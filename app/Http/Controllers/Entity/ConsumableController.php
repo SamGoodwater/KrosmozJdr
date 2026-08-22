@@ -67,6 +67,9 @@ class ConsumableController extends Controller
         return Inertia::render('Pages/entity/consumable/Index', [
             'consumables' => ConsumableResource::collection($consumables),
             'filters' => request()->only(['search', 'level', 'consumable_type_id']),
+            'consumableTypes' => ConsumableType::query()
+                ->orderBy('name')
+                ->get(['id', 'name', 'dofusdb_type_id']),
         ]);
     }
 

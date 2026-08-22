@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Log;
 final class CharacteristicMetaByDbColumnService
 {
     /** Clé de cache pour le share Inertia `characteristics` (invalidée à la sauvegarde des pivots / masters). */
-    public const FRONTEND_CACHE_KEY = 'characteristics:frontend';
+    public const FRONTEND_CACHE_KEY = 'characteristics:frontend:v3';
 
     /**
      * Mapping db_column → définition pour l'entité créature (monster, class, npc ou créature standalone).
@@ -47,7 +47,7 @@ final class CharacteristicMetaByDbColumnService
             $sorted = $this->sortPivotRowsEntityOverlayLast($charRows);
 
             foreach ($sorted as $row) {
-                $entry = $this->rowToDefinition($row->db_column, $row->characteristic);
+                $entry = $this->rowToDefinition($row->db_column, $row->characteristic, $this->pivotLimitExtra($row));
                 if ($entry !== null) {
                     $out[$entry['db_column']] = $entry;
                     // Alias : les krefs / docs utilisent la clé métier (`strength_creature`) alors que la colonne
@@ -170,7 +170,10 @@ final class CharacteristicMetaByDbColumnService
             $sorted = $this->sortPivotRowsEntityOverlayLast($charRows);
 
             foreach ($sorted as $row) {
-                $entry = $this->rowToDefinition($row->db_column, $row->characteristic, ['value_available' => $row->value_available]);
+                $entry = $this->rowToDefinition($row->db_column, $row->characteristic, array_merge(
+                    $this->pivotLimitExtra($row),
+                    ['value_available' => $row->value_available],
+                ));
                 if ($entry !== null) {
                     $out[$entry['db_column']] = $entry;
                 }
@@ -245,7 +248,7 @@ final class CharacteristicMetaByDbColumnService
 
             foreach ($sorted as $row) {
                 $idKey = (string) $row->dofusdb_characteristic_id;
-                $entry = $this->rowToDefinition($row->db_column ?? $idKey, $row->characteristic);
+                $entry = $this->rowToDefinition($row->db_column ?? $idKey, $row->characteristic, $this->pivotLimitExtra($row));
                 if ($entry !== null && $idKey !== '') {
                     $out[$idKey] = $entry;
                 }
@@ -275,7 +278,10 @@ final class CharacteristicMetaByDbColumnService
             $sorted = $this->sortPivotRowsEntityOverlayLast($charRows);
 
             foreach ($sorted as $row) {
-                $entry = $this->rowToDefinition($row->db_column, $row->characteristic, ['value_available' => $row->value_available]);
+                $entry = $this->rowToDefinition($row->db_column, $row->characteristic, array_merge(
+                    $this->pivotLimitExtra($row),
+                    ['value_available' => $row->value_available],
+                ));
                 if ($entry !== null) {
                     $out[$entry['db_column']] = $entry;
                 }
@@ -374,6 +380,39 @@ final class CharacteristicMetaByDbColumnService
                 ],
             ];
         });
+    }
+
+    /**
+     * Limites numériques figées du pivot (`min` / `max`), ignorées si formule.
+     *
+     * @return array{limit_min?: string, limit_max?: string}
+     */
+    private function pivotLimitExtra(object $row): array
+    {
+        $extra = [];
+        $min = $this->staticLimitLabel($row->min ?? null);
+        $max = $this->staticLimitLabel($row->max ?? null);
+        if ($min !== null) {
+            $extra['limit_min'] = $min;
+        }
+        if ($max !== null) {
+            $extra['limit_max'] = $max;
+        }
+
+        return $extra;
+    }
+
+    private function staticLimitLabel(mixed $raw): ?string
+    {
+        if ($raw === null || $raw === '') {
+            return null;
+        }
+        if (is_int($raw) || is_float($raw)) {
+            return (string) (int) $raw;
+        }
+        $s = trim((string) $raw);
+
+        return preg_match('/^-?\d+$/', $s) === 1 ? $s : null;
     }
 
     /**

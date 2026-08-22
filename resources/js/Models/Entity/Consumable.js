@@ -11,6 +11,7 @@
 import { BaseModel } from '../BaseModel';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
 import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
+import { FIELD_HELPERS } from '@/Utils/Entity/SharedConstants';
 
 export class Consumable extends BaseModel {
     // ============================================
@@ -327,7 +328,7 @@ export class Consumable extends BaseModel {
                 autoLabel: typeName,
                 autoScheme: 'labelHash',
                 autoTone: 'light',
-                tooltip: typeName === '-' ? '' : typeName,
+                tooltip: typeName === '-' ? '' : FIELD_HELPERS.consumable_type,
                 sortValue: typeName,
                 searchValue: typeName,
             },

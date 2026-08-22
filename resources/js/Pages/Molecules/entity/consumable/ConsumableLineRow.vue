@@ -22,6 +22,7 @@ import { getRowEntity } from "@/Utils/Entity/rowEntity";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getConsumableFieldDescriptors } from "@/Entities/consumable/consumable-descriptors";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
+import EntityFieldTooltip from "@/Pages/Molecules/entity/shared/EntityFieldTooltip.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
 
@@ -131,7 +132,15 @@ const ingredients = computed(
             <!-- Ligne 1 : Titre + Niveau + Actions -->
             <div class="flex items-center gap-2">
                 <div class="flex items-center gap-2 min-w-0 flex-1">
-                    <LevelBadge v-if="levelValue != null" :level="levelValue" size="sm" class="shrink-0" />
+                    <EntityFieldTooltip
+                        v-if="levelValue != null"
+                        field-key="level"
+                        entity-type="consumable"
+                        :descriptors="descriptors"
+                        :table-meta="tableMeta"
+                    >
+                        <LevelBadge :level="levelValue" size="sm" class="shrink-0" hide-tooltip />
+                    </EntityFieldTooltip>
                     <div class="min-w-0 flex-1">
                         <Link
                             v-if="nameCell?.type === 'route' && nameCell?.params?.href"
@@ -172,17 +181,32 @@ const ingredients = computed(
             </div>
             <!-- Ligne 2 : Type • Rareté • Prix -->
             <div class="flex flex-wrap items-center gap-2 text-sm">
-                <Badge v-if="typeCell?.value" color="auto" :auto-label="typeCell.value" auto-scheme="labelHash" auto-tone="light" variant="soft" size="xs">
-                    {{ typeCell.value }}
-                </Badge>
-                <Badge
-                    v-if="rarityConfig"
-                    :color="rarityConfig.daisyColor || rarityConfig.color || 'neutral'"
-                    variant="soft"
-                    size="xs"
+                <EntityFieldTooltip
+                    v-if="typeCell?.value"
+                    field-key="consumable_type"
+                    entity-type="consumable"
+                    :descriptors="descriptors"
+                    :table-meta="tableMeta"
                 >
-                    {{ rarityConfig.label }}
-                </Badge>
+                    <Badge color="auto" :auto-label="typeCell.value" auto-scheme="labelHash" auto-tone="light" variant="soft" size="xs">
+                        {{ typeCell.value }}
+                    </Badge>
+                </EntityFieldTooltip>
+                <EntityFieldTooltip
+                    v-if="rarityConfig"
+                    field-key="rarity"
+                    entity-type="consumable"
+                    :descriptors="descriptors"
+                    :table-meta="tableMeta"
+                >
+                    <Badge
+                        :color="rarityConfig.daisyColor || rarityConfig.color || 'neutral'"
+                        variant="soft"
+                        size="xs"
+                    >
+                        {{ rarityConfig.label }}
+                    </Badge>
+                </EntityFieldTooltip>
                 <EntityPropertyDisplay
                     v-if="canShowField('price')"
                     field-key="price"

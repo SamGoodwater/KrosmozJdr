@@ -14,6 +14,7 @@ import {
     mapPlaceholdersForPlayer,
     normalizeCharacteristicIcon,
 } from "@/Utils/Entity/characteristicTooltipLabels";
+import { formatCharacteristicLimitLine } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
     model: {
@@ -47,6 +48,13 @@ const levelRows = computed(() => {
     if (!Array.isArray(table) || table.length <= 1) return [];
     return table;
 });
+
+const limitLine = computed(() =>
+    formatCharacteristicLimitLine({
+        limit_min: props.model?.limitMin,
+        limit_max: props.model?.limitMax,
+    }),
+);
 </script>
 
 <template>
@@ -78,6 +86,9 @@ const levelRows = computed(() => {
             class="text-xs leading-relaxed italic text-white/65"
         >
             {{ model.descriptions }}
+        </p>
+        <p v-if="limitLine" class="text-xs leading-relaxed text-white/70">
+            {{ limitLine }}
         </p>
 
         <div

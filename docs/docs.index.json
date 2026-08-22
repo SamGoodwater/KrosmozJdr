@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Le survol de l’icône de panoplie sur une fiche équipement liste les pièces en vue texte : un clic sur un nom ouvre la fiche de l’objet, comme sur la page de la panoplie."
+    "description": "Le filtre Type du catalogue de ressources arrive précoché sur les types métier (bois, minerai, plante, cuir, runes, etc.). Quêtes, souvenirs, zones et essences de donjon restent disponibles dans le filtre, mais seulement si on les coche."
   },
   {
     "path": "backend/_ai.md",

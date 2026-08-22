@@ -272,6 +272,7 @@ class ItemTableController extends Controller
                             'color' => $rarityColorToken,
                             'filterValue' => $rarityKey,
                             'sortValue' => $raritySort,
+                            'tooltip' => Resource::RARITY_HELPER,
                         ],
                     ],
                     'item_type' => [
@@ -281,6 +282,9 @@ class ItemTableController extends Controller
                             'filterValue' => $itemTypeId ? (string) $itemTypeId : '',
                             'sortValue' => $itemTypeName,
                             'searchValue' => $itemTypeName,
+                            'tooltip' => $itemTypeName !== '' && $itemTypeName !== '-'
+                                ? 'Emplacement (anneau, cape, arme…).'
+                                : '',
                         ],
                     ],
                     'dofusdb_id' => [

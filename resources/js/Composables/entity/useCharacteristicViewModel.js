@@ -15,6 +15,7 @@ import {
     resolveDef,
     shouldHideCharacteristicLine,
 } from "@/Composables/entity/useCharacteristicDisplay";
+import { getEntityFieldTooltip } from "@/Utils/Entity/entity-view-ui";
 
 /**
  * Groupes de caractéristiques à interroger selon le type d'entité (aligné resolveDef).
@@ -111,8 +112,12 @@ export function useCharacteristicViewModel(options) {
             shortName,
             icon: def._resolvedIcon ?? def.icon ?? prop.icon ?? "",
             color: def._resolvedColor ?? def.color ?? prop.color ?? "",
-            helper: def.helper ?? "",
+            helper:
+                String(def.helper || "").trim() ||
+                getEntityFieldTooltip(o?.descriptors?.[fieldKey]),
             descriptions: def.descriptions ?? "",
+            limitMin: char.limit_min ?? def.limit_min ?? null,
+            limitMax: char.limit_max ?? def.limit_max ?? null,
             subtitle: def._resolvedSubtitle ?? "",
             unit: ep.unit.value || def.unit || "",
             displayValue: ep.displayValue.value,

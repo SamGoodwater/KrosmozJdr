@@ -22,6 +22,7 @@ import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngr
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
+import EntityFieldTooltip from "@/Pages/Molecules/entity/shared/EntityFieldTooltip.vue";
 import ItemPanoplyMark from "@/Pages/Molecules/entity/item/ItemPanoplyMark.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
@@ -160,24 +161,47 @@ const handleAction = async (actionKey) => {
                     />
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex items-center gap-1.5">
-                            <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
+                            <EntityFieldTooltip
+                                v-if="levelValue != null"
+                                field-key="level"
+                                entity-type="item"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                            >
+                                <LevelBadge :level="levelValue" size="xs" class="shrink-0" hide-tooltip />
+                            </EntityFieldTooltip>
                             <div class="min-w-0 flex-1">
                                 <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
                             <ItemPanoplyMark :item="entity" density="icon" :table-meta="tableMeta" class="shrink-0" />
                         </div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <Badge v-if="typeName && typeName !== '—'" color="auto" :auto-label="typeName" auto-scheme="labelHash" auto-tone="light" variant="soft" size="xs">
-                                {{ typeName }}
-                            </Badge>
-                            <Badge
-                                v-if="rarityConfig"
-                                :color="rarityConfig.daisyColor || rarityConfig.color || 'neutral'"
-                                variant="soft"
-                                size="xs"
+                            <EntityFieldTooltip
+                                v-if="typeName && typeName !== '—'"
+                                field-key="item_type"
+                                entity-type="item"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
                             >
-                                {{ rarityConfig.label }}
-                            </Badge>
+                                <Badge color="auto" :auto-label="typeName" auto-scheme="labelHash" auto-tone="light" variant="soft" size="xs">
+                                    {{ typeName }}
+                                </Badge>
+                            </EntityFieldTooltip>
+                            <EntityFieldTooltip
+                                v-if="rarityConfig"
+                                field-key="rarity"
+                                entity-type="item"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                            >
+                                <Badge
+                                    :color="rarityConfig.daisyColor || rarityConfig.color || 'neutral'"
+                                    variant="soft"
+                                    size="xs"
+                                >
+                                    {{ rarityConfig.label }}
+                                </Badge>
+                            </EntityFieldTooltip>
                             <EntityPropertyDisplay
                                 v-if="canShowField('price') && showPriceKamas"
                                 field-key="price"
@@ -214,7 +238,15 @@ const handleAction = async (actionKey) => {
                     />
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex w-full min-w-0 items-center gap-1.5">
-                            <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
+                            <EntityFieldTooltip
+                                v-if="levelValue != null"
+                                field-key="level"
+                                entity-type="item"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                            >
+                                <LevelBadge :level="levelValue" size="xs" class="shrink-0" hide-tooltip />
+                            </EntityFieldTooltip>
                             <div class="min-w-0">
                                 <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
@@ -232,17 +264,32 @@ const handleAction = async (actionKey) => {
                             </div>
                         </div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <Badge v-if="typeName && typeName !== '—'" color="auto" :auto-label="typeName" auto-scheme="labelHash" auto-tone="light" variant="soft" size="xs">
-                                {{ typeName }}
-                            </Badge>
-                            <Badge
-                                v-if="rarityConfig"
-                                :color="rarityConfig.daisyColor || rarityConfig.color || 'neutral'"
-                                variant="soft"
-                                size="xs"
+                            <EntityFieldTooltip
+                                v-if="typeName && typeName !== '—'"
+                                field-key="item_type"
+                                entity-type="item"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
                             >
-                                {{ rarityConfig.label }}
-                            </Badge>
+                                <Badge color="auto" :auto-label="typeName" auto-scheme="labelHash" auto-tone="light" variant="soft" size="xs">
+                                    {{ typeName }}
+                                </Badge>
+                            </EntityFieldTooltip>
+                            <EntityFieldTooltip
+                                v-if="rarityConfig"
+                                field-key="rarity"
+                                entity-type="item"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                            >
+                                <Badge
+                                    :color="rarityConfig.daisyColor || rarityConfig.color || 'neutral'"
+                                    variant="soft"
+                                    size="xs"
+                                >
+                                    {{ rarityConfig.label }}
+                                </Badge>
+                            </EntityFieldTooltip>
                             <EntityPropertyDisplay
                                 v-if="canShowField('price') && showPriceKamas"
                                 field-key="price"
@@ -259,8 +306,7 @@ const handleAction = async (actionKey) => {
                         </div>
                         <p
                             v-if="descriptionFull"
-                            class="text-xs text-base-content/80 line-clamp-2"
-                            :title="descriptionFull"
+                            class="text-xs text-base-content/80 whitespace-pre-wrap break-words"
                         >
                             {{ descriptionFull }}
                         </p>

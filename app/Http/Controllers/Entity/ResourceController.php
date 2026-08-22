@@ -93,7 +93,9 @@ class ResourceController extends Controller
         return Inertia::render('Pages/entity/resource/Index', [
             'resources' => ResourceResource::collection($resources),
             'filters' => request()->only(['search', 'level', 'resource_type_id', 'rarity', 'state', 'read_level', 'write_level', 'auto_update']),
-            'resourceTypes' => ResourceType::query()->select('id', 'name')->orderBy('name')->get(),
+            'resourceTypes' => ResourceType::query()
+                ->orderBy('name')
+                ->get(['id', 'name', 'dofusdb_type_id']),
             'can' => [
                 'create' => $user ? $user->can('create', Resource::class) : false,
                 'updateAny' => $user ? $user->can('updateAny', Resource::class) : false,

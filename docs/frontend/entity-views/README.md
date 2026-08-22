@@ -25,13 +25,16 @@ bandeau chips au-dessus du journal ; empty states structurés vs texte libre.
 minimal compact → survol : overlay déployé → double-clic / quick-view : modal full → agrandir : page full
 ```
 
-- L’overlay (`EntityMinimalCard`) ne décale pas la grille. En popover (`displayMode="extended"`), une seule carte (slot expanded, hauteur du contenu) : pas de coquille compacte ni de chrome tooltip autour (`OverlayTrigger` `chromeless`). En mode `hover`, la carte reste déployée tant qu’un tooltip issu d’elle est ouvert (le panneau est téléporté hors de la carte).
+- L’overlay (`EntityMinimalCard`) ne décale pas la grille. En popover (`displayMode="extended"`), une seule carte (slot expanded, hauteur du contenu) : pas de coquille compacte ni de chrome tooltip autour (`OverlayTrigger` `chromeless`). En mode `hover`, la carte reste déployée tant qu’un tooltip issu d’elle est ouvert (le panneau est téléporté hors de la carte). Les tooltips et popovers d’entités n’ont **qu’une** boîte : `OverlayTrigger` n’ajoute `tooltip-floating-surface` que si le panneau n’a pas déjà de chrome (`chromeless`, contenu sort / chips, ou `panelClass` Popover).
+- Les bibliothèques (TanStack) s’ouvrent en **vue minimale**. Le mode ligne reste disponible ; le mode colonnes déjà choisi est conservé.
+- En carte minimale **déployée**, la description des consommables, ressources et équipements n’est plus coupée.
 - Le menu d’options de la carte minimale n’a plus de fond : les icônes restent nues à droite du titre.
 - **Tous** les `*ViewMinimal` (hors `language`) passent par `EntityMinimalCard` : double-clic → modal, whitelist d’actions commune, pin flottant.
 - Shell commun : `useEntityMinimalShell` + `EntityMinimalTitle`.
 - PNJ : mêmes densités de caractéristiques que les monstres (créature liée).
 - La **page** n’est pas l’entrée principale : **Agrandir** depuis la modal, ou Ctrl+clic.
 - En `line` : même logique → modal full (`EntityLineRowActions`).
+- Badges type / rareté / niveau (ressources, équipements, consommables) : infobulle via `EntityFieldTooltip`. Hors tableau `characteristics` (type, rareté) : description courte (`FIELD_HELPERS`). Caractéristiques BDD (poids, prix, stats) : helper + limites min/max figées.
 - Actions du titre : autant de raccourcis que la largeur restante (titre → bord) ; le reste dans le dropdown `EntityActions`. Mesure : `useHorizontalOverflowCount` + `measureFlexRowLeftoverPx`. Sorts : même ligne que le titre.
 - **Monstres — équipements** : s’il y en a (`creature.items`), liste identique aux sorts (`EntityViewTextLink` + aperçu `ItemViewMinimal`) en Minimal / Line / Full. Section Full masquée si la liste est vide.
 - **Panoplies** : pas d’illustration DofusDB. La vignette reprend les images des pièces (jusqu’à 4), sinon les initiales du nom. Les équipements s’affichent en vue texte (icône + nom, clic → `ItemViewMinimal`) en Line / Minimal / Full. Les bonus de set (`{ "2": { force: 1 }, "3": {…} }`) deviennent des chips par palier (`2p …`), les valeurs à 0 sont omises. Un équipement du set affiche la panoplie via `ItemPanoplyMark` : icône seule en vue minimal compacte (tooltip = nom + pièces en vue texte + bonus) ; icône + nom en minimal déployé et Line (même tooltip) ; en Full, nom, liste des pièces et bonus. Les paliers de bonus se sélectionnent comme les effets de sorts (chiffre seul) ; un palier unique ou vide n’a pas de mini-menu. Page Modifier : équipements et bonus de set en premier (cartes du formulaire) ; nom, description et droits en bas. Recherche d’équipements via le catalogue (`EntityPickerCore`) ; chaque pièce a un bouton retirer ; les bonus se saisissent comme les effets d’équipement (caractéristique + valeur, par nombre de pièces).
@@ -81,6 +84,10 @@ Les en-têtes affichent `helper` / `general.tooltip` au survol (`TanStackTableHe
 Index server-side (`items`, `monsters`, `spells`, `resources`, `consumables`, `conditions`) : changer un filtre relance la requête (debounce) ; Réinitialiser vide `filters` (puis réapplique les défauts déclarés, s’il y en a) et revient à la page 1. Les multi-sélections partent en `filters[key][]`. Le tri envoie `sorts[i][field]` avec l’alias SQL (`item_type` → `item_type_id`, `creature_level` via jointure). La barre de recherche envoie `search=`. Les champs de saisie des filtres (texte, recherche dans un multi) ne sont pas réinitialisés à chaque refetch : les défauts ne s’appliquent que si le filtre n’a pas encore de valeur, et les `initialFilterValues` ne remplacent une clé que si son contenu a vraiment changé.
 
 Le catalogue **objets** coche par défaut les types utiles en jeu (amulette, armes, cape, dofus, trophée, etc.). Apparats, costumes et autres cosmétiques restent dans le filtre Type, décochés tant qu’on ne les demande pas.
+
+Le catalogue **ressources** coche par défaut les types métier (bois, minerai, plante, cuir, runes de forgemagie, etc.). Quêtes, souvenirs, zones et essences de donjon restent dans le filtre, décochés.
+
+Le catalogue **consommables** coche par défaut potions, nourritures, boissons, parchemins, pierres d’âme, objets utilisables, etc. Certificats, coffres, fées d’artifice et types d’événement restent dans le filtre, décochés.
 
 Index client (`npcs`, etc.) : le filtre/tri/recherche portent sur le dataset déjà chargé ; la recherche cible le nom (et les colonnes `searchable`) même si le payload n’a pas de `cells` pré-générées.
 

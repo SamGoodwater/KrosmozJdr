@@ -108,12 +108,13 @@ class ConsumableTableController extends Controller
         };
 
         $consumableTypeOptions = ConsumableType::query()
-            ->select(['id', 'name'])
+            ->select(['id', 'name', 'dofusdb_type_id'])
             ->orderBy('name')
             ->get()
             ->map(fn (ConsumableType $t) => [
                 'value' => (string) $t->id,
                 'label' => (string) $t->name,
+                'dofusdb_type_id' => $t->dofusdb_type_id !== null ? (int) $t->dofusdb_type_id : null,
             ])
             ->values()
             ->all();
@@ -230,6 +231,7 @@ class ConsumableTableController extends Controller
                             'color' => $rarityInt === null ? 'base' : $rarityColor($rarityInt),
                             'filterValue' => $rarityInt === null ? '' : (string) $rarityInt,
                             'sortValue' => $rarityInt === null ? -1 : $rarityInt,
+                            'tooltip' => Resource::RARITY_HELPER,
                         ],
                     ],
                     'consumable_type' => [
@@ -239,6 +241,9 @@ class ConsumableTableController extends Controller
                             'filterValue' => $typeId ? (string) $typeId : '',
                             'sortValue' => $typeName,
                             'searchValue' => $typeName,
+                            'tooltip' => $typeName !== '' && $typeName !== '-'
+                                ? 'Catégorie du consommable (potion, nourriture, parchemin…).'
+                                : '',
                         ],
                     ],
                     'created_by' => [
@@ -286,17 +291,6 @@ class ConsumableTableController extends Controller
                 ],
             ];
         })->values()->all();
-
-        $consumableTypeOptions = ConsumableType::query()
-            ->select(['id', 'name'])
-            ->orderBy('name')
-            ->get()
-            ->map(fn (ConsumableType $t) => [
-                'value' => (string) $t->id,
-                'label' => (string) $t->name,
-            ])
-            ->values()
-            ->all();
 
         return response()->json([
             'meta' => [

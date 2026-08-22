@@ -21,6 +21,7 @@
 
 import { TableColumnConfig } from "./TableColumnConfig.js";
 import { getCurrentScreenSize } from "../Helpers.js";
+import { getEntityFieldTooltip } from "../entity-view-ui.js";
 
 /**
  * Fonctions helper internes pour fromDescriptors()
@@ -128,7 +129,7 @@ function createColumnFromDescriptor(fieldKey, descriptor, ctx = {}) {
     label: general.label || descriptor.label || fieldKey, // Nouvelle structure puis rétrocompatibilité
     type: type,
     icon: general.icon || descriptor.icon || null, // Nouvelle structure puis rétrocompatibilité
-    tooltip: general.tooltip || descriptor.helper || null, // Nouvelle structure puis rétrocompatibilité
+    tooltip: getEntityFieldTooltip(descriptor) || null,
   });
 
   if (tableConfigDesc.permission) {

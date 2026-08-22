@@ -15,7 +15,7 @@
  */
 
 import { BaseFormatter } from './BaseFormatter.js';
-import { getRarityOptions, getRarityConfig } from '@/Utils/Entity/SharedConstants.js';
+import { FIELD_HELPERS, getRarityOptions, getRarityConfig } from '@/Utils/Entity/SharedConstants.js';
 
 export class RarityFormatter extends BaseFormatter {
   static name = 'RarityFormatter';
@@ -77,6 +77,7 @@ export class RarityFormatter extends BaseFormatter {
       sortValue: numValue,
       filterValue: numValue,
       icon: config.icon,
+      tooltip: FIELD_HELPERS.rarity,
     });
   }
 

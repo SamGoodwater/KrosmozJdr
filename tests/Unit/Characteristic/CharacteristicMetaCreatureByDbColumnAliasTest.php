@@ -37,6 +37,8 @@ class CharacteristicMetaCreatureByDbColumnAliasTest extends TestCase
             'entity' => CharacteristicCreature::ENTITY_ALL,
             'db_column' => 'strong',
             'default_value' => '8',
+            'min' => '1',
+            'max' => '20',
         ]);
 
         $service = new CharacteristicMetaByDbColumnService;
@@ -46,5 +48,33 @@ class CharacteristicMetaCreatureByDbColumnAliasTest extends TestCase
         $this->assertArrayHasKey('strength_creature', $byDb);
         $this->assertSame($byDb['strong'], $byDb['strength_creature']);
         $this->assertSame('strength_creature', $byDb['strength_creature']['key']);
+        $this->assertSame('1', $byDb['strong']['limit_min']);
+        $this->assertSame('20', $byDb['strong']['limit_max']);
+    }
+
+    public function test_creature_meta_omits_formula_limits(): void
+    {
+        $characteristic = Characteristic::create([
+            'key' => 'vitality_creature',
+            'name' => 'Vitalité',
+            'short_name' => 'Vit',
+            'type' => 'int',
+            'status' => Characteristic::STATUS_A_VALIDER,
+            'sort_order' => 2,
+            'group' => 'creature',
+        ]);
+
+        CharacteristicCreature::create([
+            'characteristic_id' => $characteristic->id,
+            'entity' => CharacteristicCreature::ENTITY_ALL,
+            'db_column' => 'vit',
+            'min' => '[level]*2',
+            'max' => '99',
+        ]);
+
+        $byDb = (new CharacteristicMetaByDbColumnService)->buildCreatureByDbColumn();
+
+        $this->assertArrayNotHasKey('limit_min', $byDb['vit']);
+        $this->assertSame('99', $byDb['vit']['limit_max']);
     }
 }

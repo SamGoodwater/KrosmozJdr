@@ -12,7 +12,8 @@
 import { ref, watch } from "vue";
 
 const STORAGE_PREFIX = "tanstack_table_prefs_";
-const PREFS_VERSION = 3;
+/** v4 : défaut d’affichage `minimal` (les prefs v3 en `line` sont migrées). */
+const PREFS_VERSION = 4;
 
 function safeParse(json) {
     try {
@@ -29,15 +30,22 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
         ? safeParse(window.localStorage?.getItem(key) || "")
         : null;
 
-    // Migration: v1 sans version / version 1 ; v2 touchedColumns ; v3 quickEdit + sorting persisté
+    // Migration: v1 sans version ; v2 touchedColumns ; v3 quickEdit + sorting ; v4 défaut minimal
     const savedVer = Number(saved?.version);
-    const hasModernColumnPrefs = savedVer === 2 || savedVer === PREFS_VERSION;
+    const hasModernColumnPrefs = Number.isFinite(savedVer) && savedVer >= 2;
 
     const visibleColumns = ref(hasModernColumnPrefs ? (saved?.visibleColumns || {}) : (defaults.visibleColumns || {}));
     const touchedColumns = ref(hasModernColumnPrefs ? (saved?.touchedColumns || []) : []);
     const pageSize = ref(saved?.pageSize || defaults.pageSize || null);
-    /** displayMode: 'table' | 'line' | 'minimal'. Défaut: 'line'. */
-    const displayMode = ref(saved?.displayMode ?? defaults.displayMode ?? "line");
+    /** displayMode: 'table' | 'line' | 'minimal'. Défaut: 'minimal'. */
+    const defaultDisplayMode = defaults.displayMode ?? "minimal";
+    let initialDisplayMode = saved?.displayMode ?? defaultDisplayMode;
+    const migrateLineToMinimal =
+        Boolean(saved) && Number.isFinite(savedVer) && savedVer < 4 && initialDisplayMode === "line";
+    if (migrateLineToMinimal) {
+        initialDisplayMode = defaultDisplayMode;
+    }
+    const displayMode = ref(initialDisplayMode);
     /** Quick edit panel : désactivé par défaut ; l’utilisateur réactive via le toggle (persisté). */
     const quickEditEnabled = ref(
         typeof saved?.quickEditEnabled === "boolean"
@@ -73,6 +81,10 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
     watch(displayMode, persist);
     watch(quickEditEnabled, persist);
     watch(sorting, persist, { deep: true });
+
+    if (migrateLineToMinimal) {
+        persist();
+    }
 
     const setColumnVisible = (columnId, isVisible) => {
         const id = String(columnId || "");
