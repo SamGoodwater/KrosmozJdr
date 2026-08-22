@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "MySQL 8 refuse un DEFAULT SQL sur TEXT/BLOB/JSON (`SQLSTATE 1101`). Après le JSON `notification_channels`, les résistances fixes créature (`res_fixe_*`) bloquaient encore `php artisan migrate` en CI."
+    "description": "`brace-expansion` (via `minimatch` / `glob` / ESLint) est forcé en 1.1.18, 2.1.4 et 5.0.9 dans `pnpm.overrides`, au-dessus des correctifs 1.1.16 / 2.1.2 / 5.0.7."
   },
   {
     "path": "backend/_ai.md",
