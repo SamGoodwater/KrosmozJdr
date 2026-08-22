@@ -22,6 +22,7 @@ import ResourceIngredientsList from "@/Pages/Molecules/data-display/ResourceIngr
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
+import ItemPanoplyMark from "@/Pages/Molecules/entity/item/ItemPanoplyMark.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
 
@@ -163,7 +164,7 @@ const handleAction = async (actionKey) => {
                             <div class="min-w-0 flex-1">
                                 <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
-                            
+                            <ItemPanoplyMark :item="entity" density="icon" :table-meta="tableMeta" class="shrink-0" />
                         </div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs">
                             <Badge v-if="typeName && typeName !== '—'" color="auto" :auto-label="typeName" auto-scheme="labelHash" auto-tone="light" variant="soft" size="xs">
@@ -254,6 +255,7 @@ const handleAction = async (actionKey) => {
                                 class="min-w-0"
                                 hide-field-label
                             />
+                            <ItemPanoplyMark :item="entity" density="named" :table-meta="tableMeta" />
                         </div>
                         <p
                             v-if="descriptionFull"

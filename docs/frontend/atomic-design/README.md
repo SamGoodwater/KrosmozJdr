@@ -9,3 +9,7 @@ Les composants UI sont organisés dans `resources/js/Pages/Atoms`, `Molecules` e
 - Organismes : tables, rendu CMS, overlays, formulaires complexes.
 
 Les index `atoms.index.json`, `molecules.index.json`, `organisms.index.json` servent à explorer les composants sans lire tout le code.
+
+## Tooltips
+
+Les infobulles hover (`Tooltip.vue` → `OverlayTrigger`) restent ouvertes tant que le pointeur est sur le déclencheur **ou** sur le panneau. Un pont CSS (`overlay-hover-bridge`) couvre l’écart Floating UI ; le délai de fermeture est `hoverCloseDelayMs` (250 ms).

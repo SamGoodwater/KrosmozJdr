@@ -4,6 +4,7 @@ namespace Tests\Feature\Api\Table;
 
 use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Item;
+use App\Models\Entity\Panoply;
 use App\Models\Type\ItemType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -391,5 +392,54 @@ class ItemTableControllerTest extends TestCase
         $entity = collect($response->json('entities'))->firstWhere('name', 'Bonus Item');
         $this->assertNotNull($entity);
         $this->assertNotEmpty($entity['bonus']);
+    }
+
+    public function test_format_entities_includes_panoply_summary(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $hat = Item::factory()->create($this->playableAttrs(['name' => 'Coiffe Set Table']));
+        $cape = Item::factory()->create($this->playableAttrs(['name' => 'Cape Set Table']));
+        $panoply = Panoply::factory()->create([
+            'name' => 'Panoplie Table Payload',
+            'bonus' => json_encode(['2' => ['strength' => 1], '3' => (object) []], JSON_THROW_ON_ERROR),
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $panoply->items()->sync([$hat->id, $cape->id]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/items?format=entities&limit=50&whitelist[]='.$hat->id);
+
+        $response->assertOk();
+        $entity = collect($response->json('entities'))->firstWhere('id', $hat->id);
+        $this->assertNotNull($entity);
+        $this->assertIsArray($entity['panoplies']);
+        $this->assertCount(1, $entity['panoplies']);
+        $this->assertSame('Panoplie Table Payload', $entity['panoplies'][0]['name']);
+        $this->assertCount(2, $entity['panoplies'][0]['items']);
+        $this->assertNotEmpty($entity['panoplies'][0]['bonus']);
+    }
+
+    public function test_format_cells_row_entity_includes_panoplies(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $item = Item::factory()->create($this->playableAttrs(['name' => 'Item Cells Panoply']));
+        $panoply = Panoply::factory()->create([
+            'name' => 'Panoplie Cells Payload',
+            'bonus' => json_encode(['2' => ['vitality' => 10]], JSON_THROW_ON_ERROR),
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $panoply->items()->sync([$item->id]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/items?limit=50&whitelist[]='.$item->id);
+
+        $response->assertOk();
+        $row = collect($response->json('rows'))->firstWhere('id', $item->id);
+        $this->assertNotNull($row);
+        $panoplies = $row['rowParams']['entity']['panoplies'] ?? null;
+        $this->assertIsArray($panoplies);
+        $this->assertSame('Panoplie Cells Payload', $panoplies[0]['name'] ?? null);
     }
 }

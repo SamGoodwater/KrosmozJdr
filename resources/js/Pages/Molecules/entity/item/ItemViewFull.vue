@@ -30,6 +30,7 @@ import ResourceIngredientsList from '@/Pages/Molecules/data-display/ResourceIngr
 import RichTextReadonlyView from '@/Pages/Molecules/data-display/RichTextReadonlyView.vue';
 import CharacteristicEffectsGrid from '@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
+import ItemPanoplyMark from '@/Pages/Molecules/entity/item/ItemPanoplyMark.vue';
 
 const props = defineProps({
     item: { type: Object, required: true },
@@ -340,6 +341,9 @@ const handleAction = async (actionKey) => {
                 <CharacteristicEffectsGrid :items="bonusItems" label-mode="full" />
             </div>
         </div>
+
+        <!-- Panoplie -->
+        <ItemPanoplyMark :item="item" density="full" :table-meta="tableMeta" />
 
         <!-- Ingrédients -->
         <div v-if="ingredients.length > 0" class="space-y-2">

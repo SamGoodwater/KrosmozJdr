@@ -56,7 +56,8 @@ export const DEFAULT_OVERLAY_OPTIONS = Object.freeze({
     maxOpen: 6,
     baseZIndex: OVERLAY_Z_INDEX.stackBase,
     hoverOpenDelayMs: 80,
-    hoverCloseDelayMs: 140,
+    /** Délai pour rejoindre le panneau (écart Floating UI + pont CSS). */
+    hoverCloseDelayMs: 250,
     clickCloseOnOutside: true,
     cacheTtlMs: 60_000,
     cacheMaxEntries: 200,

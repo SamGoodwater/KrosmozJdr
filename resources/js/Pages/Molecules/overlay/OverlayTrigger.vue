@@ -1,7 +1,9 @@
 <script setup>
-import { computed, nextTick, watch } from "vue";
+import { computed, nextTick, onUnmounted, watch } from "vue";
 import { useOverlay } from "@/Composables/overlay/useOverlay";
-import { OVERLAY_MAX_WIDTH_CLASS, OVERLAY_Z_INDEX } from "@/Composables/overlay/overlayConstants";
+import { OVERLAY_MAX_WIDTH_CLASS, OVERLAY_TRIGGER, OVERLAY_Z_INDEX } from "@/Composables/overlay/overlayConstants";
+import { useEntityMinimalCardOverlayHold } from "@/Composables/overlay/entityMinimalCardOverlayHold";
+import { provideOverlayNestHold, useOverlayNestHold } from "@/Composables/overlay/overlayNestHold";
 import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
 
 const props = defineProps({
@@ -45,13 +47,89 @@ const { service, position, trigger, a11y } = useOverlay({
     offsetPx: props.offsetPx,
     allowFlip: props.allowFlip,
 });
-const { triggerRef, overlayRef, floatingStyles, teleportTarget } = position;
+const { triggerRef, overlayRef, floatingStyles, placement, teleportTarget } = position;
 const { isOpen, loading, error, resolved, resolvedKind } = service;
 const { triggerAttrs, panelAttrs } = a11y;
 
+const cardOverlayHold = useEntityMinimalCardOverlayHold();
+const parentNestHold = useOverlayNestHold();
+const nestHoldCount = provideOverlayNestHold();
+let parentHoldsAcquired = false;
+
+/**
+ * @param {boolean} open
+ */
+function syncParentHolds(open) {
+    if (open && !parentHoldsAcquired) {
+        cardOverlayHold?.acquire();
+        parentNestHold?.acquire();
+        parentHoldsAcquired = true;
+        return;
+    }
+    if (!open && parentHoldsAcquired) {
+        cardOverlayHold?.release();
+        parentNestHold?.release();
+        parentHoldsAcquired = false;
+    }
+}
+
+watch(
+    () => isOpen.value,
+    (open) => {
+        syncParentHolds(open);
+    },
+);
+
+onUnmounted(() => {
+    syncParentHolds(false);
+});
+
+function pointerIsOverThisOverlay() {
+    return Boolean(triggerRef.value?.matches?.(":hover") || overlayRef.value?.matches?.(":hover"));
+}
+
+function onHoverTriggerLeave() {
+    if (nestHoldCount.value > 0) {
+        return;
+    }
+    trigger.onTriggerLeave();
+}
+
+function onHoverPanelLeave() {
+    if (nestHoldCount.value > 0) {
+        return;
+    }
+    trigger.onPanelLeave();
+}
+
+function onHoverTriggerFocusOut() {
+    if (nestHoldCount.value > 0) {
+        return;
+    }
+    trigger.onTriggerFocusOut();
+}
+
+watch(nestHoldCount, (count) => {
+    if (count > 0) {
+        trigger.clearTimers();
+        return;
+    }
+    if (!isOpen.value) {
+        return;
+    }
+    if (trigger.computedTrigger.value !== OVERLAY_TRIGGER.HOVER) {
+        return;
+    }
+    if (!pointerIsOverThisOverlay()) {
+        trigger.onTriggerLeave();
+    }
+});
+
 const panelMaxWidthClass = computed(() => OVERLAY_MAX_WIDTH_CLASS[props.maxWidth] || "");
+/** Survol : le panneau capte le pointeur pour rester ouvert (même si `interactive` est false). */
+const isHoverTrigger = computed(() => trigger.computedTrigger.value === OVERLAY_TRIGGER.HOVER);
 const panelPointerEventsClass = computed(() =>
-    props.interactive ? "pointer-events-auto" : "pointer-events-none",
+    props.interactive || isHoverTrigger.value ? "pointer-events-auto" : "pointer-events-none",
 );
 const panelStyle = computed(() => ({
     ...(floatingStyles?.value || {}),
@@ -106,9 +184,9 @@ function handleKeydown(event) {
         class="inline-flex min-w-0"
         v-bind="triggerAttrs"
         @mouseenter="trigger.onTriggerEnter"
-        @mouseleave="trigger.onTriggerLeave"
+        @mouseleave="onHoverTriggerLeave"
         @focusin="trigger.onTriggerFocusIn"
-        @focusout="trigger.onTriggerFocusOut"
+        @focusout="onHoverTriggerFocusOut"
         @click="trigger.onTriggerClick"
     >
         <slot />
@@ -119,16 +197,18 @@ function handleKeydown(event) {
             ref="overlayRef"
             :class="[
                 chromeless ? 'tooltip-floating-chromeless' : 'tooltip-floating-surface color-neutral',
+                'overlay-hover-bridge',
                 panelPointerEventsClass,
                 panelMaxWidthClass,
                 panelClass,
             ]"
+            :data-placement="placement"
             :style="panelStyle"
             :aria-hidden="!isPositionReady"
             v-show="isPositionReady"
             v-bind="panelAttrs"
             @mouseenter="trigger.onPanelEnter"
-            @mouseleave="trigger.onPanelLeave"
+            @mouseleave="onHoverPanelLeave"
             @keydown="handleKeydown"
         >
             <div v-if="loading" class="flex items-center gap-2 p-2 text-xs text-base-content/70">

@@ -15,6 +15,7 @@ use App\Models\Type\ItemType;
 use App\Models\User;
 use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
+use App\Support\Entity\ItemPanoplyPayload;
 use App\Support\Entity\ObjectEffectEditOptions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,7 +35,7 @@ class ItemController extends Controller
 
         $query = Item::query()
             ->visibleToUser(request()->user())
-            ->with(['createdBy', 'itemType', 'resources']);
+            ->with(['createdBy', 'itemType', 'resources', ...ItemPanoplyPayload::eagerLoad()]);
 
         // Recherche
         if (request()->has('search') && request()->search) {
@@ -135,6 +136,7 @@ class ItemController extends Controller
             'resources',
             'effectUsages.effectDegree.effect',
             'objectEffects',
+            ...ItemPanoplyPayload::eagerLoad(),
         ]);
 
         return Inertia::render('Pages/entity/item/Show', [
@@ -149,7 +151,14 @@ class ItemController extends Controller
     {
         $this->authorize('update', $item);
 
-        $item->load(['itemType', 'createdBy', 'resources', 'effectUsages.effectDegree.effect', 'objectEffects']);
+        $item->load([
+            'itemType',
+            'createdBy',
+            'resources',
+            'effectUsages.effectDegree.effect',
+            'objectEffects',
+            ...ItemPanoplyPayload::eagerLoad(),
+        ]);
 
         $availableResources = \App\Models\Entity\Resource::select('id', 'name', 'description', 'level')
             ->orderBy('name')

@@ -91,7 +91,7 @@ export function useOverlayPosition(options) {
         return middleware;
     });
 
-    const { floatingStyles } = useFloating(triggerRef, overlayRef, {
+    const { floatingStyles, placement } = useFloating(triggerRef, overlayRef, {
         open: options.openRef,
         strategy: "fixed",
         placement: floatingPlacementRef,
@@ -110,6 +110,7 @@ export function useOverlayPosition(options) {
         triggerRef,
         overlayRef,
         floatingStyles,
+        placement,
         teleportTarget,
     };
 }

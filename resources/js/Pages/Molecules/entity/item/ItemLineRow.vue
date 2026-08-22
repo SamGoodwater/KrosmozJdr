@@ -21,6 +21,7 @@ import { getRowEntity } from "@/Utils/Entity/rowEntity";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
+import ItemPanoplyMark from "@/Pages/Molecules/entity/item/ItemPanoplyMark.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
 
@@ -199,6 +200,7 @@ const rarityConfig = computed(() => {
                     size="xs"
                     class="min-w-0"
                 />
+                <ItemPanoplyMark :item="entity" density="named" :table-meta="tableMeta" />
             </div>
             <!-- Ligne 3 : Description courte -->
             <p

@@ -3,6 +3,7 @@
  * Liste d’équipements en vue Texte (popover minimal au clic).
  *
  * @props {Array} items - Lignes `{id, name, image?}` ou instances `Item`
+ * @props {String} layout - `wrap` (fiche panoplie) ou `stack` (tooltip)
  */
 import { computed } from "vue";
 import EntityViewTextLink from "@/Pages/Molecules/entity/shared/EntityViewTextLink.vue";
@@ -18,6 +19,12 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    /** `wrap` : ligne (fiche panoplie) ; `stack` : colonne (tooltip). */
+    layout: {
+        type: String,
+        default: "wrap",
+        validator: (v) => ["wrap", "stack"].includes(v),
+    },
 });
 
 const itemModels = computed(() => {
@@ -31,7 +38,12 @@ const itemModels = computed(() => {
 <template>
     <ul
         v-if="itemModels.length"
-        class="flex list-none flex-wrap items-center gap-x-3 gap-y-1.5 p-0 m-0"
+        class="flex list-none p-0 m-0"
+        :class="
+            layout === 'stack'
+                ? 'flex-col items-stretch gap-1'
+                : 'flex-wrap items-center gap-x-3 gap-y-1.5'
+        "
     >
         <li
             v-for="item in itemModels"

@@ -1,5 +1,21 @@
 # Ce qui a été fait
 
+## Août 2026 — Équipements du set dans le tooltip panoplie
+
+Le survol de l’icône de panoplie sur une fiche équipement liste les pièces en vue texte : un clic sur un nom ouvre la fiche de l’objet, comme sur la page de la panoplie.
+
+## Août 2026 — Tooltip sur une carte minimale
+
+Survoler le tooltip d’une fiche minimale (grille) ne replie plus la carte : elle reste ouverte le temps d’atteindre et de lire l’infobulle.
+
+## Août 2026 — Tooltip : on peut le survoler
+
+Les infobulles ne se ferment plus dès que la souris quitte le déclencheur : tant que le pointeur est sur le tooltip, il reste affiché, partout sur le site.
+
+## Août 2026 — Panoplie visible sur l’équipement
+
+Si un objet fait partie d’une panoplie, les fiches équipement montrent l’icône du set. En carte repliée, l’icône seule ouvre un aperçu (nom, autres pièces, bonus). En carte déployée et en liste, le nom apparaît à côté. La fiche complète liste les pièces et les bonus par palier (boutons chiffrés, comme les sorts).
+
 ## Août 2026 — Modifier une panoplie : ordre et style
 
 Sur la page Modifier, on commence par les équipements et les bonus de set. Nom, description et droits (lecture / écriture) sont en bas. Les bonus utilisent les mêmes champs verre que le reste du site, plus de panneau bleu plein.
