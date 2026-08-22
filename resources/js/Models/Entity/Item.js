@@ -12,6 +12,7 @@
 import { BaseModel } from '../BaseModel';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
 import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
+import { getRarityConfig } from '@/Utils/Entity/SharedConstants';
 
 export class Item extends BaseModel {
     // ============================================
@@ -98,7 +99,15 @@ export class Item extends BaseModel {
     }
 
     get rarity() {
-        return this._data.rarity || null;
+        const v = this._data.rarity;
+        if (v === null || v === '') {
+            return null;
+        }
+        if (v === undefined) {
+            return 0;
+        }
+        const n = Number(v);
+        return Number.isFinite(n) ? n : 0;
     }
 
     get dofusVersion() {
@@ -287,7 +296,7 @@ export class Item extends BaseModel {
      */
     _toBonusCell(format, size, options) {
         return buildCharacteristicEffectCell({
-            rawValues: [this.bonus],
+            rawValues: [this.bonus, this.effect],
             options,
             sourceGroups: ['item', 'panoply'],
             format,
@@ -392,16 +401,10 @@ export class Item extends BaseModel {
      */
     _toItemSummaryMetaCell(format, size, options) {
         const itemTypeName = this.itemType?.name || this.itemType?.label || null;
-        const rarityMap = {
-            0: 'Commun',
-            1: 'Peu commun',
-            2: 'Rare',
-            3: 'Très rare',
-            4: 'Légendaire',
-            5: 'Unique',
-        };
         const rarityValue = this.rarity;
-        const rarityLabel = Number.isFinite(Number(rarityValue)) ? (rarityMap[Number(rarityValue)] || String(rarityValue)) : null;
+        const rarityLabel = Number.isFinite(Number(rarityValue))
+            ? (getRarityConfig(Number(rarityValue))?.label || String(rarityValue))
+            : null;
         const levelValue = this.level != null ? String(this.level) : null;
         const priceValue = this.price != null ? String(this.price) : null;
         const versionValue = this.dofusVersion ? String(this.dofusVersion) : null;

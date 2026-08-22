@@ -311,9 +311,7 @@ const handleAction = async (actionKey) => {
             router.visit(route('entities.spells.edit', { spell: spellId }));
             emit('edit', props.spell);
             break;
-        case 'quick-edit':
-            emit('quick-edit', props.spell);
-            break;
+        
         case 'copy-link': {
             const cfg = getEntityRouteConfig('spell');
             const url = resolveEntityRouteUrl('spell', 'show', spellId, cfg);

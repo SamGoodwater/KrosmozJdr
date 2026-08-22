@@ -44,18 +44,16 @@ export const SCRAPPABLE_ENTITY_TYPES = Object.freeze([
 
 /**
  * Ordre d’actions par surface (du plus pertinent au moins).
- * Minimal déployé : état → pin → modal → edit modal → DofusDB → favoris → lien → pages.
+ * Minimal déployé : état → pin → modal → DofusDB → favoris → lien → édition page.
  */
 export const ENTITY_ACTION_CONTEXT_PRESETS = Object.freeze({
   minimalLine: [
     "state",
     "pin",
     "quick-view",
-    "quick-edit",
     "view-dofusdb",
     "favorite",
     "copy-link",
-    "view",
     "edit",
   ],
   modalDetail: [
@@ -81,7 +79,7 @@ export const ENTITY_ACTION_CONTEXT_PRESETS = Object.freeze({
     "state",
     "pin",
     "quick-view",
-    "quick-edit",
+    "edit",
     "view-dofusdb",
     "favorite",
     "copy-link",
@@ -141,10 +139,9 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     getTooltip: (context) => (context?.inModal ? "Agrandir" : "Afficher"),
     getIcon: (context) => (context?.inModal ? "fa-solid fa-expand" : "fa-solid fa-eye"),
     visibleIf: (context) => {
-      // Line : ouverture via quick-view (modal), pas la page.
+      // Line / Minimal : Afficher = modal (`quick-view`). La page s’ouvre depuis la modal (Agrandir).
       if (context?.inLine || context?.viewMode === "line") return false;
-      // Minimal : page en overflow (pas l’entrée principale).
-      if (context?.inMinimal || context?.viewMode === "minimal") return true;
+      if (context?.inMinimal || context?.viewMode === "minimal") return false;
       // Sur une page d'édition, on garde l'action "Afficher".
       if (context?.inPage) return context?.pageMode === "edit";
       return true;
@@ -180,15 +177,9 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     getTooltip: (context) => (context?.inModal && context?.modalMode === "edit" ? "Agrandir" : "Éditer"),
     getIcon: (context) => (context?.inModal && context?.modalMode === "edit" ? "fa-solid fa-expand" : "fa-solid fa-pen-to-square"),
     visibleIf: (context) => {
-      // Line : édition via quick-edit (modal).
-      if (context?.inLine || context?.viewMode === "line") return false;
-      // Minimal : édition page en overflow.
-      if (context?.inMinimal || context?.viewMode === "minimal") return true;
-      // Modal : éditer en page (ou agrandir si déjà en modal édition).
-      if (context?.inModal) return true;
       // Sur une page d'édition, l'action utile devient "Afficher".
       if (context?.inPage) return context?.pageMode !== "edit";
-      return false;
+      return true;
     },
   },
   "quick-edit": {
@@ -201,11 +192,10 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
     group: "edition",
     getLabel: () => "Éditer",
     getTooltip: () => "Éditer",
-    visibleIf: (context) => {
-      // Page / modal : édition page uniquement (pas de quick-edit).
-      if (context?.inPage) return false;
-      if (context?.inModal) return false;
-      return true;
+    visibleIf: () => {
+      // Action historique : l’édition unitaire passe par `edit` (page Modifier).
+      // Le panneau tableau reste EntityQuickEditPanel.
+      return false;
     },
   },
   expand: {

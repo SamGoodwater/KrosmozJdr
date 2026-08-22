@@ -106,11 +106,11 @@ const hasDescription = computed(() => {
                 <div class="flex items-start gap-2">
                     <EntityThumb size="xs" :src="imageUrl || ''" :label="displayName" />
                     <div class="min-w-0 flex-1">
-                        <div class="flex items-start gap-1.5">
+                        <div class="flex w-full min-w-0 items-start gap-1.5">
                             <div class="min-w-0">
                                 <EntityMinimalTitle :label="displayName" @open="openQuickView" />
                             </div>
-                            <div v-if="showActions" data-entity-actions class="flex min-w-8 flex-1 justify-end" @click.stop>
+                            <div v-if="showActions" data-entity-actions class="ml-auto flex min-w-8 flex-1 justify-end" @click.stop>
                                 <EntityActions
                                     entity-type="conditions"
                                     :entity="entity"

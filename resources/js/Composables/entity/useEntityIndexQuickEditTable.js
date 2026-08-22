@@ -5,13 +5,11 @@
  * État partagé : toggle quick edit persisté (via tableau). La sélection des lignes
  * est gérée par {@link TanStackTable} (`clickToSelect`) ; le panneau
  * {@link EntityQuickEditPanel} réagit à `selectedIds` + `tableQuickEditEnabled`.
- * Aucune ouverture de modal au simple clic (celle-ci reste réservée au menu d’actions, Alt+clic, etc.).
+ * Le simple clic ne fait que sélectionner ; Alt+clic et l’action Éditer ouvrent la page Modifier.
  *
  * @param {object} Model - Classe modèle (ex: Spell) avec .fromArray
  * @returns {{
  *   tableQuickEditEnabled: import('vue').Ref<boolean>,
- *   quickEditModalOpen: import('vue').Ref<boolean>,
- *   quickEditEntity: import('vue').Ref<object|null>,
  *   onUpdateTableQuickEdit: (v: boolean) => void,
  * }}
  */
@@ -19,8 +17,6 @@ import { ref } from "vue";
 
 export function useEntityIndexQuickEditTable(_Model) {
     const tableQuickEditEnabled = ref(false);
-    const quickEditModalOpen = ref(false);
-    const quickEditEntity = ref(null);
 
     const onUpdateTableQuickEdit = (v) => {
         tableQuickEditEnabled.value = Boolean(v);
@@ -28,8 +24,6 @@ export function useEntityIndexQuickEditTable(_Model) {
 
     return {
         tableQuickEditEnabled,
-        quickEditModalOpen,
-        quickEditEntity,
         onUpdateTableQuickEdit,
     };
 }

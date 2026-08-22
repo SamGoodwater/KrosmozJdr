@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "`brace-expansion` (via `minimatch` / `glob` / ESLint) est forcé en 1.1.18, 2.1.4 et 5.0.9 dans `pnpm.overrides`, au-dessus des correctifs 1.1.16 / 2.1.2 / 5.0.7."
+    "description": "Sur la page Modifier, on commence par les équipements et les bonus de set. Nom, description et droits (lecture / écriture) sont en bas."
   },
   {
     "path": "backend/_ai.md",

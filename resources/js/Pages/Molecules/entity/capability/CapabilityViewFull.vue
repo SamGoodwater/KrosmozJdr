@@ -255,9 +255,7 @@ const handleAction = async (actionKey) => {
             router.visit(route("entities.capabilities.edit", { capability: capabilityId }));
             emit("edit", props.capability);
             break;
-        case "quick-edit":
-            emit("quick-edit", props.capability);
-            break;
+        
         case "copy-link": {
             const cfg = getEntityRouteConfig("capability");
             const url = resolveEntityRouteUrl("capability", "show", capabilityId, cfg);

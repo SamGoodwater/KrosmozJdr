@@ -55,7 +55,15 @@ export class Consumable extends BaseModel {
     }
 
     get rarity() {
-        return this._data.rarity || null;
+        const v = this._data.rarity;
+        if (v === null || v === '') {
+            return null;
+        }
+        if (v === undefined) {
+            return 0;
+        }
+        const n = Number(v);
+        return Number.isFinite(n) ? n : 0;
     }
 
     get dofusVersion() {

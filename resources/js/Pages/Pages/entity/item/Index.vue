@@ -22,7 +22,6 @@ import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vu
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import EntityQuickEditPanel from "@/Pages/Organismes/entity/EntityQuickEditPanel.vue";
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
-import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
@@ -31,6 +30,10 @@ import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityInde
 import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
 import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
+import {
+    hasItemTypeFilter,
+    resolveGameplayItemTypeIds,
+} from "@/Utils/Entity/gameplayItemTypes";
 
 // Props Inertia (gardées à titre documentaire, même si non utilisées directement ici)
 const props = defineProps({
@@ -66,7 +69,17 @@ const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
 
-const indexTableFilters = computed(() => normalizeIndexTableFilters(props.filters));
+const indexTableFilters = computed(() => {
+    const fromQuery = normalizeIndexTableFilters(props.filters);
+    if (hasItemTypeFilter(fromQuery)) {
+        return fromQuery;
+    }
+    const typeIds = resolveGameplayItemTypeIds(props.itemTypes || []);
+    if (typeIds.length === 0) {
+        return fromQuery;
+    }
+    return { ...fromQuery, item_type_id: typeIds };
+});
 const serverBaseUrl = computed(() => route('api.tables.items'));
 
 const selectedEntities = computed(() => {
@@ -93,8 +106,6 @@ const modalView = ref('full');
 const createModalOpen = ref(false);
 const {
     tableQuickEditEnabled,
-    quickEditModalOpen,
-    quickEditEntity,
     onUpdateTableQuickEdit,
 } = useEntityIndexQuickEditTable(Item);
 
@@ -144,8 +155,8 @@ const { handleKeyboardIntent } = useEntityIndexTableIntents({
     canModify: () => canModify.value,
     openFullModal: openModal,
     openEdit: (model) => {
-        quickEditEntity.value = model;
-        quickEditModalOpen.value = true;
+        if (!model?.id) return;
+        router.visit(route('entities.items.edit', { item: model.id }));
     },
 });
 
@@ -168,20 +179,13 @@ const handleTableAction = async (actionKey, entity, row) => {
 
     switch (actionKey) {
         case 'view':
-            router.visit(route('entities.items.show', { item: entityId }));
-            break;
-
         case 'quick-view':
             openModal(model);
             break;
 
         case 'edit':
-            router.visit(route('entities.items.edit', { item: entityId }));
-            break;
-
         case 'quick-edit':
-            quickEditEntity.value = model;
-            quickEditModalOpen.value = true;
+            router.visit(route('entities.items.edit', { item: entityId }));
             break;
 
         case 'copy-link': {
@@ -210,9 +214,10 @@ const handleTableAction = async (actionKey, entity, row) => {
 
 // Handlers pour les actions du modal
 const handleModalQuickEdit = (entity) => {
-    quickEditEntity.value = entity;
-    quickEditModalOpen.value = true;
+    const entityId = entity?.id;
+    if (!entityId) return;
     closeModal();
+    router.visit(route('entities.items.edit', { item: entityId }));
 };
 
 const handleModalExpand = (entity) => {
@@ -248,15 +253,6 @@ const handleModalDelete = (entity) => {
     // TODO: Implémenter la suppression avec confirmation
 };
 
-const handleQuickEditSubmit = async (payload) => {
-    if (payload) {
-        const ok = await bulkPatchJson("/api/entities/items/bulk", payload);
-        if (!ok) return;
-    }
-    refreshToken.value++;
-    quickEditEntity.value = null;
-    quickEditModalOpen.value = false;
-};
 
 const handleCreate = () => {
     createModalOpen.value = true;
@@ -379,17 +375,6 @@ const clearSelection = () => {
             @download-pdf="handleModalDownloadPdf"
             @refresh="handleModalRefresh"
             @delete="handleModalDelete"
-        />
-
-        <!-- Modal d'édition rapide -->
-        <EntityQuickEditModal
-            v-if="quickEditEntity"
-            :entity="quickEditEntity"
-            entity-type="item"
-            :fields-config="fieldsConfig"
-            :open="quickEditModalOpen"
-            @close="quickEditModalOpen = false"
-            @submit="handleQuickEditSubmit"
         />
     </div>
 </template>

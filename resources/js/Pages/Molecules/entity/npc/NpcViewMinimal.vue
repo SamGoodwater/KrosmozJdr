@@ -212,7 +212,7 @@ const showSpecialization = computed(
                 <div class="flex gap-2">
                     <EntityThumb size="compact" :src="imageUrl || ''" :label="displayName" />
                     <div class="flex min-w-0 flex-1 flex-col gap-1 pl-0.5">
-                        <div class="flex items-center gap-1.5">
+                        <div class="flex w-full min-w-0 items-center gap-1.5">
                             <LevelBadge
                                 v-if="levelValue != null"
                                 :level="levelValue"
@@ -222,7 +222,7 @@ const showSpecialization = computed(
                             <div class="min-w-0">
                                 <EntityMinimalTitle :label="displayName" @open="openQuickView" />
                             </div>
-                            <div v-if="showActions" data-entity-actions class="flex min-w-8 flex-1 justify-end" @click.stop>
+                            <div v-if="showActions" data-entity-actions class="ml-auto flex min-w-8 flex-1 justify-end" @click.stop>
                                 <EntityActions
                                     entity-type="npcs"
                                     :entity="entity"

@@ -71,7 +71,7 @@ const props = defineProps({
     },
     inlineActionKeys: {
         type: Array,
-        default: () => ["state", "pin", "quick-view", "quick-edit", "view-dofusdb", "favorite", "copy-link", "view", "edit"],
+        default: () => ["state", "pin", "quick-view", "edit", "view-dofusdb", "favorite", "copy-link", "view"],
     },
     showInlineShortcuts: {
         type: Boolean,
@@ -108,7 +108,7 @@ const rowRef = ref(null);
 const measureRef = ref(null);
 const promotedCount = computed(() => promotedActions.value.length);
 
-const { visibleCount, measureWidthPx, leftoverPx } = useHorizontalOverflowCount({
+const { visibleCount, measureWidthPx } = useHorizontalOverflowCount({
     rowRef,
     measureRef,
     itemCount: promotedCount,
@@ -129,13 +129,10 @@ const showMenuTrigger = computed(() => {
     return overflowPromotedActions.value.length > 0;
 });
 
-const rootStyle = computed(() => {
-    const w = leftoverPx.value;
-    if (!Number.isFinite(w) || w < 8) return {};
-    return {
-        maxWidth: `${Math.floor(w)}px`,
-        width: `${Math.floor(w)}px`,
-    };
+const measureBoxStyle = computed(() => {
+    const w = measureWidthPx.value;
+    if (!Number.isFinite(w) || w < 8) return undefined;
+    return { width: `${Math.floor(w)}px` };
 });
 
 /**
@@ -170,14 +167,13 @@ const entityName = computed(() => getEntityName());
 <template>
     <div
         ref="rowRef"
-        class="relative flex min-w-8 items-center justify-end"
-        :style="rootStyle"
+        class="relative ml-auto flex w-full min-w-8 items-center justify-end"
     >
         <div
             v-if="promotedActions.length"
             ref="measureRef"
             class="pointer-events-none absolute top-0 right-0 flex items-center gap-0.5 overflow-hidden opacity-0"
-            :style="measureWidthPx > 0 ? { width: `${measureWidthPx}px` } : undefined"
+            :style="measureBoxStyle"
             aria-hidden="true"
         >
             <Btn
@@ -202,7 +198,7 @@ const entityName = computed(() => getEntityName());
             </Btn>
         </div>
 
-        <div class="flex min-w-0 items-center justify-end gap-0.5">
+        <div class="ml-auto flex min-w-0 items-center justify-end gap-0.5">
             <template v-for="action in visiblePromotedActions" :key="action.key">
                 <EntityStateAction
                     v-if="action.key === 'state'"

@@ -206,10 +206,11 @@ export function getRarityOptions() {
  * @returns {Object|null} Configuration de rareté ou null
  */
 export function getRarityConfig(rarity) {
-  if (typeof rarity !== 'number' || rarity < 0 || rarity > 5) {
+  const n = typeof rarity === 'number' ? rarity : Number.parseInt(String(rarity ?? ''), 10);
+  if (!Number.isFinite(n) || n < 0 || n > 5) {
     return null;
   }
-  return RARITY_GRADIENT[rarity] || null;
+  return RARITY_GRADIENT[n] || null;
 }
 
 /**

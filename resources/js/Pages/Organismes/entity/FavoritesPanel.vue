@@ -458,7 +458,7 @@ watch(isAuthenticated, (ok) => {
                                     :show-actions="false"
                                     display-mode="extended"
                                     @quick-view="(entity) => onMinimalQuickView(entity || favoriteEntities[entityKey(row.entityType, row.id)], row.entityType)"
-                                    @action="(key, entity) => key === 'quick-view' && onMinimalQuickView(entity, row.entityType)"
+                                    @action="(key, entity) => (key === 'quick-view' || key === 'view') && onMinimalQuickView(entity, row.entityType)"
                                 />
                             </div>
                             <EntitySearchHitCard

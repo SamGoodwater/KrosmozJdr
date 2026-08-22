@@ -178,6 +178,13 @@ const isSelected = (id) => {
     return selectedIds.value.includes(strId);
 };
 
+const entitiesForIds = (ids) => {
+    const byId = new Map(results.value.map((e) => [String(e.id), e]));
+    return (ids || [])
+        .map((sid) => byId.get(String(sid)))
+        .filter(Boolean);
+};
+
 const toggleSelect = (entity) => {
     if (!entity || entity.id === undefined || entity.id === null) return;
     const id = entity.id;
@@ -192,17 +199,12 @@ const toggleSelect = (entity) => {
             current.push(id);
         }
         emit('update:modelValue', current);
-    } else {
-        // En sélection simple, on remplace simplement la valeur
-        emit('update:modelValue', id);
+        emit('update:selectedEntities', entitiesForIds(current));
+        return;
     }
 
-    // Propage aussi les entités sélectionnées complètes si le parent en a besoin
-    const byId = new Map(results.value.map((e) => [String(e.id), e]));
-    const fullSelected = selectedIds.value
-        .map((sid) => byId.get(sid))
-        .filter((e) => !!e);
-    emit('update:selectedEntities', fullSelected);
+    emit('update:modelValue', id);
+    emit('update:selectedEntities', entitiesForIds([id]));
 };
 
 const selectedCount = computed(() => selectedIds.value.length);

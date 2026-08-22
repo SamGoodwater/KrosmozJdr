@@ -7,9 +7,8 @@
  * - Génération d'une cellule `chips` (icon + color) avec fallback texte
  *
  * @example
- * // Pour Item/Consumable/Resource : n'utiliser que effect (bonus = format brut DofusDB, doublon)
  * const cell = buildCharacteristicEffectCell({
- *   rawValues: [entity.effect],
+ *   rawValues: [entity.bonus, entity.effect],
  *   options,
  *   sourceGroups: ["item", "panoply"],
  *   format,
@@ -36,22 +35,103 @@ function parseJsonPayload(value) {
 }
 
 /**
+ * Bonus de panoplie : `{ "2": { strength: 1 }, "3": { vitality: 2 } }`.
+ *
+ * @param {unknown} payload
+ * @returns {boolean}
+ */
+function isNumericPieceBonusMap(payload) {
+    if (!payload || Array.isArray(payload) || typeof payload !== "object") {
+        return false;
+    }
+    const keys = Object.keys(payload);
+    if (keys.length === 0) {
+        return false;
+    }
+    return keys.every((key) => {
+        if (!/^\d+$/.test(key)) {
+            return false;
+        }
+        const inner = payload[key];
+        return Boolean(inner) && typeof inner === "object" && !Array.isArray(inner);
+    });
+}
+
+/**
+ * @param {unknown} value
+ * @returns {boolean}
+ */
+function isEffectValueZero(value) {
+    if (value === null || typeof value === "undefined" || value === "") {
+        return true;
+    }
+    if (typeof value === "object") {
+        return false;
+    }
+    const n = Number(value);
+    return Number.isFinite(n) && n === 0;
+}
+
+/**
  * @param {Object|Array|null} payload
- * @returns {Array<{key: string, value: unknown}>}
+ * @returns {Array<{key: string, value: unknown, pieceCount?: number}>}
  */
 function extractEffectEntries(payload) {
     if (!payload) return [];
 
+    if (isNumericPieceBonusMap(payload)) {
+        const out = [];
+        for (const [piece, stats] of Object.entries(payload)) {
+            const pieceCount = Number(piece);
+            for (const entry of extractEffectEntries(stats)) {
+                if (isEffectValueZero(entry.value)) {
+                    continue;
+                }
+                out.push({
+                    ...entry,
+                    pieceCount: Number.isFinite(pieceCount) ? pieceCount : entry.pieceCount,
+                });
+            }
+        }
+        return out;
+    }
+
     if (!Array.isArray(payload) && typeof payload === "object") {
-        return Object.entries(payload).map(([key, value]) => ({ key: String(key), value }));
+        return Object.entries(payload)
+            .filter(([, value]) => !isEffectValueZero(value) && (value === null || typeof value !== "object"))
+            .map(([key, value]) => ({ key: String(key), value }));
     }
 
     if (Array.isArray(payload)) {
         return payload
             .map((row) => {
                 if (!row || typeof row !== "object") return null;
-                const key = row.db_column ?? row.key ?? row.characteristic ?? row.stat ?? row.name ?? row.label ?? null;
-                const value = row.value ?? row.amount ?? row.val ?? row.to ?? row.max ?? row.min ?? null;
+                const charNum = Number(row.characteristic);
+                const charOk = Number.isFinite(charNum) && charNum > 0;
+                const key =
+                    row.db_column ??
+                    row.key ??
+                    (charOk ? row.characteristic : null) ??
+                    row.stat ??
+                    row.name ??
+                    row.label ??
+                    null;
+                let value = row.value ?? row.amount ?? row.val ?? null;
+                if (value == null) {
+                    const from = row.from;
+                    const to = row.to;
+                    if (from != null && to != null) {
+                        if (Number(to) === 0) {
+                            value = from;
+                        } else if (Number(from) === Number(to)) {
+                            value = from;
+                        } else {
+                            value = `${from}–${to}`;
+                        }
+                    } else {
+                        value = to ?? from ?? row.max ?? row.min ?? null;
+                    }
+                }
                 if (!key || value === null || typeof value === "undefined") return null;
                 return { key: String(key), value };
             })
@@ -153,7 +233,10 @@ export function buildCharacteristicEffectCell({
     if (parsedEntries.length > 0) {
         const seenCanonicalKeys = new Set();
         const items = [];
-        for (const { key, value } of parsedEntries) {
+        for (const entry of parsedEntries) {
+            const { key, value } = entry;
+            const pieceCount = Number(entry.pieceCount);
+            const hasPiece = Number.isFinite(pieceCount) && pieceCount > 0;
             const def =
                 byDb?.[key] ||
                 byDb?.[key.replace(/_object$/, "")] ||
@@ -161,23 +244,25 @@ export function buildCharacteristicEffectCell({
                 byCharacteristicKey?.[key.replace(/_object$/, "") + "_object"] ||
                 byDofusdbId?.[key] ||
                 (key && /^\d+$/.test(String(key)) ? byDofusdbId?.[String(Number(key))] : null);
-            const canonicalKey = def?.db_column || def?.key || key;
+            const canonicalKey = `${hasPiece ? `${pieceCount}:` : ""}${def?.db_column || def?.key || key}`;
             if (seenCanonicalKeys.has(canonicalKey)) continue;
             seenCanonicalKeys.add(canonicalKey);
             const renderedValue = String(value);
             const name = def?.name || key;
-            const shortLabel = def?.short_name || name;
+            const shortName = def?.short_name || name;
+            const shortLabel = hasPiece ? `${pieceCount}p ${shortName}` : shortName;
             const unit = def?.unit ?? null;
             const valueWithUnit = unit ? `${renderedValue} ${unit}` : renderedValue;
+            const pieceLabel = hasPiece ? `${pieceCount} pièce${pieceCount > 1 ? "s" : ""}` : "";
             items.push({
                 icon: def?.icon || "fa-solid fa-circle-info",
                 color: def?.color || null,
                 value: renderedValue,
                 unit,
-                name,
+                name: pieceLabel ? `${pieceLabel} — ${name}` : name,
                 shortLabel,
-                label: name,
-                tooltip: `${name}: ${valueWithUnit}`,
+                label: pieceLabel ? `${pieceLabel} — ${name}` : name,
+                tooltip: pieceLabel ? `${pieceLabel} : ${name}: ${valueWithUnit}` : `${name}: ${valueWithUnit}`,
             });
         }
 

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import {
     ENTITY_ACTION_CONTEXT_PRESETS,
+    ENTITY_ACTIONS_COMMON,
     MINIMAL_EXPANDED_ACTION_KEYS,
 } from "@/Entities/entity-actions-config";
 import {
@@ -23,11 +24,9 @@ describe("ENTITY_ACTION_CONTEXT_PRESETS", () => {
             "state",
             "pin",
             "quick-view",
-            "quick-edit",
             "view-dofusdb",
             "favorite",
             "copy-link",
-            "view",
             "edit",
         ]);
         expect(MINIMAL_EXPANDED_ACTION_KEYS).toEqual(ENTITY_ACTION_CONTEXT_PRESETS.minimalLine);
@@ -51,6 +50,22 @@ describe("ENTITY_ACTION_CONTEXT_PRESETS", () => {
             "refresh",
             "delete",
         ]);
+    });
+
+    it("masque view (page) en Minimal / Line ; Agrandir reste en modal", () => {
+        expect(ENTITY_ACTIONS_COMMON.view.visibleIf({ inMinimal: true })).toBe(false);
+        expect(ENTITY_ACTIONS_COMMON.view.visibleIf({ viewMode: "minimal" })).toBe(false);
+        expect(ENTITY_ACTIONS_COMMON.view.visibleIf({ inLine: true })).toBe(false);
+        expect(ENTITY_ACTIONS_COMMON.view.visibleIf({ inModal: true })).toBe(true);
+        expect(ENTITY_ACTIONS_COMMON["quick-view"].visibleIf({ inMinimal: true })).toBe(true);
+        expect(ENTITY_ACTIONS_COMMON["quick-view"].visibleIf({ inModal: true })).toBe(false);
+        expect(ENTITY_ACTIONS_COMMON.edit.visibleIf({ inLine: true })).toBe(true);
+        expect(ENTITY_ACTIONS_COMMON.edit.visibleIf({ viewMode: "line" })).toBe(true);
+        expect(ENTITY_ACTIONS_COMMON["quick-edit"].visibleIf({ inLine: true })).toBe(false);
+        expect(ENTITY_ACTIONS_COMMON["quick-edit"].visibleIf({ inMinimal: true })).toBe(false);
+        expect(ENTITY_ACTION_CONTEXT_PRESETS.tableDropdown).toContain("edit");
+        expect(ENTITY_ACTION_CONTEXT_PRESETS.tableDropdown).not.toContain("quick-edit");
+        expect(ENTITY_ACTION_CONTEXT_PRESETS.minimalLine).not.toContain("quick-edit");
     });
 });
 

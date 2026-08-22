@@ -103,7 +103,6 @@ const { downloadPdf } = useDownloadPdf(normalizedEntityType);
 const entityTypePlural = computed(() => normalizeEntityType(props.entityType));
 
 const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPendingDelete } = useEntityActionDispatcher(entityTypePlural, {
-    openEditModal: (entity) => emit('quick-edit', entity),
     onOpenPage: (entity) => {
         emit('expand', entity);
         handleClose();
@@ -294,7 +293,7 @@ const handleAction = async (actionKey, entity) => {
                         </template>
                     </Dropdown>
 
-                    <div class="flex min-w-8 flex-1 justify-end">
+                    <div class="ml-auto flex min-w-8 flex-1 justify-end">
                         <EntityActions
                             :entity-type="entityTypePlural"
                             :entity="entity"

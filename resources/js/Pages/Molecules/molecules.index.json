@@ -1754,34 +1754,8 @@
   },
   {
     "name": "MonsterCreatureItemsList",
-    "description": "MonsterCreatureItemsList — Équipements liés à la créature du monstre (vue texte + aperçu minimal)",
-    "props": [
-      {
-        "name": "creature",
-        "type": "Object|null",
-        "desc": "- Créature (souvent `monster.creature`) avec relation `items`"
-      },
-      {
-        "name": "tableMeta",
-        "type": "Object",
-        "desc": "- Meta tableau / contexte pour les cellules"
-      },
-      {
-        "name": "characteristicRuntime",
-        "type": "Object|null",
-        "desc": "- Runtime tooltips (optionnel)"
-      },
-      {
-        "name": "title",
-        "type": "string",
-        "desc": "- Libellé de section (défaut : « Équipements »)"
-      },
-      {
-        "name": "sectionClass",
-        "type": "string",
-        "desc": "- Classes du conteneur de section"
-      }
-    ],
+    "description": "MonsterCreatureItemsList — Équipements liés à la créature du monstre",
+    "props": [],
     "slots": [],
     "file": "entity/monster/MonsterCreatureItemsList.vue"
   },
@@ -2505,12 +2479,12 @@
   },
   {
     "name": "ResourceIngredientsList",
-    "description": "ResourceIngredientsList — Liste d'ingrédients (ressources) avec icône + nom.",
+    "description": "ResourceIngredientsList — Ingrédients (ressources) en vue texte + aperçu au clic.",
     "props": [
       {
         "name": "ingredients",
         "type": "Array",
-        "desc": "- Liste {id, name, image?, pivot?: {quantity}}}"
+        "desc": "- Liste {id, name, image?, pivot?: {quantity}}"
       }
     ],
     "slots": [],

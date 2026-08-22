@@ -121,9 +121,7 @@ const handleAction = async (actionKey) => {
             router.visit(route('entities.conditions.edit', { condition: conditionId }));
             emit('edit', props.condition);
             break;
-        case 'quick-edit':
-            emit('quick-edit', props.condition);
-            break;
+        
         case 'copy-link': {
             const cfg = getEntityRouteConfig('condition');
             const url = resolveEntityRouteUrl('condition', 'show', conditionId, cfg);
@@ -164,7 +162,7 @@ const handleAction = async (actionKey) => {
             
             <!-- Informations principales -->
             <div class="flex-1 w-full">
-                <div class="flex min-w-0 items-start gap-4">
+                <div class="flex w-full min-w-0 items-start gap-4">
                     <div class="min-w-0">
                         <h2 class="text-2xl font-bold text-primary-100 wrap-break-word">
                             <CellRenderer
@@ -178,7 +176,7 @@ const handleAction = async (actionKey) => {
                     </div>
                     
                     <!-- Actions en haut à droite -->
-                    <div v-if="showActions" class="flex min-w-8 flex-1 justify-end">
+                    <div v-if="showActions" class="ml-auto flex min-w-8 flex-1 justify-end">
                         <EntityActions
                             entity-type="conditions"
                             :entity="condition"

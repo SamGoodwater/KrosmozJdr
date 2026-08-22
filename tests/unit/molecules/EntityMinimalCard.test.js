@@ -64,4 +64,13 @@ describe("EntityMinimalCard", () => {
         await wrapper.trigger("dblclick");
         expect(wrapper.emitted("open-quick-view")?.length).toBe(1);
     });
+
+    it("en mode extended n'affiche que la carte expanded, sans overlay ni compact", () => {
+        const wrapper = mountCard({ displayMode: "extended" });
+
+        expect(wrapper.find('[data-test="compact"]').exists()).toBe(false);
+        expect(wrapper.find('[data-test="expanded"]').exists()).toBe(true);
+        expect(wrapper.find(".entity-minimal-card__expanded--overlay").exists()).toBe(false);
+        expect(wrapper.find(".entity-minimal-card--extended").exists()).toBe(true);
+    });
 });

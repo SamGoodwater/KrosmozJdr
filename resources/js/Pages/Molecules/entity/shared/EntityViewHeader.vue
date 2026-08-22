@@ -46,7 +46,7 @@ const isCompact = computed(() => props.mode === "compact");
     <slot v-if="!isMinimal" name="dot" />
 
     <!-- Minimal -->
-    <div v-if="isMinimal" class="flex min-w-0 items-start gap-2">
+    <div v-if="isMinimal" class="flex w-full min-w-0 items-start gap-2">
       <div class="flex min-w-0 items-center gap-2">
         <div class="flex-shrink-0 relative">
           <slot name="media" />
@@ -60,11 +60,11 @@ const isCompact = computed(() => props.mode === "compact");
         </div>
       </div>
 
-      <div class="flex min-w-8 flex-1 items-start justify-end gap-2">
+      <div class="ml-auto flex min-w-8 flex-1 items-start justify-end gap-2">
         <div class="shrink-0">
           <slot name="mainInfosRight" />
         </div>
-        <div class="flex min-w-8 flex-1 justify-end">
+        <div class="ml-auto flex min-w-8 flex-1 justify-end">
           <slot name="actions" />
         </div>
       </div>
@@ -77,11 +77,11 @@ const isCompact = computed(() => props.mode === "compact");
       </div>
 
       <div class="flex-1 min-w-0">
-        <div class="flex min-w-0 items-start gap-2">
+        <div class="flex w-full min-w-0 items-start gap-2">
           <div class="min-w-0">
             <slot name="title" />
           </div>
-          <div class="flex min-w-8 flex-1 justify-end">
+          <div class="ml-auto flex min-w-8 flex-1 justify-end">
             <slot name="actions" />
           </div>
         </div>
@@ -101,12 +101,12 @@ const isCompact = computed(() => props.mode === "compact");
       </div>
 
       <div class="flex-1 w-full min-w-0">
-        <div class="flex min-w-0 items-start gap-4">
+        <div class="flex w-full min-w-0 items-start gap-4">
           <div class="min-w-0">
             <slot name="title" />
           </div>
 
-          <div class="flex min-w-8 flex-1 justify-end">
+          <div class="ml-auto flex min-w-8 flex-1 justify-end">
             <slot name="actions" />
           </div>
         </div>

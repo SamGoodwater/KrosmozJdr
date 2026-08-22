@@ -35,7 +35,7 @@ class ItemBulkController extends Controller
             'auto_update' => ['sometimes', 'boolean'],
 
             // Rareté (int) : 0..4
-            'rarity' => ['sometimes', 'integer', 'min:0', 'max:4'],
+            'rarity' => ['sometimes', 'integer', 'min:0', 'max:5'],
 
             // Champs "métier" utiles en édition multiple (nullable => possibilité de vider)
             'level' => ['sometimes', 'nullable', 'string', 'max:255'],

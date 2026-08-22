@@ -8,7 +8,7 @@ Les vues d'entités standardisent l'affichage des fiches JDR.
 | `line` | ligne dense de table | `*LineRow.vue` |
 | `text` | inline + overlay | `*ViewText.vue` |
 | `full` | détail page ou modal | `*ViewFull.vue` |
-| `edit` | édition | `EntityEditForm`, `*QuickEdit` |
+| `edit` | édition | `EntityEditForm` |
 
 Ne pas créer `ViewLarge` ni `ViewCompact`. Utiliser `resolveEntityViewComponent(type, 'full')`.
 
@@ -25,14 +25,18 @@ bandeau chips au-dessus du journal ; empty states structurés vs texte libre.
 minimal compact → survol : overlay déployé → double-clic / quick-view : modal full → agrandir : page full
 ```
 
-- L’overlay (`EntityMinimalCard`) ne décale pas la grille.
+- L’overlay (`EntityMinimalCard`) ne décale pas la grille. En popover (`displayMode="extended"`), une seule carte (slot expanded, hauteur du contenu) : pas de coquille compacte ni de chrome tooltip autour (`OverlayTrigger` `chromeless`).
+- Le menu d’options de la carte minimale n’a plus de fond : les icônes restent nues à droite du titre.
 - **Tous** les `*ViewMinimal` (hors `language`) passent par `EntityMinimalCard` : double-clic → modal, whitelist d’actions commune, pin flottant.
 - Shell commun : `useEntityMinimalShell` + `EntityMinimalTitle`.
 - PNJ : mêmes densités de caractéristiques que les monstres (créature liée).
-- La **page** n’est pas l’entrée principale (icône / overflow uniquement).
+- La **page** n’est pas l’entrée principale : **Agrandir** depuis la modal, ou Ctrl+clic.
 - En `line` : même logique → modal full (`EntityLineRowActions`).
 - Actions du titre : autant de raccourcis que la largeur restante (titre → bord) ; le reste dans le dropdown `EntityActions`. Mesure : `useHorizontalOverflowCount` + `measureFlexRowLeftoverPx`. Sorts : même ligne que le titre.
 - **Monstres — équipements** : s’il y en a (`creature.items`), liste identique aux sorts (`EntityViewTextLink` + aperçu `ItemViewMinimal`) en Minimal / Line / Full. Section Full masquée si la liste est vide.
+- **Panoplies** : pas d’illustration DofusDB. La vignette reprend les images des pièces (jusqu’à 4), sinon les initiales du nom. Les équipements s’affichent en vue texte (icône + nom, clic → `ItemViewMinimal`) en Line / Minimal / Full. Les bonus de set (`{ "2": { force: 1 }, "3": {…} }`) deviennent des chips par palier (`2p …`), les valeurs à 0 sont omises. Page Modifier : équipements et bonus de set en premier (cartes du formulaire) ; nom, description et droits en bas. Recherche d’équipements via le catalogue (`EntityPickerCore`) ; chaque pièce a un bouton retirer ; les bonus se saisissent comme les effets d’équipement (caractéristique + valeur, par nombre de pièces).
+- **Afficher** (toutes les entités à vues) : en Minimal, Line et listes Index / CMS, le bouton ouvre la **modal full** (`quick-view`). La **page** Show s’ouvre depuis la modal (**Agrandir**) ou par Ctrl+clic. `useEntityMinimalShell` et les Index traitent `view` comme `quick-view`. Preset `minimalLine` : pas d’action `view`.
+- **Éditer** : le raccourci des options (Minimal / Line / tableau) ouvre la **page Modifier** (`edit`). Le panneau tableau `EntityQuickEditPanel` sert à modifier plusieurs lignes sélectionnées.
 - **Favoris** : persistés en BDD (`user_favorites`) pour les comptes connectés. Accès header
   (cœur) → modal sans changer de page ; page `/favoris`. Invité·e : message pour se connecter.
   Icône cœur plein/vide dans les menus d’options. Liste en vue Minimal ; recherche via
@@ -42,7 +46,7 @@ Presets (`ENTITY_ACTION_CONTEXT_PRESETS` dans `entity-actions-config.js`) :
 
 | Preset | Ordre (extrait) |
 | --- | --- |
-| `minimalLine` | state → pin → quick-view → quick-edit → view-dofusdb → favorite → copy-link → view → edit |
+| `minimalLine` | state → pin → quick-view → view-dofusdb → favorite → copy-link → edit |
 | `modalDetail` | state → favorite → copy-link → view (agrandir) → view-dofusdb → edit → refresh → delete |
 | `pageDetail` | state → favorite → copy-link → view-dofusdb → edit → refresh → delete |
 
@@ -61,7 +65,7 @@ Applicable aux **monstres** et **PNJ** (créature liée) ; sorts/objets gardent 
 
 ## Tableau objets
 
-La vue **Line** (`ItemLineRow`) reste courte : description sur 2 lignes, bonus en icônes, recette sur la fiche Full.
+La vue **Line** (`ItemLineRow`) reste courte : description sur 2 lignes, **bonus** en icônes (`items.bonus`, repli sur `effect`), recette sur la fiche Full.
 
 La vue **Colonnes** (`item-descriptors.js`) :
 
@@ -74,7 +78,9 @@ Les en-têtes affichent `helper` / `general.tooltip` au survol (`TanStackTableHe
 
 ## Tableaux d’entités (filtres, tri, recherche)
 
-Index server-side (`items`, `monsters`, `spells`, `resources`, `consumables`, `conditions`) : changer un filtre relance la requête (debounce) ; Réinitialiser vide `filters` et revient à la page 1. Les multi-sélections partent en `filters[key][]`. Le tri envoie `sorts[i][field]` avec l’alias SQL (`item_type` → `item_type_id`, `creature_level` via jointure). La barre de recherche envoie `search=`.
+Index server-side (`items`, `monsters`, `spells`, `resources`, `consumables`, `conditions`) : changer un filtre relance la requête (debounce) ; Réinitialiser vide `filters` (puis réapplique les défauts déclarés, s’il y en a) et revient à la page 1. Les multi-sélections partent en `filters[key][]`. Le tri envoie `sorts[i][field]` avec l’alias SQL (`item_type` → `item_type_id`, `creature_level` via jointure). La barre de recherche envoie `search=`. Les champs de saisie des filtres (texte, recherche dans un multi) ne sont pas réinitialisés à chaque refetch : les défauts ne s’appliquent que si le filtre n’a pas encore de valeur, et les `initialFilterValues` ne remplacent une clé que si son contenu a vraiment changé.
+
+Le catalogue **objets** coche par défaut les types utiles en jeu (amulette, armes, cape, dofus, trophée, etc.). Apparats, costumes et autres cosmétiques restent dans le filtre Type, décochés tant qu’on ne les demande pas.
 
 Index client (`npcs`, etc.) : le filtre/tri/recherche portent sur le dataset déjà chargé ; la recherche cible le nom (et les colonnes `searchable`) même si le payload n’a pas de `cells` pré-générées.
 

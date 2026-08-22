@@ -297,16 +297,15 @@ class PanoplyControllerTest extends TestCase
     }
 
     /**
-     * Test : La page d'édition charge les items disponibles
+     * Test : La page d'édition charge les pièces liées et les caractéristiques de bonus.
      */
-    public function test_edit_page_loads_available_items(): void
+    public function test_edit_page_loads_linked_items_and_bonus_characteristics(): void
     {
         $user = User::factory()->create();
         $panoply = Panoply::factory()->create([
             'created_by' => $user->id,
         ]);
         $item1 = Item::factory()->create(['name' => 'Item 1']);
-        $item2 = Item::factory()->create(['name' => 'Item 2']);
         $panoply->items()->attach($item1->id);
 
         $response = $this->actingAs($user)
@@ -316,9 +315,33 @@ class PanoplyControllerTest extends TestCase
         $response->assertInertia(fn ($page) => $page
             ->component('Pages/entity/panoply/Edit')
             ->has('panoply')
-            ->has('availableItems')
+            ->has('bonusCharacteristics')
+            ->missing('availableItems')
             ->where('panoply.data.items.0.id', $item1->id)
         );
+    }
+
+    /**
+     * Test : Un utilisateur peut enregistrer les bonus de set en JSON.
+     */
+    public function test_user_can_update_panoply_bonus_json(): void
+    {
+        $user = User::factory()->create();
+        $panoply = Panoply::factory()->create([
+            'created_by' => $user->id,
+            'bonus' => null,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->from(route('entities.panoplies.edit', $panoply))
+            ->patchJson(route('entities.panoplies.update', $panoply), [
+                'bonus' => ['2' => ['strength' => 1], '3' => ['vitality' => 2]],
+            ]);
+
+        $response->assertOk();
+        $decoded = json_decode((string) $panoply->fresh()->bonus, true);
+        $this->assertSame(1, $decoded['2']['strength']);
+        $this->assertSame(2, $decoded['3']['vitality']);
     }
 
     /**
@@ -345,5 +368,29 @@ class PanoplyControllerTest extends TestCase
         foreach ($items as $item) {
             $this->assertTrue($panoply->fresh()->items->contains($item));
         }
+    }
+
+    /**
+     * Test : La page show rend la vue full (plus de réponse vide).
+     */
+    public function test_show_page_renders_full_view(): void
+    {
+        $user = User::factory()->create();
+        $panoply = Panoply::factory()->create([
+            'created_by' => $user->id,
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => 0,
+            'name' => 'Panoplie du Gouffre',
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route('entities.panoplies.show', $panoply));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Pages/entity/panoply/Show')
+            ->has('panoply')
+            ->where('panoply.data.name', 'Panoplie du Gouffre')
+        );
     }
 }

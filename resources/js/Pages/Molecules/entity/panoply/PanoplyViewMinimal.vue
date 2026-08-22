@@ -9,7 +9,7 @@
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
 import { computed } from "vue";
-import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
+import PanoplyThumb from "@/Pages/Molecules/entity/panoply/PanoplyThumb.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
@@ -95,8 +95,9 @@ const handleAction = async (actionKey) => {
                 class="relative p-2 flex flex-col gap-1.5 transition-colors"
             >
                 <div class="flex gap-2">
-                    <EntityThumb
+                    <PanoplyThumb
                         size="compact"
+                        :items="linkedItems"
                         :label="entity?.name ?? 'Panoplie'"
                     />
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
@@ -123,13 +124,13 @@ const handleAction = async (actionKey) => {
                                 <span class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">
                                     Équipements
                                 </span>
-                                <PanoplyEquipmentTextList :items="linkedItems" class="mt-0.5" />
+                                <PanoplyEquipmentTextList :items="linkedItems" :table-meta="tableMeta" class="mt-0.5" />
                             </div>
                             <div v-else-if="hasLinkedItems" class="min-w-0">
                                 <span class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">
                                     Équipements
                                 </span>
-                                <PanoplyEquipmentTextList :items="linkedItems" class="mt-0.5" />
+                                <PanoplyEquipmentTextList :items="linkedItems" :table-meta="tableMeta" class="mt-0.5" />
                             </div>
                             <div v-else-if="itemsCountCell?.value && itemsCountCell.value !== '-' && itemsCountCell.value !== '—'" class="text-base-content/70">
                                 <span class="font-medium">Objets</span> {{ itemsCountCell.value }}
@@ -153,16 +154,17 @@ const handleAction = async (actionKey) => {
                 class="relative p-2 flex flex-col gap-1.5 transition-colors"
             >
                 <div class="flex gap-2">
-                    <EntityThumb
+                    <PanoplyThumb
                         size="compact"
+                        :items="linkedItems"
                         :label="entity?.name ?? 'Panoplie'"
                     />
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
-                        <div class="flex items-center gap-1.5">
+                        <div class="flex w-full min-w-0 items-center gap-1.5">
                             <div class="min-w-0">
                                 <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
-                            <div v-if="showActions" data-entity-actions class="flex min-w-8 flex-1 justify-end" @click.stop>
+                            <div v-if="showActions" data-entity-actions class="ml-auto flex min-w-8 flex-1 justify-end" @click.stop>
                                 <EntityActions
                                     entity-type="panoplies"
                                     :entity="entity"
@@ -192,13 +194,13 @@ const handleAction = async (actionKey) => {
                                 <span class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">
                                     Équipements
                                 </span>
-                                <PanoplyEquipmentTextList :items="linkedItems" class="mt-0.5" />
+                                <PanoplyEquipmentTextList :items="linkedItems" :table-meta="tableMeta" class="mt-0.5" />
                             </div>
                             <div v-else-if="hasLinkedItems" class="min-w-0">
                                 <span class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">
                                     Équipements
                                 </span>
-                                <PanoplyEquipmentTextList :items="linkedItems" class="mt-0.5" />
+                                <PanoplyEquipmentTextList :items="linkedItems" :table-meta="tableMeta" class="mt-0.5" />
                             </div>
                             <div v-else-if="itemsCountCell?.value && itemsCountCell.value !== '-' && itemsCountCell.value !== '—'" class="text-base-content/70">
                                 <span class="font-medium">Objets</span> {{ itemsCountCell.value }}

@@ -923,7 +923,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       actions: {
         enabled: true,
         permission: 'view',
-        available: ['view', 'quick-view', 'edit', 'quick-edit', 'delete', 'copy-link', 'download-pdf', 'refresh'],
+        available: ['view', 'quick-view', 'edit', 'delete', 'copy-link', 'download-pdf', 'refresh'],
         defaultVisible: {
           xs: false,
           sm: true,

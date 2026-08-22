@@ -22,7 +22,7 @@ const LINE_ROW_ACTION_KEYS = Object.freeze([
     "state",
     "pin",
     "quick-view",
-    "quick-edit",
+    "edit",
     "view-dofusdb",
     "favorite",
     "copy-link",
@@ -30,12 +30,13 @@ const LINE_ROW_ACTION_KEYS = Object.freeze([
 </script>
 
 <template>
-    <div class="entity-row-actions-hover-reveal w-full min-w-8" @click.stop>
+    <div class="entity-row-actions-hover-reveal ml-auto w-full min-w-8" @click.stop>
         <EntityActions
             :entity-type="props.entityType"
             :entity="props.entity"
             format="dropdown"
             :whitelist="LINE_ROW_ACTION_KEYS"
+            :context="{ inLine: true, viewMode: 'line' }"
             @action="(actionKey, entity) => emit('action', actionKey, entity)"
         />
     </div>

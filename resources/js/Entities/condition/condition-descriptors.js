@@ -359,7 +359,7 @@ export function getConditionFieldDescriptors(ctx = {}) {
       actions: {
         enabled: true,
         permission: "view",
-        available: ["copy-link", "quick-view", "quick-edit"],
+        available: ["copy-link", "quick-view", "edit"],
         defaultVisible: {
           xs: false,
           sm: true,

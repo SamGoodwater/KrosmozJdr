@@ -25,11 +25,9 @@ import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vu
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
-import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getCreatureTraitFieldDescriptors } from "@/Entities/creature-trait/creature-trait-descriptors";
-import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
 const props = defineProps({
     creatureTraits: {
@@ -76,16 +74,7 @@ const tableConfig = computed(() => {
 });
 const serverUrl = computed(() => `${route('api.tables.creature-traits')}?format=entities&limit=5000&_t=${refreshToken.value}`);
 
-// Fields config pour les formulaires (généré depuis les descriptors)
-const fieldsConfig = computed(() => {
-  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
-  return createFieldsConfigFromDescriptors(getCreatureTraitFieldDescriptors(ctx));
-});
 
-const defaultEntity = computed(() => {
-  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
-  return createDefaultEntityFromDescriptors(getCreatureTraitFieldDescriptors(ctx));
-});
 
 // Calcul des entités sélectionnées depuis les IDs et les rows
 const selectedEntities = computed(() => {
@@ -133,8 +122,6 @@ const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('full');
 const createModalOpen = ref(false);
-const quickEditModalOpen = ref(false);
-const quickEditEntity = ref(null);
 
 const handleCreate = () => {
     createModalOpen.value = true;
@@ -166,8 +153,8 @@ const { handleKeyboardIntent } = useEntityIndexTableIntents({
         modalOpen.value = true;
     },
     openEdit: (model) => {
-        quickEditEntity.value = model;
-        quickEditModalOpen.value = true;
+        if (!model?.id) return;
+        router.visit(route('entities.creature-traits.edit', { creatureTrait: model.id }));
     },
 });
 
@@ -185,9 +172,6 @@ const handleTableAction = async (actionKey, entity, row) => {
 
     switch (actionKey) {
         case 'view':
-            router.visit(route('entities.creature-traits.show', { creatureTrait: entityId }));
-            break;
-
         case 'quick-view':
             selectedEntity.value = model;
             modalView.value = 'full';
@@ -195,12 +179,8 @@ const handleTableAction = async (actionKey, entity, row) => {
             break;
 
         case 'edit':
-            router.visit(route('entities.creature-traits.edit', { creatureTrait: entityId }));
-            break;
-
         case 'quick-edit':
-            quickEditEntity.value = model;
-            quickEditModalOpen.value = true;
+            router.visit(route('entities.creature-traits.edit', { creatureTrait: entityId }));
             break;
 
         case 'copy-link': {
@@ -229,9 +209,10 @@ const handleTableAction = async (actionKey, entity, row) => {
 
 // Handlers pour les actions du modal
 const handleModalQuickEdit = (entity) => {
-    quickEditEntity.value = entity;
-    quickEditModalOpen.value = true;
+    const entityId = entity?.id;
+    if (!entityId) return;
     closeModal();
+    router.visit(route('entities.creature-traits.edit', { creatureTrait: entityId }));
 };
 
 const handleModalExpand = (entity) => {
@@ -267,15 +248,6 @@ const handleModalDelete = (entity) => {
     // TODO: Implémenter la suppression avec confirmation
 };
 
-const handleQuickEditSubmit = async (payload) => {
-    if (payload) {
-        const ok = await bulkPatchJson('/api/entities/creature-traits/bulk', payload);
-        if (!ok) return;
-    }
-    refreshToken.value++;
-    quickEditEntity.value = null;
-    quickEditModalOpen.value = false;
-};
 </script>
 
 <template>
@@ -355,17 +327,6 @@ const handleQuickEditSubmit = async (payload) => {
             @download-pdf="handleModalDownloadPdf"
             @refresh="handleModalRefresh"
             @delete="handleModalDelete"
-        />
-
-        <!-- Modal d'édition rapide -->
-        <EntityQuickEditModal
-            v-if="quickEditEntity"
-            :entity="quickEditEntity"
-            entity-type="creature-traits"
-            :is-admin="canModify"
-            :open="quickEditModalOpen"
-            @close="quickEditModalOpen = false"
-            @submit="handleQuickEditSubmit"
         />
     </div>
 </template>

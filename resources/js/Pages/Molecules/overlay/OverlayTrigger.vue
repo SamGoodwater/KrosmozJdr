@@ -19,6 +19,11 @@ const props = defineProps({
     renderer: { type: [Object, Function], default: null },
     offsetPx: { type: Number, default: 8 },
     allowFlip: { type: Boolean, default: true },
+    /**
+     * Sans chrome (fond, padding, bordure) : le contenu fournit déjà sa surface
+     * (ex. fiche minimale d’entité).
+     */
+    chromeless: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["open", "close", "error"]);
@@ -112,8 +117,12 @@ function handleKeydown(event) {
     <Teleport v-if="isOpen" :to="teleportTarget">
         <div
             ref="overlayRef"
-            class="tooltip-floating-surface color-neutral"
-            :class="[panelPointerEventsClass, panelMaxWidthClass, panelClass]"
+            :class="[
+                chromeless ? 'tooltip-floating-chromeless' : 'tooltip-floating-surface color-neutral',
+                panelPointerEventsClass,
+                panelMaxWidthClass,
+                panelClass,
+            ]"
             :style="panelStyle"
             :aria-hidden="!isPositionReady"
             v-show="isPositionReady"

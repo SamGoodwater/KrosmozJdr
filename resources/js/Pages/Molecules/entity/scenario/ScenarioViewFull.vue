@@ -130,9 +130,7 @@ const handleAction = async (actionKey) => {
             router.visit(route('entities.scenarios.edit', { scenario: scenarioId }));
             emit('edit', props.scenario);
             break;
-        case 'quick-edit':
-            emit('quick-edit', props.scenario);
-            break;
+        
         case 'copy-link': {
             const cfg = getEntityRouteConfig('scenario');
             const url = resolveEntityRouteUrl('scenario', 'show', props.scenario.slug || scenarioId, cfg);
@@ -173,7 +171,7 @@ const handleAction = async (actionKey) => {
             
             <!-- Informations principales -->
             <div class="flex-1 w-full">
-                <div class="flex min-w-0 items-start gap-4">
+                <div class="flex w-full min-w-0 items-start gap-4">
                     <div class="min-w-0">
                         <h2 class="text-2xl font-bold text-primary-100 break-words">
                             <CellRenderer
@@ -187,7 +185,7 @@ const handleAction = async (actionKey) => {
                     </div>
                     
                     <!-- Actions en haut à droite -->
-                    <div v-if="showActions" class="flex min-w-8 flex-1 justify-end">
+                    <div v-if="showActions" class="ml-auto flex min-w-8 flex-1 justify-end">
                         <EntityActions
                             entity-type="scenario"
                             :entity="scenario"

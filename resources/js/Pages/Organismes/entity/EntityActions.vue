@@ -63,7 +63,7 @@ const props = defineProps({
   },
   inlineActionKeys: {
     type: Array,
-    default: () => ["state", "pin", "quick-view", "quick-edit", "view-dofusdb", "favorite", "copy-link", "view", "edit"],
+    default: () => ["state", "pin", "quick-view", "edit", "view-dofusdb", "favorite", "copy-link", "view"],
   },
   showInlineShortcuts: {
     type: Boolean,

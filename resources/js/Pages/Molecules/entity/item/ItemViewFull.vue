@@ -14,7 +14,6 @@ import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import CellRenderer from '@/Pages/Atoms/data-display/CellRenderer.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.vue';
@@ -29,6 +28,8 @@ import { getRarityConfig, getRoleConfig } from '@/Utils/Entity/SharedConstants';
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
 import ResourceIngredientsList from '@/Pages/Molecules/data-display/ResourceIngredientsList.vue';
 import RichTextReadonlyView from '@/Pages/Molecules/data-display/RichTextReadonlyView.vue';
+import CharacteristicEffectsGrid from '@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue';
+import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
 
 const props = defineProps({
     item: { type: Object, required: true },
@@ -83,6 +84,18 @@ const autoUpdateValue = computed(() => {
 const ingredients = computed(() => {
     const raw = props.item?.resources ?? props.item?._data?.resources ?? [];
     return Array.isArray(raw) ? raw : [];
+});
+
+const bonusItems = computed(() => {
+    const bonus = props.item?.bonus ?? props.item?._data?.bonus;
+    const effect = props.item?.effect ?? props.item?._data?.effect;
+    const cell = buildCharacteristicEffectCell({
+        rawValues: [bonus, effect],
+        options: { context: 'extended' },
+        sourceGroups: ['item', 'panoply'],
+        size: 'lg',
+    });
+    return cell?.type === 'chips' ? cell.params?.items || [] : [];
 });
 
 const canShowField = (fieldKey) => {
@@ -180,9 +193,7 @@ const handleAction = async (actionKey) => {
             router.visit(route('entities.items.edit', { item: itemId }));
             emit('edit', props.item);
             break;
-        case 'quick-edit':
-            emit('quick-edit', props.item);
-            break;
+        
         case 'copy-link': {
             const cfg = getEntityRouteConfig('item');
             const url = resolveEntityRouteUrl('item', 'show', itemId, cfg);
@@ -311,24 +322,22 @@ const handleAction = async (actionKey) => {
             </template>
         </EntityViewHeader>
 
-        <!-- Effet -->
-        <div v-if="canShowField('effect') && (item.effect || item._data?.effect)" class="space-y-2">
+        <!-- Effet (texte riche éventuel) -->
+        <div v-if="canShowField('effect') && effectHtml" class="space-y-2">
             <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">Effet</h3>
             <div class="text-primary-200 p-3 rounded-lg bg-base-200/50 entity-radius-box">
                 <RichTextReadonlyView
-                    v-if="effectHtml"
                     :html="effectHtml"
                     :enable-rich-references="true"
                 />
-                <CellRenderer v-else :cell="getCell('effect')" ui-color="primary" />
             </div>
         </div>
 
         <!-- Bonus -->
-        <div v-if="canShowField('bonus') && (item.bonus || item._data?.bonus)" class="space-y-2">
+        <div v-if="canShowField('bonus') && bonusItems.length > 0" class="space-y-2">
             <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">Bonus</h3>
             <div class="text-primary-200 p-3 rounded-lg bg-base-200/50 entity-radius-box">
-                <CellRenderer :cell="getCell('bonus')" ui-color="primary" />
+                <CharacteristicEffectsGrid :items="bonusItems" label-mode="full" />
             </div>
         </div>
 

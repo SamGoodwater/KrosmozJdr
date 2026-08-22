@@ -3,7 +3,7 @@
  * ItemViewMinimal — Vue Minimal pour Item
  *
  * @description
- * Même structure que ItemLineRow mais condensée : State • Image • Level • Nom • Type • Rareté • Prix • Description • Effets (icône + valeur).
+ * Même structure que ItemLineRow mais condensée : State • Image • Level • Nom • Type • Rareté • Prix • Description • Bonus (icône + valeur).
  * Affiche uniquement les propriétés métier (pas read_level, write_level, auto_update, id, created_by, etc.).
  * Prix : `EntityPropertyDisplay` (aligné sur ItemViewFull).
  */
@@ -98,8 +98,10 @@ const descriptionFull = computed(
 );
 
 const effectItems = computed(() => {
+    const bonus = entity.value?.bonus ?? entity.value?._data?.bonus;
+    const effect = entity.value?.effect ?? entity.value?._data?.effect;
     const cell = buildCharacteristicEffectCell({
-        rawValues: [entity.value?.effect ?? entity.value?._data?.effect],
+        rawValues: [bonus, effect],
         options: {},
         sourceGroups: ["item", "panoply"],
         size: "sm",
@@ -210,12 +212,12 @@ const handleAction = async (actionKey) => {
                         :label="entity?.name ?? 'Équipement'"
                     />
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
-                        <div class="flex items-center gap-1.5">
+                        <div class="flex w-full min-w-0 items-center gap-1.5">
                             <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
                             <div class="min-w-0">
                                 <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
-                            <div v-if="showActions" data-entity-actions class="flex min-w-8 flex-1 justify-end" @click.stop>
+                            <div v-if="showActions" data-entity-actions class="ml-auto flex min-w-8 flex-1 justify-end" @click.stop>
                                 <EntityActions
                                     entity-type="items"
                                     :entity="entity"
@@ -271,6 +273,7 @@ const handleAction = async (actionKey) => {
                 <ResourceIngredientsList
                     v-if="ingredients.length > 0"
                     :ingredients="ingredients"
+                    :table-meta="tableMeta"
                     class="w-full pt-1.5 mt-1 border-t border-base-300"
                 />
             </div>

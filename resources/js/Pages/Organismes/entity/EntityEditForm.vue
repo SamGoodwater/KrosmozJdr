@@ -25,6 +25,7 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { FORMULA_PLACEHOLDER } from '@/Utils/entity/formula-help';
 import { registerSaveShortcut } from '@/Composables/utils/saveShortcutRegistry';
 import { useEntityActionDispatcher } from '@/Composables/entity/useEntityActionDispatcher';
+import { getRarityOptions } from '@/Utils/Entity/SharedConstants';
 import {
     invalidateKrefEntityPreviewCache,
     toKrefPreviewApiEntityType,
@@ -437,13 +438,7 @@ const defaultFieldsConfig = computed(() => {
     const entitySpecificFields = {
         item: {
             level: { type: 'number', label: 'Niveau', required: false, showInCompact: true },
-            rarity: { type: 'select', label: 'Rareté', required: false, showInCompact: true, options: [
-                { value: 'common', label: 'Commun' },
-                { value: 'uncommon', label: 'Peu commun' },
-                { value: 'rare', label: 'Rare' },
-                { value: 'epic', label: 'Épique' },
-                { value: 'legendary', label: 'Légendaire' }
-            ]},
+            rarity: { type: 'select', label: 'Rareté', required: false, showInCompact: true, options: getRarityOptions().map(({ value, label }) => ({ value, label })) },
             image: { type: 'file', label: 'Image', required: false, showInCompact: false }
         },
         spell: {

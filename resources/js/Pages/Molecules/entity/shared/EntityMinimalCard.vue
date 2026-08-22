@@ -6,6 +6,7 @@
  * Gère l'affichage compact par défaut et l'expansion au survol en overlay.
  * L'overlay ne modifie pas le flux du DOM : la carte conserve sa place,
  * le contenu étendu passe par-dessus le reste (z-index &lt; tooltips).
+ * En `display-mode="extended"` (popover, favoris) : une seule carte, hauteur du contenu.
  *
  * @slot compact - Contenu toujours visible, définit la taille du slot dans la grille
  * @slot expanded - Contenu affiché au hover (ou toujours si display-mode="extended")
@@ -122,19 +123,21 @@ onUnmounted(() => {
         @click="onCardClick"
         @dblclick="onCardDblClick"
     >
-        <!-- Compact : définit la taille du slot, ne bouge pas -->
+        <!-- Compact : réserve la place en grille. Absent en extended (une seule carte, hauteur du contenu). -->
         <div
+            v-if="displayMode !== 'extended'"
             class="entity-minimal-card__compact bg-glass-2xl border border-base-300 overflow-hidden"
             :class="{ 'opacity-0 pointer-events-none': showExpanded && canHover }"
         >
             <slot name="compact" />
         </div>
 
-        <!-- Expanded : overlay au survol, ne modifie pas le flux -->
+        <!-- Expanded : overlay au survol ; en flux si display-mode="extended" -->
         <Transition name="entity-minimal-expand">
             <div
                 v-if="showExpanded"
                 class="entity-minimal-card__expanded bg-glass-3xl"
+                :class="{ 'entity-minimal-card__expanded--overlay': canHover }"
                 role="region"
                 aria-label="Détails"
             >
@@ -164,18 +167,10 @@ onUnmounted(() => {
 
 .entity-minimal-card__expanded {
     --bg-color: var(--color-base-100, #0f172a);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    max-width: 100%;
-    /* Taille fixe : même largeur que le compact, pas d’élargissement */
     box-sizing: border-box;
     overflow-y: auto;
     overflow-x: hidden;
     max-height: 80vh;
-    z-index: 1;
-    /* Sous les tooltips (typiquement 9999) */
     border-radius: var(--rounded-box, 0.1rem);
     border: 1px solid var(--color-base-300, rgb(51 65 85));
     backdrop-filter: blur(38px) saturate(1.15);
@@ -187,6 +182,16 @@ onUnmounted(() => {
         0 1px 0 color-mix(in srgb, var(--color-base-content, #ffffff) 16%, transparent) inset;
 }
 
+/* Survol en grille : même largeur que le compact, sans décaler le flux */
+.entity-minimal-card__expanded--overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    z-index: 1;
+}
+
 /* Actions masquées par défaut, visibles au survol / focus de la carte */
 .entity-minimal-card :deep([data-entity-actions]) {
     max-width: 0;
@@ -196,9 +201,7 @@ onUnmounted(() => {
     pointer-events: none;
     transition:
         max-width 0.15s ease,
-        opacity 0.15s ease,
-        background-color 0.15s ease,
-        backdrop-filter 0.15s ease;
+        opacity 0.15s ease;
 }
 .entity-minimal-card:hover :deep([data-entity-actions]),
 .entity-minimal-card:focus-within :deep([data-entity-actions]),
@@ -210,16 +213,6 @@ onUnmounted(() => {
     opacity: 1;
     pointer-events: auto;
     overflow: visible;
-    /* Fond flou / sombre : les icônes restent lisibles au-dessus du nom */
-    padding: 0.15rem 0.2rem;
-    margin: -0.15rem -0.2rem;
-    border-radius: var(--rounded-box, 0.35rem);
-    background: color-mix(in srgb, var(--color-base-300, #1e293b) 42%, transparent);
-    backdrop-filter: blur(14px) saturate(1.2);
-    -webkit-backdrop-filter: blur(14px) saturate(1.2);
-    box-shadow:
-        0 0 0 1px color-mix(in srgb, var(--color-base-content, #fff) 8%, transparent) inset,
-        0 4px 14px rgb(0 0 0 / 0.28);
 }
 
 .entity-minimal-expand-enter-active,

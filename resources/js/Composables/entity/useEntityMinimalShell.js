@@ -5,6 +5,7 @@
  * Centralise whitelist, contexte et handlers d’ouverture (modal vs page)
  * pour toutes les `*ViewMinimal` alignées sur le parcours
  * compact → overlay → modal → page.
+ * Afficher (`view` / `quick-view`) ouvre la modal full ; la page se gagne depuis la modal (Agrandir).
  *
  * @example
  * const { minimalActionsContext, minimalActionWhitelist, createMinimalActionHandler } =
@@ -37,7 +38,6 @@ export const MINIMAL_ACTIONS_CONTEXT = Object.freeze({
  */
 export function useEntityMinimalShell(options) {
     const {
-        showRoute,
         editRoute,
         routeParam,
         emit,
@@ -60,15 +60,12 @@ export function useEntityMinimalShell(options) {
 
         switch (actionKey) {
             case "view":
-                router.visit(route(showRoute, { [routeParam]: id }));
-                emit("view", entity);
+            case "quick-view":
+                openQuickView();
                 break;
             case "edit":
                 router.visit(route(editRoute, { [routeParam]: id }));
                 emit("edit", entity);
-                break;
-            case "quick-view":
-                openQuickView();
                 break;
             case "delete":
                 emit("delete", entity);
