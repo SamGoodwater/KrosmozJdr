@@ -28,12 +28,26 @@ class NpcTableControllerTest extends TestCase
     }
 
     /**
+     * Fiches visibles d’un ROLE_USER : playable + lecture guest (comme les autres catalogues).
+     *
+     * @return array<string, mixed>
+     */
+    private function playableAttrs(array $overrides = []): array
+    {
+        return array_merge([
+            'state' => Npc::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ], $overrides);
+    }
+
+    /**
      * Test : Le format `entities` retourne les données brutes
      */
     public function test_format_entities_returns_raw_data(): void
     {
         $user = User::factory()->create();
-        $npc = Npc::factory()->create(['age' => '25', 'size' => 'Moyen']);
+        $npc = Npc::factory()->create($this->playableAttrs(['age' => '25', 'size' => 'Moyen']));
 
         $response = $this->actingAs($user)
             ->getJson('/api/tables/npcs?format=entities&limit=10');
@@ -68,7 +82,7 @@ class NpcTableControllerTest extends TestCase
     public function test_format_cells_returns_formatted_cells(): void
     {
         $user = User::factory()->create();
-        $npc = Npc::factory()->create();
+        $npc = Npc::factory()->create($this->playableAttrs());
 
         $response = $this->actingAs($user)
             ->getJson('/api/tables/npcs?limit=10');
@@ -100,7 +114,7 @@ class NpcTableControllerTest extends TestCase
     public function test_entities_format_includes_relations(): void
     {
         $user = User::factory()->create();
-        $npc = Npc::factory()->create();
+        $npc = Npc::factory()->create($this->playableAttrs());
 
         $response = $this->actingAs($user)
             ->getJson('/api/tables/npcs?format=entities&limit=10');
@@ -137,7 +151,7 @@ class NpcTableControllerTest extends TestCase
     public function test_entities_format_respects_limit(): void
     {
         $user = User::factory()->create();
-        Npc::factory()->count(15)->create();
+        Npc::factory()->count(15)->create($this->playableAttrs());
 
         $response = $this->actingAs($user)
             ->getJson('/api/tables/npcs?format=entities&limit=5');

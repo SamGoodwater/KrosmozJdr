@@ -530,11 +530,16 @@ class ScrappingRunCommand extends Command
         }
 
         if ($qualityGateEnabled && $this->entityListIncludesSpell($entities)) {
-            $gateCode = $this->call('scrapping:effects:quality-gate', [
+            $gateArgs = [
                 '--min-coverage' => 99,
                 '--max-missing-mappings' => 0,
                 '--max-missing-value-converted' => 0,
-            ]);
+            ];
+            if ($this->isTargetedImport()) {
+                // Import d’un ou quelques IDs : la base peut n’avoir aucun sous-effet de sort.
+                $gateArgs['--allow-empty'] = true;
+            }
+            $gateCode = $this->call('scrapping:effects:quality-gate', $gateArgs);
             if ($gateCode !== Command::SUCCESS) {
                 $this->error('Import terminé mais quality gate effets de sorts en échec.');
 
@@ -549,6 +554,19 @@ class ScrappingRunCommand extends Command
         }
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Import ciblé (un ou plusieurs IDs DofusDB), pas un scrap de masse.
+     *
+     * @return bool true si `--id` ou `--ids` est fourni
+     *
+     * @example $this->isTargetedImport() // true pour --id=201
+     */
+    private function isTargetedImport(): bool
+    {
+        return trim((string) ($this->option('id') ?? '')) !== ''
+            || trim((string) ($this->option('ids') ?? '')) !== '';
     }
 
     /**

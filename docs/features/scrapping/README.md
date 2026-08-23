@@ -129,7 +129,9 @@ règles.
 
 Hors `--simulate`, `scrapping:run` exécute **par défaut** `scrapping:audit --fail-on-review`
 avant toute écriture. Si l’import inclut `spell`, `scrapping:effects:quality-gate` tourne ensuite.
-Désactivation explicite : `--no-quality-gate` (diagnostic uniquement).
+Un import ciblé (`--id` / `--ids`) passe `--allow-empty` : un sort sans niveaux d’effet
+ne doit pas faire échouer la gate globale (base encore vide). Un scrap de masse reste strict
+(`expected_rows=0` = échec). Désactivation explicite : `--no-quality-gate` (diagnostic uniquement).
 
 Checklist scrap serveur : [SERVER_MASS_SCRAP.md](./SERVER_MASS_SCRAP.md).
 

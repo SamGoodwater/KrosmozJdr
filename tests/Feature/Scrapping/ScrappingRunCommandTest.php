@@ -558,7 +558,7 @@ class ScrappingRunCommandTest extends TestCase
             '--id' => '201',
         ]);
 
-        $this->assertSame(0, $code);
+        $this->assertSame(0, $code, Artisan::output());
         $spell = Spell::where('name', 'Béco du Tofu')->first();
         $this->assertNotNull($spell);
     }
