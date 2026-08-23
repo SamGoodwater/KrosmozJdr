@@ -56,8 +56,14 @@ class ItemTableController extends Controller
 
         $query = Item::query()
             ->visibleToUser($request->user())
-            ->with(['createdBy', 'itemType', 'resources', ...ItemPanoplyPayload::eagerLoad()])
-            ->withCount(['resources', 'panoplies', 'shops', 'campaigns', 'scenarios']);
+            ->with(['createdBy', 'itemType', 'resources', ...ItemPanoplyPayload::eagerLoad($request->user())])
+            ->withCount([
+                'resources',
+                'panoplies' => fn ($q) => $q->visibleToUser($request->user()),
+                'shops',
+                'campaigns',
+                'scenarios',
+            ]);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -144,7 +150,7 @@ class ItemTableController extends Controller
 
         // Option B: renvoyer des entités brutes (le front génère `cells`).
         if ($format === 'entities') {
-            $entities = $rows->map(function (Item $it) {
+            $entities = $rows->map(function (Item $it) use ($request) {
                 $createdBy = $it->createdBy;
                 $itemType = $it->itemType;
 
@@ -178,7 +184,7 @@ class ItemTableController extends Controller
                         'pivot' => ['quantity' => $res->pivot?->quantity ?? 1],
                     ])->values()->all(),
                     'resources_count' => (int) ($it->resources_count ?? 0),
-                    'panoplies' => ItemPanoplyPayload::fromItem($it),
+                    'panoplies' => ItemPanoplyPayload::fromItem($it, $request->user()),
                     'panoplies_count' => (int) ($it->panoplies_count ?? 0),
                     'shops_count' => (int) ($it->shops_count ?? 0),
                     'campaigns_count' => (int) ($it->campaigns_count ?? 0),
@@ -213,7 +219,7 @@ class ItemTableController extends Controller
             ]);
         }
 
-        $tableRows = $rows->map(function (Item $it) use ($rarityColor) {
+        $tableRows = $rows->map(function (Item $it) use ($rarityColor, $request) {
             $showHref = route('entities.items.show', $it->id);
             $dofusDbHref = $it->dofusdb_id ? "https://www.dofus.com/fr/mmorpg/encyclopedie/equipements/{$it->dofusdb_id}" : null;
 
@@ -343,7 +349,7 @@ class ItemTableController extends Controller
                             'name' => $it->itemType->name,
                         ] : null,
                         'resources_count' => (int) ($it->resources_count ?? 0),
-                        'panoplies' => ItemPanoplyPayload::fromItem($it),
+                        'panoplies' => ItemPanoplyPayload::fromItem($it, $request->user()),
                         'panoplies_count' => (int) ($it->panoplies_count ?? 0),
                         'shops_count' => (int) ($it->shops_count ?? 0),
                         'campaigns_count' => (int) ($it->campaigns_count ?? 0),

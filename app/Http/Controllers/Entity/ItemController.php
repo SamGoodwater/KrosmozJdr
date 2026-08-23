@@ -35,7 +35,7 @@ class ItemController extends Controller
 
         $query = Item::query()
             ->visibleToUser(request()->user())
-            ->with(['createdBy', 'itemType', 'resources', ...ItemPanoplyPayload::eagerLoad()]);
+            ->with(['createdBy', 'itemType', 'resources', ...ItemPanoplyPayload::eagerLoad(request()->user())]);
 
         // Recherche
         if (request()->has('search') && request()->search) {
@@ -136,7 +136,7 @@ class ItemController extends Controller
             'resources',
             'effectUsages.effectDegree.effect',
             'objectEffects',
-            ...ItemPanoplyPayload::eagerLoad(),
+            ...ItemPanoplyPayload::eagerLoad(request()->user()),
         ]);
 
         return Inertia::render('Pages/entity/item/Show', [
@@ -157,7 +157,7 @@ class ItemController extends Controller
             'resources',
             'effectUsages.effectDegree.effect',
             'objectEffects',
-            ...ItemPanoplyPayload::eagerLoad(),
+            ...ItemPanoplyPayload::eagerLoad(request()->user()),
         ]);
 
         $availableResources = \App\Models\Entity\Resource::select('id', 'name', 'description', 'level')
