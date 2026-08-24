@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Le survol de l’icône de panoplie sur une fiche équipement liste les pièces en vue texte : un clic sur un nom ouvre la fiche de l’objet, comme sur la page de la panoplie."
+    "description": "Sur une panoplie jouable, le catalogue et la fiche de lecture ne listent que les équipements que le visiteur a le droit de voir."
   },
   {
     "path": "backend/_ai.md",

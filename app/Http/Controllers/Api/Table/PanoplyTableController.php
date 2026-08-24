@@ -43,13 +43,23 @@ class PanoplyTableController extends Controller
             $order = 'desc';
         }
 
+        $viewer = $request->user();
+
         $query = Panoply::query()
-            ->visibleToUser($request->user())
+            ->visibleToUser($viewer)
             ->with([
                 'createdBy',
-                'items' => static fn ($q) => $q->select(['items.id', 'items.name', 'items.level', 'items.image']),
+                'items' => fn ($q) => $q
+                    ->visibleToUser($viewer)
+                    ->select(['items.id', 'items.name', 'items.level', 'items.image']),
             ])
-            ->withCount(['items', 'npcs', 'campaigns', 'scenarios', 'shops']);
+            ->withCount([
+                'items' => fn ($q) => $q->visibleToUser($viewer),
+                'npcs',
+                'campaigns',
+                'scenarios',
+                'shops',
+            ]);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {

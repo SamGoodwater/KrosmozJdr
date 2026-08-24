@@ -27,7 +27,7 @@ class PanoplyController extends Controller
 
         $query = Panoply::query()
             ->visibleToUser(request()->user())
-            ->with(['createdBy', 'items']);
+            ->with($this->viewerRelations());
 
         // Recherche
         if (request()->has('search') && request()->search) {
@@ -85,7 +85,7 @@ class PanoplyController extends Controller
     {
         $this->authorize('view', $panoply);
 
-        $panoply->load(['createdBy', 'items']);
+        $panoply->load($this->viewerRelations());
 
         return Inertia::render('Pages/entity/panoply/Show', [
             'panoply' => new PanoplyResource($panoply),
@@ -205,5 +205,25 @@ class PanoplyController extends Controller
         $filename = 'panoply-'.$panoply->id.'-'.now()->format('Y-m-d-His').'.pdf';
 
         return $pdf->download($filename);
+    }
+
+    /**
+     * Relations de lecture : pièces filtrées par `visibleToUser` du visiteur.
+     *
+     * L’édition charge `items` sans ce filtre pour ne pas masquer un brouillon
+     * déjà lié (un sync suivant le détacherait).
+     *
+     * @return array<string, mixed>
+     *
+     * @example $panoply->load($this->viewerRelations());
+     */
+    private function viewerRelations(): array
+    {
+        $user = request()->user();
+
+        return [
+            'createdBy',
+            'items' => fn ($q) => $q->visibleToUser($user),
+        ];
     }
 }
