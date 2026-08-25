@@ -13,7 +13,7 @@
 - Rareté (items, ressources, consommables) : libellés uniques 0–5 (Commun … Unique) via `Resource::RARITY` / `RARITY_GRADIENT` ; les filtres tableau reprennent la même liste.
 - Tableaux d’entités : filtres auto-appliqués (server-side), `filters[k][]`, tri via `sort.field` / alias SQL, recherche `search=` ou nom côté client. Défauts de colonnes (`defaultByLabel`) seulement quand les options de **ce** filtre arrivent ; `initialFilterValues` fusionne par contenu, sans réécrire la saisie en cours.
 - Catalogue objets : filtre Type précoché sur les emplacements de jeu (pas apparats / costumes) ; `GAMEPLAY_ITEM_TYPE_*` + `defaultByLabel`.
-- Overlay sort depuis un monstre : payload `effect_usages_chips` + `SpellViewMinimal` étendu (actions à droite du titre, overflow dropdown). Fetch `whitelist[]=` seulement si les chips manquent.
+- Overlay sort depuis un monstre : payload `effect_usages_chips` + `SpellViewMinimal` étendu (actions à droite du titre, overflow dropdown). Eager-load `visibleToUser` (brouillon masqué). Fetch `whitelist[]=` seulement si les chips manquent.
 - Overlay fiche minimale (`EntityViewTextLink`, recherche) : panneau `chromeless` — pas de seconde boîte tooltip autour de la carte. `displayMode: extended` n’affiche que le slot expanded (hauteur du contenu). Actions sans fond. Carte `hover` : reste déployée tant qu’un tooltip OverlayTrigger issu d’elle est ouvert (`entityMinimalCardOverlayHold`).
 - Barre d’actions (`EntityActions`) : raccourcis inline mesurés (`useHorizontalOverflowCount`, `measureFlexRowLeftoverPx`) ; ce qui ne tient pas reste dans le « ⋮ ».
 - Monstres : sorts **et** équipements (`MonsterCreatureSpellsList` / `MonsterCreatureItemsList`) si la créature en a

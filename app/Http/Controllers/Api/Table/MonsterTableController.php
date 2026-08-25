@@ -198,8 +198,9 @@ class MonsterTableController extends Controller
                 'creature' => fn ($q) => $q
                     ->with([
                         'creatureTraits',
-                        // Sorts liés : méta + chips d’effets (vue minimale), sans dump de l’arbre.
+                        // Sorts liés visibles du viewer : méta + chips d’effets (vue minimale), sans dump de l’arbre.
                         'spells' => fn ($sq) => $sq
+                            ->visibleToUser($request->user())
                             ->orderBy('name')
                             ->with([
                                 'spellTypes',

@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Sorts brouillon masqués sur un monstre jouable
+
+Sur une fiche monstre (catalogue ou page), un joueur ne voit plus les sorts encore en brouillon. Seuls les sorts qu’il a le droit de consulter apparaissent, comme pour les équipements.
+
 ## Août 2026 — Équipements du set dans le tooltip panoplie
 
 Le survol de l’icône de panoplie sur une fiche équipement liste les pièces en vue texte : un clic sur un nom ouvre la fiche de l’objet, comme sur la page de la panoplie.

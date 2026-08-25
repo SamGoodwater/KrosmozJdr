@@ -86,7 +86,8 @@ Index client (`npcs`, etc.) : le filtre/tri/recherche portent sur le dataset dé
 
 ### Sort depuis un monstre
 
-Le payload tableau / fiche d’un monstre embarque les sorts liés avec `effect_usages_chips`
-(pas l’arbre `effects`). Un clic ouvre `SpellViewMinimal` en `extended` : effets + menu
-d’options à droite du titre (raccourcis selon la largeur, overflow dans le dropdown). Si les chips manquent, un fetch `api.tables.spells?whitelist[]=`
-complète la fiche.
+Le payload tableau / fiche d’un monstre embarque les sorts liés **visibles du viewer**
+(`visibleToUser`) avec `effect_usages_chips` (pas l’arbre `effects`). Un clic ouvre
+`SpellViewMinimal` en `extended` : effets + menu d’options à droite du titre
+(raccourcis selon la largeur, overflow dans le dropdown). Si les chips manquent, un fetch
+`api.tables.spells?whitelist[]=` complète la fiche.

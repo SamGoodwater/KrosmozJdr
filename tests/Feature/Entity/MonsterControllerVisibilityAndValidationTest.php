@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Entity;
 
+use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
+use App\Models\Entity\Spell;
 use App\Models\Type\MonsterRace;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -54,5 +56,46 @@ class MonsterControllerVisibilityAndValidationTest extends TestCase
 
         $response->assertOk();
         $this->assertStringContainsString('application/pdf', (string) $response->headers->get('content-type'));
+    }
+
+    public function test_show_hides_foreign_draft_spells_from_guest(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $creature = Creature::factory()->create(['created_by' => $author->id]);
+        $playableSpell = Spell::factory()->create([
+            'name' => 'Sort Public',
+            'state' => Spell::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $draftSpell = Spell::factory()->create([
+            'name' => 'Sort Brouillon',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $creature->spells()->attach([$playableSpell->id, $draftSpell->id]);
+        $monster = Monster::factory()->create([
+            'creature_id' => $creature->id,
+            'state' => 'playable',
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->get(route('entities.monsters.show', $monster));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Pages/entity/monster/Show')
+            ->has('monster.data.creature.spells')
+            ->where('monster.data.creature.spells', function ($spells) use ($playableSpell, $draftSpell) {
+                $ids = collect($spells)->pluck('id')->all();
+
+                return in_array($playableSpell->id, $ids, true)
+                    && ! in_array($draftSpell->id, $ids, true);
+            })
+        );
     }
 }

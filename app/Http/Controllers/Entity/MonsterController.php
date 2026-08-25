@@ -146,6 +146,7 @@ class MonsterController extends Controller
             'creature' => fn ($q) => $q->with([
                 'creatureTraits',
                 'spells' => fn ($sq) => $sq
+                    ->visibleToUser($request->user())
                     ->orderBy('name')
                     ->with([
                         'spellTypes',
@@ -159,7 +160,7 @@ class MonsterController extends Controller
             'monsterRace',
             'scenarios',
             'campaigns',
-            'spellInvocations',
+            'spellInvocations' => fn ($q) => $q->visibleToUser($request->user()),
             'languages',
         ]);
 
