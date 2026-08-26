@@ -37,6 +37,56 @@ class BreedControllerTest extends TestCase
                 ->has('breed'));
     }
 
+    public function test_guest_does_not_see_draft_spells_on_playable_breed_show(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $breed = Breed::factory()->create([
+            'state' => Breed::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+
+        $playableSpell = Spell::factory()->create([
+            'name' => 'Sort public',
+            'state' => Spell::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $draftSpell = Spell::factory()->create([
+            'name' => 'Sort secret WIP',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $breed->spells()->attach($playableSpell->id, [
+            'character_level' => 1,
+            'slot_index' => 1,
+            'choice_order' => 0,
+        ]);
+        $breed->spells()->attach($draftSpell->id, [
+            'character_level' => 1,
+            'slot_index' => 2,
+            'choice_order' => 0,
+        ]);
+
+        $this->get(route('entities.breeds.show', $breed))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Pages/entity/breed/Show')
+                ->has('breed.data.spells', 1)
+                ->where('breed.data.spells.0.name', 'Sort public'));
+
+        $this->actingAs($author)
+            ->get(route('entities.breeds.show', $breed))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Pages/entity/breed/Show')
+                ->has('breed.data.spells', 2));
+    }
+
     public function test_guest_cannot_view_draft_breed(): void
     {
         $breed = Breed::factory()->create([

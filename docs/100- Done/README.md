@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Sorts brouillon masqués sur les classes
+
+Un sort (ou une capacité) encore en brouillon n’apparaît plus sur la fiche, le catalogue ou le PDF d’une classe jouable. Il reste visible pour l’auteur, les MJ et les admins, et sur la page Modifier.
+
 ## Août 2026 — Équipements du set dans le tooltip panoplie
 
 Le survol de l’icône de panoplie sur une fiche équipement liste les pièces en vue texte : un clic sur un nom ouvre la fiche de l’objet, comme sur la page de la panoplie.

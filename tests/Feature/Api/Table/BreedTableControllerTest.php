@@ -74,6 +74,90 @@ class BreedTableControllerTest extends TestCase
         $this->assertSame('Passif test', $entity['capabilities'][0]['name']);
     }
 
+    /**
+     * Un joueur ne doit pas voir les sorts / capacités brouillon via une classe jouable.
+     */
+    public function test_format_entities_hides_draft_nested_spells_and_capabilities_from_players(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $player = User::factory()->create(['role' => User::ROLE_PLAYER]);
+
+        $breed = Breed::factory()->create([
+            'name' => 'Classe Jouable',
+            'state' => Breed::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+
+        $playableSpell = Spell::factory()->create([
+            'name' => 'Sort public',
+            'state' => Spell::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $draftSpell = Spell::factory()->create([
+            'name' => 'Sort secret WIP',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $breed->spells()->attach($playableSpell->id, [
+            'character_level' => 1,
+            'slot_index' => 1,
+            'choice_order' => 0,
+        ]);
+        $breed->spells()->attach($draftSpell->id, [
+            'character_level' => 1,
+            'slot_index' => 2,
+            'choice_order' => 0,
+        ]);
+
+        $playableCap = Capability::factory()->create([
+            'name' => 'Passif public',
+            'state' => Capability::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $draftCap = Capability::factory()->create([
+            'name' => 'Passif brouillon',
+            'state' => Capability::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $breed->capabilities()->attach([$playableCap->id, $draftCap->id]);
+
+        $playerResponse = $this->actingAs($player)
+            ->getJson('/api/tables/breeds?format=entities&limit=10');
+
+        $playerResponse->assertOk();
+        $playerEntity = collect($playerResponse->json('entities'))->firstWhere('id', $breed->id);
+        $this->assertNotNull($playerEntity);
+        $this->assertSame(1, $playerEntity['spells_count']);
+        $this->assertEqualsCanonicalizing(['Sort public'], collect($playerEntity['spells'])->pluck('name')->all());
+        $this->assertEqualsCanonicalizing(['Passif public'], collect($playerEntity['capabilities'])->pluck('name')->all());
+
+        $adminResponse = $this->actingAs($author)
+            ->getJson('/api/tables/breeds?format=entities&limit=10');
+
+        $adminResponse->assertOk();
+        $adminEntity = collect($adminResponse->json('entities'))->firstWhere('id', $breed->id);
+        $this->assertNotNull($adminEntity);
+        $this->assertSame(2, $adminEntity['spells_count']);
+        $this->assertEqualsCanonicalizing(
+            ['Sort public', 'Sort secret WIP'],
+            collect($adminEntity['spells'])->pluck('name')->all()
+        );
+        $this->assertEqualsCanonicalizing(
+            ['Passif public', 'Passif brouillon'],
+            collect($adminEntity['capabilities'])->pluck('name')->all()
+        );
+    }
+
     public function test_format_cells_returns_rows_without_entities_payload(): void
     {
         $user = User::factory()->create();
