@@ -8,7 +8,7 @@
  */
 
 import { ref } from "vue";
-import { postJson } from "@/utils/scrapping/api";
+import { DOFUSDB_API_PREFIX, postJson } from "@/utils/scrapping/api";
 import { extractRelationsFromRaw } from "@/config/scrapping/relationConfig";
 import { TERMINAL_STATUSES } from "@/config/scrapping/statusConfig";
 
@@ -131,7 +131,7 @@ export function useScrappingPreview(options) {
             for (const chunkIds of mainChunks) {
                 if (signal?.aborted) break;
                 const result = await postJson(
-                    "/api/scrapping/preview/batch",
+                    `${DOFUSDB_API_PREFIX}/preview/batch`,
                     { type: entityType, ids: chunkIds },
                     { headers: { "X-CSRF-TOKEN": getCsrfToken() || "" }, signal }
                 );
@@ -198,7 +198,7 @@ export function useScrappingPreview(options) {
                         if (signal?.aborted) break;
                         try {
                             const relResult = await postJson(
-                                "/api/scrapping/preview/batch",
+                                `${DOFUSDB_API_PREFIX}/preview/batch`,
                                 { type: relType, ids: relChunkIds },
                                 { headers: { "X-CSRF-TOKEN": getCsrfToken() || "" }, signal }
                             );

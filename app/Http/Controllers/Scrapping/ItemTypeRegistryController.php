@@ -131,7 +131,7 @@ class ItemTypeRegistryController extends Controller
      * Mise à jour en masse des ItemType (registry DofusDB).
      *
      * @example
-     * PATCH /api/scrapping/item-types/bulk
+     * PATCH /api/dofusdb/item-types/bulk
      * { "ids":[1,2,3], "decision":"allowed" }
      */
     public function bulkUpdate(Request $request): JsonResponse
@@ -143,7 +143,7 @@ class ItemTypeRegistryController extends Controller
      * Supprime une entrée de registry (soft delete).
      *
      * @example
-     * DELETE /api/scrapping/item-types/{itemType}
+     * DELETE /api/dofusdb/item-types/{itemType}
      */
     public function destroy(ItemType $itemType): JsonResponse
     {
@@ -159,7 +159,7 @@ class ItemTypeRegistryController extends Controller
     /**
      * Déplace en masse des types vers une autre catégorie.
      *
-     * @example POST /api/scrapping/item-types/move-bulk { "ids": [1,2], "target": "resource" }
+     * @example POST /api/dofusdb/item-types/move-bulk { "ids": [1,2], "target": "resource" }
      */
     public function moveBulkToCategory(Request $request): JsonResponse
     {
@@ -185,7 +185,7 @@ class ItemTypeRegistryController extends Controller
     /**
      * Déplace ce type vers une autre catégorie (ressource ou consommable).
      *
-     * @example POST /api/scrapping/item-types/{id}/move { "target": "resource" }
+     * @example POST /api/dofusdb/item-types/{id}/move { "target": "resource" }
      */
     public function moveToCategory(Request $request, ItemType $itemType): JsonResponse
     {
@@ -251,7 +251,7 @@ class ItemTypeRegistryController extends Controller
     /**
      * Affiche ou masque ce type dans les filtres catalogue.
      *
-     * @example PATCH /api/scrapping/item-types/{itemType}/catalog { "show_in_catalog": true }
+     * @example PATCH /api/dofusdb/item-types/{itemType}/catalog { "show_in_catalog": true }
      */
     public function updateCatalog(Request $request, ItemType $itemType): JsonResponse
     {

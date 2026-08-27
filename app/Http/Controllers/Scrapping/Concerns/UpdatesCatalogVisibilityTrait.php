@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 trait UpdatesCatalogVisibilityTrait
 {
     /**
-     * @example PATCH /api/scrapping/item-types/{id}/catalog { "show_in_catalog": true }
+     * @example PATCH /api/dofusdb/item-types/{id}/catalog { "show_in_catalog": true }
      */
     protected function updateShowInCatalog(Request $request, Model $model): JsonResponse
     {

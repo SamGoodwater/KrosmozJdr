@@ -52,7 +52,7 @@ class EntityDofusdbRefreshControllerTest extends TestCase
     {
         $this->actingAs($this->gm)
             ->withSession($this->passwordConfirmedSession())
-            ->postJson('/api/scrapping/jobs', [
+            ->postJson('/api/dofusdb/jobs', [
                 'kind' => 'import_batch',
                 'entities' => [['type' => 'item', 'id' => 1]],
             ])

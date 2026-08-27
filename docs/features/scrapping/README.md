@@ -78,7 +78,7 @@ Vocabulaire : un **formatter** est une fonction whitelistée appliquée à une v
 
 ## Routes API (extrait)
 
-Toutes préfixées `/api/scrapping` (`routes/api/scrapping.php`) :
+Toutes préfixées `/api/dofusdb` (`routes/api/scrapping.php`, noms `scrapping.*`). Ancien préfixe `/api/scrapping` : redirect 307.
 
 - `GET /config`, `GET /meta` — configuration et métadonnées.
 - `GET /search/{entity}` — recherche (collecte seule, sans intégration).

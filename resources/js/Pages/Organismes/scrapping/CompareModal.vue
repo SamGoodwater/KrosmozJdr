@@ -25,6 +25,7 @@ import {
     formatConditionMode,
     getConditionDispellableIcon,
 } from "@/Composables/condition/conditionDisplay";
+import { DOFUSDB_API_PREFIX } from "@/utils/scrapping/api";
 
 const props = defineProps({
     entityType: { type: String, default: "" },
@@ -201,7 +202,7 @@ async function fetchPreview() {
     choices.value = {};
     try {
         const res = await fetch(
-            `/api/scrapping/preview/${props.entityType}/${props.dofusdbId}`,
+            `${DOFUSDB_API_PREFIX}/preview/${props.entityType}/${props.dofusdbId}`,
             { headers: { Accept: "application/json" } }
         );
         const json = await res.json();
@@ -234,7 +235,7 @@ async function importWithChoices() {
             dofusdb_id: props.dofusdbId,
             choices: hasExisting.value ? choices.value : {},
         };
-        const res = await fetch("/api/scrapping/import-with-merge", {
+        const res = await fetch(`${DOFUSDB_API_PREFIX}/import-with-merge`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

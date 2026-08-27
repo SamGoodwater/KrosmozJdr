@@ -32,6 +32,7 @@ signature: project:clear
 domain: cleanup
 ui: true
 cron: true
+admin: /admin/project-clear
 ```
 
 Nettoie les caches.
@@ -41,9 +42,12 @@ MD;
         self::assertCount(2, $all);
         self::assertSame('project:dev', $all[0]['signature']);
         self::assertFalse($all[0]['ui']);
+        self::assertSame('', $all[0]['admin']);
         self::assertSame('project:clear', $all[1]['signature']);
         self::assertTrue($all[1]['ui']);
         self::assertTrue($all[1]['cron']);
+        self::assertSame('/admin/project-clear', $all[1]['admin']);
+        self::assertSame('Nettoie les caches.', $all[1]['summary']);
 
         $ui = array_values(array_filter($all, static fn (array $e): bool => $e['ui']));
         self::assertCount(1, $ui);
@@ -77,5 +81,15 @@ MD;
         self::assertContains('project:clear', $uiSignatures);
         self::assertContains('project:backup', $uiSignatures);
         self::assertContains('project:review', $uiSignatures);
+
+        foreach (CommandGuide::forUi() as $entry) {
+            self::assertNotSame('', $entry['admin']);
+            self::assertStringStartsWith('/admin/', $entry['admin']);
+        }
+
+        $cards = CommandGuide::forUiCards();
+        self::assertNotEmpty($cards);
+        self::assertArrayHasKey('summary', $cards[0]);
+        self::assertArrayHasKey('admin', $cards[0]);
     }
 }

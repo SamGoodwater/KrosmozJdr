@@ -43,7 +43,7 @@ import {
     buildCsvFromErrorResults,
 } from "@/Composables/utils/useCsvDownload";
 import { RELATION_TYPE_LABELS } from "@/config/scrapping/relationConfig";
-import { getCsrfToken, getJson, postJson } from "@/utils/scrapping/api";
+import { DOFUSDB_API_PREFIX, getCsrfToken, getJson, postJson } from "@/utils/scrapping/api";
 import { useScrappingItemStatus } from "@/Composables/scrapping/useScrappingItemStatus";
 import { useScrappingSearch } from "@/Composables/scrapping/useScrappingSearch";
 import { useScrappingPreview } from "@/Composables/scrapping/useScrappingPreview";
@@ -77,7 +77,7 @@ const SCRAP_JOBS_POLL_MS = 2500;
 async function fetchScrapJobs() {
     scrapJobsLoading.value = true;
     try {
-        const result = await getJson("/api/scrapping/jobs");
+        const result = await getJson(`${DOFUSDB_API_PREFIX}/jobs`);
         if (result.ok && result.data?.success) {
             scrapJobsList.value = result.data?.data ?? { active: [], recent_finished: [] };
         }
@@ -110,7 +110,7 @@ async function cancelScrapJob(jobId) {
     if (!token) return;
     try {
         const res = await postJson(
-            `/api/scrapping/jobs/${encodeURIComponent(jobId)}/cancel`,
+            `${DOFUSDB_API_PREFIX}/jobs/${encodeURIComponent(jobId)}/cancel`,
             {},
             { headers: { "X-CSRF-TOKEN": token } }
         );
@@ -157,7 +157,7 @@ const showOnlyErrorEntities = ref(false);
 const loadMeta = async () => {
     loadingMeta.value = true;
     try {
-        const result = await getJson("/api/scrapping/meta");
+        const result = await getJson(`${DOFUSDB_API_PREFIX}/meta`);
         if (result.ok && result.data?.success) {
             metaEntityTypes.value = result.data?.data ?? [];
         } else {
@@ -176,7 +176,7 @@ const loadConfig = async () => {
     configLoadError.value = "";
     configHealth.value = null;
     try {
-        const result = await getJson("/api/scrapping/config");
+        const result = await getJson(`${DOFUSDB_API_PREFIX}/config`);
         if (result.ok && result.data?.success) {
             const map = {};
             const entities = result.data?.data?.entities ?? [];
@@ -489,9 +489,9 @@ const copyLastRunId = async () => {
 const loadKnownTypes = async () => {
     const t = selectedEntityTypeStr.value;
     const endpoint = (() => {
-        if (t === "resource") return "/api/scrapping/resource-types";
-        if (t === "consumable") return "/api/scrapping/consumable-types";
-        if (t === "equipment") return "/api/scrapping/item-types";
+        if (t === "resource") return `${DOFUSDB_API_PREFIX}/resource-types`;
+        if (t === "consumable") return `${DOFUSDB_API_PREFIX}/consumable-types`;
+        if (t === "equipment") return `${DOFUSDB_API_PREFIX}/item-types`;
         return null;
     })();
 
@@ -601,7 +601,7 @@ watch(
 
 const entityOptions = computed(() => {
     // On propose uniquement les entités à la fois:
-    // - déclarées en config (donc supportées par /api/scrapping/search/{entity})
+    // - déclarées en config (donc supportées par /api/dofusdb/search/{entity})
     // - importables (import endpoints existants)
     // NB: on exclut volontairement "item" (Objet) : c'est l'entité générique DofusDB qui mélange
     // équipements/consommables/ressources + autres catégories.
@@ -617,8 +617,8 @@ const entityOptions = computed(() => {
     };
     const fromMeta = Array.isArray(metaEntityTypes.value) ? metaEntityTypes.value : [];
     return fromMeta
-        // Ne pas dépendre strictement de /api/scrapping/config : si ce endpoint échoue,
-        // on garde un select d'entités utilisable basé sur /api/scrapping/meta.
+        // Ne pas dépendre strictement de /api/dofusdb/config : si ce endpoint échoue,
+        // on garde un select d'entités utilisable basé sur /api/dofusdb/meta.
         .filter((e) => e?.type && allowed.has(String(e.type)))
         .map((e) => {
             const type = String(e.type);
@@ -1271,7 +1271,7 @@ const analyzeEffects = async () => {
     pushHistory(`Analyse effets: preview ${effectsAnalysisType.value} #${effectsAnalysisEntityId.value}`);
 
     try {
-        const url = `/api/scrapping/preview/${effectsAnalysisType.value}/${effectsAnalysisEntityId.value}`;
+        const url = `${DOFUSDB_API_PREFIX}/preview/${effectsAnalysisType.value}/${effectsAnalysisEntityId.value}`;
         const res = await fetch(url, { headers: { Accept: "application/json" } });
         const json = await res.json();
         if (!res.ok || !json?.success) {

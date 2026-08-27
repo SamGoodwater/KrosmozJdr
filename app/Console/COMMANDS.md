@@ -1,7 +1,8 @@
 # Commandes projet
 
-Source unique (CLI et future UI super_admin). Les blocs `yaml` sont lus par `App\Console\CommandGuide`.  
-`ui: true` = exposable dans l’admin. `ui: false` = local / bootstrap, jamais servi par l’UI.
+Source unique (CLI et UI super_admin sur le récapitulatif). Les blocs `yaml` sont lus par `App\Console\CommandGuide`.  
+`ui: true` = listé sur `/admin/recap` (liens vers les pages existantes, pas un second lanceur). `ui: false` = local / bootstrap, jamais servi par l’UI.
+`admin:` = chemin interne `/admin/...` de la page thématique.
 
 Entrée officielle serveur : `php artisan project:dev`.  
 Liste brute : `php artisan list` · aide : `php artisan <cmd> -h`.
@@ -54,7 +55,7 @@ php artisan project:dev --no-prepare
 php artisan project:dev -y
 ```
 
-Interdit en production. `composer run dev` reste un helper concurrently (serve + queue + CSS), pas l’entrée officielle.
+Interdit en production. `composer run dev` lance `php artisan project:dev --queue` (même entrée, file incluse). `--no-prepare` pour les serveurs seuls. `composer run dev:network` reste le helper 0.0.0.0.
 
 ---
 
@@ -65,6 +66,7 @@ signature: project:deps
 domain: software
 ui: true
 cron: false
+admin: /admin/project-update
 ```
 
 Met à jour Composer et pnpm, puis le pipeline IDE / `optimize`. `--with-system` : apt via `setup --update` avant. Cibles : `--composer`, `--pnpm`, `--apt`. Défaut / `--all` : composer + pnpm + optimize. `-y` / `--no` : confirmations apt et IDE Helper.
@@ -87,6 +89,7 @@ signature: project:review
 domain: tests
 ui: true
 cron: false
+admin: /admin/project-review
 ```
 
 Rapport Markdown (tests, Pint, PHPStan, ESLint, audit Composer, doc). Profil : `tests`, `quality`, `security`, `docs`, `all`. Ou flags `--pint`, `--tests`, `--test-back`, `--test-front`, `--phpstan`, `--eslint`, `--security`, `--docs`, `--all`.
@@ -108,6 +111,7 @@ signature: project:data
 domain: data
 ui: true
 cron: true
+admin: /admin/content/dofusdb
 ```
 
 Synchronise le catalogue DofusDB (types / races) et les fiches déjà en base avec `auto_update=true`. N’importe pas de nouvelles fiches : pour ça, `scrapping:run` ou `project:init`.
@@ -208,6 +212,7 @@ signature: project:clear
 domain: cleanup
 ui: true
 cron: true
+admin: /admin/project-clear
 ```
 
 Caches et artefacts. `--safe` : caches Laravel + rapports review + cache PHPStan (preset cron / prod). `--all` : en local, nettoyage large (CSS généré, queue, debugbar) ; en prod, identique à `--safe`. Flags granulaires : `--cache`, `--config`, `--route`, `--view`, `--test`, `--reviews`, `--logs`, `--phpstan-cache`, `--backups`, `--kill`, `--css`, `--queue`, `--debugbar`, `--schedule`, `--event`, `--optimize`.
@@ -229,6 +234,7 @@ signature: project:clear-orphan-files
 domain: cleanup
 ui: true
 cron: true
+admin: /admin/orphan-files
 ```
 
 Fichiers publics MediaLibrary sans ligne `media`. Dry-run par défaut. `--delete` pour supprimer. `--queue` pour un job suivi.
@@ -249,6 +255,7 @@ signature: project:backup
 domain: backup
 ui: true
 cron: true
+admin: /admin/backup
 ```
 
 Dump BDD (gzip) + archive `storage/app`, purge selon rétention.

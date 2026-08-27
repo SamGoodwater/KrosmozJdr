@@ -1,9 +1,9 @@
 <script setup>
 /**
- * Récapitulatif administration — utilisateurs et rôles.
+ * Récapitulatif administration — utilisateurs, rôles, et (super-admin) liens vers les pages de commandes.
  */
 import { computed } from "vue";
-import { Head } from "@inertiajs/vue3";
+import { Head, Link } from "@inertiajs/vue3";
 import { Chart, BarController, BarElement, CategoryScale, LinearScale, Legend, Tooltip } from "chart.js";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
@@ -16,6 +16,7 @@ defineOptions({ layout: AdminArea });
 
 const props = defineProps({
     recap: { type: Object, required: true },
+    commands: { type: Array, default: () => [] },
 });
 
 const { setPageTitle } = usePageTitle();
@@ -97,5 +98,32 @@ onBeforeUnmount(() => growthChart?.destroy());
                 </div>
             </div>
         </div>
+
+        <section v-if="commands.length" class="rounded-box border border-base-300 bg-base-100/50 p-4">
+            <h2 class="text-lg font-semibold text-base-content">Commandes projet</h2>
+            <p class="mt-1 text-sm text-base-content/70 max-w-3xl">
+                Liens vers les pages déjà en place. Ce n’est pas un lanceur : chaque action reste sur sa page (mot de passe, suivi du job).
+            </p>
+            <ul class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                <li
+                    v-for="cmd in commands"
+                    :key="cmd.signature"
+                    class="rounded-box border border-base-300 bg-base-100/40 p-3"
+                >
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <Link
+                            v-if="cmd.admin"
+                            :href="cmd.admin"
+                            class="font-mono text-sm font-semibold link link-primary"
+                        >
+                            {{ cmd.signature }}
+                        </Link>
+                        <span v-else class="font-mono text-sm font-semibold">{{ cmd.signature }}</span>
+                        <span class="badge badge-ghost badge-sm">{{ cmd.domain }}</span>
+                    </div>
+                    <p v-if="cmd.summary" class="mt-2 text-sm text-base-content/70">{{ cmd.summary }}</p>
+                </li>
+            </ul>
+        </section>
     </div>
 </template>

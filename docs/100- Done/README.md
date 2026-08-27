@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — API DofusDB, entrée dev et hub commandes
+
+L’atelier parle à `/api/dofusdb` (l’ancienne adresse `/api/scrapping` redirige). `composer run dev` lance la même chose que `project:dev` avec la file. Les fiches isolées de type de ressource ouvrent la page Types commune. Sur le récapitulatif, le super-admin voit la liste des commandes avec un lien vers chaque page déjà en place.
+
 ## Août 2026 — URLs contenu sous `/admin/content`
 
 Caractéristiques, effets, langues et mappings DofusDB sont dans l’espace contenu, avec la même racine d’URL que l’atelier. Les anciens liens `/admin/characteristics` etc. redirigent. Les boutons « types » des catalogues ouvrent directement la page Types.

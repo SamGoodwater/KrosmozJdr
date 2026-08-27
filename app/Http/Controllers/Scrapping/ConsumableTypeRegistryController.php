@@ -130,7 +130,7 @@ class ConsumableTypeRegistryController extends Controller
      * Mise à jour en masse des ConsumableType (registry DofusDB).
      *
      * @example
-     * PATCH /api/scrapping/consumable-types/bulk
+     * PATCH /api/dofusdb/consumable-types/bulk
      * { "ids":[1,2,3], "decision":"allowed" }
      */
     public function bulkUpdate(Request $request): JsonResponse
@@ -142,7 +142,7 @@ class ConsumableTypeRegistryController extends Controller
      * Supprime une entrée de registry (soft delete).
      *
      * @example
-     * DELETE /api/scrapping/consumable-types/{consumableType}
+     * DELETE /api/dofusdb/consumable-types/{consumableType}
      */
     public function destroy(ConsumableType $consumableType): JsonResponse
     {
@@ -158,7 +158,7 @@ class ConsumableTypeRegistryController extends Controller
     /**
      * Déplace en masse des types vers une autre catégorie.
      *
-     * @example POST /api/scrapping/consumable-types/move-bulk { "ids": [1,2], "target": "resource" }
+     * @example POST /api/dofusdb/consumable-types/move-bulk { "ids": [1,2], "target": "resource" }
      */
     public function moveBulkToCategory(Request $request): JsonResponse
     {
@@ -184,7 +184,7 @@ class ConsumableTypeRegistryController extends Controller
     /**
      * Déplace ce type vers une autre catégorie (ressource ou équipement).
      *
-     * @example POST /api/scrapping/consumable-types/{id}/move { "target": "resource" }
+     * @example POST /api/dofusdb/consumable-types/{id}/move { "target": "resource" }
      */
     public function moveToCategory(Request $request, ConsumableType $consumableType): JsonResponse
     {
@@ -249,7 +249,7 @@ class ConsumableTypeRegistryController extends Controller
     /**
      * Affiche ou masque ce type dans les filtres catalogue.
      *
-     * @example PATCH /api/scrapping/consumable-types/{consumableType}/catalog { "show_in_catalog": true }
+     * @example PATCH /api/dofusdb/consumable-types/{consumableType}/catalog { "show_in_catalog": true }
      */
     public function updateCatalog(Request $request, ConsumableType $consumableType): JsonResponse
     {

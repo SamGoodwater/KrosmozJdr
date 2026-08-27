@@ -1,3 +1,5 @@
+import { DOFUSDB_API_PREFIX } from "@/utils/scrapping/api";
+
 /**
  * Registres de types gérés dans l’espace contenu (une page, un sous-menu).
  *
@@ -27,10 +29,10 @@ export const TYPE_REGISTRY_KINDS = [
         icon: "fa-shield-halved",
         description:
             "« En jeu » pré-coche le type dans le catalogue. « Scrap » autorise l’import / la maj DofusDB des entités de ce type. Déplaçable vers ressources ou consommables.",
-        listUrl: "/api/scrapping/item-types",
-        bulkUrl: "/api/scrapping/item-types/bulk",
-        deleteUrlBase: "/api/scrapping/item-types",
-        moveCategoryUrlBase: "/api/scrapping/item-types",
+        listUrl: `${DOFUSDB_API_PREFIX}/item-types`,
+        bulkUrl: `${DOFUSDB_API_PREFIX}/item-types/bulk`,
+        deleteUrlBase: `${DOFUSDB_API_PREFIX}/item-types`,
+        moveCategoryUrlBase: `${DOFUSDB_API_PREFIX}/item-types`,
         currentCategory: "equipment",
         spellTypeNameCell: false,
         canMove: true,
@@ -43,10 +45,10 @@ export const TYPE_REGISTRY_KINDS = [
         icon: "fa-cubes",
         description:
             "« En jeu » pré-coche le type dans le catalogue. « Scrap » autorise l’import / la maj DofusDB. Déplaçable vers équipements ou consommables.",
-        listUrl: "/api/scrapping/resource-types",
-        bulkUrl: "/api/scrapping/resource-types/bulk",
-        deleteUrlBase: "/api/scrapping/resource-types",
-        moveCategoryUrlBase: "/api/scrapping/resource-types",
+        listUrl: `${DOFUSDB_API_PREFIX}/resource-types`,
+        bulkUrl: `${DOFUSDB_API_PREFIX}/resource-types/bulk`,
+        deleteUrlBase: `${DOFUSDB_API_PREFIX}/resource-types`,
+        moveCategoryUrlBase: `${DOFUSDB_API_PREFIX}/resource-types`,
         currentCategory: "resource",
         spellTypeNameCell: false,
         canMove: true,
@@ -59,10 +61,10 @@ export const TYPE_REGISTRY_KINDS = [
         icon: "fa-flask",
         description:
             "« En jeu » pré-coche le type dans le catalogue. « Scrap » autorise l’import / la maj DofusDB. Déplaçable vers équipements ou ressources.",
-        listUrl: "/api/scrapping/consumable-types",
-        bulkUrl: "/api/scrapping/consumable-types/bulk",
-        deleteUrlBase: "/api/scrapping/consumable-types",
-        moveCategoryUrlBase: "/api/scrapping/consumable-types",
+        listUrl: `${DOFUSDB_API_PREFIX}/consumable-types`,
+        bulkUrl: `${DOFUSDB_API_PREFIX}/consumable-types/bulk`,
+        deleteUrlBase: `${DOFUSDB_API_PREFIX}/consumable-types`,
+        moveCategoryUrlBase: `${DOFUSDB_API_PREFIX}/consumable-types`,
         currentCategory: "consumable",
         spellTypeNameCell: false,
         canMove: true,

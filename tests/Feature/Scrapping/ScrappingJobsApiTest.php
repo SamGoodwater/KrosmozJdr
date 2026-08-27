@@ -27,7 +27,7 @@ class ScrappingJobsApiTest extends TestCase
     {
         Queue::fake();
 
-        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/scrapping/jobs', [
+        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/dofusdb/jobs', [
             'kind' => 'import_batch',
             'entities' => [
                 ['type' => 'class', 'id' => 1],
@@ -67,7 +67,7 @@ class ScrappingJobsApiTest extends TestCase
             'results' => [],
         ]);
 
-        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->getJson("/api/scrapping/jobs/{$job->id}");
+        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->getJson("/api/dofusdb/jobs/{$job->id}");
 
         $response->assertOk()
             ->assertJson([
@@ -89,7 +89,7 @@ class ScrappingJobsApiTest extends TestCase
             'progress_total' => 1,
         ]);
 
-        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson("/api/scrapping/jobs/{$job->id}/cancel");
+        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson("/api/dofusdb/jobs/{$job->id}/cancel");
         $response->assertOk()
             ->assertJsonPath('success', true)
             ->assertJsonPath('data.status', ScrappingJob::STATUS_CANCELLED);

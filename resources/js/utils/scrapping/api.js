@@ -4,6 +4,9 @@
  * @see docs/features/scrapping/README.md
  */
 
+/** Préfixe public de l’API atelier / registres DofusDB. */
+export const DOFUSDB_API_PREFIX = "/api/dofusdb";
+
 /**
  * Récupère le token CSRF depuis la meta du document (Laravel).
  * @returns {string|null}

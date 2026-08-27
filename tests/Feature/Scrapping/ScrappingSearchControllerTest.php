@@ -37,7 +37,7 @@ class ScrappingSearchControllerTest extends TestCase
             ], 200);
         });
 
-        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/scrapping/search/monster?name=Bouftou&limit=2&max_pages=1&skip_cache=true');
+        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/dofusdb/search/monster?name=Bouftou&limit=2&max_pages=1&skip_cache=true');
 
         $res->assertOk();
         $res->assertJsonPath('success', true);
@@ -73,7 +73,7 @@ class ScrappingSearchControllerTest extends TestCase
             ], 200);
         });
 
-        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/scrapping/search/monster?idMin=10&idMax=12&limit=2&max_pages=1');
+        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/dofusdb/search/monster?idMin=10&idMax=12&limit=2&max_pages=1');
 
         $res->assertOk();
         $res->assertJsonPath('success', true);
@@ -112,7 +112,7 @@ class ScrappingSearchControllerTest extends TestCase
             ], 200);
         });
 
-        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/scrapping/search/monster?limit=200&max_pages=2&skip_cache=true');
+        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/dofusdb/search/monster?limit=200&max_pages=2&skip_cache=true');
 
         $res->assertOk();
         $res->assertJsonPath('success', true);
@@ -126,7 +126,7 @@ class ScrappingSearchControllerTest extends TestCase
     public function test_search_unknown_entity_returns_404(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/scrapping/search/not-a-real-entity');
+        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/dofusdb/search/not-a-real-entity');
         $res->assertStatus(404);
         $res->assertJsonPath('success', false);
     }

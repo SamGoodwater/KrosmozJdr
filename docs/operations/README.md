@@ -22,6 +22,8 @@ php artisan project:clear-orphan-files --queue --delete
 
 UI : `/admin/orphan-files` (super_admin). Service : `app/Services/Media/OrphanPublicMediaCleanupService.php`. Cron catalogue `media_clear_orphan_files` (off par défaut). Après déploiement : `php artisan project:schedule:sync`.
 
+Le récapitulatif `/admin/recap` liste les commandes `ui: true` pour le super-admin, avec un lien vers chaque page thématique (pas un second lanceur).
+
 ## Notifications de jobs
 
 Jobs Artisan admin (review, clear, deps, backup, `project:data sync`) : table `project_console_jobs`, poll `GET /admin/console-jobs/{id}`, toast animé + log filtré sur la page. Un seul job actif par domaine. Imports scrapping et nettoyage orphelins : suivi persisté (progression, annulation). Backup / sync planifiée : notification de résultat admin en plus du suivi live.

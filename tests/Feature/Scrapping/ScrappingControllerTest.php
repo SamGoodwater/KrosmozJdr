@@ -31,7 +31,7 @@ class ScrappingControllerTest extends TestCase
     }
 
     /**
-     * Test de l'endpoint POST /api/scrapping/import/class/{id} (pipeline).
+     * Test de l'endpoint POST /api/dofusdb/import/class/{id} (pipeline).
      */
     public function test_import_class_endpoint_succeeds(): void
     {
@@ -47,7 +47,7 @@ class ScrappingControllerTest extends TestCase
             'api.dofusdb.fr/breeds/1*' => Http::response($mockData, 200),
         ]);
 
-        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/scrapping/import/class/1');
+        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/dofusdb/import/class/1');
 
         $response->assertStatus(201)
             ->assertJson([
@@ -65,7 +65,7 @@ class ScrappingControllerTest extends TestCase
     }
 
     /**
-     * Test de l'endpoint POST /api/scrapping/import/class/{id} avec erreur
+     * Test de l'endpoint POST /api/dofusdb/import/class/{id} avec erreur
      */
     public function test_import_class_endpoint_handles_error(): void
     {
@@ -76,7 +76,7 @@ class ScrappingControllerTest extends TestCase
 
         // Utiliser un ID valide selon la contrainte de route (1-19)
         // mais qui provoque une erreur lors de la collecte
-        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/scrapping/import/class/19');
+        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/dofusdb/import/class/19');
 
         // Le contrôleur retourne 400 si l'orchestrateur retourne success=false
         // ou 500 si une exception est levée
@@ -92,7 +92,7 @@ class ScrappingControllerTest extends TestCase
     }
 
     /**
-     * Test de l'endpoint POST /api/scrapping/import/monster/{id}
+     * Test de l'endpoint POST /api/dofusdb/import/monster/{id}
      */
     public function test_import_monster_endpoint_succeeds(): void
     {
@@ -119,7 +119,7 @@ class ScrappingControllerTest extends TestCase
             'api.dofusdb.fr/monsters/31*' => Http::response($mockData, 200),
         ]);
 
-        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/scrapping/import/monster/31');
+        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/dofusdb/import/monster/31');
 
         $response->assertStatus(201)
             ->assertJson([
@@ -128,7 +128,7 @@ class ScrappingControllerTest extends TestCase
     }
 
     /**
-     * Test de l'endpoint POST /api/scrapping/import/monster/{id} avec include_relations (pipeline relations).
+     * Test de l'endpoint POST /api/dofusdb/import/monster/{id} avec include_relations (pipeline relations).
      */
     public function test_import_monster_with_relations_succeeds(): void
     {
@@ -158,7 +158,7 @@ class ScrappingControllerTest extends TestCase
             'api.dofusdb.fr/monsters/31*' => Http::response($mockData, 200),
         ]);
 
-        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/scrapping/import/monster/31', [
+        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/dofusdb/import/monster/31', [
             'include_relations' => true,
         ]);
 
@@ -169,7 +169,7 @@ class ScrappingControllerTest extends TestCase
     }
 
     /**
-     * Test de l'endpoint POST /api/scrapping/import/item/{id}
+     * Test de l'endpoint POST /api/dofusdb/import/item/{id}
      */
     public function test_import_item_endpoint_succeeds(): void
     {
@@ -187,7 +187,7 @@ class ScrappingControllerTest extends TestCase
             'api.dofusdb.fr/items/15*' => Http::response($mockData, 200),
         ]);
 
-        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/scrapping/import/item/15');
+        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/dofusdb/import/item/15');
 
         $response->assertStatus(201)
             ->assertJson([
@@ -196,7 +196,7 @@ class ScrappingControllerTest extends TestCase
     }
 
     /**
-     * Test de l'endpoint POST /api/scrapping/import/spell/{id} (pipeline).
+     * Test de l'endpoint POST /api/dofusdb/import/spell/{id} (pipeline).
      * fetchOne GET /spells/{id} attend un objet unique.
      */
     public function test_import_spell_endpoint_succeeds(): void
@@ -215,7 +215,7 @@ class ScrappingControllerTest extends TestCase
             'api.dofusdb.fr/spells/201*' => Http::response($spellObject, 200),
         ]);
 
-        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/scrapping/import/spell/201');
+        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/dofusdb/import/spell/201');
 
         $response->assertStatus(201)
             ->assertJson([
@@ -230,7 +230,7 @@ class ScrappingControllerTest extends TestCase
     }
 
     /**
-     * Test de l'endpoint POST /api/scrapping/import/batch
+     * Test de l'endpoint POST /api/dofusdb/import/batch
      */
     public function test_import_batch_endpoint_succeeds(): void
     {
@@ -257,7 +257,7 @@ class ScrappingControllerTest extends TestCase
             ], 200),
         ]);
 
-        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/scrapping/import/batch', [
+        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/dofusdb/import/batch', [
             'entities' => $entities,
         ]);
 
@@ -282,7 +282,7 @@ class ScrappingControllerTest extends TestCase
      */
     public function test_import_batch_endpoint_validates_input(): void
     {
-        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/scrapping/import/batch', [
+        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/dofusdb/import/batch', [
             'entities' => [
                 ['type' => 'invalid', 'id' => 1],
             ],

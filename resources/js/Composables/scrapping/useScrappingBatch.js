@@ -5,7 +5,7 @@
  */
 
 import { computed, ref } from "vue";
-import { getJson, postJson } from "@/utils/scrapping/api";
+import { DOFUSDB_API_PREFIX, getJson, postJson } from "@/utils/scrapping/api";
 import { parsePageRange } from "@/utils/scrapping/parsePageRange";
 
 const JOB_POLL_INTERVAL_MS = 1500;
@@ -193,7 +193,7 @@ export function useScrappingBatch(options) {
         const { signal: createSignal, cleanup: cleanupCreateSignal } = signalWithTimeout(signal, CREATE_JOB_TIMEOUT_MS);
         let createResult;
         try {
-            createResult = await postJson("/api/scrapping/jobs", {
+            createResult = await postJson(`${DOFUSDB_API_PREFIX}/jobs`, {
                 kind: "import_batch",
                 entities: payload.entities,
                 skip_cache: payload.skip_cache,
@@ -215,7 +215,7 @@ export function useScrappingBatch(options) {
         if (!createResult.ok || !createResult.data?.data?.job_id) {
             onProgress({ phase: "batch", done: 0, total: payload.entities.length, label: `${label} (mode synchrone, peut prendre plusieurs minutes)…` });
             notifyInfo(`${label} en mode synchrone… L'import peut prendre plusieurs minutes pour les classes avec relations.`, { duration: 4000 });
-            const syncResult = await postJson("/api/scrapping/import/batch", payload, {
+            const syncResult = await postJson(`${DOFUSDB_API_PREFIX}/import/batch`, payload, {
                 headers: { "X-CSRF-TOKEN": csrf },
                 signal,
             });
@@ -232,7 +232,7 @@ export function useScrappingBatch(options) {
             // Polling jusqu'à statut terminal.
             while (true) {
                 if (shouldStop(signal)) throw abortError();
-                statusResult = await getJson(`/api/scrapping/jobs/${encodeURIComponent(jobId)}`, { signal });
+                statusResult = await getJson(`${DOFUSDB_API_PREFIX}/jobs/${encodeURIComponent(jobId)}`, { signal });
                 if (!statusResult.ok || !statusResult.data?.data) {
                     throw new Error(statusResult.error || "Statut du job indisponible");
                 }
@@ -253,11 +253,11 @@ export function useScrappingBatch(options) {
                         queuedSince = queuedSince ?? Date.now();
                         if (Date.now() - queuedSince > JOB_QUEUED_MAX_MS) {
                             notifyInfo("Le worker de queue ne semble pas actif. Passage en mode synchrone…", { duration: 5000 });
-                            await postJson(`/api/scrapping/jobs/${encodeURIComponent(jobId)}/cancel`, {}, {
+                            await postJson(`${DOFUSDB_API_PREFIX}/jobs/${encodeURIComponent(jobId)}/cancel`, {}, {
                                 headers: { "X-CSRF-TOKEN": csrf },
                             });
                             onProgress({ phase: "batch", done: 0, total: payload.entities.length, label: `${label} (mode synchrone)…` });
-                            const syncResult = await postJson("/api/scrapping/import/batch", payload, {
+                            const syncResult = await postJson(`${DOFUSDB_API_PREFIX}/import/batch`, payload, {
                                 headers: { "X-CSRF-TOKEN": csrf },
                                 signal,
                             });
@@ -288,7 +288,7 @@ export function useScrappingBatch(options) {
             }
         } catch (e) {
             if (e?.name === "AbortError") {
-                await postJson(`/api/scrapping/jobs/${encodeURIComponent(jobId)}/cancel`, {}, {
+                await postJson(`${DOFUSDB_API_PREFIX}/jobs/${encodeURIComponent(jobId)}/cancel`, {}, {
                     headers: { "X-CSRF-TOKEN": csrf },
                 });
             }

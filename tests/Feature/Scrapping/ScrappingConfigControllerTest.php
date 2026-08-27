@@ -24,7 +24,7 @@ class ScrappingConfigControllerTest extends TestCase
     public function test_config_endpoint_returns_sources_and_entities(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $response = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/scrapping/config');
+        $response = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/dofusdb/config');
 
         $response->assertStatus(200)
             ->assertJson([
@@ -61,7 +61,7 @@ class ScrappingConfigControllerTest extends TestCase
             ->delete();
 
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $response = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/scrapping/config');
+        $response = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/dofusdb/config');
 
         $response->assertStatus(200)->assertJson(['success' => true]);
 

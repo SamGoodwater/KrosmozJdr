@@ -40,7 +40,7 @@ class ScrappingPreviewConfigConversionTest extends TestCase
             return Http::response([], 404);
         });
 
-        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/scrapping/preview/monster/31');
+        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/dofusdb/preview/monster/31');
         $res->assertStatus(200)->assertJson(['success' => true]);
 
         $converted = $res->json('data.converted');
@@ -67,7 +67,7 @@ class ScrappingPreviewConfigConversionTest extends TestCase
             '*spell-levels*' => Http::response(['data' => []], 200),
         ]);
 
-        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/scrapping/preview/spell/201');
+        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/dofusdb/preview/spell/201');
         $res->assertStatus(200)->assertJson(['success' => true]);
 
         $converted = $res->json('data.converted');

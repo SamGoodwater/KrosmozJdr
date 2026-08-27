@@ -4,6 +4,8 @@
 
 Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interaction` (Symfony). Helper : `App\Console\YesNoFlags`.
 
+`composer run dev` = `php artisan project:dev --queue`. Super-admin : liste `CommandGuide::forUi()` sur `/admin/recap` (liens vers les pages existantes).
+
 ## Fichiers pivots
 
 - `app/Console/COMMANDS.md` — vocabulaire CLI unique

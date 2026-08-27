@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Type;
 
+use App\Models\Type\ResourceType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -58,5 +59,29 @@ class TypeRegistryAccessTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->component('Admin/Content/Types/Index')
                 ->where('kind', 'race'));
+    }
+
+    public function test_game_master_is_forbidden_from_resource_type_show(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $type = ResourceType::factory()->create();
+
+        $this->actingAs($gm)
+            ->get(route('entities.resource-types.show', $type))
+            ->assertForbidden();
+    }
+
+    public function test_admin_resource_type_show_and_edit_redirect_to_unified_registry(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $type = ResourceType::factory()->create();
+
+        $this->actingAs($admin)
+            ->get(route('entities.resource-types.show', $type))
+            ->assertRedirect(route('admin.content.types.show', ['kind' => 'resource']));
+
+        $this->actingAs($admin)
+            ->get(route('entities.resource-types.edit', $type))
+            ->assertRedirect(route('admin.content.types.show', ['kind' => 'resource']));
     }
 }

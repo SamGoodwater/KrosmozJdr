@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Log;
 /**
  * API import scrapping : pipeline Collect → Conversion → Validation → Intégration.
  *
- * Ex. POST /api/scrapping/import/monster/31
+ * Ex. POST /api/dofusdb/import/monster/31
  */
 class ScrappingImportController extends Controller
 {

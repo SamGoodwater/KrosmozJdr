@@ -24,7 +24,7 @@ class ItemTypeCatalogVisibilityTest extends TestCase
 
         $this->actingAs($admin)
             ->withSession(['auth.password_confirmed_at' => time()])
-            ->patchJson("/api/scrapping/item-types/{$type->id}/catalog", [
+            ->patchJson("/api/dofusdb/item-types/{$type->id}/catalog", [
                 'show_in_catalog' => true,
             ])
             ->assertOk()
@@ -44,7 +44,7 @@ class ItemTypeCatalogVisibilityTest extends TestCase
 
         $this->actingAs($gm)
             ->withSession(['auth.password_confirmed_at' => time()])
-            ->patchJson("/api/scrapping/item-types/{$type->id}/catalog", [
+            ->patchJson("/api/dofusdb/item-types/{$type->id}/catalog", [
                 'show_in_catalog' => true,
             ])
             ->assertForbidden();
@@ -66,7 +66,7 @@ class ItemTypeCatalogVisibilityTest extends TestCase
 
         $this->actingAs($admin)
             ->withSession(['auth.password_confirmed_at' => time()])
-            ->patchJson('/api/scrapping/item-types/bulk', [
+            ->patchJson('/api/dofusdb/item-types/bulk', [
                 'ids' => [$visible->id, $hidden->id],
                 'show_in_catalog' => true,
             ])

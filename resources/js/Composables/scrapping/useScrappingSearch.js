@@ -5,7 +5,7 @@
  */
 
 import { computed, ref } from "vue";
-import { getJson } from "@/utils/scrapping/api";
+import { DOFUSDB_API_PREFIX, getJson } from "@/utils/scrapping/api";
 import { parseIdsFilter } from "@/utils/scrapping/parseIdsFilter";
 
 /**
@@ -91,7 +91,7 @@ export function useScrappingSearch(options) {
         try {
             const qs = buildSearchQuery();
             const entityStr = entityTypeRef.value;
-            const url = `/api/scrapping/search/${entityStr}${qs ? `?${qs}` : ""}`;
+            const url = `${DOFUSDB_API_PREFIX}/search/${entityStr}${qs ? `?${qs}` : ""}`;
             const result = await getJson(url, { signal: options.signal });
             if (result.aborted) return;
             if (result.ok && result.data?.success) {

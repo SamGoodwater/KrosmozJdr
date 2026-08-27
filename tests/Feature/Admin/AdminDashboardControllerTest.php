@@ -63,6 +63,23 @@ class AdminDashboardControllerTest extends TestCase
             ->withSession(['auth.password_confirmed_at' => time(), 'auth.password_last_activity_at' => time()])
             ->get(route('admin.recap.index'))
             ->assertOk()
-            ->assertInertia(fn ($page) => $page->component('Admin/Recap/Index'));
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Recap/Index')
+                ->where('commands', []));
+    }
+
+    public function test_super_admin_recap_lists_command_guide_links(): void
+    {
+        $super = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+
+        $this->actingAs($super)
+            ->withSession(['auth.password_confirmed_at' => time(), 'auth.password_last_activity_at' => time()])
+            ->get(route('admin.recap.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Recap/Index')
+                ->has('commands')
+                ->where('commands.0.signature', 'project:deps')
+                ->where('commands.0.admin', '/admin/project-update'));
     }
 }

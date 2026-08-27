@@ -3,9 +3,8 @@
 use App\Http\Controllers\Type\ResourceTypeController;
 use Illuminate\Support\Facades\Route;
 
-// Routes protégées (nécessitent une authentification)
-Route::prefix('entities/resource-types')->name('entities.resource-types.')->middleware('auth')->group(function () {
-    Route::get('/', [ResourceTypeController::class, 'index'])->middleware(['role:admin', 'content.area'])->name('index');
+Route::prefix('entities/resource-types')->name('entities.resource-types.')->middleware(['auth', 'role:admin', 'content.area'])->group(function () {
+    Route::get('/', [ResourceTypeController::class, 'index'])->name('index');
     Route::get('/{resourceType}/edit', [ResourceTypeController::class, 'edit'])->name('edit');
     Route::get('/{resourceType}', [ResourceTypeController::class, 'show'])->name('show');
     Route::post('/', [ResourceTypeController::class, 'store'])->name('store');

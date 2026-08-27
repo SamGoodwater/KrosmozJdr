@@ -10,18 +10,22 @@ use App\Http\Controllers\Scrapping\ScrappingConfigController;
 use App\Http\Controllers\Scrapping\ScrappingController;
 use App\Http\Controllers\Scrapping\ScrappingImportController;
 use App\Http\Controllers\Scrapping\ScrappingSearchController;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| API — Scrapping (tests, production, registries, catalogues)
+| API — Atelier DofusDB (tests, production, registries, catalogues)
 |--------------------------------------------------------------------------
+| URI publique : /api/dofusdb. Noms de routes inchangés (scrapping.*).
+| Ancien préfixe /api/scrapping : redirect 307.
 | Accès réservé aux administrateurs (lecture et écriture).
 */
 Route::middleware(['web', 'auth', 'role:admin', 'password.confirm'])->group(function () {
 
     // Routes de test (DataCollect sans orchestrateur)
-    Route::prefix('scrapping/test')->group(function () {
+    Route::prefix('dofusdb/test')->group(function () {
         Route::get('/api', [DataCollectController::class, 'testApi'])
             ->name('scrapping.test.api');
         Route::get('/class/{id}', [DataCollectController::class, 'testCollectClass'])
@@ -46,7 +50,7 @@ Route::middleware(['web', 'auth', 'role:admin', 'password.confirm'])->group(func
     });
 
     // Scrapping production (config, search, meta, preview, import)
-    Route::prefix('scrapping')->group(function () {
+    Route::prefix('dofusdb')->group(function () {
         Route::get('/config', [ScrappingConfigController::class, 'index'])
             ->name('scrapping.config');
         Route::get('/search/{entity}', [ScrappingSearchController::class, 'search'])
@@ -112,7 +116,7 @@ Route::middleware(['web', 'auth', 'role:admin', 'password.confirm'])->group(func
     });
 
     // Registries (resource-types, item-types, consumable-types)
-    Route::prefix('scrapping/resource-types')->group(function () {
+    Route::prefix('dofusdb/resource-types')->group(function () {
         Route::get('/', [ResourceTypeRegistryController::class, 'index'])
             ->name('scrapping.resource-types.index');
         Route::get('/pending', [ResourceTypeRegistryController::class, 'pending'])
@@ -135,7 +139,7 @@ Route::middleware(['web', 'auth', 'role:admin', 'password.confirm'])->group(func
             ->name('scrapping.resource-types.replay');
     });
 
-    Route::prefix('scrapping/item-types')->group(function () {
+    Route::prefix('dofusdb/item-types')->group(function () {
         Route::get('/', [ItemTypeRegistryController::class, 'index'])
             ->name('scrapping.item-types.index');
         Route::get('/pending', [ItemTypeRegistryController::class, 'pending'])
@@ -154,7 +158,7 @@ Route::middleware(['web', 'auth', 'role:admin', 'password.confirm'])->group(func
             ->name('scrapping.item-types.catalog');
     });
 
-    Route::prefix('scrapping/consumable-types')->group(function () {
+    Route::prefix('dofusdb/consumable-types')->group(function () {
         Route::get('/', [ConsumableTypeRegistryController::class, 'index'])
             ->name('scrapping.consumable-types.index');
         Route::get('/pending', [ConsumableTypeRegistryController::class, 'pending'])
@@ -174,8 +178,19 @@ Route::middleware(['web', 'auth', 'role:admin', 'password.confirm'])->group(func
     });
 
     // Catalogue DofusDB (races monstres)
-    Route::prefix('scrapping/monster-races')->group(function () {
+    Route::prefix('dofusdb/monster-races')->group(function () {
         Route::get('/', [DofusDbMonsterRacesCatalogController::class, 'index'])
             ->name('scrapping.monster-races.catalog');
     });
+
+    Route::any('scrapping/{path?}', static function (Request $request, ?string $path = null): RedirectResponse {
+        $suffix = ($path !== null && $path !== '') ? '/'.$path : '';
+        $target = '/api/dofusdb'.$suffix;
+        $query = $request->getQueryString();
+        if ($query !== null && $query !== '') {
+            $target .= '?'.$query;
+        }
+
+        return redirect()->to($target, 307);
+    })->where('path', '.*');
 });

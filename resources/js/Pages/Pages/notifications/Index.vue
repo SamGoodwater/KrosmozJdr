@@ -6,6 +6,7 @@
  */
 import { ref, computed, inject, onMounted, watch } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
+import { DOFUSDB_API_PREFIX } from '@/utils/scrapping/api';
 import Tab from '@/Pages/Molecules/navigation/Tab.vue';
 import TabItem from '@/Pages/Atoms/navigation/TabItem.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -150,7 +151,7 @@ async function cancelScrappingJobNotification(item) {
     const jobId = item?.data?.meta?.job_id;
     if (!jobId) return;
     try {
-        await fetch(`/api/scrapping/jobs/${encodeURIComponent(jobId)}/cancel`, {
+        await fetch(`${DOFUSDB_API_PREFIX}/jobs/${encodeURIComponent(jobId)}/cancel`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': token || '', 'X-Requested-With': 'XMLHttpRequest' },
             credentials: 'same-origin',

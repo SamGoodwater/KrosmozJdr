@@ -146,7 +146,7 @@ class ResourceTypeRegistryController extends Controller
      * Applique les champs fournis à une liste d'IDs. Seuls les champs envoyés sont modifiés.
      *
      * @example
-     * PATCH /api/scrapping/resource-types/bulk
+     * PATCH /api/dofusdb/resource-types/bulk
      * { "ids":[1,2,3], "decision":"allowed", "state":"playable", "read_level":0, "write_level":4 }
      */
     public function bulkUpdate(Request $request): JsonResponse
@@ -261,7 +261,7 @@ class ResourceTypeRegistryController extends Controller
      * Supprime une entrée de registry (soft delete).
      *
      * @example
-     * DELETE /api/scrapping/resource-types/{resourceType}
+     * DELETE /api/dofusdb/resource-types/{resourceType}
      */
     public function destroy(ResourceType $resourceType): JsonResponse
     {
@@ -277,7 +277,7 @@ class ResourceTypeRegistryController extends Controller
     /**
      * Déplace en masse des types vers une autre catégorie.
      *
-     * @example POST /api/scrapping/resource-types/move-bulk { "ids": [1,2,3], "target": "consumable" }
+     * @example POST /api/dofusdb/resource-types/move-bulk { "ids": [1,2,3], "target": "consumable" }
      */
     public function moveBulkToCategory(Request $request): JsonResponse
     {
@@ -303,7 +303,7 @@ class ResourceTypeRegistryController extends Controller
     /**
      * Déplace ce type vers une autre catégorie (consommable ou équipement).
      *
-     * @example POST /api/scrapping/resource-types/{id}/move { "target": "consumable" }
+     * @example POST /api/dofusdb/resource-types/{id}/move { "target": "consumable" }
      */
     public function moveToCategory(Request $request, ResourceType $resourceType): JsonResponse
     {
@@ -333,7 +333,7 @@ class ResourceTypeRegistryController extends Controller
      * Retourne des exemples d'items "pending" pour un ResourceType (utile pour décider Utiliser / Ne pas utiliser).
      *
      * @example
-     * GET /api/scrapping/resource-types/{id}/pending-items?limit=5&with_preview=1
+     * GET /api/dofusdb/resource-types/{id}/pending-items?limit=5&with_preview=1
      */
     public function pendingItems(Request $request, ResourceType $resourceType): JsonResponse
     {
@@ -468,7 +468,7 @@ class ResourceTypeRegistryController extends Controller
     /**
      * Affiche ou masque ce type dans les filtres catalogue.
      *
-     * @example PATCH /api/scrapping/resource-types/{resourceType}/catalog { "show_in_catalog": true }
+     * @example PATCH /api/dofusdb/resource-types/{resourceType}/catalog { "show_in_catalog": true }
      */
     public function updateCatalog(Request $request, ResourceType $resourceType): JsonResponse
     {

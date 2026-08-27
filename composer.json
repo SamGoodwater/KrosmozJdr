@@ -68,8 +68,14 @@
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
         ],
-        "dev": "npx concurrently --kill-others \"php artisan serve\" \"php artisan queue:listen\" \"pnpm run dev:css:optimized\"",
-        "dev:optimized": "npx concurrently --kill-others \"php artisan serve\" \"php artisan queue:listen\" \"pnpm run dev:css:optimized\"",
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php artisan project:dev --queue"
+        ],
+        "dev:optimized": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php artisan project:dev --queue"
+        ],
         "dev:watch": "npx concurrently --kill-others \"php artisan serve\" \"php artisan queue:listen\" \"pnpm run dev:css:optimized:watch\"",
         "dev:network": [
             "Composer\\Config::disableProcessTimeout",

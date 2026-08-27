@@ -32,6 +32,7 @@ import GlassMenuDivider from "@/Pages/Atoms/navigation/GlassMenuDivider.vue";
 import { usePage, router } from "@inertiajs/vue3";
 import { ref, watch, computed, onMounted, onUnmounted, inject, nextTick } from "vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { DOFUSDB_API_PREFIX } from "@/utils/scrapping/api";
 
 function getCsrfToken() {
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -151,7 +152,7 @@ async function cancelScrappingJobNotification(item) {
     const jobId = item?.data?.meta?.job_id;
     if (!jobId) return;
     try {
-        await fetch(`/api/scrapping/jobs/${encodeURIComponent(jobId)}/cancel`, {
+        await fetch(`${DOFUSDB_API_PREFIX}/jobs/${encodeURIComponent(jobId)}/cancel`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

@@ -30,7 +30,7 @@ class TypeRegistryFlagsTest extends TestCase
 
         $this->actingAs($admin)
             ->withSession(['auth.password_confirmed_at' => time()])
-            ->patchJson('/api/scrapping/item-types/bulk', [
+            ->patchJson('/api/dofusdb/item-types/bulk', [
                 'ids' => [$type->id],
                 'allow_scrap' => true,
             ])
@@ -54,7 +54,7 @@ class TypeRegistryFlagsTest extends TestCase
 
         $this->actingAs($gm)
             ->withSession(['auth.password_confirmed_at' => time()])
-            ->patchJson('/api/scrapping/item-types/bulk', [
+            ->patchJson('/api/dofusdb/item-types/bulk', [
                 'ids' => [$type->id],
                 'allow_scrap' => true,
             ])

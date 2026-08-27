@@ -7,7 +7,7 @@ namespace App\Console;
 use RuntimeException;
 
 /**
- * Lit {@see COMMANDS.md} : un bloc YAML par commande (signature, domain, ui, cron).
+ * Lit {@see COMMANDS.md} : un bloc YAML par commande (signature, domain, ui, cron, admin).
  *
  * Ce n’est pas une seconde documentation : le Markdown reste la source, ce lecteur
  * sert au filtrage UI (`ui: true`) et aux tests.
@@ -17,8 +17,10 @@ use RuntimeException;
  *     domain: string,
  *     ui: bool,
  *     cron: bool,
+ *     admin: string,
  *     heading: string,
- *     body: string
+ *     body: string,
+ *     summary: string
  * }
  */
 final class CommandGuide
@@ -57,6 +59,24 @@ final class CommandGuide
     }
 
     /**
+     * Cartes UI : signature, domaine, lien admin, résumé.
+     *
+     * @return list<array{signature: string, domain: string, admin: string, summary: string}>
+     */
+    public static function forUiCards(?string $markdownAbsolutePath = null): array
+    {
+        return array_map(
+            static fn (array $entry): array => [
+                'signature' => $entry['signature'],
+                'domain' => $entry['domain'],
+                'admin' => $entry['admin'],
+                'summary' => $entry['summary'],
+            ],
+            self::forUi($markdownAbsolutePath)
+        );
+    }
+
+    /**
      * @return list<CommandEntry>
      */
     public static function parse(string $markdown): array
@@ -75,14 +95,17 @@ final class CommandGuide
             $heading = trim($match[1]);
             $meta = self::parseYamlBlock($match[2]);
             $signature = isset($meta['signature']) ? trim($meta['signature']) : $heading;
+            $body = trim($match[3]);
 
             $entries[] = [
                 'signature' => $signature,
                 'domain' => isset($meta['domain']) ? trim($meta['domain']) : '',
                 'ui' => self::toBool($meta['ui'] ?? 'false'),
                 'cron' => self::toBool($meta['cron'] ?? 'false'),
+                'admin' => self::sanitizeAdminPath($meta['admin'] ?? ''),
                 'heading' => $heading,
-                'body' => trim($match[3]),
+                'body' => $body,
+                'summary' => self::summaryFromBody($body),
             ];
         }
 
@@ -110,5 +133,39 @@ final class CommandGuide
     private static function toBool(string $value): bool
     {
         return in_array(strtolower(trim($value)), ['1', 'true', 'yes'], true);
+    }
+
+    /**
+     * Lien interne admin uniquement (`/admin/...`).
+     */
+    private static function sanitizeAdminPath(string $value): string
+    {
+        $value = trim($value);
+        if ($value === '' || ! str_starts_with($value, '/admin/')) {
+            return '';
+        }
+        if (str_contains($value, '..') || str_contains($value, '://') || str_contains($value, "\n")) {
+            return '';
+        }
+
+        return $value;
+    }
+
+    private static function summaryFromBody(string $body): string
+    {
+        $text = preg_replace('/```.*?```/s', '', $body) ?? $body;
+        $text = trim($text);
+        if ($text === '') {
+            return '';
+        }
+        $first = explode("\n\n", $text)[0];
+        $first = preg_replace('/\s+/', ' ', $first) ?? $first;
+        $first = trim($first);
+
+        if (function_exists('mb_substr')) {
+            return mb_substr($first, 0, 220);
+        }
+
+        return substr($first, 0, 220);
     }
 }
