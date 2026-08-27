@@ -22,7 +22,10 @@ use App\Models\ProjectScheduleTask;
  *     command?: string|(callable(): string),
  *     job?: class-string,
  *     arguments?: list<mixed>,
- *     overlap_minutes?: positive-int
+ *     overlap_minutes?: positive-int,
+ *     guide_signature?: string,
+ *     admin_route?: string,
+ *     admin_label?: string
  * }
  */
 final class ProjectScheduleCatalog
@@ -35,18 +38,23 @@ final class ProjectScheduleCatalog
                 'label' => 'Nettoyage vignettes (Media Library)',
                 'type' => 'artisan',
                 'command' => 'media:clean-thumbnails',
+                'guide_signature' => 'media:clean-thumbnails',
                 'overlap_minutes' => 30,
             ],
             'project_clear_safe' => [
                 'label' => 'Nettoyage projet sûr (caches planifiés)',
                 'type' => 'artisan',
                 'command' => 'project:clear --safe',
+                'guide_signature' => 'project:clear',
+                'admin_route' => 'admin.project-clear.index',
+                'admin_label' => 'Nettoyage caches',
                 'overlap_minutes' => 60,
             ],
             'privacy_process_deletion_requests' => [
                 'label' => 'Traitement demandes de suppression (RGPD)',
                 'type' => 'artisan',
                 'command' => 'privacy:process-deletion-requests',
+                'guide_signature' => 'privacy:process-deletion-requests',
                 'overlap_minutes' => 60,
             ],
             'notification_digest_daily' => [
@@ -74,6 +82,9 @@ final class ProjectScheduleCatalog
                 'label' => 'Synchronisation DofusDB (auto_update)',
                 'type' => 'artisan',
                 'command' => 'project:data sync',
+                'guide_signature' => 'project:data',
+                'admin_route' => 'admin.project-maintenance.index',
+                'admin_label' => 'Sync données',
                 'overlap_minutes' => 180,
             ],
             'scrap_resources_catalog' => [
@@ -83,18 +94,27 @@ final class ProjectScheduleCatalog
                     'scrapping:run --entity=resource --resource-types=allowed --limit=%d --max-pages=0 --max-items=20000',
                     max(1, (int) env('SCRAPPING_RESOURCES_AUTO_SYNC_LIMIT', 100)),
                 ),
+                'guide_signature' => 'scrapping:run',
+                'admin_route' => 'scrapping.index',
+                'admin_label' => 'Scrapping',
                 'overlap_minutes' => 240,
             ],
             'project_backup' => [
                 'label' => 'Sauvegarde projet (BDD + stockage)',
                 'type' => 'artisan',
                 'command' => 'project:backup',
+                'guide_signature' => 'project:backup',
+                'admin_route' => 'admin.backup.index',
+                'admin_label' => 'Sauvegarde',
                 'overlap_minutes' => 180,
             ],
             'media_clear_orphan_files' => [
                 'label' => 'Nettoyage fichiers Media orphelins',
                 'type' => 'artisan',
                 'command' => 'project:clear-orphan-files --queue --delete',
+                'guide_signature' => 'project:clear-orphan-files',
+                'admin_route' => 'admin.orphan-files.index',
+                'admin_label' => 'Fichiers orphelins',
                 'overlap_minutes' => 180,
             ],
         ];
@@ -181,6 +201,31 @@ final class ProjectScheduleCatalog
         $m = isset($parts[1]) ? max(0, min(59, (int) $parts[1])) : 0;
 
         return "{$m} {$h} * * *";
+    }
+
+    /**
+     * Ligne Artisan ou job affichable (planning admin).
+     *
+     * @param  Definition  $definition
+     */
+    public static function commandLine(array $definition): string
+    {
+        if (($definition['type'] ?? '') === 'job') {
+            $job = class_basename((string) ($definition['job'] ?? 'Job'));
+            $arguments = $definition['arguments'] ?? [];
+            if ($arguments === []) {
+                return 'job:'.$job;
+            }
+
+            return 'job:'.$job.' '.implode(' ', array_map(static fn (mixed $a): string => (string) $a, $arguments));
+        }
+
+        $command = $definition['command'] ?? '';
+        if (is_callable($command)) {
+            return (string) $command();
+        }
+
+        return (string) $command;
     }
 
     /**

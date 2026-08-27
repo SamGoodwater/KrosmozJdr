@@ -24,9 +24,9 @@ UI : `/admin/orphan-files` (super_admin). Service : `app/Services/Media/OrphanPu
 
 ## Planification
 
-Le serveur lance `php artisan schedule:run` chaque minute. Les tâches viennent d’un catalogue fixe (`ProjectScheduleCatalog`), pas d’une commande libre. Réglages : `/admin/project-schedule`.
+Le serveur lance `php artisan schedule:run` chaque minute. Les tâches viennent d’un catalogue fixe (`ProjectScheduleCatalog`), pas d’une commande libre. Réglages : `/admin/project-schedule` (commande Artisan affichée + lien vers la page thématique).
 
-Tâches : digests, RGPD, `project:data sync`, scrapping ressources, `project:backup`, orphelins Media, `project:clear --safe`.
+Tâches : digests, RGPD, `project:data sync` (`/admin/project-maintenance`), scrapping ressources, `project:backup` (`/admin/backup`), orphelins Media (`/admin/orphan-files`), `project:clear --safe` (`/admin/project-clear`).
 
 ## Notifications de jobs
 

@@ -6,6 +6,7 @@ import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
+import AdminCommandMeta from '@/Pages/Admin/_components/AdminCommandMeta.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 
@@ -74,6 +75,7 @@ function setRunAll() {
                 <code class="rounded bg-base-300 px-1">{{ props.reportsPathHint }}</code>. La génération est exécutée en file
                 d’attente (worker requis ; durée très longue si périmètre large).
             </p>
+            <AdminCommandMeta signature="project:review" />
         </div>
 
         <section class="space-y-4 rounded-box border border-base-content/10 bg-base-100/40 p-4">

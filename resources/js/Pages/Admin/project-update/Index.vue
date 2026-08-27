@@ -6,6 +6,7 @@ import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
+import AdminCommandMeta from '@/Pages/Admin/_components/AdminCommandMeta.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 
@@ -54,6 +55,7 @@ function submit() {
                 Composer + pnpm, puis pipeline IDE / optimize en mode « tout »).
                 <strong>Interdit en production</strong> — réservé aux machines de développement.
             </p>
+            <AdminCommandMeta signature="project:deps" />
         </div>
 
         <div v-if="isProduction" class="alert alert-warning text-sm">

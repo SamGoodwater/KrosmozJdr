@@ -7,6 +7,7 @@ import { computed, ref } from 'vue';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
+import AdminCommandMeta from '@/Pages/Admin/_components/AdminCommandMeta.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
@@ -114,6 +115,11 @@ const langOptions = [
             Enfile un job qui exécute <code class="rounded bg-base-300 px-1">project:data sync</code> côté serveur. Un
             worker doit traiter la file (<code class="rounded bg-base-300 px-1">queue:work</code>).
         </p>
+        <AdminCommandMeta
+            signature="project:data sync"
+            cron-key="project_data_sync"
+            cron-command="project:data sync"
+        />
 
         <!-- Porte d’accès : même principe que la page Scrapping (ConfirmPasswordModal + session) -->
         <div

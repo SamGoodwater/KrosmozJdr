@@ -2,7 +2,7 @@
 /**
  * Planification Laravel (source de vérité BDD `project_schedule_tasks`).
  */
-import { Head, router, usePage } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { reactive } from 'vue';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
@@ -53,9 +53,10 @@ function draft(taskId) {
             <p class="mt-2 text-sm text-base-content/70">
                 Ces réglages alimentent
                 <code class="rounded bg-base-300 px-1">schedule:run</code>
-                après migration de la base. Les commandes exécutées restent celles définies dans le catalogue applicatif ;
-                vous activez ou désactivez chaque ligne et réglez son expression cron (5 segments : minute heure jour mois
-                jour_sem).
+                (crontab serveur : une ligne par minute). Chaque ligne du catalogue correspond à une commande Artisan
+                (ou un job) ; le lien « Page » ouvre l’écran thématique quand il existe. Les clés
+                <code class="rounded bg-base-300 px-1">task_key</code>
+                ne changent pas.
             </p>
             <p v-if="schedulerHint" class="mt-3 text-xs text-warning/90 border border-warning/30 rounded-box p-3">
                 {{ schedulerHint }}
@@ -80,6 +81,8 @@ function draft(taskId) {
                 <thead>
                     <tr>
                         <th>Tâche</th>
+                        <th>Commande</th>
+                        <th>Page</th>
                         <th>Activée</th>
                         <th>Cron</th>
                         <th>Sans ré-entrée</th>
@@ -91,6 +94,22 @@ function draft(taskId) {
                         <td class="max-w-56">
                             <span class="font-medium">{{ t.label }}</span>
                             <div class="mt-1 text-[11px] text-base-content/50 font-mono">{{ t.task_key }}</div>
+                        </td>
+                        <td class="max-w-xs">
+                            <code v-if="t.command" class="text-[11px] font-mono break-all text-base-content/80">{{
+                                t.command
+                            }}</code>
+                            <span v-else class="text-base-content/40">—</span>
+                        </td>
+                        <td>
+                            <Link
+                                v-if="t.admin_href"
+                                :href="t.admin_href"
+                                class="link link-hover text-sm whitespace-nowrap"
+                            >
+                                {{ t.admin_label || 'Ouvrir' }}
+                            </Link>
+                            <span v-else class="text-base-content/40 text-sm">—</span>
                         </td>
                         <td>
                             <input v-model="draft(t.id).enabled" type="checkbox" class="checkbox checkbox-sm" />

@@ -6,6 +6,7 @@ import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
+import AdminCommandMeta from '@/Pages/Admin/_components/AdminCommandMeta.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 
@@ -48,6 +49,7 @@ function submit() {
                 Enfile un job qui exécute <code class="rounded bg-base-300 px-1">project:backup</code> (dump BDD + archive
                 storage, rotation). Un worker doit traiter la file.
             </p>
+            <AdminCommandMeta signature="project:backup" cron-key="project_backup" cron-command="project:backup" />
         </div>
 
         <div

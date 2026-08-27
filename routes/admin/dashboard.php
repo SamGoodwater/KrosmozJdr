@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Admin\AdminRecapController;
 use App\Http\Controllers\Admin\AdminActivityLogController;
+use App\Http\Controllers\Admin\AdminRecapController;
 use App\Http\Controllers\Admin\FeedbackThreadController;
 use App\Http\Controllers\Admin\ProjectBackupWebController;
+use App\Http\Controllers\Admin\ProjectClearWebController;
 use App\Http\Controllers\Admin\ProjectDepsWebController;
 use App\Http\Controllers\Admin\ProjectOrphanFilesWebController;
 use Illuminate\Http\RedirectResponse;
@@ -75,6 +76,16 @@ Route::prefix('admin/orphan-files')
         Route::post('/jobs/{jobId}/cancel', [ProjectOrphanFilesWebController::class, 'cancel'])
             ->middleware(['password.confirm', 'throttle:12,1'])
             ->name('cancel');
+    });
+
+Route::prefix('admin/project-clear')
+    ->name('admin.project-clear.')
+    ->middleware(['auth', 'role:super_admin'])
+    ->group(function () {
+        Route::get('/', [ProjectClearWebController::class, 'index'])->name('index');
+        Route::post('/run', [ProjectClearWebController::class, 'store'])
+            ->middleware(['password.confirm', 'throttle:6,1'])
+            ->name('run');
     });
 
 Route::prefix('admin/project-update')

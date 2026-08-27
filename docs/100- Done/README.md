@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Pages admin thématiques et planning cron
+
+Les commandes utiles restent chacune sur leur page (sync, backup, review, stack, orphelins, **nettoyage caches**). Le planning cron affiche la commande Artisan réellement lancée et un lien vers la page correspondante.
+
 ## Août 2026 — Confirmations CLI `-y` / `--no`
 
 `project:prepare`, `project:dev`, `project:deps` et les autres commandes qui demandent oui/non (IDE Helper, apt, refresh, permissions) acceptent `-y` pour valider et `--no` pour refuser. `-n` reste le mode non interactif de Symfony.

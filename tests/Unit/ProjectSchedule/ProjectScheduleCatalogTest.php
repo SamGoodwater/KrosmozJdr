@@ -39,5 +39,15 @@ class ProjectScheduleCatalogTest extends TestCase
 
         $this->assertSame('project:clear --safe', $handlers['project_clear_safe']['command']);
         $this->assertSame('project:data sync', $handlers['project_data_sync']['command']);
+        $this->assertSame('admin.project-clear.index', $handlers['project_clear_safe']['admin_route']);
+        $this->assertSame('admin.backup.index', $handlers['project_backup']['admin_route']);
+        $this->assertSame(
+            'project:clear --safe',
+            ProjectScheduleCatalog::commandLine($handlers['project_clear_safe'])
+        );
+        $this->assertSame(
+            'job:SendNotificationDigestsJob daily',
+            ProjectScheduleCatalog::commandLine($handlers['notification_digest_daily'])
+        );
     }
 }

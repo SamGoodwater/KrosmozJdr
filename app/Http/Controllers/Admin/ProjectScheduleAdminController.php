@@ -9,6 +9,7 @@ use App\Http\Requests\Admin\UpdateProjectScheduleTaskRequest;
 use App\Models\ProjectScheduleTask;
 use App\Support\ProjectSchedule\ProjectScheduleCatalog;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -19,17 +20,28 @@ class ProjectScheduleAdminController extends Controller
 {
     public function index(): Response
     {
-        $labels = ProjectScheduleCatalog::labelsByKey();
+        $handlers = ProjectScheduleCatalog::handlers();
 
         $tasks = ProjectScheduleTask::query()->orderBy('task_key')->get()->map(
-            fn (ProjectScheduleTask $t) => [
-                'id' => $t->id,
-                'task_key' => $t->task_key,
-                'label' => $labels[$t->task_key]['label'] ?? $t->task_key,
-                'enabled' => $t->enabled,
-                'cron_expression' => $t->cron_expression,
-                'without_overlapping' => $t->without_overlapping,
-            ]
+            function (ProjectScheduleTask $t) use ($handlers): array {
+                $definition = $handlers[$t->task_key] ?? null;
+                $admin_route = is_array($definition) ? ($definition['admin_route'] ?? null) : null;
+                $admin_href = is_string($admin_route) && Route::has($admin_route)
+                    ? route($admin_route)
+                    : null;
+
+                return [
+                    'id' => $t->id,
+                    'task_key' => $t->task_key,
+                    'label' => is_array($definition) ? ($definition['label'] ?? $t->task_key) : $t->task_key,
+                    'command' => is_array($definition) ? ProjectScheduleCatalog::commandLine($definition) : '',
+                    'admin_href' => $admin_href,
+                    'admin_label' => is_array($definition) ? ($definition['admin_label'] ?? null) : null,
+                    'enabled' => $t->enabled,
+                    'cron_expression' => $t->cron_expression,
+                    'without_overlapping' => $t->without_overlapping,
+                ];
+            }
         )->values()->all();
 
         return Inertia::render('Admin/project-schedule/Index', [

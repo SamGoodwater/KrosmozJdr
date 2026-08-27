@@ -218,7 +218,7 @@ php artisan project:clear --cache
 php artisan project:clear --all
 ```
 
-Cron : clé `project_clear_safe` → `project:clear --safe`.
+Admin : `/admin/project-clear` (super_admin + mot de passe). Cron : clé `project_clear_safe` → `project:clear --safe`.
 
 ---
 
@@ -272,7 +272,7 @@ ui: false
 cron: false
 ```
 
-Ajoute en base les tâches du catalogue manquantes, sans écraser les réglages. Après déploiement : `php artisan project:schedule:sync`. Planning : `/admin/project-schedule` (super_admin).
+Ajoute en base les tâches du catalogue manquantes, sans écraser les réglages. Après déploiement : `php artisan project:schedule:sync`. Planning : `/admin/project-schedule` (commande Artisan + lien vers la page thématique).
 
 ---
 

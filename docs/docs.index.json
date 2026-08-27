@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "`project:prepare`, `project:dev` et les commandes avec confirmation acceptent `-y` / `--no`. `-n` reste le mode non interactif Symfony."
+    "description": "Pages admin thématiques (dont nettoyage caches) et planning cron avec commande + lien."
   },
   {
     "path": "backend/_ai.md",

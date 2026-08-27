@@ -6,6 +6,7 @@ import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
+import AdminCommandMeta from '@/Pages/Admin/_components/AdminCommandMeta.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 
@@ -217,6 +218,11 @@ onBeforeUnmount(() => {
             <p class="mt-2 text-xs text-base-content/60">
                 Racines : {{ scannedRoots.join(', ') }}
             </p>
+            <AdminCommandMeta
+                signature="project:clear-orphan-files"
+                cron-key="media_clear_orphan_files"
+                cron-command="project:clear-orphan-files --queue --delete"
+            />
         </div>
 
         <div

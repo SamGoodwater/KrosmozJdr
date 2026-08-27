@@ -86,6 +86,13 @@ const adminNavItems = computed(() => {
                 show: true,
             },
             {
+                title: 'Nettoyage caches',
+                href: 'admin.project-clear.index',
+                path: '/admin/project-clear',
+                icon: 'fa-recycle',
+                show: true,
+            },
+            {
                 title: 'Fichiers orphelins',
                 href: 'admin.orphan-files.index',
                 path: '/admin/orphan-files',

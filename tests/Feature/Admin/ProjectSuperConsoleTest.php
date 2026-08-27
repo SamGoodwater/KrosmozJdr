@@ -37,6 +37,8 @@ class ProjectSuperConsoleTest extends TestCase
         $response->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Admin/project-schedule/Index')
             ->has('tasks')
+            ->has('tasks.0.command')
+            ->has('tasks.0.admin_href')
         );
     }
 
