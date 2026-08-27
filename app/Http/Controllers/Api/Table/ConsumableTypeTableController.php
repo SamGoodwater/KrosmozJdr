@@ -134,7 +134,7 @@ class ConsumableTypeTableController extends Controller
         }
 
         $tableRows = $rows->map(function (ConsumableType $t) {
-            $showHref = route('entities.consumable-types.index');
+            $showHref = route('admin.content.types.show', ['kind' => 'consumable']);
 
             return [
                 'id' => $t->id,

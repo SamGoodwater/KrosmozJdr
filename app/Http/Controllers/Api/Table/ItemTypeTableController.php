@@ -135,7 +135,7 @@ class ItemTypeTableController extends Controller
         }
 
         $tableRows = $rows->map(function (ItemType $t) {
-            $showHref = route('entities.item-types.index');
+            $showHref = route('admin.content.types.show', ['kind' => 'equipment']);
 
             return [
                 'id' => $t->id,

@@ -293,7 +293,7 @@ const handleModalDelete = () => {
                     <i class="fa-solid fa-arrow-rotate-right mr-2"></i>
                     Recharger
                 </Btn>
-                <Btn v-if="canAccess('contentManagement')" variant="ghost" @click="router.visit(route('entities.monster-races.index'))">
+                <Btn v-if="canAccess('contentManagement')" variant="ghost" @click="router.visit(route('admin.content.types.show', { kind: 'race' }))">
                     <i class="fa-solid fa-users mr-2"></i>
                     Races de monstres
                 </Btn>

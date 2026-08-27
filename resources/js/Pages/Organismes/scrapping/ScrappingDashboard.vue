@@ -1314,9 +1314,9 @@ const clearEffectsAnalysis = () => {
 const effectMappingHref = (effectId) => {
     const id = Number(effectId);
     if (!Number.isFinite(id) || id <= 0) {
-        return "/admin/dofusdb-effect-mappings";
+        return "/admin/content/dofusdb-effect-mappings";
     }
-    return `/admin/dofusdb-effect-mappings?effect_id=${encodeURIComponent(String(id))}`;
+    return `/admin/content/dofusdb-effect-mappings?effect_id=${encodeURIComponent(String(id))}`;
 };
 
 // Modal Comparer Krosmoz / DofusDB
@@ -1553,7 +1553,7 @@ const onCompareImported = () => {
                 <Link
                     v-for="row in entitiesWithConfigError"
                     :key="`cfg-err-${row.entity}`"
-                    :href="row.actionUrl || '/admin/scrapping-mappings'"
+                    :href="row.actionUrl || '/admin/content/scrapping-mappings'"
                     class="btn btn-ghost btn-xs"
                     :title="row.message"
                 >

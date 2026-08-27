@@ -168,7 +168,7 @@ function requestConversionSuggestion(curveType, entityKey = '*') {
     conversionSuggestionR2.value = null;
     conversionSuggestionForEntity.value = entityKey;
     conversionSuggestionLoading.value = true;
-    const suggestUrl = typeof route === 'function' ? (() => { try { return route('admin.characteristics.suggest-conversion-formula'); } catch { return '/admin/characteristics/suggest-conversion-formula'; } })() : '/admin/characteristics/suggest-conversion-formula';
+    const suggestUrl = typeof route === 'function' ? (() => { try { return route('admin.characteristics.suggest-conversion-formula'); } catch { return '/admin/content/characteristics/suggest-conversion-formula'; } })() : '/admin/content/characteristics/suggest-conversion-formula';
     axios
         .post(suggestUrl, {
             pairs,

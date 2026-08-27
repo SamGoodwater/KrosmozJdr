@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
  *
  * Lecture (GET) : auth + rôle. Mutations (POST/PATCH/DELETE) : + password.confirm.
  */
-Route::prefix('admin/characteristics')
+Route::prefix('admin/content/characteristics')
     ->name('admin.characteristics.')
     ->middleware(['auth', 'role:admin', 'content.area'])
     ->group(function () {

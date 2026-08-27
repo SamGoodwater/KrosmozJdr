@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
  * Référentiel des langues (hors hub bibliothèques).
  * Auth + rôle admin uniquement : pas de middleware password.confirm (référentiel léger).
  */
-Route::prefix('admin/languages')
+Route::prefix('admin/content/languages')
     ->name('admin.languages.')
     ->middleware(['auth', 'role:admin', 'content.area'])
     ->group(function () {

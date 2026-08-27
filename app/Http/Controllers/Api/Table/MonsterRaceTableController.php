@@ -124,7 +124,7 @@ class MonsterRaceTableController extends Controller
         }
 
         $tableRows = $rows->map(function (MonsterRace $r) {
-            $showHref = route('entities.monster-races.index');
+            $showHref = route('admin.content.types.show', ['kind' => 'race']);
 
             return [
                 'id' => $r->id,

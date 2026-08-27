@@ -120,7 +120,7 @@ php artisan project:data sync --type=all --entity=monster
 php artisan project:data sync --dry-run --noimage
 ```
 
-Sans `--type` / `--races` : sync des entités. Avec catalogue seul : pas de sync entités tant que `--entity` n’est pas passé. Cron : clé `project_data_sync`. Admin : `/admin/project-maintenance`.
+Sans `--type` / `--races` : sync des entités. Avec catalogue seul : pas de sync entités tant que `--entity` n’est pas passé. Cron : clé `project_data_sync`. Atelier : `/admin/content/dofusdb`.
 
 ---
 

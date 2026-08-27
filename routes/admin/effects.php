@@ -11,13 +11,13 @@ use Illuminate\Support\Facades\Route;
  * Effects : liste à gauche, panneau à droite ; duplication degré sur un effect.
  * Sub-effects : vue dédiée en lecture du référentiel.
  *
- * Mutations sur /admin/effects : password.confirm.
+ * Mutations sur /admin/content/effects : password.confirm.
  */
-Route::get('admin/sub-effects', [SubEffectController::class, 'index'])
+Route::get('admin/content/sub-effects', [SubEffectController::class, 'index'])
     ->name('admin.sub-effects.index')
     ->middleware(['auth', 'role:admin', 'content.area']);
 
-Route::prefix('admin/effects')
+Route::prefix('admin/content/effects')
     ->name('admin.effects.')
     ->middleware(['auth', 'role:admin', 'content.area'])
     ->group(function () {

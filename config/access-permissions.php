@@ -25,13 +25,6 @@ return [
     ],
 
     /**
-     * Accès au menu "Scrapping" (réservé aux administrateurs).
-     */
-    'scrapping' => [
-        ['entity' => 'users', 'ability' => 'manageAny'],
-    ],
-
-    /**
      * Accès au menu "Sous-effets" / "Effets" (admin et au-dessus).
      */
     'effectsAdmin' => [

@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — URLs contenu sous `/admin/content`
+
+Caractéristiques, effets, langues et mappings DofusDB sont dans l’espace contenu, avec la même racine d’URL que l’atelier. Les anciens liens `/admin/characteristics` etc. redirigent. Les boutons « types » des catalogues ouvrent directement la page Types.
+
 ## Août 2026 — Types : en jeu et scrap
 
 Sur la page Types, chaque registre (équipements, ressources, consommables, races, sorts) a les mêmes deux cases : visible en jeu (les tableaux catalogues le pré-cochent) et scrapable (atelier, CLI et maj d’une fiche DofusDB ne touchent que ces types, sauf demande explicite « tout récupérer »). On peut toujours déplacer un type d’équipement, ressource ou consommable vers une autre de ces trois familles.

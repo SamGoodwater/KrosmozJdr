@@ -110,7 +110,7 @@ export function usePermissions() {
   };
 
   /**
-   * Permissions d'accès UI (ex: menu administration/scrapping).
+   * Permissions d'accès UI (ex: menu administration, gestion du contenu).
    *
    * @param {string} key
    * @returns {boolean}

@@ -138,7 +138,7 @@ class ResourceTypeTableController extends Controller
         }
 
         $tableRows = $rows->map(function (ResourceType $rt) use ($decisionLabel, $decisionColor) {
-            $showHref = route('entities.resource-types.show', $rt->id);
+            $showHref = route('admin.content.types.show', ['kind' => 'resource']);
 
             $lastSeen = $rt->last_seen_at;
             $lastSeenValue = $lastSeen ? $lastSeen->toDateTimeString() : '-';

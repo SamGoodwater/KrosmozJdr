@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Route;
  *
  * Mutations : password.confirm.
  */
-Route::prefix('admin/scrapping-mappings')
+Route::prefix('admin/content/scrapping-mappings')
     ->name('admin.scrapping-mappings.')
-    ->middleware(['auth', 'role:admin'])
+    ->middleware(['auth', 'role:admin', 'content.area'])
     ->group(function () {
         Route::get('/', [ScrappingMappingController::class, 'index'])->name('index');
 

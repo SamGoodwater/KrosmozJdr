@@ -39,7 +39,7 @@ const decisionLabel = computed(() => {
                 </p>
             </div>
             <div class="flex gap-2">
-                <Btn variant="ghost" @click="router.visit(route('entities.resource-types.index'))">
+                <Btn variant="ghost" @click="router.visit(route('admin.content.types.show', { kind: 'resource' }))">
                     <i class="fa-solid fa-arrow-left mr-2"></i>
                     Retour à la liste
                 </Btn>

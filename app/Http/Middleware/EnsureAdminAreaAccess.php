@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Accès à l’espace administration (récap, utilisateurs, scrapping, maintenance).
+ * Accès à l’espace administration (récap, utilisateurs, serveur).
  *
  * Réservé aux administrateurs (admin, super_admin).
  */

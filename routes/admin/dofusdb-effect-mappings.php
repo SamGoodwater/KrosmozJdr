@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\Route;
  *
  * Mutations : password.confirm.
  */
-Route::prefix('admin/dofusdb-effect-mappings')
+Route::prefix('admin/content/dofusdb-effect-mappings')
     ->name('admin.dofusdb-effect-mappings.')
-    ->middleware(['auth', 'role:admin'])
+    ->middleware(['auth', 'role:admin', 'content.area'])
     ->group(function () {
         Route::get('/', [DofusdbEffectMappingController::class, 'index'])->name('index');
 

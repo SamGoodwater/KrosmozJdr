@@ -29,6 +29,7 @@ require __DIR__.'/admin/dofus-conversion-formulas.php';
 require __DIR__.'/admin/scrapping-mappings.php';
 require __DIR__.'/admin/dofusdb-effect-mappings.php';
 require __DIR__.'/admin/effects.php';
+require __DIR__.'/admin/content-legacy-redirects.php';
 require __DIR__.'/admin/project-maintenance.php';
 require __DIR__.'/admin/project-super-console.php';
 

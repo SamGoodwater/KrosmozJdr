@@ -14,12 +14,6 @@ const isContentArea = computed(() => {
     const p = page.url.split("?")[0];
     return (
         p.startsWith("/admin/content")
-        || p.startsWith("/admin/effects")
-        || p.startsWith("/admin/sub-effects")
-        || p.startsWith("/admin/languages")
-        || p.startsWith("/admin/characteristics")
-        || p.startsWith("/admin/scrapping-mappings")
-        || p.startsWith("/admin/dofusdb-effect-mappings")
         || p.startsWith("/entities/item-types")
         || p.startsWith("/entities/resource-types")
         || p.startsWith("/entities/consumable-types")

@@ -296,7 +296,7 @@ const handleModalDelete = (entity) => {
                     <i class="fa-solid fa-arrow-rotate-right mr-2"></i>
                     Recharger
                 </Btn>
-                <Btn v-if="canAccess('contentManagement')" variant="ghost" @click="router.visit(route('entities.resource-types.index'))">
+                <Btn v-if="canAccess('contentManagement')" variant="ghost" @click="router.visit(route('admin.content.types.show', { kind: 'resource' }))">
                     <i class="fa-solid fa-tags mr-2"></i>
                     Types de ressources
                 </Btn>
