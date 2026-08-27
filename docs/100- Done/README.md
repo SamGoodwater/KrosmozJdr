@@ -28,6 +28,10 @@ Sur une panoplie jouable, le catalogue et la fiche de lecture ne listent que les
 
 Sur une fiche monstre (catalogue ou page), un joueur ne voit plus les sorts encore en brouillon. Seuls les sorts qu’il a le droit de consulter apparaissent, comme pour les équipements.
 
+## Août 2026 — Sorts brouillon masqués sur les classes
+
+Un sort (ou une capacité) encore en brouillon n’apparaît plus sur la fiche, le catalogue ou le PDF d’une classe jouable. Il reste visible pour l’auteur, les MJ et les admins, et sur la page Modifier.
+
 ## Août 2026 — Équipements du set dans le tooltip panoplie
 
 Le survol de l’icône de panoplie sur une fiche équipement liste les pièces en vue texte : un clic sur un nom ouvre la fiche de l’objet, comme sur la page de la panoplie.

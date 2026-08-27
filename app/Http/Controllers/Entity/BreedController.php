@@ -43,13 +43,16 @@ class BreedController extends Controller
     {
         $this->authorize('viewAny', Breed::class);
 
+        $viewer = request()->user();
         $query = Breed::query()
-            ->visibleToUser(request()->user())
+            ->visibleToUser($viewer)
             ->with([
                 'createdBy',
-                'npcs',
+                'npcs' => fn ($q) => $q->visibleToUser($viewer),
                 'elementOrientations',
-                'spells' => fn ($q) => $q->orderBy('breed_spell.character_level')
+                'spells' => fn ($q) => $q
+                    ->visibleToUser($viewer)
+                    ->orderBy('breed_spell.character_level')
                     ->orderBy('breed_spell.slot_index')
                     ->orderBy('breed_spell.choice_order')
                     ->orderBy('spells.name'),
@@ -116,16 +119,19 @@ class BreedController extends Controller
     {
         $this->authorize('view', $breed);
 
+        $viewer = request()->user();
         $breed->load([
             'createdBy',
             'elementOrientations',
-            'spells' => fn ($q) => $q->orderBy('breed_spell.character_level')
+            'spells' => fn ($q) => $q
+                ->visibleToUser($viewer)
+                ->orderBy('breed_spell.character_level')
                 ->orderBy('breed_spell.slot_index')
                 ->orderBy('breed_spell.choice_order')
                 ->orderBy('spells.name'),
-            'npcs' => fn ($q) => $q->limit(100),
-            'capabilities' => fn ($q) => $q->orderBy('name'),
-            'creatureTraits' => fn ($q) => $q->orderBy('name'),
+            'npcs' => fn ($q) => $q->visibleToUser($viewer)->limit(100),
+            'capabilities' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
+            'creatureTraits' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
             'languages',
             'sections' => Breed::orderedSectionsEagerLoadConstraint(),
         ]);

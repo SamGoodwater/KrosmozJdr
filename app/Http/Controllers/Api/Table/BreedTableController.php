@@ -36,15 +36,18 @@ class BreedTableController extends Controller
             $order = 'desc';
         }
 
+        $viewer = $request->user();
         $query = Breed::query()
-            ->visibleToUser($request->user())
+            ->visibleToUser($viewer)
             ->with(['createdBy', 'elementOrientations', 'languages'])
-            ->withCount(['spells']);
+            ->withCount(['spells' => fn ($q) => $q->visibleToUser($viewer)]);
 
         if ($format === 'entities') {
             $query->with([
-                'capabilities' => fn ($q) => $q->orderBy('name'),
-                'spells' => fn ($q) => $q->orderBy('breed_spell.character_level')
+                'capabilities' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
+                'spells' => fn ($q) => $q
+                    ->visibleToUser($viewer)
+                    ->orderBy('breed_spell.character_level')
                     ->orderBy('breed_spell.slot_index')
                     ->orderBy('breed_spell.choice_order')
                     ->orderBy('spells.name'),

@@ -119,11 +119,15 @@ class PdfService
         $entity->loadMissing(self::getRelationsForType($entityType));
 
         if ($entityType === 'breed' && $entity instanceof Breed) {
+            $viewer = request()->user();
             $entity->load([
-                'spells' => fn ($q) => $q->orderBy('breed_spell.character_level')
+                'spells' => fn ($q) => $q
+                    ->visibleToUser($viewer)
+                    ->orderBy('breed_spell.character_level')
                     ->orderBy('breed_spell.slot_index')
                     ->orderBy('breed_spell.choice_order')
                     ->orderBy('spells.name'),
+                'npcs' => fn ($q) => $q->visibleToUser($viewer),
             ]);
         }
 
