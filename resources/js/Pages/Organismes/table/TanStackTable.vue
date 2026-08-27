@@ -332,7 +332,7 @@ const rowSelectedBgClass = computed(() => {
 const prefs = useTanStackTablePreferences(props.config?.id, {
     visibleColumns: {},
     pageSize: props.config?.features?.pagination?.perPage?.default ?? 25,
-    displayMode: "line",
+    displayMode: "minimal",
     quickEditEnabled: false,
     sorting: [],
 });

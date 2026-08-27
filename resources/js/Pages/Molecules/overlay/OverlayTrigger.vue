@@ -23,7 +23,7 @@ const props = defineProps({
     allowFlip: { type: Boolean, default: true },
     /**
      * Sans chrome (fond, padding, bordure) : le contenu fournit déjà sa surface
-     * (ex. fiche minimale d’entité).
+     * (ex. fiche minimale d’entité, panneau `SpellUsageCharacteristicTooltipPanel`).
      */
     chromeless: { type: Boolean, default: false },
 });
@@ -126,6 +126,26 @@ watch(nestHoldCount, (count) => {
 });
 
 const panelMaxWidthClass = computed(() => OVERLAY_MAX_WIDTH_CLASS[props.maxWidth] || "");
+/**
+ * Une seule surface : `chromeless` (ou `panelClass` déjà chromeless) pour les
+ * fiches / panneaux qui ont leur chrome ; sinon `panelClass` fourni (Popover) ;
+ * à défaut la surface tooltip par défaut.
+ */
+const isChromeless = computed(() => {
+    if (props.chromeless) {
+        return true;
+    }
+    return /\btooltip-floating-chromeless\b/.test(String(props.panelClass || ""));
+});
+const panelChromeClass = computed(() => {
+    if (isChromeless.value) {
+        return "tooltip-floating-chromeless";
+    }
+    if (String(props.panelClass || "").trim() !== "") {
+        return "";
+    }
+    return "tooltip-floating-surface color-neutral";
+});
 /** Survol : le panneau capte le pointeur pour rester ouvert (même si `interactive` est false). */
 const isHoverTrigger = computed(() => trigger.computedTrigger.value === OVERLAY_TRIGGER.HOVER);
 const panelPointerEventsClass = computed(() =>
@@ -196,7 +216,7 @@ function handleKeydown(event) {
         <div
             ref="overlayRef"
             :class="[
-                chromeless ? 'tooltip-floating-chromeless' : 'tooltip-floating-surface color-neutral',
+                panelChromeClass,
                 'overlay-hover-bridge',
                 panelPointerEventsClass,
                 panelMaxWidthClass,

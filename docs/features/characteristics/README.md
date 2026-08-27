@@ -12,6 +12,7 @@ Pour le modèle **base + objets + contexte**, les formules saisies et le sélect
 - Formules : services sous `app/Services/Characteristic/` (`FormulaExpressionParser`, `LevelDomainResolver`).
 - Runtime créature : `app/Services/Creature/Runtime/CreatureRuntimeStatsService.php`.
 - Seeders : `CharacteristicSeeder`, `CreatureCharacteristicSeeder`, `ObjectCharacteristicSeeder`, `SpellCharacteristicSeeder`.
+- Métadonnées front (share Inertia `characteristics`) : `CharacteristicMetaByDbColumnService` — `helper`, descriptions, et `limit_min` / `limit_max` si le pivot a un min/max numérique figé.
 - Qualité des définitions : `app/Services/Characteristics/CharacteristicDefinitionQualityService.php` vérifie notamment les `norms_grid`, formules de conversion et restrictions d'équipement.
 - Reprise des totaux existants : `php artisan creatures:derive-context-bonuses`.
 

@@ -1240,6 +1240,39 @@
     "file": "entity/shared/EntitySearchHitCard.vue"
   },
   {
+    "name": "EntityFieldTooltip",
+    "description": "Infobulle d’un champ d’entité : helper descriptor, ou helper + limites si caractéristique BDD.",
+    "props": [
+      {
+        "name": "fieldKey",
+        "type": "string",
+        "desc": "Clé du champ (rarity, item_type, weight…)"
+      },
+      {
+        "name": "entityType",
+        "type": "string",
+        "desc": "Type d’entité (resource, item, consumable…)"
+      },
+      {
+        "name": "descriptors",
+        "type": "Object",
+        "desc": ""
+      },
+      {
+        "name": "tableMeta",
+        "type": "Object",
+        "desc": ""
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "Déclencheur (badge, icône…)"
+      }
+    ],
+    "file": "entity/shared/EntityFieldTooltip.vue"
+  },
+  {
     "name": "EntityPropertyDisplay",
     "description": "EntityPropertyDisplay — façade par `fieldKey` vers CharacteristicProperty + view model unifié.",
     "props": [

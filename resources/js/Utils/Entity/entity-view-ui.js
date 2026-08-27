@@ -23,14 +23,41 @@ import { getByDbColumnMap, getMonsterFieldMeta } from '@/Composables/store/useCh
  */
 export function getEntityFieldTooltip(desc) {
   if (!desc || typeof desc !== "object") return "";
-  return String(
-    desc?.display?.tooltip ||
-      desc?.table?.header?.tooltip ||
-      desc?.general?.tooltip ||
-      desc?.edition?.form?.help ||
-      desc?.edit?.form?.help ||
-      "",
-  );
+  const candidates = [
+    desc.display?.tooltip,
+    desc.table?.header?.tooltip,
+    desc.general?.tooltip,
+    desc.general?.helper,
+    desc.helper,
+    desc.tooltip,
+    desc.edition?.form?.help,
+    desc.edit?.form?.help,
+  ];
+  for (const raw of candidates) {
+    const text = String(raw ?? "").trim();
+    if (text) return text;
+  }
+  return "";
+}
+
+/**
+ * Libellé de limites min/max d’une caractéristique (valeurs numériques figées).
+ *
+ * @param {object|null|undefined} def
+ * @returns {string}
+ */
+export function formatCharacteristicLimitLine(def) {
+  if (!def || typeof def !== "object") return "";
+  const min = def.limit_min ?? def.min;
+  const max = def.limit_max ?? def.max;
+  const hasMin = min !== null && typeof min !== "undefined" && String(min).trim() !== "";
+  const hasMax = max !== null && typeof max !== "undefined" && String(max).trim() !== "";
+  if (hasMin && hasMax) {
+    return `Limites : ${String(min).trim()} à ${String(max).trim()}.`;
+  }
+  if (hasMin) return `Minimum : ${String(min).trim()}.`;
+  if (hasMax) return `Maximum : ${String(max).trim()}.`;
+  return "";
 }
 
 /**
@@ -213,8 +240,12 @@ export function resolveEntityFieldUi(options = {}) {
         ? characteristic.descriptions.join(" ")
         : characteristic?.descriptions || "") ||
       ""
-  );
-  const tooltip = characteristicTooltip || descriptorTooltip;
+  ).trim();
+  const limitLine = formatCharacteristicLimitLine(characteristic);
+  const tooltip = [characteristicTooltip || descriptorTooltip, limitLine]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
 
   const iconResolved =
     characteristic?.icon ?? desc?.general?.icon ?? desc?.icon;

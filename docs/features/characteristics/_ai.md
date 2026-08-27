@@ -11,6 +11,7 @@
 ## Concepts clés
 
 - **Définitions** : JSON seeders → tables `characteristics` + pivots `characteristic_*`.
+- **Share Inertia** : `CharacteristicMetaByDbColumnService` expose `helper` / `descriptions` et `limit_min` / `limit_max` (entiers figés du pivot ; les formules sont ignorées). Cache `characteristics:frontend:v3`.
 - **Composition** : `total = base + objets + contexte`, sauf si un **total explicite** (colonne) est présent. Détail : [COMPUTED_VALUES.md](./COMPUTED_VALUES.md).
 - **DO mult.** : colonne composable `do_fixe_multiple` (`fixed_damage_multiple_creature`), visible dans Dommages.
 - **Grammaire** : `{ expression }` + suffixe d’arrondi ; domaines `[x-y]` / `[ndX]` **uniquement sur le niveau**.

@@ -18,6 +18,17 @@
  */
 
 /**
+ * Textes d’aide courts pour les champs hors tableau `characteristics`
+ * (type, rareté…). Les caractéristiques BDD exposent helper + limites à part.
+ */
+export const FIELD_HELPERS = Object.freeze({
+  rarity: 'Rareté, de Commun (0) à Unique (5).',
+  resource_type: 'Catégorie métier de la ressource (bois, minerai, plante…).',
+  item_type: 'Emplacement (anneau, cape, arme…).',
+  consumable_type: 'Catégorie du consommable (potion, nourriture, parchemin…).',
+});
+
+/**
  * Labels traduits en français pour les champs communs
  * Utilisé pour les headers de colonnes et les labels de formulaires
  */

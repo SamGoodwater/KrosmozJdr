@@ -15,7 +15,8 @@ import { router } from '@inertiajs/vue3';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import EntityPropertyDisplay from '@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue';
+import EntityFieldTooltip from '@/Pages/Molecules/entity/shared/EntityFieldTooltip.vue';
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.vue';
 import ImageViewer from '@/Pages/Molecules/data-display/ImageViewer.vue';
@@ -28,7 +29,6 @@ import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { getRarityConfig, getRoleConfig } from '@/Utils/Entity/SharedConstants';
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
 import ResourceIngredientsList from '@/Pages/Molecules/data-display/ResourceIngredientsList.vue';
-import EntityPropertyDisplay from '@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue';
 import { provideCharacteristicRuntime } from '@/Composables/entity/characteristicRuntimeContext';
 
 const props = defineProps({
@@ -115,9 +115,6 @@ const canShowField = (fieldKey) => {
 
 const getFieldUi = (fieldKey) =>
     resolveEntityFieldUi({ fieldKey, descriptors: descriptors.value, tableMeta: props.tableMeta, entityType: 'resource' });
-const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
-const getFieldTooltip = (fieldKey) => getFieldUi(fieldKey).tooltip;
-const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon || 'fa-solid fa-info-circle';
 const getFieldIconStyle = (fieldKey) => {
     const color = getFieldUi(fieldKey).color;
     return color ? { color } : {};
@@ -258,18 +255,30 @@ const handleAction = async (actionKey) => {
                     <div class="flex flex-wrap items-center gap-2">
                         <h2 class="text-2xl font-bold text-primary-100 break-words">{{ resource.name }}</h2>
                         <template v-if="canShowField('level')">
-                            <Badge
-                                :color="getBadgeColor('level')"
-                                :auto-label="levelDisplay"
-                                auto-scheme="level"
-                                auto-tone="mid"
-                                size="sm"
+                            <EntityFieldTooltip
+                                field-key="level"
+                                entity-type="resource"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
                             >
-                                Nvx {{ levelDisplay }}
-                            </Badge>
+                                <Badge
+                                    :color="getBadgeColor('level')"
+                                    :auto-label="levelDisplay"
+                                    auto-scheme="level"
+                                    auto-tone="mid"
+                                    size="sm"
+                                >
+                                    Nvx {{ levelDisplay }}
+                                </Badge>
+                            </EntityFieldTooltip>
                         </template>
                         <template v-if="canShowField('resource_type')">
-                            <Tooltip :content="getFieldTooltip('resource_type')" placement="top">
+                            <EntityFieldTooltip
+                                field-key="resource_type"
+                                entity-type="resource"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                            >
                                 <Badge
                                     color="auto"
                                     :auto-label="typeDisplay"
@@ -279,21 +288,28 @@ const handleAction = async (actionKey) => {
                                 >
                                     {{ typeDisplay }}
                                 </Badge>
-                            </Tooltip>
+                            </EntityFieldTooltip>
                         </template>
                     </div>
                     <!-- Ligne 2 : Rareté (badge), Poids, Prix (texte, pas de badge, collés au label) -->
                     <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
                         <template v-if="canShowField('rarity')">
-                            <Badge
-                                :color="rarityBadgeColor"
-                                :auto-label="String(resource.rarity ?? 0)"
-                                auto-scheme="rarity"
-                                auto-tone="mid"
-                                size="sm"
+                            <EntityFieldTooltip
+                                field-key="rarity"
+                                entity-type="resource"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
                             >
-                                {{ rarityDisplay }}
-                            </Badge>
+                                <Badge
+                                    :color="rarityBadgeColor"
+                                    :auto-label="String(resource.rarity ?? 0)"
+                                    auto-scheme="rarity"
+                                    auto-tone="mid"
+                                    size="sm"
+                                >
+                                    {{ rarityDisplay }}
+                                </Badge>
+                            </EntityFieldTooltip>
                         </template>
                         <template v-if="canShowField('weight')">
                             <EntityPropertyDisplay

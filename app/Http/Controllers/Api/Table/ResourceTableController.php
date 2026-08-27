@@ -136,11 +136,15 @@ class ResourceTableController extends Controller
         ];
 
         $resourceTypes = ResourceType::query()
-            ->select(['id', 'name'])
+            ->select(['id', 'name', 'dofusdb_type_id'])
             ->orderBy('name')
             ->limit(5000)
             ->get()
-            ->map(fn ($t) => ['value' => (string) $t->id, 'label' => (string) $t->name])
+            ->map(fn ($t) => [
+                'value' => (string) $t->id,
+                'label' => (string) $t->name,
+                'dofusdb_type_id' => $t->dofusdb_type_id !== null ? (int) $t->dofusdb_type_id : null,
+            ])
             ->values()
             ->all();
 
@@ -305,6 +309,9 @@ class ResourceTableController extends Controller
                             'filterValue' => $resourceTypeId ? (string) $resourceTypeId : '',
                             'sortValue' => $resourceTypeName,
                             'searchValue' => $resourceTypeName,
+                            'tooltip' => $resourceTypeName !== '' && $resourceTypeName !== '-'
+                                ? 'Catégorie métier de la ressource (bois, minerai, plante…).'
+                                : '',
                         ],
                     ],
                     'rarity' => [
@@ -314,6 +321,7 @@ class ResourceTableController extends Controller
                             'color' => $rarityColor((int) $r->rarity),
                             'filterValue' => (string) ((int) $r->rarity),
                             'sortValue' => (int) $r->rarity,
+                            'tooltip' => Resource::RARITY_HELPER,
                         ],
                     ],
                     'price' => [

@@ -26,6 +26,7 @@ import { getItemFieldDescriptors } from '@/Entities/item/item-descriptors';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { getRarityConfig, getRoleConfig } from '@/Utils/Entity/SharedConstants';
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
+import EntityFieldTooltip from '@/Pages/Molecules/entity/shared/EntityFieldTooltip.vue';
 import ResourceIngredientsList from '@/Pages/Molecules/data-display/ResourceIngredientsList.vue';
 import RichTextReadonlyView from '@/Pages/Molecules/data-display/RichTextReadonlyView.vue';
 import CharacteristicEffectsGrid from '@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue';
@@ -245,18 +246,30 @@ const handleAction = async (actionKey) => {
                     <div class="flex flex-wrap items-center gap-2">
                         <h2 class="text-2xl font-bold text-primary-100 break-words">{{ item.name }}</h2>
                         <template v-if="canShowField('level')">
-                            <Badge
-                                :color="getBadgeColor('level')"
-                                :auto-label="levelDisplay"
-                                auto-scheme="level"
-                                auto-tone="mid"
-                                size="sm"
+                            <EntityFieldTooltip
+                                field-key="level"
+                                entity-type="item"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
                             >
-                                Nvx {{ levelDisplay }}
-                            </Badge>
+                                <Badge
+                                    :color="getBadgeColor('level')"
+                                    :auto-label="levelDisplay"
+                                    auto-scheme="level"
+                                    auto-tone="mid"
+                                    size="sm"
+                                >
+                                    Nvx {{ levelDisplay }}
+                                </Badge>
+                            </EntityFieldTooltip>
                         </template>
                         <template v-if="canShowField('item_type')">
-                            <Tooltip :content="getFieldTooltip('item_type')" placement="top">
+                            <EntityFieldTooltip
+                                field-key="item_type"
+                                entity-type="item"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
+                            >
                                 <Badge
                                     color="auto"
                                     :auto-label="typeDisplay"
@@ -266,20 +279,27 @@ const handleAction = async (actionKey) => {
                                 >
                                     {{ typeDisplay }}
                                 </Badge>
-                            </Tooltip>
+                            </EntityFieldTooltip>
                         </template>
                     </div>
                     <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
                         <template v-if="canShowField('rarity')">
-                            <Badge
-                                :color="rarityBadgeColor"
-                                :auto-label="String(item.rarity ?? 0)"
-                                auto-scheme="rarity"
-                                auto-tone="mid"
-                                size="sm"
+                            <EntityFieldTooltip
+                                field-key="rarity"
+                                entity-type="item"
+                                :descriptors="descriptors"
+                                :table-meta="tableMeta"
                             >
-                                {{ rarityDisplay }}
-                            </Badge>
+                                <Badge
+                                    :color="rarityBadgeColor"
+                                    :auto-label="String(item.rarity ?? 0)"
+                                    auto-scheme="rarity"
+                                    auto-tone="mid"
+                                    size="sm"
+                                >
+                                    {{ rarityDisplay }}
+                                </Badge>
+                            </EntityFieldTooltip>
                         </template>
                         <template v-if="canShowField('weight')">
                             <Tooltip :content="getFieldTooltip('weight')" placement="top">

@@ -49,6 +49,7 @@ export function normalizeItemTypeLabel(value) {
         .toLowerCase()
         .normalize("NFD")
         .replace(/\p{Diacritic}/gu, "")
+        .replace(/[\u2018\u2019\u201B`'´]/g, "'")
         .trim();
 }
 

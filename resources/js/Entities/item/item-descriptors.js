@@ -14,7 +14,7 @@
  * const descriptors = getItemFieldDescriptors({ meta });
  */
 
-import { getEntityStateOptions, getRarityOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
+import { getEntityStateOptions, getRarityOptions, getUserRoleOptions, FIELD_HELPERS } from "@/Utils/Entity/SharedConstants";
 import {
     GAMEPLAY_ITEM_TYPE_DOFUS_IDS,
     GAMEPLAY_ITEM_TYPE_LABELS,
@@ -258,7 +258,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "rarity",
       label: "Rareté",
       icon: "fa-solid fa-star",
-      helper: "Rareté (Commun à Unique)",
+      helper: FIELD_HELPERS.rarity,
       table: {
         sortable: true,
         filterable: {
@@ -486,7 +486,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "item_type",
       label: "Type",
       icon: "fa-solid fa-tags",
-      helper: "Emplacement (anneau, cape, arme…)",
+      helper: FIELD_HELPERS.item_type,
       table: {
         sortable: true,
         sortField: "item_type_id",

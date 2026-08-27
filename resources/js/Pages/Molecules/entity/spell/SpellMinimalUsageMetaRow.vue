@@ -183,6 +183,7 @@ const spellPoIsCac = computed(() => isPoCac(poDisplayForCac.value));
                 v-if="poUsageVisual.hasIcon"
                 placement="top"
                 color="neutral"
+                :glass="false"
                 :accent-style="tooltipAccentFromVisual(poUsageVisual)"
             >
                 <template #content>
@@ -231,6 +232,7 @@ const spellPoIsCac = computed(() => isPoCac(poDisplayForCac.value));
                 <Tooltip
                     placement="top"
                     color="neutral"
+                    :glass="false"
                     :accent-style="tooltipAccentFromVisual(sightUsageVisual)"
                 >
                     <template #content>
@@ -352,6 +354,7 @@ const spellPoIsCac = computed(() => isPoCac(poDisplayForCac.value));
             v-if="castingRitual.show"
             placement="top"
             color="neutral"
+            :glass="false"
             :accent-style="castingRitualTooltipAccent"
         >
             <template #content>
@@ -478,6 +481,7 @@ const spellPoIsCac = computed(() => isPoCac(poDisplayForCac.value));
                         v-if="canShowField('is_magic') && isMagicDefined"
                         placement="top"
                         color="neutral"
+                        :glass="false"
                         :accent-style="tooltipAccentFromVisual(magicUsageVisual)"
                     >
                         <template #content>

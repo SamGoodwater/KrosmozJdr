@@ -29,6 +29,10 @@ import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getConsumableFieldDescriptors } from "@/Entities/consumable/consumable-descriptors";
 import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
+import {
+    hasConsumableTypeFilter,
+    resolveGameplayConsumableTypeIds,
+} from "@/Utils/Entity/gameplayConsumableTypes";
 
 const props = defineProps({
     consumables: {
@@ -95,7 +99,17 @@ const tableConfig = computed(() => {
     const config = TableConfig.fromDescriptors(descriptors, ctx);
     return config.build(ctx);
 });
-const indexTableFilters = computed(() => normalizeIndexTableFilters(props.filters));
+const indexTableFilters = computed(() => {
+    const fromQuery = normalizeIndexTableFilters(props.filters);
+    if (hasConsumableTypeFilter(fromQuery)) {
+        return fromQuery;
+    }
+    const typeIds = resolveGameplayConsumableTypeIds(props.consumableTypes || []);
+    if (typeIds.length === 0) {
+        return fromQuery;
+    }
+    return { ...fromQuery, consumable_type_id: typeIds };
+});
 const serverBaseUrl = computed(() => route('api.tables.consumables'));
 
 

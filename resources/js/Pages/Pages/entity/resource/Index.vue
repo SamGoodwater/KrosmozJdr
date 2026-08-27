@@ -31,6 +31,10 @@ import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getResourceFieldDescriptors } from "@/Entities/resource/resource-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
+import {
+    hasResourceTypeFilter,
+    resolveGameplayResourceTypeIds,
+} from "@/Utils/Entity/gameplayResourceTypes";
 
 const props = defineProps({
     resources: {
@@ -92,7 +96,17 @@ const tableConfig = computed(() => {
     return config.build(ctx);
 });
 
-const indexTableFilters = computed(() => normalizeIndexTableFilters(props.filters));
+const indexTableFilters = computed(() => {
+    const fromQuery = normalizeIndexTableFilters(props.filters);
+    if (hasResourceTypeFilter(fromQuery)) {
+        return fromQuery;
+    }
+    const typeIds = resolveGameplayResourceTypeIds(props.resourceTypes || []);
+    if (typeIds.length === 0) {
+        return fromQuery;
+    }
+    return { ...fromQuery, resource_type_id: typeIds };
+});
 const serverBaseUrl = computed(() => route('api.tables.resources'));
 
 const selectedEntities = computed(() => {

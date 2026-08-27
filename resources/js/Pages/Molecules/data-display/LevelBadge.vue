@@ -36,9 +36,13 @@ const props = defineProps({
    */
   prefix: { type: String, default: "" },
   /**
-   * Tooltip optionnel (fallback auto).
+   * Tooltip optionnel (fallback auto « Niveau N »).
    */
   tooltip: { type: String, default: "" },
+  /**
+   * Désactive le `title` natif (ex. wrapping `EntityFieldTooltip`).
+   */
+  hideTooltip: { type: Boolean, default: false },
   /**
    * Glassy (optionnel).
    */
@@ -65,6 +69,7 @@ const color = computed(() => {
 });
 
 const effectiveTooltip = computed(() => {
+  if (props.hideTooltip) return "";
   if (props.tooltip) return props.tooltip;
   if (parsed.value === null) return "";
   return `Niveau ${parsed.value}`;

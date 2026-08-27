@@ -12,7 +12,7 @@
 import { BaseModel } from '../BaseModel';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
 import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
-import { getRarityConfig } from '@/Utils/Entity/SharedConstants';
+import { getRarityConfig, FIELD_HELPERS } from '@/Utils/Entity/SharedConstants';
 
 export class Item extends BaseModel {
     // ============================================
@@ -388,7 +388,7 @@ export class Item extends BaseModel {
                 autoLabel: typeName,
                 autoScheme: 'labelHash',
                 autoTone: 'light',
-                tooltip: typeName === '-' ? '' : typeName,
+                tooltip: typeName === '-' ? '' : FIELD_HELPERS.item_type,
                 sortValue: typeName,
                 searchValue: typeName,
             },

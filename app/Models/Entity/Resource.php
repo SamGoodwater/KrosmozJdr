@@ -122,6 +122,8 @@ class Resource extends Model implements HasMedia
         5 => 'Unique',
     ];
 
+    public const RARITY_HELPER = 'Rareté, de Commun (0) à Unique (5).';
+
     /**
      * The attributes that are mass assignable.
      *

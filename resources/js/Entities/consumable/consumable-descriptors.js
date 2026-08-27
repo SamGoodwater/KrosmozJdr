@@ -14,7 +14,11 @@
  * const descriptors = getConsumableFieldDescriptors({ meta });
  */
 
-import { getEntityStateOptions, getRarityOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
+import { getEntityStateOptions, getRarityOptions, getUserRoleOptions, FIELD_HELPERS } from "@/Utils/Entity/SharedConstants";
+import {
+    GAMEPLAY_CONSUMABLE_TYPE_DOFUS_IDS,
+    GAMEPLAY_CONSUMABLE_TYPE_LABELS,
+} from "@/Utils/Entity/gameplayConsumableTypes";
 
 /**
  * @typedef {Object} ConsumableFieldDescriptor
@@ -146,6 +150,7 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       key: "level",
       label: "Niveau",
       icon: "fa-solid fa-level-up-alt",
+      helper: "Niveau du consommable.",
       table: {
         sortable: true,
         filterable: {
@@ -184,6 +189,7 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       key: "rarity",
       label: "Rareté",
       icon: "fa-solid fa-gem",
+      helper: FIELD_HELPERS.rarity,
       table: {
         sortable: true,
         filterable: {
@@ -406,10 +412,17 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       key: "consumable_type",
       label: "Type",
       icon: "fa-solid fa-tags",
+      helper: FIELD_HELPERS.consumable_type,
       table: {
         sortable: true,
         sortField: "consumable_type_id",
-        filterable: { id: "consumable_type_id", type: "multi", defaultVisible: true },
+        filterable: {
+          id: "consumable_type_id",
+          type: "multi",
+          defaultVisible: true,
+          defaultByLabel: [...GAMEPLAY_CONSUMABLE_TYPE_LABELS],
+          defaultByDofusTypeId: [...GAMEPLAY_CONSUMABLE_TYPE_DOFUS_IDS],
+        },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },

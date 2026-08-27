@@ -97,7 +97,11 @@
  */
 // Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
-import { getEntityStateOptions, getRarityOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants.js';
+import { getEntityStateOptions, getRarityOptions, getUserRoleOptions, FIELD_HELPERS } from '@/Utils/Entity/SharedConstants.js';
+import {
+  GAMEPLAY_RESOURCE_TYPE_DOFUS_IDS,
+  GAMEPLAY_RESOURCE_TYPE_LABELS,
+} from '@/Utils/Entity/gameplayResourceTypes';
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Resource".
@@ -395,7 +399,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
       general: {
         label: "Type",
         icon: "fa-solid fa-tag",
-        tooltip: "Type (métier) de la ressource",
+        tooltip: FIELD_HELPERS.resource_type,
       },
       table: {
         order: 2,
@@ -405,6 +409,8 @@ export function getResourceFieldDescriptors(ctx = {}) {
           id: "resource_type_id",
           type: "multi",
           defaultVisible: true,
+          defaultByLabel: [...GAMEPLAY_RESOURCE_TYPE_LABELS],
+          defaultByDofusTypeId: [...GAMEPLAY_RESOURCE_TYPE_DOFUS_IDS],
         },
         // Responsive: disparaît en dernier (avant il reste sur sm+)
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
@@ -419,7 +425,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
         },
       },
       display: {
-        tooltip: "Type (métier) de la ressource",
+        tooltip: FIELD_HELPERS.resource_type,
       },
       // Pas de section edition : champ en lecture seule (relation)
     },
@@ -493,7 +499,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
       general: {
         label: "Rareté",
         icon: "fa-solid fa-star",
-        tooltip: "Niveau de rareté de la ressource (0-5)",
+        tooltip: FIELD_HELPERS.rarity,
       },
       table: {
         order: 3,
@@ -519,7 +525,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
         },
       },
       display: {
-        tooltip: "Niveau de rareté de la ressource (0-5)",
+        tooltip: FIELD_HELPERS.rarity,
       },
       edition: {
         form: {

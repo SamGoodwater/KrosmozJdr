@@ -50,6 +50,10 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    /**
+     * Surface OverlayTrigger. `false` = chromeless : le slot `#content` (fiche minimale,
+     * panneau d’effet, etc.) fournit déjà le chrome — pas de seconde boîte.
+     */
     glass: {
         type: Boolean,
         default: true,
@@ -150,6 +154,7 @@ const overlayContent = computed(() =>
         :max-width="maxWidth"
         :close-on-outside="false"
         :close-on-escape="true"
+        :chromeless="!glass"
         :panel-class="floatingPanelClasses"
         @open="emit('open')"
         @close="emit('close')"

@@ -1,5 +1,21 @@
 # Ce qui a été fait
 
+## Août 2026 — Catalogue ressources : types par défaut
+
+Le filtre Type du catalogue de ressources arrive précoché sur les types métier (bois, minerai, plante, cuir, runes, etc.). Quêtes, souvenirs, zones et essences de donjon restent disponibles dans le filtre, mais seulement si on les coche.
+
+## Août 2026 — Infobulles sur type, rareté et caractéristiques
+
+Survoler le type, la rareté ou le niveau d’une ressource, d’un équipement ou d’un consommable affiche une courte explication (rareté de Commun à Unique, catégorie métier, etc.). Les stats du tableau des caractéristiques ajoutent aussi leurs limites min/max quand elles sont des nombres fixes.
+
+## Août 2026 — Catalogue consommables : types par défaut
+
+Le filtre Type du catalogue de consommables arrive précoché sur potions, nourritures, boissons, parchemins, pierres d’âme, objets utilisables, etc. Certificats, coffres et fées d’artifice restent disponibles dans le filtre, mais seulement si on les coche.
+
+## Août 2026 — Cartes minimales, tooltips et bibliothèques
+
+Les tooltips et popovers d’entités n’affichent plus une seconde boîte autour du contenu (sorts inclus). Les bibliothèques s’ouvrent en vue minimale plutôt qu’en lignes. Sur une carte déployée, la description des consommables, ressources et équipements se lit en entier.
+
 ## Août 2026 — Équipements du set dans le tooltip panoplie
 
 Le survol de l’icône de panoplie sur une fiche équipement liste les pièces en vue texte : un clic sur un nom ouvre la fiche de l’objet, comme sur la page de la panoplie.
