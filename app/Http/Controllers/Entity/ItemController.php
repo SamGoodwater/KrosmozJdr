@@ -76,7 +76,7 @@ class ItemController extends Controller
             'filters' => request()->only(['search', 'level', 'rarity', 'item_type_id']),
             'itemTypes' => ItemType::query()
                 ->orderBy('name')
-                ->get(['id', 'name', 'dofusdb_type_id']),
+                ->get(['id', 'name', 'dofusdb_type_id', 'show_in_catalog']),
         ]);
     }
 

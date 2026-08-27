@@ -6,6 +6,7 @@ namespace Database\Seeders\Type;
 
 use App\Models\Type\ItemType;
 use App\Models\User;
+use App\Support\CatalogTypeVisibility;
 use Database\Seeders\Concerns\LoadsSeederDataFile;
 use Database\Seeders\Concerns\RetriesWhenMysqlSchemaChanged;
 use Illuminate\Database\Seeder;
@@ -55,6 +56,9 @@ class ItemTypeSeeder extends Seeder
                         'read_level' => (int) ($row['read_level'] ?? User::ROLE_GUEST),
                         'write_level' => (int) ($row['write_level'] ?? User::ROLE_ADMIN),
                         'created_by' => $row['created_by'] ?? $createdBy,
+                        'show_in_catalog' => array_key_exists('show_in_catalog', $row)
+                            ? (bool) $row['show_in_catalog']
+                            : CatalogTypeVisibility::itemShouldShow($typeId),
                     ]
                 )
             );

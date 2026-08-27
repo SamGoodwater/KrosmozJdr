@@ -19,7 +19,12 @@ const isContentArea = computed(() => {
         || p.startsWith("/admin/languages")
         || p.startsWith("/admin/characteristics")
         || p.startsWith("/admin/scrapping-mappings")
-        || p.startsWith("/admin/dofusdb-effect-mappings")
+        ||         p.startsWith("/admin/dofusdb-effect-mappings")
+        || p.startsWith("/entities/item-types")
+        || p.startsWith("/entities/resource-types")
+        || p.startsWith("/entities/consumable-types")
+        || p.startsWith("/entities/monster-races")
+        || p.startsWith("/entities/spell-types")
     );
 });
 

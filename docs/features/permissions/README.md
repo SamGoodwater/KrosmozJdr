@@ -55,7 +55,7 @@ Alias enregistrés dans `bootstrap/app.php` :
 | --- | --- | --- |
 | `role:a|b` | `CheckRole.php` | Non connecté → `login` ; super_admin interactif → bypass ; sinon OU logique sur les rôles ; sinon 403 |
 | `admin.area` | `EnsureAdminAreaAccess.php` | `isAdmin()` sinon 403 |
-| `content.area` | `EnsureContentManagementAccess.php` | `isGameMaster()` sinon 403 |
+| `content.area` | `EnsureContentManagementAccess.php` | `isAdmin()` sinon 403 |
 | `password.confirm` | `RequirePasswordWithInactivity.php` | Exige confirmation MDP récente (inactivité `password_inactivity_timeout`, défaut 3600 s) ; JSON/Inertia → **423**, sinon redirect `password.confirm` |
 
 Exemple : les routes scrapping cumulent `web`, `auth`, `role:admin`, `password.confirm`.

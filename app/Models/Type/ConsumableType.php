@@ -79,6 +79,13 @@ class ConsumableType extends Model
     public const DECISION_BLOCKED = 'blocked';
 
     /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'show_in_catalog' => false,
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -89,6 +96,7 @@ class ConsumableType extends Model
         'decision',
         'seen_count',
         'last_seen_at',
+        'show_in_catalog',
         'state',
         'read_level',
         'write_level',
@@ -106,6 +114,7 @@ class ConsumableType extends Model
         'dofusdb_type_id' => 'integer',
         'seen_count' => 'integer',
         'last_seen_at' => 'datetime',
+        'show_in_catalog' => 'boolean',
     ];
 
     /**

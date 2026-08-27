@@ -111,7 +111,7 @@ class ItemTableController extends Controller
 
         // Options filtres
         $itemTypes = ItemType::query()
-            ->select(['id', 'name', 'dofusdb_type_id'])
+            ->select(['id', 'name', 'dofusdb_type_id', 'show_in_catalog'])
             ->orderBy('name')
             ->limit(5000)
             ->get()
@@ -119,6 +119,7 @@ class ItemTableController extends Controller
                 'value' => (string) $t->id,
                 'label' => (string) $t->name,
                 'dofusdb_type_id' => $t->dofusdb_type_id !== null ? (int) $t->dofusdb_type_id : null,
+                'show_in_catalog' => (bool) $t->show_in_catalog,
             ])
             ->values()
             ->all();

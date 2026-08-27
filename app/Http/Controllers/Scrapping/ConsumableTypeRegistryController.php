@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Scrapping;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Scrapping\Concerns\BulkDecisionUpdateTrait;
+use App\Http\Controllers\Scrapping\Concerns\UpdatesCatalogVisibilityTrait;
 use App\Models\Type\ConsumableType;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\Http\DofusDbClient;
@@ -20,6 +21,7 @@ use Illuminate\Http\Request;
 class ConsumableTypeRegistryController extends Controller
 {
     use BulkDecisionUpdateTrait;
+    use UpdatesCatalogVisibilityTrait;
 
     public function __construct(
         private DofusDbClient $dofusDbClient,
@@ -71,6 +73,7 @@ class ConsumableTypeRegistryController extends Controller
             'decision',
             'seen_count',
             'last_seen_at',
+            'show_in_catalog',
         ]);
 
         // Améliorer les placeholders "DofusDB type #X" en allant chercher le vrai nom côté DofusDB.
@@ -232,7 +235,18 @@ class ConsumableTypeRegistryController extends Controller
                 'decision',
                 'seen_count',
                 'last_seen_at',
+                'show_in_catalog',
             ]),
         ]);
+    }
+
+    /**
+     * Affiche ou masque ce type dans les filtres catalogue.
+     *
+     * @example PATCH /api/scrapping/consumable-types/{consumableType}/catalog { "show_in_catalog": true }
+     */
+    public function updateCatalog(Request $request, ConsumableType $consumableType): JsonResponse
+    {
+        return $this->updateShowInCatalog($request, $consumableType);
     }
 }

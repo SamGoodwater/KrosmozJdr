@@ -12,14 +12,13 @@
  * - Options d'import + historique type "invite de commande"
  */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { router } from "@inertiajs/vue3";
 import Card from "@/Pages/Atoms/data-display/Card.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Loading from "@/Pages/Atoms/feedback/Loading.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
-import Modal from "@/Pages/Molecules/action/Modal.vue";
-import TypeManagerTable from "@/Pages/Organismes/type-management/TypeManagerTable.vue";
 import CompareModal from "@/Pages/Organismes/scrapping/CompareModal.vue";
 import ScrappingFilters from "@/Pages/Organismes/scrapping/ScrappingFilters.vue";
 import ScrappingOptionsPanel from "@/Pages/Organismes/scrapping/ScrappingOptionsPanel.vue";
@@ -214,68 +213,25 @@ onMounted(async () => {
     }
 });
 
-// Gestion des types/races (modal)
-const typeManagerOpen = ref(false);
-/** Incrémenté à l'ouverture du modal « Gérer les types » et après une recherche pour forcer le rechargement de la liste. */
-const typeManagerRefreshTrigger = ref(0);
+// Gestion des types/races : mêmes pages que la nav contenu (pas de double UI).
+const TYPE_REGISTRY_ROUTES = {
+    resource: "entities.resource-types.index",
+    consumable: "entities.consumable-types.index",
+    equipment: "entities.item-types.index",
+    monster: "entities.monster-races.index",
+    spell: "entities.spell-types.index",
+};
+
 function handleOpenTypeManager() {
-    typeManagerOpen.value = true;
-    typeManagerRefreshTrigger.value += 1;
+    const name = TYPE_REGISTRY_ROUTES[selectedEntityTypeStr.value];
+    if (!name) return;
+    router.visit(route(name));
 }
+
 const typeManagerConfig = computed(() => {
-    const t = selectedEntityTypeStr.value;
-    if (t === "resource") {
-        return {
-            title: "Types DofusDB (Ressources)",
-            description: "Décider quels typeId DofusDB sont autorisés pour l’import de ressources.",
-            mode: "decision",
-            listUrl: "/api/scrapping/resource-types",
-            bulkUrl: "/api/scrapping/resource-types/bulk",
-            moveCategoryUrlBase: "/api/scrapping/resource-types",
-            currentCategory: "resource",
-        };
-    }
-    if (t === "consumable") {
-        return {
-            title: "Types DofusDB (Consommables)",
-            description: "Décider quels typeId DofusDB sont autorisés pour l’import de consommables.",
-            mode: "decision",
-            listUrl: "/api/scrapping/consumable-types",
-            bulkUrl: "/api/scrapping/consumable-types/bulk",
-            moveCategoryUrlBase: "/api/scrapping/consumable-types",
-            currentCategory: "consumable",
-        };
-    }
-    if (t === "equipment") {
-        return {
-            title: "Types DofusDB (Équipements)",
-            description: "Décider quels typeId DofusDB sont autorisés pour l’import d’équipements.",
-            mode: "decision",
-            listUrl: "/api/scrapping/item-types",
-            bulkUrl: "/api/scrapping/item-types/bulk",
-            moveCategoryUrlBase: "/api/scrapping/item-types",
-            currentCategory: "equipment",
-        };
-    }
-    if (t === "monster") {
-        return {
-            title: "Races de monstres",
-            description: "Valider ou archiver des races (champ state).",
-            mode: "state",
-            listUrl: "/api/types/monster-races",
-            bulkUrl: "/api/types/monster-races/bulk",
-        };
-    }
-    if (t === "spell") {
-        return {
-            title: "Types de sorts",
-            description: "Valider ou archiver des types de sorts (champ state).",
-            mode: "state",
-            listUrl: "/api/types/spell-types",
-            bulkUrl: "/api/types/spell-types/bulk",
-        };
-    }
-    return null;
+    const name = TYPE_REGISTRY_ROUTES[selectedEntityTypeStr.value];
+    if (!name) return null;
+    return { title: "Gérer les types", href: route(name) };
 });
 
 // Filtres principaux (persistés)
@@ -619,13 +575,6 @@ const removeKnownRace = (id) => {
     const n = Number(id);
     if (!Number.isFinite(n) || n <= 0) return;
     filterRaceIds.value = (filterRaceIds.value || []).filter((x) => Number(x) !== n);
-};
-
-const handleTypeManagerClose = async () => {
-    typeManagerOpen.value = false;
-    const t = selectedEntityTypeStr.value;
-    if (t === "resource" || t === "consumable" || t === "equipment") await loadKnownTypes();
-    if (t === "monster") await loadKnownRaces();
 };
 
 watch(
@@ -1099,7 +1048,6 @@ async function runSearchAndPreview(options = {}) {
             searchAbortControllerRef.value = null;
         }
     }
-    typeManagerRefreshTrigger.value += 1;
 }
 
 const goPrev = async () => {
@@ -1416,53 +1364,6 @@ const onCompareImported = () => {
                 Mode <strong>images seules</strong> : télécharge les images sans écraser le contenu (nom, description, stats…).
             </p>
         </div>
-        <Modal
-            :open="typeManagerOpen"
-            size="xl"
-            placement="middle-center"
-            close-on-esc
-            @close="handleTypeManagerClose"
-        >
-            <template #header>
-                <div class="flex items-center justify-between gap-3 w-full">
-                    <div class="font-semibold text-primary-100">
-                        {{ typeManagerConfig?.title || 'Gestion des types' }}
-                    </div>
-                    <Btn size="sm" variant="ghost" @click="handleTypeManagerClose">
-                        <Icon source="fa-solid fa-xmark" alt="Fermer" size="sm" /> <!-- pas besoin du texte car icone gérérer automatiquementfermer -->
-                    </Btn>
-                </div>
-            </template>
-
-            <div v-if="typeManagerConfig" class="max-h-[75vh] overflow-y-auto pr-2">
-                <TypeManagerTable
-                    :title="typeManagerConfig.title"
-                    :description="typeManagerConfig.description"
-                    :mode="typeManagerConfig.mode"
-                    :list-url="typeManagerConfig.listUrl"
-                    :refresh-trigger="typeManagerRefreshTrigger"
-                    :bulk-url="typeManagerConfig.bulkUrl"
-                    :move-category-url-base="typeManagerConfig.moveCategoryUrlBase"
-                    :current-category="typeManagerConfig.currentCategory"
-                    :delete-url-base="typeManagerConfig.mode === 'decision'
-                        ? (selectedEntityTypeStr === 'resource'
-                            ? '/api/scrapping/resource-types'
-                            : selectedEntityTypeStr === 'consumable'
-                                ? '/api/scrapping/consumable-types'
-                                : selectedEntityTypeStr === 'equipment'
-                                    ? '/api/scrapping/item-types'
-                                    : '')
-                        : (selectedEntityTypeStr === 'monster'
-                            ? '/api/types/monster-races'
-                            : selectedEntityTypeStr === 'spell'
-                                ? '/api/types/spell-types'
-                                : '')"
-                />
-            </div>
-            <div v-else class="text-sm text-primary-300 italic">
-                Cette entité n’a pas de gestionnaire de types/races.
-            </div>
-        </Modal>
 
         <CompareModal
             :open="compareModalOpen"

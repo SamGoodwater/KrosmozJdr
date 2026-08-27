@@ -27,6 +27,7 @@ class ResourceTypeResource extends JsonResource
             // Registry DofusDB
             'dofusdb_type_id' => $this->dofusdb_type_id,
             'decision' => $this->decision,
+            'show_in_catalog' => (bool) $this->show_in_catalog,
             'seen_count' => $this->seen_count,
             'last_seen_at' => $this->last_seen_at?->toISOString(),
 

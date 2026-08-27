@@ -80,6 +80,13 @@ class ResourceType extends Model
     public const DECISION_BLOCKED = 'blocked';
 
     /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'show_in_catalog' => false,
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -93,6 +100,7 @@ class ResourceType extends Model
         'decision',
         'seen_count',
         'last_seen_at',
+        'show_in_catalog',
         'created_by',
     ];
 
@@ -107,6 +115,7 @@ class ResourceType extends Model
         'dofusdb_type_id' => 'integer',
         'seen_count' => 'integer',
         'last_seen_at' => 'datetime',
+        'show_in_catalog' => 'boolean',
     ];
 
     /**

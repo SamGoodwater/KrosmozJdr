@@ -29,6 +29,7 @@ class UpdateResourceTypeRequest extends FormRequest
             'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],
             'dofusdb_type_id' => ['nullable', 'integer', 'min:1', 'unique:resource_types,dofusdb_type_id,'.$id],
             'decision' => ['nullable', 'string', 'in:pending,allowed,blocked'],
+            'show_in_catalog' => ['nullable', 'boolean'],
         ];
     }
 }

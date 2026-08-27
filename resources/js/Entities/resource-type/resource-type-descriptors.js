@@ -157,6 +157,38 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
         },
       },
     },
+    show_in_catalog: {
+      key: "show_in_catalog",
+      label: "Catalogue",
+      icon: "fa-solid fa-eye",
+      format: "boolean",
+      table: {
+        sortable: true,
+        filterable: { id: "show_in_catalog", type: "boolean", defaultVisible: true },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "checkbox",
+          group: "Statut",
+          tooltip: "Pré-cocher ce type dans les filtres du listing ressources. Indépendant du scrap (decision).",
+          required: false,
+          showInCompact: true,
+          defaultValue: false,
+          bulk: { enabled: true, nullable: false, build: (v) => Boolean(v) },
+        },
+      },
+    },
     state: {
       key: "state",
       label: "État",

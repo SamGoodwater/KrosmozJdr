@@ -46,19 +46,17 @@ describe("normalizeItemTypeLabel", () => {
 });
 
 describe("filtre Type consommable", () => {
-    it("déclare defaultByLabel / defaultByDofusTypeId", () => {
+    it("déclare defaultByCatalog", () => {
         const filterable = getConsumableFieldDescriptors().consumable_type?.table?.filterable;
-        expect(filterable?.defaultByLabel).toEqual([...GAMEPLAY_CONSUMABLE_TYPE_LABELS]);
-        expect(Array.isArray(filterable?.defaultByDofusTypeId)).toBe(true);
-        expect(filterable.defaultByDofusTypeId.length).toBe(GAMEPLAY_CONSUMABLE_TYPE_LABELS.length);
+        expect(filterable?.defaultByCatalog).toBe(true);
     });
 
     it("résout les défauts via les options API", () => {
         const filterable = getConsumableFieldDescriptors().consumable_type?.table?.filterable;
         const ids = resolveFilterDefaultValue(filterable, [
-            { value: "9", label: "Cadeau", dofusdb_type_id: 89 },
-            { value: "10", label: "Potion", dofusdb_type_id: 12 },
-            { value: "11", label: "Pain", dofusdb_type_id: 33 },
+            { value: "9", label: "Cadeau", dofusdb_type_id: 89, show_in_catalog: false },
+            { value: "10", label: "Potion", dofusdb_type_id: 12, show_in_catalog: true },
+            { value: "11", label: "Pain", dofusdb_type_id: 33, show_in_catalog: true },
         ]);
         expect(ids).toEqual(["10", "11"]);
     });

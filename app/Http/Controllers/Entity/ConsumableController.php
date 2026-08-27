@@ -69,7 +69,7 @@ class ConsumableController extends Controller
             'filters' => request()->only(['search', 'level', 'consumable_type_id']),
             'consumableTypes' => ConsumableType::query()
                 ->orderBy('name')
-                ->get(['id', 'name', 'dofusdb_type_id']),
+                ->get(['id', 'name', 'dofusdb_type_id', 'show_in_catalog']),
         ]);
     }
 

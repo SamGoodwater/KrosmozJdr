@@ -24,6 +24,7 @@ class StoreResourceTypeRequest extends FormRequest
             'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],
             'dofusdb_type_id' => ['nullable', 'integer', 'min:1', 'unique:resource_types,dofusdb_type_id'],
             'decision' => ['nullable', 'string', 'in:pending,allowed,blocked'],
+            'show_in_catalog' => ['nullable', 'boolean'],
             'seen_count' => ['nullable', 'integer', 'min:0'],
             'last_seen_at' => ['nullable', 'date'],
         ];

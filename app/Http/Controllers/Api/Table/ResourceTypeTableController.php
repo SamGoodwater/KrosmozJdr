@@ -37,7 +37,6 @@ class ResourceTypeTableController extends Controller
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
-
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
         $order = (string) $request->get('order', 'desc');
@@ -109,6 +108,7 @@ class ResourceTypeTableController extends Controller
                     'name' => (string) $rt->name,
                     'dofusdb_type_id' => $rt->dofusdb_type_id,
                     'decision' => $decision,
+                    'show_in_catalog' => (bool) $rt->show_in_catalog,
                     'seen_count' => (int) ($rt->seen_count ?? 0),
                     'last_seen_at' => $lastSeen?->toISOString(),
                     'resources_count' => (int) ($rt->resources_count ?? 0),
@@ -224,6 +224,7 @@ class ResourceTypeTableController extends Controller
                         'name' => $rt->name,
                         'dofusdb_type_id' => $rt->dofusdb_type_id,
                         'decision' => $rt->decision,
+                        'show_in_catalog' => (bool) $rt->show_in_catalog,
                         'state' => (string) ($rt->state ?? 'draft'),
                         'read_level' => (int) ($rt->read_level ?? 0),
                         'write_level' => (int) ($rt->write_level ?? 0),

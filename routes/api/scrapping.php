@@ -127,6 +127,8 @@ Route::middleware(['web', 'auth', 'role:admin', 'password.confirm'])->group(func
             ->name('scrapping.resource-types.move');
         Route::patch('/{resourceType}/decision', [ResourceTypeRegistryController::class, 'updateDecision'])
             ->name('scrapping.resource-types.decision');
+        Route::patch('/{resourceType}/catalog', [ResourceTypeRegistryController::class, 'updateCatalog'])
+            ->name('scrapping.resource-types.catalog');
         Route::get('/{resourceType}/pending-items', [ResourceTypeRegistryController::class, 'pendingItems'])
             ->name('scrapping.resource-types.pending-items');
         Route::post('/{resourceType}/replay', [ResourceTypeRegistryController::class, 'replayPending'])
@@ -148,6 +150,8 @@ Route::middleware(['web', 'auth', 'role:admin', 'password.confirm'])->group(func
             ->name('scrapping.item-types.move');
         Route::patch('/{itemType}/decision', [ItemTypeRegistryController::class, 'updateDecision'])
             ->name('scrapping.item-types.decision');
+        Route::patch('/{itemType}/catalog', [ItemTypeRegistryController::class, 'updateCatalog'])
+            ->name('scrapping.item-types.catalog');
     });
 
     Route::prefix('scrapping/consumable-types')->group(function () {
@@ -165,6 +169,8 @@ Route::middleware(['web', 'auth', 'role:admin', 'password.confirm'])->group(func
             ->name('scrapping.consumable-types.move');
         Route::patch('/{consumableType}/decision', [ConsumableTypeRegistryController::class, 'updateDecision'])
             ->name('scrapping.consumable-types.decision');
+        Route::patch('/{consumableType}/catalog', [ConsumableTypeRegistryController::class, 'updateCatalog'])
+            ->name('scrapping.consumable-types.catalog');
     });
 
     // Catalogue DofusDB (races monstres)

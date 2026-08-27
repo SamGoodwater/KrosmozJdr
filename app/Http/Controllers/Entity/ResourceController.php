@@ -95,7 +95,7 @@ class ResourceController extends Controller
             'filters' => request()->only(['search', 'level', 'resource_type_id', 'rarity', 'state', 'read_level', 'write_level', 'auto_update']),
             'resourceTypes' => ResourceType::query()
                 ->orderBy('name')
-                ->get(['id', 'name', 'dofusdb_type_id']),
+                ->get(['id', 'name', 'dofusdb_type_id', 'show_in_catalog']),
             'can' => [
                 'create' => $user ? $user->can('create', Resource::class) : false,
                 'updateAny' => $user ? $user->can('updateAny', Resource::class) : false,

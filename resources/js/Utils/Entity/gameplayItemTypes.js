@@ -2,11 +2,11 @@
  * Types d’équipement utiles en jeu (catalogue objets).
  *
  * @description
- * Cosmétiques (apparat, costume, montures d’apparat, percepteur, etc.) restent
- * dans le filtre Type mais ne sont pas cochés par défaut.
+ * Le filtre Type pré-coche les lignes `show_in_catalog`. Les listes GAMEPLAY_*
+ * restent un repli si le flag n’est pas dans le payload (tests / données anciennes).
  *
  * @example
- * resolveGameplayItemTypeIds([{ id: 12, name: 'Amulette', dofusdb_type_id: 1 }])
+ * resolveGameplayItemTypeIds([{ id: 12, name: 'Amulette', show_in_catalog: true }])
  * // ['12']
  */
 
@@ -35,7 +35,7 @@ export const GAMEPLAY_ITEM_TYPE_LABELS = Object.freeze([
     "Trophée",
 ]);
 
-/** Ids DofusDB stables (item_types.dofusdb_type_id). */
+/** Ids DofusDB stables (item_types.dofusdb_type_id) — repli si `show_in_catalog` absent. */
 export const GAMEPLAY_ITEM_TYPE_DOFUS_IDS = Object.freeze([
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 17, 18, 19, 20, 21, 23, 82, 151, 271,
 ]);
@@ -54,6 +54,26 @@ export function normalizeItemTypeLabel(value) {
 }
 
 /**
+ * @param {unknown} row
+ * @returns {boolean}
+ */
+export function isShownInCatalog(row) {
+    if (!row || typeof row !== "object") return false;
+    const v = row.show_in_catalog ?? row.showInCatalog;
+    return v === true || v === 1 || v === "1";
+}
+
+/**
+ * @param {unknown} row
+ * @returns {boolean}
+ */
+export function hasCatalogFlag(row) {
+    if (!row || typeof row !== "object") return false;
+    return Object.prototype.hasOwnProperty.call(row, "show_in_catalog")
+        || Object.prototype.hasOwnProperty.call(row, "showInCatalog");
+}
+
+/**
  * @param {unknown} filters
  * @returns {boolean}
  */
@@ -65,29 +85,47 @@ export function hasItemTypeFilter(filters) {
 }
 
 /**
- * Résout les ids locaux `item_types.id` à cocher par défaut.
+ * Résout les ids locaux à cocher par défaut (`show_in_catalog`, sinon listes fournies).
  *
- * @param {Array<Record<string, unknown>>} types - Lignes `{id|value, name|label, dofusdb_type_id?}`
+ * @param {Array<Record<string, unknown>>} types
+ * @param {{ labels?: readonly string[], dofusIds?: readonly number[] }} [fallback]
  * @returns {string[]}
  */
-export function resolveGameplayItemTypeIds(types) {
+export function resolveCatalogTypeIds(types, fallback = {}) {
     const rows = Array.isArray(types) ? types : [];
-    const wantedLabels = new Set(GAMEPLAY_ITEM_TYPE_LABELS.map(normalizeItemTypeLabel));
-    const wantedDofus = new Set(GAMEPLAY_ITEM_TYPE_DOFUS_IDS.map(Number));
+    const wantedLabels = new Set((fallback.labels || []).map(normalizeItemTypeLabel));
+    const wantedDofus = new Set((fallback.dofusIds || []).map(Number));
     const ids = [];
     const seen = new Set();
+    let anyFlag = false;
+
+    for (const row of rows) {
+        if (!row || typeof row !== "object") continue;
+        if (hasCatalogFlag(row)) anyFlag = true;
+    }
+
+    if (anyFlag) {
+        for (const row of rows) {
+            if (!isShownInCatalog(row)) continue;
+            const id = row.id ?? row.value;
+            if (id === null || typeof id === "undefined" || id === "") continue;
+            const key = String(id);
+            if (seen.has(key)) continue;
+            seen.add(key);
+            ids.push(key);
+        }
+        return ids;
+    }
 
     for (const row of rows) {
         if (!row || typeof row !== "object") continue;
         const id = row.id ?? row.value;
         if (id === null || typeof id === "undefined" || id === "") continue;
-
         const dofus = Number(row.dofusdb_type_id ?? row.dofusdbTypeId);
         const label = normalizeItemTypeLabel(row.name ?? row.label);
         const match =
             (Number.isFinite(dofus) && dofus > 0 && wantedDofus.has(dofus)) || wantedLabels.has(label);
         if (!match) continue;
-
         const key = String(id);
         if (seen.has(key)) continue;
         seen.add(key);
@@ -95,4 +133,17 @@ export function resolveGameplayItemTypeIds(types) {
     }
 
     return ids;
+}
+
+/**
+ * Résout les ids locaux `item_types.id` à cocher par défaut.
+ *
+ * @param {Array<Record<string, unknown>>} types
+ * @returns {string[]}
+ */
+export function resolveGameplayItemTypeIds(types) {
+    return resolveCatalogTypeIds(types, {
+        labels: GAMEPLAY_ITEM_TYPE_LABELS,
+        dofusIds: GAMEPLAY_ITEM_TYPE_DOFUS_IDS,
+    });
 }

@@ -13,6 +13,7 @@ import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 
+import AdminArea from "@/Pages/Layouts/AdminArea.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Modal from "@/Pages/Molecules/action/Modal.vue";
 import EntityTanStackTable from "@/Pages/Organismes/table/EntityTanStackTable.vue";
@@ -28,6 +29,8 @@ import { ResourceType } from "@/Models/Entity/ResourceType";
 import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
 import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
 import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
+
+defineOptions({ layout: AdminArea });
 
 const props = defineProps({
     resourceTypes: { type: Object, required: true },

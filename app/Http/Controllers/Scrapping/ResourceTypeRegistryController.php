@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Scrapping;
 
 use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Scrapping\Concerns\UpdatesCatalogVisibilityTrait;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
@@ -29,6 +30,8 @@ use Illuminate\Validation\Rule;
  */
 class ResourceTypeRegistryController extends Controller
 {
+    use UpdatesCatalogVisibilityTrait;
+
     /**
      * Normalise un libellé métier (used/unused) vers le stockage (allowed/blocked).
      */
@@ -81,6 +84,7 @@ class ResourceTypeRegistryController extends Controller
             'decision',
             'seen_count',
             'last_seen_at',
+            'show_in_catalog',
         ]);
 
         // Améliorer les placeholders "DofusDB type #X" en allant chercher le vrai nom côté DofusDB.
@@ -157,6 +161,7 @@ class ResourceTypeRegistryController extends Controller
                 'max:'.User::ROLE_SUPER_ADMIN,
                 Rule::when($request->input('read_level') !== null, ['gte:read_level']),
             ],
+            'show_in_catalog' => ['nullable', 'boolean'],
         ]);
 
         $ids = array_values(array_unique(array_map('intval', $validated['ids'])));
@@ -179,6 +184,9 @@ class ResourceTypeRegistryController extends Controller
         }
         if (array_key_exists('write_level', $validated) && $validated['write_level'] !== null) {
             $patch['write_level'] = (int) $validated['write_level'];
+        }
+        if (array_key_exists('show_in_catalog', $validated) && $validated['show_in_catalog'] !== null) {
+            $patch['show_in_catalog'] = $request->boolean('show_in_catalog');
         }
 
         if (empty($patch)) {
@@ -446,6 +454,16 @@ class ResourceTypeRegistryController extends Controller
             ]),
             'replay' => $replaySummary,
         ]);
+    }
+
+    /**
+     * Affiche ou masque ce type dans les filtres catalogue.
+     *
+     * @example PATCH /api/scrapping/resource-types/{resourceType}/catalog { "show_in_catalog": true }
+     */
+    public function updateCatalog(Request $request, ResourceType $resourceType): JsonResponse
+    {
+        return $this->updateShowInCatalog($request, $resourceType);
     }
 
     /**

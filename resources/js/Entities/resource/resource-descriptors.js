@@ -98,10 +98,6 @@
 // Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 import { getEntityStateOptions, getRarityOptions, getUserRoleOptions, FIELD_HELPERS } from '@/Utils/Entity/SharedConstants.js';
-import {
-  GAMEPLAY_RESOURCE_TYPE_DOFUS_IDS,
-  GAMEPLAY_RESOURCE_TYPE_LABELS,
-} from '@/Utils/Entity/gameplayResourceTypes';
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Resource".
@@ -409,8 +405,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
           id: "resource_type_id",
           type: "multi",
           defaultVisible: true,
-          defaultByLabel: [...GAMEPLAY_RESOURCE_TYPE_LABELS],
-          defaultByDofusTypeId: [...GAMEPLAY_RESOURCE_TYPE_DOFUS_IDS],
+          defaultByCatalog: true,
         },
         // Responsive: disparaît en dernier (avant il reste sur sm+)
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },

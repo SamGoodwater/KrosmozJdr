@@ -41,7 +41,6 @@ class ConsumableTableController extends Controller
         }
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
-
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
         $order = (string) $request->get('order', 'desc');
@@ -108,13 +107,14 @@ class ConsumableTableController extends Controller
         };
 
         $consumableTypeOptions = ConsumableType::query()
-            ->select(['id', 'name', 'dofusdb_type_id'])
+            ->select(['id', 'name', 'dofusdb_type_id', 'show_in_catalog'])
             ->orderBy('name')
             ->get()
             ->map(fn (ConsumableType $t) => [
                 'value' => (string) $t->id,
                 'label' => (string) $t->name,
                 'dofusdb_type_id' => $t->dofusdb_type_id !== null ? (int) $t->dofusdb_type_id : null,
+                'show_in_catalog' => (bool) $t->show_in_catalog,
             ])
             ->values()
             ->all();

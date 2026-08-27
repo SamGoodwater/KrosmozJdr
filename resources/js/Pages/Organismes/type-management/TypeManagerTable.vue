@@ -4,7 +4,7 @@
  *
  * @description
  * Tableau générique de gestion des "types/races" :
- * - mode `decision` : registry DofusDB (pending/allowed/blocked)
+ * - mode `decision` : registry DofusDB (pending/allowed/blocked) + flag catalogue
  * - mode `state` : validation interne via `state` (raw/draft/auto/playable/archived)
  *
  * Supporte sélection multiple + update en masse via un seul input.
@@ -59,6 +59,14 @@ const queryFilter = ref("all"); // 'all' | decision/state values
 
 const selectedIds = ref(new Set());
 const bulkValue = ref(""); // decision/state à appliquer
+const bulkCatalogValue = ref(""); // '1' | '0' pour show_in_catalog
+
+const canToggleCatalog = computed(() => String(props.mode) === "decision");
+const filterGridClass = computed(() => {
+    if (canMoveCategory.value && canToggleCatalog.value) return "md:grid-cols-5";
+    if (canMoveCategory.value || canToggleCatalog.value) return "md:grid-cols-4";
+    return "";
+});
 
 const getCsrfToken = () => document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
 
@@ -296,6 +304,89 @@ const bulkApply = async () => {
     }
 };
 
+const catalogBulkOptions = [
+    { value: "1", label: "Afficher au catalogue" },
+    { value: "0", label: "Masquer du catalogue" },
+];
+
+/**
+ * @param {unknown} row
+ * @returns {boolean}
+ */
+function isCatalogShown(row) {
+    const v = row?.show_in_catalog ?? row?.showInCatalog;
+    return v === true || v === 1 || v === "1";
+}
+
+const updateCatalog = async (id, shown) => {
+    if (!isAdmin.value || !canToggleCatalog.value) return;
+    const csrfToken = getCsrfToken();
+    if (!csrfToken) {
+        showError("Token CSRF introuvable. Recharge la page.");
+        return;
+    }
+    const n = Number(id);
+    if (!Number.isFinite(n)) return;
+
+    try {
+        const res = await fetch(`${props.listUrl}/${n}/catalog`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken,
+                Accept: "application/json",
+            },
+            body: JSON.stringify({ show_in_catalog: Boolean(shown) }),
+        });
+        const json = await res.json().catch(() => null);
+        if (!res.ok || (json && json.success === false)) {
+            throw new Error(json?.message || "Mise à jour catalogue impossible");
+        }
+        const row = rows.value.find((r) => Number(r?.id) === n);
+        if (row) row.show_in_catalog = Boolean(shown);
+    } catch (e) {
+        showError("Catalogue : " + e.message);
+        await load();
+    }
+};
+
+const bulkCatalogApply = async () => {
+    if (!isAdmin.value || !canToggleCatalog.value) return;
+    if (!selectedIds.value.size) return;
+    const raw = String(bulkCatalogValue.value || "").trim();
+    if (raw !== "0" && raw !== "1") return;
+
+    const csrfToken = getCsrfToken();
+    if (!csrfToken) {
+        showError("Token CSRF introuvable. Recharge la page.");
+        return;
+    }
+
+    info("Mise à jour catalogue…", { duration: 1500 });
+    try {
+        const res = await fetch(props.bulkUrl, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken,
+                Accept: "application/json",
+            },
+            body: JSON.stringify({
+                ids: Array.from(selectedIds.value),
+                show_in_catalog: raw === "1",
+            }),
+        });
+        const json = await res.json();
+        if (!res.ok || !json?.success) {
+            throw new Error(json?.message || "Bulk catalogue échoué");
+        }
+        success("Catalogue mis à jour", { duration: 2500 });
+        await load();
+    } catch (e) {
+        showError("Catalogue : " + e.message);
+    }
+};
+
 const updateSingle = async (id, value) => {
     if (!isAdmin.value) return;
     const csrfToken = getCsrfToken();
@@ -489,7 +580,7 @@ onMounted(async () => {
         </div>
 
         <!-- z-[100] pour que les dropdowns (bulk, filtres) passent au-dessus du modal -->
-        <div class="grid gap-3 md:grid-cols-3 relative z-[100]" :class="{ 'md:grid-cols-4': canMoveCategory }">
+        <div class="grid gap-3 relative z-[100] md:grid-cols-3" :class="filterGridClass">
             <InputField v-model="querySearch" label="Recherche" placeholder="id, nom…" />
             <SelectField
                 v-model="queryFilter"
@@ -511,6 +602,26 @@ onMounted(async () => {
                         Sélection: <span class="font-semibold">{{ selectedCount }}</span>
                     </div>
                     <Btn size="sm" color="primary" :disabled="!isAdmin || selectedCount === 0 || !bulkValue" @click="bulkApply">
+                        Appliquer
+                    </Btn>
+                </div>
+            </div>
+            <div v-if="canToggleCatalog" class="space-y-1">
+                <SelectField
+                    v-model="bulkCatalogValue"
+                    label="Catalogue (bulk)"
+                    :options="catalogBulkOptions"
+                    :disabled="!isAdmin || selectedCount === 0"
+                    placeholder="Choisir…"
+                    :searchable="false"
+                />
+                <div class="flex items-center justify-end">
+                    <Btn
+                        size="sm"
+                        color="primary"
+                        :disabled="!isAdmin || selectedCount === 0 || (bulkCatalogValue !== '0' && bulkCatalogValue !== '1')"
+                        @click="bulkCatalogApply"
+                    >
                         Appliquer
                     </Btn>
                 </div>
@@ -559,6 +670,7 @@ onMounted(async () => {
                         <th v-if="String(mode) === 'decision'" class="w-28">typeId</th>
                         <th>Nom</th>
                         <th v-if="String(mode) === 'decision'" class="w-28">Détections</th>
+                        <th v-if="canToggleCatalog" class="w-28 text-center">Catalogue</th>
                         <th class="w-52 text-right">Validation</th>
                         <th v-if="String(mode) === 'decision'" class="w-56">Dernière détection</th>
                         <th v-else class="w-56">Dernière maj</th>
@@ -587,6 +699,16 @@ onMounted(async () => {
                             <template v-else>{{ r.name || "—" }}</template>
                         </td>
                         <td v-if="String(mode) === 'decision'">{{ r.seen_count ?? "—" }}</td>
+                        <td v-if="canToggleCatalog" class="text-center">
+                            <input
+                                type="checkbox"
+                                class="checkbox checkbox-sm"
+                                :checked="isCatalogShown(r)"
+                                :disabled="!isAdmin"
+                                title="Afficher ce type dans les filtres catalogue"
+                                @change="updateCatalog(r.id, $event.target.checked)"
+                            />
+                        </td>
                         <td class="text-right">
                             <div class="flex justify-end items-center gap-2">
                                 <select
@@ -657,7 +779,7 @@ onMounted(async () => {
                         </td>
                     </tr>
                     <tr v-if="!filteredRows.length">
-                        <td :colspan="String(mode) === 'decision' ? 7 : 6" class="text-center text-primary-300 italic py-6">
+                        <td :colspan="String(mode) === 'decision' ? 8 : 6" class="text-center text-primary-300 italic py-6">
                             Aucun résultat.
                         </td>
                     </tr>

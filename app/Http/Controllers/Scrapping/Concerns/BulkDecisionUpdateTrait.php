@@ -30,7 +30,8 @@ trait BulkDecisionUpdateTrait
             'ids' => ['required', 'array', 'min:1'],
             'ids.*' => ['integer', 'min:1'],
             // On accepte aussi les alias UX: used/unused
-            'decision' => ['required', 'string', 'in:pending,allowed,blocked,used,unused'],
+            'decision' => ['required_without:show_in_catalog', 'nullable', 'string', 'in:pending,allowed,blocked,used,unused'],
+            'show_in_catalog' => ['required_without:decision', 'nullable', 'boolean'],
         ]);
 
         $ids = array_values(array_unique(array_map('intval', $validated['ids'])));
@@ -41,7 +42,10 @@ trait BulkDecisionUpdateTrait
             ], 422);
         }
 
-        $decision = $normalizeDecision((string) $validated['decision']);
+        $hasDecision = array_key_exists('decision', $validated) && is_string($validated['decision']) && $validated['decision'] !== '';
+        $hasCatalog = array_key_exists('show_in_catalog', $validated) && $validated['show_in_catalog'] !== null;
+        $decision = $hasDecision ? $normalizeDecision((string) $validated['decision']) : null;
+        $showInCatalog = $hasCatalog ? $request->boolean('show_in_catalog') : null;
 
         $updated = 0;
         $errors = [];
@@ -69,7 +73,12 @@ trait BulkDecisionUpdateTrait
                         continue;
                     }
 
-                    $model->setAttribute('decision', $decision);
+                    if ($decision !== null) {
+                        $model->setAttribute('decision', $decision);
+                    }
+                    if ($showInCatalog !== null) {
+                        $model->setAttribute('show_in_catalog', $showInCatalog);
+                    }
                     $model->save();
                     $updated++;
                 } catch (\Throwable $e) {

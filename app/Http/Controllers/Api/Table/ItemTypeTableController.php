@@ -114,6 +114,7 @@ class ItemTypeTableController extends Controller
                     'state' => (string) ($t->state ?? ItemType::STATE_DRAFT),
                     'dofusdb_type_id' => $t->dofusdb_type_id,
                     'decision' => (string) ($t->decision ?? ItemType::DECISION_PENDING),
+                    'show_in_catalog' => (bool) $t->show_in_catalog,
                     'items_count' => (int) ($t->items_count ?? 0),
                     'created_at' => $t->created_at?->toISOString(),
                     'updated_at' => $t->updated_at?->toISOString(),

@@ -7,6 +7,15 @@ import {
 import { resolveFilterDefaultValue } from "@/Utils/table/resolveFilterDefaultValue";
 
 describe("gameplayItemTypes", () => {
+    it("préfère show_in_catalog quand le flag est présent", () => {
+        const types = [
+            { id: 10, name: "Costume", dofusdb_type_id: 199, show_in_catalog: false },
+            { id: 11, name: "Amulette", dofusdb_type_id: 1, show_in_catalog: true },
+            { id: 12, name: "Cape d'apparat", dofusdb_type_id: 247, show_in_catalog: true },
+        ];
+        expect(resolveGameplayItemTypeIds(types)).toEqual(["11", "12"]);
+    });
+
     it("résout les ids par nom et par dofusdb_type_id", () => {
         const types = [
             { id: 10, name: "Costume", dofusdb_type_id: 199 },
@@ -44,6 +53,16 @@ describe("resolveFilterDefaultValue", () => {
 
     it("préfère defaultValue brut", () => {
         expect(resolveFilterDefaultValue({ defaultValue: ["99"] }, options)).toEqual(["99"]);
+    });
+
+    it("résout defaultByCatalog", () => {
+        expect(
+            resolveFilterDefaultValue({ defaultByCatalog: true }, [
+                { value: "10", label: "Costume", show_in_catalog: false },
+                { value: "11", label: "Amulette", show_in_catalog: true },
+                { value: "12", label: "Épée", show_in_catalog: true },
+            ]),
+        ).toEqual(["11", "12"]);
     });
 
     it("résout defaultByLabel et defaultByDofusTypeId", () => {

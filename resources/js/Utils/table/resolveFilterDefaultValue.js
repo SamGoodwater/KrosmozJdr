@@ -4,6 +4,7 @@
  * @description
  * - `defaultValue` : valeur déjà prête (ids, etc.)
  * - `defaultByLabel` / `defaultByDofusTypeId` : résolution via `filterOptions`
+ * - `defaultByCatalog` : options avec `show_in_catalog`
  *
  * @example
  * resolveFilterDefaultValue(
@@ -13,7 +14,7 @@
  * // ['12']
  */
 
-import { normalizeItemTypeLabel } from "@/Utils/Entity/gameplayItemTypes";
+import { isShownInCatalog, normalizeItemTypeLabel } from "@/Utils/Entity/gameplayItemTypes";
 
 /**
  * @param {object|null|undefined} filter
@@ -32,7 +33,8 @@ export function resolveFilterDefaultValue(filter, options = []) {
     const byDofus = Array.isArray(filter.defaultByDofusTypeId)
         ? filter.defaultByDofusTypeId.map(Number).filter((n) => Number.isFinite(n) && n > 0)
         : [];
-    if (byLabel.length === 0 && byDofus.length === 0) return undefined;
+    const byCatalog = Boolean(filter.defaultByCatalog);
+    if (byLabel.length === 0 && byDofus.length === 0 && !byCatalog) return undefined;
 
     const opts = Array.isArray(options) ? options : [];
     if (opts.length === 0) return undefined;
@@ -48,7 +50,9 @@ export function resolveFilterDefaultValue(filter, options = []) {
         const dofus = Number(opt?.dofusdb_type_id);
         const label = normalizeItemTypeLabel(opt?.label);
         const match =
-            (Number.isFinite(dofus) && dofus > 0 && wantedDofus.has(dofus)) || wantedLabels.has(label);
+            (byCatalog && isShownInCatalog(opt))
+            || (Number.isFinite(dofus) && dofus > 0 && wantedDofus.has(dofus))
+            || wantedLabels.has(label);
         if (!match) continue;
         const key = String(value);
         if (seen.has(key)) continue;

@@ -10,7 +10,7 @@
  * // ['4']
  */
 
-import { normalizeItemTypeLabel } from "@/Utils/Entity/gameplayItemTypes";
+import { resolveCatalogTypeIds } from "@/Utils/Entity/gameplayItemTypes";
 
 /** @type {readonly string[]} */
 export const GAMEPLAY_CONSUMABLE_TYPE_LABELS = Object.freeze([
@@ -66,28 +66,8 @@ export function hasConsumableTypeFilter(filters) {
  * @returns {string[]}
  */
 export function resolveGameplayConsumableTypeIds(types) {
-    const rows = Array.isArray(types) ? types : [];
-    const wantedLabels = new Set(GAMEPLAY_CONSUMABLE_TYPE_LABELS.map(normalizeItemTypeLabel));
-    const wantedDofus = new Set(GAMEPLAY_CONSUMABLE_TYPE_DOFUS_IDS.map(Number));
-    const ids = [];
-    const seen = new Set();
-
-    for (const row of rows) {
-        if (!row || typeof row !== "object") continue;
-        const id = row.id ?? row.value;
-        if (id === null || typeof id === "undefined" || id === "") continue;
-
-        const dofus = Number(row.dofusdb_type_id ?? row.dofusdbTypeId);
-        const label = normalizeItemTypeLabel(row.name ?? row.label);
-        const match =
-            (Number.isFinite(dofus) && dofus > 0 && wantedDofus.has(dofus)) || wantedLabels.has(label);
-        if (!match) continue;
-
-        const key = String(id);
-        if (seen.has(key)) continue;
-        seen.add(key);
-        ids.push(key);
-    }
-
-    return ids;
+    return resolveCatalogTypeIds(types, {
+        labels: GAMEPLAY_CONSUMABLE_TYPE_LABELS,
+        dofusIds: GAMEPLAY_CONSUMABLE_TYPE_DOFUS_IDS,
+    });
 }

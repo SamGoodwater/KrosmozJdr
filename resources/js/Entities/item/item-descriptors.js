@@ -15,10 +15,6 @@
  */
 
 import { getEntityStateOptions, getRarityOptions, getUserRoleOptions, FIELD_HELPERS } from "@/Utils/Entity/SharedConstants";
-import {
-    GAMEPLAY_ITEM_TYPE_DOFUS_IDS,
-    GAMEPLAY_ITEM_TYPE_LABELS,
-} from "@/Utils/Entity/gameplayItemTypes";
 
 /**
  * @typedef {Object} ItemFieldDescriptor
@@ -494,8 +490,7 @@ export function getItemFieldDescriptors(ctx = {}) {
           id: "item_type_id",
           type: "multi",
           defaultVisible: true,
-          defaultByLabel: [...GAMEPLAY_ITEM_TYPE_LABELS],
-          defaultByDofusTypeId: [...GAMEPLAY_ITEM_TYPE_DOFUS_IDS],
+          defaultByCatalog: true,
         },
         defaultVisible: visibleFromSm,
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },

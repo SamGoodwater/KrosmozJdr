@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Scrapping;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Scrapping\Concerns\BulkDecisionUpdateTrait;
+use App\Http\Controllers\Scrapping\Concerns\UpdatesCatalogVisibilityTrait;
 use App\Models\Type\ItemType;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\Http\DofusDbClient;
@@ -20,6 +21,7 @@ use Illuminate\Http\Request;
 class ItemTypeRegistryController extends Controller
 {
     use BulkDecisionUpdateTrait;
+    use UpdatesCatalogVisibilityTrait;
 
     public function __construct(
         private DofusDbClient $dofusDbClient,
@@ -71,6 +73,7 @@ class ItemTypeRegistryController extends Controller
             'decision',
             'seen_count',
             'last_seen_at',
+            'show_in_catalog',
         ]);
 
         // Améliorer les placeholders "DofusDB type #X" en allant chercher le vrai nom côté DofusDB.
@@ -234,7 +237,18 @@ class ItemTypeRegistryController extends Controller
                 'decision',
                 'seen_count',
                 'last_seen_at',
+                'show_in_catalog',
             ]),
         ]);
+    }
+
+    /**
+     * Affiche ou masque ce type dans les filtres catalogue.
+     *
+     * @example PATCH /api/scrapping/item-types/{itemType}/catalog { "show_in_catalog": true }
+     */
+    public function updateCatalog(Request $request, ItemType $itemType): JsonResponse
+    {
+        return $this->updateShowInCatalog($request, $itemType);
     }
 }

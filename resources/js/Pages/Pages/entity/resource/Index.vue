@@ -64,7 +64,7 @@ setPageTitle('Liste des Ressources');
 
 // Permissions
 const permissionsApi = usePermissions();
-const { canUpdateAny, canCreate: canCreatePermission } = permissionsApi;
+const { canUpdateAny, canCreate: canCreatePermission, canAccess } = permissionsApi;
 const canCreate = computed(() => Boolean(props.can?.create ?? canCreatePermission('resources')));
 const canModify = computed(() => Boolean(props.can?.updateAny ?? canUpdateAny('resources')));
 // canManageAny gardé pour plus tard (actions de maintenance)
@@ -296,7 +296,7 @@ const handleModalDelete = (entity) => {
                     <i class="fa-solid fa-arrow-rotate-right mr-2"></i>
                     Recharger
                 </Btn>
-                <Btn variant="ghost" @click="router.visit(route('entities.resource-types.index'))">
+                <Btn v-if="canAccess('contentManagement')" variant="ghost" @click="router.visit(route('entities.resource-types.index'))">
                     <i class="fa-solid fa-tags mr-2"></i>
                     Types de ressources
                 </Btn>
