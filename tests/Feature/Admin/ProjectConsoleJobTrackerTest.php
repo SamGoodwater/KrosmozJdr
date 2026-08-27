@@ -113,14 +113,12 @@ class ProjectConsoleJobTrackerTest extends TestCase
                 ->where('permissions.access.contentManagement', true));
     }
 
-    public function test_game_master_has_content_management_access_key(): void
+    public function test_game_master_forbidden_from_content_dashboard(): void
     {
         $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
 
         $this->actingAs($gm)
             ->get(route('admin.content.dashboard.index'))
-            ->assertOk()
-            ->assertInertia(fn ($page) => $page
-                ->where('permissions.access.contentManagement', true));
+            ->assertForbidden();
     }
 }

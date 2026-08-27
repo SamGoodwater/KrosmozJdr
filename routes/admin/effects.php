@@ -15,11 +15,11 @@ use Illuminate\Support\Facades\Route;
  */
 Route::get('admin/sub-effects', [SubEffectController::class, 'index'])
     ->name('admin.sub-effects.index')
-    ->middleware(['auth', 'role:game_master', 'content.area']);
+    ->middleware(['auth', 'role:admin', 'content.area']);
 
 Route::prefix('admin/effects')
     ->name('admin.effects.')
-    ->middleware(['auth', 'role:game_master', 'content.area'])
+    ->middleware(['auth', 'role:admin', 'content.area'])
     ->group(function () {
         Route::get('/', [AdminEffectController::class, 'index'])->name('index');
         Route::get('/create', [AdminEffectController::class, 'create'])->name('create');

@@ -29,7 +29,7 @@ class EffectControllerDestroyDegreeTest extends TestCase
 
     public function test_game_master_deletes_one_degree_when_at_least_two(): void
     {
-        $user = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $effect = Effect::create(['name' => 'E', 'target_type' => Effect::TARGET_DIRECT]);
         EffectDegree::create(['effect_id' => $effect->id, 'degree' => 1]);
         $d2 = EffectDegree::create(['effect_id' => $effect->id, 'degree' => 2]);
@@ -46,7 +46,7 @@ class EffectControllerDestroyDegreeTest extends TestCase
 
     public function test_cannot_delete_last_degree(): void
     {
-        $user = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $effect = Effect::create(['name' => 'E', 'target_type' => Effect::TARGET_DIRECT]);
         $d1 = EffectDegree::create(['effect_id' => $effect->id, 'degree' => 1]);
 
@@ -62,7 +62,7 @@ class EffectControllerDestroyDegreeTest extends TestCase
 
     public function test_degree_must_belong_to_effect(): void
     {
-        $user = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $e1 = Effect::create(['name' => 'A', 'target_type' => Effect::TARGET_DIRECT]);
         $e2 = Effect::create(['name' => 'B', 'target_type' => Effect::TARGET_DIRECT]);
         EffectDegree::create(['effect_id' => $e1->id, 'degree' => 1]);

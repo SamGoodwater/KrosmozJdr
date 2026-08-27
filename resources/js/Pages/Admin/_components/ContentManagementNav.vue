@@ -1,6 +1,6 @@
 <script setup>
 /**
- * Navigation gestion du contenu (game_master+).
+ * Navigation gestion du contenu (admin+).
  */
 import { computed } from "vue";
 import { usePage } from "@inertiajs/vue3";

@@ -82,6 +82,15 @@ class CharacteristicControllerTest extends TestCase
         $response->assertForbidden();
     }
 
+    public function test_game_master_receives_403_on_index(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+
+        $response = $this->actingAs($gm)->get(route('admin.characteristics.index'));
+
+        $response->assertForbidden();
+    }
+
     public function test_user_receives_403_on_show(): void
     {
         $user = User::factory()->create(['role' => User::ROLE_USER]);

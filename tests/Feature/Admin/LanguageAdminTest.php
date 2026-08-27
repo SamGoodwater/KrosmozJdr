@@ -23,6 +23,15 @@ class LanguageAdminTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_game_master_cannot_view_admin_languages_index(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+
+        $this->actingAs($gm)
+            ->get(route('admin.languages.index'))
+            ->assertForbidden();
+    }
+
     public function test_admin_can_view_admin_languages_index(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);

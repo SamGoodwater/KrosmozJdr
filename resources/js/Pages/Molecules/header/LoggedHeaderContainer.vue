@@ -595,7 +595,7 @@ const logout = () => {
                             </GlassMenuItem>
                         </div>
                         <GlassMenuDivider />
-                        <template v-if="canAccess('contentManagement') || canAccess('effectsAdmin') || isAdmin">
+                        <template v-if="canAccess('contentManagement')">
                             <div class="flex flex-col gap-0.5">
                                 <GlassMenuSectionTitle>Gestion du contenu</GlassMenuSectionTitle>
                                 <GlassMenuItem route="admin.content.dashboard.index" icon="fa-book-open" icon-alt="Gestion du contenu" hover3d>

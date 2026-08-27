@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
  */
 Route::prefix('admin/characteristics')
     ->name('admin.characteristics.')
-    ->middleware(['auth', 'role:game_master'])
+    ->middleware(['auth', 'role:admin', 'content.area'])
     ->group(function () {
         Route::get('/', [CharacteristicController::class, 'index'])->name('index');
         Route::get('/create', [CharacteristicController::class, 'create'])->name('create');

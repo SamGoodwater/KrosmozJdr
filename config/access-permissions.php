@@ -32,10 +32,10 @@ return [
     ],
 
     /**
-     * Accès au menu "Sous-effets" / "Effets" (game_master et au-dessus).
+     * Accès au menu "Sous-effets" / "Effets" (admin et au-dessus).
      */
     'effectsAdmin' => [
-        ['entity' => 'spells', 'ability' => 'updateAny'],
+        ['entity' => 'users', 'ability' => 'manageAny'],
     ],
 
     /**
@@ -46,10 +46,9 @@ return [
     ],
 
     /**
-     * Menu « Gestion du contenu » (game_master et au-dessus).
-     * `items.updateAny` suit BaseEntityPolicy (MJ+), pas SpellPolicy (admin seul).
+     * Menu « Gestion du contenu » (admin et au-dessus).
      */
     'contentManagement' => [
-        ['entity' => 'items', 'ability' => 'updateAny'],
+        ['entity' => 'users', 'ability' => 'manageAny'],
     ],
 ];

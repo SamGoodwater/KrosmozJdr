@@ -25,9 +25,6 @@ Route::prefix('admin')
             if ($user && $user->isAdmin()) {
                 return redirect()->route('admin.recap.index');
             }
-            if ($user && $user->isGameMaster()) {
-                return redirect()->route('admin.content.dashboard.index');
-            }
 
             abort(403);
         })->name('dashboard.index');

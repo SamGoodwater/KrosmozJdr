@@ -6,7 +6,7 @@ use App\Http\Controllers\Admin\ContentManagementDashboardController;
 use Illuminate\Support\Facades\Route;
 
 /**
- * Gestion du contenu : vue d’ensemble (game_master+).
+ * Gestion du contenu : vue d’ensemble (admin+).
  */
 Route::prefix('admin/content')
     ->name('admin.content.')

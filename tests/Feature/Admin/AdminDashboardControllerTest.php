@@ -17,20 +17,29 @@ class AdminDashboardControllerTest extends TestCase
         $this->get(route('admin.dashboard.index'))->assertRedirect(route('login'));
     }
 
-    public function test_game_master_redirected_to_content_dashboard(): void
+    public function test_game_master_forbidden_from_admin_root(): void
     {
         $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
 
         $this->actingAs($gm)
             ->get(route('admin.dashboard.index'))
-            ->assertRedirect(route('admin.content.dashboard.index'));
+            ->assertForbidden();
     }
 
-    public function test_game_master_can_view_content_dashboard(): void
+    public function test_game_master_forbidden_from_content_dashboard(): void
     {
         $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
 
         $this->actingAs($gm)
+            ->get(route('admin.content.dashboard.index'))
+            ->assertForbidden();
+    }
+
+    public function test_admin_can_view_content_dashboard(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $this->actingAs($admin)
             ->get(route('admin.content.dashboard.index'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page->component('Admin/Content/Dashboard/Index'));

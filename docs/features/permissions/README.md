@@ -69,7 +69,7 @@ Surcharges notables : `SpellPolicy` (`updateAny` admin), `BreedPolicy` (logique 
 ## Configuration des permissions
 
 - `config/entity-permissions.php` : registre `entityType` (kebab/pluriel) → classe Eloquent. Alimente `EntityPermissionService` et les clés de la matrice d'affichage.
-- `config/access-permissions.php` : clés UI → règles `anyOf [entity, ability]` (ex. `adminPanel`/`scrapping` → `users`/`manageAny`, `pagesManager` → `pages`/`updateAny`, `contentManagement` → `items`/`updateAny` = MJ+).
+- `config/access-permissions.php` : clés UI → règles `anyOf [entity, ability]` (ex. `adminPanel`/`scrapping`/`contentManagement`/`effectsAdmin` → `users`/`manageAny` = admin+, `pagesManager` → `pages`/`updateAny`). Zone contenu (`content.area`) = admin ; les MJ gardent le CRUD des fiches.
 
 ## Projection vers le front
 

@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Accès à la gestion du contenu (game_master et rôles supérieurs).
+ * Accès à la gestion du contenu (admin et rôles supérieurs).
  */
 class EnsureContentManagementAccess
 {
@@ -21,8 +21,8 @@ class EnsureContentManagementAccess
     {
         /** @var User|null $user */
         $user = $request->user();
-        if ($user === null || ! $user->isGameMaster()) {
-            abort(403, 'Accès réservé à la gestion du contenu (meneur de jeu et plus).');
+        if ($user === null || ! $user->isAdmin()) {
+            abort(403, 'Accès réservé à la gestion du contenu (administrateur et plus).');
         }
 
         return $next($request);
