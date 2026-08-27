@@ -20,6 +20,10 @@ Les tooltips et popovers d’entités n’affichent plus une seconde boîte auto
 
 Sur une fiche ou un catalogue d’objet visible par tout le monde, on ne voit plus une panoplie encore en brouillon, ni les autres pièces cachées de ce set. Un MJ continue de les voir pour travailler.
 
+## Août 2026 — Panoplie publique : pas les pièces brouillon
+
+Sur une panoplie jouable, le catalogue et la fiche de lecture ne listent que les équipements que le visiteur a le droit de voir. Un objet encore en brouillon, même accroché au set, n’apparaît plus pour un joueur. La page Modifier continue d’afficher toutes les pièces liées, pour ne pas les retirer par erreur.
+
 ## Août 2026 — Équipements du set dans le tooltip panoplie
 
 Le survol de l’icône de panoplie sur une fiche équipement liste les pièces en vue texte : un clic sur un nom ouvre la fiche de l’objet, comme sur la page de la panoplie.
