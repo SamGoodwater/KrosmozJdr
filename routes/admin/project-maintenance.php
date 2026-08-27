@@ -2,22 +2,19 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Admin\ProjectMaintenanceController;
+use App\Http\Controllers\Admin\ContentDofusdbWorkshopController;
 use Illuminate\Support\Facades\Route;
 
 /**
- * Maintenance projet (super admin uniquement) : sync données DofusDB via file d’attente.
- *
- * Comme `/scrapping` : la page GET est servie sans `password.confirm` ; la porte d’accès UI
- * utilise `ConfirmPasswordModal` + `user.password.confirm` (session). Le POST `/sync` reste
- * protégé par `password.confirm` + throttle (équivalent API scrapping).
+ * Ancienne page super-admin « Sync données » : GET redirigé vers l’atelier.
+ * POST conservé (même contrôleur) pour les liens/tests existants.
  */
-Route::prefix('admin/project-maintenance')
-    ->name('admin.project-maintenance.')
-    ->middleware(['auth', 'role:super_admin'])
-    ->group(function () {
-        Route::get('/', [ProjectMaintenanceController::class, 'index'])->name('index');
-        Route::post('/sync', [ProjectMaintenanceController::class, 'store'])
-            ->middleware(['password.confirm', 'throttle:6,1'])
-            ->name('sync');
-    });
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/project-maintenance', function () {
+        return redirect()->route('admin.content.dofusdb.index');
+    })->name('admin.project-maintenance.index');
+
+    Route::post('/admin/project-maintenance/sync', [ContentDofusdbWorkshopController::class, 'sync'])
+        ->middleware(['content.area', 'password.confirm', 'throttle:6,1'])
+        ->name('admin.project-maintenance.sync');
+});

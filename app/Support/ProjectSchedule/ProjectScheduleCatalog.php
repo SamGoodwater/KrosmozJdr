@@ -83,8 +83,8 @@ final class ProjectScheduleCatalog
                 'type' => 'artisan',
                 'command' => 'project:data sync',
                 'guide_signature' => 'project:data',
-                'admin_route' => 'admin.project-maintenance.index',
-                'admin_label' => 'Sync données',
+                'admin_route' => 'admin.content.dofusdb.index',
+                'admin_label' => 'Import DofusDB',
                 'overlap_minutes' => 180,
             ],
             'scrap_resources_catalog' => [
@@ -95,8 +95,8 @@ final class ProjectScheduleCatalog
                     max(1, (int) env('SCRAPPING_RESOURCES_AUTO_SYNC_LIMIT', 100)),
                 ),
                 'guide_signature' => 'scrapping:run',
-                'admin_route' => 'scrapping.index',
-                'admin_label' => 'Scrapping',
+                'admin_route' => 'admin.content.dofusdb.index',
+                'admin_label' => 'Import DofusDB',
                 'overlap_minutes' => 240,
             ],
             'project_backup' => [

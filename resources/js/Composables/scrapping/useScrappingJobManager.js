@@ -22,9 +22,9 @@ function now() {
 
 function getScrappingHref() {
     if (typeof route === "function") {
-        return route("scrapping.index");
+        return route("admin.content.dofusdb.index");
     }
-    return "/scrapping";
+    return "/admin/content/dofusdb";
 }
 
 function createJobId() {

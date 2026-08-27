@@ -8,7 +8,7 @@ import HorizontalOverflowNav from "@/Pages/Organismes/layout/HorizontalOverflowN
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 
 const page = usePage();
-const { canAccess, isSuperAdmin } = usePermissions();
+const { canAccess } = usePermissions();
 
 const path = computed(() => {
     const u = page.url.split("?")[0];
@@ -35,19 +35,34 @@ const navItems = computed(() => {
             icon: "fa-gauge-high",
             show: true,
         },
-    ];
-
-    if (canAccess("contentManagement") || canAccess("adminPanel")) {
-        items.push({
+        {
+            title: "Import DofusDB",
+            href: "admin.content.dofusdb.index",
+            path: "/admin/content/dofusdb",
+            icon: "fa-cloud-arrow-down",
+            show: canAccess("contentManagement") || canAccess("adminPanel"),
+        },
+        {
             title: "Caractéristiques",
             href: "admin.characteristics.index",
             path: "/admin/characteristics",
             icon: "fa-sliders",
-            show: true,
-        });
-    }
-
-    items.push(
+            show: canAccess("contentManagement") || canAccess("adminPanel"),
+        },
+        {
+            title: "Mappings champs",
+            href: "admin.scrapping-mappings.index",
+            path: "/admin/scrapping-mappings",
+            icon: "fa-diagram-project",
+            show: canAccess("adminPanel"),
+        },
+        {
+            title: "Mappings effets",
+            href: "admin.dofusdb-effect-mappings.index",
+            path: "/admin/dofusdb-effect-mappings",
+            icon: "fa-link",
+            show: canAccess("adminPanel"),
+        },
         {
             title: "Langues",
             href: "admin.languages.index",
@@ -75,8 +90,8 @@ const navItems = computed(() => {
             path: "/admin/recap",
             icon: "fa-screwdriver-wrench",
             show: canAccess("adminPanel"),
-        }
-    );
+        },
+    ];
 
     return items.filter((i) => i.show);
 });

@@ -3,7 +3,7 @@
  * ScrappingDashboard (Organism)
  *
  * @description
- * Dashboard de scrapping refondu pour la page `/scrapping`.
+ * Dashboard de scrapping pour l’atelier contenu (`/admin/content/dofusdb`).
  * Flow:
  * - Choix de l'entité (header)
  * - Filtres (au moins IDs + name, + filtres dépendants)
@@ -51,6 +51,16 @@ import { useScrappingCompare } from "@/Composables/scrapping/useScrappingCompare
 import { useScrappingBatch } from "@/Composables/scrapping/useScrappingBatch";
 import { useScrappingJobManager } from "@/Composables/scrapping/useScrappingJobManager";
 import { getEntityConfigStatus } from "@/Composables/scrapping/useScrappingEntityConfigStatus";
+
+const IMAGE_ONLY_BLACKLIST = "name,description,level,effect,raw,pa,pm,po,po_min,po_max,weight,price,rarity,official_id,size,is_boss,boss_pa,monster_race_id,item_type_id,resource_type_id,consumable_type_id,spell_type_id";
+
+const props = defineProps({
+    workshopMode: {
+        type: String,
+        default: "explore",
+        validator: (v) => ["explore", "update", "images"].includes(v),
+    },
+});
 
 const _initialScrapPrefs = loadScrappingPreferences();
 const _pref = (k) => _initialScrapPrefs[k] ?? SCRAP_DEFAULTS[k];
@@ -318,6 +328,26 @@ const optPropertyBlacklist = ref(_pref("optPropertyBlacklist"));
 const optSkipCache = ref(_pref("optSkipCache"));
 const optForceUpdate = ref(_pref("optForceUpdate"));
 const optManualChoice = ref(_pref("optManualChoice"));
+
+watch(
+    () => props.workshopMode,
+    (mode) => {
+        if (mode === "explore") {
+            optUpdateMode.value = "draft_raw_auto_update";
+            optPropertyBlacklist.value = "";
+            optIncludeRelations.value = true;
+        } else if (mode === "update") {
+            optUpdateMode.value = "auto_update";
+            optPropertyBlacklist.value = "";
+            optIncludeRelations.value = true;
+        } else if (mode === "images") {
+            optUpdateMode.value = "auto_update";
+            optPropertyBlacklist.value = IMAGE_ONLY_BLACKLIST;
+            optIncludeRelations.value = false;
+        }
+    },
+    { immediate: true }
+);
 
 // Résultats
 const tableSearch = ref("");
@@ -1375,6 +1405,17 @@ const onCompareImported = () => {
 
 <template>
     <div class="space-y-6">
+        <div class="rounded-box border border-base-300 bg-base-200/40 px-4 py-3 text-sm text-base-content/80">
+            <p v-if="workshopMode === 'explore'">
+                Mode <strong>explorer / importer</strong> : recherche DofusDB, aperçu, import des fiches neuves (et brouillons/raw si auto_update).
+            </p>
+            <p v-else-if="workshopMode === 'update'">
+                Mode <strong>mettre à jour l’existant</strong> : les fiches <code class="text-xs">auto_update</code> sont synchronisées. Forcer une fiche jouable reste une option explicite dans « Options &amp; historique ».
+            </p>
+            <p v-else>
+                Mode <strong>images seules</strong> : télécharge les images sans écraser le contenu (nom, description, stats…).
+            </p>
+        </div>
         <Modal
             :open="typeManagerOpen"
             size="xl"

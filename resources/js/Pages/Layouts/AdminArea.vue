@@ -18,6 +18,8 @@ const isContentArea = computed(() => {
         || p.startsWith("/admin/sub-effects")
         || p.startsWith("/admin/languages")
         || p.startsWith("/admin/characteristics")
+        || p.startsWith("/admin/scrapping-mappings")
+        || p.startsWith("/admin/dofusdb-effect-mappings")
     );
 });
 

@@ -9,7 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /**
- * Validation des options `project:data sync` lancées depuis l’UI super admin.
+ * Validation des options `project:data sync` lancées depuis l’atelier contenu (admin).
  */
 class StoreProjectDataSyncRequest extends FormRequest
 {
@@ -23,7 +23,7 @@ class StoreProjectDataSyncRequest extends FormRequest
 
     public function authorize(): bool
     {
-        return $this->user() !== null && $this->user()->isInteractiveSuperAdmin();
+        return $this->user()?->isAdmin() ?? false;
     }
 
     /**

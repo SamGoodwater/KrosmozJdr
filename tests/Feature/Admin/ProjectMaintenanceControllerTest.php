@@ -27,20 +27,16 @@ class ProjectMaintenanceControllerTest extends TestCase
 
         $response = $this->actingAs($admin)->get(route('admin.project-maintenance.index'));
 
-        $response->assertForbidden();
+        $response->assertRedirect(route('admin.content.dofusdb.index'));
     }
 
-    public function test_super_admin_can_view_index_without_full_page_password_redirect(): void
+    public function test_super_admin_is_redirected_from_legacy_index(): void
     {
         $super = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
 
         $response = $this->actingAs($super)->get(route('admin.project-maintenance.index'));
 
-        $response->assertOk();
-        $response->assertInertia(fn ($page) => $page
-            ->component('Admin/project-maintenance/Index')
-            ->has('entityChoices')
-            ->has('catalogTypeChoices'));
+        $response->assertRedirect(route('admin.content.dofusdb.index'));
     }
 
     public function test_super_admin_can_dispatch_sync_job_with_password_confirmed(): void
@@ -63,7 +59,7 @@ class ProjectMaintenanceControllerTest extends TestCase
                 'skip_notify' => false,
             ]);
 
-        $response->assertRedirect(route('admin.project-maintenance.index'));
+        $response->assertRedirect(route('admin.content.dofusdb.index'));
         $response->assertSessionHas('success');
 
         Bus::assertDispatched(function (RunProjectDataSyncJob $job) use ($super) {
@@ -79,7 +75,7 @@ class ProjectMaintenanceControllerTest extends TestCase
         });
     }
 
-    public function test_admin_forbidden_on_sync(): void
+    public function test_admin_can_dispatch_sync_via_legacy_post(): void
     {
         Bus::fake();
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
@@ -90,7 +86,7 @@ class ProjectMaintenanceControllerTest extends TestCase
                 'lang' => 'fr',
             ]);
 
-        $response->assertForbidden();
-        Bus::assertNothingDispatched();
+        $response->assertRedirect(route('admin.content.dofusdb.index'));
+        Bus::assertDispatched(RunProjectDataSyncJob::class);
     }
 }

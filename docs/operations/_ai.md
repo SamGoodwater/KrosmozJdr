@@ -21,5 +21,5 @@ Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interact
 - Source règles CMS : `private/game/rules/TABLE_DES_MATIERES.md`.
 - UI orphelins : `/admin/orphan-files` (super_admin).
 - UI nettoyage caches : `/admin/project-clear` (super_admin).
-- Planning : `/admin/project-schedule` (commande + lien page thématique).
+- UI atelier DofusDB : `/admin/content/dofusdb` (admin). Cron `project_data_sync` inchangé.
 - Jobs console admin : un actif max par domaine ; poll `GET /admin/console-jobs/{uuid}` ; log filtré.

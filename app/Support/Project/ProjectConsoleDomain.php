@@ -52,7 +52,7 @@ final class ProjectConsoleDomain
             self::CLEAR => route('admin.project-clear.index'),
             self::DEPS => route('admin.project-update.index'),
             self::BACKUP => route('admin.backup.index'),
-            self::DATA_SYNC => route('admin.project-maintenance.index'),
+            self::DATA_SYNC => route('admin.content.dofusdb.index'),
             default => '/admin',
         };
     }

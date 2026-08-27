@@ -79,13 +79,6 @@ const adminNavItems = computed(() => {
                 show: true,
             },
             {
-                title: 'Sync données',
-                href: 'admin.project-maintenance.index',
-                path: '/admin/project-maintenance',
-                icon: 'fa-database',
-                show: true,
-            },
-            {
                 title: 'Sauvegarde',
                 href: 'admin.backup.index',
                 path: '/admin/backup',
@@ -126,33 +119,12 @@ const adminNavItems = computed(() => {
                 show: true,
             },
             {
-                title: 'Scrapping',
-                href: 'scrapping.index',
-                path: '/scrapping',
-                icon: 'fa-magnifying-glass',
-                show: canAccess('scrapping'),
-            },
-            {
                 title: 'Affichage entités',
                 href: 'admin.entity-display-visibility.index',
                 path: '/admin/entity-display-visibility',
                 icon: 'fa-eye',
                 show: true,
             },
-            {
-                title: 'Mappings scrapping',
-                href: 'admin.scrapping-mappings.index',
-                path: '/admin/scrapping-mappings',
-                icon: 'fa-diagram-project',
-                show: true,
-            },
-            {
-                title: 'Mappings effets DofusDB',
-                href: 'admin.dofusdb-effect-mappings.index',
-                path: '/admin/dofusdb-effect-mappings',
-                icon: 'fa-link',
-                show: true,
-            }
         );
     }
 

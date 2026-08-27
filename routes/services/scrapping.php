@@ -1,10 +1,12 @@
 <?php
 
-use App\Http\Controllers\Scrapping\ScrappingDashboardController;
 use Illuminate\Support\Facades\Route;
 
-// SCRAPPING — accès réservé aux administrateurs (lecture et écriture)
+/**
+ * Ancienne URL `/scrapping` : redirigée vers l’atelier contenu.
+ */
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/scrapping', [ScrappingDashboardController::class, 'index'])
-        ->name('scrapping.index');
+    Route::get('/scrapping', function () {
+        return redirect()->route('admin.content.dofusdb.index');
+    })->name('scrapping.index');
 });
