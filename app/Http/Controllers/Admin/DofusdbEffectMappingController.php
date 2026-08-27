@@ -32,8 +32,17 @@ class DofusdbEffectMappingController extends Controller
     {
         $effectIdFilter = trim((string) $request->query('effect_id', ''));
 
-        $mappings = DofusdbEffectMapping::orderBy('dofusdb_effect_id')->get()
-            ->map(fn (DofusdbEffectMapping $m) => $this->formatMappingForResponse($m))
+        $labelBySlug = SubEffect::query()
+            ->get(['slug', 'template_text'])
+            ->mapWithKeys(fn (SubEffect $s) => [
+                $s->slug => $this->subEffectLabel($s->template_text, $s->slug),
+            ]);
+
+        $mappings = DofusdbEffectMapping::orderBy('sub_effect_slug')->orderBy('dofusdb_effect_id')->get()
+            ->map(fn (DofusdbEffectMapping $m) => $this->formatMappingForResponse(
+                $m,
+                $labelBySlug[$m->sub_effect_slug] ?? $m->sub_effect_slug
+            ))
             ->values()
             ->all();
 
@@ -88,7 +97,7 @@ class DofusdbEffectMappingController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Mapping créé.',
-            'mapping' => $this->formatMappingForResponse($mapping),
+            'mapping' => $this->formatMappingForResponse($mapping, $this->labelForSlug($mapping->sub_effect_slug)),
         ], 201);
     }
 
@@ -126,7 +135,7 @@ class DofusdbEffectMappingController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Mapping mis à jour.',
-            'mapping' => $this->formatMappingForResponse($mapping),
+            'mapping' => $this->formatMappingForResponse($mapping, $this->labelForSlug($mapping->sub_effect_slug)),
         ]);
     }
 
@@ -147,15 +156,31 @@ class DofusdbEffectMappingController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function formatMappingForResponse(DofusdbEffectMapping $m): array
+    private function formatMappingForResponse(DofusdbEffectMapping $m, ?string $label = null): array
     {
         return [
             'id' => $m->id,
             'dofusdb_effect_id' => $m->dofusdb_effect_id,
             'sub_effect_slug' => $m->sub_effect_slug,
+            'sub_effect_label' => $label ?: $m->sub_effect_slug,
             'characteristic_source' => $m->characteristic_source,
             'characteristic_key' => $m->characteristic_key,
         ];
+    }
+
+    private function labelForSlug(string $slug): string
+    {
+        $template = SubEffect::query()->where('slug', $slug)->value('template_text');
+
+        return $this->subEffectLabel(is_string($template) ? $template : null, $slug);
+    }
+
+    private function subEffectLabel(?string $template_text, string $slug): string
+    {
+        $stripped = trim((string) preg_replace('/\[[^\]]*\]/', '', (string) $template_text));
+        $stripped = trim((string) preg_replace('/\s+/', ' ', $stripped));
+
+        return $stripped !== '' ? $stripped : $slug;
     }
 
     private function normalizeCharacteristicKey(string $source, ?string $key): ?string

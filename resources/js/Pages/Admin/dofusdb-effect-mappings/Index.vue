@@ -12,6 +12,10 @@ import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectSearchField from '@/Pages/Molecules/data-input/SelectSearchField.vue';
 import axios from 'axios';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
+import {
+    filterDofusdbEffectMappings,
+    groupDofusdbEffectMappings,
+} from '@/Utils/effects/groupDofusdbEffectMappings';
 
 const { setPageTitle } = usePageTitle();
 
@@ -45,6 +49,13 @@ const form = ref({
 const formErrors = ref({});
 const formSaving = ref(false);
 const listFilter = ref(String(props.effectIdFilter || ''));
+const showAutre = ref(false);
+
+const autreCount = computed(() =>
+    (Array.isArray(props.mappings) ? props.mappings : []).filter(
+        (m) => String(m?.sub_effect_slug ?? '') === 'autre'
+    ).length
+);
 
 const characteristicKeyOptions = computed(() => [
     { value: '', label: '— Aucune —' },
@@ -69,21 +80,15 @@ const isQuickCreateFromAnalysis = computed(() =>
     && !!prefillEffectId.value
     && !hasExactPrefillMatch.value
 );
-const filteredMappings = computed(() => {
-    const rows = Array.isArray(props.mappings) ? props.mappings : [];
-    const q = String(listFilter.value || '').trim().toLowerCase();
-    if (!q) {
-        return rows;
-    }
+const filteredMappings = computed(() =>
+    filterDofusdbEffectMappings(props.mappings, {
+        query: listFilter.value,
+        showAutre: showAutre.value,
+        prefillEffectId: prefillEffectId.value,
+    })
+);
 
-    return rows.filter((m) => {
-        const effectId = String(m?.dofusdb_effect_id ?? '').toLowerCase();
-        const subEffect = String(m?.sub_effect_slug ?? '').toLowerCase();
-        const source = String(m?.characteristic_source ?? '').toLowerCase();
-        const characteristic = String(m?.characteristic_key ?? '').toLowerCase();
-        return effectId.includes(q) || subEffect.includes(q) || source.includes(q) || characteristic.includes(q);
-    });
-});
+const groupedMappings = computed(() => groupDofusdbEffectMappings(filteredMappings.value));
 
 function openCreate() {
     modalMode.value = 'create';
@@ -181,19 +186,26 @@ onMounted(() => {
                 <h1 class="text-2xl font-bold">Mapping effectId DofusDB → sous-effet Krosmoz</h1>
                 <p class="mt-1 text-sm text-base-content/70">
                     Définit pour chaque effectId DofusDB l’action Krosmoz (sous-effet) et la source de caractéristique.
-                    Les effectId non mappés tombent dans le sous-effet « autre ». Après modification, le cache de
-                    résolution est invalidé automatiquement.
+                    Le groupe <code class="text-xs">autre</code> est volontairement volumineux (hors périmètre :
+                    glyphes, pièges, placeholders). Il est masqué par défaut.
                 </p>
             </div>
 
-            <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
                 <h2 class="text-lg font-semibold">Mappings en base</h2>
-                <div class="flex items-center gap-2">
+                <div class="flex flex-wrap items-end gap-3">
                     <InputField
                         v-model="listFilter"
-                        label="Filtrer"
-                        placeholder="effectId, slug, source…"
+                        label="Rechercher"
+                        placeholder="effectId, sous-effet, libellé…"
                     />
+                    <label class="label cursor-pointer gap-2 pb-2">
+                        <input v-model="showAutre" type="checkbox" class="checkbox checkbox-sm" />
+                        <span class="label-text">
+                            Afficher « autre »
+                            <span class="text-base-content/50">({{ autreCount }})</span>
+                        </span>
+                    </label>
                     <Btn color="primary" size="sm" @click="openCreate">Ajouter un mapping</Btn>
                 </div>
             </div>
@@ -216,36 +228,54 @@ onMounted(() => {
                 </button>
             </div>
 
-            <div v-else class="overflow-x-auto rounded-box border border-base-300">
-                <table class="table table-zebra">
-                    <thead>
-                        <tr>
-                            <th>effectId DofusDB</th>
-                            <th>Sous-effet</th>
-                            <th>Source carac.</th>
-                            <th>Clé carac.</th>
-                            <th class="w-28">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="m in filteredMappings" :key="m.id">
-                            <td class="font-mono font-semibold">{{ m.dofusdb_effect_id }}</td>
-                            <td class="font-mono text-sm">{{ m.sub_effect_slug }}</td>
-                            <td>{{ m.characteristic_source }}</td>
-                            <td class="font-mono text-sm">{{ m.characteristic_key ?? '—' }}</td>
-                            <td>
-                                <div class="flex gap-1">
-                                    <button type="button" class="btn btn-ghost btn-xs" @click="openEdit(m)">
-                                        Modifier
-                                    </button>
-                                    <button type="button" class="btn btn-ghost btn-xs text-error" @click="confirmDelete(m)">
-                                        Suppr.
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div v-else class="space-y-4">
+                <section
+                    v-for="group in groupedMappings"
+                    :key="group.slug"
+                    class="overflow-x-auto rounded-box border border-base-300"
+                >
+                    <header class="flex items-center justify-between gap-2 border-b border-base-300 bg-base-200/40 px-4 py-2">
+                        <div>
+                            <h3 class="font-semibold">
+                                <span class="font-mono text-sm">{{ group.slug }}</span>
+                                <span
+                                    v-if="group.label && group.label !== group.slug"
+                                    class="ml-2 font-normal text-base-content/70"
+                                >
+                                    {{ group.label }}
+                                </span>
+                            </h3>
+                        </div>
+                        <span class="badge badge-ghost">{{ group.rows.length }}</span>
+                    </header>
+                    <table class="table table-zebra">
+                        <thead>
+                            <tr>
+                                <th>effectId DofusDB</th>
+                                <th>Source carac.</th>
+                                <th>Clé carac.</th>
+                                <th class="w-28">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="m in group.rows" :key="m.id">
+                                <td class="font-mono font-semibold">{{ m.dofusdb_effect_id }}</td>
+                                <td>{{ m.characteristic_source }}</td>
+                                <td class="font-mono text-sm">{{ m.characteristic_key ?? '—' }}</td>
+                                <td>
+                                    <div class="flex gap-1">
+                                        <button type="button" class="btn btn-ghost btn-xs" @click="openEdit(m)">
+                                            Modifier
+                                        </button>
+                                        <button type="button" class="btn btn-ghost btn-xs text-error" @click="confirmDelete(m)">
+                                            Suppr.
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
             </div>
         </main>
     </div>

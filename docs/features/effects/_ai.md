@@ -21,6 +21,7 @@
 
 ## Hors périmètre
 
+- Page contenu : `/admin/dofusdb-effect-mappings` (groupée par `sub_effect_slug`, `autre` masqué par défaut).
 - Triage `autre` / effectId sans clé : [MAPPINGS_HORS_PERIMETRE.md](./MAPPINGS_HORS_PERIMETRE.md)
 
 ## Liens

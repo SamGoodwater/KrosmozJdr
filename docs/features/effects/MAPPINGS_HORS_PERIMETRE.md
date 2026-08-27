@@ -43,8 +43,9 @@ Ces effets restent importables pour diagnostic, mais ne reçoivent pas de clé i
 - états (`État #N`) : convertis via `appliquer-etat`, pas via booster.
 
 Le volume `autre` (~40 %) est donc **attendu** tant que glyphes / pièges / `#1`
-restent hors périmètre ; l’audit `scrapping:effects:audit-autre` mesure surtout
-les fuites convertibles (téléports mal reclassés, etc.).
+restent hors périmètre. L’UI contenu masque ce groupe par défaut ; l’audit
+`scrapping:effects:audit-autre` mesure surtout les fuites convertibles
+(téléports mal reclassés, etc.).
 
 La liste machine est dans `ScrappingEffectsMapCommand::OUT_OF_SCOPE_CHARACTERISTIC_IDS`,
 `dofusdb_characteristic_to_krosmoz_spell.json` (`out_of_scope_ids`) et
