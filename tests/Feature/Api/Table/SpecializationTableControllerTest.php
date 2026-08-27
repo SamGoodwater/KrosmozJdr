@@ -3,7 +3,9 @@
 namespace Tests\Feature\Api\Table;
 
 use App\Http\Middleware\CheckRole;
+use App\Models\Entity\Capability;
 use App\Models\Entity\Specialization;
+use App\Models\Entity\Spell;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -123,6 +125,85 @@ class SpecializationTableControllerTest extends TestCase
         $this->assertArrayHasKey('createdBy', $entity);
         $this->assertNotNull($entity['createdBy']);
         $this->assertEquals($user->id, $entity['createdBy']['id']);
+    }
+
+    /**
+     * Un joueur ne doit pas voir les sorts / capacités brouillon via une spécialisation jouable.
+     */
+    public function test_format_entities_hides_draft_nested_spells_and_capabilities_from_players(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $player = User::factory()->create(['role' => User::ROLE_PLAYER]);
+
+        $spec = Specialization::factory()->create([
+            'name' => 'Voie Jouable',
+            'state' => Specialization::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+
+        $playableSpell = Spell::factory()->create([
+            'name' => 'Sort public',
+            'state' => Spell::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $draftSpell = Spell::factory()->create([
+            'name' => 'Sort secret WIP',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $spec->spells()->attach($playableSpell->id, ['level' => 1]);
+        $spec->spells()->attach($draftSpell->id, ['level' => 1]);
+
+        $playableCap = Capability::factory()->create([
+            'name' => 'Passif public',
+            'state' => Capability::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $draftCap = Capability::factory()->create([
+            'name' => 'Passif brouillon',
+            'state' => Capability::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $spec->capabilities()->attach([
+            $playableCap->id => ['level' => 1],
+            $draftCap->id => ['level' => 1],
+        ]);
+
+        $playerResponse = $this->actingAs($player)
+            ->getJson('/api/tables/specializations?format=entities&limit=10');
+
+        $playerResponse->assertOk();
+        $playerEntity = collect($playerResponse->json('entities'))->firstWhere('id', $spec->id);
+        $this->assertNotNull($playerEntity);
+        $this->assertSame(1, $playerEntity['spells_count']);
+        $this->assertEqualsCanonicalizing(['Sort public'], collect($playerEntity['spells'])->pluck('name')->all());
+        $this->assertEqualsCanonicalizing(['Passif public'], collect($playerEntity['capabilities'])->pluck('name')->all());
+
+        $adminResponse = $this->actingAs($author)
+            ->getJson('/api/tables/specializations?format=entities&limit=10');
+
+        $adminResponse->assertOk();
+        $adminEntity = collect($adminResponse->json('entities'))->firstWhere('id', $spec->id);
+        $this->assertNotNull($adminEntity);
+        $this->assertSame(2, $adminEntity['spells_count']);
+        $this->assertEqualsCanonicalizing(
+            ['Sort public', 'Sort secret WIP'],
+            collect($adminEntity['spells'])->pluck('name')->all()
+        );
+        $this->assertEqualsCanonicalizing(
+            ['Passif public', 'Passif brouillon'],
+            collect($adminEntity['capabilities'])->pluck('name')->all()
+        );
     }
 
     /**

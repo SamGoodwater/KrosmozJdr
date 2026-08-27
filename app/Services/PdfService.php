@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Entity\Breed;
 use App\Models\Entity\Resource;
+use App\Models\Entity\Specialization;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -127,6 +128,14 @@ class PdfService
                     ->orderBy('breed_spell.slot_index')
                     ->orderBy('breed_spell.choice_order')
                     ->orderBy('spells.name'),
+                'npcs' => fn ($q) => $q->visibleToUser($viewer),
+            ]);
+        }
+
+        if ($entityType === 'specialization' && $entity instanceof Specialization) {
+            $viewer = request()->user();
+            $entity->load([
+                'capabilities' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
                 'npcs' => fn ($q) => $q->visibleToUser($viewer),
             ]);
         }

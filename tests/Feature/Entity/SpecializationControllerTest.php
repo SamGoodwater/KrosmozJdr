@@ -46,6 +46,48 @@ class SpecializationControllerTest extends TestCase
                 ->has('specialization'));
     }
 
+    public function test_guest_does_not_see_draft_spells_on_playable_specialization_show(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $spec = Specialization::factory()->create([
+            'state' => Specialization::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+
+        $playableSpell = Spell::factory()->create([
+            'name' => 'Sort public',
+            'state' => Spell::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $draftSpell = Spell::factory()->create([
+            'name' => 'Sort secret WIP',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $spec->spells()->attach($playableSpell->id, ['level' => 1]);
+        $spec->spells()->attach($draftSpell->id, ['level' => 1]);
+
+        $this->get(route('entities.specializations.show', $spec))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Pages/entity/specialization/Show')
+                ->has('specialization.data.spells', 1)
+                ->where('specialization.data.spells.0.name', 'Sort public'));
+
+        $this->actingAs($author)
+            ->get(route('entities.specializations.show', $spec))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Pages/entity/specialization/Show')
+                ->has('specialization.data.spells', 2));
+    }
+
     public function test_guest_cannot_access_edit(): void
     {
         $spec = Specialization::factory()->create();
