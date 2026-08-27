@@ -6,44 +6,43 @@ namespace App\Console\Commands\Project;
 
 use App\Console\ArtisanExitCode;
 use App\Console\Concerns\GuardsProductionEnvironment;
-use App\Services\Project\ProjectRunService;
+use App\Services\Project\ProjectPrepareService;
+use App\Services\Project\RefusesRootExecution;
 use Illuminate\Console\Command;
 
 /**
- * Met à jour les dépendances du projet (Composer, pnpm), optionnellement la stack système,
- * puis enchaîne {@see ProjectOptimizeCommand} lorsque l’on utilise le mode « tout ».
+ * Met à jour Composer et pnpm, optionnellement la stack système, puis le pipeline IDE / optimize.
  *
  * @example php artisan project:deps
  * @example php artisan project:deps --with-system
- * @example php artisan project:deps --composer --pnpm --optimize
+ * @example php artisan project:deps --composer --pnpm
  */
 class ProjectDepsCommand extends Command
 {
     use GuardsProductionEnvironment;
 
     public function __construct(
-        private readonly ProjectRunService $projectRunService
+        private readonly ProjectPrepareService $projectPrepareService
     ) {
         parent::__construct();
     }
 
     protected $signature = 'project:deps
-        {--all : composer update + pnpm up + project:optimize (défaut si aucune cible explicite)}
+        {--all : composer update + pnpm up + pipeline optimize (défaut si aucune cible explicite)}
         {--with-system : apt / outils via setup --update (avant composer & pnpm en mode --all)}
-        {--apt : setup --update uniquement (équivalent système)}
+        {--apt : setup --update uniquement}
         {--composer : composer update}
-        {--pnpm : pnpm up}
-        {--css : rebuild CSS}
-        {--docs : index + schéma documentation}
-        {--dump : composer dump-autoload}
-        {--migrate : migrations (setup --db)}
-        {--optimize : enchaîne project:optimize après les autres cibles (hors mode --all)}';
+        {--pnpm : pnpm up}';
 
-    protected $description = 'Met à jour les dépendances (Composer, pnpm), optionnellement la stack OS ; le mode par défaut enchaîne project:optimize.';
+    protected $description = 'Met à jour les dépendances (Composer, pnpm), optionnellement la stack OS ; le mode par défaut enchaîne optimize.';
 
     public function handle(): int
     {
         if (! $this->guardNotProduction('Utilisez des déploiements contrôlés en production, pas project:deps.')) {
+            return ArtisanExitCode::FAILURE;
+        }
+
+        if (RefusesRootExecution::abort($this)) {
             return ArtisanExitCode::FAILURE;
         }
 
@@ -54,81 +53,48 @@ class ProjectDepsCommand extends Command
         $ran = false;
 
         if ($this->option('with-system') || $this->option('apt')) {
-            $this->call('setup', ['--update' => true]);
+            $this->projectPrepareService->runSetupUpdate($this);
             $ran = true;
         }
 
         if ($this->option('composer')) {
-            if ($this->projectRunService->runComposerProjectUpdate($this) !== ArtisanExitCode::SUCCESS) {
+            if ($this->projectPrepareService->updateComposer($this) !== ArtisanExitCode::SUCCESS) {
                 return ArtisanExitCode::FAILURE;
             }
             $ran = true;
         }
 
         if ($this->option('pnpm')) {
-            if ($this->projectRunService->runPnpmProjectUpdate($this) !== ArtisanExitCode::SUCCESS) {
+            if ($this->projectPrepareService->updatePnpm($this) !== ArtisanExitCode::SUCCESS) {
                 return ArtisanExitCode::FAILURE;
             }
             $ran = true;
         }
 
-        $map = [];
-        if ($this->option('css')) {
-            $map['update:css'] = true;
-            $ran = true;
-        }
-        if ($this->option('docs')) {
-            $map['update:docs'] = true;
-            $ran = true;
-        }
-        if ($this->option('dump')) {
-            $map['dump'] = true;
-            $ran = true;
-        }
-        if ($this->option('migrate')) {
-            $map['migrate'] = true;
-            $ran = true;
-        }
-        if ($this->option('optimize')) {
-            $ran = true;
-        }
-
         if (! $ran) {
-            $this->warn('Aucune cible : utilisez le mode par défaut, --all, ou au moins une option (--with-system, --composer, …).');
+            $this->warn('Aucune cible : utilisez le mode par défaut, --all, ou --with-system / --composer / --pnpm / --apt.');
 
             return ArtisanExitCode::FAILURE;
-        }
-
-        $code = $map === [] ? ArtisanExitCode::SUCCESS : $this->projectRunService->runOptionMap($map, $this);
-        if ($code !== ArtisanExitCode::SUCCESS) {
-            return $code;
-        }
-
-        if ($this->option('optimize')) {
-            return $this->call('project:optimize');
         }
 
         return ArtisanExitCode::SUCCESS;
     }
 
-    /**
-     * Mode par défaut (aucune option) ou `--all` : dépendances projet + optimize.
-     */
     private function runFullDeps(): int
     {
         if ($this->option('with-system')) {
-            $this->call('setup', ['--update' => true]);
+            $this->projectPrepareService->runSetupUpdate($this);
         }
 
-        if ($this->projectRunService->runComposerProjectUpdate($this) !== ArtisanExitCode::SUCCESS) {
+        if ($this->projectPrepareService->updateComposer($this) !== ArtisanExitCode::SUCCESS) {
             return ArtisanExitCode::FAILURE;
         }
 
-        if ($this->projectRunService->runPnpmProjectUpdate($this) !== ArtisanExitCode::SUCCESS) {
+        if ($this->projectPrepareService->updatePnpm($this) !== ArtisanExitCode::SUCCESS) {
             return ArtisanExitCode::FAILURE;
         }
 
-        return $this->call('project:optimize');
+        return $this->projectPrepareService->optimize($this);
     }
 
     private function wantsAll(): bool
@@ -137,19 +103,9 @@ class ProjectDepsCommand extends Command
             return true;
         }
 
-        return ! $this->hasExplicitGranularTargets();
-    }
-
-    private function hasExplicitGranularTargets(): bool
-    {
-        return $this->option('with-system')
-            || $this->option('apt')
-            || $this->option('composer')
-            || $this->option('pnpm')
-            || $this->option('css')
-            || $this->option('docs')
-            || $this->option('dump')
-            || $this->option('migrate')
-            || $this->option('optimize');
+        return ! $this->option('with-system')
+            && ! $this->option('apt')
+            && ! $this->option('composer')
+            && ! $this->option('pnpm');
     }
 }

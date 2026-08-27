@@ -12,7 +12,7 @@ use Illuminate\Database\Seeder;
  * Seed des types d'effets de sort depuis database/seeders/data/spell_effect_types.php.
  *
  * Pour régénérer le fichier depuis la BDD (après modification via l'interface) :
- * php artisan db:export-seeder-data --spell-effect-types
+ * php artisan scrapping:seeders:export --spell-effect-types
  *
  * @see docs/features/effects/README.md
  */

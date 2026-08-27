@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Console;
 
-use App\Console\Commands\Dev\DevReviewCommand;
 use App\Console\Commands\Project\ProjectReviewCommand;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
@@ -14,7 +13,6 @@ use Tests\TestCase;
 /**
  * Smoke tests du rapport `project:review`, sans lancer les outils réels.
  *
- * @see DevReviewCommand
  * @see ProjectReviewCommand
  */
 class ProjectReviewCommandTest extends TestCase

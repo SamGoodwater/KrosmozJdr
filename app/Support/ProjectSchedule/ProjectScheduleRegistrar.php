@@ -81,7 +81,7 @@ final class ProjectScheduleRegistrar
     {
         $schedule->command('media:clean-thumbnails')->daily();
         if ((bool) env('PROJECT_CLEAR_AUTO_ENABLED', false)) {
-            $schedule->command('project:cron --clear')
+            $schedule->command('project:clear --safe')
                 ->cron((string) env('PROJECT_CLEAR_CRON', '30 0 * * *'));
         }
         $schedule->command('privacy:process-deletion-requests')->dailyAt('02:00');
@@ -92,14 +92,14 @@ final class ProjectScheduleRegistrar
 
         if ((bool) env('PROJECT_UPDATE_AUTO_ENABLED', false)) {
             $cron = (string) env('PROJECT_UPDATE_CRON', '0 1 1 * *');
-            $schedule->command('project:data:sync')->cron($cron);
+            $schedule->command('project:data sync')->cron($cron);
         }
 
         if ((bool) env('SCRAPPING_RESOURCES_AUTO_SYNC', false)) {
             $at = (string) env('SCRAPPING_RESOURCES_AUTO_SYNC_AT', '03:00');
             $limit = (int) env('SCRAPPING_RESOURCES_AUTO_SYNC_LIMIT', 100);
             $schedule
-                ->command(sprintf('scrapping --entity=resource --resource-types=allowed --limit=%d --max-pages=0 --max-items=20000', max(1, $limit)))
+                ->command(sprintf('scrapping:run --entity=resource --resource-types=allowed --limit=%d --max-pages=0 --max-items=20000', max(1, $limit)))
                 ->dailyAt($at);
         }
 

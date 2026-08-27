@@ -53,7 +53,7 @@ class ScrappingRunCommandTest extends TestCase
 
     public function test_command_requires_entity_option(): void
     {
-        $code = Artisan::call('scrapping', []);
+        $code = Artisan::call('scrapping:run', []);
 
         $this->assertSame(1, $code);
         $out = Artisan::output();
@@ -63,7 +63,7 @@ class ScrappingRunCommandTest extends TestCase
 
     public function test_command_rejects_unknown_entity(): void
     {
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'unknown-entity',
         ]);
 
@@ -88,7 +88,7 @@ class ScrappingRunCommandTest extends TestCase
             return Http::response([], 404);
         });
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'monster,class',
             '--limit' => '1',
             '--max-items' => '1',
@@ -128,7 +128,7 @@ class ScrappingRunCommandTest extends TestCase
             return Http::response([], 404);
         });
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'monster',
             '--limit' => '5',
             '--max-items' => '5',
@@ -149,7 +149,7 @@ class ScrappingRunCommandTest extends TestCase
             ], 200),
         ]);
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'monster',
             '--id' => '31',
         ]);
@@ -181,7 +181,7 @@ class ScrappingRunCommandTest extends TestCase
             return Http::response([], 404);
         });
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'item',
             '--ids' => '70,71',
         ]);
@@ -215,7 +215,7 @@ class ScrappingRunCommandTest extends TestCase
             return Http::response([], 404);
         });
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'resource',
             '--limit' => '1',
             '--simulate' => true,
@@ -239,7 +239,7 @@ class ScrappingRunCommandTest extends TestCase
             ], 200);
         });
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'monster',
             '--limit' => '3',
             '--max-items' => '5',
@@ -264,7 +264,7 @@ class ScrappingRunCommandTest extends TestCase
             ], 200);
         });
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'monster',
             '--limit' => '2',
             '--start-skip' => '10',
@@ -300,7 +300,7 @@ class ScrappingRunCommandTest extends TestCase
             return Http::response([], 404);
         });
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'monster',
             '--limit' => '2',
             '--max-pages' => '2',
@@ -334,7 +334,7 @@ class ScrappingRunCommandTest extends TestCase
             ], 200);
         });
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'monster',
             '--limit' => '1',
             '--max-items' => '1',
@@ -367,7 +367,7 @@ class ScrappingRunCommandTest extends TestCase
             return Http::response([], 404);
         });
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'monster',
             '--limit' => '1',
             '--max-items' => '1',
@@ -396,7 +396,7 @@ class ScrappingRunCommandTest extends TestCase
             return Http::response([], 404);
         });
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'monster',
             '--limit' => '1',
             '--max-items' => '1',
@@ -428,7 +428,7 @@ class ScrappingRunCommandTest extends TestCase
             return Http::response([], 404);
         });
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'monster',
             '--limit' => '1',
             '--max-items' => '1',
@@ -477,7 +477,7 @@ class ScrappingRunCommandTest extends TestCase
             return Http::response([], 404);
         });
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'monster',
             '--id' => '31',
         ]);
@@ -501,7 +501,7 @@ class ScrappingRunCommandTest extends TestCase
             ], 200),
         ]);
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'class',
             '--id' => '1',
         ]);
@@ -525,7 +525,7 @@ class ScrappingRunCommandTest extends TestCase
             ], 200),
         ]);
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'item',
             '--id' => '15',
         ]);
@@ -553,7 +553,7 @@ class ScrappingRunCommandTest extends TestCase
             '*/spell-levels*' => Http::response(['data' => []], 200),
         ]);
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'spell',
             '--id' => '201',
         ]);
@@ -584,7 +584,7 @@ class ScrappingRunCommandTest extends TestCase
             ], 200),
         ]);
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'panoply',
             '--id' => '1',
         ]);
@@ -613,7 +613,7 @@ class ScrappingRunCommandTest extends TestCase
             '*/items/70*' => Http::response($itemWithEffects, 200),
         ]);
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'item',
             '--id' => '70',
             '--no-validate' => true,
@@ -656,14 +656,14 @@ class ScrappingRunCommandTest extends TestCase
             return Http::response([], 404);
         });
 
-        Artisan::call('scrapping', ['--entity' => 'monster', '--id' => '31']);
+        Artisan::call('scrapping:run', ['--entity' => 'monster', '--id' => '31']);
         $first = Creature::where('name', 'like', '%Bouftou%')->first();
         $this->assertNotNull($first);
 
         // Vider le cache DofusDB pour que le 2e import refasse bien la requête et reçoive le nom mis à jour du mock
         Cache::flush();
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'monster',
             '--id' => '31',
             '--replace-existing' => true,
@@ -694,7 +694,7 @@ class ScrappingRunCommandTest extends TestCase
             ], 200);
         });
 
-        $code = Artisan::call('scrapping', [
+        $code = Artisan::call('scrapping:run', [
             '--entity' => 'monster',
             '--id' => '31',
             '--debug' => true,

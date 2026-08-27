@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * Enchaîne des runs Cursor SDK (`Agent.prompt`) locaux, un par bloc « Prompts Cursor » du rapport dev:review.
+ * Enchaîne des runs Cursor SDK (`Agent.prompt`) locaux, un par bloc « Prompts Cursor » du rapport project:review.
  *
  * Prérequis : `pnpm install`, `CURSOR_API_KEY`, exécution depuis la racine du repo (`cwd` = projet).
  *
  * @example node scripts/cursor-dev-review-agents.mjs --report storage/app/dev-reports/review-2026-01-01-120000.md
- * @example pnpm run dev:review:cursor-agents -- --report storage/app/dev-reports/review-2026-01-01-120000.md
+ * @example pnpm run project:review:cursor-agents -- --report storage/app/dev-reports/review-2026-01-01-120000.md
  */
 
 import "./cursor-ensure-ripgrep-env.mjs";
@@ -74,7 +74,7 @@ async function main() {
     const blocks = extractPromptBlocks(md);
     if (blocks.length === 0) {
         console.error(
-            "Aucun bloc « ### … / ```text » trouvé sous « ## Prompts Cursor ». Lancez d’abord : php artisan dev:review …",
+            "Aucun bloc « ### … / ```text » trouvé sous « ## Prompts Cursor ». Lancez d’abord : php artisan project:review …",
         );
         process.exit(1);
     }
@@ -86,7 +86,7 @@ async function main() {
         const prompt = [
             "Tu travailles sur le dépôt Krosmoz-JDR (racine = cwd). Réponds en français.",
             "",
-            `Rapport dev:review (Markdown) à utiliser comme contexte principal : \`${relReport}\`.`,
+            `Rapport project:review (Markdown) à utiliser comme contexte principal : \`${relReport}\`.`,
             "Ouvre ce fichier, lis les sorties des outils (PHPUnit, PHPStan, etc.) au-dessus de la section « Prompts Cursor ».",
             "",
             `Mission — « ${title} » :`,

@@ -6,34 +6,33 @@ namespace App\Console\Commands\Project;
 
 use App\Console\ArtisanExitCode;
 use App\Console\Concerns\GuardsProductionEnvironment;
-use App\Services\Project\ProjectRunService;
+use App\Services\Project\ProjectDevServers;
 use Illuminate\Console\Command;
 
 /**
- * Environnement de développement : project:prepare et project:optimize par défaut, puis serveurs PHP + Vite.
+ * Environnement de développement : project:prepare puis serveurs PHP + Vite.
  *
  * @example php artisan project:dev
- * @example php artisan project:dev --no-prepare --no-optimize
+ * @example php artisan project:dev --queue
+ * @example php artisan project:dev --no-prepare
  */
 class ProjectDevCommand extends Command
 {
     use GuardsProductionEnvironment;
 
     public function __construct(
-        private readonly ProjectRunService $projectRunService
+        private readonly ProjectDevServers $projectDevServers
     ) {
         parent::__construct();
     }
 
     protected $signature = 'project:dev
         {--no-prepare : Ne pas exécuter project:prepare avant les serveurs}
-        {--no-optimize : Ne pas exécuter project:optimize avant les serveurs}
-        {--prepare : Exécuter uniquement project:prepare puis quitter}
-        {--clear : Supprimer les artefacts de tests avant project:prepare (équiv. project:prepare --clear)}
-        {--migrate : Migrations uniquement (setup --db) puis quitter}
-        {--watch : Mode watch CSS au lieu du serveur dev optimisé}';
+        {--clear : Supprimer les artefacts de tests avant project:prepare}
+        {--queue : Démarrer aussi queue:listen en arrière-plan}
+        {--watch : Mode watch CSS au lieu du serveur Vite}';
 
-    protected $description = 'Prépare (CSS, doc, migrations) et optimise le projet, puis lance PHP + Vite.';
+    protected $description = 'Prépare le projet (CSS, doc, migrations, optimize) puis lance PHP + Vite.';
 
     public function handle(): int
     {
@@ -41,32 +40,17 @@ class ProjectDevCommand extends Command
             return ArtisanExitCode::FAILURE;
         }
 
-        if ($this->option('migrate')) {
-            return $this->projectRunService->runOptionMap(['migrate' => true], $this);
-        }
-
-        $prepareOptions = ['--clear' => $this->option('clear')];
-
-        if ($this->option('prepare')) {
-            return $this->call('project:prepare', $prepareOptions);
-        }
-
         if (! $this->option('no-prepare')) {
+            $prepareOptions = ['--clear' => $this->option('clear')];
             if ($this->call('project:prepare', $prepareOptions) !== ArtisanExitCode::SUCCESS) {
                 return ArtisanExitCode::FAILURE;
             }
         }
 
-        if (! $this->option('no-optimize')) {
-            if ($this->call('project:optimize') !== ArtisanExitCode::SUCCESS) {
-                return ArtisanExitCode::FAILURE;
-            }
-        }
-
         if ($this->option('watch')) {
-            return $this->projectRunService->runOptionMap(['dev:watch' => true], $this);
+            return $this->projectDevServers->runDevWatch($this);
         }
 
-        return $this->projectRunService->runOptionMap(['dev' => true], $this);
+        return $this->projectDevServers->runDev($this, (bool) $this->option('queue'));
     }
 }

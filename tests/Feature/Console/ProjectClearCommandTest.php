@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Console;
 
-use App\Console\Commands\Project\ProjectClearCommand;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Tests\TestCase;
 
 /**
- * Smoke test : la commande `project:clear` reste enregistrée et exécutable en environnement de test.
- *
- * @see ProjectClearCommand
+ * Smoke test : `project:clear` reste enregistrée et exécutable.
  */
 class ProjectClearCommandTest extends TestCase
 {
@@ -23,6 +20,22 @@ class ProjectClearCommandTest extends TestCase
         ]);
 
         $this->assertSame(0, $code);
+    }
+
+    public function test_project_clear_safe_returns_success(): void
+    {
+        $code = Artisan::call('project:clear', [
+            '--safe' => true,
+        ]);
+
+        $this->assertSame(0, $code);
+    }
+
+    public function test_project_clear_without_option_fails(): void
+    {
+        $code = Artisan::call('project:clear', []);
+
+        $this->assertNotSame(0, $code);
     }
 
     public function test_project_clear_removes_review_files(): void
@@ -39,14 +52,5 @@ class ProjectClearCommandTest extends TestCase
         $this->assertSame(0, $code);
         $this->assertFileDoesNotExist($path);
         $this->assertDirectoryExists($dir);
-    }
-
-    public function test_project_clean_alias_same_command_as_clear(): void
-    {
-        $code = Artisan::call('project:clean', [
-            '--cache' => true,
-        ]);
-
-        $this->assertSame(0, $code);
     }
 }

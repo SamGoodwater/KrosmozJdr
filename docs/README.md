@@ -18,7 +18,7 @@ Documentation technique active du projet. Elle décrit l'état actuel du site et
 | [frontend](frontend/README.md) | Vue 3, Inertia, Atomic Design, vues d'entités. |
 | [features](features/README.md) | Fonctionnalités transverses : entités, CMS, scrapping, droits, effets. |
 | [IA](IA/README.md) | Cadrage de l’IA générative (contenu JDR). Fonctionnalité non implémentée. |
-| [operations](operations/README.md) | Commandes projet, import de règles, maintenance. |
+| [operations](operations/README.md) | Commandes projet (`app/Console/COMMANDS.md`), import de règles, maintenance. |
 | [best-practices](best-practices/README.md) | Documentation, sécurité, tests, nommage. |
 
 ## Règles de rédaction

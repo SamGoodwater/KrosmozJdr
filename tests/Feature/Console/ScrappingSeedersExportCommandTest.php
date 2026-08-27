@@ -40,7 +40,7 @@ class ScrappingSeedersExportCommandTest extends TestCase
         $originalEnv = $app->environment();
         $app->instance('env', 'production');
         try {
-            $code = Artisan::call('db:export-seeder-data', ['--characteristics' => true]);
+            $code = Artisan::call('scrapping:seeders:export', ['--characteristics' => true]);
             $this->assertSame(1, $code);
             $this->assertStringContainsString('désactivée en production', Artisan::output());
         } finally {
@@ -55,7 +55,7 @@ class ScrappingSeedersExportCommandTest extends TestCase
         $this->seed(ObjectCharacteristicSeeder::class);
         $this->seed(SpellCharacteristicSeeder::class);
 
-        $code = Artisan::call('db:export-seeder-data', ['--characteristics' => true]);
+        $code = Artisan::call('scrapping:seeders:export', ['--characteristics' => true]);
 
         $this->assertSame(0, $code);
     }
@@ -67,7 +67,7 @@ class ScrappingSeedersExportCommandTest extends TestCase
         $this->seed(ObjectCharacteristicSeeder::class);
         $this->seed(SpellCharacteristicSeeder::class);
 
-        Artisan::call('db:export-seeder-data', ['--characteristics' => true]);
+        Artisan::call('scrapping:seeders:export', ['--characteristics' => true]);
 
         $defRoot = $this->dataDir.'/characteristic-definitions';
         $this->assertDirectoryExists($defRoot);
@@ -84,10 +84,10 @@ class ScrappingSeedersExportCommandTest extends TestCase
         $this->seed(ObjectCharacteristicSeeder::class);
         $this->seed(SpellCharacteristicSeeder::class);
 
-        Artisan::call('db:export-seeder-data', ['--characteristics' => true]);
+        Artisan::call('scrapping:seeders:export', ['--characteristics' => true]);
         $this->assertDirectoryExists($this->dataDir.'/characteristic-definitions');
 
-        Artisan::call('db:export-seeder-data', ['--characteristics' => true]);
+        Artisan::call('scrapping:seeders:export', ['--characteristics' => true]);
 
         $zips = File::glob($this->backupDir.'/seeder-data-*.zip');
         $this->assertNotEmpty($zips, 'Au moins un backup ZIP doit exister après un second export.');
@@ -114,7 +114,7 @@ class ScrappingSeedersExportCommandTest extends TestCase
         $this->seed(CreatureCharacteristicSeeder::class);
         $this->seed(ObjectCharacteristicSeeder::class);
         $this->seed(SpellCharacteristicSeeder::class);
-        Artisan::call('db:export-seeder-data', ['--characteristics' => true]);
+        Artisan::call('scrapping:seeders:export', ['--characteristics' => true]);
 
         $zips = File::glob($this->backupDir.'/seeder-data-*.zip');
         $oldZips = File::glob($this->backupDir.'/seeder-data-old-*.zip');

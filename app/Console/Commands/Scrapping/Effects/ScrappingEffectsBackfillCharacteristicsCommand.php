@@ -32,8 +32,6 @@ final class ScrappingEffectsBackfillCharacteristicsCommand extends Command
 
     protected $description = 'Backfill characteristic_key des mappings d\'effets (source characteristic) pour fiabiliser les conversions';
 
-    protected $aliases = ['dofusdb:backfill-effect-characteristics'];
-
     public function handle(
         DofusDbClient $client,
         CharacteristicGetterService $characteristicGetter,

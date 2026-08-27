@@ -7,14 +7,27 @@ namespace App\Console\Commands\Project;
 use App\Console\ArtisanExitCode;
 use App\Console\Concerns\NormalizesProjectSyncEntities;
 use App\Console\Concerns\RunsBibliothequeEntityPagesSync;
+use App\Models\Entity\Breed;
+use App\Models\Entity\Consumable;
+use App\Models\Entity\Item;
+use App\Models\Entity\Monster;
+use App\Models\Entity\Panoply;
+use App\Models\Entity\Resource;
+use App\Models\Entity\Spell;
+use App\Services\NotificationService;
 use Database\Seeders\Type\SpellTypeSeeder;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
- * Point d’entrée unique pour les flux « données DofusDB » (sync / init catalogue / complétion).
+ * Sync DofusDB : catalogue (types / races) et fiches en base avec auto_update=true.
  *
- * Délègue aux commandes existantes pour rester DRY.
+ * @example php artisan project:data sync
+ * @example php artisan project:data sync --entity=monster --dry-run
  */
 class ProjectDataCommand extends Command
 {
@@ -22,109 +35,228 @@ class ProjectDataCommand extends Command
     use RunsBibliothequeEntityPagesSync;
 
     protected $signature = 'project:data
-        {action : sync (maj auto_update), init (équivalent project:init données), fill (guide complétion)}
-        {--fresh : (init) migrate:fresh avant le pipeline}
-        {--noimage : (init|sync) pas de téléchargement d’images}
-        {--skip-cache : (init|sync|catalogue) ignorer le cache HTTP scrapping}
-        {--simulate : (init) ne pas écrire en base}
-        {--entity= : (sync) Entités (virgules) : breed|class, spell, monster, panoply, resource, item, consumable — sans --type/--races : sync seul ; avec catalogue : exige ce filtre pour lancer aussi le sync entités}
-        {--type= : (sync) L\'Essentiels catalogue (virgules) : all | monster (races) | resource | consumable | item | equipment | spell (types de sorts en BDD)}
-        {--races : (sync) Raccourci pour --type=monster (races monstres DofusDB)}
-        {--lang=fr : (sync catalogue) langue DofusDB pour types/races}
-        {--skip-scrapping : (init)}
-        {--skip-seeders : (init)}
-        {--skip-types : (init)}
-        {--skip-capabilities : (init)}
-        {--skip-super-admin-prompt : (init)}
-        {--max-items=0 : (init)}
-        {--update-mode=ignore : (init)}
-        {--dry-run : (sync)}
-        {--skip-clear-queue : (sync|init)}
-        {--skip-notify : (sync|init)}';
+        {action : sync (catalogue et/ou entités auto_update)}
+        {--noimage : Pas de téléchargement d’images}
+        {--skip-cache : Ignorer le cache HTTP scrapping}
+        {--entity= : Entités (virgules) : breed|class, spell, monster, panoply, resource, item, consumable}
+        {--type= : Catalogue (virgules) : all | monster | resource | consumable | item | equipment | spell}
+        {--races : Raccourci pour --type=monster}
+        {--lang=fr : Langue DofusDB pour types/races}
+        {--dry-run : Simuler sans écrire}
+        {--skip-clear-queue : Ne pas vider la queue avant sync}
+        {--skip-notify : Ne pas notifier les admin}';
 
-    protected $description = 'Données DofusDB : sync (auto_update), init (pipeline complet), fill (guide — non automatisé)';
+    protected $description = 'Données DofusDB : sync catalogue et/ou fiches auto_update';
+
+    /** @var array<string, array{alias: string, model: class-string<Model>, idColumn: string}> */
+    private const ENTITY_CONFIG = [
+        'class' => ['alias' => 'class', 'model' => Breed::class, 'idColumn' => 'dofusdb_id'],
+        'spell' => ['alias' => 'spell', 'model' => Spell::class, 'idColumn' => 'dofusdb_id'],
+        'monster' => ['alias' => 'monster', 'model' => Monster::class, 'idColumn' => 'dofusdb_id'],
+        'resource' => ['alias' => 'resource', 'model' => Resource::class, 'idColumn' => 'dofusdb_id'],
+        'consumable' => ['alias' => 'consumable', 'model' => Consumable::class, 'idColumn' => 'dofusdb_id'],
+        'item' => ['alias' => 'item', 'model' => Item::class, 'idColumn' => 'dofusdb_id'],
+        'panoply' => ['alias' => 'panoply', 'model' => Panoply::class, 'idColumn' => 'dofusdb_id'],
+    ];
+
+    private const IDS_CHUNK_SIZE = 100;
 
     public function handle(): int
     {
         $action = strtolower(trim((string) $this->argument('action')));
 
         return match ($action) {
-            'sync', 'updates' => $this->runSync(),
-            'init' => $this->runInit(),
-            'fill', 'upgrade' => $this->runFill(),
+            'sync' => $this->runSync(),
             default => $this->invalidAction($action),
         };
     }
 
     private function runSync(): int
     {
+        set_time_limit(0);
+        $startedAt = microtime(true);
+
         $catalogCode = $this->runCatalogSync();
         if ($catalogCode !== ArtisanExitCode::SUCCESS) {
             return $catalogCode;
         }
 
-        if ($this->shouldRunEntitySyncAfterCatalog()) {
-            $params = $this->buildEntitySyncParams();
-            $syncCode = $this->call('project:data:sync', $params);
-            if ($syncCode !== ArtisanExitCode::SUCCESS) {
-                return $syncCode;
-            }
-        }
+        $errors = 0;
+        $updated = 0;
 
-        if (! (bool) $this->option('dry-run')) {
-            $this->newLine();
-            $this->info('Synchronisation menu Bibliothèques (classes / spécialisations)');
-            if (! $this->runBibliothequeEntityPagesSync()) {
+        if ($this->shouldRunEntitySyncAfterCatalog()) {
+            $entityResult = $this->runEntitySync();
+            $errors += $entityResult['errors'];
+            $updated += $entityResult['updated'];
+            if ($entityResult['fatal']) {
                 return ArtisanExitCode::FAILURE;
             }
         }
 
-        return ArtisanExitCode::SUCCESS;
+        $dryRun = (bool) $this->option('dry-run');
+        if (! $dryRun) {
+            $this->newLine();
+            $this->info('Synchronisation menu Bibliothèques (classes / spécialisations)');
+            if (! $this->runBibliothequeEntityPagesSync()) {
+                $errors++;
+            }
+        }
+
+        $duration = microtime(true) - $startedAt;
+        $finishedAt = now()->format('d/m/Y à H:i:s');
+        $success = $errors === 0;
+
+        if (! (bool) $this->option('skip-notify') && $this->shouldRunEntitySyncAfterCatalog()) {
+            $message = $success
+                ? "{$updated} entité(s) mise(s) à jour."
+                : "{$errors} erreur(s), {$updated} entité(s) traité(es).";
+            NotificationService::notifyProjectMaintenance(
+                'update',
+                $success,
+                $duration,
+                $finishedAt,
+                $message,
+            );
+        }
+
+        return $errors > 0 ? ArtisanExitCode::FAILURE : ArtisanExitCode::SUCCESS;
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array{updated: int, errors: int, fatal: bool}
      */
-    private function buildEntitySyncParams(): array
+    private function runEntitySync(): array
     {
-        $params = [];
-        $entityCsv = trim((string) $this->option('entity'));
-        if ($entityCsv !== '') {
-            $params['--entity'] = $this->normalizeEntityCsvToOptionString($entityCsv);
-        }
-        if ($this->option('noimage')) {
-            $params['--noimage'] = true;
-        }
-        if ($this->option('skip-cache')) {
-            $params['--skip-cache'] = true;
-        }
-        if ($this->option('dry-run')) {
-            $params['--dry-run'] = true;
-        }
-        if ($this->option('skip-clear-queue')) {
-            $params['--skip-clear-queue'] = true;
-        }
-        if ($this->option('skip-notify')) {
-            $params['--skip-notify'] = true;
+        $this->info('=== Mise à jour des données (auto_update) ===');
+        $this->newLine();
+
+        if (! (bool) $this->option('skip-clear-queue')) {
+            $this->clearQueue();
         }
 
-        return $params;
+        $dryRun = (bool) $this->option('dry-run');
+        if (! $dryRun) {
+            $this->line('  → effects:rebuild-signatures (avant update)');
+            Artisan::call('effects:rebuild-signatures');
+            $this->output->write(Artisan::output());
+        }
+
+        $entityFilter = (string) $this->option('entity');
+        $entities = $entityFilter !== ''
+            ? $this->normalizeEntityCsvToList($entityFilter)
+            : array_keys(self::ENTITY_CONFIG);
+
+        $updated = 0;
+        $errors = 0;
+
+        foreach ($entities as $entity) {
+            if (! isset(self::ENTITY_CONFIG[$entity])) {
+                $this->warn("Entité inconnue : {$entity}");
+
+                continue;
+            }
+
+            $config = self::ENTITY_CONFIG[$entity];
+            $ids = $this->getAutoUpdateIds($config);
+            if ($ids === []) {
+                $this->line("  {$entity} : aucun ID à mettre à jour.");
+
+                continue;
+            }
+
+            $this->line("  {$entity} : ".count($ids).' entité(s) à mettre à jour.');
+            $chunks = array_chunk($ids, self::IDS_CHUNK_SIZE);
+
+            foreach ($chunks as $i => $chunk) {
+                $scrapArgs = [
+                    '--entity' => $config['alias'],
+                    '--ids' => implode(',', $chunk),
+                    '--update-mode' => 'auto_update',
+                    '--skip-existing' => true,
+                ];
+                if ((bool) $this->option('noimage')) {
+                    $scrapArgs['--noimage'] = true;
+                }
+                if ((bool) $this->option('skip-cache')) {
+                    $scrapArgs['--skip-cache'] = true;
+                }
+                if ((bool) $this->option('dry-run')) {
+                    $scrapArgs['--simulate'] = true;
+                }
+
+                $code = $this->call('scrapping:run', $scrapArgs);
+                if ($code !== 0) {
+                    $errors++;
+                    $this->warn('  Avertissement : chunk '.($i + 1)." de {$entity} a échoué.");
+                } else {
+                    $updated += count($chunk);
+                }
+                DB::reconnect();
+            }
+            $this->newLine();
+        }
+
+        if (! $dryRun) {
+            $this->line('  → effects:rebuild-signatures (après update)');
+            Artisan::call('effects:rebuild-signatures');
+            $this->output->write(Artisan::output());
+        }
+
+        $this->info("=== Mise à jour terminée : {$updated} entité(s) traité(es) ===");
+
+        return ['updated' => $updated, 'errors' => $errors, 'fatal' => false];
     }
 
     /**
-     * Si un catalogue (--type / --races) est demandé sans --entity, on n’exécute pas le sync entités.
-     * Sinon (pas de catalogue, ou catalogue + --entity, ou sync seul) : sync entités.
+     * @param  array{alias: string, model: class-string<Model>, idColumn: string}  $config
+     * @return list<int>
      */
+    private function getAutoUpdateIds(array $config): array
+    {
+        $model = $config['model'];
+        $instance = new $model;
+        $table = $instance->getTable();
+        $idCol = $config['idColumn'];
+
+        if (! Schema::hasColumn($table, 'auto_update')) {
+            $this->warn("  Table « {$table} » : pas de colonne auto_update — aucun ID pour ce sync.");
+
+            return [];
+        }
+
+        $ids = $model::query()
+            ->where('auto_update', true)
+            ->whereNotNull($idCol)
+            ->where($idCol, '!=', '')
+            ->pluck($idCol)
+            ->map(function ($v) {
+                $n = (int) $v;
+
+                return $n > 0 ? $n : null;
+            })->filter()->unique()->values()->all();
+
+        return array_values(array_map('intval', $ids));
+    }
+
+    private function clearQueue(): void
+    {
+        $connection = Config::get('queue.default');
+        if ($connection === 'sync') {
+            return;
+        }
+        $this->line('  → Nettoyage de la queue (jobs en attente + failed)');
+        Artisan::call('queue:clear', [$connection, '--force' => true]);
+        Artisan::call('queue:flush');
+        $this->output->write(Artisan::output());
+    }
+
     private function shouldRunEntitySyncAfterCatalog(): bool
     {
-        $hasCatalog = $this->hasCatalogOptions();
-        $entityCsv = trim((string) $this->option('entity'));
-
-        if (! $hasCatalog) {
+        if (! $this->hasCatalogOptions()) {
             return true;
         }
 
-        return $entityCsv !== '';
+        return trim((string) $this->option('entity')) !== '';
     }
 
     private function hasCatalogOptions(): bool
@@ -153,7 +285,7 @@ class ProjectDataCommand extends Command
                 }
             }
             if (! $hasKnown) {
-                $this->error('Valeurs catalogue inconnues. Utilisez : all, monster, spell, resource, consumable, item, equipment (ou --races pour les races).');
+                $this->error('Valeurs catalogue inconnues. Utilisez : all, monster, spell, resource, consumable, item, equipment (ou --races).');
 
                 return ArtisanExitCode::FAILURE;
             }
@@ -249,70 +381,9 @@ class ProjectDataCommand extends Command
         return array_values(array_unique($raw));
     }
 
-    private function runInit(): int
-    {
-        $params = [];
-        if ($this->option('fresh')) {
-            $params['--fresh'] = true;
-        }
-        if ($this->option('noimage')) {
-            $params['--noimage'] = true;
-        }
-        if ($this->option('skip-cache')) {
-            $params['--skip-cache'] = true;
-        }
-        if ($this->option('simulate')) {
-            $params['--simulate'] = true;
-        }
-        if ($this->option('entity')) {
-            $params['--entity'] = $this->normalizeEntityCsvToOptionString((string) $this->option('entity'));
-        }
-        if ($this->option('skip-scrapping')) {
-            $params['--skip-scrapping'] = true;
-        }
-        if ($this->option('skip-seeders')) {
-            $params['--skip-seeders'] = true;
-        }
-        if ($this->option('skip-types')) {
-            $params['--skip-types'] = true;
-        }
-        if ($this->option('skip-capabilities')) {
-            $params['--skip-capabilities'] = true;
-        }
-        if ($this->option('skip-super-admin-prompt')) {
-            $params['--skip-super-admin-prompt'] = true;
-        }
-        if ($this->option('skip-clear-queue')) {
-            $params['--skip-clear-queue'] = true;
-        }
-        if ($this->option('skip-notify')) {
-            $params['--skip-notify'] = true;
-        }
-
-        $params['--max-items'] = $this->option('max-items');
-
-        $updateMode = (string) $this->option('update-mode');
-        if ($updateMode !== '' && $updateMode !== 'ignore') {
-            $params['--update-mode'] = $updateMode;
-        }
-
-        return $this->call('project:init', $params);
-    }
-
-    private function runFill(): int
-    {
-        $this->warn('Mode « fill / upgrade » : import ciblé des fiches absentes en base (catalogue DofusDB vs dofusdb_id locaux).');
-        $this->line('Ce mode n’est pas encore encapsulé : utilisez `scrapping:run` par entité sans `--skip-existing`, ou des filtres `--idMin` / `--levelMin` / `--limit`.');
-        $this->line('Pour mettre à jour les entités déjà présentes avec auto_update, enchaînez avec `php artisan project:data sync`.');
-        $this->newLine();
-        $this->line('Documentation : docs/operations/README.md');
-
-        return ArtisanExitCode::SUCCESS;
-    }
-
     private function invalidAction(string $action): int
     {
-        $this->error("Action inconnue « {$action} ». Utilisez : sync, init ou fill.");
+        $this->error("Action inconnue « {$action} ». Utilisez : sync.");
 
         return ArtisanExitCode::FAILURE;
     }

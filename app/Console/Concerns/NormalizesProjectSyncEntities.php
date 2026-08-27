@@ -10,7 +10,7 @@ namespace App\Console\Concerns;
 trait NormalizesProjectSyncEntities
 {
     /**
-     * Alias utilisateur → entité interne (scrapping / project:data:sync).
+     * Alias utilisateur → entité interne (scrapping / project:data sync).
      */
     protected function normalizeEntityToken(string $raw): string
     {

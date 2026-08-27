@@ -29,10 +29,9 @@ stockées en base. Détails stack : `docs/_ai.md`, `docs/project/README.md`.
 
 ### Démarrer / lancer les services (dev)
 
-Commandes standard (ne pas dupliquer ici, voir `composer.json` / `package.json`) :
+Commandes : liste dans `app/Console/COMMANDS.md`. Entrée officielle serveur : `php artisan project:dev` (`--queue` pour la file).
 
-- Tout en un : `composer run dev` (concurrently : `php artisan serve` + `php artisan queue:listen` + CSS/Vite).
-  Variante réseau (host 0.0.0.0) : `composer run dev:network`.
+- Helper concurrently : `composer run dev` (`php artisan serve` + `queue:listen` + CSS). Variante réseau : `composer run dev:network`.
 - Ou séparément : `php artisan serve --host=0.0.0.0 --port=8000`, `pnpm run dev` (Vite HMR, port 5173),
   `php artisan queue:listen --tries=1` (driver queue = `database`).
 - Le pipeline CSS custom (`pnpm run css`) génère `resources/css/*` ; nécessaire pour un rendu complet en dev.

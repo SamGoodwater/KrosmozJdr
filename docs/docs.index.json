@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Le dépôt n’a plus que `main`. Les fuites de brouillons, les tooltips catalogue et le travail local (états Auto, table de bonus, conditions canoniques) sont dans `main`."
+    "description": "Une commande par rôle : `project:dev`, `project:deps`, `project:review`, `project:data sync`, `project:clear`, `project:backup`."
   },
   {
     "path": "backend/_ai.md",
@@ -247,12 +247,12 @@
   {
     "path": "operations/_ai.md",
     "title": "Operations — IA",
-    "description": "`app/Console/Commands/Project/ProjectInitCommand.php`"
+    "description": "`app/Console/COMMANDS.md` — vocabulaire CLI unique."
   },
   {
     "path": "operations/README.md",
     "title": "Operations",
-    "description": "Commandes et opérations de maintenance du projet."
+    "description": "Vocabulaire Artisan : app/Console/COMMANDS.md. Ici : orphelins Media, planning, import règles."
   },
   {
     "path": "project/_ai.md",

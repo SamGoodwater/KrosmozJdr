@@ -84,8 +84,6 @@ class ScrappingRunCommand extends Command
 
     protected $description = 'Récupération et import DofusDB (--entity=... par défaut importe ; --simulate pour ne pas écrire ; --backfill-images pour rattraper les images).';
 
-    protected $aliases = ['scrapping'];
-
     private function isDebug(): bool
     {
         return (bool) $this->option('debug');

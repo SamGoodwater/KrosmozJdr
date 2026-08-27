@@ -47,8 +47,6 @@ class ScrappingSeedersExportCommand extends Command
 
     protected $description = 'Exporte définitions JSON caractéristiques, mapping scrapping et types item vers database/seeders/data/';
 
-    protected $aliases = ['db:export-seeder-data'];
-
     public function __construct(
         private readonly CharacteristicGetterService $getter
     ) {

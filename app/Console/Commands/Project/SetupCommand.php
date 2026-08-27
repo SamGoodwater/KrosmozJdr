@@ -29,6 +29,8 @@ class SetupCommand extends Command
 {
     use GuardsProductionEnvironment;
 
+    protected $hidden = true;
+
     protected $signature = 'setup
                             {--install : Vérifier/installer les paquets apt et les dépendances (composer, pnpm)}
                             {--update : Mettre à jour apt, pnpm et composer}

@@ -56,8 +56,8 @@ class ProjectInitCommand extends Command
     use PromptsPrimarySuperAdmin;
     use RunsBibliothequeEntityPagesSync;
 
-    protected $signature = 'project:init|init
-        {--deps : Exécuter d’abord project:deps (composer update + pnpm up + project:optimize)}
+    protected $signature = 'project:init
+        {--deps : Exécuter d’abord project:deps (composer update + pnpm up + optimize)}
         {--fresh : migrate:fresh --force avant tout}
         {--skip-migrate : Ne pas lancer les migrations}
         {--skip-seeders : Ne pas exécuter les seeders (socle déjà fait)}
@@ -385,8 +385,8 @@ class ProjectInitCommand extends Command
     private function runRulesPagesImport(): bool
     {
         $this->info('Phase 2b : Import des règles (TABLE_DES_MATIERES.md → pages CMS)');
-        $this->line('  → project:data:import-rules-toc (pages règles CMS)');
-        $code = Artisan::call('project:data:import-rules-toc');
+        $this->line('  → pages:import-rules-toc (pages règles CMS)');
+        $code = Artisan::call('pages:import-rules-toc');
         $this->output->write(Artisan::output());
         if ($code !== 0) {
             $this->warn('  Avertissement : import des pages règles échoué.');
@@ -591,7 +591,7 @@ class ProjectInitCommand extends Command
         $this->line("    <fg=green>{$cronLine}</>");
         $this->newLine();
         $this->line('  Commande : <fg=cyan>crontab -e</> puis coller la ligne ci-dessus.');
-        $this->line('  Pour project:update planifié : définissez PROJECT_UPDATE_AUTO_ENABLED=true et PROJECT_UPDATE_CRON dans .env');
+        $this->line('  Pour project:data sync planifié : définissez PROJECT_UPDATE_AUTO_ENABLED=true et PROJECT_UPDATE_CRON dans .env');
         $this->newLine();
         $this->line('  Tâches planifiées actuelles :');
         Artisan::call('schedule:list');

@@ -29,11 +29,6 @@ class StoreProjectDepsWebRequest extends FormRequest
             'apt' => ['sometimes', 'boolean'],
             'composer' => ['sometimes', 'boolean'],
             'pnpm' => ['sometimes', 'boolean'],
-            'css' => ['sometimes', 'boolean'],
-            'docs' => ['sometimes', 'boolean'],
-            'dump' => ['sometimes', 'boolean'],
-            'migrate' => ['sometimes', 'boolean'],
-            'optimize' => ['sometimes', 'boolean'],
         ];
     }
 
@@ -56,11 +51,6 @@ class StoreProjectDepsWebRequest extends FormRequest
             'apt' => '--apt',
             'composer' => '--composer',
             'pnpm' => '--pnpm',
-            'css' => '--css',
-            'docs' => '--docs',
-            'dump' => '--dump',
-            'migrate' => '--migrate',
-            'optimize' => '--optimize',
         ] as $key => $flag) {
             if ($this->boolean($key)) {
                 $opts[$flag] = true;

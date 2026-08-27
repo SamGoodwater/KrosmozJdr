@@ -5,34 +5,31 @@ declare(strict_types=1);
 namespace App\Console\Commands\Project;
 
 use App\Console\ArtisanExitCode;
-use App\Services\Project\ProjectRunService;
+use App\Services\Project\ProjectClearService;
 use Illuminate\Console\Command;
 
 /**
- * Réinstallation locale lourde : grand ménage disque puis optionnellement `setup --refresh`,
- * puis **pipeline complet** {@see ProjectInitCommand} (`project:init --fresh`) pour aligner la base
- * avec l’init standard (seeders, règles, capacités, types, scrapping selon options).
- * Termine par les clears alignés sur `project:cron --clear`.
+ * Réinstallation locale : grand ménage puis pipeline `project:init --fresh`.
  * Interdit en production.
  */
 class ProjectRefreshCommand extends Command
 {
     public function __construct(
-        private readonly ProjectRunService $projectRunService
+        private readonly ProjectClearService $projectClearService
     ) {
         parent::__construct();
     }
 
     protected $signature = 'project:refresh
         {--hard : Exécuter setup --refresh (vendor + node_modules) avant le pipeline d’init}
-        {--without-seed : Transmet --skip-seeders à project:init (schéma migré, sans données seedées)}
-        {--skip-scrapping : Transmet à project:init — accélère fortement la réinit}
-        {--fast : Raccourci : --skip-scrapping et --skip-types (données locales sans DofusDB)}
-        {--noimage : Transmet à project:init — pas de téléchargement d’images}
-        {--skip-types : Transmet à project:init — pas de types DofusDB (API)}
-        {--force : Ne pas demander confirmation (scripts/CI) ; transmet aussi --skip-super-admin-prompt à project:init}';
+        {--without-seed : Transmet --skip-seeders à project:init}
+        {--skip-scrapping : Transmet à project:init}
+        {--fast : --skip-scrapping et --skip-types (données locales sans DofusDB)}
+        {--noimage : Transmet à project:init}
+        {--skip-types : Transmet à project:init}
+        {--force : Ne pas demander confirmation ; transmet --skip-super-admin-prompt à project:init}';
 
-    protected $description = 'Réinit locale : grand ménage, setup --hard optionnel, project:init --fresh (pipeline complet), puis clears type project:cron --clear';
+    protected $description = 'Réinit locale : grand ménage, setup --hard optionnel, project:init --fresh, puis clear --safe';
 
     public function handle(): int
     {
@@ -42,15 +39,14 @@ class ProjectRefreshCommand extends Command
             return ArtisanExitCode::FAILURE;
         }
 
-        if (! $this->option('force') && ! $this->confirm('⚠️  Cette commande exécute migrate:fresh via project:init et détruira toutes les tables. Continuer ?')) {
+        if (! $this->option('force') && ! $this->confirm('Cette commande exécute migrate:fresh via project:init et détruira toutes les tables. Continuer ?')) {
             $this->info('Annulé.');
 
             return ArtisanExitCode::FAILURE;
         }
 
-        $this->info('→ Grand ménage local (CSS/pnpm via clear:deep + rapports review + logs Laravel + purge queue locale)');
-
-        $code = $this->projectRunService->runOptionMap(['clear:deep' => true], $this);
+        $this->info('→ Grand ménage local');
+        $code = $this->projectClearService->clearDeep($this);
         if ($code !== 0) {
             return $code;
         }
@@ -63,24 +59,19 @@ class ProjectRefreshCommand extends Command
             }
         }
 
-        $this->info('→ project:init --fresh (pipeline complet : migrations, seeders, règles, capacités, types, scrapping selon options)');
-
+        $this->info('→ project:init --fresh');
         $code = $this->call('project:init', $this->buildProjectInitArguments());
         if ($code !== 0) {
             return $code;
         }
 
-        $this->info('→ Même jeu de clears qu’avec `project:cron --clear`');
-        $code = $this->projectRunService->runOptionMap([
-            'clear:cron' => true,
-            'clear:reviews' => true,
-            'clear:phpstan-cache' => true,
-        ], $this);
+        $this->info('→ project:clear --safe');
+        $code = $this->projectClearService->clearSafe($this);
         if ($code !== 0) {
             return $code;
         }
 
-        $this->info('✅ project:refresh terminé.');
+        $this->info('project:refresh terminé.');
 
         return ArtisanExitCode::SUCCESS;
     }

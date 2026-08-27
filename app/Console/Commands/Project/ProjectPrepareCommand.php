@@ -6,31 +6,31 @@ namespace App\Console\Commands\Project;
 
 use App\Console\ArtisanExitCode;
 use App\Console\Concerns\GuardsProductionEnvironment;
-use App\Services\Project\ProjectRunService;
+use App\Services\Project\ProjectClearService;
+use App\Services\Project\ProjectPrepareService;
 use Illuminate\Console\Command;
 
 /**
- * Prépare l’environnement de dev : rebuild CSS, caches vues, documentation, migrations.
+ * Prépare l’environnement de dev : rebuild CSS, caches, documentation, migrations, IDE / optimize.
  *
  * @example php artisan project:prepare
  * @example php artisan project:prepare --clear
- * @example php artisan project:prepare --dev
  */
 class ProjectPrepareCommand extends Command
 {
     use GuardsProductionEnvironment;
 
     public function __construct(
-        private readonly ProjectRunService $projectRunService
+        private readonly ProjectPrepareService $projectPrepareService,
+        private readonly ProjectClearService $projectClearService
     ) {
         parent::__construct();
     }
 
     protected $signature = 'project:prepare
-        {--clear : Supprimer les artefacts de tests (PHPUnit, coverage, storage/framework/testing) avant la préparation}
-        {--dev : Après la préparation, enchaîner project:optimize puis les serveurs (comme project:dev sans double préparation)}';
+        {--clear : Supprimer les artefacts de tests (PHPUnit, coverage, storage/framework/testing) avant la préparation}';
 
-    protected $description = 'Rebuild CSS, vide caches applicatifs/vues, régénère la doc, exécute les migrations.';
+    protected $description = 'Rebuild CSS, vide caches/vues, régénère la doc, migrations, puis IDE Helper / optimize.';
 
     public function handle(): int
     {
@@ -39,23 +39,11 @@ class ProjectPrepareCommand extends Command
         }
 
         if ($this->option('clear')) {
-            $this->projectRunService->clearTestArtifacts($this);
+            $this->projectClearService->clearTestArtifacts($this);
         }
 
         $this->info('=== project:prepare ===');
 
-        if ($this->projectRunService->runProjectPrepare($this) !== ArtisanExitCode::SUCCESS) {
-            return ArtisanExitCode::FAILURE;
-        }
-
-        if (! $this->option('dev')) {
-            return ArtisanExitCode::SUCCESS;
-        }
-
-        if ($this->call('project:optimize') !== ArtisanExitCode::SUCCESS) {
-            return ArtisanExitCode::FAILURE;
-        }
-
-        return $this->projectRunService->runOptionMap(['dev' => true], $this);
+        return $this->projectPrepareService->prepare($this);
     }
 }

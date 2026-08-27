@@ -32,11 +32,6 @@ const form = useForm({
     apt: false,
     composer: false,
     pnpm: false,
-    css: false,
-    docs: false,
-    dump: false,
-    migrate: false,
-    optimize: false,
 });
 
 const canSubmit = computed(
@@ -56,7 +51,7 @@ function submit() {
             <h1 class="text-2xl font-semibold text-base-content">Mise à jour de la stack</h1>
             <p class="mt-2 text-sm text-base-content/70">
                 Enfile un job qui exécute <code class="rounded bg-base-300 px-1">project:deps</code> (mise à jour
-                Composer + pnpm, puis <code class="rounded bg-base-300 px-1">project:optimize</code> en mode « tout »).
+                Composer + pnpm, puis pipeline IDE / optimize en mode « tout »).
                 <strong>Interdit en production</strong> — réservé aux machines de développement.
             </p>
         </div>
@@ -76,7 +71,7 @@ function submit() {
         <form v-else class="space-y-4 rounded-box border border-base-content/10 bg-base-100/50 p-4" @submit.prevent="submit">
             <label class="flex items-center gap-2 cursor-pointer text-sm font-medium">
                 <input v-model="form.all" type="checkbox" class="checkbox checkbox-sm" />
-                Tout (composer update + pnpm up + project:optimize)
+                Tout (composer update + pnpm up + optimize)
             </label>
             <label
                 v-if="form.all"
@@ -96,23 +91,6 @@ function submit() {
                 >
                 <label class="flex items-center gap-2 cursor-pointer"
                     ><input v-model="form.pnpm" type="checkbox" class="checkbox checkbox-sm" :disabled="form.all" /> pnpm</label
-                >
-                <label class="flex items-center gap-2 cursor-pointer"
-                    ><input v-model="form.css" type="checkbox" class="checkbox checkbox-sm" :disabled="form.all" /> css</label
-                >
-                <label class="flex items-center gap-2 cursor-pointer"
-                    ><input v-model="form.docs" type="checkbox" class="checkbox checkbox-sm" :disabled="form.all" /> docs</label
-                >
-                <label class="flex items-center gap-2 cursor-pointer"
-                    ><input v-model="form.dump" type="checkbox" class="checkbox checkbox-sm" :disabled="form.all" /> dump-autoload</label
-                >
-                <label class="flex items-center gap-2 cursor-pointer"
-                    ><input v-model="form.migrate" type="checkbox" class="checkbox checkbox-sm" :disabled="form.all" />
-                    migrate</label
-                >
-                <label class="flex items-center gap-2 cursor-pointer"
-                    ><input v-model="form.optimize" type="checkbox" class="checkbox checkbox-sm" :disabled="form.all" />
-                    project:optimize (IDE + caches Laravel)</label
                 >
             </div>
 

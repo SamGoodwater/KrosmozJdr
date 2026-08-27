@@ -21,7 +21,7 @@ class ScrappingRunBatchPathTest extends TestCase
         $outside = sys_get_temp_dir().'/kroz-scrap-batch-'.uniqid('', true).'.json';
         File::put($outside, '{}');
         try {
-            $code = Artisan::call('scrapping', ['--batch' => $outside]);
+            $code = Artisan::call('scrapping:run', ['--batch' => $outside]);
             $this->assertSame(1, $code);
             $this->assertStringContainsStringIgnoringCase('hors du répertoire', Artisan::output());
         } finally {
@@ -35,7 +35,7 @@ class ScrappingRunBatchPathTest extends TestCase
         File::ensureDirectoryExists(dirname($path));
         File::put($path, '{"invalid":'); // JSON cassé après lecture
         try {
-            $code = Artisan::call('scrapping', ['--batch' => $path]);
+            $code = Artisan::call('scrapping:run', ['--batch' => $path]);
             $this->assertSame(1, $code);
             $this->assertStringContainsString('JSON invalide', Artisan::output());
         } finally {

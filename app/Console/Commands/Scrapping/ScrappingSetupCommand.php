@@ -36,8 +36,6 @@ class ScrappingSetupCommand extends Command
 
     protected $description = 'Initialise le socle scrapping (migrations + caractéristiques + mappings)';
 
-    protected $aliases = ['scrapping:bootstrap'];
-
     /** @var list<class-string> */
     private const SEEDERS = [
         TypeSeeder::class,

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Exécute `project:review` / `review` depuis la file d’attente (super-admin web).
+ * Exécute `project:review` depuis la file d’attente (super-admin web).
  *
  * Risque CPU / durée importante : timeouts élevés, verrou singleton.
  */

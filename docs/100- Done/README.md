@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Commandes projet simplifiées
+
+Une commande par rôle : `project:dev`, `project:deps`, `project:review`, `project:data sync`, `project:clear`, `project:backup`. Plus d’alias ni de wrappers. La liste tient dans `app/Console/COMMANDS.md`. Le cron admin appelle les mêmes noms.
+
 ## Août 2026 — Une seule `main`, branches courtes
 
 Le dépôt n’a plus que `main`. Les fuites de brouillons (panoplies, pièces de set, sorts via monstre / classe / spécialisation), les tooltips catalogue et le travail local (états Auto, table de bonus, conditions canoniques) sont dans `main`. On crée une branche par sujet, on merge, on la supprime. Pas de branches longues `ui` ou `security`.

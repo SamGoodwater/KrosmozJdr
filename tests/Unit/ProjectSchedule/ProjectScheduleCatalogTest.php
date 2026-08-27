@@ -36,5 +36,8 @@ class ProjectScheduleCatalogTest extends TestCase
             $this->assertContains($definition['type'], ['artisan', 'job']);
             $this->assertArrayHasKey('label', $definition);
         }
+
+        $this->assertSame('project:clear --safe', $handlers['project_clear_safe']['command']);
+        $this->assertSame('project:data sync', $handlers['project_data_sync']['command']);
     }
 }

@@ -77,8 +77,8 @@
         ],
         "scss": "sass --watch resources/scss:resources/css",
         "phpstan": "php -d memory_limit=1G ./vendor/bin/phpstan analyse --configuration=phpstan.neon",
-        "dev:review": "@php artisan dev:review",
-        "dev:review:agent": "@php artisan dev:review all --cursor-agent"
+        "project:review": "@php artisan project:review",
+        "project:review:agent": "@php artisan project:review all --cursor-agent"
     },
     "extra": {
         "laravel": {

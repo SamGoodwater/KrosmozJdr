@@ -26,8 +26,6 @@ class ScrappingTypesExtractCommand extends Command
 
     protected $description = 'Extrait les types item DofusDB par catégorie (resource/consumable/equipment) vers database/seeders/data/';
 
-    protected $aliases = ['scrapping:extract-item-types'];
-
     public function __construct(
         private readonly DofusDbItemTypesCatalogService $catalogService,
         private readonly DofusDbItemSuperTypeMappingService $mappingService

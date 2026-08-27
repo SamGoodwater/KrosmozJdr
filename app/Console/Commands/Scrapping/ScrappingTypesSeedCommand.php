@@ -30,8 +30,6 @@ class ScrappingTypesSeedCommand extends Command
 
     protected $description = 'Remplit les types item (ressource / consommable / équipement) depuis l’API DofusDB puis les seeders';
 
-    protected $aliases = ['scrapping:seed-item-types'];
-
     /** @var array<string, class-string> */
     private const ITEM_TYPE_SEEDERS = [
         'resource' => ResourceTypeSeeder::class,

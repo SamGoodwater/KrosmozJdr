@@ -178,7 +178,7 @@ final class ProjectInitVerifyService
     {
         $rulesCount = Page::query()->where('slug', 'like', 'regles-%')->count();
         if ($rulesCount < 5) {
-            $this->failures[] = "Pages règles CMS insuffisantes ({$rulesCount}) — lancer project:data:import-rules-toc.";
+            $this->failures[] = "Pages règles CMS insuffisantes ({$rulesCount}) — lancer pages:import-rules-toc.";
         }
     }
 }

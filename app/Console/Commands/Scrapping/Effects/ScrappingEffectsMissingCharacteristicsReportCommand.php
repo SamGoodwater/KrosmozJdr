@@ -28,8 +28,6 @@ final class ScrappingEffectsMissingCharacteristicsReportCommand extends Command
 
     protected $description = 'Rapport des mappings d\'effets sans characteristic_key, regroupés par characteristic DofusDB';
 
-    protected $aliases = ['dofusdb:report-missing-effect-characteristics'];
-
     public function handle(
         DofusDbClient $client,
         CharacteristicGetterService $characteristicGetter

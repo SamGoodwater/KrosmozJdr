@@ -40,7 +40,7 @@ final class ProjectScheduleCatalog
             'project_clear_safe' => [
                 'label' => 'Nettoyage projet sûr (caches planifiés)',
                 'type' => 'artisan',
-                'command' => 'project:cron --clear',
+                'command' => 'project:clear --safe',
                 'overlap_minutes' => 60,
             ],
             'privacy_process_deletion_requests' => [
@@ -73,14 +73,14 @@ final class ProjectScheduleCatalog
             'project_data_sync' => [
                 'label' => 'Synchronisation DofusDB (auto_update)',
                 'type' => 'artisan',
-                'command' => 'project:data:sync',
+                'command' => 'project:data sync',
                 'overlap_minutes' => 180,
             ],
             'scrap_resources_catalog' => [
                 'label' => 'Scrapping catalogue ressources (types autorisés)',
                 'type' => 'artisan',
                 'command' => static fn (): string => sprintf(
-                    'scrapping --entity=resource --resource-types=allowed --limit=%d --max-pages=0 --max-items=20000',
+                    'scrapping:run --entity=resource --resource-types=allowed --limit=%d --max-pages=0 --max-items=20000',
                     max(1, (int) env('SCRAPPING_RESOURCES_AUTO_SYNC_LIMIT', 100)),
                 ),
                 'overlap_minutes' => 240,

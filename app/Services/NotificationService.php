@@ -539,7 +539,7 @@ class NotificationService
     }
 
     /**
-     * Notifie tous les admin/super_admin du résultat de project:init ou project:update.
+     * Notifie tous les admin/super_admin du résultat de project:init ou project:data sync.
      *
      * @param  string  $command  'init'|'update'
      * @param  string  $finishedAt  Date/heure de fin formatée

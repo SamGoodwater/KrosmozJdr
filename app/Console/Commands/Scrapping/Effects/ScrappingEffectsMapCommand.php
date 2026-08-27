@@ -31,8 +31,6 @@ class ScrappingEffectsMapCommand extends Command
 
     protected $description = 'Récupère les effets DofusDB via l’API et génère des propositions de mapping pour le seeder';
 
-    protected $aliases = ['dofusdb:fetch-effect-mappings'];
-
     private const BASE_URL = 'https://api.dofusdb.fr/effects';
 
     /**

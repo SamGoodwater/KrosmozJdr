@@ -144,7 +144,7 @@ Pour plus de détails, consulte :
 
 ### 4.1. Fichiers Markdown ↔ pages CMS (import TOC)
 
-La commande `php artisan pages:import-rules-toc` (alias `project:data:import-rules-toc`) lit [TABLE_DES_MATIERES.md](TABLE_DES_MATIERES.md) et les fichiers `N.N.N-*.md` pour créer / mettre à jour les **pages** et **sections** du site.
+La commande `php artisan pages:import-rules-toc` lit [TABLE_DES_MATIERES.md](TABLE_DES_MATIERES.md) et les fichiers `N.N.N-*.md` pour créer / mettre à jour les **pages** et **sections** du site.
 
 - Chaque fichier `N.N.N-*.md` (entrée niveau 3 de la TOC) est **découpé en plusieurs sections CMS** :
   - préambule (description, règles rapides) → **Résumé** ;
