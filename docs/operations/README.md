@@ -30,4 +30,4 @@ Jobs Artisan admin (review, clear, deps, backup, `project:data sync`) : table `p
 
 Le serveur lance `php artisan schedule:run` chaque minute. Les tâches viennent d’un catalogue fixe (`ProjectScheduleCatalog`), pas d’une commande libre. Réglages : `/admin/project-schedule` (commande Artisan affichée + lien vers la page thématique).
 
-Tâches : digests, RGPD, `project:data sync` (`/admin/project-maintenance`), scrapping ressources, `project:backup` (`/admin/backup`), orphelins Media (`/admin/orphan-files`), `project:clear --safe` (`/admin/project-clear`).
+Tâches : digests, RGPD, `project:data sync` (`/admin/content/dofusdb`), scrapping ressources, `project:backup` (`/admin/backup`), orphelins Media (`/admin/orphan-files`), `project:clear --safe` (`/admin/project-clear`).

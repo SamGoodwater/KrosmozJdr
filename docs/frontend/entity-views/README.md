@@ -60,6 +60,10 @@ L’action `view-dofusdb` (icône `/images/logos/dofus.png`) apparaît si l’en
 `dofusDbReference` ; le panneau `DofusDbReferencePanel` (monté dans `Main`) affiche le deep-link
 et un bouton `window.open` (pas d’iframe).
 
+L’action `refresh` (modal / page, types scrapables) lance une maj DofusDB **unitaire**
+(`POST /api/entities/{type}/{id}/dofusdb-refresh`, id local, policy `update`). Les MJ
+n’ont pas l’atelier de masse.
+
 ## Caractéristiques
 
 Densités `icon` / `labeled` / `spacious` sur `CharacteristicsCard` — voir

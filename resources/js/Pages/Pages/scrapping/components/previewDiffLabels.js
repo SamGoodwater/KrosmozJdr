@@ -1,6 +1,6 @@
 /**
- * Libellés pour l’affichage prévisualisation et comparaison (scrapping).
- * Mapping clé technique → libellé et section → libellé, partagé entre SearchPreviewSection et EntityDiffTable.
+ * Libellés pour l’affichage prévisualisation et comparaison (atelier DofusDB).
+ * Mapping clé technique → libellé et section → libellé (`CompareModal`).
  */
 
 /** Libellés des sections (clé top-level : creatures, monsters, items, spells, etc.). */

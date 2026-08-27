@@ -451,20 +451,6 @@
     "file": "section/modals/CreatePageModal.vue"
   },
   {
-    "name": "ScrappingSection",
-    "description": "ScrappingSection (Organism)",
-    "props": [],
-    "slots": [],
-    "file": "scrapping/ScrappingSection.vue"
-  },
-  {
-    "name": "ScrappingSearchTableSection",
-    "description": "ScrappingSearchTableSection",
-    "props": [],
-    "slots": [],
-    "file": "scrapping/ScrappingSearchTableSection.vue"
-  },
-  {
     "name": "ScrappingResultsTable",
     "description": "ScrappingResultsTable — Tableau résultats (lignes entité + relation + détail dépliable). Reçoit rows et getters (statut, triple*, comparisonRows) ; émet toggle-expand, open-compare, open-entity, update:selectedIds. Affiche le type d'entité via EntityLabel (icône + label).",
     "props": [],
@@ -477,13 +463,6 @@
     "props": [],
     "slots": [],
     "file": "scrapping/ScrappingOptionsPanel.vue"
-  },
-  {
-    "name": "ScrappingModal",
-    "description": "ScrappingModal (Organism)",
-    "props": [],
-    "slots": [],
-    "file": "scrapping/ScrappingModal.vue"
   },
   {
     "name": "ScrappingFilters",

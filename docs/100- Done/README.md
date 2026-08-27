@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Atelier DofusDB dans le contenu, maj unitaire sur la fiche
+
+L’import DofusDB n’est plus un coin « scrapping » à part. Les **admins** gèrent tout ça dans **Gestion du contenu** : un atelier unique pour chercher, importer, mettre à jour en masse ou ne récupérer que les images, plus les types, les mappings et les référentiels (caractéristiques, effets, langues). Les **MJ** restent sur les fiches : créer, modifier, et lancer une mise à jour DofusDB **pour une fiche à la fois** (contenu ou images). Le **super-admin** s’occupe du serveur (cron, sauvegardes, caches) ; le sync de masse vit dans l’atelier, plus dans l’ops. Les types du catalogue (équipements, ressources, consommables) se cochent désormais dans les registres, plus via une liste figée.
+
 ## Août 2026 — Lien admin ↔ contenu et suivi live des jobs
 
 Depuis l’espace administration, un lien mène à la gestion du contenu (et l’inverse pour les admins). Les commandes lancées depuis les pages thématiques (review, nettoyage, stack, sauvegarde, sync) affichent un pourcentage, un toast animé et la sortie console filtrée. Tant qu’un job du même type tourne, on ne peut pas en relancer un second.

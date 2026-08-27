@@ -16,7 +16,7 @@
 - **OAuth** : `OAuthController` + modèle `OAuthAccount` (providers github/discord/steam), flux redirect/callback/link/transfer. Détail : [README](./README.md#oauth).
 - **Middlewares** : `role:` (`CheckRole`), `admin.area`, `content.area`, `password.confirm` (`RequirePasswordWithInactivity`, 423 si JSON). Détail : [README](./README.md#middlewares).
 - **Policies** : `BaseEntityPolicy` (admin → auteur → matrice affichage → state + read/write_level) ; surcharges par entité ; `UserPolicy`. `CreaturePolicy::viewResolvedStats` suit le `view` du monstre/PNJ lié (pas un bypass public). Payload panoplie d’un équipement (`ItemPanoplyPayload`) : mêmes règles `view` / `visibleToUser` sur le set et ses pièces. Sorts/équipements nested d’un monstre : `visibleToUser` à l’eager-load. Détail : [README](./README.md#policies).
-- **Projection front** : `EntityPermissionService` calcule les droits (cache 10 min) → partagés via `HandleInertiaRequests` → composable `usePermissions` (`can`, `canAccess`). `contentManagement` / `effectsAdmin` / `scrapping` = `users`/`manageAny` (admin+). Les MJ n’ont pas la zone contenu ; ils gardent le CRUD des fiches. Les droits **par ligne** viennent du champ `can` des Resources, pas de `usePermissions`.
+- **Projection front** : `EntityPermissionService` calcule les droits (cache 10 min) → partagés via `HandleInertiaRequests` → composable `usePermissions` (`can`, `canAccess`). `contentManagement` / `effectsAdmin` / `scrapping` = `users`/`manageAny` (admin+). Les MJ n’ont pas la zone contenu (atelier DofusDB, types, mappings, caracs/effets/langues) ; ils gardent le CRUD des fiches et la maj DofusDB unitaire. Les droits **par ligne** viennent du champ `can` des Resources, pas de `usePermissions`.
 
 ## Fichiers pivots
 

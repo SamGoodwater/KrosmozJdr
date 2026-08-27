@@ -27,7 +27,7 @@ JSON brut. Pour les panoplies, elles deviennent des paliers de `-2` à `2` aux s
 et `13`. L'ID DofusDB `0` est volontairement ignoré car il regroupe des effets techniques hétérogènes ;
 les dommages multi-éléments utilisent l'ID `16`.
 
-Accès **réservé aux administrateurs** : toutes les routes (web et API) passent par `role:admin` + `password.confirm`. La page `/scrapping` impose une confirmation de mot de passe (`ConfirmPasswordModal`) avec un délai d'inactivité.
+Accès **réservé aux administrateurs** : les routes API de masse passent par `role:admin` + `password.confirm`. L’atelier UI est `/admin/content/dofusdb` (même confirmation). `/scrapping` et `/admin/project-maintenance` redirigent vers cet atelier. La maj **unitaire** depuis une fiche est ouverte aux MJ+ (`POST /api/entities/{type}/{id}/dofusdb-refresh`).
 
 ## Pipeline
 
@@ -140,9 +140,11 @@ Les sorts locaux dont le `dofusdb_id` renvoie 404 côté API sont archivés (`st
 
 ## UI (admin)
 
-- Page : `resources/js/Pages/Pages/scrapping/Index.vue` (route `/scrapping`).
-- Logique : composables `resources/js/Composables/scrapping/*` (`useScrappingJobManager`, `useScrappingSearch`, `useScrappingCompare`…), préférences via `useScrappingPreferences`.
-- Comparaison Brut / Converti / Krosmoz pilotée par le mapping.
+- Atelier : `resources/js/Pages/Admin/Content/DofusdbWorkshop/Index.vue` (route `/admin/content/dofusdb`), modes explorer / maj / images + preset auto_update.
+- Tableau et options : `ScrappingDashboard.vue` + composables `resources/js/Composables/scrapping/*` (`useScrappingJobManager`, `useScrappingSearch`, `useScrappingCompare`…), préférences via `useScrappingPreferences`.
+- Comparaison Brut / Converti / Krosmoz dans `CompareModal`.
+- Registres de types : pages contenu `/entities/item-types` (et resource/consumable/races/spells). `decision` = scrap ; `show_in_catalog` = filtre catalogue.
+- Maj unitaire MJ : panneau sur la fiche (`POST /api/entities/{type}/{id}/dofusdb-refresh`), pas l’atelier.
 
 ## Pour aller plus loin
 
