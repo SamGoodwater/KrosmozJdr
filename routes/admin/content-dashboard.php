@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Admin\ContentDofusdbWorkshopController;
 use App\Http\Controllers\Admin\ContentManagementDashboardController;
+use App\Http\Controllers\Admin\ContentTypeRegistryController;
 use Illuminate\Support\Facades\Route;
 
 /**
- * Gestion du contenu : vue d’ensemble + atelier DofusDB (admin+).
+ * Gestion du contenu : vue d’ensemble + atelier DofusDB + registres de types (admin+).
  */
 Route::prefix('admin/content')
     ->name('admin.content.')
@@ -18,4 +19,8 @@ Route::prefix('admin/content')
         Route::post('/dofusdb/sync', [ContentDofusdbWorkshopController::class, 'sync'])
             ->middleware(['password.confirm', 'throttle:6,1'])
             ->name('dofusdb.sync');
+        Route::get('/types', [ContentTypeRegistryController::class, 'index'])->name('types.index');
+        Route::get('/types/{kind}', [ContentTypeRegistryController::class, 'show'])
+            ->whereIn('kind', ContentTypeRegistryController::KINDS)
+            ->name('types.show');
     });

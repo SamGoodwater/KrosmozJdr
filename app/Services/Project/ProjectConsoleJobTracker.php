@@ -14,6 +14,7 @@ use App\Support\Project\ProjectConsoleDomain;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -103,6 +104,10 @@ class ProjectConsoleJobTracker
         $buffer = $record ? (string) $record->output : '';
         $lastFlush = 0.0;
 
+        if ($record !== null && $record->status === ProjectConsoleJob::STATUS_CANCELLED) {
+            return 130;
+        }
+
         if ($record !== null) {
             $record->status = ProjectConsoleJob::STATUS_RUNNING;
             $record->started_at = now();
@@ -114,6 +119,10 @@ class ProjectConsoleJobTracker
 
         $flush = function (bool $force) use (&$buffer, &$lastFlush, $record, $estimator): void {
             if ($record === null) {
+                return;
+            }
+            $record->refresh();
+            if ($record->status === ProjectConsoleJob::STATUS_CANCELLED) {
                 return;
             }
             $now = microtime(true);
@@ -148,6 +157,10 @@ class ProjectConsoleJobTracker
         $flush(true);
 
         if ($record !== null) {
+            $record->refresh();
+            if ($record->status === ProjectConsoleJob::STATUS_CANCELLED) {
+                return $code;
+            }
             $record->exit_code = $code;
             $record->finished_at = now();
             $record->progress = 100;
@@ -239,8 +252,55 @@ class ProjectConsoleJobTracker
         return match ($job->status) {
             ProjectConsoleJob::STATUS_SUCCESS => $label.' terminé (100 %)',
             ProjectConsoleJob::STATUS_FAILED => $label.' en échec',
+            ProjectConsoleJob::STATUS_CANCELLED => $label.' annulé',
             default => $label.' — '.$phase.' ('.$percent.' %)',
         };
+    }
+
+    /**
+     * Le job a-t-il été annulé (ne plus lancer Artisan, ne pas écraser en failed).
+     */
+    public function isCancelled(?string $jobId): bool
+    {
+        if ($jobId === null || $jobId === '') {
+            return false;
+        }
+
+        $record = ProjectConsoleJob::query()->find($jobId);
+
+        return $record !== null && $record->status === ProjectConsoleJob::STATUS_CANCELLED;
+    }
+
+    /**
+     * Annule un job encore actif : retire la ligne de la file Laravel si elle est encore queued.
+     * Un Artisan déjà lancé peut se terminer ; le suivi passe en « annulé ».
+     */
+    public function cancel(ProjectConsoleJob $job): bool
+    {
+        $job->refresh();
+        if (! $job->isActive()) {
+            return false;
+        }
+
+        $job->status = ProjectConsoleJob::STATUS_CANCELLED;
+        $job->progress = 100;
+        $job->progress_label = 'Annulé';
+        $job->error = null;
+        $job->finished_at = now();
+        $job->save();
+        $this->dropQueuedLaravelJobs($job->id);
+        $this->syncNotification($job);
+
+        return true;
+    }
+
+    private function dropQueuedLaravelJobs(string $consoleJobId): void
+    {
+        try {
+            DB::table('jobs')->where('payload', 'like', '%'.$consoleJobId.'%')->delete();
+        } catch (\Throwable) {
+            // Driver queue autre que database : rien à retirer.
+        }
     }
 
     public function logArtisanFailure(string $context, int $userId, int $code): void

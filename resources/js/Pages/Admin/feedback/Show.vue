@@ -1,7 +1,10 @@
 <script setup>
 import { Head, Link, router, useForm } from "@inertiajs/vue3";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import AdminArea from "@/Pages/Layouts/AdminArea.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
+
+defineOptions({ layout: AdminArea });
 
 const props = defineProps({
     thread: { type: Object, required: true },

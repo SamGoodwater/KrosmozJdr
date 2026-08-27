@@ -42,6 +42,10 @@ class RunProjectReviewJob implements ShouldQueue
     {
         $tracker = app(ProjectConsoleJobTracker::class);
 
+        if ($tracker->isCancelled($this->consoleJobId)) {
+            return;
+        }
+
         /** @var DevReportsService $devReports */
         $devReports = app(DevReportsService::class);
         if (! $devReports->isAllowedNewReportPath($this->reportPath)) {
@@ -98,7 +102,11 @@ class RunProjectReviewJob implements ShouldQueue
 
     public function failed(?\Throwable $e): void
     {
-        app(ProjectConsoleJobTracker::class)->markFailed(
+        $tracker = app(ProjectConsoleJobTracker::class);
+        if ($tracker->isCancelled($this->consoleJobId)) {
+            return;
+        }
+        $tracker->markFailed(
             $this->consoleJobId,
             $e?->getMessage() ?? 'Échec inattendu',
         );

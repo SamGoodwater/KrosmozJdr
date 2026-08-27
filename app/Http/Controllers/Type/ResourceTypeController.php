@@ -7,6 +7,7 @@ use App\Http\Requests\Type\StoreResourceTypeRequest;
 use App\Http\Requests\Type\UpdateResourceTypeRequest;
 use App\Http\Resources\Type\ResourceTypeResource;
 use App\Models\Type\ResourceType;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 
 /**
@@ -18,51 +19,13 @@ use Inertia\Inertia;
 class ResourceTypeController extends Controller
 {
     /**
-     * Liste paginée des types de ressources.
+     * Liste : registre commun `/admin/content/types/resource`.
      */
-    public function index()
+    public function index(): RedirectResponse
     {
         $this->authorize('viewAny', ResourceType::class);
 
-        $user = request()->user();
-
-        $query = ResourceType::query()->withCount('resources');
-
-        if (request()->filled('search')) {
-            $search = (string) request()->get('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('dofusdb_type_id', 'like', "%{$search}%");
-            });
-        }
-
-        if (request()->filled('decision')) {
-            $decision = (string) request()->get('decision');
-            if (in_array($decision, [ResourceType::DECISION_PENDING, ResourceType::DECISION_ALLOWED, ResourceType::DECISION_BLOCKED], true)) {
-                $query->where('decision', $decision);
-            }
-        }
-
-        // Tri
-        $sortColumn = request()->get('sort', 'id');
-        $sortOrder = request()->get('order', 'desc');
-        if (in_array($sortColumn, ['id', 'name', 'dofusdb_type_id', 'decision', 'seen_count', 'last_seen_at', 'resources_count', 'created_at'], true)) {
-            $query->orderBy($sortColumn, $sortOrder);
-        } else {
-            $query->latest();
-        }
-
-        $resourceTypes = $query->paginate(20)->withQueryString();
-
-        return Inertia::render('Pages/entity/resource-type/Index', [
-            'resourceTypes' => ResourceTypeResource::collection($resourceTypes),
-            'filters' => request()->only(['search', 'decision']),
-            'can' => [
-                'create' => $user ? $user->can('create', ResourceType::class) : false,
-                'updateAny' => $user ? $user->can('updateAny', ResourceType::class) : false,
-                'deleteAny' => $user ? $user->can('deleteAny', ResourceType::class) : false,
-            ],
-        ]);
+        return redirect()->route('admin.content.types.show', ['kind' => 'resource']);
     }
 
     /**

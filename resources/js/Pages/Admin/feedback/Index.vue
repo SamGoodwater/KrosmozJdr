@@ -1,6 +1,9 @@
 <script setup>
 import { Head, Link } from "@inertiajs/vue3";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import AdminArea from "@/Pages/Layouts/AdminArea.vue";
+
+defineOptions({ layout: AdminArea });
 
 defineProps({
     threads: { type: Object, required: true },

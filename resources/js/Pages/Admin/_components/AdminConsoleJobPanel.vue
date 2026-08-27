@@ -3,12 +3,16 @@
  * Panneau de suivi d’un job Artisan admin : pourcentage + sortie console filtrée.
  */
 import { nextTick, ref, watch } from "vue";
-import { consoleJobStatusLabel } from "@/Composables/admin/useProjectConsoleJob";
+import { consoleJobStatusLabel, isConsoleJobActive } from "@/Composables/admin/useProjectConsoleJob";
+import Btn from "@/Pages/Atoms/action/Btn.vue";
 
 const props = defineProps({
     job: { type: Object, default: null },
     pollError: { type: String, default: "" },
+    cancelling: { type: Boolean, default: false },
 });
+
+const emit = defineEmits(["cancel"]);
 
 const logEl = ref(null);
 
@@ -31,11 +35,29 @@ watch(
     >
         <div class="flex flex-wrap items-center justify-between gap-2">
             <h2 class="text-lg font-medium">Suivi du job</h2>
-            <span class="badge badge-outline">{{ consoleJobStatusLabel(job.status) }}</span>
+            <div class="flex items-center gap-2">
+                <span class="badge badge-outline">{{ consoleJobStatusLabel(job.status) }}</span>
+                <Btn
+                    v-if="isConsoleJobActive(job.status)"
+                    size="sm"
+                    variant="outline"
+                    color="error"
+                    :disabled="cancelling"
+                    @click="emit('cancel')"
+                >
+                    {{ cancelling ? "Annulation…" : "Annuler" }}
+                </Btn>
+            </div>
         </div>
         <p class="text-sm text-base-content/80">
             {{ job.progress_label || consoleJobStatusLabel(job.status) }}
             — <strong>{{ job.progress ?? 0 }} %</strong>
+        </p>
+        <p
+            v-if="job.status === 'queued'"
+            class="text-xs text-warning"
+        >
+            En attente d’un worker (`php artisan queue:listen` ou `project:dev --queue`). Vous pouvez annuler.
         </p>
         <progress class="progress progress-primary w-full" :value="job.progress ?? 0" max="100" />
         <p v-if="job.command" class="text-xs text-base-content/50 font-mono break-all">{{ job.command }}</p>

@@ -26,7 +26,7 @@ const props = defineProps({
 const page = usePage();
 const unlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
 const showConfirmModal = ref(false);
-const { liveJob, pollError, busy } = useProjectConsoleJob(props, { title: 'Review' });
+const { liveJob, pollError, busy, cancelJob, cancelling } = useProjectConsoleJob(props, { title: 'Review' });
 
 function onPasswordConfirmed() {
     unlocked.value = true;
@@ -110,7 +110,7 @@ function setRunAll() {
             {{ page.props.flash.error }}
         </p>
 
-        <AdminConsoleJobPanel :job="liveJob" :poll-error="pollError" />
+        <AdminConsoleJobPanel :job="liveJob" :poll-error="pollError" :cancelling="cancelling" @cancel="cancelJob" />
 
         <section class="rounded-box border border-base-content/10 p-6 space-y-4">
             <h2 class="text-lg font-medium">Nouvelle review</h2>

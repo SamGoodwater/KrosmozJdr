@@ -4,26 +4,19 @@ namespace App\Http\Controllers\Type;
 
 use App\Http\Controllers\Controller;
 use App\Models\Type\ItemType;
-use Inertia\Inertia;
+use Illuminate\Http\RedirectResponse;
 
 /**
  * Page d'administration des types d'équipements (ItemType).
  *
- * @description
- * Gestion de la registry DofusDB (dofusdb_type_id + decision).
+ * L’index redirige vers le registre commun `/admin/content/types/equipment`.
  */
 class ItemTypeController extends Controller
 {
-    public function index()
+    public function index(): RedirectResponse
     {
         $this->authorize('viewAny', ItemType::class);
 
-        $user = request()->user();
-
-        return Inertia::render('Pages/entity/item-type/Index', [
-            'can' => [
-                'updateAny' => $user ? $user->can('updateAny', ItemType::class) : false,
-            ],
-        ]);
+        return redirect()->route('admin.content.types.show', ['kind' => 'equipment']);
     }
 }

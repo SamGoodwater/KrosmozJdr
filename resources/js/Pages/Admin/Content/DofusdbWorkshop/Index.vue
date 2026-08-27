@@ -3,7 +3,7 @@
  * Atelier DofusDB — import de masse (admin, confirmation mot de passe).
  */
 import { ref, onMounted } from "vue";
-import { Head, usePage } from "@inertiajs/vue3";
+import { Head, Link, usePage } from "@inertiajs/vue3";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import AdminArea from "@/Pages/Layouts/AdminArea.vue";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
@@ -46,12 +46,12 @@ function onPasswordConfirmed() {
                 </p>
             </div>
             <div v-if="unlocked" class="flex flex-wrap gap-2">
-                <a :href="route('admin.scrapping-mappings.index')" class="btn btn-ghost btn-sm">
+                <Link :href="route('admin.scrapping-mappings.index')" class="btn btn-ghost btn-sm">
                     Mapping champs
-                </a>
-                <a :href="route('admin.dofusdb-effect-mappings.index')" class="btn btn-ghost btn-sm">
+                </Link>
+                <Link :href="route('admin.dofusdb-effect-mappings.index')" class="btn btn-ghost btn-sm">
                     Mapping effets
-                </a>
+                </Link>
             </div>
         </div>
 

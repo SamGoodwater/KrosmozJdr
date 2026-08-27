@@ -2,7 +2,7 @@ import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 
 /**
- * Suivi live d’un job console admin : poll JSON, toast animé (barre %), log sur la page.
+ * Suivi live d’un job console admin : poll JSON, toast (fermable) + barre %, log sur la page.
  *
  * Le poll continue après un changement de page tant que le job n’est pas terminé.
  *
@@ -10,12 +10,12 @@ import { useNotificationStore } from "@/Composables/store/useNotificationStore";
  * @param {{ title: string }} options
  *
  * @example
- * const { liveJob, busy, pollError } = useProjectConsoleJob(props, { title: "Review" });
+ * const { liveJob, busy, pollError, cancelJob } = useProjectConsoleJob(props, { title: "Review" });
  */
 
 const ACTIVE_STATUSES = new Set(["queued", "running"]);
 
-/** @type {Map<string, { timer: number|null, toastId: number|null, title: string, listeners: Set<(job: Record<string, any>) => void> }>} */
+/** @type {Map<string, { timer: number|null, toastId: number|null, title: string, failCount: number, listeners: Set<(job: Record<string, any>) => void> }>} */
 const polls = new Map();
 
 /**
@@ -37,8 +37,36 @@ export function consoleJobStatusLabel(status) {
             running: "En cours",
             success: "Terminé",
             failed: "Échec",
+            cancelled: "Annulé",
         }[status] || status
     );
+}
+
+/**
+ * @returns {Record<string, string>}
+ */
+function jsonHeaders() {
+    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || "";
+    return {
+        Accept: "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+        "X-CSRF-TOKEN": token,
+    };
+}
+
+/**
+ * @param {Record<string, any>} job
+ * @returns {string}
+ */
+function queuedWorkerHint(job) {
+    if (String(job.status) !== "queued") {
+        return "";
+    }
+    const created = job.created_at ? Date.parse(job.created_at) : 0;
+    if (!created || Date.now() - created < 8000) {
+        return "";
+    }
+    return " — la file n’avance pas (worker inactif ? `php artisan queue:listen`)";
 }
 
 /**
@@ -54,7 +82,10 @@ function toastMessage(job, title) {
     if (job.status === "failed") {
         return `${title} en échec${job.error ? ` : ${job.error}` : ""}`;
     }
-    return `${title} — ${phase} (${percent} %)`;
+    if (job.status === "cancelled") {
+        return `${title} annulé`;
+    }
+    return `${title} — ${phase} (${percent} %)${queuedWorkerHint(job)}`;
 }
 
 /**
@@ -63,6 +94,7 @@ function toastMessage(job, title) {
 function toastType(job) {
     if (job.status === "success") return "success";
     if (job.status === "failed") return "error";
+    if (job.status === "cancelled") return "warning";
     return "info";
 }
 
@@ -82,8 +114,19 @@ function pushJobToListeners(jobId, job, title) {
         type: toastType(job),
         progress: percent,
         duration: active ? 0 : 14000,
-        dismissible: !active,
+        dismissible: true,
         icon: "fa-terminal",
+        actions: active
+            ? [
+                  {
+                      content: "Annuler",
+                      color: "error",
+                      onClick: () => {
+                          cancelConsoleJob(jobId).catch(() => {});
+                      },
+                  },
+              ]
+            : undefined,
     };
     if (entry.toastId == null) {
         entry.toastId = store.addNotification(payload);
@@ -101,10 +144,7 @@ function pushJobToListeners(jobId, job, title) {
  */
 async function fetchConsoleJob(jobId) {
     const res = await fetch(route("admin.console-jobs.show", jobId), {
-        headers: {
-            Accept: "application/json",
-            "X-Requested-With": "XMLHttpRequest",
-        },
+        headers: jsonHeaders(),
         credentials: "same-origin",
     });
     const json = await res.json();
@@ -112,6 +152,31 @@ async function fetchConsoleJob(jobId) {
         throw new Error(json.message || "Statut indisponible");
     }
     return json.data;
+}
+
+/**
+ * Annule un job encore en file / en cours.
+ *
+ * @param {string} jobId
+ * @returns {Promise<Record<string, any>>}
+ */
+export async function cancelConsoleJob(jobId) {
+    const res = await fetch(route("admin.console-jobs.cancel", jobId), {
+        method: "POST",
+        headers: jsonHeaders(),
+        credentials: "same-origin",
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || !json.success) {
+        throw new Error(json.message || "Annulation impossible");
+    }
+    const data = json.data;
+    const entry = polls.get(jobId);
+    if (entry && data) {
+        pushJobToListeners(jobId, data, entry.title);
+        stopPollTimer(jobId);
+    }
+    return data;
 }
 
 /**
@@ -124,18 +189,23 @@ function ensurePoll(jobId, title) {
         existing.title = title;
         return existing;
     }
-    const entry = { timer: null, toastId: null, title, listeners: new Set() };
+    const entry = { timer: null, toastId: null, title, failCount: 0, listeners: new Set() };
     polls.set(jobId, entry);
 
     const tick = async () => {
         try {
             const data = await fetchConsoleJob(jobId);
+            entry.failCount = 0;
             pushJobToListeners(jobId, data, title);
             if (!isConsoleJobActive(data.status)) {
                 stopPollTimer(jobId);
             }
-        } catch {
-            // Le poll reprend au tick suivant.
+        } catch (e) {
+            entry.failCount += 1;
+            if (entry.failCount >= 3) {
+                const message = e instanceof Error ? e.message : "Statut indisponible";
+                entry.listeners.forEach((fn) => fn({ ...(polls.get(jobId) ? {} : {}), _pollError: message }));
+            }
         }
     };
 
@@ -162,11 +232,16 @@ export function useProjectConsoleJob(props, options) {
     const title = options.title || "Job";
     const liveJob = ref(props.consoleJob ?? null);
     const pollError = ref("");
+    const cancelling = ref(false);
     let subscribedId = null;
 
     const busy = computed(() => isConsoleJobActive(liveJob.value?.status));
 
     const onUpdate = (job) => {
+        if (job?._pollError) {
+            pollError.value = String(job._pollError);
+            return;
+        }
         liveJob.value = job;
         pollError.value = "";
     };
@@ -183,6 +258,24 @@ export function useProjectConsoleJob(props, options) {
         entry.listeners.add(onUpdate);
         subscribedId = job.id;
         pushJobToListeners(job.id, job, title);
+    }
+
+    async function cancelJob() {
+        const id = liveJob.value?.id;
+        if (!id || !busy.value || cancelling.value) {
+            return;
+        }
+        cancelling.value = true;
+        try {
+            const data = await cancelConsoleJob(id);
+            if (data) {
+                liveJob.value = data;
+            }
+        } catch (e) {
+            pollError.value = e instanceof Error ? e.message : "Annulation impossible";
+        } finally {
+            cancelling.value = false;
+        }
     }
 
     watch(
@@ -206,6 +299,8 @@ export function useProjectConsoleJob(props, options) {
         liveJob,
         pollError,
         busy,
+        cancelling,
+        cancelJob,
         isActive: isConsoleJobActive,
         statusLabel: consoleJobStatusLabel,
     };

@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Menus, jobs et types
+
+On passe d’un espace à l’autre par le menu du header, plus par un raccourci dans les barres. Les retours utilisateurs gardent le menu d’administration. Un job (mise à jour stack, sync…) s’annule depuis le toast ou le panneau ; s’il reste coincé à 1 %, c’est souvent que le worker de file n’est pas lancé. Les cinq registres de types (équipements, ressources, consommables, races, sorts) partagent une même page, avec un menu d’actions par ligne.
+
 ## Août 2026 — Atelier DofusDB dans le contenu, maj unitaire sur la fiche
 
 L’import DofusDB n’est plus un coin « scrapping » à part. Les **admins** gèrent tout ça dans **Gestion du contenu** : un atelier unique pour chercher, importer, mettre à jour en masse ou ne récupérer que les images, plus les types, les mappings et les référentiels (caractéristiques, effets, langues). Les **MJ** restent sur les fiches : créer, modifier, et lancer une mise à jour DofusDB **pour une fiche à la fois** (contenu ou images). Le **super-admin** s’occupe du serveur (cron, sauvegardes, caches) ; le sync de masse vit dans l’atelier, plus dans l’ops. Les types du catalogue (équipements, ressources, consommables) se cochent désormais dans les registres, plus via une liste figée.

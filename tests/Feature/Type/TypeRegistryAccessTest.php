@@ -21,6 +21,15 @@ class TypeRegistryAccessTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_game_master_is_forbidden_from_unified_type_registry(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+
+        $this->actingAs($gm)
+            ->get(route('admin.content.types.show', ['kind' => 'equipment']))
+            ->assertForbidden();
+    }
+
     public function test_game_master_is_forbidden_from_resource_type_registry_index(): void
     {
         $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
@@ -30,23 +39,24 @@ class TypeRegistryAccessTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_admin_can_view_item_type_registry(): void
+    public function test_admin_is_redirected_from_legacy_item_type_index(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $this->actingAs($admin)
             ->get(route('entities.item-types.index'))
-            ->assertOk()
-            ->assertInertia(fn ($page) => $page->component('Pages/entity/item-type/Index'));
+            ->assertRedirect(route('admin.content.types.show', ['kind' => 'equipment']));
     }
 
-    public function test_admin_can_view_monster_race_registry(): void
+    public function test_admin_can_view_unified_type_registry(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $this->actingAs($admin)
-            ->get(route('entities.monster-races.index'))
+            ->get(route('admin.content.types.show', ['kind' => 'race']))
             ->assertOk()
-            ->assertInertia(fn ($page) => $page->component('Pages/entity/monster-race/Index'));
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Content/Types/Index')
+                ->where('kind', 'race'));
     }
 }

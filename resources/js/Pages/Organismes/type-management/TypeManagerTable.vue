@@ -13,12 +13,12 @@ import { computed, onMounted, ref, watch } from "vue";
 import Card from "@/Pages/Atoms/data-display/Card.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import SpellTypeBadge from "@/Pages/Molecules/entity/spell/SpellTypeBadge.vue";
 import Loading from "@/Pages/Atoms/feedback/Loading.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import SelectField from "@/Pages/Molecules/data-input/SelectField.vue";
 import ConfirmModal from "@/Pages/Molecules/action/ConfirmModal.vue";
+import TypeRegistryRowMenu from "@/Pages/Molecules/content/TypeRegistryRowMenu.vue";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 
@@ -316,6 +316,56 @@ const catalogBulkOptions = [
 function isCatalogShown(row) {
     const v = row?.show_in_catalog ?? row?.showInCatalog;
     return v === true || v === 1 || v === "1";
+}
+
+/**
+ * @param {unknown} row
+ * @returns {boolean}
+ */
+function isScrapOn(row) {
+    return String(row?.decision || "") === "allowed";
+}
+
+/**
+ * @param {unknown} row
+ * @returns {boolean}
+ */
+function isInGameOn(row) {
+    if (String(props.mode) === "decision") {
+        return isCatalogShown(row);
+    }
+    return String(row?.state || "") === "playable";
+}
+
+/**
+ * @param {unknown} row
+ */
+async function toggleScrap(row) {
+    if (!isAdmin.value || String(props.mode) !== "decision") return;
+    await updateSingle(row.id, isScrapOn(row) ? "unused" : "used");
+}
+
+/**
+ * @param {unknown} row
+ */
+async function toggleInGame(row) {
+    if (!isAdmin.value) return;
+    if (String(props.mode) === "decision") {
+        await updateCatalog(row.id, !isCatalogShown(row));
+        return;
+    }
+    await updateSingle(row.id, isInGameOn(row) ? "archived" : "playable");
+}
+
+/**
+ * @param {unknown} row
+ * @returns {string}
+ */
+function scrapBadgeLabel(row) {
+    const d = String(row?.decision || "");
+    if (d === "allowed") return "Scrap";
+    if (d === "blocked") return "Pas scrap";
+    return "Attente";
 }
 
 const updateCatalog = async (id, shown) => {
@@ -670,8 +720,8 @@ onMounted(async () => {
                         <th v-if="String(mode) === 'decision'" class="w-28">typeId</th>
                         <th>Nom</th>
                         <th v-if="String(mode) === 'decision'" class="w-28">Détections</th>
-                        <th v-if="canToggleCatalog" class="w-28 text-center">Catalogue</th>
-                        <th class="w-52 text-right">Validation</th>
+                        <th v-if="canToggleCatalog" class="w-28 text-center">En jeu</th>
+                        <th class="w-44 text-right">Actions</th>
                         <th v-if="String(mode) === 'decision'" class="w-56">Dernière détection</th>
                         <th v-else class="w-56">Dernière maj</th>
                     </tr>
@@ -700,75 +750,43 @@ onMounted(async () => {
                         </td>
                         <td v-if="String(mode) === 'decision'">{{ r.seen_count ?? "—" }}</td>
                         <td v-if="canToggleCatalog" class="text-center">
-                            <input
-                                type="checkbox"
-                                class="checkbox checkbox-sm"
-                                :checked="isCatalogShown(r)"
-                                :disabled="!isAdmin"
-                                title="Afficher ce type dans les filtres catalogue"
-                                @change="updateCatalog(r.id, $event.target.checked)"
-                            />
+                            <span
+                                class="badge badge-sm"
+                                :class="isCatalogShown(r) ? 'badge-success' : 'badge-ghost'"
+                            >
+                                {{ isCatalogShown(r) ? "Oui" : "Non" }}
+                            </span>
                         </td>
                         <td class="text-right">
                             <div class="flex justify-end items-center gap-2">
-                                <select
-                                    class="select select-bordered select-sm"
-                                    :disabled="!isAdmin"
-                                    :value="String(mode) === 'decision' ? (r.decision === 'allowed' ? 'used' : r.decision === 'blocked' ? 'unused' : 'pending') : r.state"
-                                    @change="(e) => updateSingle(r.id, e.target.value)"
+                                <span
+                                    v-if="String(mode) === 'decision'"
+                                    class="badge badge-sm badge-outline"
                                 >
-                                    <template v-if="String(mode) === 'decision'">
-                                        <option value="pending">En attente</option>
-                                        <option value="used">Utiliser</option>
-                                        <option value="unused">Ne pas utiliser</option>
-                                    </template>
-                                    <template v-else>
-                                        <option
-                                            v-for="opt in bulkOptions"
-                                            :key="opt.value"
-                                            :value="opt.value"
-                                        >
-                                            {{ opt.value }}
-                                        </option>
-                                    </template>
-                                </select>
-
-                                <template v-if="canMoveCategory">
-                                    <select
-                                        class="select select-bordered select-xs max-w-[120px]"
-                                        :disabled="!isAdmin"
-                                        title="Déplacer vers…"
-                                        :value="''"
-                                        @change="
-                                            (e) => {
-                                                const t = e.target.value;
-                                                if (t) {
-                                                    requestMove(r, t);
-                                                    e.target.value = '';
-                                                }
-                                            }
-                                        "
-                                    >
-                                        <option value="" disabled>Déplacer vers…</option>
-                                        <option
-                                            v-for="opt in moveTargetOptions"
-                                            :key="opt.value"
-                                            :value="opt.value"
-                                        >
-                                            {{ opt.label }}
-                                        </option>
-                                    </select>
-                                </template>
-                                <Btn
-                                    v-if="deleteUrlBase"
-                                    size="sm"
-                                    variant="ghost"
-                                    :disabled="!isAdmin"
-                                    title="Supprimer"
-                                    @click="requestDelete(r)"
+                                    {{ scrapBadgeLabel(r) }}
+                                </span>
+                                <span
+                                    v-else
+                                    class="badge badge-sm"
+                                    :class="isInGameOn(r) ? 'badge-success' : 'badge-ghost'"
                                 >
-                                    <Icon source="fa-solid fa-trash" alt="Supprimer" pack="solid" />
-                                </Btn>
+                                    {{ isInGameOn(r) ? "En jeu" : r.state || "—" }}
+                                </span>
+                                <TypeRegistryRowMenu
+                                    :row="r"
+                                    :disabled="!isAdmin"
+                                    :can-toggle-scrap="String(mode) === 'decision'"
+                                    :can-toggle-catalog="true"
+                                    :can-move="canMoveCategory"
+                                    :can-delete="Boolean(deleteUrlBase)"
+                                    :scrap-on="isScrapOn(r)"
+                                    :in-game-on="isInGameOn(r)"
+                                    :move-options="moveTargetOptions"
+                                    @toggle-scrap="toggleScrap(r)"
+                                    @toggle-ingame="toggleInGame(r)"
+                                    @move="(target) => requestMove(r, target)"
+                                    @delete="requestDelete(r)"
+                                />
                             </div>
                         </td>
                         <td v-if="String(mode) === 'decision'">

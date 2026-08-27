@@ -4,26 +4,19 @@ namespace App\Http\Controllers\Type;
 
 use App\Http\Controllers\Controller;
 use App\Models\Type\SpellType;
-use Inertia\Inertia;
+use Illuminate\Http\RedirectResponse;
 
 /**
  * Page d'administration des types de sorts (SpellType).
  *
- * @description
- * Validation via le champ `state` (raw/draft/auto/playable/archived).
+ * L’index redirige vers le registre commun `/admin/content/types/spell`.
  */
 class SpellTypeController extends Controller
 {
-    public function index()
+    public function index(): RedirectResponse
     {
         $this->authorize('viewAny', SpellType::class);
 
-        $user = request()->user();
-
-        return Inertia::render('Pages/entity/spell-type/Index', [
-            'can' => [
-                'updateAny' => $user ? $user->can('updateAny', SpellType::class) : false,
-            ],
-        ]);
+        return redirect()->route('admin.content.types.show', ['kind' => 'spell']);
     }
 }

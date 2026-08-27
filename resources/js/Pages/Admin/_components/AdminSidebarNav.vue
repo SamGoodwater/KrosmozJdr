@@ -39,13 +39,6 @@ const adminNavItems = computed(() => {
         show: true,
     });
     items.push({
-        title: 'Gestion du contenu',
-        href: 'admin.content.dashboard.index',
-        path: '/admin/content',
-        icon: 'fa-book-open',
-        show: canAccess('contentManagement') || canAccess('effectsAdmin') || canAccess('adminPanel'),
-    });
-    items.push({
         title: 'Journal',
         href: 'admin.activity-log.index',
         url: '/admin/activity-log',

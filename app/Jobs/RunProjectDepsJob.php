@@ -38,6 +38,10 @@ class RunProjectDepsJob implements ShouldQueue
     {
         $tracker = app(ProjectConsoleJobTracker::class);
 
+        if ($tracker->isCancelled($this->consoleJobId)) {
+            return;
+        }
+
         if (app()->environment('production')) {
             Log::warning('RunProjectDepsJob : ignoré en production', [
                 'user_id' => $this->triggeredByUserId,
@@ -88,7 +92,11 @@ class RunProjectDepsJob implements ShouldQueue
 
     public function failed(?\Throwable $e): void
     {
-        app(ProjectConsoleJobTracker::class)->markFailed(
+        $tracker = app(ProjectConsoleJobTracker::class);
+        if ($tracker->isCancelled($this->consoleJobId)) {
+            return;
+        }
+        $tracker->markFailed(
             $this->consoleJobId,
             $e?->getMessage() ?? 'Échec inattendu',
         );

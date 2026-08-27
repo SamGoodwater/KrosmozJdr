@@ -85,7 +85,7 @@ class ProjectConsoleJobTrackerTest extends TestCase
             ->assertJsonPath('data.status', 'running');
     }
 
-    public function test_admin_forbidden_on_console_job_status(): void
+    public function test_admin_forbidden_on_clear_console_job_status(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $job = ProjectConsoleJob::query()->create([
@@ -99,6 +99,47 @@ class ProjectConsoleJobTrackerTest extends TestCase
         $this->actingAs($admin)
             ->getJson(route('admin.console-jobs.show', $job->id))
             ->assertForbidden();
+    }
+
+    public function test_admin_can_poll_data_sync_console_job(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $job = ProjectConsoleJob::query()->create([
+            'domain' => ProjectConsoleDomain::DATA_SYNC,
+            'status' => ProjectConsoleJob::STATUS_QUEUED,
+            'progress' => 1,
+            'command' => 'project:data sync',
+            'output' => '',
+            'triggered_by' => $admin->id,
+        ]);
+
+        $this->actingAs($admin)
+            ->getJson(route('admin.console-jobs.show', $job->id))
+            ->assertOk()
+            ->assertJsonPath('data.status', 'queued');
+    }
+
+    public function test_super_admin_can_cancel_queued_console_job(): void
+    {
+        $super = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+        $job = ProjectConsoleJob::query()->create([
+            'domain' => ProjectConsoleDomain::DEPS,
+            'status' => ProjectConsoleJob::STATUS_QUEUED,
+            'progress' => 1,
+            'progress_label' => 'En file d’attente',
+            'command' => 'project:deps --all',
+            'output' => '',
+            'triggered_by' => $super->id,
+        ]);
+
+        $this->actingAs($super)
+            ->postJson(route('admin.console-jobs.cancel', $job->id))
+            ->assertOk()
+            ->assertJsonPath('data.status', 'cancelled');
+
+        $job->refresh();
+        $this->assertSame(ProjectConsoleJob::STATUS_CANCELLED, $job->status);
+        $this->assertFalse(ProjectConsoleJob::hasActive(ProjectConsoleDomain::DEPS));
     }
 
     public function test_admin_can_open_content_dashboard(): void

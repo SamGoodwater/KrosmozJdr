@@ -22,4 +22,4 @@ Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interact
 - UI orphelins : `/admin/orphan-files` (super_admin).
 - UI nettoyage caches : `/admin/project-clear` (super_admin).
 - UI atelier DofusDB : `/admin/content/dofusdb` (admin). Cron `project_data_sync` inchangé.
-- Jobs console admin : un actif max par domaine ; poll `GET /admin/console-jobs/{uuid}` ; log filtré.
+- Jobs console admin : un actif max par domaine ; poll `GET /admin/console-jobs/{uuid}` ; annulation `POST /admin/console-jobs/{uuid}/cancel` (file Laravel retirée si encore queued) ; toast fermable ; log filtré.

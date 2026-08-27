@@ -20,7 +20,7 @@ const props = defineProps({
     consoleJob: { type: Object, default: null },
 });
 
-const { liveJob, pollError, busy } = useProjectConsoleJob(props, { title: "Synchronisation auto_update" });
+const { liveJob, pollError, busy, cancelJob, cancelling } = useProjectConsoleJob(props, { title: "Synchronisation auto_update" });
 
 const ENTITY_LABELS = {
     class: "Classes",
@@ -33,19 +33,18 @@ const ENTITY_LABELS = {
 };
 
 const CATALOG_LABELS = {
-    all: "Tout le catalogue (types + races + sorts)",
-    monster: "Races monstres (DofusDB)",
-    spell: "Types de sorts (seeder)",
+    all: "Tout (types, races, sorts)",
+    monster: "Races monstres",
+    spell: "Types de sorts",
     resource: "Types ressources",
     consumable: "Types consommables",
-    item: "Types objets",
-    equipment: "Types équipement (= objets)",
+    item: "Types équipements",
+    equipment: "Types équipements",
 };
 
 const form = useForm({
     entities: [],
     catalog_types: [],
-    races: false,
     lang: "fr",
     noimage: false,
     skip_cache: false,
@@ -55,9 +54,16 @@ const form = useForm({
 });
 
 const hasEntityFilter = computed(() => Array.isArray(form.entities) && form.entities.length > 0);
-const hasCatalogFilter = computed(
-    () => (Array.isArray(form.catalog_types) && form.catalog_types.length > 0) || form.races
-);
+const hasCatalogFilter = computed(() => Array.isArray(form.catalog_types) && form.catalog_types.length > 0);
+
+/** `equipment` est un alias de `item` : on n’affiche qu’une case. */
+const catalogKeys = computed(() => {
+    const keys = Array.isArray(props.catalogTypeChoices) ? [...props.catalogTypeChoices] : [];
+    if (keys.includes("item") && keys.includes("equipment")) {
+        return keys.filter((k) => k !== "equipment");
+    }
+    return keys;
+});
 
 const summaryHint = computed(() => {
     if (!hasCatalogFilter.value && !hasEntityFilter.value) {
@@ -104,7 +110,7 @@ const langOptions = [
             cron-key="project_data_sync"
             cron-command="project:data sync"
         />
-        <AdminConsoleJobPanel :job="liveJob" :poll-error="pollError" />
+        <AdminConsoleJobPanel :job="liveJob" :poll-error="pollError" :cancelling="cancelling" @cancel="cancelJob" />
 
         <Alert v-if="$page.props.flash?.success" color="success" class="text-sm" :show-icon="false" role="status">
             {{ $page.props.flash.success }}
@@ -116,13 +122,12 @@ const langOptions = [
         <form class="space-y-6" @submit.prevent="submit">
             <section class="rounded-box border border-base-300 bg-base-200/40 p-4">
                 <h3 class="font-medium">Catalogue (types / races)</h3>
-                <label class="mt-3 flex cursor-pointer items-center gap-2 text-sm">
-                    <input v-model="form.races" type="checkbox" class="checkbox checkbox-sm" />
-                    <span>Races monstres</span>
-                </label>
+                <p class="mt-1 text-xs text-base-content/60">
+                    Cochez les registres à resynchroniser depuis DofusDB. Rien de coché = pas de maj catalogue.
+                </p>
                 <div class="mt-3 flex flex-wrap gap-2">
                     <label
-                        v-for="key in catalogTypeChoices"
+                        v-for="key in catalogKeys"
                         :key="`cat-${key}`"
                         class="flex cursor-pointer items-center gap-2 rounded-lg border border-base-300 bg-base-100 px-3 py-2 text-sm"
                     >

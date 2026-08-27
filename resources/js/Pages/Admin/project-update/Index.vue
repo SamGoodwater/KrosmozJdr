@@ -25,7 +25,7 @@ const props = defineProps({
 const page = usePage();
 const unlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
 const showConfirmModal = ref(false);
-const { liveJob, pollError, busy } = useProjectConsoleJob(props, { title: 'Mise à jour stack' });
+const { liveJob, pollError, busy, cancelJob, cancelling } = useProjectConsoleJob(props, { title: 'Mise à jour stack' });
 
 function onPasswordConfirmed() {
     unlocked.value = true;
@@ -75,7 +75,7 @@ function submit() {
             {{ page.props.flash.error }}
         </p>
 
-        <AdminConsoleJobPanel :job="liveJob" :poll-error="pollError" />
+        <AdminConsoleJobPanel :job="liveJob" :poll-error="pollError" :cancelling="cancelling" @cancel="cancelJob" />
 
         <div v-if="isProduction" class="alert alert-warning text-sm">
             Cette action n’est pas disponible lorsque <code class="px-1">APP_ENV=production</code>.

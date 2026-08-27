@@ -37,6 +37,8 @@ class ProjectConsoleJob extends Model
 
     public const STATUS_FAILED = 'failed';
 
+    public const STATUS_CANCELLED = 'cancelled';
+
     protected $table = 'project_console_jobs';
 
     public $incrementing = false;
@@ -94,7 +96,7 @@ class ProjectConsoleJob extends Model
 
     public function isTerminal(): bool
     {
-        return in_array($this->status, [self::STATUS_SUCCESS, self::STATUS_FAILED], true);
+        return in_array($this->status, [self::STATUS_SUCCESS, self::STATUS_FAILED, self::STATUS_CANCELLED], true);
     }
 
     public static function hasActive(string $domain): bool

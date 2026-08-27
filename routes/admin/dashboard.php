@@ -53,11 +53,15 @@ Route::prefix('admin')
 
 Route::prefix('admin/console-jobs')
     ->name('admin.console-jobs.')
-    ->middleware(['auth', 'role:super_admin'])
+    ->middleware(['auth', 'role:admin'])
     ->group(function () {
         Route::get('/{job}', [ProjectConsoleJobStatusController::class, 'show'])
             ->whereUuid('job')
             ->name('show');
+        Route::post('/{job}/cancel', [ProjectConsoleJobStatusController::class, 'cancel'])
+            ->middleware(['throttle:12,1'])
+            ->whereUuid('job')
+            ->name('cancel');
     });
 
 Route::prefix('admin/backup')

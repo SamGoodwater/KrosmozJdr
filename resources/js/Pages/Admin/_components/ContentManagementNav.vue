@@ -43,38 +43,10 @@ const navItems = computed(() => {
             show: canAccess("contentManagement") || canAccess("adminPanel"),
         },
         {
-            title: "Types équipements",
-            href: "entities.item-types.index",
-            path: "/entities/item-types",
-            icon: "fa-shield-halved",
-            show: canAccess("contentManagement") || canAccess("adminPanel"),
-        },
-        {
-            title: "Types ressources",
-            href: "entities.resource-types.index",
-            path: "/entities/resource-types",
-            icon: "fa-cubes",
-            show: canAccess("contentManagement") || canAccess("adminPanel"),
-        },
-        {
-            title: "Types consommables",
-            href: "entities.consumable-types.index",
-            path: "/entities/consumable-types",
-            icon: "fa-flask",
-            show: canAccess("contentManagement") || canAccess("adminPanel"),
-        },
-        {
-            title: "Races",
-            href: "entities.monster-races.index",
-            path: "/entities/monster-races",
-            icon: "fa-paw",
-            show: canAccess("contentManagement") || canAccess("adminPanel"),
-        },
-        {
-            title: "Types sorts",
-            href: "entities.spell-types.index",
-            path: "/entities/spell-types",
-            icon: "fa-wand-sparkles",
+            title: "Types",
+            href: "admin.content.types.index",
+            path: "/admin/content/types",
+            icon: "fa-tags",
             show: canAccess("contentManagement") || canAccess("adminPanel"),
         },
         {
@@ -118,13 +90,6 @@ const navItems = computed(() => {
             path: "/admin/sub-effects",
             icon: "fa-wand-magic-sparkles",
             show: canAccess("effectsAdmin"),
-        },
-        {
-            title: "Espace administration",
-            href: "admin.recap.index",
-            path: "/admin/recap",
-            icon: "fa-screwdriver-wrench",
-            show: canAccess("adminPanel"),
         },
     ];
 

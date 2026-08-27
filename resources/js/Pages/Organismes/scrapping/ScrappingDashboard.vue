@@ -12,7 +12,7 @@
  * - Options d'import + historique type "invite de commande"
  */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { router } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
 import Card from "@/Pages/Atoms/data-display/Card.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
@@ -31,6 +31,7 @@ import { Spell } from "@/Models/Entity/Spell";
 import { Consumable } from "@/Models/Entity/Consumable";
 import { Resource } from "@/Models/Entity/Resource";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
+import { SCRAPPING_ENTITY_TO_TYPE_KIND } from "@/Utils/content/typeRegistryKinds";
 import {
     useScrappingPreferences,
     DEFAULTS as SCRAP_DEFAULTS,
@@ -213,25 +214,17 @@ onMounted(async () => {
     }
 });
 
-// Gestion des types/races : mêmes pages que la nav contenu (pas de double UI).
-const TYPE_REGISTRY_ROUTES = {
-    resource: "entities.resource-types.index",
-    consumable: "entities.consumable-types.index",
-    equipment: "entities.item-types.index",
-    monster: "entities.monster-races.index",
-    spell: "entities.spell-types.index",
-};
-
+// Gestion des types/races : page commune contenu.
 function handleOpenTypeManager() {
-    const name = TYPE_REGISTRY_ROUTES[selectedEntityTypeStr.value];
-    if (!name) return;
-    router.visit(route(name));
+    const kind = SCRAPPING_ENTITY_TO_TYPE_KIND[selectedEntityTypeStr.value];
+    if (!kind) return;
+    router.visit(route("admin.content.types.show", { kind }));
 }
 
 const typeManagerConfig = computed(() => {
-    const name = TYPE_REGISTRY_ROUTES[selectedEntityTypeStr.value];
-    if (!name) return null;
-    return { title: "Gérer les types", href: route(name) };
+    const kind = SCRAPPING_ENTITY_TO_TYPE_KIND[selectedEntityTypeStr.value];
+    if (!kind) return null;
+    return { title: "Gérer les types", href: route("admin.content.types.show", { kind }) };
 });
 
 // Filtres principaux (persistés)
@@ -1557,7 +1550,7 @@ const onCompareImported = () => {
             </p>
 
             <div v-if="entitiesWithConfigErrorCount > 0" class="flex flex-wrap gap-1.5">
-                <a
+                <Link
                     v-for="row in entitiesWithConfigError"
                     :key="`cfg-err-${row.entity}`"
                     :href="row.actionUrl || '/admin/scrapping-mappings'"
@@ -1565,7 +1558,7 @@ const onCompareImported = () => {
                     :title="row.message"
                 >
                     {{ row.label }}
-                </a>
+                </Link>
             </div>
 
             <p v-if="configLoadError" class="opacity-70">
@@ -1787,12 +1780,12 @@ const onCompareImported = () => {
                                 {{ u?.meta?.description_fr || "—" }}
                             </td>
                             <td>
-                                <a
+                                <Link
                                     :href="effectMappingHref(u?.effectId)"
                                     class="btn btn-ghost btn-xs"
                                 >
                                     Corriger
-                                </a>
+                                </Link>
                             </td>
                         </tr>
                     </tbody>

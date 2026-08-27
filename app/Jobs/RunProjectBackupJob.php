@@ -37,6 +37,9 @@ class RunProjectBackupJob implements ShouldQueue
     public function handle(): void
     {
         $tracker = app(ProjectConsoleJobTracker::class);
+        if ($tracker->isCancelled($this->consoleJobId)) {
+            return;
+        }
         $lock = Cache::lock(self::LOCK_KEY, self::LOCK_TTL_SECONDS);
 
         if (! $lock->get()) {
@@ -76,7 +79,11 @@ class RunProjectBackupJob implements ShouldQueue
 
     public function failed(?\Throwable $e): void
     {
-        app(ProjectConsoleJobTracker::class)->markFailed(
+        $tracker = app(ProjectConsoleJobTracker::class);
+        if ($tracker->isCancelled($this->consoleJobId)) {
+            return;
+        }
+        $tracker->markFailed(
             $this->consoleJobId,
             $e?->getMessage() ?? 'Échec inattendu',
         );
