@@ -16,6 +16,10 @@ Le filtre Type du catalogue de consommables arrive précoché sur potions, nourr
 
 Les tooltips et popovers d’entités n’affichent plus une seconde boîte autour du contenu (sorts inclus). Les bibliothèques s’ouvrent en vue minimale plutôt qu’en lignes. Sur une carte déployée, la description des consommables, ressources et équipements se lit en entier.
 
+## Août 2026 — Sets brouillon masqués sur un équipement public
+
+Sur une fiche ou un catalogue d’objet visible par tout le monde, on ne voit plus une panoplie encore en brouillon, ni les autres pièces cachées de ce set. Un MJ continue de les voir pour travailler.
+
 ## Août 2026 — Équipements du set dans le tooltip panoplie
 
 Le survol de l’icône de panoplie sur une fiche équipement liste les pièces en vue texte : un clic sur un nom ouvre la fiche de l’objet, comme sur la page de la panoplie.

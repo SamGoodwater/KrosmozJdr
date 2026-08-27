@@ -53,7 +53,7 @@ class ItemResource extends JsonResource
             'resources' => $this->getResourcesArray(),
             'panoplies' => $this->whenLoaded(
                 'panoplies',
-                fn () => ItemPanoplyPayload::fromItem($this->resource)
+                fn () => ItemPanoplyPayload::fromItem($this->resource, $request->user())
             ),
             'scenarios' => $this->whenLoaded('scenarios'),
             'campaigns' => $this->whenLoaded('campaigns'),

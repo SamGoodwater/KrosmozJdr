@@ -15,7 +15,7 @@
 - **Auth** : session guard `web` ; contrôleurs `app/Http/Controllers/Auth/*` ; routes `routes/auth.php`. Sanctum présent mais **non branché** sur `User` (pas de tokens) → auth réelle = session.
 - **OAuth** : `OAuthController` + modèle `OAuthAccount` (providers github/discord/steam), flux redirect/callback/link/transfer. Détail : [README](./README.md#oauth).
 - **Middlewares** : `role:` (`CheckRole`), `admin.area`, `content.area`, `password.confirm` (`RequirePasswordWithInactivity`, 423 si JSON). Détail : [README](./README.md#middlewares).
-- **Policies** : `BaseEntityPolicy` (admin → auteur → matrice affichage → state + read/write_level) ; surcharges par entité ; `UserPolicy`. `CreaturePolicy::viewResolvedStats` suit le `view` du monstre/PNJ lié (pas un bypass public). Détail : [README](./README.md#policies).
+- **Policies** : `BaseEntityPolicy` (admin → auteur → matrice affichage → state + read/write_level) ; surcharges par entité ; `UserPolicy`. `CreaturePolicy::viewResolvedStats` suit le `view` du monstre/PNJ lié (pas un bypass public). Payload panoplie d’un équipement (`ItemPanoplyPayload`) : mêmes règles `view` / `visibleToUser` sur le set et ses pièces. Détail : [README](./README.md#policies).
 - **Projection front** : `EntityPermissionService` calcule les droits (cache 10 min) → partagés via `HandleInertiaRequests` → composable `usePermissions` (`can`, `canAccess`). Les droits **par ligne** viennent du champ `can` des Resources, pas de `usePermissions`.
 
 ## Fichiers pivots
