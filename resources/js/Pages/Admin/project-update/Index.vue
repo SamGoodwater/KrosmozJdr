@@ -5,8 +5,10 @@
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { useProjectConsoleJob } from '@/Composables/admin/useProjectConsoleJob';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import AdminCommandMeta from '@/Pages/Admin/_components/AdminCommandMeta.vue';
+import AdminConsoleJobPanel from '@/Pages/Admin/_components/AdminConsoleJobPanel.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 
@@ -17,11 +19,13 @@ setPageTitle('Mise à jour stack');
 
 const props = defineProps({
     isProduction: { type: Boolean, default: false },
+    consoleJob: { type: Object, default: null },
 });
 
 const page = usePage();
 const unlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
 const showConfirmModal = ref(false);
+const { liveJob, pollError, busy } = useProjectConsoleJob(props, { title: 'Mise à jour stack' });
 
 function onPasswordConfirmed() {
     unlocked.value = true;
@@ -36,7 +40,7 @@ const form = useForm({
 });
 
 const canSubmit = computed(
-    () => unlocked.value && !form.processing && !props.isProduction
+    () => unlocked.value && !form.processing && !props.isProduction && !busy.value
 );
 
 function submit() {
@@ -57,6 +61,21 @@ function submit() {
             </p>
             <AdminCommandMeta signature="project:deps" />
         </div>
+
+        <p
+            v-if="page.props.flash?.success"
+            class="text-success text-sm rounded-box border border-success/30 bg-success/10 px-3 py-2"
+        >
+            {{ page.props.flash.success }}
+        </p>
+        <p
+            v-if="page.props.flash?.error"
+            class="text-error text-sm rounded-box border border-error/30 bg-error/10 px-3 py-2"
+        >
+            {{ page.props.flash.error }}
+        </p>
+
+        <AdminConsoleJobPanel :job="liveJob" :poll-error="pollError" />
 
         <div v-if="isProduction" class="alert alert-warning text-sm">
             Cette action n’est pas disponible lorsque <code class="px-1">APP_ENV=production</code>.
@@ -97,7 +116,7 @@ function submit() {
             </div>
 
             <Btn type="submit" color="primary" :disabled="!canSubmit">
-                {{ form.processing ? 'Envoi…' : 'Lancer la mise à jour' }}
+                {{ busy ? 'Job déjà en cours…' : form.processing ? 'Envoi…' : 'Lancer la mise à jour' }}
             </Btn>
         </form>
 

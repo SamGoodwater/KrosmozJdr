@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Services\Project\DevReportsService;
+use App\Services\Project\ProjectConsoleJobTracker;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -35,10 +35,13 @@ class RunProjectReviewJob implements ShouldQueue
         private readonly int $triggeredByUserId,
         private readonly string $reportPath,
         private readonly array $artisanArguments = [],
+        private readonly ?string $consoleJobId = null,
     ) {}
 
     public function handle(): void
     {
+        $tracker = app(ProjectConsoleJobTracker::class);
+
         /** @var DevReportsService $devReports */
         $devReports = app(DevReportsService::class);
         if (! $devReports->isAllowedNewReportPath($this->reportPath)) {
@@ -46,6 +49,7 @@ class RunProjectReviewJob implements ShouldQueue
                 'user_id' => $this->triggeredByUserId,
                 'report_path' => $this->reportPath,
             ]);
+            $tracker->markFailed($this->consoleJobId, 'Chemin de rapport invalide.');
 
             throw new \RuntimeException('Chemin de rapport invalide.');
         }
@@ -56,6 +60,7 @@ class RunProjectReviewJob implements ShouldQueue
             Log::warning('RunProjectReviewJob : verrou actif, abandon', [
                 'user_id' => $this->triggeredByUserId,
             ]);
+            $tracker->markFailed($this->consoleJobId, 'Une génération de rapport review est déjà en cours.');
 
             throw new \RuntimeException(
                 'Une génération de rapport review est déjà en cours. Réessayez plus tard.'
@@ -73,14 +78,10 @@ class RunProjectReviewJob implements ShouldQueue
                 '--no-cursor-prompts' => true,
             ], $this->artisanArguments);
 
-            $code = Artisan::call('project:review', $params);
+            $code = $tracker->runArtisan($this->consoleJobId, 'project:review', $params);
 
             if ($code !== 0) {
-                Log::error('RunProjectReviewJob : commande en échec', [
-                    'user_id' => $this->triggeredByUserId,
-                    'exit_code' => $code,
-                    'output' => Artisan::output(),
-                ]);
+                $tracker->logArtisanFailure('RunProjectReviewJob', $this->triggeredByUserId, $code);
 
                 throw new \RuntimeException(
                     'La commande project:review a retourné le code '.$code.'. Voir les logs.'
@@ -97,6 +98,10 @@ class RunProjectReviewJob implements ShouldQueue
 
     public function failed(?\Throwable $e): void
     {
+        app(ProjectConsoleJobTracker::class)->markFailed(
+            $this->consoleJobId,
+            $e?->getMessage() ?? 'Échec inattendu',
+        );
         Log::error('RunProjectReviewJob : échec', [
             'user_id' => $this->triggeredByUserId,
             'exception' => $e?->getMessage(),

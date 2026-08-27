@@ -14,6 +14,7 @@ Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interact
 - `app/Console/Commands/Scrapping/`
 - `app/Services/Media/OrphanPublicMediaCleanupService.php`
 - `app/Support/ProjectSchedule/ProjectScheduleCatalog.php`
+- `app/Models/ProjectConsoleJob.php`, `app/Services/Project/ProjectConsoleJobTracker.php`
 
 ## Chemins importants
 
@@ -21,3 +22,4 @@ Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interact
 - UI orphelins : `/admin/orphan-files` (super_admin).
 - UI nettoyage caches : `/admin/project-clear` (super_admin).
 - Planning : `/admin/project-schedule` (commande + lien page thématique).
+- Jobs console admin : un actif max par domaine ; poll `GET /admin/console-jobs/{uuid}` ; log filtré.

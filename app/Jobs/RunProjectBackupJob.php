@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Services\Project\ProjectConsoleJobTracker;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -31,16 +31,19 @@ class RunProjectBackupJob implements ShouldQueue
     public function __construct(
         private readonly int $triggeredByUserId,
         private readonly array $artisanOptions = [],
+        private readonly ?string $consoleJobId = null,
     ) {}
 
     public function handle(): void
     {
+        $tracker = app(ProjectConsoleJobTracker::class);
         $lock = Cache::lock(self::LOCK_KEY, self::LOCK_TTL_SECONDS);
 
         if (! $lock->get()) {
             Log::warning('RunProjectBackupJob : verrou actif, abandon', [
                 'user_id' => $this->triggeredByUserId,
             ]);
+            $tracker->markFailed($this->consoleJobId, 'Une sauvegarde est déjà en cours.');
 
             throw new \RuntimeException(
                 'Une sauvegarde est déjà en cours. Réessayez plus tard.'
@@ -53,14 +56,10 @@ class RunProjectBackupJob implements ShouldQueue
                 'option_keys' => array_keys($this->artisanOptions),
             ]);
 
-            $code = Artisan::call('project:backup', $this->artisanOptions);
+            $code = $tracker->runArtisan($this->consoleJobId, 'project:backup', $this->artisanOptions);
 
             if ($code !== 0) {
-                Log::error('RunProjectBackupJob : commande en échec', [
-                    'user_id' => $this->triggeredByUserId,
-                    'exit_code' => $code,
-                    'output' => Artisan::output(),
-                ]);
+                $tracker->logArtisanFailure('RunProjectBackupJob', $this->triggeredByUserId, $code);
 
                 throw new \RuntimeException(
                     'La commande project:backup a retourné le code '.$code.'. Voir les logs.'
@@ -77,6 +76,10 @@ class RunProjectBackupJob implements ShouldQueue
 
     public function failed(?\Throwable $e): void
     {
+        app(ProjectConsoleJobTracker::class)->markFailed(
+            $this->consoleJobId,
+            $e?->getMessage() ?? 'Échec inattendu',
+        );
         Log::error('RunProjectBackupJob : échec', [
             'user_id' => $this->triggeredByUserId,
             'exception' => $e?->getMessage(),

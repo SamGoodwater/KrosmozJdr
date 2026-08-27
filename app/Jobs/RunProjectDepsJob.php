@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Services\Project\ProjectConsoleJobTracker;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -31,14 +31,18 @@ class RunProjectDepsJob implements ShouldQueue
     public function __construct(
         private readonly int $triggeredByUserId,
         private readonly array $artisanOptions = [],
+        private readonly ?string $consoleJobId = null,
     ) {}
 
     public function handle(): void
     {
+        $tracker = app(ProjectConsoleJobTracker::class);
+
         if (app()->environment('production')) {
             Log::warning('RunProjectDepsJob : ignoré en production', [
                 'user_id' => $this->triggeredByUserId,
             ]);
+            $tracker->markFailed($this->consoleJobId, 'Indisponible en production.');
 
             throw new \RuntimeException(
                 'La mise à jour de la stack (project:deps) n’est pas disponible en production depuis l’interface.'
@@ -51,6 +55,7 @@ class RunProjectDepsJob implements ShouldQueue
             Log::warning('RunProjectDepsJob : verrou actif, abandon', [
                 'user_id' => $this->triggeredByUserId,
             ]);
+            $tracker->markFailed($this->consoleJobId, 'Une mise à jour de stack est déjà en cours.');
 
             throw new \RuntimeException(
                 'Une mise à jour de stack est déjà en cours. Réessayez plus tard.'
@@ -63,14 +68,10 @@ class RunProjectDepsJob implements ShouldQueue
                 'option_keys' => array_keys($this->artisanOptions),
             ]);
 
-            $code = Artisan::call('project:deps', $this->artisanOptions);
+            $code = $tracker->runArtisan($this->consoleJobId, 'project:deps', $this->artisanOptions);
 
             if ($code !== 0) {
-                Log::error('RunProjectDepsJob : commande en échec', [
-                    'user_id' => $this->triggeredByUserId,
-                    'exit_code' => $code,
-                    'output' => Artisan::output(),
-                ]);
+                $tracker->logArtisanFailure('RunProjectDepsJob', $this->triggeredByUserId, $code);
 
                 throw new \RuntimeException(
                     'La commande project:deps a retourné le code '.$code.'. Voir les logs.'
@@ -87,6 +88,10 @@ class RunProjectDepsJob implements ShouldQueue
 
     public function failed(?\Throwable $e): void
     {
+        app(ProjectConsoleJobTracker::class)->markFailed(
+            $this->consoleJobId,
+            $e?->getMessage() ?? 'Échec inattendu',
+        );
         Log::error('RunProjectDepsJob : échec', [
             'user_id' => $this->triggeredByUserId,
             'exception' => $e?->getMessage(),

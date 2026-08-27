@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Lien admin ↔ contenu et suivi live des jobs
+
+Depuis l’espace administration, un lien mène à la gestion du contenu (et l’inverse pour les admins). Les commandes lancées depuis les pages thématiques (review, nettoyage, stack, sauvegarde, sync) affichent un pourcentage, un toast animé et la sortie console filtrée. Tant qu’un job du même type tourne, on ne peut pas en relancer un second.
+
 ## Août 2026 — Pages admin thématiques et planning cron
 
 Les commandes utiles restent chacune sur leur page (sync, backup, review, stack, orphelins, **nettoyage caches**). Le planning cron affiche la commande Artisan réellement lancée et un lien vers la page correspondante.

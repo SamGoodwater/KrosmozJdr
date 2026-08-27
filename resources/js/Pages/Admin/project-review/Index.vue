@@ -5,8 +5,10 @@
 import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { useProjectConsoleJob } from '@/Composables/admin/useProjectConsoleJob';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import AdminCommandMeta from '@/Pages/Admin/_components/AdminCommandMeta.vue';
+import AdminConsoleJobPanel from '@/Pages/Admin/_components/AdminConsoleJobPanel.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 
@@ -18,11 +20,13 @@ setPageTitle('Reviews dev');
 const props = defineProps({
     reports: { type: Array, required: true },
     reportsPathHint: { type: String, default: '' },
+    consoleJob: { type: Object, default: null },
 });
 
 const page = usePage();
 const unlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
 const showConfirmModal = ref(false);
+const { liveJob, pollError, busy } = useProjectConsoleJob(props, { title: 'Review' });
 
 function onPasswordConfirmed() {
     unlocked.value = true;
@@ -40,7 +44,7 @@ const form = useForm({
     docs: false,
 });
 
-const canSubmit = computed(() => unlocked.value && !form.processing);
+const canSubmit = computed(() => unlocked.value && !form.processing && !busy.value);
 
 /** @param {string} basename */
 function downloadUrl(basename) {
@@ -102,6 +106,11 @@ function setRunAll() {
         <p v-if="page.props.flash?.success" class="text-success text-sm rounded-box border border-success/30 bg-success/10 px-3 py-2">
             {{ page.props.flash.success }}
         </p>
+        <p v-if="page.props.flash?.error" class="text-error text-sm rounded-box border border-error/30 bg-error/10 px-3 py-2">
+            {{ page.props.flash.error }}
+        </p>
+
+        <AdminConsoleJobPanel :job="liveJob" :poll-error="pollError" />
 
         <section class="rounded-box border border-base-content/10 p-6 space-y-4">
             <h2 class="text-lg font-medium">Nouvelle review</h2>
@@ -143,7 +152,7 @@ function setRunAll() {
                 </fieldset>
                 <p v-if="form.errors.scope" class="text-error text-sm">{{ form.errors.scope }}</p>
                 <Btn type="submit" color="primary" :disabled="!canSubmit">
-                    {{ form.processing ? 'Envoi…' : 'Planifier une review' }}
+                    {{ busy ? 'Job déjà en cours…' : form.processing ? 'Envoi…' : 'Planifier une review' }}
                 </Btn>
             </form>
         </section>

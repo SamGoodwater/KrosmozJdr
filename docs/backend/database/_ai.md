@@ -8,6 +8,7 @@
 - `database/seeders/`
 - `database/seeders/data/`
 - Favoris user : table `user_favorites` (`user_id`, `entity_type`, `entity_id`)
+- Jobs console admin : table `project_console_jobs` (domaine, %, sortie filtrée)
 - Colonnes JSON/TEXT MySQL : pas de `DEFAULT` SQL (erreur 1101) ; défaut via `$attributes` Eloquent (`users.notification_channels`, `creatures.res_fixe_*`).
 - `conditions.canonical_condition_id` : FK self nullable, jeton Dofus → état JDR `playable`.
 

@@ -6,8 +6,10 @@
 import { computed, ref } from 'vue';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { useProjectConsoleJob } from '@/Composables/admin/useProjectConsoleJob';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import AdminCommandMeta from '@/Pages/Admin/_components/AdminCommandMeta.vue';
+import AdminConsoleJobPanel from '@/Pages/Admin/_components/AdminConsoleJobPanel.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
@@ -19,10 +21,13 @@ const page = usePage();
 const maintenanceUnlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
 const showConfirmModal = ref(false);
 
-defineProps({
+const props = defineProps({
     entityChoices: { type: Array, default: () => [] },
     catalogTypeChoices: { type: Array, default: () => [] },
+    consoleJob: { type: Object, default: null },
 });
+
+const { liveJob, pollError, busy } = useProjectConsoleJob(props, { title: 'Synchronisation données' });
 
 defineOptions({ layout: AdminArea });
 setPageTitle('Maintenance données');
@@ -121,6 +126,8 @@ const langOptions = [
             cron-command="project:data sync"
         />
 
+        <AdminConsoleJobPanel class="mt-6" :job="liveJob" :poll-error="pollError" />
+
         <!-- Porte d’accès : même principe que la page Scrapping (ConfirmPasswordModal + session) -->
         <div
             v-if="!maintenanceUnlocked"
@@ -156,6 +163,15 @@ const langOptions = [
             >
                 {{ $page.props.flash.success }}
             </Alert>
+            <Alert
+                v-if="$page.props.flash?.error"
+                color="error"
+                class="mt-6 text-sm"
+                :show-icon="false"
+                role="alert"
+            >
+                {{ $page.props.flash.error }}
+            </Alert>
 
             <form class="mt-8 space-y-8" @submit.prevent="submit">
                 <section class="rounded-box border border-base-300 bg-base-200/40 p-4">
@@ -169,7 +185,7 @@ const langOptions = [
                     </label>
                     <div class="mt-3 flex flex-wrap gap-2">
                         <label
-                            v-for="key in catalogTypeChoices"
+                            v-for="key in props.catalogTypeChoices"
                             :key="key"
                             class="flex cursor-pointer items-center gap-2 rounded-lg border border-base-300 bg-base-100 px-3 py-2 text-sm"
                         >
@@ -192,7 +208,7 @@ const langOptions = [
                     </p>
                     <div class="mt-3 flex flex-wrap gap-2">
                         <label
-                            v-for="key in entityChoices"
+                            v-for="key in props.entityChoices"
                             :key="key"
                             class="flex cursor-pointer items-center gap-2 rounded-lg border border-base-300 bg-base-100 px-3 py-2 text-sm"
                         >
@@ -242,8 +258,8 @@ const langOptions = [
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3">
-                    <Btn type="submit" color="primary" :disabled="form.processing">
-                        {{ form.processing ? 'Envoi…' : 'Lancer la synchronisation (file d’attente)' }}
+                    <Btn type="submit" color="primary" :disabled="form.processing || busy">
+                        {{ busy ? 'Job déjà en cours…' : form.processing ? 'Envoi…' : 'Lancer la synchronisation (file d’attente)' }}
                     </Btn>
                     <span v-if="form.hasErrors" class="text-sm text-error">
                         {{ form.errors?.entities?.[0] || form.errors?.catalog_types?.[0] || 'Erreur de validation.' }}

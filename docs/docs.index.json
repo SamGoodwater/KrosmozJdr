@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Pages admin thématiques (dont nettoyage caches) et planning cron avec commande + lien."
+    "description": "Lien admin ↔ gestion du contenu ; suivi live des jobs console (%, log filtré, un actif par domaine)."
   },
   {
     "path": "backend/_ai.md",

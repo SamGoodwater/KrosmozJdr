@@ -5,6 +5,7 @@
 import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import AdminCommandMeta from '@/Pages/Admin/_components/AdminCommandMeta.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -34,6 +35,47 @@ const form = useForm({
     delete: false,
     skip_notify: false,
 });
+
+const notificationStore = useNotificationStore();
+let orphanToastId = null;
+
+/**
+ * @param {Record<string, any>|null|undefined} job
+ */
+function syncOrphanToast(job) {
+    if (!job?.id) {
+        return;
+    }
+    const total = Number(job.progress_total || 0);
+    const done = Number(job.progress_done || 0);
+    const percent = total > 0 ? Math.min(100, Math.round((done / total) * 100)) : isActiveStatus(job.status) ? 5 : 100;
+    const active = isActiveStatus(job.status);
+    const message = active
+        ? `Fichiers orphelins — ${statusLabel(job.status)} (${percent} %)`
+        : job.status === 'succeeded'
+            ? `Fichiers orphelins terminé (${percent} %)`
+            : `Fichiers orphelins : ${statusLabel(job.status)}`;
+    const payload = {
+        message,
+        type: job.status === 'failed' ? 'error' : job.status === 'succeeded' ? 'success' : 'info',
+        progress: percent,
+        duration: active ? 0 : 14000,
+        dismissible: !active,
+        icon: 'fa-broom',
+    };
+    if (orphanToastId == null) {
+        if (!active) {
+            return;
+        }
+        orphanToastId = notificationStore.addNotification(payload);
+        return;
+    }
+    notificationStore.updateNotification(orphanToastId, payload);
+    if (!active) {
+        notificationStore.scheduleDismiss(orphanToastId, 14000);
+        orphanToastId = null;
+    }
+}
 
 const canSubmit = computed(() => unlocked.value && !form.processing && !isActiveStatus(liveJob.value?.status));
 
@@ -113,6 +155,7 @@ async function fetchStatus(jobId) {
         }
         liveJob.value = json.data;
         upsertRecent(json.data);
+        syncOrphanToast(json.data);
         if (!isActiveStatus(json.data.status)) {
             stopPolling();
         }
@@ -194,6 +237,7 @@ watch(
 
 onMounted(() => {
     if (liveJob.value?.id && isActiveStatus(liveJob.value.status)) {
+        syncOrphanToast(liveJob.value);
         startPolling(liveJob.value.id);
     }
 });
@@ -269,6 +313,7 @@ onBeforeUnmount(() => {
             <p class="text-sm">
                 Mode : <strong>{{ liveJob.mode === 'delete' ? 'suppression' : 'dry-run' }}</strong>
                 — {{ liveJob.progress_done }} / {{ liveJob.progress_total }} fichier(s)
+                ({{ progressPercent }} %)
             </p>
             <progress
                 class="progress progress-primary w-full"

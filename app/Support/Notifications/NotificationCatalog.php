@@ -10,6 +10,7 @@ use App\Notifications\FeedbackThreadNotification;
 use App\Notifications\LastConnectionNotification;
 use App\Notifications\NewUserCreatedNotification;
 use App\Notifications\ProfileModifiedNotification;
+use App\Notifications\ProjectConsoleJobProgressNotification;
 use App\Notifications\ProjectMaintenanceNotification;
 use App\Notifications\ScrappingJobProgressNotification;
 use App\Notifications\UserDeletedNotification;
@@ -58,6 +59,11 @@ class NotificationCatalog
             'config_type' => null,
             'category' => 'system',
             'action_label' => null,
+        ],
+        ProjectConsoleJobProgressNotification::class => [
+            'config_type' => null,
+            'category' => 'system',
+            'action_label' => 'Voir le job',
         ],
         EntityModifiedNotification::class => [
             'config_type' => null,

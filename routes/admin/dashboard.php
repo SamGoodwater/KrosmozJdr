@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AdminRecapController;
 use App\Http\Controllers\Admin\FeedbackThreadController;
 use App\Http\Controllers\Admin\ProjectBackupWebController;
 use App\Http\Controllers\Admin\ProjectClearWebController;
+use App\Http\Controllers\Admin\ProjectConsoleJobStatusController;
 use App\Http\Controllers\Admin\ProjectDepsWebController;
 use App\Http\Controllers\Admin\ProjectOrphanFilesWebController;
 use Illuminate\Http\RedirectResponse;
@@ -51,6 +52,15 @@ Route::prefix('admin')
         Route::patch('/feedback/{feedback}/status', [FeedbackThreadController::class, 'updateStatus'])
             ->middleware(['admin.area', 'password.confirm', 'throttle:12,1'])
             ->name('feedback.status');
+    });
+
+Route::prefix('admin/console-jobs')
+    ->name('admin.console-jobs.')
+    ->middleware(['auth', 'role:super_admin'])
+    ->group(function () {
+        Route::get('/{job}', [ProjectConsoleJobStatusController::class, 'show'])
+            ->whereUuid('job')
+            ->name('show');
     });
 
 Route::prefix('admin/backup')

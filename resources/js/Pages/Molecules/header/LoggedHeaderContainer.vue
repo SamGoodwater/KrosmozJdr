@@ -336,7 +336,7 @@ onUnmounted(() => {
 });
 
 // Vérifier si l'utilisateur est admin ou super_admin
-const { canAccess, isSuperAdmin } = usePermissions();
+const { canAccess, isSuperAdmin, isAdmin } = usePermissions();
 
 // Vérifier si l'utilisateur est game_master, admin ou super_admin
 const canManagePages = computed(() => canAccess('pagesManager'));
@@ -595,7 +595,7 @@ const logout = () => {
                             </GlassMenuItem>
                         </div>
                         <GlassMenuDivider />
-                        <template v-if="canAccess('contentManagement') || canAccess('effectsAdmin')">
+                        <template v-if="canAccess('contentManagement') || canAccess('effectsAdmin') || isAdmin">
                             <div class="flex flex-col gap-0.5">
                                 <GlassMenuSectionTitle>Gestion du contenu</GlassMenuSectionTitle>
                                 <GlassMenuItem route="admin.content.dashboard.index" icon="fa-book-open" icon-alt="Gestion du contenu" hover3d>

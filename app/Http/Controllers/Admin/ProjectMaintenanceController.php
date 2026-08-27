@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\SharesProjectConsoleJob;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreProjectDataSyncRequest;
 use App\Jobs\RunProjectDataSyncJob;
+use App\Services\Project\ProjectConsoleJobTracker;
+use App\Support\Project\ProjectConsoleDomain;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
@@ -21,18 +24,20 @@ use Inertia\Response as InertiaResponse;
  */
 class ProjectMaintenanceController extends Controller
 {
+    use SharesProjectConsoleJob;
+
     /**
      * Formulaire + rappels (worker queue requis).
      */
     public function index(): InertiaResponse
     {
-        return Inertia::render('Admin/project-maintenance/Index', [
+        return Inertia::render('Admin/project-maintenance/Index', array_merge([
             'entityChoices' => StoreProjectDataSyncRequest::ENTITY_CHOICES,
             'catalogTypeChoices' => StoreProjectDataSyncRequest::CATALOG_TYPE_CHOICES,
-        ]);
+        ], $this->consoleJobProps(ProjectConsoleDomain::DATA_SYNC)));
     }
 
-    public function store(StoreProjectDataSyncRequest $request): RedirectResponse
+    public function store(StoreProjectDataSyncRequest $request, ProjectConsoleJobTracker $tracker): RedirectResponse
     {
         $user = $request->user();
         if ($user === null || ! $user->isInteractiveSuperAdmin()) {
@@ -40,6 +45,13 @@ class ProjectMaintenanceController extends Controller
         }
 
         $params = $request->artisanParameters();
+        $commandLine = ProjectConsoleJobTracker::commandLine('project:data sync', $params);
+        $record = $tracker->tryQueue(ProjectConsoleDomain::DATA_SYNC, $commandLine, $user->id);
+        if ($record === null) {
+            return redirect()
+                ->route('admin.project-maintenance.index')
+                ->with('error', ProjectConsoleDomain::busyMessage(ProjectConsoleDomain::DATA_SYNC));
+        }
 
         Log::info('admin.project_maintenance.sync_dispatched', [
             'user_id' => $user->id,
@@ -49,9 +61,10 @@ class ProjectMaintenanceController extends Controller
             'has_entity_filter' => isset($params['--entity']),
             'has_catalog' => isset($params['--type']) || ($params['--races'] ?? false),
             'dry_run' => (bool) ($params['--dry-run'] ?? false),
+            'console_job_id' => $record->id,
         ]);
 
-        RunProjectDataSyncJob::dispatch($user->id, $params);
+        RunProjectDataSyncJob::dispatch($user->id, $params, $record->id);
 
         return redirect()
             ->route('admin.project-maintenance.index')

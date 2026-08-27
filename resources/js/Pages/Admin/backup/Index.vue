@@ -5,8 +5,10 @@
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { useProjectConsoleJob } from '@/Composables/admin/useProjectConsoleJob';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import AdminCommandMeta from '@/Pages/Admin/_components/AdminCommandMeta.vue';
+import AdminConsoleJobPanel from '@/Pages/Admin/_components/AdminConsoleJobPanel.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 
@@ -15,9 +17,14 @@ defineOptions({ layout: AdminArea });
 const { setPageTitle } = usePageTitle();
 setPageTitle('Sauvegarde');
 
+const props = defineProps({
+    consoleJob: { type: Object, default: null },
+});
+
 const page = usePage();
 const unlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
 const showConfirmModal = ref(false);
+const { liveJob, pollError, busy } = useProjectConsoleJob(props, { title: 'Sauvegarde' });
 
 function onPasswordConfirmed() {
     unlocked.value = true;
@@ -32,7 +39,7 @@ const form = useForm({
     retention_days: '',
 });
 
-const canSubmit = computed(() => unlocked.value && !form.processing);
+const canSubmit = computed(() => unlocked.value && !form.processing && !busy.value);
 
 function submit() {
     form.post(route('admin.backup.run'), { preserveScroll: true });
@@ -51,6 +58,21 @@ function submit() {
             </p>
             <AdminCommandMeta signature="project:backup" cron-key="project_backup" cron-command="project:backup" />
         </div>
+
+        <p
+            v-if="page.props.flash?.success"
+            class="text-success text-sm rounded-box border border-success/30 bg-success/10 px-3 py-2"
+        >
+            {{ page.props.flash.success }}
+        </p>
+        <p
+            v-if="page.props.flash?.error"
+            class="text-error text-sm rounded-box border border-error/30 bg-error/10 px-3 py-2"
+        >
+            {{ page.props.flash.error }}
+        </p>
+
+        <AdminConsoleJobPanel :job="liveJob" :poll-error="pollError" />
 
         <div
             v-if="!unlocked"
@@ -94,7 +116,7 @@ function submit() {
             </div>
 
             <Btn type="submit" color="primary" :disabled="!canSubmit">
-                {{ form.processing ? 'Envoi…' : 'Lancer la sauvegarde' }}
+                {{ busy ? 'Job déjà en cours…' : form.processing ? 'Envoi…' : 'Lancer la sauvegarde' }}
             </Btn>
         </form>
 

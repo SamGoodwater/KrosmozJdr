@@ -34,7 +34,9 @@ class ProjectClearWebControllerTest extends TestCase
         $response = $this->actingAs($super)->get(route('admin.project-clear.index'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => $page->component('Admin/project-clear/Index'));
+        $response->assertInertia(fn ($page) => $page
+            ->component('Admin/project-clear/Index')
+            ->has('consoleJob'));
     }
 
     public function test_super_admin_can_dispatch_clear_job_when_password_confirmed(): void

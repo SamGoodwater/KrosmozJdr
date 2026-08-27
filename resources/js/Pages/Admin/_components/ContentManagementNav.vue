@@ -68,6 +68,13 @@ const navItems = computed(() => {
             path: "/admin/sub-effects",
             icon: "fa-wand-magic-sparkles",
             show: canAccess("effectsAdmin"),
+        },
+        {
+            title: "Espace administration",
+            href: "admin.recap.index",
+            path: "/admin/recap",
+            icon: "fa-screwdriver-wrench",
+            show: canAccess("adminPanel"),
         }
     );
 

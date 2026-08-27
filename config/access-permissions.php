@@ -47,8 +47,9 @@ return [
 
     /**
      * Menu « Gestion du contenu » (game_master et au-dessus).
+     * `items.updateAny` suit BaseEntityPolicy (MJ+), pas SpellPolicy (admin seul).
      */
     'contentManagement' => [
-        ['entity' => 'spells', 'ability' => 'updateAny'],
+        ['entity' => 'items', 'ability' => 'updateAny'],
     ],
 ];
