@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Le survol de l’icône de panoplie sur une fiche équipement liste les pièces en vue texte : un clic sur un nom ouvre la fiche de l’objet, comme sur la page de la panoplie."
+    "description": "Un sort (ou une capacité) encore en brouillon n’apparaît plus sur la fiche, le catalogue ou le PDF d’une spécialisation jouable."
   },
   {
     "path": "backend/_ai.md",

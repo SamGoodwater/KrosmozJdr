@@ -24,7 +24,7 @@
 - `app/Http/Controllers/Auth/*`, `app/Http/Controllers/Auth/OAuthController.php`, `app/Support/OAuthConfig.php`.
 - `app/Http/Middleware/CheckRole.php`, `EnsureAdminAreaAccess.php`, `EnsureContentManagementAccess.php`, `RequirePasswordWithInactivity.php`, `HandleInertiaRequests.php`.
 - `app/Policies/Entity/BaseEntityPolicy.php`, `app/Policies/UserPolicy.php`.
-- `app/Support/EntityPermissions/EntityPermissionService.php`, `app/Services/EntityDisplay/EntityDisplayVisibilityService.php` (`constrainQueryToViewer` pour listes ; colonnes `state`/`read_level`/`write_level`/`created_by` qualifiées par table, pour rester valides après un JOIN).
+- `app/Support/EntityPermissions/EntityPermissionService.php`, `app/Services/EntityDisplay/EntityDisplayVisibilityService.php` (`constrainQueryToViewer` pour listes ; colonnes `state`/`read_level`/`write_level`/`created_by` qualifiées par table, pour rester valides après un JOIN). Nested spécialisations : `SpecializationController` / `SpecializationTableController` / `PdfService` appliquent `visibleToUser` aux sorts/capacités/traits/objets/PNJ liés.
 - `config/entity-permissions.php`, `config/access-permissions.php`, `config/auth.php`.
 - `resources/js/Composables/permissions/usePermissions.js`, `Composables/auth/useProtectedAdminAction.js`, `Pages/Molecules/action/ConfirmPasswordModal.vue`.
 

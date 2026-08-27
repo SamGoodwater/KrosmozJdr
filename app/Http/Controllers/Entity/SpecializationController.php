@@ -50,15 +50,19 @@ class SpecializationController extends Controller
     {
         $this->authorize('viewAny', Specialization::class);
 
+        $viewer = request()->user();
         $query = Specialization::query()
-            ->visibleToUser(request()->user())
+            ->visibleToUser($viewer)
             ->with([
                 'createdBy',
-                'npcs',
-                'capabilities' => fn ($q) => $q->orderBy('name'),
-                'spells' => fn ($q) => $q->orderBy('name'),
+                'npcs' => fn ($q) => $q->visibleToUser($viewer),
+                'capabilities' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
+                'spells' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
             ])
-            ->withCount(['capabilities', 'spells']);
+            ->withCount([
+                'capabilities' => fn ($q) => $q->visibleToUser($viewer),
+                'spells' => fn ($q) => $q->visibleToUser($viewer),
+            ]);
 
         // Recherche
         if (request()->has('search') && request()->search) {
@@ -127,15 +131,16 @@ class SpecializationController extends Controller
     {
         $this->authorize('view', $specialization);
 
+        $viewer = request()->user();
         $specialization->load([
             'createdBy',
-            'npcs' => fn ($q) => $q->limit(100),
-            'capabilities' => fn ($q) => $q->orderBy('name'),
-            'spells' => fn ($q) => $q->orderBy('name'),
-            'creatureTraits' => fn ($q) => $q->orderBy('name'),
-            'consumables' => fn ($q) => $q->orderBy('name'),
-            'resources' => fn ($q) => $q->orderBy('name'),
-            'items' => fn ($q) => $q->orderBy('name'),
+            'npcs' => fn ($q) => $q->visibleToUser($viewer)->limit(100),
+            'capabilities' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
+            'spells' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
+            'creatureTraits' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
+            'consumables' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
+            'resources' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
+            'items' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
             'sections' => Specialization::orderedSectionsEagerLoadConstraint(),
         ]);
 

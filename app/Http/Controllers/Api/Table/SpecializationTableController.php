@@ -32,7 +32,6 @@ class SpecializationTableController extends Controller
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
-
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
         $order = (string) $request->get('order', 'desc');
@@ -44,14 +43,18 @@ class SpecializationTableController extends Controller
             $order = 'desc';
         }
 
+        $viewer = $request->user();
         $query = Specialization::query()
-            ->visibleToUser($request->user())
+            ->visibleToUser($viewer)
             ->with([
                 'createdBy',
-                'capabilities' => fn ($q) => $q->orderBy('name'),
-                'spells' => fn ($q) => $q->orderBy('name'),
+                'capabilities' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
+                'spells' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
             ])
-            ->withCount(['capabilities', 'spells']);
+            ->withCount([
+                'capabilities' => fn ($q) => $q->visibleToUser($viewer),
+                'spells' => fn ($q) => $q->visibleToUser($viewer),
+            ]);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
