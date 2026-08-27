@@ -3,6 +3,7 @@
 namespace App\Models\Type;
 
 use App\Models\Entity\Monster;
+use App\Models\Type\Concerns\HasTypeRegistryFlags;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -53,7 +54,7 @@ use Illuminate\Support\Carbon;
 class MonsterRace extends Model
 {
     /** @use HasFactory<\\Database\\Factories\\MonsterRaceFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasTypeRegistryFlags, SoftDeletes;
 
     public const STATE_RAW = 'raw';
 
@@ -64,6 +65,14 @@ class MonsterRace extends Model
     public const STATE_PLAYABLE = 'playable';
 
     public const STATE_ARCHIVED = 'archived';
+
+    /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'show_in_catalog' => false,
+        'allow_scrap' => false,
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -78,6 +87,8 @@ class MonsterRace extends Model
         'write_level',
         'created_by',
         'id_super_race',
+        'show_in_catalog',
+        'allow_scrap',
     ];
 
     /**
@@ -89,6 +100,8 @@ class MonsterRace extends Model
         'read_level' => 'integer',
         'write_level' => 'integer',
         'dofusdb_race_id' => 'integer',
+        'show_in_catalog' => 'boolean',
+        'allow_scrap' => 'boolean',
     ];
 
     /**
@@ -108,6 +121,8 @@ class MonsterRace extends Model
                 $model->dofusdb_race_id = $dofusdbRaceId;
                 $model->name = $name ?: ("DofusDB race #{$dofusdbRaceId}");
                 $model->state = self::STATE_DRAFT;
+                $model->show_in_catalog = false;
+                $model->allow_scrap = false;
                 $model->read_level = 0;
                 $model->write_level = 3;
                 $model->created_by = null;

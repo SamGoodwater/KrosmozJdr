@@ -51,8 +51,8 @@ function visitKind(key) {
         <div>
             <h1 class="text-3xl font-bold text-primary-100">Types</h1>
             <p class="text-primary-200 mt-2">
-                Même interface pour les cinq registres. Le menu d’actions de chaque ligne permet de scrap / afficher en jeu / supprimer
-                (et de déplacer équipements, ressources et consommables).
+                Même interface pour les cinq registres : visible en jeu (tableaux) et autorisation de scrap. Le menu
+                d’actions permet aussi de supprimer, et de déplacer équipements, ressources et consommables.
             </p>
         </div>
 
@@ -74,14 +74,13 @@ function visitKind(key) {
             :key="current.key"
             :title="current.title"
             :description="current.description"
-            :mode="current.mode"
             :list-url="current.listUrl"
             :bulk-url="current.bulkUrl"
             :delete-url-base="current.deleteUrlBase"
             :move-category-url-base="current.canMove ? current.moveCategoryUrlBase : ''"
             :current-category="current.currentCategory"
             :spell-type-name-cell="current.spellTypeNameCell"
-            field-label="Actions en masse"
+            :has-dofus-meta="current.hasDofusMeta"
         />
     </Container>
 </template>

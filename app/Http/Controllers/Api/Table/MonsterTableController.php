@@ -244,12 +244,13 @@ class MonsterTableController extends Controller
         ];
 
         $monsterRaceOptions = MonsterRace::query()
-            ->select(['id', 'name'])
+            ->select(['id', 'name', 'show_in_catalog'])
             ->orderBy('name')
             ->get()
             ->map(fn (MonsterRace $race) => [
                 'value' => (string) $race->id,
                 'label' => (string) $race->name,
+                'show_in_catalog' => (bool) $race->show_in_catalog,
             ])
             ->values()
             ->all();

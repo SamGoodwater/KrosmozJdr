@@ -7,7 +7,6 @@
  *   shortTitle: string,
  *   icon: string,
  *   description: string,
- *   mode: 'decision'|'state',
  *   listUrl: string,
  *   bulkUrl: string,
  *   deleteUrlBase: string,
@@ -15,8 +14,7 @@
  *   currentCategory: string,
  *   spellTypeNameCell: boolean,
  *   canMove: boolean,
- *   canToggleScrap: boolean,
- *   canToggleCatalog: boolean,
+ *   hasDofusMeta: boolean,
  * }} TypeRegistryKind
  */
 
@@ -28,8 +26,7 @@ export const TYPE_REGISTRY_KINDS = [
         shortTitle: "Équipements",
         icon: "fa-shield-halved",
         description:
-            "« Scrap » inclut le type dans l’import / la maj de masse. « En jeu » le pré-coche dans le catalogue objets.",
-        mode: "decision",
+            "« En jeu » pré-coche le type dans le catalogue. « Scrap » autorise l’import / la maj DofusDB des entités de ce type. Déplaçable vers ressources ou consommables.",
         listUrl: "/api/scrapping/item-types",
         bulkUrl: "/api/scrapping/item-types/bulk",
         deleteUrlBase: "/api/scrapping/item-types",
@@ -37,8 +34,7 @@ export const TYPE_REGISTRY_KINDS = [
         currentCategory: "equipment",
         spellTypeNameCell: false,
         canMove: true,
-        canToggleScrap: true,
-        canToggleCatalog: true,
+        hasDofusMeta: true,
     },
     {
         key: "resource",
@@ -46,8 +42,7 @@ export const TYPE_REGISTRY_KINDS = [
         shortTitle: "Ressources",
         icon: "fa-cubes",
         description:
-            "« Scrap » inclut le type dans l’import / la maj de masse. « En jeu » le pré-coche dans le catalogue ressources.",
-        mode: "decision",
+            "« En jeu » pré-coche le type dans le catalogue. « Scrap » autorise l’import / la maj DofusDB. Déplaçable vers équipements ou consommables.",
         listUrl: "/api/scrapping/resource-types",
         bulkUrl: "/api/scrapping/resource-types/bulk",
         deleteUrlBase: "/api/scrapping/resource-types",
@@ -55,8 +50,7 @@ export const TYPE_REGISTRY_KINDS = [
         currentCategory: "resource",
         spellTypeNameCell: false,
         canMove: true,
-        canToggleScrap: true,
-        canToggleCatalog: true,
+        hasDofusMeta: true,
     },
     {
         key: "consumable",
@@ -64,8 +58,7 @@ export const TYPE_REGISTRY_KINDS = [
         shortTitle: "Consommables",
         icon: "fa-flask",
         description:
-            "« Scrap » inclut le type dans l’import / la maj de masse. « En jeu » le pré-coche dans le catalogue consommables.",
-        mode: "decision",
+            "« En jeu » pré-coche le type dans le catalogue. « Scrap » autorise l’import / la maj DofusDB. Déplaçable vers équipements ou ressources.",
         listUrl: "/api/scrapping/consumable-types",
         bulkUrl: "/api/scrapping/consumable-types/bulk",
         deleteUrlBase: "/api/scrapping/consumable-types",
@@ -73,8 +66,7 @@ export const TYPE_REGISTRY_KINDS = [
         currentCategory: "consumable",
         spellTypeNameCell: false,
         canMove: true,
-        canToggleScrap: true,
-        canToggleCatalog: true,
+        hasDofusMeta: true,
     },
     {
         key: "race",
@@ -82,8 +74,7 @@ export const TYPE_REGISTRY_KINDS = [
         shortTitle: "Races",
         icon: "fa-paw",
         description:
-            "« En jeu » (`playable`) rend la race disponible au catalogue et au filtre de scrap monstres. Pas de déplacement vers une autre entité.",
-        mode: "state",
+            "« En jeu » pré-coche la race dans le catalogue monstres. « Scrap » l’inclut dans le filtre d’import monstres. Pas de déplacement vers une autre entité.",
         listUrl: "/api/types/monster-races",
         bulkUrl: "/api/types/monster-races/bulk",
         deleteUrlBase: "/api/types/monster-races",
@@ -91,8 +82,7 @@ export const TYPE_REGISTRY_KINDS = [
         currentCategory: "",
         spellTypeNameCell: false,
         canMove: false,
-        canToggleScrap: false,
-        canToggleCatalog: true,
+        hasDofusMeta: false,
     },
     {
         key: "spell",
@@ -100,8 +90,7 @@ export const TYPE_REGISTRY_KINDS = [
         shortTitle: "Sorts",
         icon: "fa-wand-sparkles",
         description:
-            "« En jeu » (`playable`) rend le type disponible au catalogue. Pas de déplacement vers une autre entité.",
-        mode: "state",
+            "« En jeu » pré-coche le type dans le catalogue sorts. « Scrap » indique si les sorts de ce type peuvent être mis à jour via DofusDB. Pas de déplacement.",
         listUrl: "/api/types/spell-types",
         bulkUrl: "/api/types/spell-types/bulk",
         deleteUrlBase: "/api/types/spell-types",
@@ -109,8 +98,7 @@ export const TYPE_REGISTRY_KINDS = [
         currentCategory: "",
         spellTypeNameCell: true,
         canMove: false,
-        canToggleScrap: false,
-        canToggleCatalog: true,
+        hasDofusMeta: false,
     },
 ];
 

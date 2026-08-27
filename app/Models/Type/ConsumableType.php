@@ -3,6 +3,7 @@
 namespace App\Models\Type;
 
 use App\Models\Entity\Consumable;
+use App\Models\Type\Concerns\HasTypeRegistryFlags;
 use App\Models\User;
 use Database\Factories\ConsumableTypeFactory;
 use Illuminate\Database\Eloquent\Collection;
@@ -60,7 +61,7 @@ use Illuminate\Support\Carbon;
 class ConsumableType extends Model
 {
     /** @use HasFactory<ConsumableTypeFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasTypeRegistryFlags, SoftDeletes;
 
     public const STATE_RAW = 'raw';
 
@@ -83,6 +84,7 @@ class ConsumableType extends Model
      */
     protected $attributes = [
         'show_in_catalog' => false,
+        'allow_scrap' => false,
     ];
 
     /**
@@ -97,6 +99,7 @@ class ConsumableType extends Model
         'seen_count',
         'last_seen_at',
         'show_in_catalog',
+        'allow_scrap',
         'state',
         'read_level',
         'write_level',
@@ -115,15 +118,8 @@ class ConsumableType extends Model
         'seen_count' => 'integer',
         'last_seen_at' => 'datetime',
         'show_in_catalog' => 'boolean',
+        'allow_scrap' => 'boolean',
     ];
-
-    /**
-     * Scope: types explicitement autorisés (whitelist).
-     */
-    public function scopeAllowed($query)
-    {
-        return $query->where('decision', self::DECISION_ALLOWED);
-    }
 
     /**
      * Scope: types en attente de validation UX.
@@ -142,10 +138,10 @@ class ConsumableType extends Model
     }
 
     /**
-     * Indique si un typeId DofusDB est explicitement autorisé en base.
+     * Indique si un typeId DofusDB est explicitement autorisé au scrap.
      *
      * Comportement:
-     * - Si le type n'existe pas encore, il est créé en `decision=pending` et la méthode retourne false.
+     * - Si le type n'existe pas encore, il est créé en `allow_scrap=false` et la méthode retourne false.
      */
     public static function isDofusdbTypeAllowed(int $typeId): bool
     {
@@ -157,7 +153,7 @@ class ConsumableType extends Model
             return false;
         }
 
-        return $type->decision === self::DECISION_ALLOWED;
+        return (bool) $type->allow_scrap;
     }
 
     /**
@@ -178,6 +174,8 @@ class ConsumableType extends Model
                 'usable' => 0,
                 'is_visible' => 'guest',
                 'decision' => self::DECISION_PENDING,
+                'allow_scrap' => false,
+                'show_in_catalog' => false,
                 'seen_count' => 0,
                 'created_by' => User::getSystemUser()?->id,
             ]

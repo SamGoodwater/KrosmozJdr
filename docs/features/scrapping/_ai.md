@@ -13,7 +13,7 @@
 - **Pipeline** : `Collect` (HTTP + cache) → `Conversion` (mapping + formatters) → `Validation` (limites caractéristiques) → `Intégration` (écriture BDD + relations + images). Détail : [README](./README.md#pipeline).
 - **Config-driven** : sources JSON dans `resources/scrapping/` ; règles de mapping runtime en **BDD** (`scrapping_entity_mappings` + targets). Détail : [README](./README.md#ou-modifier-le-mapping).
 - **Jobs async** : import long via `app/Jobs/ProcessScrappingJob.php` (table `scrapping_jobs`).
-- **UI atelier** : `/admin/content/dofusdb` (admin, password.confirm). Anciennes URLs `/scrapping` et `/admin/project-maintenance` redirigent. Preset `project:data sync` (auto_update) disponible aux admins. « Gérer les types » ouvre `/admin/content/types/{kind}`.
+- **UI atelier** : `/admin/content/dofusdb` (admin, password.confirm). Anciennes URLs `/scrapping` et `/admin/project-maintenance` redirigent. Preset `project:data sync` (auto_update) disponible aux admins. « Gérer les types » ouvre `/admin/content/types/{kind}` (`show_in_catalog` + `allow_scrap`).
 - **Mappings spécialisés** : effets de sorts → `dofusdb_effect_mappings` ; bonus objets → `characteristic_object.dofusdb_characteristic_id`.
 - **Conversion paramétrable** : les valeurs numériques passent par `convertCharacteristic` + `characteristic_key` → `conversion_formula` → limites. Les diagnostics conservent les cas à revoir. La réécriture JDR (simplifier un sort, générer un PNJ) n’est **pas** dans ce pipeline : cadrage [IA générative](../../IA/_ai.md).
 - **Monstres** : niveau 1–30, caractéristiques principales 6–30, PA 3–14, PM 2–10, PO 0–10 ; résistances relatives par paliers `-100/-50/0/50/100`, sans conversion automatique vers les résistances fixes.

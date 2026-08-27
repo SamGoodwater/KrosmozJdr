@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Cache;
  * @description
  * - `resource`, `consumable`, `equipment` sont des vues métier autour de DofusDB `/items`.
  * - La source de vérité éditable est `resources/scrapping/config/sources/dofusdb/item-super-types.json`
- * - Les registries DB (resource_types / consumable_types) priment quand elles sont remplies (decision=allowed).
+ * - Les registries DB (resource_types / consumable_types) priment quand elles sont remplies (`allow_scrap`).
  */
 class ItemEntityTypeFilterService
 {

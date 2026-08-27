@@ -223,7 +223,7 @@ class ScrappingRunCommand extends Command
                         ->all();
 
                     if (empty($typeIds)) {
-                        throw new \RuntimeException('Aucun typeId autorisé trouvé dans resource_types (decision=allowed).');
+                        throw new \RuntimeException('Aucun typeId autorisé trouvé dans resource_types (allow_scrap).');
                     }
 
                     $perType = (bool) ((int) $this->option('per-type'));

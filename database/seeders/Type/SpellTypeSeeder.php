@@ -77,6 +77,8 @@ class SpellTypeSeeder extends Seeder
                 ['name' => $spellType['name']],
                 array_merge($spellType, [
                     'state' => 'playable',
+                    'show_in_catalog' => true,
+                    'allow_scrap' => true,
                     'read_level' => User::ROLE_GUEST,
                     'write_level' => User::ROLE_ADMIN,
                     'created_by' => $createdBy,

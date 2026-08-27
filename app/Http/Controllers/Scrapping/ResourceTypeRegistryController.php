@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Scrapping;
 
 use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Scrapping\Concerns\AppliesTypeRegistryListFilters;
 use App\Http\Controllers\Scrapping\Concerns\UpdatesCatalogVisibilityTrait;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Item;
@@ -30,6 +31,7 @@ use Illuminate\Validation\Rule;
  */
 class ResourceTypeRegistryController extends Controller
 {
+    use AppliesTypeRegistryListFilters;
     use UpdatesCatalogVisibilityTrait;
 
     /**
@@ -73,6 +75,8 @@ class ResourceTypeRegistryController extends Controller
             ->whereNotNull('dofusdb_type_id')
             ->orderByDesc('last_seen_at');
 
+        $this->applyTypeRegistryListFilters($query, $request);
+
         if (is_string($decision) && in_array($decision, ['pending', 'allowed', 'blocked'], true)) {
             $query->where('decision', $decision);
         }
@@ -82,6 +86,7 @@ class ResourceTypeRegistryController extends Controller
             'name',
             'dofusdb_type_id',
             'decision',
+            'allow_scrap',
             'seen_count',
             'last_seen_at',
             'show_in_catalog',
@@ -152,6 +157,7 @@ class ResourceTypeRegistryController extends Controller
             'ids' => ['required', 'array', 'min:1'],
             'ids.*' => ['integer', 'min:1'],
             'decision' => ['nullable', 'string', 'in:pending,allowed,blocked,used,unused'],
+            'allow_scrap' => ['nullable', 'boolean'],
             'state' => ['nullable', 'string', EntityState::rule()],
             'read_level' => ['nullable', 'integer', 'min:'.User::ROLE_GUEST, 'max:'.User::ROLE_SUPER_ADMIN],
             'write_level' => [
@@ -175,6 +181,9 @@ class ResourceTypeRegistryController extends Controller
         $patch = [];
         if (array_key_exists('decision', $validated) && $validated['decision'] !== null) {
             $patch['decision'] = $this->normalizeDecision($validated['decision']);
+        }
+        if (array_key_exists('allow_scrap', $validated) && $validated['allow_scrap'] !== null) {
+            $patch['allow_scrap'] = $request->boolean('allow_scrap');
         }
         if (array_key_exists('state', $validated) && $validated['state'] !== null) {
             $patch['state'] = $validated['state'];

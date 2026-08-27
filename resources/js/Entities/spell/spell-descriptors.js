@@ -996,7 +996,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-tags",
       table: {
         sortable: true,
-        filterable: { id: "types", type: "multi", defaultVisible: true },
+        filterable: { id: "types", type: "multi", defaultVisible: true, defaultByCatalog: true },
         defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },

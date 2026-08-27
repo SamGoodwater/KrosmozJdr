@@ -59,6 +59,9 @@ class ItemTypeSeeder extends Seeder
                         'show_in_catalog' => array_key_exists('show_in_catalog', $row)
                             ? (bool) $row['show_in_catalog']
                             : CatalogTypeVisibility::itemShouldShow($typeId),
+                        'allow_scrap' => array_key_exists('allow_scrap', $row)
+                            ? (bool) $row['allow_scrap']
+                            : (string) ($row['decision'] ?? 'pending') === 'allowed',
                     ]
                 )
             );

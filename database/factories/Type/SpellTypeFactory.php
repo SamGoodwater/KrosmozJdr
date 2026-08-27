@@ -40,6 +40,8 @@ class SpellTypeFactory extends Factory
             'read_level' => $readLevel,
             'write_level' => $writeLevel,
             'created_by' => null,
+            'show_in_catalog' => false,
+            'allow_scrap' => false,
         ];
     }
 }

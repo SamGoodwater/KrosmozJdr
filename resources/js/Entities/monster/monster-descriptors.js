@@ -151,6 +151,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
           id: 'monster_race_id',
           type: 'multi',
           defaultVisible: true,
+          defaultByCatalog: true,
         },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: {

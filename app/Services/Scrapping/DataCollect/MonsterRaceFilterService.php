@@ -10,7 +10,7 @@ use App\Models\Type\MonsterRace;
  * @description
  * Objectif: reproduire le même pattern que `type_mode` :
  * - all: aucun filtre race (toutes les races)
- * - allowed: uniquement les races validées (state=playable)
+ * - allowed: uniquement les races avec `allow_scrap`
  * - selected: uniquement les races fournies par l'UI
  */
 class MonsterRaceFilterService
@@ -42,10 +42,10 @@ class MonsterRaceFilterService
             return $filters;
         }
 
-        // allowed: races validées uniquement (IDs DofusDB)
+        // allowed: races autorisées au scrap (IDs DofusDB)
         try {
             $ids = MonsterRace::query()
-                ->where('state', MonsterRace::STATE_PLAYABLE)
+                ->allowScrap()
                 ->whereNotNull('dofusdb_race_id')
                 ->pluck('dofusdb_race_id')
                 ->map(fn ($v) => (int) $v)

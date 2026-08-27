@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Scrapping;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Scrapping\Concerns\AppliesTypeRegistryListFilters;
 use App\Http\Controllers\Scrapping\Concerns\BulkDecisionUpdateTrait;
 use App\Http\Controllers\Scrapping\Concerns\UpdatesCatalogVisibilityTrait;
 use App\Models\Type\ConsumableType;
@@ -20,6 +21,7 @@ use Illuminate\Http\Request;
  */
 class ConsumableTypeRegistryController extends Controller
 {
+    use AppliesTypeRegistryListFilters;
     use BulkDecisionUpdateTrait;
     use UpdatesCatalogVisibilityTrait;
 
@@ -62,6 +64,8 @@ class ConsumableTypeRegistryController extends Controller
             ->whereNotNull('dofusdb_type_id')
             ->orderByDesc('last_seen_at');
 
+        $this->applyTypeRegistryListFilters($query, $request);
+
         if (is_string($decision) && in_array($decision, ['pending', 'allowed', 'blocked'], true)) {
             $query->where('decision', $decision);
         }
@@ -71,6 +75,7 @@ class ConsumableTypeRegistryController extends Controller
             'name',
             'dofusdb_type_id',
             'decision',
+            'allow_scrap',
             'seen_count',
             'last_seen_at',
             'show_in_catalog',
@@ -233,6 +238,7 @@ class ConsumableTypeRegistryController extends Controller
                 'name',
                 'dofusdb_type_id',
                 'decision',
+                'allow_scrap',
                 'seen_count',
                 'last_seen_at',
                 'show_in_catalog',

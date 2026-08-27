@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Types : en jeu et scrap
+
+Sur la page Types, chaque registre (équipements, ressources, consommables, races, sorts) a les mêmes deux cases : visible en jeu (les tableaux le pré-cochent) et scrapable (on peut mettre à jour les fiches de ce type depuis DofusDB). On peut toujours déplacer un type d’équipement, ressource ou consommable vers une autre de ces trois familles.
+
 ## Août 2026 — Menus, jobs et types
 
 On passe d’un espace à l’autre par le menu du header, plus par un raccourci dans les barres. Les retours utilisateurs gardent le menu d’administration. Un job (mise à jour stack, sync…) s’annule depuis le toast ou le panneau ; s’il reste coincé à 1 %, c’est souvent que le worker de file n’est pas lancé. Les cinq registres de types (équipements, ressources, consommables, races, sorts) partagent une même page, avec un menu d’actions par ligne.

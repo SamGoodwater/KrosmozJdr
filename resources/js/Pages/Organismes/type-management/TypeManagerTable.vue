@@ -3,11 +3,9 @@
  * TypeManagerTable (Organism)
  *
  * @description
- * Tableau générique de gestion des "types/races" :
- * - mode `decision` : registry DofusDB (pending/allowed/blocked) + flag catalogue
- * - mode `state` : validation interne via `state` (raw/draft/auto/playable/archived)
- *
- * Supporte sélection multiple + update en masse via un seul input.
+ * Tableau générique des registres de types : `show_in_catalog` (en jeu) et
+ * `allow_scrap` (maj DofusDB). Déplacement de catégorie pour équipements /
+ * ressources / consommables.
  */
 import { computed, onMounted, ref, watch } from "vue";
 import Card from "@/Pages/Atoms/data-display/Card.vue";
@@ -28,23 +26,21 @@ const props = defineProps({
 
     // GET -> { success:true, data:[] }
     listUrl: { type: String, required: true },
-    // PATCH -> bulk endpoint (expects ids + decision/state)
+    // PATCH -> bulk endpoint (expects ids + allow_scrap / show_in_catalog)
     bulkUrl: { type: String, required: true },
     // DELETE -> suppression (optionnel)
     deleteUrlBase: { type: String, default: "" },
 
-    // 'decision' | 'state'
-    mode: { type: String, required: true, validator: (v) => ["decision", "state"].includes(String(v)) },
-    // libellé affiché pour le champ principal
-    fieldLabel: { type: String, default: "" },
-    /** Incrémenté par le parent (ex. ouverture du modal, fin de recherche) pour forcer un rechargement de la liste. */
+    /** Incrémenté par le parent pour forcer un rechargement de la liste. */
     refreshTrigger: { type: Number, default: 0 },
-    /** Colonne « Nom » : badge type de sort (icône + teinte), ex. page admin types de sorts. */
+    /** Colonne « Nom » : badge type de sort (icône + teinte). */
     spellTypeNameCell: { type: Boolean, default: false },
-    /** Base URL pour déplacer un type vers une autre catégorie (ex. /api/scrapping/resource-types). Si vide, pas d'action "Déplacer vers". */
+    /** Base URL pour déplacer un type vers une autre catégorie. Si vide, pas d'action "Déplacer vers". */
     moveCategoryUrlBase: { type: String, default: "" },
-    /** Catégorie courante : resource | consumable | equipment. Requis pour afficher "Déplacer vers". */
+    /** Catégorie courante : resource | consumable | equipment. */
     currentCategory: { type: String, default: "" },
+    /** Colonnes typeId / détections DofusDB (équipements, ressources, consommables). */
+    hasDofusMeta: { type: Boolean, default: false },
 });
 
 const notificationStore = useNotificationStore();
@@ -55,17 +51,15 @@ const loading = ref(false);
 const rows = ref([]);
 
 const querySearch = ref("");
-const queryFilter = ref("all"); // 'all' | decision/state values
+const queryFilter = ref("all"); // 'all' | 'catalog' | 'hidden' | 'scrap' | 'no-scrap'
 
 const selectedIds = ref(new Set());
-const bulkValue = ref(""); // decision/state à appliquer
-const bulkCatalogValue = ref(""); // '1' | '0' pour show_in_catalog
+const bulkScrapValue = ref(""); // '1' | '0'
+const bulkCatalogValue = ref(""); // '1' | '0'
 
-const canToggleCatalog = computed(() => String(props.mode) === "decision");
 const filterGridClass = computed(() => {
-    if (canMoveCategory.value && canToggleCatalog.value) return "md:grid-cols-5";
-    if (canMoveCategory.value || canToggleCatalog.value) return "md:grid-cols-4";
-    return "";
+    if (canMoveCategory.value) return "md:grid-cols-5";
+    return "md:grid-cols-4";
 });
 
 const getCsrfToken = () => document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
@@ -92,44 +86,23 @@ const moveTarget = ref(null); // { id: number, name: string, target: 'resource'|
 const bulkMoveConfirmOpen = ref(false);
 const bulkMoveTarget = ref(""); // 'resource'|'consumable'|'equipment' pour le déplacement en masse
 
-const filterOptions = computed(() => {
-    if (String(props.mode) === "decision") {
-        return [
-            { value: "all", label: "Tous" },
-            { value: "pending", label: "En attente" },
-            { value: "allowed", label: "Utiliser" },
-            { value: "blocked", label: "Ne pas utiliser" },
-        ];
-    }
-    return [
-        { value: "all", label: "Tous" },
-        { value: "raw", label: "Raw" },
-        { value: "draft", label: "Brouillon" },
-        { value: "auto", label: "Auto" },
-        { value: "playable", label: "Validé (playable)" },
-        { value: "archived", label: "Archivé" },
-    ];
-});
+const filterOptions = computed(() => [
+    { value: "all", label: "Tous" },
+    { value: "catalog", label: "En jeu" },
+    { value: "hidden", label: "Hors jeu" },
+    { value: "scrap", label: "Scrap autorisé" },
+    { value: "no-scrap", label: "Scrap interdit" },
+]);
 
-const bulkOptions = computed(() => {
-    if (String(props.mode) === "decision") {
-        return [
-            { value: "pending", label: "En attente" },
-            { value: "used", label: "Utiliser" }, // alias UX (backend normalise)
-            { value: "unused", label: "Ne pas utiliser" }, // alias UX
-        ];
-    }
-    return [
-        { value: "raw", label: "Raw" },
-        { value: "draft", label: "Brouillon" },
-        { value: "auto", label: "Auto" },
-        { value: "playable", label: "Validé (playable)" },
-        { value: "archived", label: "Archivé" },
-    ];
-});
+const bulkScrapOptions = [
+    { value: "1", label: "Autoriser le scrap" },
+    { value: "0", label: "Interdire le scrap" },
+];
 
-const fieldKey = computed(() => (String(props.mode) === "decision" ? "decision" : "state"));
-const filterQueryKey = computed(() => (String(props.mode) === "decision" ? "decision" : "state"));
+const catalogBulkOptions = [
+    { value: "1", label: "Afficher au catalogue" },
+    { value: "0", label: "Masquer du catalogue" },
+];
 
 const MOVE_CATEGORY_OPTIONS = [
     { value: "resource", label: "Ressources" },
@@ -143,7 +116,6 @@ const moveTargetOptions = computed(() => {
 });
 const canMoveCategory = computed(
     () =>
-        String(props.mode) === "decision" &&
         Boolean(props.moveCategoryUrlBase?.trim()) &&
         Boolean(props.currentCategory?.trim()) &&
         moveTargetOptions.value.length > 0
@@ -161,6 +133,8 @@ const filteredRows = computed(() => {
             r?.name,
             r?.dofusdb_type_id,
             r?.decision,
+            r?.allow_scrap,
+            r?.show_in_catalog,
             r?.state,
         ]
             .filter((v) => v !== null && typeof v !== "undefined")
@@ -203,9 +177,10 @@ const toggleRow = (id) => {
 const buildListUrl = () => {
     const u = new URL(props.listUrl, window.location.origin);
     const f = String(queryFilter.value || "all");
-    if (f !== "all") {
-        u.searchParams.set(filterQueryKey.value, f);
-    }
+    if (f === "catalog") u.searchParams.set("show_in_catalog", "1");
+    else if (f === "hidden") u.searchParams.set("show_in_catalog", "0");
+    else if (f === "scrap") u.searchParams.set("allow_scrap", "1");
+    else if (f === "no-scrap") u.searchParams.set("allow_scrap", "0");
     return u.pathname + u.search;
 };
 
@@ -267,47 +242,44 @@ const deleteOne = async (id) => {
     }
 };
 
-const bulkApply = async () => {
-    if (!isAdmin.value) return;
-    if (!selectedIds.value.size) return;
-    const v = String(bulkValue.value || "").trim();
-    if (!v) return;
-
+const patchFlags = async (ids, payload) => {
     const csrfToken = getCsrfToken();
     if (!csrfToken) {
         showError("Token CSRF introuvable. Recharge la page.");
-        return;
+        return false;
     }
 
-    info("Mise à jour en masse…", { duration: 1500 });
-    try {
-        const payload = { ids: Array.from(selectedIds.value) };
-        payload[fieldKey.value] = v;
-
-        const res = await fetch(props.bulkUrl, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": csrfToken,
-                Accept: "application/json",
-            },
-            body: JSON.stringify(payload),
-        });
-        const json = await res.json();
-        if (!res.ok || !json?.success) {
-            throw new Error(json?.message || "Bulk update échoué");
-        }
-        success("Mise à jour enregistrée", { duration: 2500 });
-        await load();
-    } catch (e) {
-        showError("Bulk : " + e.message);
+    const res = await fetch(props.bulkUrl, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": csrfToken,
+            Accept: "application/json",
+        },
+        body: JSON.stringify({ ids, ...payload }),
+    });
+    const json = await res.json();
+    if (!res.ok || !json?.success) {
+        throw new Error(json?.message || "Mise à jour échouée");
     }
+    return true;
 };
 
-const catalogBulkOptions = [
-    { value: "1", label: "Afficher au catalogue" },
-    { value: "0", label: "Masquer du catalogue" },
-];
+const bulkScrapApply = async () => {
+    if (!isAdmin.value) return;
+    if (!selectedIds.value.size) return;
+    const raw = String(bulkScrapValue.value || "").trim();
+    if (raw !== "0" && raw !== "1") return;
+
+    info("Mise à jour scrap…", { duration: 1500 });
+    try {
+        await patchFlags(Array.from(selectedIds.value), { allow_scrap: raw === "1" });
+        success("Scrap mis à jour", { duration: 2500 });
+        await load();
+    } catch (e) {
+        showError("Scrap : " + e.message);
+    }
+};
 
 /**
  * @param {unknown} row
@@ -323,26 +295,26 @@ function isCatalogShown(row) {
  * @returns {boolean}
  */
 function isScrapOn(row) {
+    const v = row?.allow_scrap ?? row?.allowScrap;
+    if (v === true || v === 1 || v === "1") return true;
+    if (v === false || v === 0 || v === "0") return false;
     return String(row?.decision || "") === "allowed";
-}
-
-/**
- * @param {unknown} row
- * @returns {boolean}
- */
-function isInGameOn(row) {
-    if (String(props.mode) === "decision") {
-        return isCatalogShown(row);
-    }
-    return String(row?.state || "") === "playable";
 }
 
 /**
  * @param {unknown} row
  */
 async function toggleScrap(row) {
-    if (!isAdmin.value || String(props.mode) !== "decision") return;
-    await updateSingle(row.id, isScrapOn(row) ? "unused" : "used");
+    if (!isAdmin.value) return;
+    const next = !isScrapOn(row);
+    try {
+        await patchFlags([Number(row.id)], { allow_scrap: next });
+        const found = rows.value.find((r) => Number(r?.id) === Number(row.id));
+        if (found) found.allow_scrap = next;
+    } catch (e) {
+        showError("Scrap : " + e.message);
+        await load();
+    }
 }
 
 /**
@@ -350,26 +322,11 @@ async function toggleScrap(row) {
  */
 async function toggleInGame(row) {
     if (!isAdmin.value) return;
-    if (String(props.mode) === "decision") {
-        await updateCatalog(row.id, !isCatalogShown(row));
-        return;
-    }
-    await updateSingle(row.id, isInGameOn(row) ? "archived" : "playable");
-}
-
-/**
- * @param {unknown} row
- * @returns {string}
- */
-function scrapBadgeLabel(row) {
-    const d = String(row?.decision || "");
-    if (d === "allowed") return "Scrap";
-    if (d === "blocked") return "Pas scrap";
-    return "Attente";
+    await updateCatalog(row.id, !isCatalogShown(row));
 }
 
 const updateCatalog = async (id, shown) => {
-    if (!isAdmin.value || !canToggleCatalog.value) return;
+    if (!isAdmin.value) return;
     const csrfToken = getCsrfToken();
     if (!csrfToken) {
         showError("Token CSRF introuvable. Recharge la page.");
@@ -401,54 +358,19 @@ const updateCatalog = async (id, shown) => {
 };
 
 const bulkCatalogApply = async () => {
-    if (!isAdmin.value || !canToggleCatalog.value) return;
+    if (!isAdmin.value) return;
     if (!selectedIds.value.size) return;
     const raw = String(bulkCatalogValue.value || "").trim();
     if (raw !== "0" && raw !== "1") return;
 
-    const csrfToken = getCsrfToken();
-    if (!csrfToken) {
-        showError("Token CSRF introuvable. Recharge la page.");
-        return;
-    }
-
     info("Mise à jour catalogue…", { duration: 1500 });
     try {
-        const res = await fetch(props.bulkUrl, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": csrfToken,
-                Accept: "application/json",
-            },
-            body: JSON.stringify({
-                ids: Array.from(selectedIds.value),
-                show_in_catalog: raw === "1",
-            }),
-        });
-        const json = await res.json();
-        if (!res.ok || !json?.success) {
-            throw new Error(json?.message || "Bulk catalogue échoué");
-        }
+        await patchFlags(Array.from(selectedIds.value), { show_in_catalog: raw === "1" });
         success("Catalogue mis à jour", { duration: 2500 });
         await load();
     } catch (e) {
         showError("Catalogue : " + e.message);
     }
-};
-
-const updateSingle = async (id, value) => {
-    if (!isAdmin.value) return;
-    const csrfToken = getCsrfToken();
-    if (!csrfToken) {
-        showError("Token CSRF introuvable. Recharge la page.");
-        return;
-    }
-
-    // On réutilise le bulk pour rester DRY côté API
-    selectedIds.value = new Set([Number(id)]);
-    bulkValue.value = String(value);
-    await bulkApply();
 };
 
 function requestMove(row, target) {
@@ -634,15 +556,15 @@ onMounted(async () => {
             <InputField v-model="querySearch" label="Recherche" placeholder="id, nom…" />
             <SelectField
                 v-model="queryFilter"
-                :label="String(mode) === 'decision' ? 'Filtre statut' : 'Filtre état'"
+                label="Filtre"
                 :options="filterOptions"
                 :searchable="false"
             />
             <div class="space-y-1">
                 <SelectField
-                    v-model="bulkValue"
-                    :label="fieldLabel || (String(mode) === 'decision' ? 'Valider (bulk)' : 'État (bulk)')"
-                    :options="bulkOptions"
+                    v-model="bulkScrapValue"
+                    label="Scrap (sélection)"
+                    :options="bulkScrapOptions"
                     :disabled="!isAdmin || selectedCount === 0"
                     placeholder="Choisir…"
                     :searchable="false"
@@ -651,15 +573,20 @@ onMounted(async () => {
                     <div class="text-xs text-primary-300">
                         Sélection: <span class="font-semibold">{{ selectedCount }}</span>
                     </div>
-                    <Btn size="sm" color="primary" :disabled="!isAdmin || selectedCount === 0 || !bulkValue" @click="bulkApply">
+                    <Btn
+                        size="sm"
+                        color="primary"
+                        :disabled="!isAdmin || selectedCount === 0 || (bulkScrapValue !== '0' && bulkScrapValue !== '1')"
+                        @click="bulkScrapApply"
+                    >
                         Appliquer
                     </Btn>
                 </div>
             </div>
-            <div v-if="canToggleCatalog" class="space-y-1">
+            <div class="space-y-1">
                 <SelectField
                     v-model="bulkCatalogValue"
-                    label="Catalogue (bulk)"
+                    label="En jeu (sélection)"
                     :options="catalogBulkOptions"
                     :disabled="!isAdmin || selectedCount === 0"
                     placeholder="Choisir…"
@@ -717,12 +644,13 @@ onMounted(async () => {
                             />
                         </th>
                         <th class="w-20">ID</th>
-                        <th v-if="String(mode) === 'decision'" class="w-28">typeId</th>
+                        <th v-if="hasDofusMeta" class="w-28">typeId</th>
                         <th>Nom</th>
-                        <th v-if="String(mode) === 'decision'" class="w-28">Détections</th>
-                        <th v-if="canToggleCatalog" class="w-28 text-center">En jeu</th>
-                        <th class="w-44 text-right">Actions</th>
-                        <th v-if="String(mode) === 'decision'" class="w-56">Dernière détection</th>
+                        <th v-if="hasDofusMeta" class="w-28">Détections</th>
+                        <th class="w-28 text-center">En jeu</th>
+                        <th class="w-28 text-center">Scrap</th>
+                        <th class="w-24 text-right">Actions</th>
+                        <th v-if="hasDofusMeta" class="w-56">Dernière détection</th>
                         <th v-else class="w-56">Dernière maj</th>
                     </tr>
                 </thead>
@@ -737,7 +665,7 @@ onMounted(async () => {
                             />
                         </td>
                         <td class="font-mono">{{ r.id }}</td>
-                        <td v-if="String(mode) === 'decision'" class="font-mono">{{ r.dofusdb_type_id }}</td>
+                        <td v-if="hasDofusMeta" class="font-mono">{{ r.dofusdb_type_id }}</td>
                         <td class="min-w-[220px]">
                             <SpellTypeBadge
                                 v-if="spellTypeNameCell && r.name"
@@ -748,8 +676,8 @@ onMounted(async () => {
                             />
                             <template v-else>{{ r.name || "—" }}</template>
                         </td>
-                        <td v-if="String(mode) === 'decision'">{{ r.seen_count ?? "—" }}</td>
-                        <td v-if="canToggleCatalog" class="text-center">
+                        <td v-if="hasDofusMeta">{{ r.seen_count ?? "—" }}</td>
+                        <td class="text-center">
                             <span
                                 class="badge badge-sm"
                                 :class="isCatalogShown(r) ? 'badge-success' : 'badge-ghost'"
@@ -757,30 +685,25 @@ onMounted(async () => {
                                 {{ isCatalogShown(r) ? "Oui" : "Non" }}
                             </span>
                         </td>
+                        <td class="text-center">
+                            <span
+                                class="badge badge-sm"
+                                :class="isScrapOn(r) ? 'badge-success' : 'badge-ghost'"
+                            >
+                                {{ isScrapOn(r) ? "Oui" : "Non" }}
+                            </span>
+                        </td>
                         <td class="text-right">
                             <div class="flex justify-end items-center gap-2">
-                                <span
-                                    v-if="String(mode) === 'decision'"
-                                    class="badge badge-sm badge-outline"
-                                >
-                                    {{ scrapBadgeLabel(r) }}
-                                </span>
-                                <span
-                                    v-else
-                                    class="badge badge-sm"
-                                    :class="isInGameOn(r) ? 'badge-success' : 'badge-ghost'"
-                                >
-                                    {{ isInGameOn(r) ? "En jeu" : r.state || "—" }}
-                                </span>
                                 <TypeRegistryRowMenu
                                     :row="r"
                                     :disabled="!isAdmin"
-                                    :can-toggle-scrap="String(mode) === 'decision'"
+                                    :can-toggle-scrap="true"
                                     :can-toggle-catalog="true"
                                     :can-move="canMoveCategory"
                                     :can-delete="Boolean(deleteUrlBase)"
                                     :scrap-on="isScrapOn(r)"
-                                    :in-game-on="isInGameOn(r)"
+                                    :in-game-on="isCatalogShown(r)"
                                     :move-options="moveTargetOptions"
                                     @toggle-scrap="toggleScrap(r)"
                                     @toggle-ingame="toggleInGame(r)"
@@ -789,7 +712,7 @@ onMounted(async () => {
                                 />
                             </div>
                         </td>
-                        <td v-if="String(mode) === 'decision'">
+                        <td v-if="hasDofusMeta">
                             <span class="text-sm text-primary-300">{{ formatDateFr(r.last_seen_at) }}</span>
                         </td>
                         <td v-else>
@@ -797,7 +720,7 @@ onMounted(async () => {
                         </td>
                     </tr>
                     <tr v-if="!filteredRows.length">
-                        <td :colspan="String(mode) === 'decision' ? 8 : 6" class="text-center text-primary-300 italic py-6">
+                        <td :colspan="hasDofusMeta ? 9 : 7" class="text-center text-primary-300 italic py-6">
                             Aucun résultat.
                         </td>
                     </tr>

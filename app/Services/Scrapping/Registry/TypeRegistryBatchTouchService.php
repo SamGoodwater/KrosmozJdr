@@ -59,6 +59,8 @@ class TypeRegistryBatchTouchService
                     'name' => $placeholderName,
                     'dofusdb_type_id' => $typeId,
                     'decision' => 'pending',
+                    'allow_scrap' => 0,
+                    'show_in_catalog' => 0,
                     'seen_count' => 0,
                     'last_seen_at' => $now,
                     'created_by' => $systemUserId,

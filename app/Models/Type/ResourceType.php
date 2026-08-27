@@ -3,6 +3,7 @@
 namespace App\Models\Type;
 
 use App\Models\Entity\Resource;
+use App\Models\Type\Concerns\HasTypeRegistryFlags;
 use App\Models\User;
 use Database\Factories\ResourceTypeFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -61,7 +62,7 @@ use Illuminate\Support\Carbon;
 class ResourceType extends Model
 {
     /** @use HasFactory<ResourceTypeFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasTypeRegistryFlags, SoftDeletes;
 
     public const STATE_RAW = 'raw';
 
@@ -84,6 +85,7 @@ class ResourceType extends Model
      */
     protected $attributes = [
         'show_in_catalog' => false,
+        'allow_scrap' => false,
     ];
 
     /**
@@ -101,6 +103,7 @@ class ResourceType extends Model
         'seen_count',
         'last_seen_at',
         'show_in_catalog',
+        'allow_scrap',
         'created_by',
     ];
 
@@ -116,21 +119,8 @@ class ResourceType extends Model
         'seen_count' => 'integer',
         'last_seen_at' => 'datetime',
         'show_in_catalog' => 'boolean',
+        'allow_scrap' => 'boolean',
     ];
-
-    /**
-     * Scope: types explicitement autorisés (whitelist).
-     *
-     * @param  Builder  $query
-     * @return Builder
-     *
-     * @example
-     * ResourceType::query()->allowed()->get();
-     */
-    public function scopeAllowed($query)
-    {
-        return $query->where('decision', self::DECISION_ALLOWED);
-    }
 
     /**
      * Scope: types bloqués (blacklist).
@@ -155,12 +145,11 @@ class ResourceType extends Model
     }
 
     /**
-     * Indique si un typeId DofusDB est explicitement autorisé en base.
+     * Indique si un typeId DofusDB est explicitement autorisé au scrap.
      *
      * Comportement:
-     * - Si le type n'existe pas encore, il est créé en `decision=pending` (à valider via UX)
+     * - Si le type n'existe pas encore, il est créé en `allow_scrap=false` (à valider via UX)
      *   et la méthode retourne false (sécurité par défaut).
-     *
      *
      * @example
      * if (ResourceType::isDofusdbTypeAllowed(15)) {
@@ -177,7 +166,7 @@ class ResourceType extends Model
             return false;
         }
 
-        return $type->decision === self::DECISION_ALLOWED;
+        return (bool) $type->allow_scrap;
     }
 
     /**
@@ -202,6 +191,8 @@ class ResourceType extends Model
                 'read_level' => User::ROLE_GUEST,
                 'write_level' => User::ROLE_ADMIN,
                 'decision' => self::DECISION_PENDING,
+                'allow_scrap' => false,
+                'show_in_catalog' => false,
                 'seen_count' => 0,
                 'created_by' => User::getSystemUser()?->id,
             ]

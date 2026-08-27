@@ -41,6 +41,8 @@ class MonsterRaceSeeder extends Seeder
                 ['name' => $race['name']],
                 array_merge($race, [
                     'state' => 'playable',
+                    'show_in_catalog' => true,
+                    'allow_scrap' => true,
                     'read_level' => User::ROLE_GUEST,
                     'write_level' => User::ROLE_ADMIN,
                     'created_by' => $createdBy,
@@ -66,6 +68,8 @@ class MonsterRaceSeeder extends Seeder
                     [
                         'name' => $subRace['name'],
                         'state' => 'playable',
+                        'show_in_catalog' => true,
+                        'allow_scrap' => true,
                         'read_level' => User::ROLE_GUEST,
                         'write_level' => User::ROLE_ADMIN,
                         'created_by' => $createdBy,

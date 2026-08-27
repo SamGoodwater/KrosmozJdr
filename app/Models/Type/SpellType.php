@@ -3,6 +3,7 @@
 namespace App\Models\Type;
 
 use App\Models\Entity\Spell;
+use App\Models\Type\Concerns\HasTypeRegistryFlags;
 use App\Models\User;
 use Database\Factories\SpellTypeFactory;
 use Illuminate\Database\Eloquent\Collection;
@@ -53,7 +54,7 @@ use Illuminate\Support\Carbon;
 class SpellType extends Model
 {
     /** @use HasFactory<SpellTypeFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasTypeRegistryFlags, SoftDeletes;
 
     public const STATE_RAW = 'raw';
 
@@ -64,6 +65,14 @@ class SpellType extends Model
     public const STATE_PLAYABLE = 'playable';
 
     public const STATE_ARCHIVED = 'archived';
+
+    /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'show_in_catalog' => false,
+        'allow_scrap' => false,
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -79,6 +88,8 @@ class SpellType extends Model
         'read_level',
         'write_level',
         'created_by',
+        'show_in_catalog',
+        'allow_scrap',
     ];
 
     /**
@@ -89,6 +100,8 @@ class SpellType extends Model
     protected $casts = [
         'read_level' => 'integer',
         'write_level' => 'integer',
+        'show_in_catalog' => 'boolean',
+        'allow_scrap' => 'boolean',
     ];
 
     /**

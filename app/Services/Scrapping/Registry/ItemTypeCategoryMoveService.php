@@ -209,6 +209,8 @@ final class ItemTypeCategoryMoveService
             'name' => $model->name,
             'dofusdb_type_id' => $model->dofusdb_type_id,
             'decision' => $model->decision ?? 'pending',
+            'allow_scrap' => (bool) ($model->allow_scrap ?? false),
+            'show_in_catalog' => (bool) ($model->show_in_catalog ?? false),
             'seen_count' => $model->seen_count ?? 0,
             'last_seen_at' => $model->last_seen_at,
             'state' => $model->state ?? 'draft',

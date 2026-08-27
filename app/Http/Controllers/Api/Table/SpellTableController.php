@@ -315,12 +315,13 @@ class SpellTableController extends Controller
             'area' => collect(AreaConstants::SHAPES)
                 ->map(fn (string $shape) => ['value' => $shape, 'label' => AreaConstants::getShapeLabel($shape)])
                 ->values()->all(),
-            'types' => SpellType::query()->orderBy('name')->get(['id', 'name', 'color', 'icon'])
+            'types' => SpellType::query()->orderBy('name')->get(['id', 'name', 'color', 'icon', 'show_in_catalog'])
                 ->map(fn (SpellType $t) => [
                     'value' => (string) $t->id,
                     'label' => $t->name,
                     'color' => $t->color,
                     'icon' => $t->icon,
+                    'show_in_catalog' => (bool) $t->show_in_catalog,
                 ])
                 ->values()->all(),
             'pa' => [

@@ -218,6 +218,8 @@ class ScrappingSeedersExportCommand extends Command
             'dofusdb_type_id' => $r->dofusdb_type_id,
             'name' => $r->name,
             'decision' => $r->decision,
+            'allow_scrap' => (bool) $r->allow_scrap,
+            'show_in_catalog' => (bool) $r->show_in_catalog,
             'state' => $r->state,
             'read_level' => $r->read_level,
             'write_level' => $r->write_level,

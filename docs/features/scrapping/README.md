@@ -143,7 +143,7 @@ Les sorts locaux dont le `dofusdb_id` renvoie 404 côté API sont archivés (`st
 - Atelier : `resources/js/Pages/Admin/Content/DofusdbWorkshop/Index.vue` (route `/admin/content/dofusdb`), modes explorer / maj / images + preset auto_update.
 - Tableau et options : `ScrappingDashboard.vue` + composables `resources/js/Composables/scrapping/*` (`useScrappingJobManager`, `useScrappingSearch`, `useScrappingCompare`…), préférences via `useScrappingPreferences`.
 - Comparaison Brut / Converti / Krosmoz dans `CompareModal`.
-- Registres de types : page commune `/admin/content/types/{kind}`. `decision` = scrap ; `show_in_catalog` = filtre catalogue.
+- Registres de types : page commune `/admin/content/types/{kind}`. `show_in_catalog` = filtre catalogue ; `allow_scrap` = import / maj DofusDB. Déplacement équipements ↔ ressources ↔ consommables.
 - Maj unitaire MJ : panneau sur la fiche (`POST /api/entities/{type}/{id}/dofusdb-refresh`), pas l’atelier.
 
 ## Pour aller plus loin
