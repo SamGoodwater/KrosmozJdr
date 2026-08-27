@@ -2,6 +2,8 @@
 
 > Commandes projet : [../../app/Console/COMMANDS.md](../../app/Console/COMMANDS.md) + `App\Console\CommandGuide`.
 
+Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interaction` (Symfony). Helper : `App\Console\YesNoFlags`.
+
 ## Fichiers pivots
 
 - `app/Console/COMMANDS.md` — vocabulaire CLI unique

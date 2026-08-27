@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Console\Commands\Project;
 
 use App\Console\ArtisanExitCode;
+use App\Console\Concerns\AcceptsYesNoFlags;
 use App\Console\Concerns\GuardsProductionEnvironment;
+use App\Console\YesNoFlags;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use PDO;
@@ -27,6 +29,7 @@ use PDOException;
  */
 class SetupCommand extends Command
 {
+    use AcceptsYesNoFlags;
     use GuardsProductionEnvironment;
 
     protected $hidden = true;
@@ -37,7 +40,8 @@ class SetupCommand extends Command
                             {--db : Base de données (MySQL/PostgreSQL : création user et base si besoin, puis migrations + seeders)}
                             {--no-seed : Avec --db, ne pas lancer les seeders}
                             {--clean : Supprimer node_modules, vendor, locks et vider la config Laravel}
-                            {--refresh : Clean puis réinstaller (composer + pnpm) et clear config}';
+                            {--refresh : Clean puis réinstaller (composer + pnpm) et clear config}
+                            '.YesNoFlags::SIGNATURE;
 
     protected $description = 'Setup projet : install (apt + deps), update (apt/pnpm/composer), db, clean, refresh';
 
@@ -79,6 +83,10 @@ class SetupCommand extends Command
             'setup : interdit en production (apt/clean/refresh/install/update/db). '
             .'Utilisez des migrations et déploiements contrôlés.'
         )) {
+            return ArtisanExitCode::FAILURE;
+        }
+
+        if ($this->abortIfConflictingYesNoFlags()) {
             return ArtisanExitCode::FAILURE;
         }
 
@@ -150,7 +158,7 @@ class SetupCommand extends Command
         $this->table(['Paquet', 'Description', 'Statut'], $rows);
 
         if ($toInstall !== []) {
-            if (! $this->option('no-interaction') && ! $this->confirm('Installer les paquets manquants avec apt ?', true)) {
+            if (! $this->confirmOrFlag('Installer les paquets manquants avec apt ?', true)) {
                 $this->warn('Installation apt annulée.');
 
                 return;

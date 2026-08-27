@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Console\Commands\Project;
 
 use App\Console\ArtisanExitCode;
+use App\Console\Concerns\AcceptsYesNoFlags;
 use App\Console\Concerns\GuardsProductionEnvironment;
+use App\Console\YesNoFlags;
 use App\Services\Project\ProjectPrepareService;
 use App\Services\Project\RefusesRootExecution;
 use Illuminate\Console\Command;
@@ -16,9 +18,11 @@ use Illuminate\Console\Command;
  * @example php artisan project:deps
  * @example php artisan project:deps --with-system
  * @example php artisan project:deps --composer --pnpm
+ * @example php artisan project:deps -y
  */
 class ProjectDepsCommand extends Command
 {
+    use AcceptsYesNoFlags;
     use GuardsProductionEnvironment;
 
     public function __construct(
@@ -32,7 +36,8 @@ class ProjectDepsCommand extends Command
         {--with-system : apt / outils via setup --update (avant composer & pnpm en mode --all)}
         {--apt : setup --update uniquement}
         {--composer : composer update}
-        {--pnpm : pnpm up}';
+        {--pnpm : pnpm up}
+        '.YesNoFlags::SIGNATURE;
 
     protected $description = 'Met à jour les dépendances (Composer, pnpm), optionnellement la stack OS ; le mode par défaut enchaîne optimize.';
 
@@ -43,6 +48,10 @@ class ProjectDepsCommand extends Command
         }
 
         if (RefusesRootExecution::abort($this)) {
+            return ArtisanExitCode::FAILURE;
+        }
+
+        if ($this->abortIfConflictingYesNoFlags()) {
             return ArtisanExitCode::FAILURE;
         }
 

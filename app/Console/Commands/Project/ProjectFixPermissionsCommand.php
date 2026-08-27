@@ -5,25 +5,36 @@ declare(strict_types=1);
 namespace App\Console\Commands\Project;
 
 use App\Console\ArtisanExitCode;
+use App\Console\Concerns\AcceptsYesNoFlags;
 use App\Console\Concerns\GuardsProductionEnvironment;
+use App\Console\YesNoFlags;
 use Illuminate\Console\Command;
 
 /**
  * Corrige propriétaires / permissions du dépôt (chown, chmod Laravel).
  * Ne touche pas aux binaires globaux composer / pnpm.
+ *
+ * @example php artisan project:fix-permissions nom_utilisateur
+ * @example php artisan project:fix-permissions nom_utilisateur -y
  */
 class ProjectFixPermissionsCommand extends Command
 {
+    use AcceptsYesNoFlags;
     use GuardsProductionEnvironment;
 
     protected $signature = 'project:fix-permissions
-        {user : Nom d’utilisateur système cible (ex. www-data, goodwater)}';
+        {user : Nom d’utilisateur système cible (ex. www-data, goodwater)}
+        '.YesNoFlags::SIGNATURE;
 
     protected $description = 'Attribue les fichiers du projet à un utilisateur (chown, chmod Laravel).';
 
     public function handle(): int
     {
         if (! $this->guardNotProduction('Interdit en production.')) {
+            return ArtisanExitCode::FAILURE;
+        }
+
+        if ($this->abortIfConflictingYesNoFlags()) {
             return ArtisanExitCode::FAILURE;
         }
 
@@ -46,9 +57,7 @@ class ProjectFixPermissionsCommand extends Command
             $this->warn("Tu es actuellement connecté en tant que '$currentUser'");
             $this->warn("Tu vas changer les permissions pour l'utilisateur '$user'");
 
-            if ($this->option('no-interaction')) {
-                $this->info('Mode non-interactif : continuation automatique...');
-            } elseif (! $this->confirm('Es-tu sûr de vouloir continuer ?')) {
+            if (! $this->confirmOrFlag('Es-tu sûr de vouloir continuer ?', $this->isNonInteractiveInput())) {
                 $this->info('Opération annulée.');
 
                 return ArtisanExitCode::SUCCESS;

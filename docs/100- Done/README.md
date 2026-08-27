@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Confirmations CLI `-y` / `--no`
+
+`project:prepare`, `project:dev`, `project:deps` et les autres commandes qui demandent oui/non (IDE Helper, apt, refresh, permissions) acceptent `-y` pour valider et `--no` pour refuser. `-n` reste le mode non interactif de Symfony.
+
 ## Août 2026 — Commandes projet simplifiées
 
 Une commande par rôle : `project:dev`, `project:deps`, `project:review`, `project:data sync`, `project:clear`, `project:backup`. Plus d’alias ni de wrappers. La liste tient dans `app/Console/COMMANDS.md`. Le cron admin appelle les mêmes noms.

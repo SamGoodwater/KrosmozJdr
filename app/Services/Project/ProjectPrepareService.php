@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Project;
 
+use App\Console\YesNoFlags;
 use Illuminate\Console\Command;
 use Symfony\Component\Process\Process;
 use Throwable;
@@ -32,7 +33,10 @@ class ProjectPrepareService
         $this->updateAtomicIndexes($command);
         $this->updateDocs($command);
 
-        $migrate = $command->call('setup', ['--db' => true]);
+        $migrate = $command->call('setup', array_merge(
+            ['--db' => true],
+            $this->yesNoCallOptions($command)
+        ));
         if ($migrate !== Command::SUCCESS) {
             return $migrate;
         }
@@ -83,10 +87,17 @@ class ProjectPrepareService
         exec('composer dump-autoload');
     }
 
+    /**
+     * Génère IDE Helper. `-y` écrase les modèles ; `--no` ou non-interactif écrit `_ide_helper_models.php`.
+     */
     public function optimiseIde(Command $command): void
     {
         $command->info('Génération des fichiers IDE Helper…');
-        $command->call('ide-helper:models');
+        $ide_helper_models = ['--nowrite' => true];
+        if (is_callable([$command, 'ideHelperModelsArguments'])) {
+            $ide_helper_models = $command->ideHelperModelsArguments();
+        }
+        $command->call('ide-helper:models', $ide_helper_models);
         $php = defined('PHP_BINARY') ? PHP_BINARY : 'php';
         $artisan = base_path('artisan');
         $commands = ['ide-helper:generate', 'ide-helper:eloquent', 'ide-helper:meta'];
@@ -139,7 +150,18 @@ class ProjectPrepareService
 
     public function runSetupUpdate(Command $command): int
     {
-        return $command->call('setup', ['--update' => true]);
+        return $command->call('setup', array_merge(
+            ['--update' => true],
+            $this->yesNoCallOptions($command)
+        ));
+    }
+
+    /**
+     * @return array<string, bool>
+     */
+    private function yesNoCallOptions(Command $command): array
+    {
+        return YesNoFlags::callOptions($command);
     }
 
     /**

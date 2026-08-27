@@ -6,6 +6,12 @@ Source unique (CLI et future UI super_admin). Les blocs `yaml` sont lus par `App
 Entrée officielle serveur : `php artisan project:dev`.  
 Liste brute : `php artisan list` · aide : `php artisan <cmd> -h`.
 
+Confirmations (IDE Helper, apt, refresh, permissions) :
+
+- `-y` / `--yes` : accepter (écrase les modèles pour `ide-helper:models`).
+- `--no` : refuser (écrit `_ide_helper_models.php`, annule apt / refresh / permissions).
+- `-n` / `--no-interaction` : réservé par Symfony. Sans `-y`, IDE Helper n’écrase pas les modèles (équivalent du défaut `[no]`).
+
 ---
 
 ## `project:prepare`
@@ -22,9 +28,11 @@ Rebuild CSS, vide les caches applicatifs et les vues, régénère les index Atom
 ```bash
 php artisan project:prepare
 php artisan project:prepare --clear
+php artisan project:prepare -y
+php artisan project:prepare --no
 ```
 
-`--clear` : artefacts de tests (PHPUnit, coverage) avant la préparation. Interdit en production.
+`--clear` : artefacts de tests (PHPUnit, coverage) avant la préparation. `-y` : écrase les PHPDoc des modèles. `--no` : écrit `_ide_helper_models.php`. Interdit en production.
 
 ---
 
@@ -37,12 +45,13 @@ ui: false
 cron: false
 ```
 
-`project:prepare` puis serveur Laravel (8000) + Vite. Option `--queue` : file `queue:listen` en plus. `--no-prepare` : serveurs seuls. `--watch` : watch CSS à la place de Vite. `--clear` : transmis à prepare.
+`project:prepare` puis serveur Laravel (8000) + Vite. Option `--queue` : file `queue:listen` en plus. `--no-prepare` : serveurs seuls. `--watch` : watch CSS à la place de Vite. `--clear`, `-y` et `--no` : transmis à prepare.
 
 ```bash
 php artisan project:dev
 php artisan project:dev --queue
 php artisan project:dev --no-prepare
+php artisan project:dev -y
 ```
 
 Interdit en production. `composer run dev` reste un helper concurrently (serve + queue + CSS), pas l’entrée officielle.
@@ -58,12 +67,13 @@ ui: true
 cron: false
 ```
 
-Met à jour Composer et pnpm, puis le pipeline IDE / `optimize`. `--with-system` : apt via `setup --update` avant. Cibles : `--composer`, `--pnpm`, `--apt`. Défaut / `--all` : composer + pnpm + optimize.
+Met à jour Composer et pnpm, puis le pipeline IDE / `optimize`. `--with-system` : apt via `setup --update` avant. Cibles : `--composer`, `--pnpm`, `--apt`. Défaut / `--all` : composer + pnpm + optimize. `-y` / `--no` : confirmations apt et IDE Helper.
 
 ```bash
 php artisan project:deps
 php artisan project:deps --with-system
 php artisan project:deps --composer
+php artisan project:deps -y
 ```
 
 Interdit en production. L’admin `/admin/project-update` enfile un job (hors prod, super_admin + mot de passe).
@@ -123,11 +133,12 @@ ui: false
 cron: false
 ```
 
-Pipeline d’installation : migrations, seeders, import règles (`pages:import-rules-toc`), capacités, types DofusDB, scrapping. `--fresh`, `--skip-scrapping`, `--skip-types`, `--verify`, `--deps`.
+Pipeline d’installation : migrations, seeders, import règles (`pages:import-rules-toc`), capacités, types DofusDB, scrapping. `--fresh`, `--skip-scrapping`, `--skip-types`, `--verify`, `--deps`. `-y` / `--no` : transmis à `project:deps` (IDE Helper, apt).
 
 ```bash
 php artisan project:init
 php artisan project:init --skip-scrapping --skip-types --verify
+php artisan project:init --deps -y
 ```
 
 Interdit en production.
@@ -161,10 +172,12 @@ ui: false
 cron: false
 ```
 
-Grand ménage local puis `project:init --fresh`. `--fast` : sans types ni scrapping. `--hard` : wipe vendor/node (`setup --refresh`) avant.
+Grand ménage local puis `project:init --fresh`. `--fast` : sans types ni scrapping. `--hard` : wipe vendor/node (`setup --refresh`) avant. `-y` : comme `--force` (pas de confirmation). `--no` : annule.
 
 ```bash
 php artisan project:refresh --fast --force
+php artisan project:refresh --fast -y
+php artisan project:refresh --no
 ```
 
 Destructif. Interdit en production.
@@ -285,10 +298,11 @@ ui: false
 cron: false
 ```
 
-`chown`/`chmod` du dépôt pour un utilisateur système. Interdit en production.
+`chown`/`chmod` du dépôt pour un utilisateur système. Interdit en production. `-y` : continuer si l’utilisateur cible n’est pas le compte courant. `--no` : annuler.
 
 ```bash
 php artisan project:fix-permissions nom_utilisateur
+php artisan project:fix-permissions nom_utilisateur -y
 ```
 
 ---

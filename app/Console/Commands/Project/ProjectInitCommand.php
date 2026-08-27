@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Console\Commands\Project;
 
 use App\Console\ArtisanExitCode;
+use App\Console\Concerns\AcceptsYesNoFlags;
 use App\Console\Concerns\GuardsProductionEnvironment;
 use App\Console\Concerns\NormalizesProjectSyncEntities;
 use App\Console\Concerns\PromptsPrimarySuperAdmin;
 use App\Console\Concerns\RunsBibliothequeEntityPagesSync;
+use App\Console\YesNoFlags;
 use App\Services\NotificationService;
 use Database\Seeders\CreationPagesSeeder;
 use Database\Seeders\CriticalPagesSeeder;
@@ -51,6 +53,7 @@ use Throwable;
  */
 class ProjectInitCommand extends Command
 {
+    use AcceptsYesNoFlags;
     use GuardsProductionEnvironment;
     use NormalizesProjectSyncEntities;
     use PromptsPrimarySuperAdmin;
@@ -77,7 +80,8 @@ class ProjectInitCommand extends Command
         {--skip-notify : Ne pas notifier les admin à la fin}
         {--skip-super-admin-prompt : Ne pas demander la création du super_admin (CI / scripts)}
         {--verify : Exécuter project:init:verify à la fin (échec si socle incomplet)}
-        {--verify-with-rules : Comme --verify avec contrôle des pages règles CMS}';
+        {--verify-with-rules : Comme --verify avec contrôle des pages règles CMS}
+        '.YesNoFlags::SIGNATURE;
 
     protected $description = 'Initialise le projet (migrations, seeders, capacités locales, puis types/scrapping DofusDB)';
 
@@ -104,6 +108,10 @@ class ProjectInitCommand extends Command
             return ArtisanExitCode::FAILURE;
         }
 
+        if ($this->abortIfConflictingYesNoFlags()) {
+            return ArtisanExitCode::FAILURE;
+        }
+
         set_time_limit(0);
         $startedAt = microtime(true);
         $phaseStatuses = [
@@ -124,8 +132,10 @@ class ProjectInitCommand extends Command
 
         if ((bool) $this->option('deps')) {
             $this->info('Phase 0 : dépendances (project:deps — composer + pnpm + optimize)');
-            $code = Artisan::call('project:deps', ['--all' => true]);
-            $this->output->write(Artisan::output());
+            $code = $this->call('project:deps', array_merge(
+                ['--all' => true],
+                $this->yesNoCallOptions()
+            ));
             if ($code !== 0) {
                 $this->error('Échec de project:deps.');
 

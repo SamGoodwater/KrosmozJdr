@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Console\Commands\Project;
 
 use App\Console\ArtisanExitCode;
+use App\Console\Concerns\AcceptsYesNoFlags;
 use App\Console\Concerns\GuardsProductionEnvironment;
+use App\Console\YesNoFlags;
 use App\Services\Project\ProjectClearService;
 use App\Services\Project\ProjectPrepareService;
 use Illuminate\Console\Command;
@@ -15,9 +17,11 @@ use Illuminate\Console\Command;
  *
  * @example php artisan project:prepare
  * @example php artisan project:prepare --clear
+ * @example php artisan project:prepare -y
  */
 class ProjectPrepareCommand extends Command
 {
+    use AcceptsYesNoFlags;
     use GuardsProductionEnvironment;
 
     public function __construct(
@@ -28,13 +32,18 @@ class ProjectPrepareCommand extends Command
     }
 
     protected $signature = 'project:prepare
-        {--clear : Supprimer les artefacts de tests (PHPUnit, coverage, storage/framework/testing) avant la préparation}';
+        {--clear : Supprimer les artefacts de tests (PHPUnit, coverage, storage/framework/testing) avant la préparation}
+        '.YesNoFlags::SIGNATURE;
 
     protected $description = 'Rebuild CSS, vide caches/vues, régénère la doc, migrations, puis IDE Helper / optimize.';
 
     public function handle(): int
     {
         if (! $this->guardNotProduction('Interdit en production.')) {
+            return ArtisanExitCode::FAILURE;
+        }
+
+        if ($this->abortIfConflictingYesNoFlags()) {
             return ArtisanExitCode::FAILURE;
         }
 

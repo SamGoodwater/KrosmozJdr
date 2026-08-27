@@ -5,15 +5,22 @@ declare(strict_types=1);
 namespace App\Console\Commands\Project;
 
 use App\Console\ArtisanExitCode;
+use App\Console\Concerns\AcceptsYesNoFlags;
+use App\Console\YesNoFlags;
 use App\Services\Project\ProjectClearService;
 use Illuminate\Console\Command;
 
 /**
  * Réinstallation locale : grand ménage puis pipeline `project:init --fresh`.
  * Interdit en production.
+ *
+ * @example php artisan project:refresh --fast --force
+ * @example php artisan project:refresh --fast -y
  */
 class ProjectRefreshCommand extends Command
 {
+    use AcceptsYesNoFlags;
+
     public function __construct(
         private readonly ProjectClearService $projectClearService
     ) {
@@ -27,7 +34,8 @@ class ProjectRefreshCommand extends Command
         {--fast : --skip-scrapping et --skip-types (données locales sans DofusDB)}
         {--noimage : Transmet à project:init}
         {--skip-types : Transmet à project:init}
-        {--force : Ne pas demander confirmation ; transmet --skip-super-admin-prompt à project:init}';
+        {--force : Ne pas demander confirmation ; transmet --skip-super-admin-prompt à project:init}
+        '.YesNoFlags::SIGNATURE;
 
     protected $description = 'Réinit locale : grand ménage, setup --hard optionnel, project:init --fresh, puis clear --safe';
 
@@ -39,7 +47,20 @@ class ProjectRefreshCommand extends Command
             return ArtisanExitCode::FAILURE;
         }
 
-        if (! $this->option('force') && ! $this->confirm('Cette commande exécute migrate:fresh via project:init et détruira toutes les tables. Continuer ?')) {
+        if ($this->abortIfConflictingYesNoFlags()) {
+            return ArtisanExitCode::FAILURE;
+        }
+
+        if ($this->wantsNo()) {
+            $this->info('Annulé.');
+
+            return ArtisanExitCode::FAILURE;
+        }
+
+        if (! $this->option('force') && ! $this->confirmOrFlag(
+            'Cette commande exécute migrate:fresh via project:init et détruira toutes les tables. Continuer ?',
+            false
+        )) {
             $this->info('Annulé.');
 
             return ArtisanExitCode::FAILURE;
@@ -53,7 +74,10 @@ class ProjectRefreshCommand extends Command
 
         if ($this->option('hard')) {
             $this->info('→ setup --refresh');
-            $code = $this->call('setup', ['--refresh' => true]);
+            $code = $this->call('setup', array_merge(
+                ['--refresh' => true],
+                $this->yesNoCallOptions()
+            ));
             if ($code !== 0) {
                 return $code;
             }
@@ -85,7 +109,7 @@ class ProjectRefreshCommand extends Command
             '--fresh' => true,
         ];
 
-        if ($this->option('force') || ! $this->input->isInteractive()) {
+        if ($this->option('force') || $this->wantsYes() || ! $this->input->isInteractive()) {
             $arguments['--skip-super-admin-prompt'] = true;
         }
 
@@ -104,6 +128,6 @@ class ProjectRefreshCommand extends Command
             }
         }
 
-        return $arguments;
+        return array_merge($arguments, $this->yesNoCallOptions());
     }
 }

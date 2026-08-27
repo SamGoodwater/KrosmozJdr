@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Une commande par rôle : `project:dev`, `project:deps`, `project:review`, `project:data sync`, `project:clear`, `project:backup`."
+    "description": "`project:prepare`, `project:dev` et les commandes avec confirmation acceptent `-y` / `--no`. `-n` reste le mode non interactif Symfony."
   },
   {
     "path": "backend/_ai.md",
@@ -247,7 +247,7 @@
   {
     "path": "operations/_ai.md",
     "title": "Operations — IA",
-    "description": "`app/Console/COMMANDS.md` — vocabulaire CLI unique."
+    "description": "Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. Vocabulaire : app/Console/COMMANDS.md."
   },
   {
     "path": "operations/README.md",
