@@ -53,4 +53,38 @@ class ItemEntityTypeFilterServiceTest extends TestCase
         $this->assertFalse($this->service->isTypeIdAllowedForEntity('resource', 12, ItemEntityTypeFilterService::TYPE_MODE_ALLOWED));
         $this->assertTrue($this->service->isTypeIdAllowedForEntity('resource', 51, ItemEntityTypeFilterService::TYPE_MODE_ALLOWED));
     }
+
+    public function test_allowed_mode_with_no_allow_scrap_yields_empty_type_ids(): void
+    {
+        ResourceType::factory()->create([
+            'dofusdb_type_id' => 51,
+            'decision' => ResourceType::DECISION_PENDING,
+            'allow_scrap' => false,
+        ]);
+
+        $filters = $this->service->applyDefaults('resource', [], ItemEntityTypeFilterService::TYPE_MODE_ALLOWED);
+
+        $this->assertSame([], $filters['typeIds'] ?? null);
+        $this->assertFalse($this->service->isTypeIdAllowedForEntity('resource', 51, ItemEntityTypeFilterService::TYPE_MODE_ALLOWED));
+    }
+
+    public function test_item_entity_uses_equipment_allow_scrap_ids(): void
+    {
+        ItemType::factory()->create([
+            'dofusdb_type_id' => 1,
+            'decision' => ItemType::DECISION_ALLOWED,
+            'allow_scrap' => true,
+        ]);
+        ItemType::factory()->create([
+            'dofusdb_type_id' => 199,
+            'decision' => ItemType::DECISION_PENDING,
+            'allow_scrap' => false,
+        ]);
+
+        $filters = $this->service->applyDefaults('item', [], ItemEntityTypeFilterService::TYPE_MODE_ALLOWED);
+
+        $this->assertSame([1], $filters['typeIds'] ?? []);
+        $this->assertTrue($this->service->isTypeIdAllowedForEntity('item', 1, ItemEntityTypeFilterService::TYPE_MODE_ALLOWED));
+        $this->assertFalse($this->service->isTypeIdAllowedForEntity('item', 199, ItemEntityTypeFilterService::TYPE_MODE_ALLOWED));
+    }
 }

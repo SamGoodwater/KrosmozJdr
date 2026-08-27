@@ -152,4 +152,18 @@ class TypeRegistryFlagsTest extends TestCase
 
         $this->assertSame([11], $filters['raceIds'] ?? []);
     }
+
+    public function test_monster_race_defaults_are_empty_when_none_allow_scrap(): void
+    {
+        MonsterRace::factory()->create([
+            'name' => 'Race scrap off',
+            'dofusdb_race_id' => 33,
+            'allow_scrap' => false,
+            'state' => MonsterRace::STATE_PLAYABLE,
+        ]);
+
+        $filters = app(MonsterRaceFilterService::class)->applyDefaults([]);
+
+        $this->assertSame([], $filters['raceIds'] ?? null);
+    }
 }

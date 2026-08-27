@@ -86,7 +86,7 @@ class SpellController extends Controller
 
         $spells = $query->paginate(20)->withQueryString();
         $spellTypes = SpellType::query()
-            ->select(['id', 'name', 'color', 'icon'])
+            ->select(['id', 'name', 'color', 'icon', 'show_in_catalog'])
             ->orderBy('name')
             ->get();
 

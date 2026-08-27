@@ -242,12 +242,12 @@ const filterTypeIdsNot = ref([]); // number[]
 
 // Mode de filtrage par types
 // - all: dérive les types depuis DofusDB (superType -> types)
-// - allowed: seulement les types validés (decision=allowed)
+// - allowed: seulement les types avec allow_scrap
 // - selected: seulement les types cochés dans l'UI
 const typeMode = ref("allowed"); // "all" | "allowed" | "selected"
 const typeModeOptions = [
     { value: "all", label: "Tout récupérer (tous types DofusDB)" },
-    { value: "allowed", label: "Types validés uniquement" },
+    { value: "allowed", label: "Types scrapables uniquement" },
     { value: "selected", label: "Types cochés (sélection UI)" },
 ];
 
@@ -255,7 +255,7 @@ const typeModeOptions = [
 const raceMode = ref("allowed"); // "all" | "allowed" | "selected"
 const raceModeOptions = [
     { value: "all", label: "Toutes les races" },
-    { value: "allowed", label: "Races validées uniquement" },
+    { value: "allowed", label: "Races scrapables uniquement" },
     { value: "selected", label: "Races cochées (sélection UI)" },
 ];
 const knownRacesLoading = ref(false);

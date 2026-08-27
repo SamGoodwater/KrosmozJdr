@@ -476,7 +476,7 @@ class ResourceTypeRegistryController extends Controller
     }
 
     /**
-     * Réimporte tous les items DofusDB mémorisés pour ce typeId (si decision=allowed).
+     * Réimporte tous les items DofusDB mémorisés pour ce typeId (si allow_scrap).
      */
     public function replayPending(Request $request, ResourceType $resourceType): JsonResponse
     {
@@ -489,10 +489,10 @@ class ResourceTypeRegistryController extends Controller
             ], 422);
         }
 
-        if ($resourceType->decision !== 'allowed') {
+        if (! (bool) $resourceType->allow_scrap) {
             return response()->json([
                 'success' => false,
-                'message' => 'Le type doit être autorisé avant réimport.',
+                'message' => 'Le type doit autoriser le scrap avant réimport.',
             ], 422);
         }
 

@@ -100,6 +100,17 @@ class CollectServiceTest extends TestCase
         $this->assertSame(4, ($result['items'][1]['id'] ?? null));
     }
 
+    public function test_fetch_many_empty_type_ids_does_not_call_api(): void
+    {
+        Http::fake();
+
+        $result = $this->service->fetchMany('dofusdb', 'item', ['typeIds' => []], ['limit' => 10]);
+
+        $this->assertSame([], $result['items']);
+        $this->assertSame(0, $result['meta']['total']);
+        Http::assertNothingSent();
+    }
+
     public function test_fetch_many_limit_and_offset_combined(): void
     {
         Http::fake(function ($request) {

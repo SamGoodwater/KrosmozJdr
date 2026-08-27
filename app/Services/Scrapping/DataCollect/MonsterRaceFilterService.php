@@ -54,11 +54,9 @@ class MonsterRaceFilterService
                 ->values()
                 ->all();
 
-            if (! empty($ids)) {
-                $filters['raceIds'] = $ids;
-            }
+            $filters['raceIds'] = $ids;
         } catch (\Throwable) {
-            // best effort
+            $filters['raceIds'] = [];
         }
 
         return $filters;

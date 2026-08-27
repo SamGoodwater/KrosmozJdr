@@ -238,7 +238,7 @@ const coverageColor = computed(() => {
                         <div class="md:col-span-2 flex items-start justify-between gap-3">
                             <div class="text-xs text-primary-300 flex items-center gap-2">
                                 <span v-if="String(typeMode) === 'all'">Tous les types DofusDB (utile pour détecter de nouveaux types → "À valider").</span>
-                                <span v-else-if="String(typeMode) === 'allowed'">Uniquement les types validés (decision=allowed).</span>
+                                <span v-else-if="String(typeMode) === 'allowed'">Uniquement les types avec allow_scrap.</span>
                                 <span v-else>Uniquement les types cochés ci-dessous (types connus).</span>
                             </div>
                             <Btn size="sm" variant="outline" type="button" :disabled="!typeManagerConfig" title="Ouvrir le gestionnaire de types/races" @click="emit('open-type-manager')">
@@ -328,7 +328,7 @@ const coverageColor = computed(() => {
                         <div class="md:col-span-2 flex items-start justify-between gap-3">
                             <div class="text-xs text-primary-300 flex items-center gap-2">
                                 <span v-if="String(raceMode) === 'all'">Toutes les races DofusDB.</span>
-                                <span v-else-if="String(raceMode) === 'allowed'">Uniquement les races validées (state=playable).</span>
+                                <span v-else-if="String(raceMode) === 'allowed'">Uniquement les races avec allow_scrap.</span>
                                 <span v-else>Uniquement les races cochées ci-dessous (races validées).</span>
                             </div>
                             <Btn size="sm" variant="outline" type="button" :disabled="entityTypeStr !== 'monster'" title="Ouvrir le gestionnaire de races" @click="emit('open-type-manager')">

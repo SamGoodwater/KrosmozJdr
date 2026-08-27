@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Api;
 
 use App\Models\Entity\Item;
+use App\Models\Type\ItemType;
 use App\Models\User;
 use App\Services\Entity\EntityDofusdbRefreshService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -124,6 +125,28 @@ class EntityDofusdbRefreshControllerTest extends TestCase
         $this->actingAs($player)
             ->postJson("/api/entities/items/{$item->id}/dofusdb-refresh", ['mode' => 'preview'])
             ->assertForbidden();
+    }
+
+    public function test_refresh_blocked_when_item_type_disallows_scrap(): void
+    {
+        $type = ItemType::factory()->create([
+            'name' => 'Costume',
+            'dofusdb_type_id' => 199,
+            'decision' => ItemType::DECISION_PENDING,
+            'allow_scrap' => false,
+        ]);
+        $item = Item::factory()->create([
+            'created_by' => $this->gm->id,
+            'state' => Item::STATE_DRAFT,
+            'dofusdb_id' => '42',
+            'write_level' => User::ROLE_GAME_MASTER,
+            'item_type_id' => $type->id,
+        ]);
+
+        $this->actingAs($this->gm)
+            ->postJson("/api/entities/items/{$item->id}/dofusdb-refresh", ['mode' => 'preview'])
+            ->assertStatus(422)
+            ->assertJsonPath('success', false);
     }
 
     public function test_game_master_cannot_update_item_they_cannot_edit(): void

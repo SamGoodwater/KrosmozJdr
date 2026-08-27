@@ -40,6 +40,13 @@ php artisan scrapping:run \
   --output=summary
 ```
 
+La masse items/monstres filtre par défaut `allow_scrap`. Pour tout le catalogue DofusDB (y compris types non scrapables) :
+
+```bash
+php artisan scrapping:run --entity=item --type-mode=all --max-items=0
+php artisan scrapping:run --entity=monster --race-mode=all --max-items=0
+```
+
 Pour forcer un run sans frein (diagnostic uniquement) :
 
 ```bash

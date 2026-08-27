@@ -65,7 +65,7 @@ class ItemEntityTypeFilterService
         return match ($entity) {
             'resource' => $this->defaultResourceFilters($typeMode),
             'consumable' => $this->defaultConsumableFilters($typeMode),
-            'equipment' => $this->defaultEquipmentFilters($typeMode),
+            'equipment', 'item' => $this->defaultEquipmentFilters($typeMode),
             default => [],
         };
     }
@@ -76,6 +76,9 @@ class ItemEntityTypeFilterService
     public function getAllowedTypeIdsFromRegistry(string $entity): array
     {
         $entity = strtolower(trim($entity));
+        if ($entity === 'item') {
+            $entity = 'equipment';
+        }
         $cacheKey = "scrapping_allowed_type_ids_{$entity}";
         $ttl = (int) config('scrapping.data_collect.cache_ttl', 3600);
 
@@ -158,23 +161,23 @@ class ItemEntityTypeFilterService
     public function isTypeIdAllowedForEntity(string $entity, int $typeId, string $typeMode = self::TYPE_MODE_ALLOWED): bool
     {
         $entity = strtolower($entity);
+        if ($entity === 'item') {
+            $entity = 'equipment';
+        }
         $typeId = (int) $typeId;
         $typeMode = $this->normalizeTypeMode($typeMode);
         if ($typeId <= 0) {
             return false;
         }
 
-        // Cas simples: resource/consumable
         if ($entity === 'resource' || $entity === 'consumable') {
             if ($typeMode === self::TYPE_MODE_ALLOWED) {
-                $allowed = $this->getAllowedTypeIdsFromRegistry($entity);
-                if (! empty($allowed)) {
-                    $allowed = $this->disambiguateTypeIdsForEntity($entity, $allowed);
+                $allowed = $this->disambiguateTypeIdsForEntity(
+                    $entity,
+                    $this->getAllowedTypeIdsFromRegistry($entity)
+                );
 
-                    return in_array($typeId, $allowed, true);
-                }
-
-                return true;
+                return in_array($typeId, $allowed, true);
             }
 
             $fromRegistry = $this->getTypeIdsFromRegistry($entity);
@@ -184,12 +187,7 @@ class ItemEntityTypeFilterService
 
         if ($entity === 'equipment') {
             if ($typeMode === self::TYPE_MODE_ALLOWED) {
-                $allowed = $this->getAllowedTypeIdsFromRegistry('equipment');
-                if (! empty($allowed)) {
-                    return in_array($typeId, $allowed, true);
-                }
-
-                return true;
+                return in_array($typeId, $this->getAllowedTypeIdsFromRegistry('equipment'), true);
             }
 
             $fromRegistry = $this->getTypeIdsFromRegistry('equipment');
@@ -206,12 +204,12 @@ class ItemEntityTypeFilterService
     private function defaultResourceFilters(string $typeMode): array
     {
         if ($typeMode === self::TYPE_MODE_ALLOWED) {
-            $allowed = $this->getAllowedTypeIdsFromRegistry('resource');
-            if (! empty($allowed)) {
-                $allowed = $this->disambiguateTypeIdsForEntity('resource', $allowed);
-
-                return ! empty($allowed) ? ['typeIds' => $allowed] : [];
-            }
+            return [
+                'typeIds' => $this->disambiguateTypeIdsForEntity(
+                    'resource',
+                    $this->getAllowedTypeIdsFromRegistry('resource')
+                ),
+            ];
         }
 
         return [];
@@ -223,12 +221,12 @@ class ItemEntityTypeFilterService
     private function defaultConsumableFilters(string $typeMode): array
     {
         if ($typeMode === self::TYPE_MODE_ALLOWED) {
-            $allowed = $this->getAllowedTypeIdsFromRegistry('consumable');
-            if (! empty($allowed)) {
-                $allowed = $this->disambiguateTypeIdsForEntity('consumable', $allowed);
-
-                return ! empty($allowed) ? ['typeIds' => $allowed] : [];
-            }
+            return [
+                'typeIds' => $this->disambiguateTypeIdsForEntity(
+                    'consumable',
+                    $this->getAllowedTypeIdsFromRegistry('consumable')
+                ),
+            ];
         }
 
         return [];
@@ -271,10 +269,7 @@ class ItemEntityTypeFilterService
     private function defaultEquipmentFilters(string $typeMode): array
     {
         if ($typeMode === self::TYPE_MODE_ALLOWED) {
-            $allowed = $this->getAllowedTypeIdsFromRegistry('equipment');
-            if (! empty($allowed)) {
-                return ['typeIds' => $allowed];
-            }
+            return ['typeIds' => $this->getAllowedTypeIdsFromRegistry('equipment')];
         }
 
         return [];

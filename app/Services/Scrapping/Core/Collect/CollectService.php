@@ -290,6 +290,21 @@ final class CollectService
      */
     public function fetchMany(string $source, string $entity, array $filters = [], array $options = []): array
     {
+        if ($this->filtersMatchNothing($filters)) {
+            $limit = (int) ($options['limit'] ?? 0);
+            $offset = (int) ($options['offset'] ?? 0);
+
+            return [
+                'items' => [],
+                'meta' => [
+                    'total' => 0,
+                    'limit' => $limit,
+                    'offset' => $offset,
+                    'collected' => 0,
+                ],
+            ];
+        }
+
         $sourceConfig = $this->configLoader->loadSource($source);
         $entityConfig = $this->configLoader->loadEntity($source, $entity);
 
@@ -436,6 +451,23 @@ final class CollectService
     }
 
     /**
+     * Liste d’IDs vide (`typeIds`, `raceIds`, `ids`) = aucun résultat, sans appel API.
+     * Sinon DofusDB ignore le filtre et renvoie tout le catalogue.
+     *
+     * @param  array<string, mixed>  $filters
+     */
+    private function filtersMatchNothing(array $filters): bool
+    {
+        foreach (['typeIds', 'raceIds', 'ids'] as $key) {
+            if (array_key_exists($key, $filters) && is_array($filters[$key]) && $filters[$key] === []) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Construit les paramètres de requête Feathers à partir des filtres config.
      *
      * @param  array<string, mixed>  $entityConfig
@@ -569,6 +601,24 @@ final class CollectService
      */
     private function fetchManyWithFeathersEncoding(string $source, string $entity, array $filters = [], array $options = []): array
     {
+        if ($this->filtersMatchNothing($filters)) {
+            $limit = (int) ($options['limit'] ?? 100);
+            $skip = (int) ($options['offset'] ?? $options['start_skip'] ?? 0);
+
+            return [
+                'items' => [],
+                'meta' => [
+                    'total' => 0,
+                    'limit' => $limit,
+                    'offset' => $skip,
+                    'skip' => $skip,
+                    'pages' => 0,
+                    'returned' => 0,
+                    'collected' => 0,
+                ],
+            ];
+        }
+
         $sourceConfig = $this->configLoader->loadSource($source);
         $entityConfig = $this->configLoader->loadEntity($source, $entity);
         $baseUrl = rtrim((string) ($sourceConfig['baseUrl'] ?? 'https://api.dofusdb.fr'), '/');

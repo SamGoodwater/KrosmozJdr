@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Services\Entity;
 
 use App\Enums\EntityState;
+use App\Models\Entity\Consumable;
+use App\Models\Entity\Item;
+use App\Models\Entity\Monster;
+use App\Models\Entity\Resource;
 use App\Models\User;
 use App\Services\Scrapping\Core\Config\CollectAliasResolver;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
@@ -33,6 +37,7 @@ class EntityDofusdbRefreshService
     public function run(Model $entity, User $actor, string $mode, bool $force): array
     {
         $dofusdbId = $this->resolveDofusdbId($entity);
+        $this->assertTypeAllowsScrap($entity);
         $alias = $this->pipelineAliasFor($entity);
         $resolved = $this->resolveSourceEntity($alias);
         $state = $this->entityState($entity);
@@ -105,6 +110,28 @@ class EntityDofusdbRefreshService
         }
 
         return (int) $raw;
+    }
+
+    /**
+     * Bloque la maj unitaire si le type / la race de la fiche a `allow_scrap` à false.
+     */
+    private function assertTypeAllowsScrap(Model $entity): void
+    {
+        $registry = match (true) {
+            $entity instanceof Item => $entity->itemType()->first(),
+            $entity instanceof Resource => $entity->resourceType()->first(),
+            $entity instanceof Consumable => $entity->consumableType()->first(),
+            $entity instanceof Monster => $entity->monsterRace()->first(),
+            default => null,
+        };
+
+        if ($registry === null) {
+            return;
+        }
+
+        if (! (bool) $registry->getAttribute('allow_scrap')) {
+            throw new HttpException(422, 'Le type de cette fiche n’autorise pas la mise à jour depuis DofusDB.');
+        }
     }
 
     private function pipelineAliasFor(Model $entity): string

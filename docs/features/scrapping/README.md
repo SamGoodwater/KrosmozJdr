@@ -119,7 +119,7 @@ règles.
 | Commande | Rôle |
 | --- | --- |
 | `php artisan scrapping:setup` | Initialise le socle (migrations + seeders caractéristiques/mappings). Variantes `--fresh`, `--skip-migrate`. |
-| `php artisan scrapping:run` | Collecte / preview / import des entités DofusDB (commande d'exploitation). |
+| `php artisan scrapping:run` | Collecte / preview / import. Masse : `--type-mode=allowed` / `--race-mode=allowed` (défaut, `allow_scrap`) ; `--id` / `--typeId` / `--type-mode=all` pour outrepasser. |
 | `php artisan scrapping:seeders:export` | Exporte les données BDD vers `database/seeders/data/*`. |
 | `php artisan scrapping:types:seed` | Extrait les item-types depuis l'API puis seede les types. |
 | `php artisan scrapping:effects:map` | Propose des mappings effectId → sous-effet. |
@@ -144,7 +144,7 @@ Les sorts locaux dont le `dofusdb_id` renvoie 404 côté API sont archivés (`st
 - Tableau et options : `ScrappingDashboard.vue` + composables `resources/js/Composables/scrapping/*` (`useScrappingJobManager`, `useScrappingSearch`, `useScrappingCompare`…), préférences via `useScrappingPreferences`.
 - Comparaison Brut / Converti / Krosmoz dans `CompareModal`.
 - Registres de types : page commune `/admin/content/types/{kind}`. `show_in_catalog` = filtre catalogue ; `allow_scrap` = import / maj DofusDB. Déplacement équipements ↔ ressources ↔ consommables.
-- Maj unitaire MJ : panneau sur la fiche (`POST /api/entities/{type}/{id}/dofusdb-refresh`), pas l’atelier.
+- Maj unitaire MJ : panneau sur la fiche (`POST /api/entities/{type}/{id}/dofusdb-refresh`), pas l’atelier. Refusée si le type / la race n’a pas `allow_scrap`.
 
 ## Pour aller plus loin
 

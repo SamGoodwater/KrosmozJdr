@@ -2,7 +2,7 @@
 
 ## Août 2026 — Types : en jeu et scrap
 
-Sur la page Types, chaque registre (équipements, ressources, consommables, races, sorts) a les mêmes deux cases : visible en jeu (les tableaux le pré-cochent) et scrapable (on peut mettre à jour les fiches de ce type depuis DofusDB). On peut toujours déplacer un type d’équipement, ressource ou consommable vers une autre de ces trois familles.
+Sur la page Types, chaque registre (équipements, ressources, consommables, races, sorts) a les mêmes deux cases : visible en jeu (les tableaux catalogues le pré-cochent) et scrapable (atelier, CLI et maj d’une fiche DofusDB ne touchent que ces types, sauf demande explicite « tout récupérer »). On peut toujours déplacer un type d’équipement, ressource ou consommable vers une autre de ces trois familles.
 
 ## Août 2026 — Menus, jobs et types
 

@@ -16,6 +16,8 @@ use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use App\Services\Scrapping\Core\Preview\ScrappingPreviewBuilder;
+use App\Services\Scrapping\DataCollect\ItemEntityTypeFilterService;
+use App\Services\Scrapping\DataCollect\MonsterRaceFilterService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -69,6 +71,8 @@ class ScrappingRunCommand extends Command
         {--levelMax= : Niveau maximum (monster, item, resource, consumable, panoply)}
         {--resource-types= : Pour resource: typeId depuis resource_types (allowed)}
         {--per-type=1 : (resource-types=allowed) itérer par typeId (1/0)}
+        {--type-mode=allowed : all|allowed — masse items/ressources/consommables (défaut: allow_scrap)}
+        {--race-mode=allowed : all|allowed — masse monstres (défaut: allow_scrap)}
         {--limit=100 : Taille de page (et de chaque requête API, moins de pages = plus rapide)}
         {--start-skip=0 : Skip initial (pagination)}
         {--max-pages=0 : Nombre max de pages (0=illimité)}
@@ -213,6 +217,11 @@ class ScrappingRunCommand extends Command
                 // Mode resource-types=allowed: on dérive les typeId depuis la DB.
                 $resourceTypesMode = $normalizedEntity === 'resource' && (string) ($this->option('resource-types') ?? '') === 'allowed';
 
+                $entityFilters = $filters;
+                if (empty($ids) && ! $resourceTypesMode) {
+                    $entityFilters = $this->applyRegistryScrapDefaults($normalizedEntity, $entityFilters);
+                }
+
                 if ($resourceTypesMode) {
                     $typeIds = ResourceType::query()
                         ->allowed()
@@ -272,9 +281,12 @@ class ScrappingRunCommand extends Command
                         $this->debugLine("FetchOne {$collectorEntity} id={$id} OK");
                     }
                 } else {
-                    $this->debugLine("Début collecte {$collectorEntity} (filtres: ".json_encode($filters).', page_size='.($options['page_size'] ?? $options['limit'] ?? '?').', max_pages='.($options['max_pages'] ?? '?').', max_items='.($options['max_items'] ?? '?').'). Pour tout récupérer : --max-items=0.');
+                    $this->debugLine("Début collecte {$collectorEntity} (filtres: ".json_encode($entityFilters).', page_size='.($options['page_size'] ?? $options['limit'] ?? '?').', max_pages='.($options['max_pages'] ?? '?').', max_items='.($options['max_items'] ?? '?').'). Pour tout récupérer : --max-items=0.');
+                    if ($this->isEmptyRegistryScrapSelection($entityFilters)) {
+                        $this->warn('  Aucun type/race avec allow_scrap : collecte ignorée (passe --type-mode=all ou --race-mode=all).');
+                    }
                     $this->line("  Collecte {$collectorEntity} en cours…");
-                    $search = $collectService->fetchManyResult('dofusdb', $collectorEntity, $filters, $options);
+                    $search = $collectService->fetchManyResult('dofusdb', $collectorEntity, $entityFilters, $options);
                     $items = $search['items'] ?? [];
                     $entityResult['items'] = $items;
                     $entityResult['meta'] = $search['meta'] ?? [];
@@ -1107,6 +1119,44 @@ class ScrappingRunCommand extends Command
         }
 
         return $filters;
+    }
+
+    /**
+     * Injecte les typeIds / raceIds `allow_scrap` pour un scrap de masse sans filtre explicite.
+     *
+     * @param  array<string,mixed>  $filters
+     * @return array<string,mixed>
+     */
+    private function applyRegistryScrapDefaults(string $entity, array $filters): array
+    {
+        $typeMode = strtolower(trim((string) ($this->option('type-mode') ?? ItemEntityTypeFilterService::TYPE_MODE_ALLOWED)));
+        $raceMode = strtolower(trim((string) ($this->option('race-mode') ?? MonsterRaceFilterService::RACE_MODE_ALLOWED)));
+
+        if (in_array($entity, ['resource', 'consumable', 'equipment', 'item'], true)) {
+            $filterEntity = $entity === 'item' ? 'equipment' : $entity;
+
+            return app(ItemEntityTypeFilterService::class)->applyDefaults($filterEntity, $filters, $typeMode);
+        }
+
+        if ($entity === 'monster') {
+            return app(MonsterRaceFilterService::class)->applyDefaults($filters, $raceMode);
+        }
+
+        return $filters;
+    }
+
+    /**
+     * @param  array<string,mixed>  $filters
+     */
+    private function isEmptyRegistryScrapSelection(array $filters): bool
+    {
+        foreach (['typeIds', 'raceIds'] as $key) {
+            if (array_key_exists($key, $filters) && is_array($filters[$key]) && $filters[$key] === []) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
