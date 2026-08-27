@@ -12,14 +12,14 @@
 import { computed, ref } from "vue";
 import { router } from "@inertiajs/vue3";
 import axios from "axios";
-import { normalizeActionEntityType } from "@/Entities/entity-actions-config";
+import { isScrappableEntityType, normalizeActionEntityType } from "@/Entities/entity-actions-config";
 import {
     getEntityRouteConfig,
     getEntitySingularRouteKey,
     resolveEntityRouteUrl,
 } from "@/Composables/entity/entityRouteRegistry";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
-import { useScrapping } from "@/Composables/utils/useScrapping";
+import { useEntityDofusdbRefresh } from "@/Composables/entity/useEntityDofusdbRefresh";
 
 function getEntityId(entity) {
     return entity?.id ?? entity?._data?.id ?? null;
@@ -31,7 +31,7 @@ function getEntityLabel(entity) {
 
 export function useEntityActionDispatcher(entityType, handlers = {}) {
     const { copyToClipboard } = useCopyToClipboard();
-    const { refreshEntity } = useScrapping();
+    const { previewRefresh, applyRefresh } = useEntityDofusdbRefresh();
 
     const normalizedType = computed(() => normalizeActionEntityType(entityType?.value ?? entityType));
     const routeParamKey = computed(() => getEntitySingularRouteKey(normalizedType.value));
@@ -136,6 +136,106 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         resetDeleteConfirm();
     }
 
+    const refreshConfirm = ref({
+        open: false,
+        loading: false,
+        applying: false,
+        preview: null,
+        error: "",
+        playable: false,
+        entity: null,
+        entityLabel: "cette fiche",
+        meta: {},
+    });
+
+    function resetRefreshConfirm() {
+        refreshConfirm.value = {
+            open: false,
+            loading: false,
+            applying: false,
+            preview: null,
+            error: "",
+            playable: false,
+            entity: null,
+            entityLabel: "cette fiche",
+            meta: {},
+        };
+    }
+
+    function isPlayableEntity(entity) {
+        const state = entity?.state || entity?.creature?.state || entity?._data?.state;
+        return state === "playable" || state === "archived";
+    }
+
+    async function openRefreshPanel(entity, meta = {}) {
+        const entityId = getEntityId(entity);
+        const plural = normalizedType.value;
+        if (!entityId || !isScrappableEntityType(plural)) return false;
+
+        refreshConfirm.value = {
+            open: true,
+            loading: true,
+            applying: false,
+            preview: null,
+            error: "",
+            playable: isPlayableEntity(entity),
+            entity,
+            entityLabel: getEntityLabel(entity),
+            meta,
+        };
+
+        const preview = await previewRefresh(plural, entityId);
+        if (!refreshConfirm.value.open) return false;
+        if (!preview) {
+            refreshConfirm.value = {
+                ...refreshConfirm.value,
+                loading: false,
+                error: "Impossible de charger l’aperçu DofusDB.",
+            };
+            return false;
+        }
+        if (preview.success === false && preview.message && !preview.data) {
+            refreshConfirm.value = {
+                ...refreshConfirm.value,
+                loading: false,
+                error: String(preview.message),
+            };
+            return false;
+        }
+        refreshConfirm.value = {
+            ...refreshConfirm.value,
+            loading: false,
+            preview,
+            error: preview.success === false ? String(preview.message || "") : "",
+        };
+        return true;
+    }
+
+    async function confirmPendingRefresh(options = {}) {
+        const pending = refreshConfirm.value;
+        const entity = pending.entity;
+        const entityId = getEntityId(entity);
+        const plural = normalizedType.value;
+        if (!entityId || !plural || pending.applying) return false;
+
+        refreshConfirm.value = { ...pending, applying: true };
+        const ok = await applyRefresh(plural, entityId, {
+            mode: options.mode === "images_only" ? "images_only" : "full",
+            force: Boolean(options.force),
+        });
+        if (!ok) {
+            refreshConfirm.value = { ...refreshConfirm.value, applying: false };
+            return false;
+        }
+        handlers.onRefresh?.(entity, pending.meta);
+        resetRefreshConfirm();
+        return true;
+    }
+
+    function cancelPendingRefresh() {
+        resetRefreshConfirm();
+    }
+
     async function dispatchEntityAction(actionKey, entity, meta = {}) {
         const entityId = getEntityId(entity);
         if (!entityId) return false;
@@ -173,10 +273,10 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
             }
 
             case "refresh": {
-                if (handlers.onRefresh) {
-                    await handlers.onRefresh(entity, meta);
+                if (handlers.onRefreshRequest) {
+                    await handlers.onRefreshRequest(entity, meta);
                 } else {
-                    await refreshEntity(paramKey, entityId, { forceUpdate: true });
+                    await openRefreshPanel(entity, meta);
                 }
                 return true;
             }
@@ -201,5 +301,8 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         deleteConfirm,
         confirmPendingDelete,
         cancelPendingDelete,
+        refreshConfirm,
+        confirmPendingRefresh,
+        cancelPendingRefresh,
     };
 }

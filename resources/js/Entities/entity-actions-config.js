@@ -294,7 +294,7 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
   refresh: {
     key: "refresh",
     label: "Rafraîchir",
-    tooltip: "Rafraîchir les données depuis le serveur (via scrapping)",
+    tooltip: "Rafraîchir les données depuis DofusDB (aperçu puis confirmation)",
     icon: "fa-solid fa-arrow-rotate-right",
     permission: "canUpdate",
     requiresEntity: true,

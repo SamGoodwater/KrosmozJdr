@@ -17,7 +17,6 @@ import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityInde
 import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
 import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
-import { useScrapping } from "@/Composables/utils/useScrapping";
 import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 
@@ -53,7 +52,6 @@ const canModify = computed(() => canUpdateAny('specializations'));
 // Bulk request
 const { bulkPatchJson } = useBulkRequest();
 const { copyToClipboard } = useCopyToClipboard();
-const { refreshEntity } = useScrapping();
 const { downloadPdf } = useDownloadPdf("specialization");
 
 // Table v2
@@ -197,12 +195,6 @@ const handleTableAction = async (actionKey, entity, row) => {
         case 'download-pdf':
             await downloadPdf(entityId);
             break;
-
-        case 'refresh':
-            await refreshEntity('specialization', entityId, { forceUpdate: true });
-            refreshToken.value++;
-            break;
-
         case 'delete':
             if (window.confirm("Supprimer cette spécialisation ? Elle sera placée en corbeille.")) {
                 router.delete(route("entities.specializations.delete", { specialization: entityId }), {
@@ -247,10 +239,7 @@ const handleModalDownloadPdf = (entity) => {
     downloadPdf(entityId);
 };
 
-const handleModalRefresh = async (entity) => {
-    const entityId = entity?.id;
-    if (!entityId) return;
-    await refreshEntity('specialization', entityId, { forceUpdate: true });
+const handleModalRefresh = () => {
     refreshToken.value++;
     closeModal();
 };

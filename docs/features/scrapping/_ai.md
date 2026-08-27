@@ -18,7 +18,7 @@
 - **Monstres** : niveau 1–30, caractéristiques principales 6–30, PA 3–14, PM 2–10, PO 0–10 ; résistances relatives par paliers `-100/-50/0/50/100`, sans conversion automatique vers les résistances fixes.
 - **Objets** : bonus/malus signés et bornes symétriques (caractéristiques ±6, PA ±5, PM ±2 hors forgemagie) ; résistances relatives converties uniquement sur les panoplies en paliers `-2/-1/0/1/2`.
 - **Audit / gates** : `scrapping:audit` valide le socle ; `scrapping:run` active la gate pré-import par défaut (hors simulate / `--no-quality-gate`) ; après import `spell`, `scrapping:effects:quality-gate` (`--allow-empty` si `--id`/`--ids`). Checklist mass scrap : [SERVER_MASS_SCRAP.md](./SERVER_MASS_SCRAP.md).
-- **Sécurité** : middleware `role:admin` + `password.confirm` sur toutes les routes ; porte `ConfirmPasswordModal` sur la page.
+- **Sécurité** : middleware `role:admin` + `password.confirm` sur `/api/scrapping/*` (masse). Maj **unitaire** MJ+ : `POST /api/entities/{type}/{id}/dofusdb-refresh` (id local, policy `update`, throttle, pas de password.confirm).
 - **CLI** : `php artisan scrapping:setup` (socle) puis `scrapping:run` (exploitation).
 
 ## Fichiers pivots

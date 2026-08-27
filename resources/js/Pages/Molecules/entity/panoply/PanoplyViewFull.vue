@@ -22,7 +22,8 @@ import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
-import { useScrapping } from "@/Composables/utils/useScrapping";
+import { useEntityActionDispatcher } from "@/Composables/entity/useEntityActionDispatcher";
+import EntityDofusdbRefreshPanel from "@/Pages/Molecules/entity/EntityDofusdbRefreshPanel.vue";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getPanoplyFieldDescriptors } from "@/Entities/panoply/panoply-descriptors";
@@ -72,7 +73,10 @@ const emit = defineEmits([
 ]);
 
 const { copyToClipboard } = useCopyToClipboard();
-const { refreshEntity } = useScrapping();
+const { dispatchEntityAction, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh } =
+    useEntityActionDispatcher("panoplies", {
+        onRefresh: () => router.reload(),
+    });
 const { downloadPdf } = useDownloadPdf("panoply");
 const permissions = usePermissions();
 
@@ -211,12 +215,8 @@ const handleAction = async (actionKey) => {
             await downloadPdf(panoplyId);
             emit("download-pdf", props.panoply);
             break;
-        case 'refresh': {
-            const ok = await refreshEntity('panoply', panoplyId, { forceUpdate: true });
-            if (ok) {
-                router.reload();
-            }
-            emit('refresh', props.panoply);
+        case "refresh": {
+            await dispatchEntityAction("refresh", props.panoply);
             break;
         }
         case "delete":
@@ -340,6 +340,17 @@ const handleAction = async (actionKey) => {
             </div>
         </div>
     </div>
+    <EntityDofusdbRefreshPanel
+        :open="refreshConfirm.open"
+        :loading="refreshConfirm.loading"
+        :applying="refreshConfirm.applying"
+        :preview="refreshConfirm.preview"
+        :error="refreshConfirm.error"
+        :playable="refreshConfirm.playable"
+        :entity-label="refreshConfirm.entityLabel"
+        @confirm="confirmPendingRefresh"
+        @close="cancelPendingRefresh"
+    />
 </template>
 
 <style scoped>

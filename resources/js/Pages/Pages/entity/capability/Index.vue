@@ -15,7 +15,6 @@ import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { Capability } from "@/Models/Entity/Capability";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
-import { useScrapping } from "@/Composables/utils/useScrapping";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -56,7 +55,6 @@ const canModify = computed(() => canUpdateAny('capabilities'));
 const { bulkPatchJson } = useBulkRequest();
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf("capability");
-const { refreshEntity } = useScrapping();
 
 // Table v2
 const selectedIds = ref([]);
@@ -233,12 +231,6 @@ const handleTableAction = async (actionKey, entity, row) => {
         case 'download-pdf':
             await downloadPdf(entityId);
             break;
-
-        case 'refresh':
-            await refreshEntity('capability', entityId, { forceUpdate: true });
-            refreshToken.value++;
-            break;
-
         case 'delete':
             // TODO: Implémenter la suppression avec confirmation
             break;
@@ -276,10 +268,7 @@ const handleModalDownloadPdf = async (entity) => {
     await downloadPdf(entityId);
 };
 
-const handleModalRefresh = async (entity) => {
-    const entityId = entity?.id;
-    if (!entityId) return;
-    await refreshEntity('capability', entityId, { forceUpdate: true });
+const handleModalRefresh = () => {
     refreshToken.value++;
     closeModal();
 };

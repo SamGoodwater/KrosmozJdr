@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ConsumableBulkController;
 use App\Http\Controllers\Api\CreatureBulkController;
 use App\Http\Controllers\Api\CreatureTraitBulkController;
 use App\Http\Controllers\Api\EntityDeletionController;
+use App\Http\Controllers\Api\EntityDofusdbRefreshController;
 use App\Http\Controllers\Api\EntityStateController;
 use App\Http\Controllers\Api\ItemBulkController;
 use App\Http\Controllers\Api\MonsterBulkController;
@@ -37,6 +38,11 @@ Route::middleware(['web', 'auth'])->prefix('entities')->group(function () {
         ->where('entityType', '[a-z-]+')
         ->whereNumber('id')
         ->name('api.entities.state.update');
+    Route::post('/{entityType}/{id}/dofusdb-refresh', EntityDofusdbRefreshController::class)
+        ->middleware(['role:game_master', 'throttle:12,1'])
+        ->where('entityType', '[a-z-]+')
+        ->whereNumber('id')
+        ->name('api.entities.dofusdb-refresh');
     Route::get('/{entityType}/{id}/delete-impact', [EntityDeletionController::class, 'impact'])
         ->where('entityType', '[a-z-]+')
         ->whereNumber('id')

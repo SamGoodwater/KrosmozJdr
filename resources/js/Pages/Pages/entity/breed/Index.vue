@@ -14,7 +14,6 @@ import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityInde
 import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
 import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
-import { useScrapping } from "@/Composables/utils/useScrapping";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -47,7 +46,6 @@ const canModify = computed(() => canUpdateAny('breeds'));
 
 const { bulkPatchJson } = useBulkRequest();
 const { copyToClipboard } = useCopyToClipboard();
-const { refreshEntity } = useScrapping();
 
 const selectedIds = ref([]);
 const tableRows = ref([]);
@@ -196,12 +194,6 @@ const handleTableAction = async (actionKey, entity, row) => {
 
         case 'download-pdf':
             break;
-
-        case 'refresh':
-            await refreshEntity('breed', entityId, { forceUpdate: true });
-            refreshToken.value++;
-            break;
-
         case 'delete':
             break;
     }
@@ -233,10 +225,7 @@ const handleModalCopyLink = async (entity) => {
 
 const handleModalDownloadPdf = (_entity) => {};
 
-const handleModalRefresh = async (entity) => {
-    const entityId = entity?.id;
-    if (!entityId) return;
-    await refreshEntity('breed', entityId, { forceUpdate: true });
+const handleModalRefresh = () => {
     refreshToken.value++;
     closeModal();
 };

@@ -26,7 +26,8 @@ import { useCreatureResolvedStats } from "@/Composables/entity/useCreatureResolv
 import { CHARACTERISTIC_CARD_DENSITY } from "@/Utils/Entity/creatureCharacteristicGroups.manifest";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
-import { useScrapping } from '@/Composables/utils/useScrapping';
+import { useEntityActionDispatcher } from '@/Composables/entity/useEntityActionDispatcher';
+import EntityDofusdbRefreshPanel from '@/Pages/Molecules/entity/EntityDofusdbRefreshPanel.vue';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
@@ -74,7 +75,10 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('monster');
-const { refreshEntity } = useScrapping();
+const { dispatchEntityAction, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh } =
+    useEntityActionDispatcher('monsters', {
+        onRefresh: () => router.reload({ only: ['monster', 'characteristicRuntime'] }),
+    });
 const permissions = usePermissions();
 
 const ctx = computed(() => {
@@ -325,11 +329,7 @@ const handleAction = async (actionKey) => {
             emit('download-pdf', props.monster);
             break;
         case 'refresh': {
-            const ok = await refreshEntity('monster', monsterId, { forceUpdate: true });
-            if (ok) {
-                router.reload({ only: ['monster', 'characteristicRuntime'] });
-            }
-            emit('refresh', props.monster);
+            await dispatchEntityAction('refresh', props.monster);
             break;
         }
         case 'delete':
@@ -627,6 +627,17 @@ const handleAction = async (actionKey) => {
             </div>
         </div>
     </div>
+    <EntityDofusdbRefreshPanel
+        :open="refreshConfirm.open"
+        :loading="refreshConfirm.loading"
+        :applying="refreshConfirm.applying"
+        :preview="refreshConfirm.preview"
+        :error="refreshConfirm.error"
+        :playable="refreshConfirm.playable"
+        :entity-label="refreshConfirm.entityLabel"
+        @confirm="confirmPendingRefresh"
+        @close="cancelPendingRefresh"
+    />
 </template>
 
 <style scoped>

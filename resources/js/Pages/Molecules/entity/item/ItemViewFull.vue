@@ -20,7 +20,8 @@ import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.v
 import ImageViewer from '@/Pages/Molecules/data-display/ImageViewer.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
-import { useScrapping } from '@/Composables/utils/useScrapping';
+import { useEntityActionDispatcher } from '@/Composables/entity/useEntityActionDispatcher';
+import EntityDofusdbRefreshPanel from '@/Pages/Molecules/entity/EntityDofusdbRefreshPanel.vue';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { getItemFieldDescriptors } from '@/Entities/item/item-descriptors';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
@@ -62,7 +63,10 @@ const effectHtml = computed(() => {
 });
 
 const { copyToClipboard } = useCopyToClipboard();
-const { refreshEntity } = useScrapping();
+const { dispatchEntityAction, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh } =
+    useEntityActionDispatcher('items', {
+        onRefresh: () => router.reload(),
+    });
 const { downloadPdf } = useDownloadPdf('item');
 const permissions = usePermissions();
 
@@ -208,11 +212,7 @@ const handleAction = async (actionKey) => {
             emit('download-pdf', props.item);
             break;
         case 'refresh': {
-            const ok = await refreshEntity('item', itemId, { forceUpdate: true });
-            if (ok) {
-                router.reload();
-            }
-            emit('refresh', props.item);
+            await dispatchEntityAction('refresh', props.item);
             break;
         }
         case 'delete':
@@ -445,6 +445,17 @@ const handleAction = async (actionKey) => {
             </div>
         </section>
     </div>
+    <EntityDofusdbRefreshPanel
+        :open="refreshConfirm.open"
+        :loading="refreshConfirm.loading"
+        :applying="refreshConfirm.applying"
+        :preview="refreshConfirm.preview"
+        :error="refreshConfirm.error"
+        :playable="refreshConfirm.playable"
+        :entity-label="refreshConfirm.entityLabel"
+        @confirm="confirmPendingRefresh"
+        @close="cancelPendingRefresh"
+    />
 </template>
 
 <style scoped>

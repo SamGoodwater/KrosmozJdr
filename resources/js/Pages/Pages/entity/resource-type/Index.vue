@@ -11,7 +11,6 @@ import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
-import { useScrapping } from "@/Composables/utils/useScrapping";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 
 import Btn from "@/Pages/Atoms/action/Btn.vue";
@@ -47,7 +46,6 @@ const canCreateResolved = computed(() => Boolean(props.can?.create ?? canCreate(
 
 const { bulkPatchJson } = useBulkRequest();
 const { copyToClipboard } = useCopyToClipboard();
-const { refreshEntity } = useScrapping();
 
 const selectedEntity = ref(null);
 const editOpen = ref(false);
@@ -182,11 +180,6 @@ const handleTableAction = async (actionKey, entity, row) => {
             break;
         }
 
-        case 'refresh': {
-            await refreshEntity('resource-type', entityId, { forceUpdate: true });
-            refreshToken.value++;
-            break;
-        }
 
         default:
             // Action non gérée (peut être étendue dans le futur)

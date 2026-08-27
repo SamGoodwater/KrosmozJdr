@@ -19,6 +19,7 @@ import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import EditActionDock from '@/Pages/Molecules/action/EditActionDock.vue';
 import ConfirmModal from '@/Pages/Molecules/action/ConfirmModal.vue';
+import EntityDofusdbRefreshPanel from '@/Pages/Molecules/entity/EntityDofusdbRefreshPanel.vue';
 import FormulaHelpHint from '@/Pages/Molecules/entity/FormulaHelpHint.vue';
 import EntityEditFormFieldBody from '@/Pages/Molecules/entity/EntityEditFormFieldBody.vue';
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
@@ -198,8 +199,10 @@ const entitiesPluralSegment = computed(() => {
     return `${et}s`;
 });
 
-const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPendingDelete } =
-    useEntityActionDispatcher(entitiesPluralSegment);
+const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPendingDelete, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh } =
+    useEntityActionDispatcher(entitiesPluralSegment, {
+        onRefresh: () => router.reload(),
+    });
 const showReadAction = computed(() => props.isUpdating && Boolean(props.entity?.id));
 
 /** Contexte actions : page d’édition ou modal d’édition embarquée. */
@@ -1295,6 +1298,17 @@ async function handleEditPageAction(actionKey) {
         @confirm="confirmPendingDelete"
         @cancel="cancelPendingDelete"
         @close="cancelPendingDelete"
+    />
+    <EntityDofusdbRefreshPanel
+        :open="refreshConfirm.open"
+        :loading="refreshConfirm.loading"
+        :applying="refreshConfirm.applying"
+        :preview="refreshConfirm.preview"
+        :error="refreshConfirm.error"
+        :playable="refreshConfirm.playable"
+        :entity-label="refreshConfirm.entityLabel"
+        @confirm="confirmPendingRefresh"
+        @close="cancelPendingRefresh"
     />
 </template>
 

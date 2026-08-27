@@ -15,6 +15,7 @@
 import { computed, defineAsyncComponent, shallowRef, watch } from 'vue';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import ConfirmModal from '@/Pages/Molecules/action/ConfirmModal.vue';
+import EntityDofusdbRefreshPanel from '@/Pages/Molecules/entity/EntityDofusdbRefreshPanel.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
@@ -102,7 +103,7 @@ const { downloadPdf } = useDownloadPdf(normalizedEntityType);
 /** Pluriel normalisé (ex. spells) — actions, reload Inertia */
 const entityTypePlural = computed(() => normalizeEntityType(props.entityType));
 
-const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPendingDelete } = useEntityActionDispatcher(entityTypePlural, {
+const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPendingDelete, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh } = useEntityActionDispatcher(entityTypePlural, {
     onOpenPage: (entity) => {
         emit('expand', entity);
         handleClose();
@@ -347,6 +348,17 @@ const handleAction = async (actionKey, entity) => {
         @confirm="confirmPendingDelete"
         @cancel="cancelPendingDelete"
         @close="cancelPendingDelete"
+    />
+    <EntityDofusdbRefreshPanel
+        :open="refreshConfirm.open"
+        :loading="refreshConfirm.loading"
+        :applying="refreshConfirm.applying"
+        :preview="refreshConfirm.preview"
+        :error="refreshConfirm.error"
+        :playable="refreshConfirm.playable"
+        :entity-label="refreshConfirm.entityLabel"
+        @confirm="confirmPendingRefresh"
+        @close="cancelPendingRefresh"
     />
 </template>
 

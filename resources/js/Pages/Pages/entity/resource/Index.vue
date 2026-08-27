@@ -18,7 +18,6 @@ import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexT
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
-import { useScrapping } from "@/Composables/utils/useScrapping";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -61,7 +60,6 @@ const { setPageTitle } = usePageTitle();
 const notificationStore = useNotificationStore();
 const { bulkPatchJson } = useBulkRequest();
 const { copyToClipboard } = useCopyToClipboard();
-const { refreshEntity } = useScrapping();
 setPageTitle('Liste des Ressources');
 
 // Permissions
@@ -237,12 +235,6 @@ const handleTableAction = async (actionKey, entity, row) => {
         case 'download-pdf':
             // TODO: Implémenter le téléchargement PDF
             break;
-
-        case 'refresh':
-            await refreshEntity('resource', entityId, { forceUpdate: true });
-            refreshToken.value++;
-            break;
-
         case 'delete':
             // TODO: Implémenter la suppression avec confirmation
             break;
@@ -278,10 +270,7 @@ const handleModalDownloadPdf = (entity) => {
     // TODO: Implémenter le téléchargement PDF
 };
 
-const handleModalRefresh = async (entity) => {
-    const entityId = entity?.id;
-    if (!entityId) return;
-    await refreshEntity('resource', entityId, { forceUpdate: true });
+const handleModalRefresh = () => {
     refreshToken.value++;
     closeModal();
 };

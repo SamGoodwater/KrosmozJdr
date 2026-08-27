@@ -18,7 +18,6 @@ import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-conf
 import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
-import { useScrapping } from "@/Composables/utils/useScrapping";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -54,7 +53,6 @@ const canModify = computed(() => canUpdateAny('panoplies'));
 const { bulkPatchJson } = useBulkRequest();
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf("panoply");
-const { refreshEntity } = useScrapping();
 
 // État
 const selectedEntity = ref(null);
@@ -194,12 +192,6 @@ const handleTableAction = async (actionKey, entity, row) => {
         case 'download-pdf':
             await downloadPdf(entityId);
             break;
-
-        case 'refresh':
-            await refreshEntity('panoply', entityId, { forceUpdate: true });
-            refreshToken.value++;
-            break;
-
         case 'delete':
             // TODO: Implémenter la suppression avec confirmation
             break;
@@ -237,10 +229,7 @@ const handleModalDownloadPdf = async (entity) => {
     await downloadPdf(entityId);
 };
 
-const handleModalRefresh = async (entity) => {
-    const entityId = entity?.id;
-    if (!entityId) return;
-    await refreshEntity('panoply', entityId, { forceUpdate: true });
+const handleModalRefresh = () => {
     refreshToken.value++;
     closeModal();
 };

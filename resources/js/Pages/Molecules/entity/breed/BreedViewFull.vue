@@ -15,7 +15,8 @@ import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
 import { resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
-import { useScrapping } from "@/Composables/utils/useScrapping";
+import { useEntityActionDispatcher } from "@/Composables/entity/useEntityActionDispatcher";
+import EntityDofusdbRefreshPanel from "@/Pages/Molecules/entity/EntityDofusdbRefreshPanel.vue";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
@@ -71,7 +72,10 @@ const emit = defineEmits([
 ]);
 
 const { copyToClipboard } = useCopyToClipboard();
-const { refreshEntity } = useScrapping();
+const { dispatchEntityAction, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh } =
+    useEntityActionDispatcher("breeds", {
+        onRefresh: () => router.reload(),
+    });
 const { downloadPdf } = useDownloadPdf("breed");
 const permissions = usePermissions();
 
@@ -187,12 +191,8 @@ const handleAction = async (actionKey) => {
             await downloadPdf(breedId);
             emit("download-pdf", props.breed);
             break;
-        case 'refresh': {
-            const ok = await refreshEntity('class', breedId, { forceUpdate: true });
-            if (ok) {
-                router.reload();
-            }
-            emit('refresh', props.breed);
+        case "refresh": {
+            await dispatchEntityAction("refresh", props.breed);
             break;
         }
         case "delete":
@@ -322,6 +322,17 @@ const handleAction = async (actionKey) => {
             :characteristic-runtime="characteristicRuntime"
         />
     </div>
+    <EntityDofusdbRefreshPanel
+        :open="refreshConfirm.open"
+        :loading="refreshConfirm.loading"
+        :applying="refreshConfirm.applying"
+        :preview="refreshConfirm.preview"
+        :error="refreshConfirm.error"
+        :playable="refreshConfirm.playable"
+        :entity-label="refreshConfirm.entityLabel"
+        @confirm="confirmPendingRefresh"
+        @close="cancelPendingRefresh"
+    />
 </template>
 
 <style scoped>

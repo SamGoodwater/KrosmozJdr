@@ -22,7 +22,8 @@ import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.v
 import ImageViewer from '@/Pages/Molecules/data-display/ImageViewer.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
-import { useScrapping } from '@/Composables/utils/useScrapping';
+import { useEntityActionDispatcher } from '@/Composables/entity/useEntityActionDispatcher';
+import EntityDofusdbRefreshPanel from '@/Pages/Molecules/entity/EntityDofusdbRefreshPanel.vue';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { getResourceFieldDescriptors } from '@/Entities/resource/resource-descriptors';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
@@ -57,7 +58,10 @@ provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
-const { refreshEntity } = useScrapping();
+const { dispatchEntityAction, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh } =
+    useEntityActionDispatcher('resources', {
+        onRefresh: () => router.reload(),
+    });
 const { downloadPdf } = useDownloadPdf('resource');
 const permissions = usePermissions();
 
@@ -216,11 +220,7 @@ const handleAction = async (actionKey) => {
             emit('download-pdf', props.resource);
             break;
         case 'refresh': {
-            const ok = await refreshEntity('resource', resourceId, { forceUpdate: true });
-            if (ok) {
-                router.reload();
-            }
-            emit('refresh', props.resource);
+            await dispatchEntityAction('refresh', props.resource);
             break;
         }
         case 'delete':
@@ -615,6 +615,17 @@ const handleAction = async (actionKey) => {
             </div>
         </section>
     </div>
+    <EntityDofusdbRefreshPanel
+        :open="refreshConfirm.open"
+        :loading="refreshConfirm.loading"
+        :applying="refreshConfirm.applying"
+        :preview="refreshConfirm.preview"
+        :error="refreshConfirm.error"
+        :playable="refreshConfirm.playable"
+        :entity-label="refreshConfirm.entityLabel"
+        @confirm="confirmPendingRefresh"
+        @close="cancelPendingRefresh"
+    />
 </template>
 
 <style scoped>
