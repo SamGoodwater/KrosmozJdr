@@ -323,4 +323,73 @@ class MonsterTableControllerTest extends TestCase
         $this->assertArrayNotHasKey('effects', $spellRow);
         $this->assertArrayHasKey('resolution_mode', $spellRow);
     }
+
+    /**
+     * Un joueur qui voit un monstre jouable ne doit pas recevoir les sorts brouillon liés.
+     */
+    public function test_nested_spells_hide_foreign_draft_from_player(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $player = User::factory()->create(['role' => User::ROLE_PLAYER]);
+        $creature = Creature::factory()->create(['created_by' => $author->id]);
+        $playableSpell = Spell::factory()->create([
+            'name' => 'Coup Public',
+            'state' => Spell::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $draftSpell = Spell::factory()->create([
+            'name' => 'Mécanique Secrète',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $creature->spells()->attach([$playableSpell->id, $draftSpell->id]);
+        Monster::factory()->create([
+            'creature_id' => $creature->id,
+            'state' => 'playable',
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->actingAs($player)
+            ->getJson('/api/tables/monsters?format=entities&limit=10');
+
+        $response->assertOk();
+        $spellIds = collect($response->json('entities.0.creature.spells'))->pluck('id')->all();
+        $this->assertContains($playableSpell->id, $spellIds);
+        $this->assertNotContains($draftSpell->id, $spellIds);
+    }
+
+    /**
+     * Un MJ voit encore les sorts brouillon liés à un monstre jouable.
+     */
+    public function test_nested_spells_still_include_draft_for_game_master(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $creature = Creature::factory()->create(['created_by' => $gm->id]);
+        $draftSpell = Spell::factory()->create([
+            'name' => 'Mécanique MJ',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $gm->id,
+        ]);
+        $creature->spells()->attach($draftSpell->id);
+        Monster::factory()->create([
+            'creature_id' => $creature->id,
+            'state' => 'playable',
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->actingAs($gm)
+            ->getJson('/api/tables/monsters?format=entities&limit=10');
+
+        $response->assertOk();
+        $spellIds = collect($response->json('entities.0.creature.spells'))->pluck('id')->all();
+        $this->assertContains($draftSpell->id, $spellIds);
+    }
 }
