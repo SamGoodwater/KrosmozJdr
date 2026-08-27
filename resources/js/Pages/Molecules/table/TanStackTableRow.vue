@@ -13,6 +13,11 @@ import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import {
+    getEntityStateBadgeColor,
+    getEntityStateDisplayLabel,
+    getEntityStateDotClass,
+} from "@/Utils/Entity/SharedConstants.js";
 
 /** Colonnes à contenu riche : max-width pour forcer le wrap et éviter scroll cellule */
 const RICH_CONTENT_COLUMNS = new Set(["spell_summary_profile", "effect_summary"]);
@@ -216,50 +221,14 @@ const stateValue = computed(() => {
     return v;
 });
 
-const dotColor = computed(() => {
-    switch (stateValue.value) {
-        case "playable":
-            return "success";
-        case "draft":
-            return "warning";
-        case "raw":
-            return "error";
-        case "archived":
-            return "info";
-        default:
-            return "neutral";
-    }
-});
-
-const dotBgClass = computed(() => {
-    switch (stateValue.value) {
-        case "playable":
-            return "bg-success";
-        case "draft":
-            return "bg-warning";
-        case "raw":
-            return "bg-error";
-        case "archived":
-            return "bg-info";
-        default:
-            return "bg-base-300";
-    }
-});
+const dotBgClass = computed(() => getEntityStateDotClass(stateValue.value));
 
 const dotTooltip = computed(() => {
-    switch (stateValue.value) {
-        case "playable":
-            return "Jouable";
-        case "draft":
-            return "Brouillon";
-        case "raw":
-            return "Brut";
-        case "archived":
-            return "Archivé";
-        default:
-            return null;
-    }
+    if (!stateValue.value) return null;
+    return getEntityStateDisplayLabel(stateValue.value);
 });
+
+const dotColor = computed(() => getEntityStateBadgeColor(stateValue.value));
 
 const handleAction = (actionKey, entity) => {
     closeContextMenu();

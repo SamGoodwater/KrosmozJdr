@@ -168,6 +168,7 @@ final class SpellEffectDefinitionsSerializer
         }
 
         return Condition::query()
+            ->with('canonical')
             ->whereKey(array_values(array_unique($ids)))
             ->get()
             ->keyBy('id');
@@ -186,17 +187,11 @@ final class SpellEffectDefinitionsSerializer
             $id = (int) $sid;
             $st = $byId->get($id);
             if ($st !== null) {
-                return $this->conditionBriefFromModel($st);
+                $display = $this->conditionForDisplay($st);
+                if ($display->state !== Condition::STATE_RAW) {
+                    return $this->conditionBriefFromModel($display);
+                }
             }
-
-            return [
-                'id' => $id,
-                'dofusdb_id' => is_numeric($params['condition_dofusdb_id'] ?? null) ? (int) $params['condition_dofusdb_id'] : null,
-                'name' => isset($params['condition_name']) && trim((string) $params['condition_name']) !== ''
-                    ? DofusHyperlinkText::toDisplayLabel(trim((string) $params['condition_name']))
-                    : 'Condition #'.$id,
-                'icon' => null,
-            ];
         }
 
         $dofusdbId = $params['condition_dofusdb_id'] ?? null;
@@ -207,17 +202,13 @@ final class SpellEffectDefinitionsSerializer
         $dofusdbId = (int) $dofusdbId;
         $st = $byDofusdbId->get($dofusdbId);
         if ($st !== null) {
-            return $this->conditionBriefFromModel($st);
+            $display = $this->conditionForDisplay($st);
+            if ($display->state !== Condition::STATE_RAW) {
+                return $this->conditionBriefFromModel($display);
+            }
         }
 
-        return [
-            'id' => null,
-            'dofusdb_id' => $dofusdbId,
-            'name' => isset($params['condition_name']) && trim((string) $params['condition_name']) !== ''
-                ? DofusHyperlinkText::toDisplayLabel(trim((string) $params['condition_name']))
-                : 'Condition DofusDB #'.$dofusdbId,
-            'icon' => null,
-        ];
+        return null;
     }
 
     /**
@@ -263,6 +254,7 @@ final class SpellEffectDefinitionsSerializer
         }
 
         return Condition::query()
+            ->with('canonical')
             ->where(static function ($query) use ($ids): void {
                 foreach ($ids as $id) {
                     $query->orWhere('dofusdb_id', $id);
@@ -270,6 +262,20 @@ final class SpellEffectDefinitionsSerializer
             })
             ->get()
             ->keyBy('dofusdb_id');
+    }
+
+    /**
+     * Affiche le canon JDR lorsqu’un jeton Dofus y est rattaché.
+     *
+     * @example
+     * $this->conditionForDisplay($rawPesanteur)->name;
+     * // 'Pesanteur'
+     */
+    private function conditionForDisplay(Condition $state): Condition
+    {
+        $canonical = $state->canonical;
+
+        return $canonical instanceof Condition ? $canonical : $state;
     }
 
     /**

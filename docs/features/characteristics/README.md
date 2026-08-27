@@ -29,6 +29,10 @@ Pour les objets, les caractéristiques dont l'aide cible un type d'équipement p
 Ces valeurs sont les identifiants stables de types DofusDB, jamais les clés locales de la table
 `item_types`. Une aide mentionnant plusieurs emplacements produit l'union correspondante.
 
+Le tableau MJ des bonus d’équipement (`EquipmentBonusTableService`, template CMS `equipment_bonus_table`)
+lit ces pivots et la table JSON `formula` (plus grand seuil ≤ début de bande 1, 3, … 19). Les méta
+(nom, description, niveau, rareté, prix, poids) sont ignorées. API : `GET /api/characteristics/equipment-bonus-table` (rôle ≥ MJ).
+
 ## Surcharges des monstres
 
 Une définition `entities.monster` remplace les limites et la formule génériques uniquement pour les monstres.

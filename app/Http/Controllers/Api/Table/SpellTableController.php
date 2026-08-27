@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Table;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Spell;
 use App\Models\SubEffect;
@@ -377,12 +378,7 @@ class SpellTableController extends Controller
                 ['value' => '1', 'label' => 'Oui'],
                 ['value' => '0', 'label' => 'Non'],
             ],
-            'state' => [
-                ['value' => 'raw', 'label' => 'Brut'],
-                ['value' => 'draft', 'label' => 'Brouillon'],
-                ['value' => 'playable', 'label' => 'Jouable'],
-                ['value' => 'archived', 'label' => 'Archivé'],
-            ],
+            'state' => EntityState::options(),
         ];
 
         // Mode "entities" : retourner les entités brutes

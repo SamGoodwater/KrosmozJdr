@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Enums\EntityState;
 use App\Http\Requests\Concerns\HasCharacteristicValidation;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -39,7 +40,7 @@ class UpdateResourceRequest extends FormRequest
             'weight' => ['nullable', 'string', 'max:255'],
             'rarity' => $this->characteristicRules('rarity', 'resource') ?: ['nullable', 'integer', 'min:0', 'max:5'],
             'dofus_version' => ['nullable', 'string', 'max:255'],
-            'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
+            'state' => ['nullable', 'string', EntityState::rule()],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],
             'image' => ['nullable', 'string', 'max:255'],

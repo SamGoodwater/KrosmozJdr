@@ -15,6 +15,66 @@
  */
 
 import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
+import {
+    CONDITION_CATALOG_STATE_DEFAULT,
+    CONDITION_MECHANICAL_FLAGS,
+} from "@/Composables/condition/conditionDisplay";
+
+const mechanicalFlagTableHidden = {
+    xs: false,
+    sm: false,
+    md: false,
+    lg: false,
+    xl: false,
+};
+
+/**
+ * Descriptors d’édition des flags mécaniques (cases à cocher, hors colonnes tableau).
+ *
+ * @returns {Record<string, object>}
+ */
+function mechanicalFlagDescriptors() {
+    const out = {};
+    for (const { key, label } of CONDITION_MECHANICAL_FLAGS) {
+        out[key] = {
+            key,
+            label,
+            icon: "fa-solid fa-shield-halved",
+            table: {
+                defaultVisible: mechanicalFlagTableHidden,
+                cell: {
+                    sizes: {
+                        xs: { mode: "text" },
+                        sm: { mode: "text" },
+                        md: { mode: "text" },
+                        lg: { mode: "text" },
+                        xl: { mode: "text" },
+                    },
+                },
+            },
+            display: {
+                sizes: {
+                    xs: { mode: "text" },
+                    sm: { mode: "text" },
+                    md: { mode: "text" },
+                    lg: { mode: "text" },
+                    xl: { mode: "text" },
+                },
+            },
+            edit: {
+                form: {
+                    type: "checkbox",
+                    group: "Effets mécaniques",
+                    required: false,
+                    showInCompact: false,
+                    defaultValue: false,
+                    bulk: { enabled: false },
+                },
+            },
+        };
+    }
+    return out;
+}
 
 /**
  * @typedef {Object} ConditionFieldDescriptor
@@ -143,6 +203,34 @@ export function getConditionFieldDescriptors(ctx = {}) {
         },
       },
     },
+    ...mechanicalFlagDescriptors(),
+    mechanical_flags: {
+      key: "mechanical_flags",
+      label: "Effets",
+      icon: "fa-solid fa-shield-halved",
+      table: {
+        sortable: false,
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: {
+          sizes: {
+            xs: { mode: "text", truncate: 24 },
+            sm: { mode: "text", truncate: 32 },
+            md: { mode: "text", truncate: 48 },
+            lg: { mode: "text" },
+            xl: { mode: "text" },
+          },
+        },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "text", truncate: 24 },
+          sm: { mode: "text", truncate: 32 },
+          md: { mode: "text", truncate: 48 },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
+      },
+    },
     description: {
       key: "description",
       label: "Description",
@@ -177,7 +265,12 @@ export function getConditionFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-circle-info",
       table: {
         sortable: true,
-        filterable: { id: "state", type: "multi", defaultVisible: true },
+        filterable: {
+          id: "state",
+          type: "multi",
+          defaultVisible: true,
+          defaultValue: [...CONDITION_CATALOG_STATE_DEFAULT],
+        },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },

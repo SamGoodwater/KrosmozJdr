@@ -1,6 +1,6 @@
 <script setup>
 /**
- * EntityStateBadge — pastille d'état entité (raw / draft / playable / archived).
+ * EntityStateBadge — pastille d'état entité (raw / draft / auto / playable / archived).
  *
  * @description
  * Badge coloré (variant soft par défaut), libellé métier optionnel, tooltip optionnel.

@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\CharacteristicController;
 use App\Http\Controllers\Api\CharacteristicNormsCatalogController;
 use App\Http\Controllers\Api\CharacteristicNormsController;
 use App\Http\Controllers\Api\CharacteristicReferenceTableController;
+use App\Http\Controllers\Api\EquipmentBonusTableController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,3 +28,6 @@ Route::middleware(['web'])->get('/characteristics/{key}/norms/{entity?}', [Chara
 
 Route::middleware(['web'])->get('/characteristics/reference-table', [CharacteristicReferenceTableController::class, 'index'])
     ->name('api.characteristics.reference-table');
+
+Route::middleware(['web'])->get('/characteristics/equipment-bonus-table', [EquipmentBonusTableController::class, 'index'])
+    ->name('api.characteristics.equipment-bonus-table');

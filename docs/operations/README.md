@@ -12,6 +12,7 @@ Commandes et opérations de maintenance du projet.
 - `php artisan pages:import-rules-toc` : commande bas niveau d'import des règles.
 - `php artisan scrapping:setup` : initialise les données nécessaires au scrapping.
 - `php artisan scrapping:run` : lance les imports DofusDB.
+- `php artisan conditions:remap-canonical` : recolle les sorts sur les états JDR de base (Pesanteur, Empoisonné, …). `--dry-run` pour compter sans écrire.
 
 ## Nettoyage Des Fichiers Orphelins
 

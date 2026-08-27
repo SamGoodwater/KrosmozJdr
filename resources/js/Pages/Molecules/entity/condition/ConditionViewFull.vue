@@ -20,6 +20,7 @@ import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getConditionFieldDescriptors } from "@/Entities/condition/condition-descriptors";
+import ConditionMechanicalFlags from "@/Pages/Molecules/entity/condition/ConditionMechanicalFlags.vue";
 
 const props = defineProps({
     condition: {
@@ -173,6 +174,11 @@ const handleAction = async (actionKey) => {
                         <p v-if="condition.description" class="text-primary-300 mt-2 wrap-break-word">
                             {{ condition.description }}
                         </p>
+                        <ConditionMechanicalFlags
+                            class="mt-3"
+                            :condition="condition"
+                            show-empty
+                        />
                     </div>
                     
                     <!-- Actions en haut à droite -->

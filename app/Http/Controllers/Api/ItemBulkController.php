@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Item;
 use Illuminate\Http\JsonResponse;
@@ -29,7 +30,7 @@ class ItemBulkController extends Controller
             'ids.*' => ['integer', 'min:1', 'exists:items,id'],
 
             // Champs bulk (les clés absentes ne sont pas modifiées)
-            'state' => ['sometimes', 'string', 'in:raw,draft,playable,archived'],
+            'state' => ['sometimes', 'string', EntityState::rule()],
             'read_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
             'write_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
             'auto_update' => ['sometimes', 'boolean'],

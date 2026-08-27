@@ -9,7 +9,7 @@ Le CMS maison gère le contenu éditorial du site (accueil, règles, bibliothèq
 | Champ | Rôle |
 | --- | --- |
 | `title`, `slug` (unique) | Identité ; binding de route `{page:slug}` |
-| `state`, `read_level`, `write_level` | États `raw`/`draft`/`playable`/`archived` + droits (voir [permissions](../permissions/README.md)) |
+| `state`, `read_level`, `write_level` | États `raw`/`draft`/`auto`/`playable`/`archived` + droits (voir [permissions](../permissions/README.md)) |
 | `parent_id` | Hiérarchie (arbre) |
 | `in_menu`, `menu_order`, `menu_group`, `entity_key` | Présence et placement dans le menu |
 | `icon`, `*_css_classes` | Présentation |
@@ -31,7 +31,7 @@ Médias via Spatie Media Library (collection `files`, conversions `thumb`/`webp`
 
 ## Templates de sections
 
-L'enum `app/Enums/SectionType.php` définit 9 types (defaults PHP dans `config/section_templates.php`) :
+L'enum `app/Enums/SectionType.php` définit 10 types (defaults PHP dans `config/section_templates.php`) :
 
 | `value` | Usage |
 | --- | --- |
@@ -40,6 +40,7 @@ L'enum `app/Enums/SectionType.php` définit 9 types (defaults PHP dans `config/s
 | `entity_table` | Tableau d'entités (legacy) |
 | `legal_markdown` | Document légal en Markdown |
 | `characteristic_norms`, `characteristic_norms_catalog`, `characteristic_reference_table` | Chartes/référentiels de caractéristiques |
+| `equipment_bonus_table` | Plafonds de bonus d’équipement (slot × carac × bandes 1–2…19–20, prix, FM) ; projection live de `characteristic_object.formula` |
 
 Côté front, chaque template est un dossier `resources/js/Pages/Organismes/section/templates/<type>/` avec `config.js` + `Section*Read.vue` + `Section*Edit.vue`, auto-découvert par `templates/index.js` (`import.meta.glob('./*/config.js')`) et exposé via `composables/useTemplateRegistry.js`.
 
@@ -70,7 +71,11 @@ Les « kref » sont des références inline insérées dans le texte riche.
 
 ## Menu dynamique
 
-`GET /pages/menu` (`PageController::menu`, réponse JSON) → composable `useDynamicMenu` (axios) → `DynamicMenu.vue` dans `Layouts/Aside.vue`. L'arbre est construit par `PageService::getMenuPages` + `buildMenuTree`, regroupé en 4 groupes fixes (L'Essentiel, Règles, Bibliothèques, Informations), avec fallback `config('nav_menu.bibliotheques')`. Le cache menu est invalidé via `PageService::clearMenuCache()` après tout CRUD de page.
+`GET /pages/menu` (`PageController::menu`, réponse JSON) → composable `useDynamicMenu` (axios) → `DynamicMenu.vue` dans `Layouts/Aside.vue`. L'arbre est construit par `PageService::getMenuPages` + `buildMenuTree`, regroupé selon `config/nav_menu.php` (`groups` : L'Essentiel, Règles, Bibliothèques, Pour les MJ, Informations), avec fallback `config('nav_menu.bibliotheques')` si le groupe Bibliothèques n’a pas encore de pages seedées. Un groupe sans enfants (après filtrage `read_level`) n’est pas renvoyé. Le cache menu est invalidé via `PageService::clearMenuCache()` après tout CRUD de page.
+
+**Pour les MJ** n’est pas une page CMS : c’est un groupe de menu. L’atelier **Création** (`/pages/creation`, `read_level` MJ) y rassemble Équipements (`creation-equipements`) et les chartes (`contribution-creatures|objets|sorts`). Contribution (Informations) ne contient plus que **Nous rejoindre**.
+
+Le tableau `equipment_bonus_table` est alimenté par `GET /api/characteristics/equipment-bonus-table` (session web, rôle ≥ MJ).
 
 ## Routes (extrait)
 

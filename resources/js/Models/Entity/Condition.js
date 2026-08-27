@@ -9,7 +9,7 @@
  * console.log(condition.name); // Accès normalisé
  */
 import { BaseModel } from '../BaseModel';
-import { formatConditionDispellable, getConditionDispellableIcon } from '@/Composables/condition/conditionDisplay';
+import { CONDITION_MECHANICAL_FLAGS, formatConditionDispellable, getConditionDispellableIcon, listActiveMechanicalFlags, readConditionFlag } from '@/Composables/condition/conditionDisplay';
 import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 
 export class Condition extends BaseModel {
@@ -64,6 +64,9 @@ export class Condition extends BaseModel {
     toCell(fieldKey, options = {}) {
         if (fieldKey === 'dissipable') {
             return this._toDissipableCell(options);
+        }
+        if (fieldKey === 'mechanical_flags') {
+            return this._toMechanicalFlagsCell(options);
         }
 
         // D'abord, essayer la méthode de base (gère les formatters automatiquement)
@@ -188,6 +191,26 @@ export class Condition extends BaseModel {
     }
 
     /**
+     * Cellule résumé des flags mécaniques actifs.
+     * @private
+     */
+    _toMechanicalFlagsCell(options = {}) {
+        const flags = listActiveMechanicalFlags(this);
+        const summary = flags.map((f) => f.label).join(' · ') || '—';
+        const { size = 'md', format = {} } = options;
+
+        return {
+            type: 'text',
+            value: summary,
+            params: {
+                truncate: format.truncate || (size === 'xs' || size === 'sm' ? 32 : null),
+                searchValue: summary === '—' ? '' : summary,
+                sortValue: summary,
+            },
+        };
+    }
+
+    /**
      * Génère une cellule pour created_by
      * @private
      */
@@ -223,6 +246,11 @@ export class Condition extends BaseModel {
      * @returns {Object}
      */
     toFormData() {
+        const flags = {};
+        for (const { key } of CONDITION_MECHANICAL_FLAGS) {
+            flags[key] = readConditionFlag(this, key);
+        }
+
         return {
             name: this.name,
             description: this.description,
@@ -230,7 +258,8 @@ export class Condition extends BaseModel {
             read_level: this.readLevel,
             write_level: this.writeLevel,
             dissipable: this.dissipable,
-            image: this.image
+            image: this.image,
+            ...flags,
         };
     }
 }

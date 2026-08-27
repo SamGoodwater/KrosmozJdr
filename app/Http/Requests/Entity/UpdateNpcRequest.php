@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Enums\EntityState;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -35,7 +36,7 @@ class UpdateNpcRequest extends FormRequest
             'size' => ['nullable', 'string', 'max:255'],
             'breed_id' => ['nullable', 'integer', 'exists:breeds,id'],
             'specialization_id' => ['nullable', 'integer', 'exists:specializations,id'],
-            'state' => ['nullable', 'string', 'max:255'],
+            'state' => ['nullable', 'string', EntityState::rule()],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:4'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:4'],
         ];

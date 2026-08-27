@@ -40,11 +40,15 @@ rend autant de PV que les dégâts réellement infligés, conformément aux règ
 La durée numérique importée est également copiée dans `effect_sub_effect.duration_formula`, qui constitue
 la valeur commune au moteur de résolution, à l’éditeur et à l’affichage. Un réimport met à jour les pivots
 existants (durée, params, condition liée) au lieu de les ignorer. Les états DofusDB créent/mettent à jour
-l’entité `Condition` et la liaison `condition_spell` ; les flags restent en snake_case
+l’entité `Condition` (état `raw` à la création, sans écraser un `playable` existant). La liaison
+`condition_spell` et `params.condition_id` ciblent l’état JDR de base s’il existe (Pesanteur, Empoisonné,
+Étourdi, Ralenti, Affaibli) ; le jeton Dofus reste en `raw` (`canonical_condition_id`). Sans canon, pas
+de liaison JDR. Les flags restent en snake_case
 (`cant_be_moved`, `cant_switch_position`, etc.). Les noms d’états DofusDB parfois fournis sous forme
 d’hyperlien Ankama (`{{spell,id,level::Libellé}}`) sont normalisés vers le libellé affichable à
 l’import, à la résolution et à l’affichage (`App\Support\DofusHyperlinkText`). Maintenance ponctuelle :
-`php artisan conditions:strip-dofus-hyperlinks`. Les identifiants élémentaires DofusDB utilisent une
+`php artisan conditions:strip-dofus-hyperlinks` ; recollement vers le noyau JDR :
+`php artisan conditions:remap-canonical`. Les identifiants élémentaires DofusDB utilisent une
 correspondance centralisée : 0 neutre, 1 feu, 2 eau, 3 terre et 4 air.
 
 Les effets « Bouclier » DofusDB (`1020`, `1039`, `1040`) sont mappés vers `protéger`, même lorsqu’ils

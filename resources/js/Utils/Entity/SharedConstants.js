@@ -384,6 +384,7 @@ export const CREATURE_COMBAT_ICONS = Object.freeze({
 export const ENTITY_STATE_OPTIONS = Object.freeze([
   { value: 'raw', label: 'Brut' },
   { value: 'draft', label: 'Brouillon' },
+  { value: 'auto', label: 'Auto' },
   { value: 'playable', label: 'Jouable' },
   { value: 'archived', label: 'Archivé' },
 ]);
@@ -393,7 +394,7 @@ export function getEntityStateOptions() {
 }
 
 /**
- * Classes Tailwind pour un point de couleur d'état (raw/draft/playable/archived).
+ * Classes Tailwind pour un point de couleur d'état (raw/draft/auto/playable/archived).
  * Aligné sur {@link EntityUsableDot} pour cohérence filtres / cartes.
  *
  * @param {string|null|undefined} state
@@ -407,6 +408,8 @@ export function getEntityStateDotClass(state) {
       return "bg-warning";
     case "raw":
       return "bg-error";
+    case "auto":
+      return "bg-secondary";
     case "archived":
       return "bg-info";
     default:
@@ -418,6 +421,7 @@ export function getEntityStateDotClass(state) {
 export const ENTITY_STATE_BADGE_COLORS = Object.freeze({
   raw: "error",
   draft: "warning",
+  auto: "secondary",
   playable: "success",
   archived: "info",
 });

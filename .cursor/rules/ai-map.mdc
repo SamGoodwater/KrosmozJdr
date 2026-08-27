@@ -30,5 +30,5 @@ Avant d'explorer le code en masse, utilise la **documentation condensée pour IA
 
 - **Doc code/site** (à maintenir) vs **contenu de jeu** (`private/game/`, lore + règles JDR) : ne réécris pas le contenu de jeu sans demande explicite.
 - Rôles utilisateur : entier 0→5 (guest → super_admin).
-- Entités de jeu : champs communs `state` (`raw`/`draft`/`playable`/`archived`), `read_level`, `write_level`, `created_by`. Un état `ai_review` est cadré dans `docs/IA/`, pas encore branché.
+- Entités de jeu : champs communs `state` (`raw`/`draft`/`auto`/`playable`/`archived`), `read_level`, `write_level`, `created_by`. L’état `auto` (proposition IA/script à relire) est dans le code ; le pipeline LLM reste cadré dans `docs/IA/`.
 - i18n `vue-i18n` documenté mais **non branché** côté front (libellés FR en dur).

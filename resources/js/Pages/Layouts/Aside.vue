@@ -37,8 +37,7 @@ const footerItems = [
         label: "Nous rejoindre",
         icon: "fa-handshake-angle",
         pack: "solid",
-        tooltip:
-            "Discord, GitHub, droits d’édition et chartes de conception des entités",
+        tooltip: "Discord, GitHub et droits d’édition",
     },
     {
         id: "tools",

@@ -22,11 +22,13 @@ use App\Models\Type\MonsterRace;
 use App\Models\Type\ResourceType;
 use App\Models\Type\SpellType;
 use App\Models\User;
+use App\Services\Condition\ConditionCanonicalMapper;
 use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Support\DofusDbElementId;
 use App\Support\DofusHyperlinkText;
 use App\Support\ElementBitmask;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -39,6 +41,8 @@ use Illuminate\Support\Facades\Log;
  */
 final class IntegrationService
 {
+    private ?ConditionCanonicalMapper $conditionCanonicalMapper = null;
+
     public function __construct(
         private readonly ?DofusDbItemTypesCatalogService $itemTypesCatalog = null,
         private readonly ?DofusDbItemSuperTypeMappingService $superTypeMapping = null
@@ -729,15 +733,15 @@ final class IntegrationService
                         : null);
                 $durationFormula = $durationFormula !== '' ? $durationFormula : null;
 
-                $condition = $this->integrateConditionFromParams($spell, $slug, $params);
-                if ($condition !== null) {
-                    $params['condition_id'] = $condition->id;
-                    $params['condition_dofusdb_id'] = $condition->dofusdb_id;
-                    if (! isset($params['condition_name']) || trim((string) $params['condition_name']) === '') {
-                        $params['condition_name'] = $condition->name;
-                    } else {
+                $linkedCondition = $this->integrateConditionFromParams($spell, $slug, $params);
+                if ($linkedCondition !== null) {
+                    $params['condition_id'] = $linkedCondition->id;
+                    $params['condition_name'] = $linkedCondition->name;
+                } else {
+                    unset($params['condition_id']);
+                    if (isset($params['condition_name']) && is_string($params['condition_name']) && trim($params['condition_name']) !== '') {
                         $params['condition_name'] = DofusHyperlinkText::toDisplayLabel(
-                            trim((string) $params['condition_name'])
+                            trim($params['condition_name'])
                         );
                     }
                 }
@@ -1041,15 +1045,21 @@ final class IntegrationService
             'crit_only' => $critOnly,
         ];
 
-        // Ne jamais comparer les chemins JSON à null (`= null` ne matche jamais en SQL).
-        foreach ([
+        $dofusConditionId = $params['condition_dofusdb_id'] ?? null;
+        $dedupParams = [
             'characteristic' => $params['characteristic'] ?? null,
             'value_formula' => $params['value_formula'] ?? null,
             'value_formula_crit' => $params['value_formula_crit'] ?? null,
             'value' => $params['value'] ?? null,
-            'condition_dofusdb_id' => $params['condition_dofusdb_id'] ?? null,
-            'condition_id' => $params['condition_id'] ?? null,
-        ] as $key => $value) {
+            'condition_dofusdb_id' => $dofusConditionId,
+        ];
+        // L’id Dofus est la clé stable ; condition_id peut passer du jeton raw au canon JDR.
+        if ($dofusConditionId === null || $dofusConditionId === '') {
+            $dedupParams['condition_id'] = $params['condition_id'] ?? null;
+        }
+
+        // Ne jamais comparer les chemins JSON à null (`= null` ne matche jamais en SQL).
+        foreach ($dedupParams as $key => $value) {
             if ($value === null || $value === '') {
                 continue;
             }
@@ -1086,28 +1096,35 @@ final class IntegrationService
             $conditionName = 'Condition DofusDB #'.$stateDofusdbId;
         }
 
+        $attributes = [
+            'name' => $conditionName,
+            'icon' => isset($params['condition_icon']) && is_string($params['condition_icon']) ? $params['condition_icon'] : null,
+            'image' => isset($params['condition_image']) && is_string($params['condition_image']) ? $params['condition_image'] : null,
+            'prevents_spell_cast' => (bool) data_get($flags, 'prevents_spell_cast', false),
+            'prevents_fight' => (bool) data_get($flags, 'prevents_fight', false),
+            'cant_be_moved' => (bool) data_get($flags, 'cant_be_moved', false),
+            'cant_be_pushed' => (bool) data_get($flags, 'cant_be_pushed', false),
+            'cant_deal_damage' => (bool) data_get($flags, 'cant_deal_damage', false),
+            'invulnerable' => (bool) data_get($flags, 'invulnerable', false),
+            'cant_switch_position' => (bool) data_get($flags, 'cant_switch_position', false),
+            'incurable' => (bool) data_get($flags, 'incurable', false),
+            'invulnerable_melee' => (bool) data_get($flags, 'invulnerable_melee', false),
+            'invulnerable_range' => (bool) data_get($flags, 'invulnerable_range', false),
+            'cant_tackle' => (bool) data_get($flags, 'cant_tackle', false),
+            'cant_be_tackled' => (bool) data_get($flags, 'cant_be_tackled', false),
+            'display_turn_remaining' => (bool) data_get($flags, 'display_turn_remaining', false),
+            'is_main_state' => (bool) data_get($flags, 'is_main_state', false),
+            'raw' => $flags !== [] ? $flags : null,
+        ];
+
+        $existing = Condition::query()->where('dofusdb_id', $stateDofusdbId)->first();
+        if ($existing === null || $existing->state === Condition::STATE_DRAFT) {
+            $attributes['state'] = Condition::STATE_RAW;
+        }
+
         $condition = Condition::query()->updateOrCreate(
             ['dofusdb_id' => $stateDofusdbId],
-            [
-                'name' => $conditionName,
-                'icon' => isset($params['condition_icon']) && is_string($params['condition_icon']) ? $params['condition_icon'] : null,
-                'image' => isset($params['condition_image']) && is_string($params['condition_image']) ? $params['condition_image'] : null,
-                'prevents_spell_cast' => (bool) data_get($flags, 'prevents_spell_cast', false),
-                'prevents_fight' => (bool) data_get($flags, 'prevents_fight', false),
-                'cant_be_moved' => (bool) data_get($flags, 'cant_be_moved', false),
-                'cant_be_pushed' => (bool) data_get($flags, 'cant_be_pushed', false),
-                'cant_deal_damage' => (bool) data_get($flags, 'cant_deal_damage', false),
-                'invulnerable' => (bool) data_get($flags, 'invulnerable', false),
-                'cant_switch_position' => (bool) data_get($flags, 'cant_switch_position', false),
-                'incurable' => (bool) data_get($flags, 'incurable', false),
-                'invulnerable_melee' => (bool) data_get($flags, 'invulnerable_melee', false),
-                'invulnerable_range' => (bool) data_get($flags, 'invulnerable_range', false),
-                'cant_tackle' => (bool) data_get($flags, 'cant_tackle', false),
-                'cant_be_tackled' => (bool) data_get($flags, 'cant_be_tackled', false),
-                'display_turn_remaining' => (bool) data_get($flags, 'display_turn_remaining', false),
-                'is_main_state' => (bool) data_get($flags, 'is_main_state', false),
-                'raw' => $flags !== [] ? $flags : null,
-            ]
+            $attributes
         );
 
         $applicationMode = $subEffectSlug === 's-appliquer-etat' ? 'self' : 'target';
@@ -1115,23 +1132,90 @@ final class IntegrationService
             ? (int) $params['dofus_effect_id']
             : null;
 
-        DB::table('condition_spell')->updateOrInsert(
-            [
-                'spell_id' => $spell->id,
-                'condition_id' => $condition->id,
-                'application_mode' => $applicationMode,
-                'dofus_effect_id' => $dofusEffectId,
-            ],
-            [
-                'duration' => isset($params['duration']) && is_numeric($params['duration']) ? (int) $params['duration'] : null,
-                'dispellable' => array_key_exists('dispellable', $params) ? (bool) $params['dispellable'] : null,
-                'target_mask' => isset($params['target_mask']) && is_string($params['target_mask']) ? $params['target_mask'] : null,
-                'updated_at' => now(),
-                'created_at' => now(),
-            ]
-        );
+        $canonical = $this->conditionCanonicalMapper()->resolve($condition);
+        $canonicalFk = $canonical !== null && (int) $canonical->id !== (int) $condition->id
+            ? (int) $canonical->id
+            : null;
+        $currentFk = $condition->canonical_condition_id !== null ? (int) $condition->canonical_condition_id : null;
+        if ($currentFk !== $canonicalFk) {
+            $condition->canonical_condition_id = $canonicalFk;
+            $condition->save();
+        }
 
-        return $condition;
+        $this->syncConditionSpellLink($spell, $condition, $canonical, $applicationMode, $dofusEffectId, $params);
+
+        return $canonical;
+    }
+
+    /**
+     * Relie le sort au canon JDR s’il existe ; retire l’ancienne ligne vers le jeton Dofus.
+     *
+     * @param  array<string, mixed>  $params
+     */
+    private function syncConditionSpellLink(
+        Spell $spell,
+        Condition $source,
+        ?Condition $canonical,
+        string $applicationMode,
+        ?int $dofusEffectId,
+        array $params
+    ): void {
+        if ($canonical === null || (int) $canonical->id !== (int) $source->id) {
+            $this->conditionSpellIdentityQuery($spell->id, (int) $source->id, $applicationMode, $dofusEffectId)
+                ->delete();
+        }
+
+        if ($canonical === null) {
+            return;
+        }
+
+        $payload = [
+            'duration' => isset($params['duration']) && is_numeric($params['duration']) ? (int) $params['duration'] : null,
+            'dispellable' => array_key_exists('dispellable', $params) ? (bool) $params['dispellable'] : null,
+            'target_mask' => isset($params['target_mask']) && is_string($params['target_mask']) ? $params['target_mask'] : null,
+            'updated_at' => now(),
+        ];
+
+        $existing = $this->conditionSpellIdentityQuery($spell->id, (int) $canonical->id, $applicationMode, $dofusEffectId)
+            ->first();
+        if ($existing !== null) {
+            DB::table('condition_spell')->where('id', $existing->id)->update($payload);
+
+            return;
+        }
+
+        DB::table('condition_spell')->insert(array_merge($payload, [
+            'spell_id' => $spell->id,
+            'condition_id' => $canonical->id,
+            'application_mode' => $applicationMode,
+            'dofus_effect_id' => $dofusEffectId,
+            'created_at' => now(),
+        ]));
+    }
+
+    /**
+     * @return Builder
+     */
+    private function conditionSpellIdentityQuery(
+        int $spellId,
+        int $conditionId,
+        string $applicationMode,
+        ?int $dofusEffectId
+    ) {
+        $query = DB::table('condition_spell')
+            ->where('spell_id', $spellId)
+            ->where('condition_id', $conditionId)
+            ->where('application_mode', $applicationMode);
+        if ($dofusEffectId === null) {
+            return $query->whereNull('dofus_effect_id');
+        }
+
+        return $query->where('dofus_effect_id', $dofusEffectId);
+    }
+
+    private function conditionCanonicalMapper(): ConditionCanonicalMapper
+    {
+        return $this->conditionCanonicalMapper ??= app(ConditionCanonicalMapper::class);
     }
 
     /**

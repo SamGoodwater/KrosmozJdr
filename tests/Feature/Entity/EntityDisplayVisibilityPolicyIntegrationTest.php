@@ -76,4 +76,20 @@ class EntityDisplayVisibilityPolicyIntegrationTest extends TestCase
         $response->assertOk();
         $this->assertSame([], $response->json('results'));
     }
+
+    public function test_auto_spell_is_hidden_from_player_and_visible_to_game_master(): void
+    {
+        $spell = Spell::factory()->create([
+            'name' => 'Sort auto visibilité',
+            'state' => Spell::STATE_AUTO,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $player = User::factory()->create(['role' => User::ROLE_PLAYER]);
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+
+        $this->assertFalse(Gate::forUser($player)->allows('view', $spell));
+        $this->assertTrue(Gate::forUser($gm)->allows('view', $spell));
+    }
 }

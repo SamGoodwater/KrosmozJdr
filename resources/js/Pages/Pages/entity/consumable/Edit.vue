@@ -15,7 +15,7 @@ import { computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Consumable } from '@/Models/Entity/Consumable';
-import { getRarityOptions } from '@/Utils/Entity/SharedConstants';
+import { getRarityOptions, getEntityStateOptions } from '@/Utils/Entity/SharedConstants';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EffectUsagesManager from '@/Pages/Organismes/entity/EffectUsagesManager.vue';
 import ObjectEffectsManager from '@/Pages/Organismes/entity/ObjectEffectsManager.vue';
@@ -99,12 +99,7 @@ const fieldsConfig = computed(() => ({
         label: 'État',
         required: false,
         showInCompact: false,
-        options: [
-            { value: 'raw', label: 'Brut' },
-            { value: 'draft', label: 'Brouillon' },
-            { value: 'playable', label: 'Jouable' },
-            { value: 'archived', label: 'Archivé' }
-        ]
+        options: getEntityStateOptions(),
     },
     consumable_type_id: {
         type: 'select',

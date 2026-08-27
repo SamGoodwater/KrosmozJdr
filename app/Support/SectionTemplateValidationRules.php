@@ -117,6 +117,7 @@ class SectionTemplateValidationRules
                 'settings.show_prices' => ['sometimes', 'boolean'],
                 'settings.show_only_with_equipment' => ['sometimes', 'boolean'],
             ],
+            SectionType::EQUIPMENT_BONUS_TABLE => [],
             default => [],
         };
     }

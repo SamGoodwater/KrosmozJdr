@@ -56,6 +56,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $spells_count
  * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
+ *
  * @method static \Database\Factories\Entity\CampaignFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign newQuery()
@@ -79,6 +80,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withoutTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign visibleToUser(?\App\Models\User $user)
+ *
  * @mixin \Eloquent
  */
 class Campaign extends Model implements HasMedia
@@ -89,6 +91,8 @@ class Campaign extends Model implements HasMedia
     public const STATE_RAW = 'raw';
 
     public const STATE_DRAFT = 'draft';
+
+    public const STATE_AUTO = 'auto';
 
     public const STATE_PLAYABLE = 'playable';
 

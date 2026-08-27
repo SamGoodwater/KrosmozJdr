@@ -1,6 +1,6 @@
 <script setup>
 /**
- * Matrice admin : rôle minimal requis pour voir chaque type d’entité selon son état (raw, draft, playable, archived).
+ * Matrice admin : rôle minimal requis pour voir chaque type d’entité selon son état (raw, draft, auto, playable, archived).
  */
 import { computed } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';

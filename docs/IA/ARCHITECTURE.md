@@ -24,7 +24,7 @@ Validateurs PHP (limites, ids, cohérence)
    erreurs ? ──► 1 à 2 retries avec la liste d’erreurs
         │
         ▼
-Enregistrement en ai_review  (+ métadonnées modèle / prompt)
+        Enregistrement en auto  (+ métadonnées modèle / prompt)
         │
         ▼
 Relecture humaine → playable  (les meilleures fiches enrichissent les étalons)
@@ -32,27 +32,25 @@ Relecture humaine → playable  (les meilleures fiches enrichissent les étalons
 
 Règle d’or : **Laravel interroge le catalogue, pas le LLM.** Un agent avec outils n’est envisagé que pour un PNJ ponctuel très exploratoire, pas pour un batch.
 
-## État `ai_review`
+## État `auto`
 
-Les états actuels sont `raw` / `draft` / `playable` / `archived` (`EntityStateController`, `EntityDisplayVisibilityService`, Form Requests).
-
-État prévu :
+Les états de publication sont `raw` / `draft` / `auto` / `playable` / `archived` (`app/Enums/EntityState.php`, policies, Form Requests, recherche, stats admin).
 
 | Code | UI | Rôle |
 | --- | --- | --- |
 | `raw` | Brut | Import Dofus, pas encore « JDR ». |
 | `draft` | Brouillon | Travail humain (création ou retravail). |
-| `ai_review` | À relire / Proposition IA | L’IA a proposé ; file d’attente de publication. |
+| `auto` | Auto | Proposition construite par IA ou script ; file d’attente de publication. |
 | `playable` | Jouable | Seul état que le modèle a le droit d’utiliser comme exemple. |
 | `archived` | Archivé | Retiré. |
 
-Visibilité de `ai_review` : **comme `raw` / `draft`** (éditeurs seulement).
+Visibilité de `auto` : **comme `raw` / `draft`** (éditeurs seulement, `rôle ≥ write_level`).
 
 Éviter le libellé « Brouillon amélioré » : trop proche de `draft`.
 
 Métadonnées utiles (champs, pas un état) : `ai_generated_at`, identifiant du modèle, version de prompt, rapport du validateur. Permet de régénérer sans casser le cycle de vie.
 
-Impact transversal connu : policies, `EntityStateController::STATES`, `GlobalSearchService::ALLOWED_STATES`, Form Requests, filtres de tables, stats admin (`AdminOverviewStatsService`). Tant que ce n’est pas branché, le code ne connaît que les 4 états actuels.
+L’état `auto` est **dans le code**. Le pipeline LLM (assembleur de contexte, JSON Schema, retries) n’est pas encore branché.
 
 ## Pourquoi pas un modèle « à nous »
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Resource;
 use Illuminate\Http\JsonResponse;
@@ -30,7 +31,7 @@ class ResourceBulkController extends Controller
 
             // Champs bulk (les clés absentes ne sont pas modifiées)
             'resource_type_id' => ['sometimes', 'nullable', 'integer', 'exists:resource_types,id'],
-            'state' => ['sometimes', 'string', 'in:raw,draft,playable,archived'],
+            'state' => ['sometimes', 'string', EntityState::rule()],
             'read_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
             'write_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
             'auto_update' => ['sometimes', 'boolean'],

@@ -13,6 +13,7 @@ import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard
 import EntityMinimalTitle from "@/Pages/Molecules/entity/shared/EntityMinimalTitle.vue";
 import { useEntityMinimalShell } from "@/Composables/entity/useEntityMinimalShell";
 import ConditionDissipableHighlight from "@/Pages/Molecules/entity/condition/ConditionDissipableHighlight.vue";
+import ConditionMechanicalFlags from "@/Pages/Molecules/entity/condition/ConditionMechanicalFlags.vue";
 
 const props = defineProps({
     condition: { type: Object, required: true },
@@ -127,6 +128,11 @@ const hasDescription = computed(() => {
                             class="mt-1"
                             :dissipable="dissipableValue"
                             variant="block"
+                        />
+                        <ConditionMechanicalFlags
+                            class="mt-1"
+                            :condition="entity"
+                            size="xs"
                         />
                     </div>
                 </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Table;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Condition;
 use Illuminate\Http\JsonResponse;
@@ -63,7 +64,6 @@ class ConditionTableController extends Controller
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
-
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
         $order = (string) $request->get('order', 'desc');
@@ -87,6 +87,8 @@ class ConditionTableController extends Controller
 
         if ($this->hasFilterValue($filters, 'state')) {
             $this->applyEqualityFilter($query, 'state', $filters['state']);
+        } else {
+            $query->where('state', '!=', Condition::STATE_RAW);
         }
         if ($this->hasFilterValue($filters, 'read_level')) {
             $this->applyEqualityFilter($query, 'read_level', $filters['read_level'], 'int');
@@ -129,12 +131,7 @@ class ConditionTableController extends Controller
         ];
 
         $filterOptions = [
-            'state' => [
-                ['value' => 'raw', 'label' => 'Brut'],
-                ['value' => 'draft', 'label' => 'Brouillon'],
-                ['value' => 'playable', 'label' => 'Jouable'],
-                ['value' => 'archived', 'label' => 'Archivé'],
-            ],
+            'state' => EntityState::options(),
             'read_level' => self::LEVEL_OPTIONS,
             'write_level' => self::LEVEL_OPTIONS,
             'dissipable' => [
@@ -145,28 +142,7 @@ class ConditionTableController extends Controller
 
         // Mode "entities" : retourner les entités brutes
         if ($format === 'entities') {
-            $entities = $rows->map(function (Condition $a) {
-                $createdBy = $a->createdBy;
-
-                return [
-                    'id' => $a->id,
-                    'name' => $a->name,
-                    'description' => $a->description,
-                    'state' => (string) ($a->state ?? 'draft'),
-                    'read_level' => (int) ($a->read_level ?? 0),
-                    'write_level' => (int) ($a->write_level ?? 0),
-                    'dissipable' => (bool) ($a->dissipable ?? true),
-                    'image' => $a->image,
-                    'created_by' => $a->created_by,
-                    'createdBy' => $createdBy ? [
-                        'id' => $createdBy->id,
-                        'name' => $createdBy->name,
-                        'email' => $createdBy->email,
-                    ] : null,
-                    'created_at' => $a->created_at?->toISOString(),
-                    'updated_at' => $a->updated_at?->toISOString(),
-                ];
-            })->values()->all();
+            $entities = $rows->map(fn (Condition $a) => $this->serializeCondition($a))->values()->all();
 
             return response()->json([
                 'meta' => [
@@ -202,6 +178,11 @@ class ConditionTableController extends Controller
             $createdAtSort = $a->created_at ? $a->created_at->getTimestamp() : 0;
             $updatedAtLabel = $a->updated_at ? $a->updated_at->format('d/m/Y H:i') : '-';
             $updatedAtSort = $a->updated_at ? $a->updated_at->getTimestamp() : 0;
+            $flagLabels = array_map(
+                static fn (array $flag): string => $flag['label'],
+                $a->activeMechanicalFlags()
+            );
+            $flagsSummary = $flagLabels !== [] ? implode(' · ', $flagLabels) : '—';
 
             return [
                 'id' => $a->id,
@@ -231,6 +212,14 @@ class ConditionTableController extends Controller
                             'filterValue' => $dissipable ? '1' : '0',
                             'sortValue' => $dissipable ? 1 : 0,
                             'searchValue' => $dissipableLabel,
+                        ],
+                    ],
+                    'mechanical_flags' => [
+                        'type' => 'text',
+                        'value' => $flagsSummary,
+                        'params' => [
+                            'searchValue' => $flagsSummary === '—' ? '' : $flagsSummary,
+                            'sortValue' => $flagsSummary,
                         ],
                     ],
                     'state' => [
@@ -286,22 +275,7 @@ class ConditionTableController extends Controller
                     ],
                 ],
                 'rowParams' => [
-                    'entity' => [
-                        'id' => $a->id,
-                        'name' => $a->name,
-                        'description' => $a->description,
-                        'state' => (string) ($a->state ?? 'draft'),
-                        'read_level' => (int) ($a->read_level ?? 0),
-                        'write_level' => (int) ($a->write_level ?? 0),
-                        'dissipable' => $dissipable,
-                        'image' => $a->image,
-                        'created_by' => $a->created_by,
-                        'createdBy' => $createdBy ? [
-                            'id' => $createdBy->id,
-                            'name' => $createdBy->name,
-                            'email' => $createdBy->email,
-                        ] : null,
-                    ],
+                    'entity' => $this->serializeCondition($a, false),
                 ],
             ];
         })->values()->all();
@@ -341,5 +315,39 @@ class ConditionTableController extends Controller
         }
 
         return null;
+    }
+
+    /**
+     * Payload entité pour le tableau (cells ou format entities).
+     *
+     * @return array<string, mixed>
+     */
+    private function serializeCondition(Condition $condition, bool $withTimestamps = true): array
+    {
+        $createdBy = $condition->createdBy;
+        $payload = [
+            'id' => $condition->id,
+            'name' => $condition->name,
+            'description' => $condition->description,
+            'state' => (string) ($condition->state ?? 'draft'),
+            'read_level' => (int) ($condition->read_level ?? 0),
+            'write_level' => (int) ($condition->write_level ?? 0),
+            'dissipable' => (bool) ($condition->dissipable ?? true),
+            ...$condition->mechanicalFlagValues(),
+            'image' => $condition->image,
+            'created_by' => $condition->created_by,
+            'createdBy' => $createdBy ? [
+                'id' => $createdBy->id,
+                'name' => $createdBy->name,
+                'email' => $createdBy->email,
+            ] : null,
+        ];
+
+        if ($withTimestamps) {
+            $payload['created_at'] = $condition->created_at?->toISOString();
+            $payload['updated_at'] = $condition->updated_at?->toISOString();
+        }
+
+        return $payload;
     }
 }

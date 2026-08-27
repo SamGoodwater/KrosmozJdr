@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Scrapping\Core\Conversion\SpellEffects;
 
+use App\Models\Entity\Condition;
 use App\Models\SubEffect;
+use App\Services\Condition\ConditionCanonicalMapper;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -25,6 +27,7 @@ final class SpellAutreMappingReapplyService
 
     public function __construct(
         private readonly DofusdbEffectMappingService $mappingService,
+        private readonly ConditionCanonicalMapper $conditionCanonicalMapper,
     ) {}
 
     /**
@@ -195,11 +198,10 @@ final class SpellAutreMappingReapplyService
             return;
         }
 
-        $condition = DB::table('conditions')
+        $condition = Condition::query()
             ->where('dofusdb_id', $stateDofusId)
-            ->whereNull('deleted_at')
             ->orderBy('id')
-            ->first(['id', 'name', 'dofusdb_id', 'icon', 'image']);
+            ->first();
 
         if ($condition === null) {
             $params['condition_dofusdb_id'] = $stateDofusId;
@@ -208,14 +210,21 @@ final class SpellAutreMappingReapplyService
             return;
         }
 
-        $params['condition_id'] = (int) $condition->id;
         $params['condition_dofusdb_id'] = (int) $condition->dofusdb_id;
-        $params['condition_name'] = (string) ($condition->name ?: 'Invisible');
         if (! empty($condition->icon)) {
             $params['condition_icon'] = (string) $condition->icon;
         }
         if (! empty($condition->image)) {
             $params['condition_image'] = (string) $condition->image;
+        }
+
+        $canonical = $this->conditionCanonicalMapper->resolve($condition);
+        if ($canonical !== null) {
+            $params['condition_id'] = (int) $canonical->id;
+            $params['condition_name'] = (string) $canonical->name;
+        } else {
+            unset($params['condition_id']);
+            $params['condition_name'] = (string) ($condition->name ?: 'Invisible');
         }
         unset($params['value'], $params['value_formula']);
     }

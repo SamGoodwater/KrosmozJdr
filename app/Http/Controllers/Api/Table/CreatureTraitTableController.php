@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Table;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\CreatureTrait;
 use Illuminate\Http\JsonResponse;
@@ -62,7 +63,6 @@ class CreatureTraitTableController extends Controller
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
-
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
         $order = (string) $request->get('order', 'desc');
@@ -112,12 +112,7 @@ class CreatureTraitTableController extends Controller
         ];
 
         $filterOptions = [
-            'state' => [
-                ['value' => 'raw', 'label' => 'Brut'],
-                ['value' => 'draft', 'label' => 'Brouillon'],
-                ['value' => 'playable', 'label' => 'Jouable'],
-                ['value' => 'archived', 'label' => 'Archivé'],
-            ],
+            'state' => EntityState::options(),
             'read_level' => self::LEVEL_OPTIONS,
             'write_level' => self::LEVEL_OPTIONS,
         ];

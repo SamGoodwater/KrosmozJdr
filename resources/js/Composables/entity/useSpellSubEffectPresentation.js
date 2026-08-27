@@ -272,9 +272,9 @@ export function buildUnifiedSubEffectModel(input) {
         condition:
             chip.condition_context &&
             typeof chip.condition_context === "object" &&
-            (chip.condition_context.condition_id != null || chip.condition_context.condition_dofusdb_id != null)
+            chip.condition_context.condition_id != null
                 ? {
-                      id: chip.condition_context.condition_id ?? chip.condition_context.condition_dofusdb_id,
+                      id: chip.condition_context.condition_id,
                       dofusdb_id: chip.condition_context.condition_dofusdb_id ?? null,
                       name:
                           typeof chip.condition_context.condition_name === "string" &&

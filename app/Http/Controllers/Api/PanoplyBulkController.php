@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Panoply;
 use Illuminate\Http\JsonResponse;
@@ -30,7 +31,7 @@ class PanoplyBulkController extends Controller
 
             // Champs bulk (les clés absentes ne sont pas modifiées)
             'bonus' => ['sometimes', 'nullable', 'string'],
-            'state' => ['sometimes', 'nullable', 'string', 'in:raw,draft,playable,archived'],
+            'state' => ['sometimes', 'nullable', 'string', EntityState::rule()],
             'read_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
 

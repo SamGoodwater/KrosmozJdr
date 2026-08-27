@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Capability;
 use Illuminate\Http\JsonResponse;
@@ -35,7 +36,7 @@ class CapabilityBulkController extends Controller
             'po_editable' => ['sometimes', 'nullable', 'boolean'],
             'is_passive' => ['sometimes', 'nullable', 'boolean'],
             'element' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:127'],
-            'state' => ['sometimes', 'nullable', 'string', 'in:raw,draft,playable,archived'],
+            'state' => ['sometimes', 'nullable', 'string', EntityState::rule()],
             'read_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
 

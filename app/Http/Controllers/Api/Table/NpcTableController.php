@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Table;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Breed;
-use App\Models\Entity\Creature;
 use App\Models\Entity\Npc;
 use App\Models\Entity\Specialization;
 use App\Support\Creature\CreatureMasteryColumns;
@@ -43,7 +43,6 @@ class NpcTableController extends Controller
         }
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
-
 
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
@@ -124,12 +123,7 @@ class NpcTableController extends Controller
 
             return $collected->map(fn ($v) => ['value' => $v, 'label' => $v])->all();
         };
-        $creatureStateOptions = [
-            ['value' => Creature::STATE_RAW, 'label' => 'Brouillon (raw)'],
-            ['value' => Creature::STATE_DRAFT, 'label' => 'Brouillon'],
-            ['value' => Creature::STATE_PLAYABLE, 'label' => 'Jouable'],
-            ['value' => Creature::STATE_ARCHIVED, 'label' => 'Archivé'],
-        ];
+        $creatureStateOptions = EntityState::options();
         $filterOptions = [
             'breed_id' => $breedOptions,
             'specialization_id' => $specializationOptions,

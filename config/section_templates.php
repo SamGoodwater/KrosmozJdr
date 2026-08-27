@@ -108,4 +108,8 @@ return [
         ],
         'data' => [],
     ],
+    'equipment_bonus_table' => [
+        'settings' => [],
+        'data' => [],
+    ],
 ];

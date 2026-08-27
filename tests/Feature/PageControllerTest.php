@@ -508,4 +508,77 @@ class PageControllerTest extends TestCase
         $this->assertNotNull($child);
         $this->assertSame('/storage/images/entity/breeds/iop.webp', $child['menu_icon']);
     }
+
+    /**
+     * Test : un invité ne voit pas le groupe « Pour les MJ ».
+     */
+    public function test_menu_hides_pour_les_mj_for_guest(): void
+    {
+        $this->seedMjCreationMenuPages();
+        PageService::clearMenuCache();
+
+        $response = $this->getJson(route('pages.menu'));
+        $response->assertOk();
+
+        $mj = collect($response->json('menu'))->firstWhere('id', 'pour-les-mj');
+        $this->assertNull($mj, 'Le groupe Pour les MJ ne doit pas apparaître pour un invité.');
+    }
+
+    /**
+     * Test : un MJ voit Création et ses enfants dans « Pour les MJ ».
+     */
+    public function test_menu_shows_creation_workshop_for_game_master(): void
+    {
+        $this->seedMjCreationMenuPages();
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        PageService::clearMenuCache();
+
+        $response = $this->actingAs($gm)->getJson(route('pages.menu'));
+        $response->assertOk();
+
+        $mj = collect($response->json('menu'))->firstWhere('id', 'pour-les-mj');
+        $this->assertNotNull($mj, 'Le groupe Pour les MJ doit être présent pour un MJ.');
+        $this->assertSame('Pour les MJ', $mj['title']);
+
+        $creation = collect($mj['children'] ?? [])->firstWhere('title', 'Création');
+        $this->assertNotNull($creation);
+        $this->assertSame('/pages/creation', $creation['url']);
+
+        $childTitles = collect($creation['children'] ?? [])->pluck('title')->all();
+        $this->assertContains('Équipements', $childTitles);
+        $this->assertContains('Créatures', $childTitles);
+        $this->assertContains('Objets', $childTitles);
+        $this->assertContains('Sorts', $childTitles);
+    }
+
+    private function seedMjCreationMenuPages(): void
+    {
+        $parent = Page::factory()->create([
+            'title' => 'Création',
+            'slug' => 'creation',
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GAME_MASTER,
+            'menu_group' => 'Pour les MJ',
+            'menu_order' => 0,
+        ]);
+
+        foreach ([
+            ['title' => 'Équipements', 'slug' => 'creation-equipements', 'order' => 0],
+            ['title' => 'Créatures', 'slug' => 'contribution-creatures', 'order' => 1],
+            ['title' => 'Objets', 'slug' => 'contribution-objets', 'order' => 2],
+            ['title' => 'Sorts', 'slug' => 'contribution-sorts', 'order' => 3],
+        ] as $child) {
+            Page::factory()->create([
+                'title' => $child['title'],
+                'slug' => $child['slug'],
+                'parent_id' => $parent->id,
+                'in_menu' => true,
+                'state' => Page::STATE_PLAYABLE,
+                'read_level' => User::ROLE_GAME_MASTER,
+                'menu_group' => null,
+                'menu_order' => $child['order'],
+            ]);
+        }
+    }
 }

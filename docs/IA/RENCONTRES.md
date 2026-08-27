@@ -24,7 +24,7 @@ Flux prévu :
 
 1. Brief MJ (« chef Bouftou niveau 10 ») → Laravel : gabarit 5.1.2 + quelques étalons `playable`.
 2. Un JSON `{ monster, spells: [ … ] }`.
-3. Créer les `Spell` et le `Monster` en `ai_review`, lier le pivot.
+3. Créer les `Spell` et le `Monster` en `auto`, lier le pivot.
 4. Relire **le paquet**, pas quatre fiches orphelines.
 
 Plus tard : réutiliser un sort `playable` déjà collé (« même crachat que le Bouftou ») au lieu d’en créer un. En v1, créer les 2–3 sorts dans le même JSON suffit.
@@ -42,7 +42,7 @@ Réécriture JDR d’un sort Dofus `raw` :
 - PA / portée / dés dans les grilles existantes ;
 - pas de nouveaux types d’effets hors catalogue.
 
-À faire **au fil de l’eau** (PNJ ou perso), pas un batch de tout le grimoire Dofus. Le mapping d’effets scrap (`SpellEffectsConversionService`, `dofusdb_effect_mappings`) reste la conversion brute ; l’IA propose un `ai_review` par-dessus.
+À faire **au fil de l’eau** (PNJ ou perso), pas un batch de tout le grimoire Dofus. Le mapping d’effets scrap (`SpellEffectsConversionService`, `dofusdb_effect_mappings`) reste la conversion brute ; l’IA propose un `auto` par-dessus.
 
 ## PNJ
 

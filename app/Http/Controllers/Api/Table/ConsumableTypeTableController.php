@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Table;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Type\ConsumableType;
 use Illuminate\Http\JsonResponse;
@@ -102,12 +103,7 @@ class ConsumableTypeTableController extends Controller
                 ['value' => ConsumableType::DECISION_ALLOWED, 'label' => 'Utilisé'],
                 ['value' => ConsumableType::DECISION_BLOCKED, 'label' => 'Non utilisé'],
             ],
-            'state' => [
-                ['value' => ConsumableType::STATE_RAW, 'label' => 'Brut'],
-                ['value' => ConsumableType::STATE_DRAFT, 'label' => 'Brouillon'],
-                ['value' => ConsumableType::STATE_PLAYABLE, 'label' => 'Jouable'],
-                ['value' => ConsumableType::STATE_ARCHIVED, 'label' => 'Archivé'],
-            ],
+            'state' => EntityState::options(),
         ];
 
         if ($format === 'entities') {

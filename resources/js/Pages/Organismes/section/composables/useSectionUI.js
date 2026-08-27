@@ -269,6 +269,7 @@ function getStateColor(state) {
   const colorMap = {
     raw: 'error',
     draft: 'warning',
+    auto: 'secondary',
     playable: 'success',
     archived: 'info',
   };
@@ -293,6 +294,7 @@ function getStateBadge(state) {
   const badgeMap = {
     raw: { text: 'Brut', color: 'error', variant: 'soft' },
     draft: { text: 'Brouillon', color: 'warning', variant: 'soft' },
+    auto: { text: 'Auto', color: 'secondary', variant: 'soft' },
     playable: { text: 'Jouable', color: 'success', variant: 'soft' },
     archived: { text: 'Archivé', color: 'info', variant: 'soft' },
   };

@@ -141,4 +141,23 @@ class ConditionModelTest extends TestCase
             'id' => $creature->id,
         ]);
     }
+
+    public function test_active_mechanical_flags_lists_only_true_values(): void
+    {
+        $condition = Condition::factory()->create([
+            'cant_be_moved' => true,
+            'invulnerable' => false,
+            'prevents_spell_cast' => true,
+        ]);
+
+        $this->assertSame(
+            [
+                ['key' => 'prevents_spell_cast', 'label' => 'Empêche de lancer des sorts'],
+                ['key' => 'cant_be_moved', 'label' => 'Ne peut pas être déplacé'],
+            ],
+            $condition->activeMechanicalFlags()
+        );
+        $this->assertTrue($condition->mechanicalFlagValues()['cant_be_moved']);
+        $this->assertFalse($condition->mechanicalFlagValues()['invulnerable']);
+    }
 }

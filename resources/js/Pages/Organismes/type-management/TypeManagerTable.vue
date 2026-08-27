@@ -5,7 +5,7 @@
  * @description
  * Tableau générique de gestion des "types/races" :
  * - mode `decision` : registry DofusDB (pending/allowed/blocked)
- * - mode `state` : validation interne via `state` (raw/draft/playable/archived)
+ * - mode `state` : validation interne via `state` (raw/draft/auto/playable/archived)
  *
  * Supporte sélection multiple + update en masse via un seul input.
  */
@@ -97,6 +97,7 @@ const filterOptions = computed(() => {
         { value: "all", label: "Tous" },
         { value: "raw", label: "Raw" },
         { value: "draft", label: "Brouillon" },
+        { value: "auto", label: "Auto" },
         { value: "playable", label: "Validé (playable)" },
         { value: "archived", label: "Archivé" },
     ];
@@ -113,6 +114,7 @@ const bulkOptions = computed(() => {
     return [
         { value: "raw", label: "Raw" },
         { value: "draft", label: "Brouillon" },
+        { value: "auto", label: "Auto" },
         { value: "playable", label: "Validé (playable)" },
         { value: "archived", label: "Archivé" },
     ];
@@ -599,10 +601,13 @@ onMounted(async () => {
                                         <option value="unused">Ne pas utiliser</option>
                                     </template>
                                     <template v-else>
-                                        <option value="raw">raw</option>
-                                        <option value="draft">draft</option>
-                                        <option value="playable">playable</option>
-                                        <option value="archived">archived</option>
+                                        <option
+                                            v-for="opt in bulkOptions"
+                                            :key="opt.value"
+                                            :value="opt.value"
+                                        >
+                                            {{ opt.value }}
+                                        </option>
                                     </template>
                                 </select>
 

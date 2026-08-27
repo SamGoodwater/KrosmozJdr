@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Table;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Type\MonsterRace;
 use Illuminate\Http\JsonResponse;
@@ -91,12 +92,7 @@ class MonsterRaceTableController extends Controller
         ];
 
         $filterOptions = [
-            'state' => [
-                ['value' => MonsterRace::STATE_RAW, 'label' => 'Brut'],
-                ['value' => MonsterRace::STATE_DRAFT, 'label' => 'Brouillon'],
-                ['value' => MonsterRace::STATE_PLAYABLE, 'label' => 'Jouable'],
-                ['value' => MonsterRace::STATE_ARCHIVED, 'label' => 'Archivé'],
-            ],
+            'state' => EntityState::options(),
         ];
 
         if ($format === 'entities') {

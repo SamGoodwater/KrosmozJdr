@@ -152,9 +152,7 @@
             "base_price_per_unit": 700,
             "rune_price_per_unit": null,
             "value_available": null,
-            "item_type_dofus_ids": [
-                17
-            ],
+            "item_type_dofus_ids": null,
             "item_type_ids": null
         }
     },

@@ -2,15 +2,17 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Enums\EntityState;
 use App\Http\Requests\Concerns\HasCharacteristicValidation;
 use App\Models\Entity\Spell;
+use App\Policies\Entity\SpellPolicy;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * FormRequest pour la mise à jour d'un Spell.
  *
- * Autorisation déléguée à {@see \App\Policies\Entity\SpellPolicy::update} (auteur|admin).
+ * Autorisation déléguée à {@see SpellPolicy::update} (auteur|admin).
  * Les min/max des champs liés aux caractéristiques (area, element, powerful, etc.)
  * sont dérivés de CharacteristicGetterService (entity spell).
  */
@@ -84,7 +86,7 @@ class UpdateSpellRequest extends FormRequest
             'save_success_note' => ['nullable', 'string'],
             'auto_success_if_willing_target' => ['nullable', 'boolean'],
             'allows_reaction' => ['nullable', 'boolean'],
-            'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
+            'state' => ['nullable', 'string', EntityState::rule()],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],
             'image' => ['nullable', 'string', 'max:255'],

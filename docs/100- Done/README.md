@@ -1,5 +1,21 @@
 # Ce qui a été fait
 
+## Août 2026 — Sorts branchés sur les états de base
+
+Les sorts n’affichent plus chaque état Dofus comme une fiche à part. Quand l’effet correspond à Pesanteur, Empoisonné, Étourdi, Ralenti ou Affaibli, le sort pointe vers cette fiche JDR. Les milliers d’états scrapés restent en Brut, pour le travail d’import.
+
+## Août 2026 — Pages Pour les MJ et atelier Création
+
+Les MJ ont un cinquième bloc de menu, **Pour les MJ**, avec l’atelier **Création**. Dedans : le tableau vivant des bonus d’équipement (par emplacement et par niveau) et les chartes créatures / objets / sorts. La page Contribution, toujours visible de tous, ne sert plus qu’à **Nous rejoindre** (Discord, GitHub, droits).
+
+## Août 2026 — Catalogue des états : Brut masqué, effets visibles
+
+Le catalogue d’états n’affiche plus par défaut les milliers d’états Dofus (ils restent en **Brut**, on peut les recocher dans le filtre). Les quelques états JDR (Pesanteur, Empoisonné, etc.) restent jouables. Sur une fiche, on voit les effets mécaniques (ne pas être déplacé, invulnérable…).
+
+## Août 2026 — État Auto des fiches
+
+Les fiches (sorts, objets, pages, etc.) ont un cinquième état : **Auto**. C’est une proposition à relire (IA ou script), pas encore jouable. Les joueurs ne la voient pas ; les MJ et éditeurs oui, comme un brouillon. Dans les listes, l’ordre est Brut → Brouillon → Auto → Jouable → Archivé.
+
 ## Août 2026 — Catalogue ressources : types par défaut
 
 Le filtre Type du catalogue de ressources arrive précoché sur les types métier (bois, minerai, plante, cuir, runes, etc.). Quêtes, souvenirs, zones et essences de donjon restent disponibles dans le filtre, mais seulement si on les coche.

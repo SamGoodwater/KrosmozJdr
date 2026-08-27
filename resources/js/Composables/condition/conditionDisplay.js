@@ -120,3 +120,67 @@ export function formatConditionMeta(data, separator = " · ") {
     return parts.join(separator);
 }
 
+/**
+ * Flags mécaniques affichés sur les fiches d’état (hors métadonnées UI Dofus).
+ * @type {ReadonlyArray<{key: string, label: string}>}
+ */
+export const CONDITION_MECHANICAL_FLAGS = Object.freeze([
+    { key: "prevents_spell_cast", label: "Empêche de lancer des sorts" },
+    { key: "prevents_fight", label: "Empêche de combattre" },
+    { key: "cant_be_moved", label: "Ne peut pas être déplacé" },
+    { key: "cant_be_pushed", label: "Ne peut pas être poussé" },
+    { key: "cant_deal_damage", label: "Ne peut pas infliger de dégâts" },
+    { key: "invulnerable", label: "Invulnérable" },
+    { key: "cant_switch_position", label: "Ne peut pas échanger de position" },
+    { key: "incurable", label: "Incurable" },
+    { key: "invulnerable_melee", label: "Invulnérable au corps à corps" },
+    { key: "invulnerable_range", label: "Invulnérable à distance" },
+    { key: "cant_tackle", label: "Ne peut pas tacler" },
+    { key: "cant_be_tackled", label: "Ne peut pas être taclé" },
+]);
+
+/**
+ * États de publication précochés dans le catalogue (Brut décoché).
+ * @type {ReadonlyArray<string>}
+ */
+export const CONDITION_CATALOG_STATE_DEFAULT = Object.freeze([
+    "draft",
+    "auto",
+    "playable",
+    "archived",
+]);
+
+/**
+ * Lit un booléen de flag depuis une instance Condition ou un payload brut.
+ *
+ * @param {object|null|undefined} entity
+ * @param {string} key
+ * @returns {boolean}
+ *
+ * @example
+ * readConditionFlag({ cant_be_moved: true }, "cant_be_moved");
+ * // true
+ */
+export function readConditionFlag(entity, key) {
+    if (!entity || typeof entity !== "object" || !key) return false;
+    const nested = entity._data && typeof entity._data === "object" ? entity._data : null;
+    const raw = entity[key];
+    if (typeof raw === "boolean") return raw;
+    if (nested && typeof nested[key] === "boolean") return nested[key];
+    return Boolean(raw ?? nested?.[key]);
+}
+
+/**
+ * Flags mécaniques actifs d’un état, avec libellé.
+ *
+ * @param {object|null|undefined} entity
+ * @returns {Array<{key: string, label: string}>}
+ *
+ * @example
+ * listActiveMechanicalFlags({ cant_be_moved: true });
+ * // [{ key: "cant_be_moved", label: "Ne peut pas être déplacé" }]
+ */
+export function listActiveMechanicalFlags(entity) {
+    return CONDITION_MECHANICAL_FLAGS.filter((flag) => readConditionFlag(entity, flag.key));
+}
+

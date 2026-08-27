@@ -240,6 +240,14 @@ class IntegrationServiceTest extends TestCase
     {
         $this->createSystemUser();
 
+        $playable = Condition::query()->create([
+            'name' => 'Pesanteur',
+            'state' => Condition::STATE_PLAYABLE,
+            'read_level' => 0,
+            'write_level' => 4,
+            'cant_be_moved' => true,
+        ]);
+
         $convertedData = [
             'spells' => [
                 'dofusdb_id' => '54322',
@@ -293,15 +301,17 @@ class IntegrationServiceTest extends TestCase
         $condition = Condition::where('dofusdb_id', 987654)->first();
         $this->assertNotNull($condition);
         $this->assertSame('Pesanteur Test', $condition->name);
+        $this->assertSame(Condition::STATE_RAW, $condition->state);
+        $this->assertSame($playable->id, $condition->canonical_condition_id);
         $this->assertTrue($condition->cant_be_moved);
         $this->assertTrue($condition->cant_deal_damage);
         $this->assertTrue($condition->cant_be_tackled);
 
         $pivot = EffectSubEffect::query()->firstOrFail();
         $pivotParams = $pivot->params;
-        $this->assertSame($condition->id, $pivotParams['condition_id'] ?? null);
+        $this->assertSame($playable->id, $pivotParams['condition_id'] ?? null);
         $this->assertSame(987654, $pivotParams['condition_dofusdb_id'] ?? null);
-        $this->assertSame('Pesanteur Test', $pivotParams['condition_name'] ?? null);
+        $this->assertSame('Pesanteur', $pivotParams['condition_name'] ?? null);
         $this->assertSame('2', $pivot->duration_formula);
 
         // Re-import : met à jour la durée au lieu d'ignorer le pivot existant.
@@ -315,7 +325,7 @@ class IntegrationServiceTest extends TestCase
 
         $attachedState = $spell->conditions()->first();
         $this->assertNotNull($attachedState);
-        $this->assertSame($condition->id, $attachedState->id);
+        $this->assertSame($playable->id, $attachedState->id);
         $this->assertSame('target', $attachedState->pivot->application_mode);
         $this->assertSame(5, $attachedState->pivot->duration);
         $this->assertTrue((bool) $attachedState->pivot->dispellable);
@@ -325,6 +335,130 @@ class IntegrationServiceTest extends TestCase
         $this->assertTrue($secondResult->isSuccess());
         $this->assertSame(1, Effect::query()->count());
         $this->assertSame(1, EffectSubEffect::query()->count());
+    }
+
+    public function test_integrate_spell_condition_does_not_downgrade_playable_state(): void
+    {
+        $this->createSystemUser();
+
+        $existing = Condition::factory()->create([
+            'dofusdb_id' => 111222,
+            'name' => 'Pesanteur',
+            'state' => Condition::STATE_PLAYABLE,
+            'cant_be_moved' => false,
+        ]);
+
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '54323',
+                'name' => 'Sort État Playable',
+                'description' => 'Description',
+                'pa' => '4',
+                'po' => '1',
+                'level' => '1',
+            ],
+            'spell_effects' => [
+                'effect_group' => ['name' => 'Sort État Playable', 'slug' => 'sort-etat-playable'],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Sort État Playable',
+                        'slug' => 'sort-etat-playable-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [
+                            [
+                                'order' => 0,
+                                'sub_effect_slug' => 'appliquer-etat',
+                                'params' => [
+                                    'condition_dofusdb_id' => 111222,
+                                    'condition_name' => 'Pesanteur',
+                                    'condition_flags' => [
+                                        'cant_be_moved' => true,
+                                    ],
+                                ],
+                                'crit_only' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, []);
+        $this->assertTrue($result->isSuccess());
+
+        $existing->refresh();
+        $this->assertSame(Condition::STATE_PLAYABLE, $existing->state);
+        $this->assertTrue($existing->cant_be_moved);
+
+        $spell = Spell::find($result->getPrimaryId());
+        $this->assertNotNull($spell);
+        $this->assertSame($existing->id, $spell->conditions()->first()?->id);
+
+        $pivotParams = EffectSubEffect::query()->firstOrFail()->params;
+        $this->assertSame($existing->id, $pivotParams['condition_id'] ?? null);
+        $this->assertSame(111222, $pivotParams['condition_dofusdb_id'] ?? null);
+    }
+
+    public function test_integrate_unmapped_condition_keeps_raw_without_spell_link(): void
+    {
+        $this->createSystemUser();
+
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '54324',
+                'name' => 'Sort État Jeton',
+                'description' => 'Description',
+                'pa' => '4',
+                'po' => '1',
+                'level' => '1',
+            ],
+            'spell_effects' => [
+                'effect_group' => ['name' => 'Sort État Jeton', 'slug' => 'sort-etat-jeton'],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Sort État Jeton',
+                        'slug' => 'sort-etat-jeton-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [
+                            [
+                                'order' => 0,
+                                'sub_effect_slug' => 'appliquer-etat',
+                                'params' => [
+                                    'condition_dofusdb_id' => 250,
+                                    'condition_name' => 'Invisible',
+                                    'dofus_effect_id' => 150,
+                                    'condition_flags' => [
+                                        'invulnerable' => true,
+                                    ],
+                                ],
+                                'crit_only' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, []);
+        $this->assertTrue($result->isSuccess());
+
+        $spell = Spell::find($result->getPrimaryId());
+        $this->assertNotNull($spell);
+        $this->assertSame(0, $spell->conditions()->count());
+
+        $raw = Condition::where('dofusdb_id', 250)->first();
+        $this->assertNotNull($raw);
+        $this->assertSame(Condition::STATE_RAW, $raw->state);
+        $this->assertNull($raw->canonical_condition_id);
+
+        $pivotParams = EffectSubEffect::query()->firstOrFail()->params;
+        $this->assertArrayNotHasKey('condition_id', $pivotParams);
+        $this->assertSame(250, $pivotParams['condition_dofusdb_id'] ?? null);
+        $this->assertSame('Invisible', $pivotParams['condition_name'] ?? null);
     }
 
     public function test_integrate_spell_infere_element_et_types_depuis_sous_effets(): void

@@ -137,7 +137,7 @@ export class BaseModel {
     }
 
     /**
-     * State lifecycle (raw|draft|playable|archived)
+     * State lifecycle (raw|draft|auto|playable|archived)
      */
     get state() {
         return this._data.state;

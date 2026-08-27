@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Search;
 
+use App\Enums\EntityState;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
 use App\Models\Page;
@@ -52,8 +53,14 @@ final class GlobalSearchService
     /** @var list<string> */
     public const ALLOWED_TYPES = self::SEARCH_TYPE_ORDER;
 
-    /** @var list<string> */
-    public const ALLOWED_STATES = ['raw', 'draft', 'playable', 'archived'];
+    /** États de publication acceptés en filtre (voir {@see EntityState}). */
+    public const ALLOWED_STATES = [
+        'raw',
+        'draft',
+        'auto',
+        'playable',
+        'archived',
+    ];
 
     /**
      * @param  list<string>  $types  Types à interroger (sous-ensemble de ALLOWED_TYPES)
@@ -73,7 +80,7 @@ final class GlobalSearchService
 
         $limit = max(1, min($limit, 80));
         $types = $this->normalizeTypes($types);
-        $states = array_values(array_intersect(self::ALLOWED_STATES, $states));
+        $states = array_values(array_intersect(EntityState::values(), $states));
 
         $perType = (int) max(3, ceil($limit / max(1, count($types))));
         $like = '%'.addcslashes($term, '%_\\').'%';

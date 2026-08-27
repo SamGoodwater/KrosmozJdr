@@ -45,7 +45,7 @@ L’IA est pertinente là où il faut **du design** (simplifier, choisir, racont
 
 1. **Grille d’objets** par algorithme (~200–400 `playable`, pas tout Dofus). Sans ça, un PNJ n’a rien de cohérent à porter.
 2. Descriptions machine + JSON Schema + ~20 étalons `playable` **par type** au moment où l’IA touche ce type.
-3. **Rencontre à la demande** : un monstre et ses sorts-créature dans le même JSON, état `ai_review`.
+3. **Rencontre à la demande** : un monstre et ses sorts-créature dans le même JSON, état `auto`.
 4. **PNJ à la demande** : brief + listes préfiltrées (objets et sorts `playable`).
 
 Les sorts de classe se réécrivent au fil de l’eau (quand un PNJ ou un perso en a besoin), pas en masse au départ.

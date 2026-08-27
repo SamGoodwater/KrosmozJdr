@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Table;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Type\ItemType;
 use Illuminate\Http\JsonResponse;
@@ -102,12 +103,7 @@ class ItemTypeTableController extends Controller
                 ['value' => ItemType::DECISION_ALLOWED, 'label' => 'Utilisé'],
                 ['value' => ItemType::DECISION_BLOCKED, 'label' => 'Non utilisé'],
             ],
-            'state' => [
-                ['value' => ItemType::STATE_RAW, 'label' => 'Brut'],
-                ['value' => ItemType::STATE_DRAFT, 'label' => 'Brouillon'],
-                ['value' => ItemType::STATE_PLAYABLE, 'label' => 'Jouable'],
-                ['value' => ItemType::STATE_ARCHIVED, 'label' => 'Archivé'],
-            ],
+            'state' => EntityState::options(),
         ];
 
         if ($format === 'entities') {

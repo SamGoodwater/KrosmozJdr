@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Table;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Resource;
 use App\Models\Type\ResourceType;
@@ -64,7 +65,6 @@ class ResourceTableController extends Controller
         }
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
-
 
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
@@ -154,12 +154,7 @@ class ResourceTableController extends Controller
                 ->map(fn ($label, $value) => ['value' => (string) $value, 'label' => (string) $label])
                 ->values()
                 ->all(),
-            'state' => [
-                ['value' => 'raw', 'label' => 'Brut'],
-                ['value' => 'draft', 'label' => 'Brouillon'],
-                ['value' => 'playable', 'label' => 'Jouable'],
-                ['value' => 'archived', 'label' => 'Archivé'],
-            ],
+            'state' => EntityState::options(),
             'level' => [
                 ['value' => '1', 'label' => '1'],
                 ['value' => '50', 'label' => '50'],

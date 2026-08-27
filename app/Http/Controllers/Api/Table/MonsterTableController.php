@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Table;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Entity\LanguageResource;
 use App\Models\Entity\Creature;
@@ -260,12 +261,7 @@ class MonsterTableController extends Controller
             ['value' => '3', 'label' => 'Hostile'],
             ['value' => '4', 'label' => 'Agressif'],
         ];
-        $creatureStateOptions = [
-            ['value' => Creature::STATE_RAW, 'label' => 'Brouillon (raw)'],
-            ['value' => Creature::STATE_DRAFT, 'label' => 'Brouillon'],
-            ['value' => Creature::STATE_PLAYABLE, 'label' => 'Jouable'],
-            ['value' => Creature::STATE_ARCHIVED, 'label' => 'Archivé'],
-        ];
+        $creatureStateOptions = EntityState::options();
         $toDistinctOptions = function ($values, $sort = true) {
             $collected = collect($values)->filter(fn ($v) => $v !== null && $v !== '')->map(fn ($v) => (string) $v)->unique()->values();
             if ($sort) {

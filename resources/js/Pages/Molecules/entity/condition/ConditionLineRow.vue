@@ -2,6 +2,7 @@
 /** ConditionLineRow — ligne dense pour les tables d'entité (états). */
 import { computed } from "vue";
 import ConditionDissipableHighlight from "@/Pages/Molecules/entity/condition/ConditionDissipableHighlight.vue";
+import ConditionMechanicalFlags from "@/Pages/Molecules/entity/condition/ConditionMechanicalFlags.vue";
 import EntityLineRowActions from "@/Pages/Molecules/entity/shared/EntityLineRowActions.vue";
 import { emitLineRowClick, emitLineRowDblClick } from "@/Composables/table/useEntityTableRowPointer";
 import { getRowEntity } from "@/Utils/Entity/rowEntity";
@@ -33,6 +34,7 @@ const value = (key) => entity.value?.[key] ?? entity.value?._data?.[key] ?? null
             <span class="min-w-0 flex flex-col">
             <span class="block truncate text-sm font-semibold text-base-content">{{ value('name') || '—' }}</span>
             <span v-if="value('description')" class="block truncate text-xs text-base-content/60">{{ value('description') }}</span>
+            <ConditionMechanicalFlags class="mt-0.5" :condition="entity" size="xs" />
             </span>
         </span>
         <EntityLineRowActions

@@ -116,6 +116,7 @@ const formatState = (state) => {
     const states = {
         raw: { label: 'Brut', color: 'badge-ghost' },
         draft: { label: 'Brouillon', color: 'badge-warning' },
+        auto: { label: 'Auto', color: 'badge-secondary' },
         playable: { label: 'Jouable', color: 'badge-success' },
         archived: { label: 'Archivé', color: 'badge-ghost' },
     };

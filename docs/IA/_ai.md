@@ -12,7 +12,7 @@
 
 - **Pas de modèle maison / fine-tuning** au départ. LLM du commerce + prompt + schéma JSON + validateurs PHP.
 - **Laravel assemble le contexte** ; l’IA ne « browse » pas l’API en batch.
-- L’IA **propose**, jamais `playable`. Nouvel état prévu : `ai_review` (UI « À relire »).
+- L’IA **propose**, jamais `playable`. État `auto` (UI « Auto ») : déjà dans le code. Pipeline LLM non branché.
 - **Objets** : catalogue réduit par **algorithme** (grille niveau × slot × voie), pas tout Dofus.
 - **Monstres / PNJ / sorts de créature** : génération **à la demande**, paquet cohérent.
 - Exemples few-shot : uniquement des fiches `playable` (une vingtaine par type quand l’IA s’en mêle).

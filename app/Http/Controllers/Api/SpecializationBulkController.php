@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Specialization;
 use Illuminate\Http\JsonResponse;
@@ -29,7 +30,7 @@ class SpecializationBulkController extends Controller
             'ids.*' => ['integer', 'min:1', 'exists:specializations,id'],
 
             // Champs bulk (les clés absentes ne sont pas modifiées)
-            'state' => ['sometimes', 'nullable', 'string', 'in:raw,draft,playable,archived'],
+            'state' => ['sometimes', 'nullable', 'string', EntityState::rule()],
             'read_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
 

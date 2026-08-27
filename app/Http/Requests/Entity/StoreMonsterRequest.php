@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Enums\EntityState;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -40,7 +41,7 @@ class StoreMonsterRequest extends FormRequest
             'is_boss' => ['nullable', 'boolean'],
             'boss_pa' => ['nullable', 'integer', 'min:0'],
             'monster_race_id' => ['nullable', 'integer', 'exists:monster_races,id'],
-            'state' => ['nullable', 'string', 'max:255'],
+            'state' => ['nullable', 'string', EntityState::rule()],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:4'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:4'],
         ];

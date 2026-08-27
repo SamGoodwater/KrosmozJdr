@@ -360,36 +360,53 @@ class PageController extends Controller
         $menuTree = PageService::buildMenuTree($pages);
 
         $tree = collect($menuTree);
-        $reglesItems = $tree->filter(fn ($p) => ($p['menu_group'] ?? '') === 'Règles')->sortBy('order')->values()->toArray();
-        $referentielsItems = $tree->filter(fn ($p) => ($p['menu_group'] ?? '') === 'L\'Essentiel')->sortBy('order')->values()->toArray();
-        $informationsItems = $tree->filter(fn ($p) => ($p['menu_group'] ?? '') === 'Informations')->sortBy('order')->values()->toArray();
-        $bibliothequesItems = $tree->filter(fn ($p) => ($p['menu_group'] ?? '') === 'Bibliothèques')->sortBy('order')->values()->toArray();
-        if ($bibliothequesItems === []) {
-            // Compatibilité ascendante : fallback config si les pages Bibliothèques ne sont pas seedées.
-            $bibliothequesItems = collect(self::normalizeNavBibliothequeEntries(config('nav_menu.bibliotheques', [])))
-                ->sortBy('order')
-                ->map(fn (array $item) => [
-                    'id' => 'bibliotheque-'.($item['route'] ?? ($item['label'] ?? 'item')),
-                    'title' => $item['label'],
-                    'url' => self::bibliothequeMenuItemUrl($item),
-                    'entity_key' => $item['entity_key'] ?? null,
-                    'order' => $item['order'] ?? 0,
-                    'menu_item_css_classes' => $item['menu_item_css_classes']
-                        ?? (($item['entity_key'] ?? null) ? 'color-'.$item['entity_key'].'-500 box-shadow-glass' : null),
-                    'children' => [],
-                ])
-                ->values()
-                ->toArray();
+        $groupsConfig = config('nav_menu.groups', []);
+        if (! is_array($groupsConfig) || $groupsConfig === []) {
+            $groupsConfig = [
+                ['id' => 'referentiels', 'title' => "L'Essentiel", 'menu_group' => "L'Essentiel", 'order' => 0, 'icon' => 'fa-book-bookmark'],
+                ['id' => 'regles', 'title' => 'Règles', 'menu_group' => 'Règles', 'order' => 1, 'icon' => 'fa-book'],
+                ['id' => 'bibliotheques', 'title' => 'Bibliothèques', 'menu_group' => 'Bibliothèques', 'order' => 2, 'icon' => 'fa-book-open-reader'],
+                ['id' => 'pour-les-mj', 'title' => 'Pour les MJ', 'menu_group' => 'Pour les MJ', 'order' => 3, 'icon' => 'fa-hat-wizard'],
+                ['id' => 'informations', 'title' => 'Informations', 'menu_group' => 'Informations', 'order' => 4, 'icon' => 'fa-circle-info'],
+            ];
         }
 
-        $allGroups = [
-            ['id' => 'referentiels', 'title' => 'L\'Essentiel', 'menu_group' => 'L\'Essentiel', 'order' => 0, 'icon' => 'fa-book-bookmark', 'children' => $referentielsItems],
-            ['id' => 'regles', 'title' => 'Règles', 'menu_group' => 'Règles', 'order' => 1, 'icon' => 'fa-book', 'children' => $reglesItems],
-            ['id' => 'bibliotheques', 'title' => 'Bibliothèques', 'menu_group' => 'Bibliothèques', 'order' => 2, 'icon' => 'fa-book-open-reader', 'children' => $bibliothequesItems],
-            ['id' => 'informations', 'title' => 'Informations', 'menu_group' => 'Informations', 'order' => 4, 'icon' => 'fa-circle-info', 'children' => $informationsItems],
-        ];
+        $menu = collect($groupsConfig)
+            ->filter(fn ($group) => is_array($group) && isset($group['menu_group']))
+            ->map(function (array $group) use ($tree): array {
+                $children = $tree
+                    ->filter(fn ($p) => ($p['menu_group'] ?? '') === $group['menu_group'])
+                    ->sortBy('order')
+                    ->values()
+                    ->toArray();
 
-        $menu = collect($allGroups)
+                if (($group['id'] ?? '') === 'bibliotheques' && $children === []) {
+                    // Compatibilité ascendante : fallback config si les pages Bibliothèques ne sont pas seedées.
+                    $children = collect(self::normalizeNavBibliothequeEntries(config('nav_menu.bibliotheques', [])))
+                        ->sortBy('order')
+                        ->map(fn (array $item) => [
+                            'id' => 'bibliotheque-'.($item['route'] ?? ($item['label'] ?? 'item')),
+                            'title' => $item['label'],
+                            'url' => self::bibliothequeMenuItemUrl($item),
+                            'entity_key' => $item['entity_key'] ?? null,
+                            'order' => $item['order'] ?? 0,
+                            'menu_item_css_classes' => $item['menu_item_css_classes']
+                                ?? (($item['entity_key'] ?? null) ? 'color-'.$item['entity_key'].'-500 box-shadow-glass' : null),
+                            'children' => [],
+                        ])
+                        ->values()
+                        ->toArray();
+                }
+
+                return [
+                    'id' => (string) ($group['id'] ?? $group['menu_group']),
+                    'title' => (string) ($group['title'] ?? $group['menu_group']),
+                    'menu_group' => (string) $group['menu_group'],
+                    'order' => (int) ($group['order'] ?? 0),
+                    'icon' => (string) ($group['icon'] ?? 'fa-folder'),
+                    'children' => $children,
+                ];
+            })
             ->filter(fn (array $group) => count($group['children']) > 0)
             ->sortBy('order')
             ->values()

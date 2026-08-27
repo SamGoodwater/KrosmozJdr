@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Scrapping;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Item;
@@ -147,7 +148,7 @@ class ResourceTypeRegistryController extends Controller
             'ids' => ['required', 'array', 'min:1'],
             'ids.*' => ['integer', 'min:1'],
             'decision' => ['nullable', 'string', 'in:pending,allowed,blocked,used,unused'],
-            'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
+            'state' => ['nullable', 'string', EntityState::rule()],
             'read_level' => ['nullable', 'integer', 'min:'.User::ROLE_GUEST, 'max:'.User::ROLE_SUPER_ADMIN],
             'write_level' => [
                 'nullable',

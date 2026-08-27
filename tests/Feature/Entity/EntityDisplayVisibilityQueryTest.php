@@ -84,4 +84,21 @@ class EntityDisplayVisibilityQueryTest extends TestCase
 
         $this->assertCount(1, $ids);
     }
+
+    public function test_auto_spells_are_hidden_from_player_and_listed_for_game_master(): void
+    {
+        $player = User::factory()->create(['role' => User::ROLE_PLAYER]);
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+
+        Spell::factory()->create([
+            'state' => Spell::STATE_AUTO,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'read_level' => User::ROLE_GUEST,
+            'created_by' => $author->id,
+        ]);
+
+        $this->assertSame(0, Spell::query()->visibleToUser($player)->count());
+        $this->assertSame(1, Spell::query()->visibleToUser($gm)->count());
+    }
 }

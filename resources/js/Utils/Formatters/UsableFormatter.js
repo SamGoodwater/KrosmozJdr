@@ -2,7 +2,7 @@
  * UsableFormatter — Formatter pour le champ `state`
  *
  * @description
- * Formate les états d'entités (`raw`, `draft`, `playable`, `archived`) en badges ou texte.
+ * Formate les états d'entités (`raw`, `draft`, `auto`, `playable`, `archived`) en badges ou texte.
  * NB: le nom historique "UsableFormatter" est conservé pour limiter les changements.
  */
 
@@ -15,6 +15,7 @@ export class UsableFormatter extends BaseFormatter {
   static options = Object.freeze([
     { value: 'raw', label: 'Brut', daisyColor: 'error' },
     { value: 'draft', label: 'Brouillon', daisyColor: 'warning' },
+    { value: 'auto', label: 'Auto', daisyColor: 'secondary' },
     { value: 'playable', label: 'Jouable', daisyColor: 'success' },
     { value: 'archived', label: 'Archivé', daisyColor: 'info' },
   ]);

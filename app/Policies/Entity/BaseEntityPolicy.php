@@ -100,12 +100,12 @@ abstract class BaseEntityPolicy
             return $level >= $this->readLevel($model);
         }
 
-        // Jouable: lisible si niveau >= read_level
+        // Jouable : lisible si niveau >= read_level
         if ($state === 'playable') {
             return $level >= $this->readLevel($model);
         }
 
-        // Raw/Draft: réservé aux éditeurs (niveau >= write_level)
+        // Raw / draft / auto : réservé aux éditeurs (niveau >= write_level).
         return $user !== null && $level >= $this->writeLevel($model);
     }
 

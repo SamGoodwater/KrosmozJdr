@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Admin;
 
+use App\Enums\EntityState;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Campaign;
 use App\Models\Entity\Capability;
@@ -49,13 +50,6 @@ class AdminOverviewStatsService
         'shops' => Shop::class,
         'creatures' => Creature::class,
         'npcs' => Npc::class,
-    ];
-
-    private const STATE_LABELS = [
-        'raw' => 'Brut',
-        'draft' => 'Brouillon',
-        'playable' => 'Jouable',
-        'archived' => 'Archivé',
     ];
 
     /**
@@ -152,7 +146,7 @@ class AdminOverviewStatsService
             ->pluck('aggregate', 'state');
 
         $byState = [];
-        foreach (array_keys(self::STATE_LABELS) as $state) {
+        foreach (array_keys(EntityState::labels()) as $state) {
             $byState[$state] = (int) ($counts[$state] ?? 0);
         }
 
@@ -178,7 +172,7 @@ class AdminOverviewStatsService
      */
     public static function stateLabels(): array
     {
-        return self::STATE_LABELS;
+        return EntityState::labels();
     }
 
     /**
@@ -188,11 +182,6 @@ class AdminOverviewStatsService
      */
     public static function stateColors(): array
     {
-        return [
-            'raw' => '#94a3b8',
-            'draft' => '#fbbf24',
-            'playable' => '#34d399',
-            'archived' => '#f87171',
-        ];
+        return EntityState::chartColors();
     }
 }

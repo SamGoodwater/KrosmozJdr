@@ -6,10 +6,11 @@
  * Petit point coloré (success/warning/neutral) avec tooltip.
  * Utilisable dans les tableaux, headers de vues, listes, etc.
  *
- * @props {string|null} state - raw|draft|playable|archived (ou null)
+ * @props {string|null} state - raw|draft|auto|playable|archived (ou null)
  * @props {string} playableLabel - Texte tooltip si state=playable
  * @props {string} draftLabel - Texte tooltip si state=draft
  * @props {string} rawLabel - Texte tooltip si state=raw
+ * @props {string} autoLabel - Texte tooltip si state=auto
  * @props {string} archivedLabel - Texte tooltip si state=archived
  * @note
  * Le positionnement (absolute, offsets, etc.) se fait via un wrapper dans le parent
@@ -26,6 +27,7 @@ const props = defineProps({
   playableLabel: { type: String, default: "Jouable" },
   draftLabel: { type: String, default: "Brouillon" },
   rawLabel: { type: String, default: "Brut" },
+  autoLabel: { type: String, default: "Auto" },
   archivedLabel: { type: String, default: "Archivé" },
 });
 
@@ -37,6 +39,8 @@ const tooltip = computed(() => {
       return props.draftLabel;
     case "raw":
       return props.rawLabel;
+    case "auto":
+      return props.autoLabel;
     case "archived":
       return props.archivedLabel;
     default:
@@ -52,6 +56,8 @@ const dotClass = computed(() => {
       return "bg-warning";
     case "raw":
       return "bg-error";
+    case "auto":
+      return "bg-secondary";
     case "archived":
       return "bg-info";
     default:

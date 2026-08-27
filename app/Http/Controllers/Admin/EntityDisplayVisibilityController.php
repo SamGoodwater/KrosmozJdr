@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateEntityDisplayVisibilityRequest;
 use App\Models\ApplicationSetting;
@@ -24,12 +25,7 @@ class EntityDisplayVisibilityController extends Controller
         return Inertia::render('Admin/EntityDisplayVisibility/Index', [
             'matrix' => $visibilityService->matrixForManageableEntities(),
             'entityKeys' => $visibilityService->manageableEntityPermissionKeys(),
-            'states' => [
-                ['value' => 'raw', 'label' => 'Brut'],
-                ['value' => 'draft', 'label' => 'Brouillon'],
-                ['value' => 'playable', 'label' => 'Jouable'],
-                ['value' => 'archived', 'label' => 'Archivé'],
-            ],
+            'states' => EntityState::options(),
             'roles' => [
                 ['value' => User::ROLE_GUEST, 'label' => 'Invité'],
                 ['value' => User::ROLE_USER, 'label' => 'Utilisateur'],

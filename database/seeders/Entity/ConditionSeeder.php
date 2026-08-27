@@ -12,9 +12,20 @@ class ConditionSeeder extends Seeder
     {
         $defaults = ['state' => Condition::STATE_PLAYABLE, 'read_level' => User::ROLE_GUEST, 'write_level' => User::ROLE_ADMIN];
         $conditions = [
-            ['name' => 'Pesanteur', 'description' => 'Empêche certains déplacements forcés ou effets de placement.'],
+            [
+                'name' => 'Pesanteur',
+                'description' => 'Empêche certains déplacements forcés ou effets de placement.',
+                'cant_be_moved' => true,
+                'cant_be_pushed' => true,
+                'cant_switch_position' => true,
+            ],
             ['name' => 'Empoisonné', 'description' => 'Subit des dégâts ou effets de poison selon la source.'],
-            ['name' => 'Étourdi', 'description' => 'Réduit ou empêche temporairement les actions.'],
+            [
+                'name' => 'Étourdi',
+                'description' => 'Réduit ou empêche temporairement les actions.',
+                'prevents_spell_cast' => true,
+                'prevents_fight' => true,
+            ],
             ['name' => 'Ralenti', 'description' => 'Réduit temporairement les points de mouvement ou la mobilité.'],
             ['name' => 'Affaibli', 'description' => 'Réduit temporairement la puissance ou certaines caractéristiques.'],
         ];

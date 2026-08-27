@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Type;
 
+use App\Enums\EntityState;
 use App\Models\Type\ResourceType;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -23,7 +24,7 @@ class UpdateResourceTypeRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:255'],
-            'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
+            'state' => ['nullable', 'string', EntityState::rule()],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],
             'dofusdb_type_id' => ['nullable', 'integer', 'min:1', 'unique:resource_types,dofusdb_type_id,'.$id],

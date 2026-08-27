@@ -132,6 +132,13 @@
     "file": "privacy/CookieConsentTriggerButton.vue"
   },
   {
+    "name": "OverlayTrigger",
+    "description": "Sans chrome (fond, padding, bordure) : le contenu fournit déjà sa surface (ex. fiche minimale d’entité, panneau `SpellUsageCharacteristicTooltipPanel`).",
+    "props": [],
+    "slots": [],
+    "file": "overlay/OverlayTrigger.vue"
+  },
+  {
     "name": "Tab",
     "description": "Tab Molecule (DaisyUI + Custom Utility)",
     "props": [
@@ -1240,39 +1247,6 @@
     "file": "entity/shared/EntitySearchHitCard.vue"
   },
   {
-    "name": "EntityFieldTooltip",
-    "description": "Infobulle d’un champ d’entité : helper descriptor, ou helper + limites si caractéristique BDD.",
-    "props": [
-      {
-        "name": "fieldKey",
-        "type": "string",
-        "desc": "Clé du champ (rarity, item_type, weight…)"
-      },
-      {
-        "name": "entityType",
-        "type": "string",
-        "desc": "Type d’entité (resource, item, consumable…)"
-      },
-      {
-        "name": "descriptors",
-        "type": "Object",
-        "desc": ""
-      },
-      {
-        "name": "tableMeta",
-        "type": "Object",
-        "desc": ""
-      }
-    ],
-    "slots": [
-      {
-        "name": "default",
-        "desc": "Déclencheur (badge, icône…)"
-      }
-    ],
-    "file": "entity/shared/EntityFieldTooltip.vue"
-  },
-  {
     "name": "EntityPropertyDisplay",
     "description": "EntityPropertyDisplay — façade par `fieldKey` vers CharacteristicProperty + view model unifié.",
     "props": [
@@ -1410,6 +1384,13 @@
     "props": [],
     "slots": [],
     "file": "entity/shared/EntityLineRowActions.vue"
+  },
+  {
+    "name": "EntityFieldTooltip",
+    "description": "Infobulle d’un champ d’entité (helper descriptor ou caractéristique BDD).",
+    "props": [],
+    "slots": [],
+    "file": "entity/shared/EntityFieldTooltip.vue"
   },
   {
     "name": "ScenarioViewText",
@@ -1638,6 +1619,13 @@
     "file": "entity/panoply/PanoplyViewFull.vue"
   },
   {
+    "name": "PanoplyThumb",
+    "description": "Vignette de panoplie : images des équipements, sinon initiales du nom.",
+    "props": [],
+    "slots": [],
+    "file": "entity/panoply/PanoplyThumb.vue"
+  },
+  {
     "name": "PanoplyLineRow",
     "description": "PanoplyLineRow — Une ligne de la vue Line pour les panoplies",
     "props": [],
@@ -1646,12 +1634,17 @@
   },
   {
     "name": "PanoplyEquipmentTextList",
-    "description": "Liste d’équipements en vue Texte (popover minimal au survol).",
+    "description": "Liste d’équipements en vue Texte (popover minimal au clic).",
     "props": [
       {
         "name": "items",
-        "type": "Array<{id: number, name?: string}>",
-        "desc": ""
+        "type": "Array",
+        "desc": "- Lignes `{id, name, image?}` ou instances `Item`"
+      },
+      {
+        "name": "layout",
+        "type": "String",
+        "desc": "- `wrap` (fiche panoplie) ou `stack` (tooltip)"
       }
     ],
     "slots": [],
@@ -1660,13 +1653,7 @@
   {
     "name": "PanoplyBonusTiers",
     "description": "Bonus de panoplie par palier de pièces (chiffre seul, comme les sorts).",
-    "props": [
-      {
-        "name": "bonus",
-        "type": "Object|String",
-        "desc": "- JSON paliers { \"2\": { strength: 1 } }"
-      }
-    ],
+    "props": [],
     "slots": [],
     "file": "entity/panoply/PanoplyBonusTiers.vue"
   },
@@ -1858,24 +1845,6 @@
     "file": "entity/item/ItemViewText.vue"
   },
   {
-    "name": "ItemPanoplyMark",
-    "description": "Marque de panoplie sur une fiche équipement (icône, nom, tooltip, full).",
-    "props": [
-      {
-        "name": "item",
-        "type": "Object",
-        "desc": "- Équipement (instance Item ou payload plat)"
-      },
-      {
-        "name": "density",
-        "type": "String",
-        "desc": "- icon | named | full"
-      }
-    ],
-    "slots": [],
-    "file": "entity/item/ItemPanoplyMark.vue"
-  },
-  {
     "name": "ItemViewMinimal",
     "description": "ItemViewMinimal — Vue Minimal pour Item",
     "props": [],
@@ -1922,6 +1891,13 @@
     ],
     "slots": [],
     "file": "entity/item/ItemPriceEditSection.vue"
+  },
+  {
+    "name": "ItemPanoplyMark",
+    "description": "Marque de panoplie sur une fiche équipement.",
+    "props": [],
+    "slots": [],
+    "file": "entity/item/ItemPanoplyMark.vue"
   },
   {
     "name": "ItemLineRow",
@@ -2057,6 +2033,13 @@
     ],
     "slots": [],
     "file": "entity/condition/ConditionViewFull.vue"
+  },
+  {
+    "name": "ConditionMechanicalFlags",
+    "description": "ConditionMechanicalFlags — chips des effets mécaniques actifs d’un état.",
+    "props": [],
+    "slots": [],
+    "file": "entity/condition/ConditionMechanicalFlags.vue"
   },
   {
     "name": "ConditionLineRow",

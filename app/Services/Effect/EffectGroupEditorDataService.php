@@ -74,6 +74,7 @@ final class EffectGroupEditorDataService
         ])->values()->all();
 
         $conditions = Condition::query()
+            ->where('state', '!=', Condition::STATE_RAW)
             ->orderBy('name')
             ->get(['id', 'dofusdb_id', 'name', 'icon'])
             ->map(fn ($st) => [

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Table;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Shop;
 use Illuminate\Http\JsonResponse;
@@ -31,7 +32,6 @@ class ShopTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
-
 
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
@@ -75,12 +75,7 @@ class ShopTableController extends Controller
         ];
 
         $filterOptions = [
-            'state' => [
-                ['value' => Shop::STATE_RAW, 'label' => 'Brouillon (raw)'],
-                ['value' => Shop::STATE_DRAFT, 'label' => 'Brouillon'],
-                ['value' => Shop::STATE_PLAYABLE, 'label' => 'Jouable'],
-                ['value' => Shop::STATE_ARCHIVED, 'label' => 'Archivé'],
-            ],
+            'state' => EntityState::options(),
         ];
 
         // Mode "entities" : retourner les entités brutes

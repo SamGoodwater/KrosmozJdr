@@ -9,6 +9,7 @@
 - `app/Console/Commands/Project/ProjectClearOrphanFilesCommand.php`
 - `app/Console/Commands/Pages/PagesImportRulesTocCommand.php`
 - `app/Console/Commands/Effects/ConditionsStripDofusHyperlinksCommand.php`
+- `app/Console/Commands/Effects/ConditionsRemapCanonicalCommand.php` — `php artisan conditions:remap-canonical`
 - `app/Console/Commands/Scrapping/`
 - `app/Services/Media/OrphanPublicMediaCleanupService.php`
 - `app/Services/Media/MediaCleanupDispatcher.php`

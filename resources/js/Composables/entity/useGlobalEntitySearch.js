@@ -78,6 +78,7 @@ export const GLOBAL_SEARCH_STATE_FILTERS = Object.freeze([
     { value: "playable", label: "Jouable" },
     { value: "draft", label: "Brouillon" },
     { value: "raw", label: "Brut" },
+    { value: "auto", label: "Auto" },
     { value: "archived", label: "Archivé" },
 ]);
 

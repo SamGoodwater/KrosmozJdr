@@ -27,6 +27,8 @@ enum SectionType: string
     case CHARACTERISTIC_NORMS_CATALOG = 'characteristic_norms_catalog';
     /** Référentiel tabulaire des caractéristiques (formules, bornes, économie indicative). */
     case CHARACTERISTIC_REFERENCE_TABLE = 'characteristic_reference_table';
+    /** Tableau vivant des plafonds de bonus d’équipement (slot × carac × bandes). */
+    case EQUIPMENT_BONUS_TABLE = 'equipment_bonus_table';
 
     /**
      * Retourne le label traduit du type.
@@ -43,6 +45,7 @@ enum SectionType: string
             self::CHARACTERISTIC_NORMS => 'Charte caractéristique',
             self::CHARACTERISTIC_NORMS_CATALOG => 'Catalogue de chartes (normes)',
             self::CHARACTERISTIC_REFERENCE_TABLE => 'Référentiel des caractéristiques',
+            self::EQUIPMENT_BONUS_TABLE => 'Tableau des bonus d’équipement',
         };
     }
 
@@ -61,6 +64,7 @@ enum SectionType: string
             self::CHARACTERISTIC_NORMS => 'fa-chart-bar',
             self::CHARACTERISTIC_NORMS_CATALOG => 'fa-table-list',
             self::CHARACTERISTIC_REFERENCE_TABLE => 'fa-table-columns',
+            self::EQUIPMENT_BONUS_TABLE => 'fa-table',
         };
     }
 
@@ -123,6 +127,7 @@ enum SectionType: string
                 'show_prices' => 'boolean (optional, default: true)',
                 'show_only_with_equipment' => 'boolean (optional, default: false)',
             ],
+            self::EQUIPMENT_BONUS_TABLE => [],
         };
     }
 

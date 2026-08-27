@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Creature;
 use Illuminate\Http\JsonResponse;
@@ -34,7 +35,7 @@ class CreatureBulkController extends Controller
             'life' => ['sometimes', 'nullable', 'string', 'max:255'],
             'pa' => ['sometimes', 'nullable', 'string', 'max:255'],
             'pm' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'state' => ['sometimes', 'nullable', 'string', 'in:raw,draft,playable,archived'],
+            'state' => ['sometimes', 'nullable', 'string', EntityState::rule()],
             'read_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
         ]);

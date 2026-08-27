@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Table;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Capability;
 use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
@@ -92,7 +93,6 @@ class CapabilityTableController extends Controller
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
-
 
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
@@ -185,12 +185,7 @@ class CapabilityTableController extends Controller
                 ['value' => '5', 'label' => '5'],
                 ['value' => '6', 'label' => '6+'],
             ],
-            'state' => [
-                ['value' => 'raw', 'label' => 'Brut'],
-                ['value' => 'draft', 'label' => 'Brouillon'],
-                ['value' => 'playable', 'label' => 'Jouable'],
-                ['value' => 'archived', 'label' => 'Archivé'],
-            ],
+            'state' => EntityState::options(),
             'element' => ElementBitmask::allFilterOptions(),
             'is_magic' => [
                 ['value' => '1', 'label' => 'Wakfu'],

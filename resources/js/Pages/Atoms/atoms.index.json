@@ -471,7 +471,7 @@
   },
   {
     "name": "Tooltip",
-    "description": "Accent sémantique (variable `--color` pour bordure / ombre, voir `_tooltip.scss`).",
+    "description": "Surface OverlayTrigger. `false` = chromeless : le slot `#content` (fiche minimale, panneau d’effet, etc.) fournit déjà le chrome — pas de seconde boîte.",
     "props": [],
     "slots": [],
     "file": "feedback/Tooltip.vue"
@@ -2020,7 +2020,7 @@
       {
         "name": "state",
         "type": "string|null",
-        "desc": "- raw|draft|playable|archived (ou null)"
+        "desc": "- raw|draft|auto|playable|archived (ou null)"
       },
       {
         "name": "playableLabel",
@@ -2038,6 +2038,11 @@
         "desc": "- Texte tooltip si state=raw"
       },
       {
+        "name": "autoLabel",
+        "type": "string",
+        "desc": "- Texte tooltip si state=auto"
+      },
+      {
         "name": "archivedLabel",
         "type": "string",
         "desc": "- Texte tooltip si state=archived"
@@ -2048,7 +2053,7 @@
   },
   {
     "name": "EntityStateBadge",
-    "description": "EntityStateBadge — pastille d'état entité (raw / draft / playable / archived).",
+    "description": "EntityStateBadge — pastille d'état entité (raw / draft / auto / playable / archived).",
     "props": [
       {
         "name": "state",

@@ -167,4 +167,52 @@ class ConditionTableControllerTest extends TestCase
         $this->assertLessThanOrEqual(3, count($data['entities']));
         $this->assertEquals(3, $data['meta']['query']['limit']);
     }
+
+    public function test_index_excludes_raw_by_default(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $playable = Condition::factory()->create([
+            'name' => 'Force',
+            'state' => Condition::STATE_PLAYABLE,
+            'created_by' => $user->id,
+        ]);
+        $raw = Condition::factory()->create([
+            'name' => 'Intelligence',
+            'state' => Condition::STATE_RAW,
+            'dofusdb_id' => 900001,
+            'created_by' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/conditions?format=entities&limit=50');
+
+        $response->assertOk();
+        $ids = collect($response->json('entities'))->pluck('id')->all();
+        $this->assertContains($playable->id, $ids);
+        $this->assertNotContains($raw->id, $ids);
+    }
+
+    public function test_index_includes_raw_when_state_filter_asks_for_it(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        Condition::factory()->create([
+            'name' => 'Force',
+            'state' => Condition::STATE_PLAYABLE,
+            'created_by' => $user->id,
+        ]);
+        $raw = Condition::factory()->create([
+            'name' => 'Intelligence',
+            'state' => Condition::STATE_RAW,
+            'dofusdb_id' => 900002,
+            'created_by' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/conditions?format=entities&limit=50&filters[state][]=raw');
+
+        $response->assertOk();
+        $ids = collect($response->json('entities'))->pluck('id')->all();
+        $this->assertSame([$raw->id], $ids);
+        $this->assertArrayHasKey('cant_be_moved', $response->json('entities.0'));
+    }
 }

@@ -5,86 +5,70 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Enums\SectionType;
+use App\Models\Characteristic;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
+use App\Services\Characteristics\CharacteristicDefinitionReader;
+use App\Services\PageService;
+use App\Support\Characteristics\CharacteristicDefinitionNaming;
 use Illuminate\Database\Seeder;
 
 /**
- * Arborescence « Création » : aide à la création d’entités (chartes / normes).
- * Une sous-page par **groupe technique** (spell, creature, object) : toutes les caractéristiques
- * d’un groupe partagent le même référentiel de sens ; les types d’entité (monstre, consommable, etc.)
- * se distinguent par le contenu, pas par des chartes dupliquées.
+ * Atelier MJ « Création » : hub Pour les MJ, tableau des bonus d’équipement,
+ * chartes (créatures / objets / sorts) reparentées depuis Contribution.
  *
  * Prérequis : seeders des caractéristiques et pivots (norms_grid) exécutés avant
  * (ex. {@see CreatureCharacteristicSeeder}, {@see ObjectCharacteristicSeeder}, {@see SpellCharacteristicSeeder}).
  */
 class CreationPagesSeeder extends Seeder
 {
-    /**
-     * Sous-pages : une par groupe (`characteristic_*` pivot), `entity` = *.
-     *
-     * @var list<array{title: string, slug: string, icon: string, group: string, entity: string, intro: string, advice: string}>
-     */
-    private const SUBPAGES = [
-        [
-            'title' => 'Sorts et capacités',
-            'slug' => 'creation-sorts',
-            'icon' => 'fa-solid fa-wand-sparkles',
-            'group' => 'spell',
-            'entity' => '*',
-            'intro' => '<h2>Groupe sort / capacités — chartes</h2>'
-                .'<p>Ce catalogue couvre <strong>toutes</strong> les caractéristiques du groupe <em>sort</em> : '
-                .'dégâts, soins, portée, PA, buffs, etc. Les <strong>capacités</strong> s’appuient sur le même groupe '
-                .'en base : une seule page évite de dupliquer les mêmes grilles.</p>'
-                .'<p>Complète avec des sections texte (conseils, exemples) si besoin.</p>',
-            'advice' => '<p><strong>Conseils d’équilibrage</strong></p>'
-                .'<ul>'
-                .'<li>Commence par la ligne <strong>Neutre</strong> au niveau visé, puis applique uniquement les modificateurs réellement pertinents.</li>'
-                .'<li>Pour un sort à très forte portée ou à grande zone, évite de dépasser les bornes hautes de dégâts/soins au même niveau.</li>'
-                .'<li>Un coût PA élevé peut justifier une valeur plus haute, mais garde une cohérence avec les limites min/max affichées sous le tableau.</li>'
-                .'<li>Les capacités utilitaires (entrave, placement, contrôle) compensent souvent la valeur brute : privilégie alors une lecture plus prudente.</li>'
-                .'</ul>',
-        ],
+    /** @var list<array{title: string, slug: string, icon: string, group: string, entity: string, intro: string}> */
+    private const CHARTE_PAGES = [
         [
             'title' => 'Créatures',
-            'slug' => 'creation-creatures',
+            'slug' => 'contribution-creatures',
             'icon' => 'fa-solid fa-dragon',
             'group' => 'creature',
             'entity' => '*',
-            'intro' => '<h2>Groupe créature — chartes</h2>'
-                .'<p>Référentiel unique pour monstres, classes jouables, PNJ : PV, stats, CA, maîtrises, etc. '
-                .'Le sens des caractéristiques est commun à tout le groupe <em>creature</em>.</p>',
-            'advice' => '<p><strong>Conseils de construction</strong></p>'
-                .'<ul>'
-                .'<li>Si la créature est censée encaisser, privilégie d’abord les <strong>points de vie</strong> puis la défense, avant d’augmenter les dégâts.</li>'
-                .'<li>Évite de cumuler des valeurs hautes sur trop d’axes (PV, dégâts, mobilité, contrôle) au même niveau.</li>'
-                .'<li>Pour les créatures rapides ou techniques, monte plutôt mobilité/initiative et garde des PV plus modérés.</li>'
-                .'<li>Vérifie systématiquement que les valeurs finales restent dans les bornes min/max du niveau cible.</li>'
-                .'</ul>',
+            'intro' => '<h2>Chartes des caractéristiques — Créatures</h2>'
+                .'<p>Cette section présente les <strong>normes de référence</strong> pour les caractéristiques des créatures '
+                .'(monstres, classes jouables, PNJ). Chaque charte définit les valeurs attendues selon le <strong>niveau</strong> (1–20) '
+                .'et la <strong>puissance</strong> (très faible → très forte).</p>'
+                .'<p>Utilise ces chartes pour vérifier qu’une créature est équilibrée par rapport aux références du jeu. '
+                .'Les conditions de lecture permettent d’ajuster la ligne de puissance ou le niveau en fonction d’autres caractéristiques.</p>',
         ],
         [
             'title' => 'Objets',
-            'slug' => 'creation-objets',
-            'icon' => 'fa-solid fa-box-open',
+            'slug' => 'contribution-objets',
+            'icon' => 'fa-solid fa-shield-halved',
             'group' => 'object',
             'entity' => '*',
-            'intro' => '<h2>Groupe objet — chartes</h2>'
-                .'<p>Un seul catalogue pour équipements, consommables, ressources, panoplies : les bonus et portées '
-                .'objet partagent les mêmes échelles. Tu documentes les nuances (slot, rareté, usage) en texte autour du catalogue.</p>',
-            'advice' => '<p><strong>Conseils de calibration</strong></p>'
-                .'<ul>'
-                .'<li>Sur les bas niveaux, reste proche des paliers faibles/modérés ; réserve les valeurs fortes aux objets rares ou à fortes contraintes.</li>'
-                .'<li>Évite les objets qui surclassent la progression normale du niveau (surtout sur plusieurs stats en même temps).</li>'
-                .'<li>Pour consommables et ressources, adapte la puissance à la fréquence d’obtention et au coût d’accès.</li>'
-                .'<li>Utilise les limites min/max comme garde-fou avant validation finale.</li>'
-                .'</ul>',
+            'intro' => '<h2>Chartes des caractéristiques — Objets</h2>'
+                .'<p>Cette section présente les <strong>normes de référence</strong> pour les bonus d’équipement. '
+                .'Les valeurs sont calibrées selon les <strong>règles 5.2.4</strong> (Équipements et panoplies) : '
+                .'+1-2 aux niveaux 1-5, +2-3 aux niveaux 6-10, +3-4 aux niveaux 11-15, +4-5 aux niveaux 16-20.</p>'
+                .'<p>Un objet dont les bonus dépassent significativement la ligne « neutre » de sa charte est potentiellement '
+                .'déséquilibré. Les objets rares ou légendaires peuvent atteindre la ligne « fort » ou « très fort ».</p>',
+        ],
+        [
+            'title' => 'Sorts',
+            'slug' => 'contribution-sorts',
+            'icon' => 'fa-solid fa-wand-sparkles',
+            'group' => 'spell',
+            'entity' => '*',
+            'intro' => '<h2>Chartes des caractéristiques — Sorts</h2>'
+                .'<p>Cette section présente les <strong>normes de référence</strong> pour les effets de sorts. '
+                .'Les dégâts, soins et boucliers sont calibrés selon les <strong>règles 5.2.3</strong> (Sorts et aptitudes), '
+                .'avec une progression de ~1d6 (niveau 1) à ~5d6+mod (niveau 20).</p>'
+                .'<p>Les conditions de lecture prennent en compte le coût en PA et la zone d’effet : '
+                .'un sort coûteux (5+ PA) peut avoir des dégâts supérieurs, tandis qu’un sort en zone (≥2 cases) '
+                .'devrait avoir des dégâts réduits par cible.</p>',
         ],
     ];
 
     /**
-     * Anciennes sous-pages (6 pages par type d’entité) remplacées par 3 pages par groupe.
-     * Suppression logique au re-seed pour éviter les doublons dans le menu.
+     * Anciennes sous-pages (par type d’entité ou catalogues `creation-*` doublons).
      *
      * @var list<string>
      */
@@ -94,11 +78,15 @@ class CreationPagesSeeder extends Seeder
         'creation-ressources',
         'creation-consommables',
         'creation-capacites',
+        'creation-creatures',
+        'creation-objets',
+        'creation-sorts',
     ];
 
     public function run(): void
     {
         $creatorId = $this->resolveDefaultCreatorId();
+        $characteristicNames = $this->loadCharacteristicNames();
 
         $parent = $this->createOrRestorePage([
             'title' => 'Création',
@@ -108,9 +96,9 @@ class CreationPagesSeeder extends Seeder
             'read_level' => User::ROLE_GAME_MASTER,
             'write_level' => User::ROLE_ADMIN,
             'menu_order' => 850,
-            'menu_group' => 'Aide',
+            'menu_group' => 'Pour les MJ',
             'parent_id' => null,
-            'icon' => null,
+            'icon' => 'fa-solid fa-hat-wizard',
             'created_by' => $creatorId,
         ]);
 
@@ -118,19 +106,20 @@ class CreationPagesSeeder extends Seeder
             $parent,
             'creation-intro',
             'Introduction',
-            '<h2>Aide à la création</h2>'
-            .'<p>Trois espaces alignés sur les <strong>groupes de caractéristiques</strong> du jeu : '
-            .'<strong>sort</strong> (sorts et capacités), <strong>créature</strong>, <strong>objet</strong> (équipement, consommables, ressources…). '
-            .'Chaque groupe a un sens interne cohérent — pas besoin d’une page par type d’entité pour les chartes.</p>'
-            .'<p>Ajoute des sections <em>texte</em> sur chaque sous-page pour conseils, exemples ou liens.</p>',
+            '<h2>Atelier de création</h2>'
+            .'<p>Espace réservé aux MJ pour concevoir et équilibrer le contenu : tableau des bonus d’équipement, '
+            .'chartes des créatures, des objets et des sorts. Les chiffres affichés ici sont une <strong>projection</strong> '
+            .'du système de caractéristiques : on corrige les fiches, pas une grille figée.</p>',
             0,
             $creatorId
         );
 
         $this->removeDeprecatedCreationChildren($parent);
 
-        $order = 0;
-        foreach (self::SUBPAGES as $meta) {
+        $this->seedEquipementsPage($parent, $creatorId);
+
+        $order = 1;
+        foreach (self::CHARTE_PAGES as $meta) {
             $sub = $this->createOrRestorePage([
                 'title' => $meta['title'],
                 'slug' => $meta['slug'],
@@ -145,49 +134,122 @@ class CreationPagesSeeder extends Seeder
                 'created_by' => $creatorId,
             ]);
 
-            $this->ensureTextSection(
-                $sub,
-                $meta['slug'].'-intro',
-                'Introduction',
-                $meta['intro'],
-                0,
-                $creatorId
-            );
-
             $this->ensureCatalogSection(
                 $sub,
                 $meta['slug'].'-catalog',
                 'Catalogue des chartes',
                 $meta['group'],
                 $meta['entity'],
-                1,
+                0,
                 $creatorId
             );
 
             $this->ensureTextSection(
                 $sub,
-                $meta['slug'].'-advice',
-                '',
-                $meta['advice'],
-                2,
+                $meta['slug'].'-intro',
+                'Introduction',
+                $meta['intro'],
+                1,
                 $creatorId
+            );
+
+            $normsKeys = $this->characteristicKeysWithNormsFromDefinitions($meta['group']);
+            $charteOrder = 2;
+            foreach ($normsKeys as $charKey) {
+                $charName = $characteristicNames[$charKey] ?? $charKey;
+                $this->ensureCharacteristicNormsSection(
+                    $sub,
+                    $meta['slug'].'-norms-'.str_replace('_', '-', $charKey),
+                    $charName,
+                    $charKey,
+                    $meta['group'],
+                    $meta['entity'],
+                    $charteOrder++,
+                    $creatorId
+                );
+            }
+
+            $this->command?->info(
+                "📄 Page {$meta['slug']} : catalogue + intro + ".count($normsKeys).' chartes.'
             );
         }
 
-        $this->command?->info('📐 Pages Création : parent + '.count(self::SUBPAGES).' sous-pages (par groupe).');
+        PageService::clearMenuCache();
+        $this->command?->info('📐 Pages Création : hub MJ + équipements + '.count(self::CHARTE_PAGES).' chartes.');
+    }
+
+    private function seedEquipementsPage(Page $parent, ?int $creatorId): void
+    {
+        $page = $this->createOrRestorePage([
+            'title' => 'Équipements',
+            'slug' => 'creation-equipements',
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GAME_MASTER,
+            'write_level' => User::ROLE_ADMIN,
+            'menu_order' => 0,
+            'menu_group' => null,
+            'parent_id' => $parent->id,
+            'icon' => 'fa-solid fa-shield-halved',
+            'created_by' => $creatorId,
+        ]);
+
+        $this->ensureTextSection(
+            $page,
+            'creation-equipements-intro',
+            'Lire le tableau',
+            '<h2>Bonus d’équipement</h2>'
+            .'<p>Ce tableau projette les plafonds de bonus par <strong>emplacement</strong> (type d’objet) et par '
+            .'<strong>caractéristique</strong>, d’après la table <em>formula</em> des caractéristiques objet. '
+            .'Ce n’est pas une grille figée : si un chiffre est faux, on corrige la caractéristique, pas cette page.</p>'
+            .'<p>Chaque colonne 1–2, 3–4, … 19–20 indique le plafond au début de la tranche (plus grand seuil de formule '
+            .'≤ niveau de début). Un tiret signifie que le bonus n’est pas encore débloqué (valeur 0).</p>'
+            .'<p>Les colonnes Prix / unité, FM max et Prix rune viennent du même enregistrement. Les écarts entre '
+            .'<em>formula</em>, grille de normes et min/max se voient ici : ils se corrigent dans les fiches caractéristiques.</p>',
+            0,
+            $creatorId
+        );
+
+        $this->ensureEquipmentBonusTableSection(
+            $page,
+            'creation-equipements-table',
+            'Tableau des bonus',
+            1,
+            $creatorId
+        );
+
+        $this->ensureTextSection(
+            $page,
+            'creation-equipements-rarete',
+            'Rareté',
+            '<h2>Rareté</h2>'
+            .'<p>La rareté d’un objet se déduit de son <strong>prix</strong> dans la tranche de niveau, pas du nombre de caractéristiques.</p>'
+            .'<ul>'
+            .'<li>Plus de <strong>commun</strong> à partir du niveau 5</li>'
+            .'<li>Plus de <strong>peu commun</strong> à partir du niveau 9</li>'
+            .'<li>Plus de <strong>rare</strong> à partir du niveau 15 (très rare / légendaire)</li>'
+            .'<li>Jamais <strong>unique</strong>, sauf Dofus et cas spéciaux</li>'
+            .'</ul>',
+            2,
+            $creatorId
+        );
     }
 
     private function removeDeprecatedCreationChildren(Page $parent): void
     {
         foreach (self::DEPRECATED_CHILD_SLUGS as $slug) {
             /** @var Page|null $page */
-            $page = Page::withTrashed()->where('parent_id', $parent->id)->where('slug', $slug)->first();
+            $page = Page::withTrashed()->where('slug', $slug)->first();
             if (! $page instanceof Page) {
                 continue;
             }
+            if ($page->parent_id !== null && (int) $page->parent_id !== (int) $parent->id) {
+                $page->parent_id = $parent->id;
+                $page->save();
+            }
             if (! $page->trashed()) {
                 Page::destroy($page->id);
-                $this->command?->info("🗑️ Ancienne page « {$slug} » archivée (remplacée par la structure par groupe).");
+                $this->command?->info("🗑️ Ancienne page « {$slug} » archivée (doublon / structure remplacée).");
             }
         }
     }
@@ -270,6 +332,59 @@ class CreationPagesSeeder extends Seeder
         ]);
     }
 
+    private function ensureCharacteristicNormsSection(
+        Page $page,
+        string $slug,
+        string $title,
+        string $characteristicKey,
+        string $group,
+        string $entity,
+        int $order,
+        ?int $creatorId
+    ): Section {
+        $settings = [
+            'characteristic_key' => $characteristicKey,
+            'group' => $group,
+            'entity' => $entity,
+        ];
+
+        return $this->ensureSection($page, $slug, [
+            'title' => $title,
+            'order' => $order,
+            'template' => SectionType::CHARACTERISTIC_NORMS->value,
+            'type' => SectionType::CHARACTERISTIC_NORMS->value,
+            'settings' => $settings,
+            'data' => [],
+            'params' => $settings,
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GAME_MASTER,
+            'write_level' => User::ROLE_ADMIN,
+            'created_by' => $creatorId,
+        ]);
+    }
+
+    private function ensureEquipmentBonusTableSection(
+        Page $page,
+        string $slug,
+        string $title,
+        int $order,
+        ?int $creatorId
+    ): Section {
+        return $this->ensureSection($page, $slug, [
+            'title' => $title,
+            'order' => $order,
+            'template' => SectionType::EQUIPMENT_BONUS_TABLE->value,
+            'type' => SectionType::EQUIPMENT_BONUS_TABLE->value,
+            'settings' => [],
+            'data' => [],
+            'params' => [],
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GAME_MASTER,
+            'write_level' => User::ROLE_ADMIN,
+            'created_by' => $creatorId,
+        ]);
+    }
+
     /**
      * @param  array<string, mixed>  $attributes
      */
@@ -293,6 +408,91 @@ class CreationPagesSeeder extends Seeder
         }
 
         return Section::create($attributes);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function loadCharacteristicNames(): array
+    {
+        try {
+            $names = Characteristic::pluck('name', 'key')->toArray();
+            if (count($names) > 0) {
+                return $names;
+            }
+        } catch (\Throwable) {
+            // Table non disponible, fallback sur le fichier
+        }
+
+        return $this->loadCharacteristicNamesFromDefinitionFiles();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function loadCharacteristicNamesFromDefinitionFiles(): array
+    {
+        $names = [];
+        foreach (CharacteristicDefinitionReader::allDefinitionAbsolutePaths() as $path) {
+            try {
+                $def = CharacteristicDefinitionReader::load($path);
+            } catch (\Throwable) {
+                continue;
+            }
+            $c = $def['characteristic'] ?? [];
+            if (! is_array($c)) {
+                continue;
+            }
+            $key = $c['key'] ?? '';
+            if (! is_string($key) || $key === '') {
+                continue;
+            }
+            $names[$key] = is_string($c['name'] ?? null) && $c['name'] !== '' ? $c['name'] : $key;
+        }
+
+        return $names;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function characteristicKeysWithNormsFromDefinitions(string $group): array
+    {
+        $dir = base_path(CharacteristicDefinitionNaming::RELATIVE_ROOT.'/'.$group);
+        if (! is_dir($dir)) {
+            return [];
+        }
+        $found = [];
+        foreach (glob($dir.DIRECTORY_SEPARATOR.'*-definition.json') ?: [] as $path) {
+            if (! is_file($path)) {
+                continue;
+            }
+            try {
+                $def = CharacteristicDefinitionReader::load($path);
+            } catch (\Throwable) {
+                continue;
+            }
+            $key = $def['characteristic']['key'] ?? '';
+            if (! is_string($key) || $key === '') {
+                continue;
+            }
+            foreach ($def['entities'] as $payload) {
+                if (! is_array($payload)) {
+                    continue;
+                }
+                $hasNorms = ! empty($payload['norms_grid'])
+                    || ! empty($payload['norms_conditions'])
+                    || (isset($payload['norms_description']) && is_string($payload['norms_description']) && $payload['norms_description'] !== '');
+                if ($hasNorms) {
+                    $found[$key] = true;
+                    break;
+                }
+            }
+        }
+        $list = array_keys($found);
+        sort($list);
+
+        return $list;
     }
 
     private function resolveDefaultCreatorId(): ?int

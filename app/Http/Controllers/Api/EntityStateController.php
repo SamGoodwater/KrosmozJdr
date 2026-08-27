@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Campaign;
@@ -23,7 +24,6 @@ use App\Models\Type\ResourceType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * Met à jour l'état d'une seule entité via la barre d'actions.
@@ -38,8 +38,6 @@ use Illuminate\Validation\Rule;
  */
 class EntityStateController extends Controller
 {
-    private const STATES = ['raw', 'draft', 'playable', 'archived'];
-
     /** @var array<string, class-string<Model>> */
     private const MODELS = [
         'breeds' => Breed::class,
@@ -72,7 +70,7 @@ class EntityStateController extends Controller
         }
 
         $validated = $request->validate([
-            'state' => ['required', 'string', Rule::in(self::STATES)],
+            'state' => ['required', 'string', EntityState::rule()],
         ]);
 
         /** @var Model $model */

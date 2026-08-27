@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\EntityState;
 use App\Models\Page;
 use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -34,7 +35,7 @@ class StorePageRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255', 'unique:pages,slug', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
             'in_menu' => ['sometimes', 'boolean'],
-            'state' => ['sometimes', 'string', Rule::in([Page::STATE_RAW, Page::STATE_DRAFT, Page::STATE_PLAYABLE, Page::STATE_ARCHIVED])],
+            'state' => ['sometimes', 'string', EntityState::rule()],
             'read_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
             'write_level' => ['sometimes', 'integer', 'min:0', 'max:5', 'gte:read_level'],
             'parent_id' => ['nullable', 'exists:pages,id'],

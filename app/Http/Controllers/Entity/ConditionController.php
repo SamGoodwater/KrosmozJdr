@@ -44,6 +44,8 @@ class ConditionController extends Controller
         // Filtres
         if (request()->has('state') && request()->state !== '') {
             $query->where('state', (string) request()->state);
+        } else {
+            $query->where('state', '!=', Condition::STATE_RAW);
         }
 
         // Tri

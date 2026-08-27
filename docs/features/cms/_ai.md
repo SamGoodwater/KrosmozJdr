@@ -11,11 +11,11 @@
 
 - **Page** : `slug` unique, `state`, `read_level`/`write_level`, `parent_id`, `in_menu`/`menu_order`/`menu_group`, `settings` JSON (dont `linked_entity`). Code : `app/Models/Page.php`. Slugs critiques : `accueil`, `cgu`.
 - **Section** : appartient à une page, `template` (enum `SectionType`), `data`/`settings`, `order`, médias Spatie. Code : `app/Models/Section.php`, `app/Enums/SectionType.php`.
-- **9 templates** : `text`, `image`, `gallery`, `video`, `entity_table`, `legal_markdown`, `characteristic_norms`, `characteristic_norms_catalog`, `characteristic_reference_table`. Détail : [README](./README.md#templates-de-sections).
+- **10 templates** : `text`, `image`, `gallery`, `video`, `entity_table`, `legal_markdown`, `characteristic_norms`, `characteristic_norms_catalog`, `characteristic_reference_table`, `equipment_bonus_table`. Détail : [README](./README.md#templates-de-sections).
 - **`entity_table` (Bibliothèques)** : lecture en pagination serveur via `api.tables.*` (`SectionEntityTableRead`) — ne plus compter sur `settings.limit` (plafond legacy 50).
 - **Rendu front** : `PageRenderer` → `SectionLazyGate` (lazy) → `SectionRenderer` → template via registry auto-discovery. Détail : [README](./README.md#rendu-frontend).
 - **kref** : références inline `@` (Tiptap) sérialisées en `<span class="kref">`, validées et prévisualisées via API CMS. Détail : [README](./README.md#references-kref).
-- **Menu dynamique** : `GET /pages/menu` (JSON) → `useDynamicMenu` → `DynamicMenu.vue`. 4 groupes fixes (L'Essentiel, Règles, Bibliothèques, Informations).
+- **Menu dynamique** : `GET /pages/menu` (JSON) → `useDynamicMenu` → `DynamicMenu.vue`. Groupes dans `config/nav_menu.php` (L'Essentiel, Règles, Bibliothèques, Pour les MJ, Informations) ; un groupe sans enfants visibles n’apparaît pas.
 - **Sécurité contenu** : Mews\Purifier (profil `section_text`) sur le HTML de section.
 
 ## Fichiers pivots

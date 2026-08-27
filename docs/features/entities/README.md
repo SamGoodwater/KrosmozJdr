@@ -8,7 +8,7 @@ Toutes les entités principales et leurs typages exposent au minimum :
 
 | Champ | Type | Rôle |
 | --- | --- | --- |
-| `state` | string | `raw`, `draft`, `playable`, `archived` |
+| `state` | string | `raw`, `draft`, `auto`, `playable`, `archived` |
 | `read_level` | tinyint (0-5) | Rôle minimal pour lire |
 | `write_level` | tinyint (0-5) | Rôle minimal pour modifier (≥ `read_level`) |
 | `created_by` | FK users | Auteur (nullable) |
@@ -30,6 +30,10 @@ Référence exhaustive des champs par entité : `docs/features/entities/README.m
 
 Note : la table des classes est `breeds` (et la FK `breed_id`) pour éviter le mot réservé `class`.
 
+### États (conditions)
+
+Le scrap DofusDB crée les états en `raw` (jetons de sort, pas le catalogue JDR). Le seeder conserve un noyau `playable` (Pesanteur, Empoisonné, Étourdi, Ralenti, Affaibli). À l’import, le sort et `params.condition_id` pointent vers ce noyau quand le nom ou les flags correspondent (`ConditionCanonicalMapper`) ; le jeton Dofus reste en base (`canonical_condition_id`, `condition_dofusdb_id`). Sans équivalent JDR, pas de liaison sort. Le catalogue masque Brut par défaut. Les flags mécaniques s’affichent en chips. Recollement des données déjà importées : `php artisan conditions:remap-canonical`.
+
 ### Métadonnées globales des sorts
 
 Les fiches de sort stockent indépendamment des effets détaillés les contraintes globales de lancement :
@@ -46,7 +50,7 @@ La logique est centralisée dans `app/Policies/Entity/BaseEntityPolicy.php`. Pou
 2. Une **matrice « Gérer l'affichage »** (`EntityDisplayVisibilityService`) fixe le rôle minimal par état.
 3. Ensuite, selon `state` :
    - `playable` / `archived` : visible si `rôle ≥ read_level`.
-   - `raw` / `draft` : réservé aux éditeurs (`rôle ≥ write_level`).
+   - `raw` / `draft` / `auto` : réservé aux éditeurs (`rôle ≥ write_level`).
 
 Pour l'écriture (`update`/`delete`) : admin, auteur, ou `rôle ≥ write_level`. Les abilities « bulk » (`updateAny`, `deleteAny`, `manageAny`) ciblent game_master/admin. Le registre des permissions exposées au front est dans `config/entity-permissions.php` (consommé par `EntityPermissionService`, partagé via Inertia → composable `usePermissions`).
 
@@ -100,4 +104,4 @@ La restauration et la suppression définitive (`restore`, `forceDelete`) sont r�
 - `docs/features/entities/README.md` — modèle de données détaillé, champs par entité, pivots.
 - `docs/frontend/entity-views/README.md` — système de vues.
 - `.cursor/rules/entity-views.mdc` — conventions de vues.
-- [IA générative](../../IA/README.md) — cadrage d’un état `ai_review` (proposition LLM à relire), non implémenté.
+- [IA générative](../../IA/README.md) — cadrage LLM ; l’état `auto` (proposition à relire) est dans le code, pas le pipeline.

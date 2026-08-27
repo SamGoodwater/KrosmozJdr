@@ -1,15 +1,55 @@
 <?php
 
+use App\Http\Controllers\PageController;
 use Database\Seeders\NavMenuSeeder;
 
 /**
  * Configuration du menu de navigation (groupes, entrées).
  *
  * Seedée par NavMenuSeeder. Structure des Bibliothèques pour le menu principal.
+ * Les groupes sans enfants visibles (filtrage `read_level`) n’apparaissent pas.
  *
  * @see NavMenuSeeder
+ * @see PageController::menu()
  */
 return [
+    'groups' => [
+        [
+            'id' => 'referentiels',
+            'title' => "L'Essentiel",
+            'menu_group' => "L'Essentiel",
+            'order' => 0,
+            'icon' => 'fa-book-bookmark',
+        ],
+        [
+            'id' => 'regles',
+            'title' => 'Règles',
+            'menu_group' => 'Règles',
+            'order' => 1,
+            'icon' => 'fa-book',
+        ],
+        [
+            'id' => 'bibliotheques',
+            'title' => 'Bibliothèques',
+            'menu_group' => 'Bibliothèques',
+            'order' => 2,
+            'icon' => 'fa-book-open-reader',
+        ],
+        [
+            'id' => 'pour-les-mj',
+            'title' => 'Pour les MJ',
+            'menu_group' => 'Pour les MJ',
+            'order' => 3,
+            'icon' => 'fa-hat-wizard',
+        ],
+        [
+            'id' => 'informations',
+            'title' => 'Informations',
+            'menu_group' => 'Informations',
+            'order' => 4,
+            'icon' => 'fa-circle-info',
+        ],
+    ],
     'bibliotheques' => [
         [
             'label' => 'Classes',

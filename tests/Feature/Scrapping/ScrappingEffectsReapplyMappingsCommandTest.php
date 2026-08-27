@@ -8,6 +8,7 @@ use App\Models\DofusdbEffectMapping;
 use App\Models\Effect;
 use App\Models\EffectDegree;
 use App\Models\EffectSubEffect;
+use App\Models\Entity\Condition;
 use App\Models\Entity\Spell;
 use App\Models\SubEffect;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\DofusdbEffectMappingService;
@@ -76,9 +77,10 @@ final class ScrappingEffectsReapplyMappingsCommandTest extends TestCase
         ]);
         app(DofusdbEffectMappingService::class)->clearCache();
 
-        $condition = \App\Models\Entity\Condition::factory()->create([
+        $condition = Condition::factory()->create([
             'name' => 'Invisible',
             'dofusdb_id' => 250,
+            'state' => Condition::STATE_RAW,
         ]);
 
         $spell = Spell::factory()->create();
@@ -115,8 +117,9 @@ final class ScrappingEffectsReapplyMappingsCommandTest extends TestCase
         ]);
         $params = EffectSubEffect::query()->whereKey($pivot->id)->value('params');
         $this->assertSame(250, $params['condition_dofusdb_id'] ?? null);
-        $this->assertSame($condition->id, $params['condition_id'] ?? null);
+        $this->assertArrayNotHasKey('condition_id', is_array($params) ? $params : []);
         $this->assertSame('Invisible', $params['condition_name'] ?? null);
+        $this->assertSame(Condition::STATE_RAW, $condition->fresh()->state);
     }
 
     /**

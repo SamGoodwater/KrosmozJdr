@@ -53,6 +53,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $scenarios_count
  * @property-read Collection<int, Shop> $shops
  * @property-read int|null $shops_count
+ *
  * @method static \Database\Factories\Entity\ResourceFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource newQuery()
@@ -81,6 +82,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereWeight($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withoutTrashed()
+ *
  * @property-read Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
  * @property-read Collection<int, EffectUsage> $effectUsages
@@ -91,7 +93,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $object_effects_count
  * @property-read Collection<int, resource> $recipeIngredients
  * @property-read int|null $recipe_ingredients_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource visibleToUser(?\App\Models\User $user)
+ *
  * @mixin \Eloquent
  */
 class Resource extends Model implements HasMedia
@@ -102,6 +106,8 @@ class Resource extends Model implements HasMedia
     public const STATE_RAW = 'raw';
 
     public const STATE_DRAFT = 'draft';
+
+    public const STATE_AUTO = 'auto';
 
     public const STATE_PLAYABLE = 'playable';
 

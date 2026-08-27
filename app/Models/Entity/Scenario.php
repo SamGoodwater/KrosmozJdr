@@ -58,6 +58,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $spells_count
  * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
+ *
  * @method static \Database\Factories\Entity\ScenarioFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario newQuery()
@@ -81,6 +82,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withoutTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario visibleToUser(?\App\Models\User $user)
+ *
  * @mixin \Eloquent
  */
 class Scenario extends Model implements HasMedia
@@ -91,6 +93,8 @@ class Scenario extends Model implements HasMedia
     public const STATE_RAW = 'raw';
 
     public const STATE_DRAFT = 'draft';
+
+    public const STATE_AUTO = 'auto';
 
     public const STATE_PLAYABLE = 'playable';
 

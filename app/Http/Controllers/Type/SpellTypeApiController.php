@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Type;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Type\SpellType;
 use Illuminate\Http\JsonResponse;
@@ -27,7 +28,7 @@ class SpellTypeApiController extends Controller
 
         $query = SpellType::query()->orderBy('name');
 
-        if (is_string($state) && in_array($state, ['raw', 'draft', 'playable', 'archived'], true)) {
+        if (is_string($state) && in_array($state, EntityState::values(), true)) {
             $query->where('state', $state);
         }
 
@@ -62,7 +63,7 @@ class SpellTypeApiController extends Controller
         $validated = $request->validate([
             'ids' => ['required', 'array', 'min:1'],
             'ids.*' => ['integer', 'min:1'],
-            'state' => ['required', 'string', 'in:raw,draft,playable,archived'],
+            'state' => ['required', 'string', EntityState::rule()],
         ]);
 
         $ids = array_values(array_unique(array_map('intval', $validated['ids'])));

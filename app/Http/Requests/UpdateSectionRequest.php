@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\EntityState;
 use App\Enums\SectionType;
 use App\Models\Section;
 use App\Support\SectionTemplatePayloadValidator;
@@ -53,7 +54,7 @@ class UpdateSectionRequest extends FormRequest
             'settings' => ['sometimes', 'nullable', 'array'],
             'data' => ['sometimes', 'array'],
             'params' => ['sometimes', 'array'],
-            'state' => ['sometimes', 'string', Rule::in([Section::STATE_RAW, Section::STATE_DRAFT, Section::STATE_PLAYABLE, Section::STATE_ARCHIVED])],
+            'state' => ['sometimes', 'string', EntityState::rule()],
             'read_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
             'write_level' => ['sometimes', 'integer', 'min:0', 'max:5', 'gte:read_level'],
         ];

@@ -8,6 +8,9 @@
 - `app/Services/Effect/` (`SpellNestedPreviewSerializer` : chips d’aperçu sur sorts liés)
 - `app/Services/Scrapping/Core/Conversion/SpellEffects/`
 - `app/Support/DofusHyperlinkText.php` (libellés d’états `{{spell,…::Nom}}`)
+- `app/Services/Condition/ConditionCanonicalMapper.php` — jeton Dofus → état JDR `playable`
+- `php artisan conditions:remap-canonical` — recolle `condition_spell` + `params.condition_id`
+- Affichage sorts : `SpellEffectDefinitionsSerializer` ne lie que les états hors `raw`
 - `Spell::visibleToUser` / `EntityDisplayVisibilityService::constrainQueryToViewer` (listes)
 - `GET /api/effects/definitions` — recherche defs pour liaison sort (payload edit allégé)
 - `GET /api/effects/effects?q=&per_page=` — index paginé (plus de dump massif)

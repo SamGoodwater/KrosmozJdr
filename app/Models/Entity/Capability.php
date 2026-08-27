@@ -45,6 +45,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $creatures_count
  * @property-read Collection<int, Specialization> $specializations
  * @property-read int|null $specializations_count
+ *
  * @method static \Database\Factories\Entity\CapabilityFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability newQuery()
@@ -75,14 +76,19 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withoutTrashed()
+ *
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
  * @property-read Collection<int, Breed> $breeds
  * @property-read int|null $breeds_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereIsPassive($value)
+ *
  * @property-read Collection<int, Condition> $conditions
  * @property-read int|null $conditions_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability visibleToUser(?\App\Models\User $user)
+ *
  * @mixin \Eloquent
  */
 class Capability extends Model implements HasMedia
@@ -93,6 +99,8 @@ class Capability extends Model implements HasMedia
     public const STATE_RAW = 'raw';
 
     public const STATE_DRAFT = 'draft';
+
+    public const STATE_AUTO = 'auto';
 
     public const STATE_PLAYABLE = 'playable';
 

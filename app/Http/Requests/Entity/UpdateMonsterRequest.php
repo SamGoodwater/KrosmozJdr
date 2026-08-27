@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Enums\EntityState;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -29,7 +30,7 @@ class UpdateMonsterRequest extends FormRequest
             'monster_race_id' => ['nullable', 'integer', 'exists:monster_races,id'],
             'dofus_version' => ['nullable', 'string', 'max:255'],
             'auto_update' => ['nullable', 'boolean'],
-            'state' => ['nullable', 'string', 'max:255'],
+            'state' => ['nullable', 'string', EntityState::rule()],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:4'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:4'],
         ];

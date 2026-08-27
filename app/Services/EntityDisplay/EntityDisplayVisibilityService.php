@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services\EntityDisplay;
 
+use App\Enums\EntityState;
 use App\Models\ApplicationSetting;
 use App\Models\Entity\Creature;
 use App\Models\Page;
 use App\Models\User;
+use App\Policies\Entity\BaseEntityPolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
@@ -81,7 +83,7 @@ final class EntityDisplayVisibilityService
     }
 
     /**
-     * Nettoie le JSON stocké : uniquement entités autorisées et quatre états connus.
+     * Nettoie le JSON stocké : uniquement entités autorisées et états connus.
      *
      * @param  array<string, mixed>  $rules
      * @return array<string, array<string, int>>
@@ -89,7 +91,7 @@ final class EntityDisplayVisibilityService
     public function sanitizeStoredPayload(array $rules): array
     {
         $allowedEntities = array_flip($this->manageableEntityPermissionKeys());
-        $allowedStates = array_flip(['raw', 'draft', 'playable', 'archived']);
+        $allowedStates = array_flip(EntityState::values());
 
         $sanitized = [];
         foreach ($rules as $entityKey => $perState) {
@@ -120,7 +122,7 @@ final class EntityDisplayVisibilityService
     {
         $matrix = [];
         foreach ($this->manageableEntityPermissionKeys() as $entityKey) {
-            foreach (['raw', 'draft', 'playable', 'archived'] as $state) {
+            foreach (EntityState::values() as $state) {
                 $matrix[$entityKey][$state] = $this->minimumRoleForView($entityKey, $state);
             }
         }
@@ -175,7 +177,7 @@ final class EntityDisplayVisibilityService
 
     /**
      * Restreint une requête liste pour qu’elle ne renvoie que les lignes visibles
-     * selon {@see \App\Policies\Entity\BaseEntityPolicy::view} (admin, auteur, matrice, read/write_level).
+     * selon {@see BaseEntityPolicy::view} (admin, auteur, matrice, read/write_level).
      *
      * @param  Builder<Model>  $query
      *
@@ -189,10 +191,11 @@ final class EntityDisplayVisibilityService
         }
 
         $role = $user !== null ? (int) ($user->role ?? 0) : User::ROLE_GUEST;
-        $minRaw = $this->minimumRoleForView($entityPermissionKey, 'raw');
-        $minDraft = $this->minimumRoleForView($entityPermissionKey, 'draft');
-        $minPlayable = $this->minimumRoleForView($entityPermissionKey, 'playable');
-        $minArchived = $this->minimumRoleForView($entityPermissionKey, 'archived');
+        $minRaw = $this->minimumRoleForView($entityPermissionKey, EntityState::Raw->value);
+        $minDraft = $this->minimumRoleForView($entityPermissionKey, EntityState::Draft->value);
+        $minAuto = $this->minimumRoleForView($entityPermissionKey, EntityState::Auto->value);
+        $minPlayable = $this->minimumRoleForView($entityPermissionKey, EntityState::Playable->value);
+        $minArchived = $this->minimumRoleForView($entityPermissionKey, EntityState::Archived->value);
 
         // Ne pas utiliser isFillable(): Model::unguard() le rend toujours vrai.
         // Monstres / PNJ : pas de created_by sur la table (auteur via créature liée).
@@ -205,7 +208,7 @@ final class EntityDisplayVisibilityService
         $writeLevelCol = $query->qualifyColumn('write_level');
         $createdByCol = $query->qualifyColumn('created_by');
 
-        $query->where(function (Builder $outer) use ($user, $role, $minRaw, $minDraft, $minPlayable, $minArchived, $hasCreatedBy, $stateCol, $readLevelCol, $writeLevelCol, $createdByCol): void {
+        $query->where(function (Builder $outer) use ($user, $role, $minRaw, $minDraft, $minAuto, $minPlayable, $minArchived, $hasCreatedBy, $stateCol, $readLevelCol, $writeLevelCol, $createdByCol): void {
             // Base fausse : sans branche OR, aucune ligne ne fuit.
             $outer->whereRaw('0 = 1');
 
@@ -215,28 +218,35 @@ final class EntityDisplayVisibilityService
 
             if ($role >= $minPlayable) {
                 $outer->orWhere(function (Builder $q) use ($role, $stateCol, $readLevelCol): void {
-                    $q->where($stateCol, 'playable')
+                    $q->where($stateCol, EntityState::Playable->value)
                         ->where($readLevelCol, '<=', $role);
                 });
             }
 
             if ($role >= $minArchived) {
                 $outer->orWhere(function (Builder $q) use ($role, $stateCol, $readLevelCol): void {
-                    $q->where($stateCol, 'archived')
+                    $q->where($stateCol, EntityState::Archived->value)
                         ->where($readLevelCol, '<=', $role);
                 });
             }
 
             if ($user !== null && $role >= $minRaw) {
                 $outer->orWhere(function (Builder $q) use ($role, $stateCol, $writeLevelCol): void {
-                    $q->where($stateCol, 'raw')
+                    $q->where($stateCol, EntityState::Raw->value)
                         ->where($writeLevelCol, '<=', $role);
                 });
             }
 
             if ($user !== null && $role >= $minDraft) {
                 $outer->orWhere(function (Builder $q) use ($role, $stateCol, $writeLevelCol): void {
-                    $q->where($stateCol, 'draft')
+                    $q->where($stateCol, EntityState::Draft->value)
+                        ->where($writeLevelCol, '<=', $role);
+                });
+            }
+
+            if ($user !== null && $role >= $minAuto) {
+                $outer->orWhere(function (Builder $q) use ($role, $stateCol, $writeLevelCol): void {
+                    $q->where($stateCol, EntityState::Auto->value)
                         ->where($writeLevelCol, '<=', $role);
                 });
             }
@@ -251,10 +261,11 @@ final class EntityDisplayVisibilityService
     {
         $merged = [
             '*' => [
-                'raw' => User::ROLE_GAME_MASTER,
-                'draft' => User::ROLE_GAME_MASTER,
-                'playable' => User::ROLE_GUEST,
-                'archived' => User::ROLE_ADMIN,
+                EntityState::Raw->value => User::ROLE_GAME_MASTER,
+                EntityState::Draft->value => User::ROLE_GAME_MASTER,
+                EntityState::Auto->value => User::ROLE_GAME_MASTER,
+                EntityState::Playable->value => User::ROLE_GUEST,
+                EntityState::Archived->value => User::ROLE_ADMIN,
             ],
         ];
 
@@ -282,7 +293,7 @@ final class EntityDisplayVisibilityService
     {
         return match ($stateKey) {
             'playable' => User::ROLE_GUEST,
-            'raw', 'draft' => User::ROLE_GAME_MASTER,
+            'raw', 'draft', 'auto' => User::ROLE_GAME_MASTER,
             'archived' => User::ROLE_ADMIN,
             default => User::ROLE_GAME_MASTER,
         };

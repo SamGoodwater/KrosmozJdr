@@ -87,4 +87,30 @@ class EntityStateControllerTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonValidationErrors('state');
     }
+
+    public function test_admin_can_set_auto_state(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $spell = Spell::factory()->create(['state' => Spell::STATE_DRAFT]);
+
+        $response = $this->actingAs($admin)
+            ->patchJson("/api/entities/spells/{$spell->id}/state", [
+                'state' => Spell::STATE_AUTO,
+            ]);
+
+        $response->assertOk()
+            ->assertJson([
+                'success' => true,
+                'entity' => [
+                    'id' => $spell->id,
+                    'type' => 'spells',
+                    'state' => Spell::STATE_AUTO,
+                ],
+            ]);
+
+        $this->assertDatabaseHas('spells', [
+            'id' => $spell->id,
+            'state' => Spell::STATE_AUTO,
+        ]);
+    }
 }

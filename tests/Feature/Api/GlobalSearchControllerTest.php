@@ -214,6 +214,41 @@ class GlobalSearchControllerTest extends TestCase
     }
 
     /**
+     * Le filtre `states[]=auto` est accepté et ne remonte que les fiches Auto.
+     */
+    public function test_auto_state_filter_is_accepted(): void
+    {
+        $token = 'GlSearchAutoTok'.uniqid();
+
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+
+        Spell::factory()->create([
+            'name' => 'Jouable '.$token,
+            'state' => Spell::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        Spell::factory()->create([
+            'name' => 'Auto '.$token,
+            'state' => Spell::STATE_AUTO,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->actingAs($gm)->getJson('/api/global-search?'.http_build_query([
+            'q' => $token,
+            'types' => ['spells'],
+            'states' => ['auto'],
+        ]));
+
+        $response->assertOk();
+        $titles = collect($response->json('results'))->pluck('title')->all();
+        $this->assertTrue(collect($titles)->contains(fn ($t) => str_contains((string) $t, 'Auto')));
+        $this->assertFalse(collect($titles)->contains(fn ($t) => str_contains((string) $t, 'Jouable')));
+    }
+
+    /**
      * Structure minimale attendue pour chaque résultat.
      */
     public function test_each_hit_has_expected_keys(): void

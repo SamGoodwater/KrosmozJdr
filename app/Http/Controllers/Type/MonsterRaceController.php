@@ -10,7 +10,7 @@ use Inertia\Inertia;
  * Page d'administration des races de monstres (MonsterRace).
  *
  * @description
- * Validation via le champ `state` (raw/draft/playable/archived).
+ * Validation via le champ `state` (raw/draft/auto/playable/archived).
  */
 class MonsterRaceController extends Controller
 {

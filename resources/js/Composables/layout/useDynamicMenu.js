@@ -5,7 +5,8 @@
  * Composable pour gérer le menu dynamique des pages.
  * - Récupère les pages du menu depuis l'API GET /pages/menu
  * - Affiche uniquement les pages « à afficher » : state=playable, in_menu=true, visibles pour l'utilisateur
- * - Rafraîchit le menu à chaque navigation vers une URL /pages/* (après création/édition/suppression)
+ * - Recalcule le menu à la connexion / déconnexion (le layout Aside survit au login Inertia)
+ * - Rafraîchit aussi à chaque navigation (création/édition de pages, etc.)
  *
  * @example
  * const { menuItems, loading, error, refresh } = useDynamicMenu();
@@ -13,6 +14,20 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+
+/**
+ * Clé d’auth pour détecter login / logout / changement de rôle.
+ *
+ * @param {import('@inertiajs/vue3').Page} page
+ * @returns {string}
+ */
+function authMenuKey(page) {
+    const user = page.props?.auth?.user;
+    if (!user?.id) {
+        return 'guest';
+    }
+    return `${user.id}:${user.role ?? ''}`;
+}
 
 const menuItems = ref([]);
 const loading = ref(false);
@@ -115,20 +130,27 @@ const shouldMenuBeOpen = (page, currentRoute) => {
 export function useDynamicMenu() {
     const page = usePage();
 
-    // Charger le menu au montage
     onMounted(() => {
         fetchMenuPages();
     });
 
-    // Rafraîchir le menu à chaque navigation vers une page /pages/* ou /entities/* (ex. après création/édition)
     watch(
-        () => page.url,
-        (newUrl) => {
-            if (newUrl && (newUrl.startsWith('/pages') || newUrl.startsWith('/entities'))) {
+        () => authMenuKey(page),
+        (key, previous) => {
+            if (previous !== undefined && key !== previous) {
                 fetchMenuPages();
             }
         },
-        { immediate: false }
+    );
+
+    watch(
+        () => page.url,
+        (newUrl, oldUrl) => {
+            if (newUrl && newUrl !== oldUrl) {
+                fetchMenuPages();
+            }
+        },
+        { immediate: false },
     );
 
     return {

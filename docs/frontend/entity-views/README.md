@@ -89,6 +89,8 @@ Le catalogue **ressources** coche par défaut les types métier (bois, minerai, 
 
 Le catalogue **consommables** coche par défaut potions, nourritures, boissons, parchemins, pierres d’âme, objets utilisables, etc. Certificats, coffres, fées d’artifice et types d’événement restent dans le filtre, décochés.
 
+Le catalogue **états** coche par défaut Brouillon, Auto, Jouable et Archivé. Brut (import Dofus) reste dans le filtre, décoché. Les effets mécaniques (ne pas être déplacé, invulnérable, etc.) apparaissent en chips sur les fiches et en colonne Effets.
+
 Index client (`npcs`, etc.) : le filtre/tri/recherche portent sur le dataset déjà chargé ; la recherche cible le nom (et les colonnes `searchable`) même si le payload n’a pas de `cells` pré-générées.
 
 ### Sort depuis un monstre

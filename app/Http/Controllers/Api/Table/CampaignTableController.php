@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Table;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Campaign;
 use App\Models\User;
@@ -21,13 +22,6 @@ class CampaignTableController extends Controller
     use InterpretsEntityTableSort;
     use PaginatesEntityTable;
 
-    private const STATE_LABELS = [
-        Campaign::STATE_RAW => 'Brut',
-        Campaign::STATE_DRAFT => 'Brouillon',
-        Campaign::STATE_PLAYABLE => 'Jouable',
-        Campaign::STATE_ARCHIVED => 'Archivé',
-    ];
-
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Campaign::class);
@@ -46,7 +40,6 @@ class CampaignTableController extends Controller
         }
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
-
 
         $sortsPayload = $request->input('sorts');
         $sort = (string) $request->get('sort', 'id');
@@ -132,10 +125,7 @@ class CampaignTableController extends Controller
         ];
 
         $filterOptions = [
-            'state' => collect(self::STATE_LABELS)
-                ->map(fn (string $label, string $value) => ['value' => $value, 'label' => $label])
-                ->values()
-                ->all(),
+            'state' => EntityState::options(),
             'progress_state' => collect(Campaign::PROGRESS_STATES)
                 ->map(fn (string $label, int $value) => ['value' => (string) $value, 'label' => $label])
                 ->values()
@@ -213,7 +203,7 @@ class CampaignTableController extends Controller
             $updatedAtLabel = $c->updated_at ? $c->updated_at->format('d/m/Y H:i') : '-';
             $updatedAtSort = $c->updated_at ? $c->updated_at->getTimestamp() : 0;
 
-            $stateLabel = self::STATE_LABELS[(string) ($c->state ?? '')] ?? (string) ($c->state ?? '');
+            $stateLabel = EntityState::tryFrom((string) ($c->state ?? ''))?->label() ?? (string) ($c->state ?? '');
             $isPublicLabel = ((int) ($c->is_public ?? 0)) === 1 ? 'Oui' : 'Non';
 
             return [

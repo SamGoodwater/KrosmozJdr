@@ -17,6 +17,7 @@
 - **Grammaire** : `{ expression }` + suffixe d’arrondi ; domaines `[x-y]` / `[ndX]` **uniquement sur le niveau**.
 - **Runtime créature** : `CreatureRuntimeStatsService` → `levels[]` pour le sélecteur de niveau. Endpoint `resolved-stats` : `CreaturePolicy::viewResolvedStats` (visibilité monstre/PNJ).
 - **Conversion Dofus** : pipeline séparé (`conversion_formula`, `[d]`).
+- **Bonus équipement (MJ)** : `EquipmentBonusTableService` projette `formula` JSON par bandes 1–2…19–20 + types d’item ; API `GET /api/characteristics/equipment-bonus-table` (rôle ≥ MJ).
 
 ## Fichiers pivots
 
@@ -33,6 +34,7 @@
 - `resources/js/Pages/Molecules/data-display/AbilityScoreStack.vue`
 - `resources/js/Pages/Organismes/data-display/CharacteristicsCard.vue`
 - `database/seeders/*CharacteristicSeeder.php`
+- `app/Services/Characteristic/Reference/EquipmentBonusTableService.php`
 
 ## Liens
 
