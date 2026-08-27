@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Une seule `main`, branches courtes
+
+Le dépôt n’a plus que `main`. Les fuites de brouillons (panoplies, pièces de set, sorts via monstre / classe / spécialisation), les tooltips catalogue et le travail local (états Auto, table de bonus, conditions canoniques) sont dans `main`. On crée une branche par sujet, on merge, on la supprime. Pas de branches longues `ui` ou `security`.
+
 ## Août 2026 — Sorts branchés sur les états de base
 
 Les sorts n’affichent plus chaque état Dofus comme une fiche à part. Quand l’effet correspond à Pesanteur, Empoisonné, Étourdi, Ralenti ou Affaibli, le sort pointe vers cette fiche JDR. Les milliers d’états scrapés restent en Brut, pour le travail d’import.

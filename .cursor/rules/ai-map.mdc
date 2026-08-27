@@ -24,7 +24,7 @@ Avant d'explorer le code en masse, utilise la **documentation condensée pour IA
 - Base de données : `docs/backend/database/_ai.md`
 - Fonctionnalités : `docs/features/_ai.md` (entités, scrapping, CMS, droits…)
 - IA générative (cadrage LLM métier, non implémenté) : `docs/IA/_ai.md`
-- Bonnes pratiques : `docs/best-practices/_ai.md`
+- Bonnes pratiques : `docs/best-practices/_ai.md` (Git/GitHub : `.cursor/rules/git-github.mdc`)
 
 ## À savoir absolument
 

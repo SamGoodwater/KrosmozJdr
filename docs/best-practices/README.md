@@ -16,6 +16,10 @@ Conventions appliquées au projet.
 - Frontend : Composition API, composants Atomic Design, pas de classes Tailwind dynamiques.
 - Sécurité : valider les entrées, ne pas versionner `.env`, garder les actions admin sous confirmation de mot de passe si sensibles. Les CVE transitives Node se corrigent via `pnpm.overrides` dans `package.json` (ex. `undici` 6.28.0, `brace-expansion` 1.1.18 / 2.1.4 / 5.0.9 pour CVE-2026-13149) plutôt qu’en patchant le code applicatif. Dependabot versionne npm, Composer et GitHub Actions via `.github/dependabot.yml` (weekly ; npm groupé minor/patch ; Composer sans groupe pour éviter de mélanger le lockfile ; un bump majeur de Vitest ou des Actions se fait à part).
 
+## Git et GitHub
+
+`main` est la seule branche durable. Une modification se fait sur une branche courte et spécifique (`feat/…`, `fix/…`, `security/…`, `docs/…`), puis est mergée dans `main` et la branche est supprimée. Pas de branches longues `ui` / `security` / `optimisation`. En solo, une PR GitHub n’est pas obligatoire ; si elle est ouverte, elle se merge ou se ferme tout de suite. Dependabot : merger les PR npm minor/patch cohérentes ; ne pas merger un lockfile Composer qui rétrograde Symfony. Détail agent : `.cursor/rules/git-github.mdc`.
+
 ## Tests
 
 Adapter la couverture au risque : tests ciblés pour une modification locale, tests plus larges pour une feature partagée.

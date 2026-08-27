@@ -9,6 +9,7 @@ voir [DOCUMENTATION_GUIDE.md](../../docs/DOCUMENTATION_GUIDE.md), [Index de la d
 - **Sécurité** : toujours valider les entrées utilisateur, respecter les recommandations de [SECURITY_PRACTICES.md](../../docs/best-practices/README.md).
 - **Nommage** : suivre les conventions de [NAMING_CONVENTIONS.md](../../docs/best-practices/README.md) (kebab-case fichiers, PascalCase classes, camelCase méthodes, snake_case variables).
 - **Tests** : référencer [TESTING_PRACTICES.md](../../docs/best-practices/README.md) pour la stratégie de tests.
+- **Git / GitHub** : une branche courte par sujet, commit, merge dans `main`, suppression. Voir `.cursor/rules/git-github.mdc`.
 - **Documenter les avancées** : Générer de la documentation sur les avencées du projet (non technique) (markdown), voir [Ce qui a été fait](../../docs/100-%20Done/README.md).
 
 Exemples :
