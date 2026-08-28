@@ -8,24 +8,21 @@
  * @props {Object} items - Collection paginée des items
  */
 import { Head, router } from "@inertiajs/vue3";
-import { ref, computed, watch } from "vue";
+import { ref, computed } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { Item } from "@/Models/Entity/Item";
-import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
-import EntityQuickEditPanel from "@/Pages/Organismes/entity/EntityQuickEditPanel.vue";
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
-import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
 import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
 import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
@@ -53,7 +50,6 @@ const props = defineProps({
 const { setPageTitle } = usePageTitle();
 setPageTitle('Liste des Objets');
 
-const { bulkPatchJson } = useBulkRequest();
 const { copyToClipboard } = useCopyToClipboard();
 
 // Permissions
@@ -80,16 +76,6 @@ const indexTableFilters = computed(() => {
 });
 const serverBaseUrl = computed(() => route('api.tables.items'));
 
-const selectedEntities = computed(() => {
-    if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
-    // Normaliser pour éviter les mismatch string vs number (Set.has est strict)
-    const idSet = new Set(selectedIds.value.map((v) => Number(v)).filter((n) => Number.isFinite(n)));
-    const raw = (tableRows.value || [])
-        .filter((r) => idSet.has(Number(r?.id)))
-        .map((r) => r?.rowParams?.entity)
-        .filter(Boolean);
-    return Item.fromArray(raw);
-});
 
 const tableMeta = ref({});
 const handleTableLoaded = ({ rows, meta }) => {
@@ -102,20 +88,7 @@ const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('full');
 const createModalOpen = ref(false);
-const {
-    tableQuickEditEnabled,
-    onUpdateTableQuickEdit,
-} = useEntityIndexQuickEditTable(Item);
 
-// Sécurité UX: si l'utilisateur perd le droit de modifier, on coupe les modes d'édition.
-watch(
-    () => canModify.value,
-    (allowed) => {
-        if (allowed) return;
-        selectedIds.value = [];
-    },
-    { immediate: true }
-);
 
 // Configuration du tableau avec permissions et contexte
 const tableConfig = computed(() => {
@@ -182,7 +155,6 @@ const handleTableAction = async (actionKey, entity, row) => {
             break;
 
         case 'edit':
-        case 'quick-edit':
             router.visit(route('entities.items.edit', { item: entityId }));
             break;
 
@@ -205,12 +177,6 @@ const handleTableAction = async (actionKey, entity, row) => {
 };
 
 // Handlers pour les actions du modal
-const handleModalQuickEdit = (entity) => {
-    const entityId = entity?.id;
-    if (!entityId) return;
-    closeModal();
-    router.visit(route('entities.items.edit', { item: entityId }));
-};
 
 const handleModalExpand = (entity) => {
     const entityId = entity?.id;
@@ -266,16 +232,7 @@ const itemDescriptors = computed(() => getItemFieldDescriptors({ capabilities: {
 const fieldsConfig = computed(() => createFieldsConfigFromDescriptors(itemDescriptors.value, { meta: {}, capabilities: { updateAny: canModify.value } }));
 const defaultEntity = computed(() => createDefaultEntityFromDescriptors(itemDescriptors.value));
 
-const handleBulkApplied = async (payload) => {
-    const ok = await bulkPatchJson({ url: "/api/entities/items/bulk", payload });
-    if (!ok) return;
-    refreshToken.value++;
-    selectedIds.value = [];
-};
 
-const clearSelection = () => {
-    selectedIds.value = [];
-};
 
 // const handleRefreshAll = () => refreshToken.value++;
 </script>
@@ -298,14 +255,7 @@ const clearSelection = () => {
             </div>
         </div>
 
-        <div
-            class="grid grid-cols-1 gap-4"
-            :class="{
-                'xl:grid-cols-[minmax(0,1fr)_380px]':
-                    canModify && selectedEntities.length >= 1 && tableQuickEditEnabled,
-            }"
-        >
-            <div class="min-w-0 overflow-x-auto">
+        <div class="min-w-0 overflow-x-auto">
                 <EntityTanStackTable
                     entity-type="items"
                     :config="tableConfig"
@@ -317,24 +267,10 @@ const clearSelection = () => {
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
-                    @update:quick-edit-enabled="onUpdateTableQuickEdit"
                     @keyboard-intent="handleKeyboardIntent"
                     @create-request="handleCreateRequest"
                     @action="handleTableAction"
                 />
-            </div>
-
-            <div v-if="canModify && selectedEntities.length >= 1 && tableQuickEditEnabled" class="sticky top-4 self-start">
-                <EntityQuickEditPanel
-                    entity-type="items"
-                    :selected-entities="selectedEntities"
-                    :is-admin="canModify"
-                    mode="client"
-                    :filtered-ids="selectedIds"
-                    @applied="handleBulkApplied"
-                    @clear="clearSelection"
-                />
-            </div>
         </div>
 
         <!-- Modal de création -->
@@ -358,7 +294,6 @@ const clearSelection = () => {
             :table-meta="tableMeta"
             :use-stored-format="true"
             @close="closeModal"
-            @quick-edit="handleModalQuickEdit"
             @expand="handleModalExpand"
             @copy-link="handleModalCopyLink"
             @download-pdf="handleModalDownloadPdf"

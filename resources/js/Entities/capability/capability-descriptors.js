@@ -45,7 +45,6 @@ import { getElementOptions } from "@/Utils/Entity/Elements";
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Capability".
@@ -816,10 +815,6 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
     _tableConfig: {
       id: "capabilities.index",
       entityType: "capability",
-      quickEdit: {
-        enabled: true,
-        permission: "updateAny",
-      },
       actions: {
         enabled: true,
         permission: "view",
@@ -861,21 +856,5 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
         skeletonRows: 10,
       },
     },
-
-    // Configuration globale du quickedit
-    _quickeditConfig: {
-      fields: [
-        "level",
-        "pa",
-        "po",
-        "po_editable",
-        "element",
-        "is_passive",
-        "state",
-        "read_level",
-        "write_level",
-        "description",
-        "effect",
-      ],
-    },};
+  };
 }

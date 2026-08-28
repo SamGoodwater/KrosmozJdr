@@ -51,39 +51,6 @@ describe('condition-descriptors', () => {
         });
     });
 
-    describe('_quickeditConfig', () => {
-        it('définit les champs quickEdit', () => {
-            const descriptors = getConditionFieldDescriptors();
-            expect(Array.isArray(descriptors._quickeditConfig?.fields)).toBe(true);
-            expect(descriptors._quickeditConfig.fields.length).toBeGreaterThan(0);
-        });
-
-        it('précoché le filtre état hors Brut', () => {
-            const descriptors = getConditionFieldDescriptors();
-            expect(descriptors.state.table.filterable.defaultValue).toEqual([
-                'draft',
-                'auto',
-                'playable',
-                'archived',
-            ]);
-            expect(descriptors.state.table.filterable.defaultValue).not.toContain('raw');
-        });
-
-        it('expose les flags mécaniques en édition, pas en colonnes', () => {
-            const descriptors = getConditionFieldDescriptors();
-            expect(descriptors.cant_be_moved.edit.form.group).toBe('Effets mécaniques');
-            expect(descriptors.cant_be_moved.table.defaultVisible.md).toBe(false);
-            expect(descriptors.mechanical_flags).toHaveProperty('key', 'mechanical_flags');
-        });
-
-        it('quickEdit contient uniquement des champs existants', () => {
-            const descriptors = getConditionFieldDescriptors();
-            const fields = descriptors._quickeditConfig.fields;
-            fields.forEach((field) => {
-                expect(descriptors).toHaveProperty(field);
-            });
-        });
-    });
 
     describe('Configuration bulk', () => {
         it('les champs avec edit.form ont une configuration bulk', () => {

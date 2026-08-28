@@ -266,12 +266,7 @@ const handleNameRouteClick = (event) => {
                 />
             </Tooltip>
             <div
-                class="inline-flex items-center justify-center transition-opacity duration-150"
-                :class="
-                    isSelected
-                        ? 'opacity-100 pointer-events-auto'
-                        : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'
-                "
+                class="inline-flex items-center justify-center"
             >
                 <CheckboxCore
                     :model-value="isSelected"

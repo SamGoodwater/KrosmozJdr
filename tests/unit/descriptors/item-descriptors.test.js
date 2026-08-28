@@ -60,7 +60,7 @@ describe('item-descriptors', () => {
     describe('Configuration bulk', () => {
         it('les champs bulk-enabled ont enabled: true', () => {
             const descriptors = getItemFieldDescriptors();
-            const bulkEnabledFields = descriptors._quickeditConfig?.fields || [];
+            const bulkEnabledFields = Object.keys(descriptors).filter((k) => descriptors[k]?.edit?.form?.bulk?.enabled);
 
             bulkEnabledFields.forEach((fieldKey) => {
                 const desc = descriptors[fieldKey];
@@ -123,28 +123,6 @@ describe('item-descriptors', () => {
         });
     });
 
-    describe('QUICK_EDIT_FIELDS', () => {
-        it('quickEdit contient uniquement des champs existants', () => {
-            const descriptors = getItemFieldDescriptors();
-            const quickEditFields = descriptors._quickeditConfig?.fields || [];
-
-            quickEditFields.forEach((fieldKey) => {
-                expect(descriptors).toHaveProperty(fieldKey);
-            });
-        });
-
-        it('les champs quickEdit sont bulk-enabled', () => {
-            const descriptors = getItemFieldDescriptors();
-            const quickEditFields = descriptors._quickeditConfig?.fields || [];
-
-            quickEditFields.forEach((fieldKey) => {
-                const desc = descriptors[fieldKey];
-                if (desc?.edit?.form) {
-                    expect(desc.edit.form.bulk?.enabled).toBe(true);
-                }
-            });
-        });
-    });
 
     describe('Vue Colonnes — visibilité par défaut', () => {
         const allTrue = { xs: true, sm: true, md: true, lg: true, xl: true };

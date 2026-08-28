@@ -44,7 +44,6 @@ import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/Shared
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "CreatureTrait".
@@ -317,10 +316,6 @@ export function getCreatureTraitFieldDescriptors(ctx = {}) {
     _tableConfig: {
       id: "creatureTraits.index",
       entityType: "creature-traits",
-      quickEdit: {
-        enabled: true,
-        permission: "updateAny",
-      },
       actions: {
         enabled: true,
         permission: "view",
@@ -361,17 +356,6 @@ export function getCreatureTraitFieldDescriptors(ctx = {}) {
       ui: {
         skeletonRows: 10,
       },
-    },
-
-    // Configuration globale du quickedit
-    _quickeditConfig: {
-      fields: [
-        "state",
-        "read_level",
-        "write_level",
-        "description",
-        "image",
-      ],
     },
   };
 }

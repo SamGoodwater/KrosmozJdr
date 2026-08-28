@@ -44,7 +44,6 @@ import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/Shared
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "NPC".
@@ -554,10 +553,6 @@ export function getNpcFieldDescriptors(ctx = {}) {
     _tableConfig: {
       id: "npcs.index",
       entityType: "npc",
-      quickEdit: {
-        enabled: true,
-        permission: "updateAny",
-      },
       actions: {
         enabled: true,
         permission: "view",
@@ -599,17 +594,5 @@ export function getNpcFieldDescriptors(ctx = {}) {
         skeletonRows: 10,
       },
     },
-
-    // Configuration globale du quickedit
-    _quickeditConfig: {
-      fields: [
-        "breed",
-        "specialization",
-        "age",
-        "size",
-        "state",
-        "read_level",
-        "write_level",
-      ],
-    },};
+  };
 }

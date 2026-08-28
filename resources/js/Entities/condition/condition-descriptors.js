@@ -104,7 +104,6 @@ function mechanicalFlagDescriptors() {
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Condition".
@@ -445,10 +444,6 @@ export function getConditionFieldDescriptors(ctx = {}) {
     _tableConfig: {
       id: "conditions.index",
       entityType: "condition",
-      quickEdit: {
-        enabled: true,
-        permission: "updateAny",
-      },
       actions: {
         enabled: true,
         permission: "view",
@@ -489,18 +484,6 @@ export function getConditionFieldDescriptors(ctx = {}) {
       ui: {
         skeletonRows: 10,
       },
-    },
-
-    // Configuration globale du quickedit
-    _quickeditConfig: {
-      fields: [
-        "dissipable",
-        "state",
-        "read_level",
-        "write_level",
-        "description",
-        "image",
-      ],
     },
   };
 }

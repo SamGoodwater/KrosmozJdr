@@ -44,7 +44,6 @@ import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/Shared
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Panoply".
@@ -383,10 +382,6 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
     _tableConfig: {
       id: "panoplies.index",
       entityType: "panoply",
-      quickEdit: {
-        enabled: true,
-        permission: "updateAny",
-      },
       actions: {
         enabled: true,
         permission: "view",
@@ -428,15 +423,5 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
         skeletonRows: 10,
       },
     },
-
-    // Configuration globale du quickedit
-    _quickeditConfig: {
-      fields: [
-        "state",
-        "read_level",
-        "write_level",
-        "description",
-        "dofusdb_id",
-      ],
-    },};
+  };
 }

@@ -123,16 +123,6 @@ describe("TableConfig", () => {
     }).toThrow("TableConfig: 'id' est obligatoire");
   });
 
-  it("configure quickEdit", () => {
-    const tableConfig = new TableConfig({
-      id: "test.index",
-      entityType: "test",
-    }).withQuickEdit({ enabled: true, permission: "updateAny" });
-
-    expect(tableConfig.quickEdit.enabled).toBe(true);
-    expect(tableConfig.quickEdit.permission).toBe("updateAny");
-  });
-
   it("configure les actions", () => {
     const tableConfig = new TableConfig({
       id: "test.index",
@@ -174,7 +164,6 @@ describe("TableConfig", () => {
       id: "test.index",
       entityType: "test",
     })
-      .withQuickEdit({ enabled: true, permission: "updateAny" })
       .withActions({ enabled: true, permission: "view", available: ["view"] })
       .addColumn(
         new TableColumnConfig({
@@ -189,8 +178,17 @@ describe("TableConfig", () => {
     expect(config.id).toBe("test.index");
     expect(config.columns).toBeDefined();
     expect(config._metadata).toBeDefined();
-    expect(config._metadata.quickEdit.enabled).toBe(true);
     expect(config._metadata.actions.enabled).toBe(true);
+    expect(config.features.selection.enabled).toBe(true);
+  });
+
+  it("garde la sélection active sans droit updateAny", () => {
+    const config = new TableConfig({
+      id: "test.index",
+      entityType: "test",
+    }).build({ capabilities: { viewAny: true } });
+
+    expect(config.features.selection.enabled).toBe(true);
   });
 
   it("getVisibleColumns filtre selon les permissions", () => {

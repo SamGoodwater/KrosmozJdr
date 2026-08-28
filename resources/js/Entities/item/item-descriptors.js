@@ -44,7 +44,6 @@ import { getEntityStateOptions, getRarityOptions, getUserRoleOptions, FIELD_HELP
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Item".
@@ -643,10 +642,6 @@ export function getItemFieldDescriptors(ctx = {}) {
     _tableConfig: {
       id: "items.index",
       entityType: "item",
-      quickEdit: {
-        enabled: true,
-        permission: "updateAny",
-      },
       actions: {
         enabled: true,
         permission: "view",
@@ -688,21 +683,5 @@ export function getItemFieldDescriptors(ctx = {}) {
         skeletonRows: 10,
       },
     },
-
-    // Configuration globale du quickedit
-    _quickeditConfig: {
-      fields: [
-        "rarity",
-        "level",
-        "state",
-        "auto_update",
-        "read_level",
-        "write_level",
-        "price",
-        "dofus_version",
-        "description",
-        "image",
-        "dofusdb_id",
-      ],
-    },};
+  };
 }

@@ -13,14 +13,13 @@
  * })
  *   .addField("rarity", { enabled: true, nullable: true })
  *   .addField("level", { enabled: true, nullable: true })
- *   .withQuickEditFields(["rarity", "level", "state"])
  *   .build();
- * 
+ *
  * @example
  * // Génération depuis les descriptors
  * const descriptors = getResourceFieldDescriptors(ctx);
  * const bulkConfig = BulkConfig.fromDescriptors(descriptors, ctx);
- * 
+ *
  * ⚠️ IMPORTANT : Les transformations de données sont gérées par les mappers (ex: ResourceMapper.fromBulkForm()),
  * pas dans la configuration bulk. Le paramètre `build` est déprécié.
  */
@@ -28,25 +27,22 @@
 /**
  * Fonction helper interne pour fromDescriptors()
  */
-function createBulkFieldFromDescriptor(fieldKey, descriptor, ctx = {}) {
+function createBulkFieldFromDescriptor(fieldKey, descriptor) {
   if (!descriptor) {
     throw new Error(`Descriptor manquant pour ${fieldKey}`);
   }
 
-  const quickeditConfig = descriptor.quickedit || {};
   const bulkConfig =
     descriptor.edit?.form?.bulk || descriptor.edition?.bulk || {};
 
-  const config = quickeditConfig.enabled !== undefined ? quickeditConfig : bulkConfig;
-
-  if (!config.enabled && !bulkConfig.enabled) {
+  if (!bulkConfig.enabled) {
     return null;
   }
 
   return {
-    enabled: config.enabled !== false,
-    nullable: config.nullable !== false,
-    label: config.label || descriptor.label || fieldKey,
+    enabled: bulkConfig.enabled !== false,
+    nullable: bulkConfig.nullable !== false,
+    label: bulkConfig.label || descriptor.label || fieldKey,
   };
 }
 
@@ -65,9 +61,6 @@ export class BulkConfig {
 
     // Champs bulk-editables
     this.fields = {};
-
-    // Champs affichés dans quickEdit
-    this.quickEditFields = [];
   }
 
   /**
@@ -107,17 +100,6 @@ export class BulkConfig {
   }
 
   /**
-   * Configure la liste des champs affichés dans quickEdit.
-   *
-   * @param {string[]} fields - Liste des clés de champs
-   * @returns {BulkConfig} Instance pour chaînage
-   */
-  withQuickEditFields(fields) {
-    this.quickEditFields = Array.isArray(fields) ? fields : [];
-    return this;
-  }
-
-  /**
    * Obtient la configuration d'un champ bulk.
    *
    * @param {string} key - Clé du champ
@@ -145,12 +127,11 @@ export class BulkConfig {
   build() {
     return {
       fields: { ...this.fields },
-      quickEditFields: [...this.quickEditFields],
     };
   }
 
   /**
-   * Génère un BulkConfig complet depuis les descriptors
+   * Génère une BulkConfig complète depuis les descriptors
    *
    * @static
    * @param {Object} descriptors - Descriptors de l'entité (retournés par getResourceFieldDescriptors, etc.)
@@ -166,7 +147,6 @@ export class BulkConfig {
       throw new Error('Descriptors invalides');
     }
 
-    const quickeditConfig = descriptors._quickeditConfig || {};
     const entityType = descriptors._tableConfig?.entityType || 'resource';
 
     const bulkConfig = new BulkConfig({
@@ -174,45 +154,25 @@ export class BulkConfig {
     });
 
     const fieldKeys = Object.keys(descriptors).filter(key => !key.startsWith('_'));
-    const quickeditFields = [];
 
     for (const key of fieldKeys) {
       const descriptor = descriptors[key];
-      
-      const hasQuickedit = descriptor.quickedit?.enabled;
+
       const hasBulk =
         descriptor.edit?.form?.bulk?.enabled === true ||
         descriptor.edition?.bulk?.enabled === true;
 
-      if (hasQuickedit || hasBulk) {
+      if (hasBulk) {
         try {
-          const fieldConfig = createBulkFieldFromDescriptor(key, descriptor, ctx);
-          
+          const fieldConfig = createBulkFieldFromDescriptor(key, descriptor);
+
           if (fieldConfig) {
             bulkConfig.addField(key, fieldConfig);
-            quickeditFields.push(key);
           }
         } catch (error) {
           console.warn(`[BulkConfig.fromDescriptors] Erreur lors de la création du champ bulk ${key}:`, error);
         }
       }
-    }
-
-    let fieldsToUse = quickeditConfig.fields;
-    
-    if (!fieldsToUse && quickeditFields.length > 0) {
-      fieldsToUse = quickeditFields;
-    }
-
-    // Utiliser _quickeditConfig.fields depuis les descriptors (nouveau pattern)
-    if (!fieldsToUse && descriptors._quickeditConfig?.fields) {
-      fieldsToUse = descriptors._quickeditConfig.fields;
-    }
-
-    if (fieldsToUse && Array.isArray(fieldsToUse)) {
-      bulkConfig.withQuickEditFields(fieldsToUse);
-    } else if (quickeditFields.length > 0) {
-      bulkConfig.withQuickEditFields(quickeditFields);
     }
 
     return bulkConfig;

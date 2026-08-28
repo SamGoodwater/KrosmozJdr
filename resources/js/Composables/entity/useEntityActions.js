@@ -253,7 +253,7 @@ export function useEntityActions(entityType, entity = null, options = {}) {
 function resolveActionIntent(actionKey, context) {
   if (actionKey === "view") return "open-page";
   if (actionKey === "quick-view") return "open-modal";
-  if (actionKey === "edit" || actionKey === "quick-edit") return "edit-page";
+  if (actionKey === "edit") return "edit-page";
   if (actionKey === "copy-link") return "copy-link";
   if (actionKey === "refresh") return "refresh";
   if (actionKey === "delete") return "delete";

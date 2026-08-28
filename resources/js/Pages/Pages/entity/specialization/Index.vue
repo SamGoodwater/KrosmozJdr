@@ -11,9 +11,7 @@ import { Head, router } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { Specialization } from "@/Models/Entity/Specialization";
-import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
 import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
 import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
@@ -24,7 +22,6 @@ import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
-import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getSpecializationFieldDescriptors } from "@/Entities/specialization/specialization-descriptors";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
@@ -50,7 +47,6 @@ const canCreate = computed(() => canCreatePermission('specializations'));
 const canModify = computed(() => canUpdateAny('specializations'));
 
 // Bulk request
-const { bulkPatchJson } = useBulkRequest();
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf("specialization");
 
@@ -58,7 +54,6 @@ const { downloadPdf } = useDownloadPdf("specialization");
 const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
-const { tableQuickEditEnabled, onUpdateTableQuickEdit } = useEntityIndexQuickEditTable(Specialization);
 
 // Configuration du tableau avec permissions et contexte
 const tableConfig = computed(() => {
@@ -77,28 +72,9 @@ const serverUrl = computed(() => `${route('api.tables.specializations')}?format=
 
 
 // Calcul des entités sélectionnées depuis les IDs et les rows
-const selectedEntities = computed(() => {
-    if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
-    // Normaliser pour éviter les mismatch string vs number (Set.has est strict)
-    const idSet = new Set(selectedIds.value.map((v) => Number(v)).filter((n) => Number.isFinite(n)));
-    const raw = (tableRows.value || [])
-        .filter((r) => idSet.has(Number(r?.id)))
-        .map((r) => r?.rowParams?.entity)
-        .filter(Boolean);
-    return Specialization.fromArray(raw);
-});
 
 // Bulk edit
-const handleBulkUpdate = async (payload) => {
-  const ok = await bulkPatchJson('/api/entities/specializations/bulk', payload);
-  if (!ok) return;
-  refreshToken.value++;
-  selectedIds.value = [];
-};
 
-const clearSelection = () => {
-    selectedIds.value = [];
-};
 
 const tableMeta = ref({});
 const handleTableLoaded = ({ rows, meta }) => {
@@ -179,7 +155,6 @@ const handleTableAction = async (actionKey, entity, row) => {
             break;
 
         case 'edit':
-        case 'quick-edit':
             router.visit(route('entities.specializations.edit', { specialization: entityId }));
             break;
 
@@ -209,12 +184,6 @@ const handleTableAction = async (actionKey, entity, row) => {
 };
 
 // Handlers pour les actions du modal
-const handleModalQuickEdit = (entity) => {
-    const entityId = entity?.id;
-    if (!entityId) return;
-    closeModal();
-    router.visit(route('entities.specializations.edit', { specialization: entityId }));
-};
 
 const handleModalExpand = (entity) => {
     const entityId = entity?.id;
@@ -274,16 +243,7 @@ const handleModalDelete = (entity) => {
                 Créer une spécialisation
             </Btn>
         </div>
-
-        <!-- Grid layout pour permettre le scroll horizontal du tableau quand le quick edit est ouvert -->
-        <div
-            class="grid grid-cols-1 gap-4"
-            :class="{
-                'xl:grid-cols-[minmax(0,1fr)_380px]':
-                    canModify && selectedEntities.length >= 1 && tableQuickEditEnabled,
-            }"
-        >
-            <div class="min-w-0 overflow-x-auto">
+        <div class="min-w-0 overflow-x-auto">
                 <EntityTanStackTable
                     entity-type="specializations"
                     :config="tableConfig"
@@ -293,23 +253,8 @@ const handleModalDelete = (entity) => {
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
                     @keyboard-intent="handleKeyboardIntent"
-                    @update:quick-edit-enabled="onUpdateTableQuickEdit"
                     @action="handleTableAction"
                 />
-            </div>
-
-            <!-- Quick Edit Panel -->
-            <div v-if="canModify && selectedEntities.length >= 1 && tableQuickEditEnabled" class="sticky top-4 self-start">
-                <EntityQuickEditPanel
-                    entity-type="specializations"
-                    :selected-entities="selectedEntities"
-                    :is-admin="canModify"
-                    mode="client"
-                    :filtered-ids="selectedIds"
-                    @applied="handleBulkUpdate"
-                    @clear="clearSelection"
-                />
-            </div>
         </div>
 
         <!-- Modal de création -->
@@ -330,7 +275,6 @@ const handleModalDelete = (entity) => {
             :open="modalOpen"
             :table-meta="tableMeta"
             @close="closeModal"
-            @quick-edit="handleModalQuickEdit"
             @expand="handleModalExpand"
             @copy-link="handleModalCopyLink"
             @download-pdf="handleModalDownloadPdf"

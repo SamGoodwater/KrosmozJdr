@@ -61,8 +61,6 @@ describe("ENTITY_ACTION_CONTEXT_PRESETS", () => {
         expect(ENTITY_ACTIONS_COMMON["quick-view"].visibleIf({ inModal: true })).toBe(false);
         expect(ENTITY_ACTIONS_COMMON.edit.visibleIf({ inLine: true })).toBe(true);
         expect(ENTITY_ACTIONS_COMMON.edit.visibleIf({ viewMode: "line" })).toBe(true);
-        expect(ENTITY_ACTIONS_COMMON["quick-edit"].visibleIf({ inLine: true })).toBe(false);
-        expect(ENTITY_ACTIONS_COMMON["quick-edit"].visibleIf({ inMinimal: true })).toBe(false);
         expect(ENTITY_ACTION_CONTEXT_PRESETS.tableDropdown).toContain("edit");
         expect(ENTITY_ACTION_CONTEXT_PRESETS.tableDropdown).not.toContain("quick-edit");
         expect(ENTITY_ACTION_CONTEXT_PRESETS.minimalLine).not.toContain("quick-edit");

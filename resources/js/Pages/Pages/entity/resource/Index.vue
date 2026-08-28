@@ -12,11 +12,9 @@ import { ref, computed } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { Resource } from "@/Models/Entity/Resource";
-import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
 import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
 import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 
@@ -24,7 +22,6 @@ import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
-import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getResourceFieldDescriptors } from "@/Entities/resource/resource-descriptors";
@@ -58,7 +55,6 @@ const { setPageTitle } = usePageTitle();
 
 // Notifications
 const notificationStore = useNotificationStore();
-const { bulkPatchJson } = useBulkRequest();
 const { copyToClipboard } = useCopyToClipboard();
 setPageTitle('Liste des Ressources');
 
@@ -78,7 +74,6 @@ const createModalOpen = ref(false);
 const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
-const { tableQuickEditEnabled, onUpdateTableQuickEdit } = useEntityIndexQuickEditTable(Resource);
 
 // Configuration du tableau avec permissions et contexte
 const tableConfig = computed(() => {
@@ -107,18 +102,7 @@ const indexTableFilters = computed(() => {
 });
 const serverBaseUrl = computed(() => route('api.tables.resources'));
 
-const selectedEntities = computed(() => {
-    if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
-    // Normaliser pour éviter les mismatch string vs number (Set.has est strict)
-    const idSet = new Set(selectedIds.value.map((v) => Number(v)).filter((n) => Number.isFinite(n)));
-    const raw = (tableRows.value || [])
-        .filter((r) => idSet.has(Number(r?.id)))
-        .map((r) => r?.rowParams?.entity)
-        .filter(Boolean);
-    return Resource.fromArray(raw);
-});
 
-const filteredIds = computed(() => selectedIds.value || []);
 
 // Handlers
 const openModal = (entity) => {
@@ -127,9 +111,6 @@ const openModal = (entity) => {
     modalOpen.value = true;
 };
 
-const clearSelection = () => {
-    selectedIds.value = [];
-};
 
 const tableMeta = ref({});
 const handleTableLoaded = ({ rows, meta }) => {
@@ -194,12 +175,6 @@ const handleRefreshAll = () => {
     refreshToken.value++;
 };
 
-const handleBulkApplied = async (payload) => {
-    const ok = await bulkPatchJson({ url: "/api/entities/resources/bulk", payload });
-    if (!ok) return;
-    refreshToken.value++;
-    clearSelection();
-};
 
 // Handler pour les actions du tableau
 const handleTableAction = async (actionKey, entity, row) => {
@@ -219,7 +194,6 @@ const handleTableAction = async (actionKey, entity, row) => {
             break;
 
         case 'edit':
-        case 'quick-edit':
             router.visit(route('entities.resources.edit', { resource: entityId }));
             break;
 
@@ -242,12 +216,6 @@ const handleTableAction = async (actionKey, entity, row) => {
 };
 
 // Handlers pour les actions du modal (reçoivent directement l'entité depuis l'événement)
-const handleModalQuickEdit = (entity) => {
-    const entityId = entity?.id;
-    if (!entityId) return;
-    closeModal();
-    router.visit(route('entities.resources.edit', { resource: entityId }));
-};
 
 const handleModalExpand = (entity) => {
     const entityId = entity?.id;
@@ -307,14 +275,7 @@ const handleModalDelete = (entity) => {
         </div>
         </div>
 
-        <div
-            class="grid grid-cols-1 gap-4"
-            :class="{
-                'xl:grid-cols-[minmax(0,1fr)_380px]':
-                    canModify && selectedEntities.length >= 1 && tableQuickEditEnabled,
-            }"
-        >
-            <div class="min-w-0 overflow-x-auto">
+        <div class="min-w-0 overflow-x-auto">
                 <EntityTanStackTable
                     entity-type="resources"
                     :config="tableConfig"
@@ -327,23 +288,8 @@ const handleModalDelete = (entity) => {
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
                     @keyboard-intent="handleKeyboardIntent"
-                    @update:quick-edit-enabled="onUpdateTableQuickEdit"
                     @action="handleTableAction"
                 />
-            </div>
-
-            <div v-if="canModify && selectedEntities.length >= 1 && tableQuickEditEnabled" class="sticky top-4 self-start">
-                <EntityQuickEditPanel
-                    entity-type="resources"
-                    :selected-entities="selectedEntities"
-                    :is-admin="canModify"
-                    :extra-ctx="{ resourceTypes: props.resourceTypes || [] }"
-                    :filtered-ids="filteredIds"
-                    mode="client"
-                    @applied="handleBulkApplied"
-                    @clear="clearSelection"
-                />
-            </div>
         </div>
 
         <!-- Modal de création -->
@@ -366,7 +312,6 @@ const handleModalDelete = (entity) => {
             :open="modalOpen"
             :table-meta="tableMeta"
             @close="closeModal"
-            @quick-edit="handleModalQuickEdit"
             @expand="handleModalExpand"
             @copy-link="handleModalCopyLink"
             @download-pdf="handleModalDownloadPdf"

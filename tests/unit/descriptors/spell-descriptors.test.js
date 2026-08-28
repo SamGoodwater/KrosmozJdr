@@ -99,7 +99,7 @@ describe('spell-descriptors', () => {
     describe('Configuration bulk', () => {
         it('les champs bulk-enabled ont enabled: true', () => {
             const descriptors = getSpellFieldDescriptors();
-            const bulkEnabledFields = descriptors._quickeditConfig?.fields || [];
+            const bulkEnabledFields = Object.keys(descriptors).filter((k) => descriptors[k]?.edit?.form?.bulk?.enabled);
 
             bulkEnabledFields.forEach((fieldKey) => {
                 const desc = descriptors[fieldKey];
@@ -169,41 +169,6 @@ describe('spell-descriptors', () => {
         });
     });
 
-    describe('QUICK_EDIT_FIELDS', () => {
-        it('quickEdit contient uniquement des champs existants', () => {
-            const descriptors = getSpellFieldDescriptors();
-            const quickEditFields = descriptors._quickeditConfig?.fields || [];
-
-            quickEditFields.forEach((fieldKey) => {
-                expect(descriptors).toHaveProperty(fieldKey);
-            });
-        });
-
-        it('les champs quickEdit sont bulk-enabled', () => {
-            const descriptors = getSpellFieldDescriptors();
-            const quickEditFields = descriptors._quickeditConfig?.fields || [];
-
-            quickEditFields.forEach((fieldKey) => {
-                const desc = descriptors[fieldKey];
-                if (desc?.edit?.form) {
-                    expect(desc.edit.form.bulk?.enabled).toBe(true);
-                }
-            });
-        });
-
-        it('quickEdit ne contient pas de champs sans edit.form', () => {
-            const descriptors = getSpellFieldDescriptors();
-            const quickEditFields = descriptors._quickeditConfig?.fields || [];
-
-            quickEditFields.forEach((fieldKey) => {
-                const desc = descriptors[fieldKey];
-                // Si le champ a edit.form, il doit avoir bulk.enabled
-                if (desc?.edit?.form) {
-                    expect(desc.edit.form.bulk?.enabled).toBe(true);
-                }
-            });
-        });
-    });
 
     describe('Options des selects', () => {
         it('les champs de type select ont des options résolubles (tableau non vide)', () => {

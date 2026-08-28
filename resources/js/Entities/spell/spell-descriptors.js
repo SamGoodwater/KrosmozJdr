@@ -74,7 +74,6 @@ export const SPELL_TARGET_TYPE_OPTIONS = () => [
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Spell".
@@ -1156,10 +1155,6 @@ export function getSpellFieldDescriptors(ctx = {}) {
     _tableConfig: {
       id: "spells.index",
       entityType: "spell",
-      quickEdit: {
-        enabled: true,
-        permission: "updateAny",
-      },
       actions: {
         enabled: true,
         permission: "view",
@@ -1201,21 +1196,5 @@ export function getSpellFieldDescriptors(ctx = {}) {
         skeletonRows: 10,
       },
     },
-
-    // Configuration globale du quickedit
-    _quickeditConfig: {
-      fields: [
-        "level",
-        "pa",
-        "po_min",
-        "po_max",
-        "area",
-        "state",
-        "auto_update",
-        "read_level",
-        "write_level",
-        "description",
-        "image",
-      ],
-    },};
+  };
 }

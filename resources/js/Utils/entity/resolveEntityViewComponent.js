@@ -46,12 +46,6 @@ const VIEW_COMPONENT_MAP = {
   'text': 'ViewText',
   /** Vue liste dense (SpellLineRow, ResourceLineRow, …) */
   'line': 'LineRow',
-  'quickedit': 'QuickEdit',
-  'QuickEdit': 'QuickEdit',
-  'editlarge': 'EditLarge',
-  'EditLarge': 'EditLarge',
-  'editcompact': 'EditCompact',
-  'EditCompact': 'EditCompact',
 };
 
 /**
@@ -77,7 +71,7 @@ export async function resolveEntityViewComponent(entityType, view = 'full') {
     .toLowerCase();
   const componentPath = `@/Pages/Molecules/entity/${folderName}/${componentName}.vue`;
 
-  const components = import.meta.glob('@/Pages/Molecules/entity/**/*{View,Edit,QuickEdit}*.vue');
+  const components = import.meta.glob('@/Pages/Molecules/entity/**/*{View,Edit}*.vue');
   const lineRowComponents = import.meta.glob('@/Pages/Molecules/entity/**/*LineRow.vue');
   const mergedGlobs = { ...components, ...lineRowComponents };
 
@@ -120,23 +114,15 @@ export function resolveEntityViewComponentSync(entityType, view = 'full') {
     .toLowerCase();
   const componentPath = `@/Pages/Molecules/entity/${folderName}/${componentName}.vue`;
 
-  const components = import.meta.glob('@/Pages/Molecules/entity/**/*{View,Edit,QuickEdit}*.vue', { eager: true });
+  const components = import.meta.glob('@/Pages/Molecules/entity/**/*{View,Edit}*.vue', { eager: true });
   const lineRowComponents = import.meta.glob('@/Pages/Molecules/entity/**/*LineRow.vue', { eager: true });
-  const genericComponents = import.meta.glob('@/Pages/Molecules/entity/Entity{View,Edit,QuickEdit}*.vue', { eager: true });
+  const genericComponents = import.meta.glob('@/Pages/Molecules/entity/Entity{View,Edit}*.vue', { eager: true });
 
   const allComponents = { ...components, ...lineRowComponents, ...genericComponents };
 
   for (const [path, module] of Object.entries(allComponents)) {
     if (path.includes(`/${folderName}/`) && path.includes(componentName)) {
       return module.default || module[componentName] || module;
-    }
-  }
-
-  if (view === 'quickedit' || view === 'QuickEdit') {
-    for (const [path, module] of Object.entries(genericComponents)) {
-      if (path.includes('EntityQuickEdit.vue')) {
-        return module.default || module;
-      }
     }
   }
 

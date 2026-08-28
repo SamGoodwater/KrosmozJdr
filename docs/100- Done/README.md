@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Tableaux : plus de quick edit, sélection et raccourcis
+
+L’édition groupée dans les catalogues (panneau latéral, toggle Quick edit) a été retirée : on modifie une fiche via la page Modifier. On peut à nouveau cocher des lignes dans les trois vues (minimal, ligne, colonnes) pour l’export CSV ou le PDF. Les cases restent visibles. Les raccourcis du tableau ne volent plus la saisie (recherche, filtres) ni Entrée/Espace sur un bouton ; Ctrl+N (nouvelle fenêtre du navigateur) n’est plus intercepté.
+
 ## Août 2026 — API DofusDB, entrée dev et hub commandes
 
 L’atelier parle à `/api/dofusdb` (l’ancienne adresse `/api/scrapping` redirige). `composer run dev` lance la même chose que `project:dev` avec la file. Les fiches isolées de type de ressource ouvrent la page Types commune. Sur le récapitulatif, le super-admin voit la liste des commandes avec un lien vers chaque page déjà en place.

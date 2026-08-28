@@ -57,17 +57,6 @@ export function validateFieldDescriptor(descriptor, fieldKey) {
     }
   }
 
-  // Validation de quickedit si présent (nouvelle structure)
-  if (descriptor.quickedit) {
-    const quickedit = descriptor.quickedit;
-    if (quickedit.enabled && !quickedit.type) {
-      errors.push(`Type obligatoire pour quickedit.enabled=true dans ${fieldKey}`);
-    }
-    if (quickedit.enabled && !FORM_TYPES.includes(quickedit.type)) {
-      errors.push(`Type de formulaire invalide pour quickedit dans ${fieldKey}: ${quickedit.type}`);
-    }
-  }
-
   // Validation de visibleIf et editableIf
   if (descriptor.visibleIf && typeof descriptor.visibleIf !== "function") {
     errors.push(`visibleIf doit être une fonction pour ${fieldKey}`);

@@ -3,17 +3,15 @@
  *
  * @description
  * Cette classe permet de configurer un tableau avec :
- * - Configuration quickEdit (permission, activation)
  * - Configuration actions (menu, permissions, visibilité responsive)
  * - Liste des colonnes
- * - Features du tableau (search, filters, pagination, etc.)
+ * - Features du tableau (search, filters, pagination, selection, etc.)
  *
  * @example
  * const tableConfig = new TableConfig({
  *   id: "resources.index",
  *   entityType: "resource"
  * })
- *   .withQuickEdit({ enabled: true, permission: "updateAny" })
  *   .withActions({ enabled: true, permission: "view", available: ["view", "edit", "delete"] })
  *   .addColumn(new TableColumnConfig({ key: "name", label: "Nom", type: "route" }))
  *   .build();
@@ -276,12 +274,6 @@ export class TableConfig {
     this.id = base.id;
     this.entityType = base.entityType;
 
-    // Configuration quickEdit
-    this.quickEdit = {
-      enabled: false,
-      permission: null,
-    };
-
     // Configuration actions
     this.actions = {
       enabled: false,
@@ -313,22 +305,6 @@ export class TableConfig {
     this.ui = {
       skeletonRows: 10,
     };
-  }
-
-  /**
-   * Configure le mode quickEdit.
-   *
-   * @param {Object} config - Configuration quickEdit
-   * @param {boolean} config.enabled - Activer quickEdit
-   * @param {string} config.permission - Permission requise
-   * @returns {TableConfig} Instance pour chaînage
-   */
-  withQuickEdit(config) {
-    this.quickEdit = {
-      enabled: Boolean(config.enabled),
-      permission: config.permission || null,
-    };
-    return this;
   }
 
   /**
@@ -449,10 +425,7 @@ export class TableConfig {
    */
   build(ctx = {}) {
     const can = ctx?.capabilities || ctx?.meta?.capabilities || {};
-    
-    // Vérifier si quickEdit est activé et si la permission est présente
-    const quickEditEnabled = this.quickEdit.enabled && (!this.quickEdit.permission || can[this.quickEdit.permission]);
-    
+
     // Vérifier si actions est activé et si la permission est présente
     const actionsEnabled = this.actions.enabled && (!this.actions.permission || can[this.actions.permission]);
     
@@ -473,17 +446,12 @@ export class TableConfig {
         ...this.features,
         selection: {
           ...this.features.selection,
-          enabled: this.features.selection.enabled && quickEditEnabled, // Désactiver si pas de permission quickEdit
         },
       },
       columns,
       // Métadonnées pour le système
       _metadata: {
         entityType: this.entityType,
-        quickEdit: {
-          enabled: quickEditEnabled,
-          permission: this.quickEdit.permission,
-        },
         actions: {
           enabled: actionsEnabled,
           permission: this.actions.permission,
@@ -532,9 +500,6 @@ export class TableConfig {
 
     if (tableConfig.features) {
       config.withFeatures(tableConfig.features);
-    }
-    if (tableConfig.quickEdit) {
-      config.withQuickEdit(tableConfig.quickEdit);
     }
     if (tableConfig.actions) {
       const actionsConfig = { ...tableConfig.actions };

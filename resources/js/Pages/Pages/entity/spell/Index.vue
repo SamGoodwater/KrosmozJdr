@@ -10,10 +10,9 @@
  * @props {Object} spells - Collection paginée des sorts
  */
 import { Head, router } from "@inertiajs/vue3";
-import { ref, computed, watch } from "vue";
+import { ref, computed } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { Spell } from "@/Models/Entity/Spell";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
@@ -22,7 +21,6 @@ import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
-import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import SpellEditModal from '@/Pages/Organismes/entity/SpellEditModal.vue';
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
@@ -33,7 +31,6 @@ import {
     getSpellCreateDefaultEntity,
     mergeSpellTypesFieldIntoSpellFormConfig,
 } from "@/Entities/spell/spell-form-config";
-import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
 import { clearKrefEntityPreviewCache } from "@/Composables/richText/krefEntityPreviewCache";
 import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
@@ -63,7 +60,6 @@ const canCreate = computed(() => canCreatePermission('spells'));
 const canModify = computed(() => canUpdateAny('spells'));
 
 // Bulk request
-const { bulkPatchJson } = useBulkRequest();
 const { copyToClipboard } = useCopyToClipboard();
 
 // État
@@ -72,7 +68,6 @@ const modalOpen = ref(false);
 const modalView = ref('full');
 const createModalOpen = ref(false);
 const selectedIds = ref([]);
-const { tableQuickEditEnabled, onUpdateTableQuickEdit } = useEntityIndexQuickEditTable(Spell);
 const tableRows = ref([]);
 const refreshToken = ref(0);
 
@@ -80,18 +75,7 @@ const refreshToken = ref(0);
 const spellEditModalOpen = ref(false);
 const spellEditId = ref(null);
 
-const selectedEntities = computed(() => {
-    if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
-    // Normaliser pour éviter les mismatch string vs number (Set.has est strict)
-    const idSet = new Set(selectedIds.value.map((v) => Number(v)).filter((n) => Number.isFinite(n)));
-    const raw = (tableRows.value || [])
-        .filter((r) => idSet.has(Number(r?.id)))
-        .map((r) => r?.rowParams?.entity)
-        .filter(Boolean);
-    return Spell.fromArray(raw);
-});
 
-const filteredIds = computed(() => selectedIds.value || []);
 
 // Configuration du tableau avec permissions et contexte
 const tableConfig = computed(() => {
@@ -110,14 +94,6 @@ const tableConfig = computed(() => {
 const serverBaseUrl = computed(() => route('api.tables.spells'));
 const indexTableFilters = computed(() => normalizeIndexTableFilters(props.filters));
 
-watch(
-    () => canModify.value,
-    (allowed) => {
-        if (allowed) return;
-        selectedIds.value = [];
-    },
-    { immediate: true }
-);
 
 /** Formulaire création (même structure que la fiche édition). */
 const spellCreateFieldsConfig = computed(() =>
@@ -145,17 +121,7 @@ const onSpellEditModalSaved = () => {
     refreshToken.value++;
 };
 
-const clearSelection = () => {
-    selectedIds.value = [];
-};
 
-const handleBulkApplied = async (payload) => {
-    const ok = await bulkPatchJson({ url: "/api/entities/spells/bulk", payload });
-    if (!ok) return;
-    clearKrefEntityPreviewCache();
-    refreshToken.value++;
-    selectedIds.value = [];
-};
 
 const tableMeta = ref({});
 const handleTableLoaded = ({ rows, meta }) => {
@@ -234,7 +200,6 @@ const handleTableAction = async (actionKey, entity, row) => {
             openSpellEditModal(entityId);
             break;
 
-        case 'quick-edit':
             openSpellEditModal(entityId);
             break;
 
@@ -257,12 +222,6 @@ const handleTableAction = async (actionKey, entity, row) => {
 };
 
 // Handlers pour les actions du modal
-const handleModalQuickEdit = (entity) => {
-    const entityId = entity?.id;
-    if (!entityId) return;
-    closeModal();
-    openSpellEditModal(entityId);
-};
 
 const handleModalExpand = (entity) => {
     const entityId = entity?.id;
@@ -310,16 +269,7 @@ const handleModalDelete = (_entity) => {
                 Créer un sort
             </Btn>
         </div>
-
-        <!-- Grid layout pour permettre le scroll horizontal du tableau quand le quick edit est ouvert -->
-        <div
-            class="grid grid-cols-1 gap-4"
-            :class="{
-                'xl:grid-cols-[minmax(0,1fr)_380px]':
-                    canModify && selectedEntities.length >= 1 && tableQuickEditEnabled,
-            }"
-        >
-            <div class="min-w-0 overflow-x-auto">
+        <div class="min-w-0 overflow-x-auto">
                 <EntityTanStackTable
                     entity-type="spells"
                     :config="tableConfig"
@@ -331,26 +281,10 @@ const handleModalDelete = (_entity) => {
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
-                    @update:quick-edit-enabled="onUpdateTableQuickEdit"
                     @keyboard-intent="handleKeyboardIntent"
                     @create-request="handleCreateRequest"
                     @action="handleTableAction"
                 />
-            </div>
-
-            <!-- Quick Edit Panel -->
-            <div v-if="canModify && selectedEntities.length >= 1 && tableQuickEditEnabled" class="sticky top-4 self-start">
-                <EntityQuickEditPanel
-                    entity-type="spells"
-                    :selected-entities="selectedEntities"
-                    :is-admin="canModify"
-                    mode="client"
-                    :filtered-ids="filteredIds"
-                    :extra-ctx="{ spellTypes: props.spellTypes || [] }"
-                    @applied="handleBulkApplied"
-                    @clear="clearSelection"
-                />
-            </div>
         </div>
 
         <!-- Modal de création -->
@@ -378,7 +312,6 @@ const handleModalDelete = (_entity) => {
             :open="modalOpen"
             :table-meta="tableMeta"
             @close="closeModal"
-            @quick-edit="handleModalQuickEdit"
             @expand="handleModalExpand"
             @copy-link="handleModalCopyLink"
             @download-pdf="handleModalDownloadPdf"

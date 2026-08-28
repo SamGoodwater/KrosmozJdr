@@ -80,7 +80,7 @@ describe('entity-registry', () => {
             expect(config.key).toBe('resources');
             expect(config.getDescriptors).toBeDefined();
             const descriptors = config.getDescriptors({});
-            expect(descriptors._quickeditConfig?.fields?.length).toBeGreaterThan(0);
+            expect(descriptors._tableConfig?.id).toBe("resources.index");
             expect(config.responseAdapter).toBeDefined();
         });
 
@@ -91,7 +91,7 @@ describe('entity-registry', () => {
             expect(config.key).toBe('spells');
             expect(config.getDescriptors).toBeDefined();
             const descriptors = config.getDescriptors({});
-            expect(descriptors._quickeditConfig?.fields?.length).toBeGreaterThan(0);
+            expect(descriptors._tableConfig?.id).toBe("spells.index");
             expect(config.responseAdapter).toBeDefined();
         });
 

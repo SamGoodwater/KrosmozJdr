@@ -6,7 +6,6 @@
  * - La configuration bulk fonctionne correctement
  * - BulkConfig.fromDescriptors() génère correctement la configuration
  * - Les champs bulk-editables sont correctement identifiés
- * - Les quickEditFields sont correctement configurés
  */
 
 import { describe, it, expect, vi } from "vitest";
@@ -22,7 +21,6 @@ describe("BulkConfig", () => {
 
       expect(bulkConfig.entityType).toBe("resource");
       expect(bulkConfig.fields).toEqual({});
-      expect(bulkConfig.quickEditFields).toEqual([]);
     });
 
     it("lance une erreur si entityType est manquant", () => {
@@ -47,14 +45,6 @@ describe("BulkConfig", () => {
       expect(field.label).toBe("Rareté");
     });
 
-    it("configure les quickEditFields", () => {
-      const bulkConfig = new BulkConfig({
-        entityType: "resource",
-      }).withQuickEditFields(["rarity", "level", "state"]);
-
-      expect(bulkConfig.quickEditFields).toEqual(["rarity", "level", "state"]);
-    });
-
     it("vérifie si un champ est bulk-editable", () => {
       const bulkConfig = new BulkConfig({
         entityType: "resource",
@@ -72,15 +62,14 @@ describe("BulkConfig", () => {
         entityType: "resource",
       })
         .addField("rarity", { enabled: true, nullable: true })
-        .addField("level", { enabled: true, nullable: false })
-        .withQuickEditFields(["rarity", "level"]);
+        .addField("level", { enabled: true, nullable: false });
 
       const config = bulkConfig.build();
 
       expect(config.fields).toBeDefined();
       expect(config.fields.rarity).toBeDefined();
       expect(config.fields.level).toBeDefined();
-      expect(config.quickEditFields).toEqual(["rarity", "level"]);
+      expect(config.quickEditFields).toBeUndefined();
     });
   });
 
@@ -97,30 +86,16 @@ describe("BulkConfig", () => {
       const descriptors = getResourceFieldDescriptors();
       const bulkConfig = BulkConfig.fromDescriptors(descriptors);
 
-      // Vérifier que les champs bulk-editables sont présents
       const config = bulkConfig.build();
       expect(Object.keys(config.fields).length).toBeGreaterThan(0);
     });
 
-    it("configure les quickEditFields depuis _quickeditConfig ou _quickEditFields", () => {
+    it("fromDescriptors construit un bulk depuis les champs edit.form.bulk", () => {
       const descriptors = getResourceFieldDescriptors();
       const bulkConfig = BulkConfig.fromDescriptors(descriptors);
 
       const config = bulkConfig.build();
-      expect(Array.isArray(config.quickEditFields)).toBe(true);
-      expect(config.quickEditFields.length).toBeGreaterThan(0);
-    });
-
-    it("utilise _quickeditConfig.fields pour les champs quick edit", () => {
-      const descriptors = getResourceFieldDescriptors();
-
-      expect(descriptors._quickeditConfig?.fields).toBeDefined();
-      expect(Array.isArray(descriptors._quickeditConfig.fields)).toBe(true);
-
-      const bulkConfig = BulkConfig.fromDescriptors(descriptors);
-      const config = bulkConfig.build();
-
-      expect(config.quickEditFields.length).toBeGreaterThan(0);
+      expect(config.fields).toBeDefined();
     });
 
     it("lance une erreur si descriptors est invalide", () => {
@@ -147,15 +122,12 @@ describe("BulkConfig", () => {
         _tableConfig: {
           entityType: "test",
         },
-        _quickEditFields: ["name"],
       };
 
       const bulkConfig = BulkConfig.fromDescriptors(descriptors);
       const config = bulkConfig.build();
 
-      // _tableConfig ne devrait pas être dans les fields
       expect(config.fields._tableConfig).toBeUndefined();
-      // name devrait être présent
       expect(config.fields.name).toBeDefined();
     });
 
@@ -174,17 +146,13 @@ describe("BulkConfig", () => {
         },
         invalid: {
           key: "invalid",
-          // Manque edit.form.bulk
         },
-        _quickEditFields: ["valid"],
       };
 
       const bulkConfig = BulkConfig.fromDescriptors(descriptors);
       const config = bulkConfig.build();
 
-      // Le champ valide devrait être présent
       expect(config.fields.valid).toBeDefined();
-      // Le champ invalide ne devrait pas être présent
       expect(config.fields.invalid).toBeUndefined();
 
       consoleWarnSpy.mockRestore();
@@ -197,16 +165,12 @@ describe("BulkConfig", () => {
       const bulkConfig = BulkConfig.fromDescriptors(descriptors);
       const config = bulkConfig.build();
 
-      // Vérifier la structure
       expect(config.fields).toBeDefined();
-      expect(config.quickEditFields).toBeDefined();
-      expect(Array.isArray(config.quickEditFields)).toBe(true);
 
-      // Vérifier que les champs attendus sont présents
       const expectedFields = ["rarity", "level", "state", "read_level", "write_level"];
       expectedFields.forEach((field) => {
-        if (config.quickEditFields.includes(field)) {
-          expect(config.fields[field]).toBeDefined();
+        if (config.fields[field]) {
+          expect(config.fields[field].enabled).toBe(true);
         }
       });
     });

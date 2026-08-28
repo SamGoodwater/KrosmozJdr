@@ -27,8 +27,9 @@ alwaysApply: false
 
 - **Afficher** (Minimal / Line / listes) : modal full (`quick-view`), pas la page Show.
 - **Agrandir** (depuis la modal) ou Ctrl+clic : page Show.
-- **Éditer** (Minimal / Line / listes) : page Modifier (`edit`). Pas de modal d’édition unitaire.
+- **Éditer** (Minimal / Line / listes) : page Modifier (`edit`). Pas de modal d’édition unitaire ni de panneau d’édition multiple.
 - Preset `minimalLine` : pas d’action `view`.
+- **Sélection tableau** : cases toujours visibles ; indépendante de l’édition.
 
 ## Distinctions
 

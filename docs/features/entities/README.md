@@ -61,7 +61,7 @@ La restauration et la suppression définitive (`restore`, `forceDelete`) sont r�
 - Un contrôleur web par entité : `app/Http/Controllers/Entity/<Type>Controller.php` (ex. `SpellController`, `ItemController`, `MonsterController`). Pattern : `index`/`show` publics, `create`/`store`/`edit`/`update`/`destroy` sous `auth`, plus des routes relationnelles (ex. sorts d'une classe).
 - Validation : Form Requests dédiées dans `app/Http/Requests/Entity/` (une par action).
 - Transformation de sortie : `app/Http/Resources/Entity/`.
-- Lecture en table : `app/Http/Controllers/Api/<Type>TableController.php` (datasets TanStack server-side), édition multiple via `*BulkController`, changement d'état via `EntityStateController`.
+- Lecture en table : `app/Http/Controllers/Api/<Type>TableController.php` (datasets TanStack server-side), changement d'état via `EntityStateController`.
 - Corbeille entités : API générique `api/entities/{entityType}/{id}` (`DELETE` soft delete), `POST .../restore`, `DELETE .../force`, `GET .../delete-impact`. La logique commune est dans `app/Services/Entity/EntityDeletionService.php` et la résolution des modèles dans `app/Support/EntityModelRegistry.php`. Les routes web `DELETE entities/{type}/{id}` déléguent aussi à ce service (notifications + journal admin).
 - Soft delete : trait `SoftDeletes` sur les modèles d’entité JDR, y compris `Monster` et `Npc` (colonne `deleted_at`).
 - Force delete : détache les relations `BelongsToMany`, supprime les médias Spatie, puis `forceDelete` ; refusé (422) si l’entité n’est pas déjà en corbeille.
@@ -81,15 +81,15 @@ La restauration et la suppression définitive (`restore`, `forceDelete`) sont r�
   | `full` | `*ViewFull` | Détail page ou modal |
   | `edit` | `EntityEditForm` / pages `Edit.vue` | Édition unitaire |
 
-  Les composants par type sont dans `resources/js/Pages/Molecules/entity/<type>/`. Le resolver charge encore une vue `quickedit` (`EntityQuickEdit.vue`) pour le panneau d’édition multiple du tableau (voir rule `.cursor/rules/entity-views.mdc`).
+  Les composants par type sont dans `resources/js/Pages/Molecules/entity/<type>/`.
 - **Table** : `resources/js/Pages/Organismes/table/EntityTanStackTable.vue` (server-side) ; préférences/filtres via `resources/js/Composables/table/*`. Ouverture en vue **minimal** (`useTanStackTablePreferences` v4). Les en-têtes lisent `column.tooltip`. Catalogue objets : image, nom, niveau, type, rareté, bonus (`items.bonus`) ; `state` réservé aux éditeurs. Rareté 0–5 : Commun, Peu commun, Rare, Très rare, Légendaire, Unique (mêmes libellés filtres et vues). Catalogue consommables : types `show_in_catalog` précochés (même mécanisme que les équipements). Panoplies : pièces en vue texte, vignette = images d’équipements ou initiales ; catalogue et fiche lecture ne sérialisent que les pièces `visibleToUser` (l’édition charge toutes les pièces liées). Un équipement du set affiche `ItemPanoplyMark` (payload `panoplies` via `ItemPanoplyPayload`, limité aux panoplies et pièces `view` pour le visiteur). Édition panoplie : équipements puis bonus en tête (cartes du formulaire, `PanoplyBonusEditor`) ; droits en bas. Recherche catalogue (`EntityPickerCore`).
 - **Afficher** : Minimal / Line / Index / CMS (`SectionEntityTableRead`) ouvrent la modal full (`EntityModal`). **Agrandir** (depuis la modal) ou Ctrl+clic mènent à la page Show.
-- **Éditer** : raccourci des options → page Modifier. Panneau tableau `EntityQuickEditPanel` pour l’édition multiple.
+- **Éditer** : raccourci des options → page Modifier. La sélection de lignes (cases toujours visibles) sert au CSV et au PDF. Les raccourcis du tableau n’interfèrent pas avec la recherche.
 - **Query tableaux** : filtres multi en `filters[key][]` (CSV encore accepté) ; `InterpretsEntityTableFilters` fait un `whereIn`. Le tri mappe les ids de colonnes (`item_type`, `monster_race`) vers les FK SQL ; `column.sort.field` côté front. La recherche serveur envoie `search=` ; en client elle porte aussi sur le nom / la description de l’entité. Les inputs de filtres gardent la saisie en cours (défauts seulement si la clé n’est pas déjà posée).
 - **Aperçu sort depuis un monstre** : sorts liés avec `effect_usages_chips` (`SpellNestedPreviewSerializer`) ; eager-load table/show filtré `visibleToUser` (un sort brouillon ne fuit pas via un monstre jouable). Clic → `SpellViewMinimal` étendu (effets + actions à droite du titre, overflow dropdown). Fetch `api.tables.spells` seulement si les chips manquent.
 - **Classes** : sur show / table / PDF, les sorts, capacités, traits et PNJ liés passent par `visibleToUser` (pas de fuite d’un sort brouillon via une classe jouable). L’écran Modifier charge toutes les liaisons.
 - **Spécialisations** : sur show / table / PDF, les sorts, capacités, traits, objets, consommables, ressources et PNJ liés passent par `visibleToUser` (pas de fuite d’un sort brouillon via une spécialisation jouable). L’écran Modifier charge toutes les liaisons.
-- **Édition** : `resources/js/Pages/Organismes/entity/EntityEditForm.vue`, modales (`EntityModal`, `CreateEntityModal`, `EntityQuickEditPanel`).
+- **Édition** : `resources/js/Pages/Organismes/entity/EntityEditForm.vue`, modales (`EntityModal`, `CreateEntityModal`).
 - **Suppression UI** : `useEntityActionDispatcher` ouvre une `ConfirmModal` avec le récapitulatif `delete-impact` (relations détachées, médias) avant soft delete depuis page/modal d’entité.
 
 ## Exemple : ajouter un champ à une entité

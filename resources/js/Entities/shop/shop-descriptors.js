@@ -44,7 +44,6 @@ import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/Shared
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Shop".
@@ -427,10 +426,6 @@ export function getShopFieldDescriptors(ctx = {}) {
     _tableConfig: {
       id: "shops.index",
       entityType: "shop",
-      quickEdit: {
-        enabled: true,
-        permission: "updateAny",
-      },
       actions: {
         enabled: true,
         permission: "view",
@@ -472,17 +467,5 @@ export function getShopFieldDescriptors(ctx = {}) {
         skeletonRows: 10,
       },
     },
-
-    // Configuration globale du quickedit
-    _quickeditConfig: {
-      fields: [
-        "location",
-        "price",
-        "state",
-        "read_level",
-        "write_level",
-        "description",
-        "npc_id",
-      ],
-    },};
+  };
 }

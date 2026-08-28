@@ -678,13 +678,6 @@
     "file": "entity/EntityRelationsManager.vue"
   },
   {
-    "name": "EntityQuickEditPanel",
-    "description": "EntityQuickEditPanel",
-    "props": [],
-    "slots": [],
-    "file": "entity/EntityQuickEditPanel.vue"
-  },
-  {
     "name": "EntityPickerCore",
     "description": "EntityPickerCore",
     "props": [],

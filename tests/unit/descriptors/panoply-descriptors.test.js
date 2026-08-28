@@ -51,7 +51,7 @@ describe('panoply-descriptors', () => {
     describe('Configuration bulk', () => {
         it('les champs bulk-enabled ont enabled: true', () => {
             const descriptors = getPanoplyFieldDescriptors();
-            const bulkEnabledFields = descriptors._quickeditConfig?.fields || [];
+            const bulkEnabledFields = Object.keys(descriptors).filter((k) => descriptors[k]?.edit?.form?.bulk?.enabled);
 
             bulkEnabledFields.forEach((fieldKey) => {
                 const desc = descriptors[fieldKey];

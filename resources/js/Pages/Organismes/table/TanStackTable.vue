@@ -37,8 +37,9 @@ import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import TanStackTableShortcutsModal from "@/Pages/Molecules/table/TanStackTableShortcutsModal.vue";
-import { matchTableEnterIntent } from "@/Composables/table/useTanStackTableKeyboard.js";
+import { matchTableEnterIntent, isTableTypingTarget, shouldIgnoreTableRowIntent } from "@/Composables/table/useTanStackTableKeyboard.js";
 import { resolveFilterDefaultValue } from "@/Utils/table/resolveFilterDefaultValue.js";
+import { normalizeTableRowId, toSelectedIdSet, selectedSetHas } from "@/Utils/table/normalizeTableRowId.js";
 import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import {
     classifyRowPointerModifiers,
@@ -111,10 +112,6 @@ const props = defineProps({
      */
     lineRowComponent: { type: Object, default: null },
     /**
-     * Droit global d’édition sur l’entité (quick edit). Le toggle n’apparaît que si true.
-     */
-    quickEditAllowed: { type: Boolean, default: false },
-    /**
      * Valeurs de filtres initiales (ex. query string de l’index Inertia).
      */
     initialFilterValues: { type: Object, default: () => ({}) },
@@ -129,7 +126,6 @@ const emit = defineEmits([
     "update:selectedIds",
     "update:selected-ids",
     "update:serverParams",
-    "update:quickEditEnabled",
     "create-request",
     "keyboard-intent",
     "action", // Émis pour chaque action d'entité
@@ -328,18 +324,13 @@ const rowSelectedBgClass = computed(() => {
     return "bg-base-200/50";
 });
 
-// Préférences (colonnes visibles + pageSize + displayMode + quick edit + tri)
+// Préférences (colonnes visibles + pageSize + displayMode + tri)
 const prefs = useTanStackTablePreferences(props.config?.id, {
     visibleColumns: {},
     pageSize: props.config?.features?.pagination?.perPage?.default ?? 25,
     displayMode: "minimal",
-    quickEditEnabled: false,
     sorting: [],
 });
-
-/** Ref template (unwrap) pour le toggle quick edit */
-const quickEditEnabledPref = prefs.quickEditEnabled;
-const setQuickEditEnabledPref = prefs.setQuickEditEnabled;
 
 /** Composant Minimal pour la vue grille (flex-wrap) */
 const minimalViewComponent = computed(() => {
@@ -1738,15 +1729,8 @@ const paginationCanNext = computed(() => {
     return table?.getCanNextPage?.() ?? false;
 });
 
-// Selection (Phase 1: local Set)
+// Selection
 const selectionEnabled = computed(() => Boolean(props.config?.features?.selection?.enabled));
-const showQuickEditToggle = computed(() => props.quickEditAllowed && selectionEnabled.value);
-
-watch(
-    () => quickEditEnabledPref.value,
-    (v) => emit("update:quickEditEnabled", v),
-    { immediate: true },
-);
 
 const checkboxMode = computed(() => props.config?.features?.selection?.checkboxMode || "auto");
 const clickToSelect = computed(() => Boolean(props.config?.features?.selection?.clickToSelect));
@@ -1757,7 +1741,7 @@ watch(
     () => props.selectedIds,
     (next) => {
         if (!Array.isArray(next)) return;
-        selectedIds.value = new Set(next);
+        selectedIds.value = toSelectedIdSet(next);
     },
     { immediate: true },
 );
@@ -1772,36 +1756,29 @@ const selectedCount = computed(() => selectedIds.value.size);
 const showSelectionCheckboxes = computed(() => {
     if (!selectionEnabled.value) return false;
     if (checkboxMode.value === "none") return false;
-    if (checkboxMode.value === "always") return true;
-    // « auto » : toujours afficher les cases dès que la sélection est activée.
-    // Sinon, sans sélection préalable on ne peut pas cliquer une ligne « vide » sur des cellules riches
-    // (liens, chips, boutons) — seuls Ctrl+A / raccourcis permettaient la première sélection.
     return true;
 });
 
 const pageRows = computed(() => table.getRowModel().rows.map((r) => r.original));
 
-const isSelected = (row) => selectedIds.value.has(row?.id);
+const isSelected = (row) => selectedSetHas(selectedIds.value, row?.id);
 
 const allSelectedOnPage = computed(() => {
     const rows = pageRows.value || [];
     if (!rows.length) return false;
-    return rows.every((r) => selectedIds.value.has(r.id));
+    return rows.every((r) => isSelected(r));
 });
 
 const someSelectedOnPage = computed(() => {
     const rows = pageRows.value || [];
     if (!rows.length) return false;
-    const count = rows.filter((r) => selectedIds.value.has(r.id)).length;
+    const count = rows.filter((r) => isSelected(r)).length;
     return count > 0 && count < rows.length;
 });
 
 const toggleRow = (row, checked) => {
-    // Normaliser l'id (certains JSON peuvent être string, mais tout le système attend des IDs numériques)
-    const idRaw = row?.id;
-    const id = typeof idRaw === "string" ? Number(idRaw) : idRaw;
-    if (id === null || typeof id === "undefined") return;
-    if (typeof id === "number" && !Number.isFinite(id)) return;
+    const id = normalizeTableRowId(row?.id);
+    if (id === null) return;
     const next = new Set(selectedIds.value);
     if (checked) next.add(id);
     else next.delete(id);
@@ -1813,10 +1790,8 @@ const toggleAllOnPage = (checked) => {
     const rows = pageRows.value || [];
     const next = new Set(selectedIds.value);
     for (const r of rows) {
-        const idRaw = r?.id;
-        const id = typeof idRaw === "string" ? Number(idRaw) : idRaw;
-        if (id === null || typeof id === "undefined") continue;
-        if (typeof id === "number" && !Number.isFinite(id)) continue;
+        const id = normalizeTableRowId(r?.id);
+        if (id === null) continue;
         if (checked) next.add(id);
         else next.delete(id);
     }
@@ -1854,7 +1829,6 @@ const handleRowClick = (row) => {
 
 /**
  * Clic ligne : Ctrl/Méta → page entité, Alt → édition, sinon sélection (toggle si `clickToSelect`).
- * Le panneau quick edit éventuel est piloté par la page via `selectedIds` + toggle tableau.
  * @param {object} row
  * @param {MouseEvent} [event]
  */
@@ -1886,7 +1860,7 @@ function moveRowFocusInTable(e, root) {
     if (!root) return false;
     const key = String(e.key || "").toLowerCase();
     if (key !== "arrowdown" && key !== "arrowup") return false;
-    const typing = isKeyboardTypingTarget(e.target);
+    const typing = isTableTypingTarget(e.target);
     if (typing) return false;
     const nodes = [...root.querySelectorAll("[data-table-row-focus]")];
     if (!nodes.length) return false;
@@ -1914,8 +1888,7 @@ function handleLineRowBlockKeydown(e, row) {
     const root = tableRootRef.value;
     if (!root) return;
     if (!root.contains(e.target)) return;
-    const typing = isKeyboardTypingTarget(e.target);
-    if (typing) return;
+    if (shouldIgnoreTableRowIntent(e)) return;
 
     const key = String(e.key || "").toLowerCase();
 
@@ -1962,11 +1935,7 @@ const goPaginationPrev = () => {
 };
 
 function isKeyboardTypingTarget(target) {
-    const el = target;
-    if (!el || !el.tagName) return false;
-    const tag = el.tagName.toLowerCase();
-    if (tag === "input" || tag === "textarea" || tag === "select") return true;
-    return Boolean(el.isContentEditable);
+    return isTableTypingTarget(target);
 }
 
 function findRowFromTableFocus() {
@@ -2022,8 +1991,13 @@ function handleTableKeydown(e) {
     if (!root) return;
     if (!root.contains(e.target) && e.target !== root) return;
 
-    const typing = isKeyboardTypingTarget(e.target);
+    const typing = isTableTypingTarget(e.target);
+    const rowIntentBlocked = shouldIgnoreTableRowIntent(e);
     const key = String(e.key || "").toLowerCase();
+
+    if (typing) {
+        return;
+    }
 
     if (e.altKey && !e.ctrlKey && !e.metaKey && key === "n") {
         e.preventDefault();
@@ -2035,13 +2009,7 @@ function handleTableKeydown(e) {
         goPaginationPrev();
         return;
     }
-    if ((e.ctrlKey || e.metaKey) && key === "n") {
-        e.preventDefault();
-        emit("create-request");
-        return;
-    }
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && key === "a") {
-        if (typing) return;
         e.preventDefault();
         if (selectionEnabled.value) {
             if (allSelectedOnPage.value) {
@@ -2053,20 +2021,21 @@ function handleTableKeydown(e) {
         return;
     }
     if ((e.ctrlKey || e.metaKey) && !e.shiftKey && key === "a") {
-        if (typing) return;
         e.preventDefault();
         if (selectionEnabled.value) toggleAllOnPage(true);
         return;
     }
     if ((e.ctrlKey || e.metaKey) && !e.shiftKey && key === "d") {
-        if (typing) return;
         e.preventDefault();
         if (selectionEnabled.value) clearSelection();
         return;
     }
 
+    if (rowIntentBlocked) {
+        return;
+    }
+
     if (e.altKey && !e.ctrlKey && !e.metaKey && (key === "o" || e.code === "KeyO")) {
-        if (typing) return;
         e.preventDefault();
         const row = findRowFromTableFocus();
         if (row) openRowActionsContextMenu(row);
@@ -2074,7 +2043,6 @@ function handleTableKeydown(e) {
     }
 
     if (key === " " || e.code === "Space") {
-        if (typing) return;
         const row = findRowFromTableFocus();
         if (!row || !selectionEnabled.value || !clickToSelect.value) return;
         e.preventDefault();
@@ -2083,7 +2051,6 @@ function handleTableKeydown(e) {
     }
 
     if (key === "enter") {
-        if (typing) return;
         const row = findRowFromTableFocus();
         if (!row) return;
         const intent = matchTableEnterIntent(e);
@@ -2095,7 +2062,6 @@ function handleTableKeydown(e) {
     }
 
     if (key === "e" && e.altKey && !e.ctrlKey && !e.metaKey) {
-        if (typing) return;
         e.preventDefault();
         const row = findRowFromTableFocus();
         if (row) emit("keyboard-intent", { type: "open-edit", row });
@@ -2249,16 +2215,6 @@ const handleExport = () => {
                         <i class="fa-solid fa-table-columns mr-1" aria-hidden></i>
                         Colonne
                     </Btn>
-                </div>
-                <div v-if="showQuickEditToggle" class="flex items-center gap-2">
-                    <span class="text-xs text-base-content/70">Quick edit</span>
-                    <input
-                        type="checkbox"
-                        class="toggle toggle-xs"
-                        :checked="quickEditEnabledPref"
-                        aria-label="Activer l’édition rapide au clic sur une ligne"
-                        @change="setQuickEditEnabledPref($event.target.checked)"
-                    />
                 </div>
                 <Btn
                     size="xs"
@@ -2510,12 +2466,7 @@ const handleExport = () => {
                             >
                                 <div
                                     v-if="showSelectionCheckboxes"
-                                    class="absolute top-2 left-2 z-30 flex items-center justify-center transition-opacity duration-150"
-                                    :class="
-                                        isSelected(row)
-                                            ? 'pointer-events-auto opacity-100'
-                                            : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'
-                                    "
+                                    class="absolute top-2 left-2 z-30 flex items-center justify-center"
                                     @click.stop="toggleRow(row, !isSelected(row))"
                                 >
                                     <input
@@ -2611,12 +2562,7 @@ const handleExport = () => {
                         >
                             <div
                                 v-if="showSelectionCheckboxes"
-                                class="absolute top-2 left-2 z-30 flex items-center justify-center transition-opacity duration-150"
-                                :class="
-                                    isSelected(row)
-                                        ? 'pointer-events-auto opacity-100'
-                                        : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'
-                                "
+                                class="absolute top-2 left-2 z-30 flex items-center justify-center"
                                 @click.stop="toggleRow(row, !isSelected(row))"
                             >
                                 <input

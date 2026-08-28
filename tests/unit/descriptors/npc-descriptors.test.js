@@ -47,21 +47,6 @@ describe('npc-descriptors', () => {
         });
     });
 
-    describe('_quickeditConfig', () => {
-        it('définit les champs quickEdit', () => {
-            const descriptors = getNpcFieldDescriptors();
-            expect(Array.isArray(descriptors._quickeditConfig?.fields)).toBe(true);
-            expect(descriptors._quickeditConfig.fields.length).toBeGreaterThan(0);
-        });
-
-        it('quickEdit contient uniquement des champs existants', () => {
-            const descriptors = getNpcFieldDescriptors();
-            const fields = descriptors._quickeditConfig.fields;
-            fields.forEach((field) => {
-                expect(descriptors).toHaveProperty(field);
-            });
-        });
-    });
 
     describe('Configuration bulk', () => {
         it('les champs avec edit.form ont une configuration bulk', () => {

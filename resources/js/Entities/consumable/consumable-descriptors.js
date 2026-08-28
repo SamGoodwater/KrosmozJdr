@@ -44,7 +44,6 @@ import { getEntityStateOptions, getRarityOptions, getUserRoleOptions, FIELD_HELP
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Consumable".
@@ -594,10 +593,6 @@ export function getConsumableFieldDescriptors(ctx = {}) {
     _tableConfig: {
       id: "consumables.index",
       entityType: "consumable",
-      quickEdit: {
-        enabled: true,
-        permission: "updateAny",
-      },
       actions: {
         enabled: true,
         permission: "view",
@@ -639,22 +634,5 @@ export function getConsumableFieldDescriptors(ctx = {}) {
         skeletonRows: 10,
       },
     },
-
-    // Configuration globale du quickedit
-    _quickeditConfig: {
-      fields: [
-        "consumable_type_id",
-        "level",
-        "rarity",
-        "state",
-        "auto_update",
-        "read_level",
-        "write_level",
-        "price",
-        "dofus_version",
-        "effect",
-        "image",
-        "dofusdb_id",
-      ],
-    },};
+  };
 }

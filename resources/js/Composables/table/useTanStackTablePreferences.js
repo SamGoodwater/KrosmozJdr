@@ -30,7 +30,7 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
         ? safeParse(window.localStorage?.getItem(key) || "")
         : null;
 
-    // Migration: v1 sans version ; v2 touchedColumns ; v3 quickEdit + sorting ; v4 défaut minimal
+    // Migration: v1 sans version ; v2 touchedColumns ; v3 tri ; v4 défaut minimal
     const savedVer = Number(saved?.version);
     const hasModernColumnPrefs = Number.isFinite(savedVer) && savedVer >= 2;
 
@@ -46,12 +46,6 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
         initialDisplayMode = defaultDisplayMode;
     }
     const displayMode = ref(initialDisplayMode);
-    /** Quick edit panel : désactivé par défaut ; l’utilisateur réactive via le toggle (persisté). */
-    const quickEditEnabled = ref(
-        typeof saved?.quickEditEnabled === "boolean"
-            ? saved.quickEditEnabled
-            : (defaults.quickEditEnabled === true),
-    );
     /**
      * Tri multi (TanStack) persisté : [{ id: string, desc: boolean }, ...]
      * Ignoré si colonnes inconnues au chargement (filtré côté TanStackTable).
@@ -67,7 +61,6 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
                 touchedColumns: touchedColumns.value,
                 pageSize: pageSize.value,
                 displayMode: displayMode.value,
-                quickEditEnabled: quickEditEnabled.value,
                 sorting: sorting.value,
             }));
         } catch {
@@ -79,7 +72,6 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
     watch(touchedColumns, persist, { deep: true });
     watch(pageSize, persist);
     watch(displayMode, persist);
-    watch(quickEditEnabled, persist);
     watch(sorting, persist, { deep: true });
 
     if (migrateLineToMinimal) {
@@ -116,10 +108,6 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
         }
     };
 
-    const setQuickEditEnabled = (v) => {
-        quickEditEnabled.value = Boolean(v);
-    };
-
     const setSorting = (list) => {
         sorting.value = Array.isArray(list) ? list : [];
     };
@@ -133,8 +121,6 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
         resetColumns,
         displayMode,
         setDisplayMode,
-        quickEditEnabled,
-        setQuickEditEnabled,
         sorting,
         setSorting,
     };

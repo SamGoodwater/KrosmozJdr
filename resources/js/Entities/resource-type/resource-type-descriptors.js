@@ -44,7 +44,6 @@ import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/Shared
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 export function getResourceTypeFieldDescriptors(ctx = {}) {
   const can = ctx?.capabilities || ctx?.meta?.capabilities || null;
@@ -393,10 +392,6 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
     _tableConfig: {
       id: "resource-types.index",
       entityType: "resource-type",
-      quickEdit: {
-        enabled: true,
-        permission: "updateAny",
-      },
       actions: {
         enabled: true,
         permission: "view",
@@ -434,16 +429,7 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
         skeletonRows: 10,
       },
     },
-
-    // Configuration globale du quickedit
-    _quickeditConfig: {
-      fields: [
-        "decision",
-        "state",
-        "read_level",
-        "write_level",
-      ],
-    },};
+  };
 }
 
 

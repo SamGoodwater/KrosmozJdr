@@ -44,7 +44,6 @@ import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/Shared
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Options pour le champ progress_state (progression de campagne)
@@ -440,10 +439,6 @@ export function getCampaignFieldDescriptors(ctx = {}) {
     _tableConfig: {
       id: "campaigns.index",
       entityType: "campaign",
-      quickEdit: {
-        enabled: true,
-        permission: "updateAny",
-      },
       actions: {
         enabled: true,
         permission: "view",
@@ -485,17 +480,5 @@ export function getCampaignFieldDescriptors(ctx = {}) {
         skeletonRows: 10,
       },
     },
-
-    // Configuration globale du quickedit
-    _quickeditConfig: {
-      fields: [
-        "progress_state",
-        "state",
-        "is_public",
-        "read_level",
-        "write_level",
-        "description",
-        "keyword",
-      ],
-    },};
+  };
 }

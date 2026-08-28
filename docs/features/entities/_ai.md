@@ -14,7 +14,7 @@
 - **Droits** : matrice rôle × état, puis `read_level`/`write_level`, l'auteur garde l'accès. Code : `app/Policies/Entity/BaseEntityPolicy.php`. Détail : [README](./README.md#droits).
 - **Backend CRUD** : un contrôleur web par entité dans `app/Http/Controllers/Entity/` ; validation par Form Requests `app/Http/Requests/Entity/`.
 - **Suppression** : `EntityDeletionService` (soft/restore/force + impact) ; API `EntityDeletionController` ; web `delete` → même service. UI : `ConfirmModal` + `delete-impact`.
-- **Tables (lecture)** : API server-side TanStack via `app/Http/Controllers/Api/*TableController.php` + bulk via `*BulkController`, changement d'état via `EntityStateController`. Index front : vue **minimal** par défaut (`useTanStackTablePreferences` v4).
+- **Tables (lecture)** : API server-side TanStack via `app/Http/Controllers/Api/*TableController.php`, changement d'état via `EntityStateController`. Index front : vue **minimal** par défaut (`useTanStackTablePreferences` v4). Sélection de lignes (cases toujours visibles, IDs normalisés) pour CSV / PDF, indépendante des droits d’édition. Raccourcis : `useTanStackTableKeyboard.js` (ignorés pendant la saisie ; pas de Ctrl+N). Pas de panneau d’édition multiple.
 - **Registre front** : `resources/js/Entities/entity-registry.js` (modèle + descriptors + adapter par type ; `normalizeEntityType()` normalise singulier/pluriel).
 - **Vues** : `minimal` | `line` | `text` | `full` | `edit`. Résolution dynamique : `resources/js/Utils/entity/resolveEntityViewComponent.js`. Conventions : rule `.cursor/rules/entity-views.mdc`.
 - **Monstres** : coquille `Monster` + stats/sorts/équipements sur `Creature` ; sorts liés en aperçu (`effect_usages_chips`, pas l’arbre) **et** `visibleToUser` (comme les équipements) ; PDF multi + `visibleToUser` ; Full affiche sorts/empty states, équipements seulement s’il y en a. `resolved-stats` créature : même visibilité que le monstre/PNJ lié. Tri catalogue par nom via sous-requête (pas de JOIN `creatures`).
@@ -28,14 +28,14 @@
 - **Registres de types** : page commune `/admin/content/types/{equipment|resource|consumable|race|spell}` (anciennes URLs `/entities/item-types` etc. redirigent). Deux flags persistés : `show_in_catalog` (en jeu / filtre catalogue) et `allow_scrap` (maj DofusDB). `decision` reste une colonne historique syncée sur les types objet. Déplacement de catégorie seulement item/resource/consumable. Boutons catalogues → cette page.
 - **États (conditions)** : scrap Dofus en `raw` ; catalogue préfiltre hors Brut. Les sorts pointent vers les 5 états JDR `playable` (Pesanteur, Empoisonné, Étourdi, Ralenti, Affaibli) via `ConditionCanonicalMapper` ; jeton Dofus conservé (`canonical_condition_id`). Flags mécaniques en chips. Maintenance : `php artisan conditions:remap-canonical`.
 - **Panoplies** : pièces en vue texte + vignette d’équipements ; bonus par palier de pièces (`2p` / `3p`) via `buildCharacteristicEffectCell`. Catalogue / fiche lecture : `items` eager-load `visibleToUser` (un brouillon lié ne fuit pas). Édition : `items` sans ce filtre (sinon un sync détacherait la pièce). Fiches **équipement** : `ItemPanoplyMark` + payload `panoplies[]` (`ItemPanoplyPayload`, eager-load table/show **filtré `visibleToUser` / `view`** — un objet jouable ne fuit pas un set ou une pièce brouillon). Édition : équipements puis bonus en tête (`PanoplyBonusEditor`, champs glass) ; recherche via `api.tables.items` (`EntityPickerCore`) ; droits en bas de page.
-- **Ouverture fiche** : Afficher (Minimal / Line / Index / table CMS) → `EntityModal` full ; Agrandir (modal) ou Ctrl+clic → page Show. Éditer (options Minimal / Line / tableau) → page Modifier. Panneau `EntityQuickEditPanel` = édition multiple. Config : `entity-actions-config.js`.
+- **Ouverture fiche** : Afficher (Minimal / Line / Index / table CMS) → `EntityModal` full ; Agrandir (modal) ou Ctrl+clic → page Show. Éditer (options Minimal / Line / tableau) → page Modifier. Config : `entity-actions-config.js`.
 - **Rareté** : 0 Commun, 1 Peu commun, 2 Rare, 3 Très rare, 4 Légendaire, 5 Unique — mêmes libellés filtres / vues / édition (`Resource::RARITY`, `RARITY_GRADIENT`).
 
 ## Fichiers pivots
 
 - `app/Policies/Entity/BaseEntityPolicy.php` — logique de droits commune (view/create/update/delete + matrice visibilité).
 - `app/Http/Controllers/Entity/SpellController.php` — exemple de contrôleur web d'entité (pattern réutilisé).
-- `app/Http/Controllers/Api/` — `*TableController`, `*BulkController`, `EntityStateController`, `EntityDeletionController`.
+- `app/Http/Controllers/Api/` — `*TableController`, `EntityStateController`, `EntityDeletionController`.
 - `app/Services/Entity/EntityDeletionService.php` — soft delete / restore / force delete + récapitulatif d’impact.
 - `resources/js/Entities/entity-registry.js` — point d'entrée front d'une entité.
 - `resources/js/Utils/entity/resolveEntityViewComponent.js` — charge le bon composant de vue.

@@ -97,7 +97,7 @@ export function getEntityConfig(entityType) {
         key,
         model: Resource,
         getDescriptors: getResourceFieldDescriptors,
-        // viewFields supprimé : utiliser descriptors._quickeditConfig.fields directement
+        // viewFields : champs d’édition via descriptors.edit
         responseAdapter: createEntityAdapter(Resource, ResourceMapper),
         defaults: { minimalImportantFields: ["level", "rarity", "state", "read_level"] },
       };

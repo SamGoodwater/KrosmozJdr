@@ -85,7 +85,6 @@ const emit = defineEmits([
   "view",
   "quick-view",
   "edit",
-  "quick-edit",
   "expand",
   "copy-link",
   "state",

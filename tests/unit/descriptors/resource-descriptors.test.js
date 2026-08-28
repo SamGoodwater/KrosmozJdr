@@ -83,23 +83,6 @@ describe('resource-descriptors (nouveau système)', () => {
         });
     });
 
-    describe('_quickeditConfig', () => {
-        it('définit les champs affichés dans quickEdit', () => {
-            const descriptors = getResourceFieldDescriptors();
-            expect(Array.isArray(descriptors._quickeditConfig?.fields)).toBe(true);
-            expect(descriptors._quickeditConfig.fields.length).toBeGreaterThan(0);
-        });
-
-        it('contient les champs bulk-editables principaux', () => {
-            const descriptors = getResourceFieldDescriptors();
-            const fields = descriptors._quickeditConfig.fields;
-            expect(fields).toContain('rarity');
-            expect(fields).toContain('level');
-            expect(fields).toContain('state');
-            expect(fields).toContain('read_level');
-            expect(fields).toContain('write_level');
-        });
-    });
 
     describe('Conformité aux règles strictes', () => {
         it('aucune logique métier dans les descriptors (pas de build bulk)', () => {

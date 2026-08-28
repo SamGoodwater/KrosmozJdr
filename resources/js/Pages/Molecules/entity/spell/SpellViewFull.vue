@@ -83,7 +83,7 @@ const headerMode = computed(() => (props.inModal ? 'compact' : 'full'));
 
 provideCharacteristicRuntime(computed(() => props.characteristicRuntime));
 
-const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
+const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
 const { dispatchEntityAction, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh } =

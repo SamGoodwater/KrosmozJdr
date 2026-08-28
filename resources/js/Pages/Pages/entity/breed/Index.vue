@@ -5,12 +5,10 @@
  * @props {Object} breeds - Collection paginée des breeds
  */
 import { Head, router } from "@inertiajs/vue3";
-import { ref, computed, watch } from "vue";
+import { ref, computed } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { Breed } from "@/Models/Entity/Breed";
-import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
 import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
 import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
@@ -20,7 +18,6 @@ import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
-import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
@@ -44,25 +41,12 @@ const { canCreate: canCreatePermission, canUpdateAny } = usePermissions();
 const canCreate = computed(() => canCreatePermission('breeds'));
 const canModify = computed(() => canUpdateAny('breeds'));
 
-const { bulkPatchJson } = useBulkRequest();
 const { copyToClipboard } = useCopyToClipboard();
 
 const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
-const {
-    tableQuickEditEnabled,
-    onUpdateTableQuickEdit,
-} = useEntityIndexQuickEditTable(Breed);
 
-watch(
-    () => canModify.value,
-    (allowed) => {
-        if (allowed) return;
-        selectedIds.value = [];
-    },
-    { immediate: true }
-);
 
 const tableConfig = computed(() => {
     const ctx = {
@@ -78,26 +62,8 @@ const tableConfig = computed(() => {
 const serverUrl = computed(() => `${route('api.tables.breeds')}?format=entities&limit=5000&_t=${refreshToken.value}`);
 
 
-const selectedEntities = computed(() => {
-    if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
-    const idSet = new Set(selectedIds.value.map((v) => Number(v)).filter((n) => Number.isFinite(n)));
-    const raw = (tableRows.value || [])
-        .filter((r) => idSet.has(Number(r?.id)))
-        .map((r) => r?.rowParams?.entity)
-        .filter(Boolean);
-    return Breed.fromArray(raw);
-});
 
-const handleBulkUpdate = async (payload) => {
-  const ok = await bulkPatchJson('/api/entities/breeds/bulk', payload);
-  if (!ok) return;
-  refreshToken.value++;
-  selectedIds.value = [];
-};
 
-const clearSelection = () => {
-    selectedIds.value = [];
-};
 
 const tableMeta = ref({});
 const handleTableLoaded = ({ rows, meta }) => {
@@ -179,7 +145,6 @@ const handleTableAction = async (actionKey, entity, row) => {
             break;
 
         case 'edit':
-        case 'quick-edit':
             router.visit(route('entities.breeds.edit', { breed: entityId }));
             break;
 
@@ -199,12 +164,6 @@ const handleTableAction = async (actionKey, entity, row) => {
     }
 };
 
-const handleModalQuickEdit = (entity) => {
-    const entityId = entity?.id;
-    if (!entityId) return;
-    closeModal();
-    router.visit(route('entities.breeds.edit', { breed: entityId }));
-};
 
 const handleModalExpand = (entity) => {
     const entityId = entity?.id;
@@ -249,14 +208,7 @@ const handleModalDelete = (_entity) => {};
             </Btn>
         </div>
 
-        <div
-            class="grid grid-cols-1 gap-4"
-            :class="{
-                'xl:grid-cols-[minmax(0,1fr)_380px]':
-                    canModify && selectedEntities.length >= 1 && tableQuickEditEnabled,
-            }"
-        >
-            <div class="min-w-0 overflow-x-auto">
+        <div class="min-w-0 overflow-x-auto">
                 <EntityTanStackTable
                     entity-type="breeds"
                     :config="tableConfig"
@@ -265,24 +217,10 @@ const handleModalDelete = (_entity) => {};
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
-                    @update:quick-edit-enabled="onUpdateTableQuickEdit"
                     @keyboard-intent="handleKeyboardIntent"
                     @create-request="handleCreateRequest"
                     @action="handleTableAction"
                 />
-            </div>
-
-            <div v-if="canModify && selectedEntities.length >= 1 && tableQuickEditEnabled" class="sticky top-4 self-start">
-                <EntityQuickEditPanel
-                    entity-type="breeds"
-                    :selected-entities="selectedEntities"
-                    :is-admin="canModify"
-                    mode="client"
-                    :filtered-ids="selectedIds"
-                    @applied="handleBulkUpdate"
-                    @clear="clearSelection"
-                />
-            </div>
         </div>
 
         <CreateEntityModal
@@ -301,7 +239,6 @@ const handleModalDelete = (_entity) => {};
             :open="modalOpen"
             :table-meta="tableMeta"
             @close="closeModal"
-            @quick-edit="handleModalQuickEdit"
             @expand="handleModalExpand"
             @copy-link="handleModalCopyLink"
             @download-pdf="handleModalDownloadPdf"

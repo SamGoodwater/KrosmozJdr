@@ -8,10 +8,9 @@
  * @props {Object} capabilities - Collection paginée des capacités
  */
 import { Head, router } from "@inertiajs/vue3";
-import { ref, computed, watch } from "vue";
+import { ref, computed } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { Capability } from "@/Models/Entity/Capability";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
@@ -21,7 +20,6 @@ import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
-import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import CapabilityEditModal from '@/Pages/Organismes/entity/CapabilityEditModal.vue';
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
@@ -31,7 +29,6 @@ import {
     CAPABILITY_FORM_FIELD_SECTIONS_CREATE,
     getCapabilityCreateDefaultEntity,
 } from "@/Entities/capability/capability-form-config";
-import { useEntityIndexQuickEditTable } from "@/Composables/entity/useEntityIndexQuickEditTable.js";
 import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
 import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 
@@ -52,7 +49,6 @@ const canCreate = computed(() => canCreatePermission('capabilities'));
 const canModify = computed(() => canUpdateAny('capabilities'));
 
 // Bulk request
-const { bulkPatchJson } = useBulkRequest();
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf("capability");
 
@@ -60,16 +56,6 @@ const { downloadPdf } = useDownloadPdf("capability");
 const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
-const { tableQuickEditEnabled, onUpdateTableQuickEdit } = useEntityIndexQuickEditTable(Capability);
-
-watch(
-    () => canModify.value,
-    (allowed) => {
-        if (allowed) return;
-        selectedIds.value = [];
-    },
-    { immediate: true },
-);
 
 // Configuration du tableau avec permissions et contexte
 const tableConfig = computed(() => {
@@ -91,28 +77,9 @@ const capabilityCreateFieldsConfig = computed(() =>
 const capabilityCreateDefaultEntity = getCapabilityCreateDefaultEntity();
 
 // Calcul des entités sélectionnées depuis les IDs et les rows
-const selectedEntities = computed(() => {
-    if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
-    // Normaliser pour éviter les mismatch string vs number (Set.has est strict)
-    const idSet = new Set(selectedIds.value.map((v) => Number(v)).filter((n) => Number.isFinite(n)));
-    const raw = (tableRows.value || [])
-        .filter((r) => idSet.has(Number(r?.id)))
-        .map((r) => r?.rowParams?.entity)
-        .filter(Boolean);
-    return Capability.fromArray(raw);
-});
 
 // Bulk edit
-const handleBulkUpdate = async (payload) => {
-  const ok = await bulkPatchJson('/api/entities/capabilities/bulk', payload);
-  if (!ok) return;
-  refreshToken.value++;
-  selectedIds.value = [];
-};
 
-const clearSelection = () => {
-    selectedIds.value = [];
-};
 
 const tableMeta = ref({});
 const handleTableLoaded = ({ rows, meta }) => {
@@ -215,7 +182,6 @@ const handleTableAction = async (actionKey, entity, row) => {
             openCapabilityEditModal(entityId);
             break;
 
-        case 'quick-edit':
             openCapabilityEditModal(entityId);
             break;
 
@@ -238,12 +204,6 @@ const handleTableAction = async (actionKey, entity, row) => {
 };
 
 // Handlers pour les actions du modal
-const handleModalQuickEdit = (entity) => {
-    const entityId = entity?.id;
-    if (!entityId) return;
-    closeModal();
-    openCapabilityEditModal(entityId);
-};
 
 const handleModalExpand = (entity) => {
     const entityId = entity?.id;
@@ -294,16 +254,7 @@ const handleModalDelete = (_entity) => {
                 Créer une capacité
             </Btn>
         </div>
-
-        <!-- Grid layout pour permettre le scroll horizontal du tableau quand le quick edit est ouvert -->
-        <div
-            class="grid grid-cols-1 gap-4"
-            :class="{
-                'xl:grid-cols-[minmax(0,1fr)_380px]':
-                    canModify && selectedEntities.length >= 1 && tableQuickEditEnabled,
-            }"
-        >
-            <div class="min-w-0 overflow-x-auto">
+        <div class="min-w-0 overflow-x-auto">
                 <EntityTanStackTable
                     entity-type="capabilities"
                     :config="tableConfig"
@@ -313,23 +264,8 @@ const handleModalDelete = (_entity) => {
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
                     @keyboard-intent="handleKeyboardIntent"
-                    @update:quick-edit-enabled="onUpdateTableQuickEdit"
                     @action="handleTableAction"
                 />
-            </div>
-
-            <!-- Quick Edit Panel -->
-            <div v-if="canModify && selectedEntities.length >= 1 && tableQuickEditEnabled" class="sticky top-4 self-start">
-                <EntityQuickEditPanel
-                    entity-type="capabilities"
-                    :selected-entities="selectedEntities"
-                    :is-admin="canModify"
-                    mode="client"
-                    :filtered-ids="selectedIds"
-                    @applied="handleBulkUpdate"
-                    @clear="clearSelection"
-                />
-            </div>
         </div>
 
         <!-- Modal de création -->
@@ -354,7 +290,6 @@ const handleModalDelete = (_entity) => {
             :open="modalOpen"
             :table-meta="tableMeta"
             @close="closeModal"
-            @quick-edit="handleModalQuickEdit"
             @expand="handleModalExpand"
             @copy-link="handleModalCopyLink"
             @download-pdf="handleModalDownloadPdf"

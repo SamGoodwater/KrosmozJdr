@@ -55,7 +55,7 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['close', 'edit', 'quick-edit', 'expand', 'copy-link', 'download-pdf', 'refresh', 'delete']);
+const emit = defineEmits(['close', 'edit', 'expand', 'copy-link', 'download-pdf', 'refresh', 'delete']);
 
 // Préférences UI / PDF : type normalisé pluriel (spell | spells → spells)
 const normalizedEntityType = normalizeEntityType(props.entityType);

@@ -182,22 +182,6 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
       return true;
     },
   },
-  "quick-edit": {
-    key: "quick-edit",
-    label: "Éditer",
-    tooltip: "Éditer",
-    icon: "fa-solid fa-pen-to-square",
-    permission: "canUpdate",
-    requiresEntity: true,
-    group: "edition",
-    getLabel: () => "Éditer",
-    getTooltip: () => "Éditer",
-    visibleIf: () => {
-      // Action historique : l’édition unitaire passe par `edit` (page Modifier).
-      // Le panneau tableau reste EntityQuickEditPanel.
-      return false;
-    },
-  },
   expand: {
     key: "expand",
     label: "Agrandir",

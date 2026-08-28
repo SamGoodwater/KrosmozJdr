@@ -53,7 +53,7 @@ const actionsContext = computed(() =>
 
 const headerMode = computed(() => (props.inModal ? 'compact' : 'full'));
 
-const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
+const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'delete', 'action']);
 
 const effectHtml = computed(() => {
     const raw = props.item?.effect ?? props.item?._data?.effect;

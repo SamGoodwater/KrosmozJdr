@@ -259,7 +259,6 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
 
             case "edit":
             case "edit-page":
-            case "quick-edit":
             case "edit-modal":
                 router.visit(route(`entities.${plural}.edit`, { [paramKey]: entityId }));
                 handlers.onEditPage?.(entity, meta);

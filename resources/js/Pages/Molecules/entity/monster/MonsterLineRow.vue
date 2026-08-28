@@ -200,12 +200,7 @@ const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length
                     size="xs"
                     :color="uiColor"
                     aria-label="Sélectionner"
-                    class="shrink-0 transition-opacity duration-150 ease-out"
-                    :class="
-                        isSelected
-                            ? 'opacity-100'
-                            : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'
-                    "
+                    class="shrink-0"
                     @update:model-value="(v) => emit('toggle-select', row, Boolean(v))"
                 />
             </div>

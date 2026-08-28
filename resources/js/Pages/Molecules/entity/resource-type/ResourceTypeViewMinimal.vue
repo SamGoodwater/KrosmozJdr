@@ -28,7 +28,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits([
-    "edit", "copy-link", "refresh", "view", "quick-view", "quick-edit", "delete", "action",
+    "edit", "copy-link", "refresh", "view", "quick-view", "delete", "action",
 ]);
 
 const entity = computed(() => props.resourceType);

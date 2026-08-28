@@ -917,10 +917,6 @@ export function getMonsterFieldDescriptors(ctx = {}) {
     _tableConfig: {
       id: 'monsters.index',
       entityType: 'monster',
-      quickEdit: {
-        enabled: true,
-        permission: 'updateAny',
-      },
       actions: {
         enabled: true,
         permission: 'view',
@@ -961,21 +957,6 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       ui: {
         skeletonRows: 10,
       },
-    },
-
-    _quickeditConfig: {
-      fields: [
-        'monster_race_id',
-        'size',
-        'is_boss',
-        'boss_pa',
-        'state',
-        'read_level',
-        'write_level',
-        'auto_update',
-        'dofus_version',
-        'dofusdb_id',
-      ],
     },
   };
 }

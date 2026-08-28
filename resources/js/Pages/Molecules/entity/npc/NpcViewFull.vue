@@ -58,7 +58,7 @@ const actionsContext = computed(() =>
 );
 
 
-const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
+const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('npc');

@@ -74,7 +74,6 @@ const emit = defineEmits([
     // Compat: remonter aussi la forme kebab-case si certains parents l'écoutent
     "update:selectedIds",
     "update:selected-ids",
-    "update:quickEditEnabled",
     "create-request",
     "keyboard-intent",
     "loaded",
@@ -151,9 +150,6 @@ const canAbility = (ability, { entityType } = {}) => {
 };
 
 const canViewAny = computed(() => canAbility("viewAny"));
-const canUpdateAny = computed(() => {
-    return canAbility("updateAny");
-});
 const selectedPdfIds = computed(() => (Array.isArray(props.selectedIds) ? props.selectedIds : []));
 const canDownloadSelectionPdf = computed(() => canViewAny.value && selectedPdfIds.value.length > 0);
 
@@ -367,10 +363,8 @@ const handleDownloadSelectionPdf = async () => {
             :server-pagination-meta="serverPaginationMeta"
             :server-params="serverParams"
             :initial-filter-values="initialFilterValues"
-            :quick-edit-allowed="canUpdateAny"
             @update:server-params="handleServerParamsChange"
             @update:selected-ids="(ids) => { emit('update:selectedIds', ids); emit('update:selected-ids', ids); }"
-            @update:quick-edit-enabled="(v) => emit('update:quickEditEnabled', v)"
             @create-request="() => emit('create-request')"
             @keyboard-intent="(p) => emit('keyboard-intent', p)"
             @row-click="handleRowClick"

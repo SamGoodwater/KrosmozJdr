@@ -36,7 +36,6 @@ const emit = defineEmits([
     "refresh",
     "view",
     "quick-view",
-    "quick-edit",
     "delete",
     "action",
 ]);

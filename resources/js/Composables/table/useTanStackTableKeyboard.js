@@ -38,7 +38,6 @@ export function parseShortcutKeysForDisplay(s) {
 export const TANSTACK_TABLE_KEYBOARD_SHORTCUTS = [
     { keys: "Alt+N", action: "Page suivante" },
     { keys: "Alt+B", action: "Page précédente" },
-    { keys: "Ctrl+N", action: "Création (événement create-request)" },
     { keys: "Ctrl+A", action: "Tout sélectionner (page courante)" },
     { keys: "Ctrl+D", action: "Tout désélectionner" },
     { keys: "Ctrl+Shift+A", action: "Basculer sélection sur la page" },
@@ -52,11 +51,64 @@ export const TANSTACK_TABLE_KEYBOARD_SHORTCUTS = [
 
 /** @type {TanStackShortcutRow[]} */
 export const TANSTACK_TABLE_POINTER_SHORTCUTS = [
-    { keys: "Clic", action: "Sélectionner la ligne (si sélection activée) ; quick edit si option activée" },
-    { keys: "Double-clic", action: "Selon la page (souvent aperçu / modal)" },
+    { keys: "Clic", action: "Sélectionner la ligne (si la cible n’est pas un lien ou un bouton)" },
+    { keys: "Case à cocher", action: "Sélectionner ou désélectionner la ligne" },
+    { keys: "Double-clic", action: "Ouvrir l’aperçu (modal vue)" },
     { keys: "Ctrl+clic / Cmd+clic", action: "Ouvrir la page fiche entité" },
     { keys: "Alt+clic", action: "Ouvrir la page d’édition" },
 ];
+
+/**
+ * Saisie en cours : ne pas intercepter les raccourcis du tableau.
+ *
+ * @param {EventTarget|null|undefined} target
+ * @returns {boolean}
+ */
+export function isTableTypingTarget(target) {
+    const el = target;
+    if (!el || typeof el !== "object" || !("tagName" in el)) {
+        return false;
+    }
+    const tag = String(el.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select") {
+        return true;
+    }
+    return Boolean(el.isContentEditable);
+}
+
+/**
+ * Contrôle interactif (bouton, lien, menu) : Entrée / Espace doivent rester natifs.
+ *
+ * @param {EventTarget|null|undefined} target
+ * @returns {boolean}
+ */
+export function isTableInteractiveTarget(target) {
+    const el = target;
+    if (!el || typeof el.closest !== "function") {
+        return false;
+    }
+    return Boolean(
+        el.closest(
+            'a,button,input,select,textarea,summary,[role="button"],[role="link"],[role="menuitem"],[contenteditable="true"],[data-no-row-select]',
+        ),
+    );
+}
+
+/**
+ * @param {KeyboardEvent} e
+ * @returns {boolean}
+ */
+export function shouldIgnoreTableShortcut(e) {
+    return isTableTypingTarget(e?.target);
+}
+
+/**
+ * @param {KeyboardEvent} e
+ * @returns {boolean}
+ */
+export function shouldIgnoreTableRowIntent(e) {
+    return isTableTypingTarget(e?.target) || isTableInteractiveTarget(e?.target);
+}
 
 /**
  * Détermine l’intention Entrée (vue / page / édition) pour une ligne.
