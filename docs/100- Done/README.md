@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Maj DofusDB « images seules » sans écraser la fiche
+
+Le bouton « Images seules » d’une fiche ne réécrit plus le contenu (sorts, bonus d’objet, pièces de panoplie). Seule l’image est mise à jour.
+
 ## Août 2026 — Filtres de tableau : largeur selon le contenu
 
 Les filtres des catalogues ne s’alignent plus sur trois colonnes identiques. Rareté, état et autres listes courtes s’affichent en pastilles ; type, race et listes longues restent un menu avec recherche. Les interrupteurs et champs texte prennent seulement la place dont ils ont besoin.

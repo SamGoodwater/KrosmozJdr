@@ -98,6 +98,7 @@ final class Orchestrator
             'exclude_from_update' => $excludeList,
             'property_whitelist' => $propertyWhitelist,
             'include_relations' => (bool) ($options['include_relations'] ?? false),
+            'images_only' => (bool) ($options['images_only'] ?? false),
             'download_images' => (bool) ($options['download_images'] ?? true),
             'spell_category_hint' => $options['spell_category_hint'] ?? null,
         ];
