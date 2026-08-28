@@ -28,6 +28,7 @@ use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Support\DofusDbElementId;
 use App\Support\DofusHyperlinkText;
 use App\Support\ElementBitmask;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -53,10 +54,14 @@ final class IntegrationService
      *
      * @param  string  $entityType  Type KrosmozJDR (ex. monster)
      * @param  array<string, array<string, mixed>>  $convertedData  Structure par modèle (creatures, monsters)
-     * @param  array{dry_run?: bool, force_update?: bool, ignore_unvalidated?: bool, exclude_from_update?: list<string>}  $options
+     * @param  array{dry_run?: bool, force_update?: bool, ignore_unvalidated?: bool, exclude_from_update?: list<string>, images_only?: bool}  $options
      */
     public function integrate(string $entityType, array $convertedData, array $options = []): IntegrationResult
     {
+        if (! empty($options['images_only'])) {
+            return $this->integrateImagesOnly($entityType, $convertedData, $options);
+        }
+
         if ($entityType === 'monster') {
             return $this->integrateMonster($convertedData, $options);
         }
@@ -74,6 +79,157 @@ final class IntegrationService
         }
 
         return IntegrationResult::fail("Type d'entité non supporté : {$entityType}");
+    }
+
+    /**
+     * Mode « images seules » : n’écrit pas les champs, effets, ni relations.
+     *
+     * @param  array<string, array<string, mixed>>  $convertedData
+     * @param  array<string, mixed>  $options
+     *
+     * @example $service->integrate('spell', $converted, ['images_only' => true]);
+     */
+    private function integrateImagesOnly(string $entityType, array $convertedData, array $options): IntegrationResult
+    {
+        $resolved = $this->resolveExistingForImagesOnly($entityType, $convertedData);
+        if ($resolved === null) {
+            return IntegrationResult::fail('Aucune fiche locale correspondante pour une mise à jour images seules.');
+        }
+
+        $mediaTarget = $resolved['media'];
+        $dryRun = (bool) ($options['dry_run'] ?? false);
+        if ($dryRun) {
+            return $this->imagesOnlyResult($entityType, $resolved, 'would_update', 'Simulation : image non téléchargée.');
+        }
+
+        $imageUrl = $this->imageUrlFromConverted($entityType, $convertedData);
+        $this->attachImageFromUrl($mediaTarget, $imageUrl, $options);
+
+        return $this->imagesOnlyResult($entityType, $resolved, 'updated', 'Image mise à jour, contenu inchangé.');
+    }
+
+    /**
+     * @param  array<string, array<string, mixed>>  $convertedData
+     * @return array{media: object, primary: object, monster?: Monster}|null
+     */
+    private function resolveExistingForImagesOnly(string $entityType, array $convertedData): ?array
+    {
+        if ($entityType === 'monster') {
+            $dofusdbId = isset($convertedData['monsters']['dofusdb_id'])
+                ? (string) $convertedData['monsters']['dofusdb_id']
+                : '';
+            if ($dofusdbId === '') {
+                return null;
+            }
+            $monster = Monster::query()->where('dofusdb_id', $dofusdbId)->first();
+            $creature = $monster?->creature;
+            if ($monster === null || $creature === null) {
+                return null;
+            }
+
+            return ['media' => $creature, 'primary' => $creature, 'monster' => $monster];
+        }
+
+        if ($entityType === 'spell') {
+            $model = $this->findByDofusdbId(Spell::query(), $convertedData['spells']['dofusdb_id'] ?? null);
+
+            return $model === null ? null : ['media' => $model, 'primary' => $model];
+        }
+
+        if ($entityType === 'breed' || $entityType === 'class') {
+            $model = $this->findByDofusdbId(
+                Breed::query(),
+                $convertedData['breeds']['dofusdb_id'] ?? $convertedData['classes']['dofusdb_id'] ?? null
+            );
+
+            return $model === null ? null : ['media' => $model, 'primary' => $model];
+        }
+
+        if ($entityType === 'panoply') {
+            $model = $this->findByDofusdbId(Panoply::query(), $convertedData['panoplies']['dofusdb_id'] ?? null);
+
+            return $model === null ? null : ['media' => $model, 'primary' => $model];
+        }
+
+        if (in_array($entityType, ['item', 'items', 'resources', 'consumables', 'resource', 'consumable'], true)) {
+            $targetTable = in_array($entityType, ['resources', 'resource', 'consumables', 'consumable'], true)
+                ? ($entityType === 'consumable' || $entityType === 'consumables' ? 'consumables' : 'resources')
+                : $this->getItemTargetTable($convertedData);
+            $data = $convertedData[$targetTable]
+                ?? $convertedData['items']
+                ?? $convertedData['resources']
+                ?? $convertedData['consumables']
+                ?? [];
+            $dofusdbId = $data['dofusdb_id'] ?? null;
+            $model = match ($targetTable) {
+                'consumables' => $this->findByDofusdbId(Consumable::query(), $dofusdbId),
+                'resources' => $this->findByDofusdbId(Resource::query(), $dofusdbId),
+                default => $this->findByDofusdbId(Item::query(), $dofusdbId),
+            };
+
+            return $model === null ? null : ['media' => $model, 'primary' => $model];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder<Model>  $query
+     */
+    private function findByDofusdbId($query, mixed $dofusdbId): ?Model
+    {
+        if ($dofusdbId === null || $dofusdbId === '') {
+            return null;
+        }
+
+        return $query->where('dofusdb_id', (string) $dofusdbId)->first();
+    }
+
+    /**
+     * @param  array<string, array<string, mixed>>  $convertedData
+     */
+    private function imageUrlFromConverted(string $entityType, array $convertedData): ?string
+    {
+        $raw = match (true) {
+            $entityType === 'monster' => $convertedData['creatures']['image'] ?? null,
+            $entityType === 'spell' => $convertedData['spells']['image'] ?? null,
+            $entityType === 'breed' || $entityType === 'class' => $convertedData['breeds']['image']
+                ?? $convertedData['classes']['image']
+                ?? null,
+            $entityType === 'panoply' => $convertedData['panoplies']['image'] ?? null,
+            default => $convertedData['items']['image']
+                ?? $convertedData['resources']['image']
+                ?? $convertedData['consumables']['image']
+                ?? null,
+        };
+
+        return is_string($raw) && $raw !== '' ? $raw : null;
+    }
+
+    /**
+     * @param  array{media: object, primary: object, monster?: Monster}  $resolved
+     */
+    private function imagesOnlyResult(string $entityType, array $resolved, string $action, string $message): IntegrationResult
+    {
+        if ($entityType === 'monster') {
+            $creature = $resolved['primary'];
+            $monster = $resolved['monster'] ?? null;
+
+            return IntegrationResult::ok(
+                (int) $creature->id,
+                $monster !== null ? (int) $monster->id : null,
+                $action,
+                $action,
+                $message,
+                ['creature' => $creature->toArray(), 'monster' => $monster?->toArray()]
+            );
+        }
+
+        $primary = $resolved['primary'];
+
+        return IntegrationResult::okEntity((int) $primary->id, $action, $message, [
+            'entity' => $primary->toArray(),
+        ]);
     }
 
     /**
