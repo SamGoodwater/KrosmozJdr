@@ -3,8 +3,8 @@
  * TanStackTableFilters Molecule
  *
  * @description
- * UI générique des filtres côté client (select/boolean/text) à partir de la config.
- * Les options peuvent venir de `filterOptions` (serveur) ou de la colonne (fallback).
+ * Contrôles de filtres tableau : listes compactes par défaut,
+ * interrupteur pour les booléens, champ texte sinon.
  */
 
 import ToggleCore from "@/Pages/Atoms/data-input/ToggleCore.vue";
@@ -18,7 +18,7 @@ import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import SpellTypeBadge from "@/Pages/Molecules/entity/spell/SpellTypeBadge.vue";
 import { computed, unref, ref } from "vue";
 import { buildSelectOptionBadgeProps } from "@/Utils/Entity/selectOptionBadge.js";
-import { resolveTableFilterLayout } from "@/Utils/table/resolveTableFilterLayout.js";
+import { resolveTableFilterLayout, shouldShowTableFilterMenuSearch } from "@/Utils/table/resolveTableFilterLayout.js";
 
 const props = defineProps({
     columns: { type: Array, required: true },
@@ -71,18 +71,20 @@ const getOptions = (col) => {
 const getFilterLayout = (col) =>
     resolveTableFilterLayout({
         type: col?.filter?.type,
-        uiLayout: getFilterUi(col).layout,
-        optionCount: (getOptions(col) || []).length,
         isBooleanSelect: isBooleanSelect(col),
+    });
+
+const showMenuSearch = (col) =>
+    shouldShowTableFilterMenuSearch({
+        optionCount: (getOptions(col) || []).length,
+        searchable: getFilterUi(col).searchable !== false,
     });
 
 /** Classes littérales (Tailwind n’accepte pas de classes construites). */
 const filterShellClass = (col) => {
     const layout = getFilterLayout(col);
     if (layout === "text") return "flex flex-col gap-1 w-full max-w-xs";
-    if (layout === "toggle") return "flex flex-col gap-1 w-auto";
-    if (layout === "chips") return "flex flex-col gap-1 min-w-0 max-w-full";
-    return "flex flex-col gap-1 w-full sm:w-auto";
+    return "flex flex-col gap-1 w-auto";
 };
 
 /**
@@ -198,24 +200,7 @@ const toggleMultiValue = (filterId, value, checked) => {
     setMultiValues(filterId, Array.from(current));
 };
 
-const isMultiValueOn = (col, opt) =>
-    getRawFilterArrayValue(col?.filter?.id).includes(String(opt?.value));
-
-const onMultiChipClick = (col, opt) => {
-    const v = String(opt?.value);
-    toggleMultiValue(col.filter.id, v, !isMultiValueOn(col, opt));
-};
-
-const onSelectChipClick = (col, opt) => {
-    const v = String(opt?.value);
-    if (getRawFilterValue(col.filter.id) === v) {
-        handleSelectUpdate(col.filter.id, null);
-        return;
-    }
-    handleSelectUpdate(col.filter.id, v);
-};
-
-const chipVariant = (on) => (on ? "glass" : "outline");
+const menuTriggerLabel = (col, summary) => `${getFilterLabel(col)} · ${summary}`;
 
 const clearMultiFilter = (filterId) => setMultiValues(filterId, []);
 const selectAllMulti = (col) => {
@@ -405,9 +390,8 @@ const clearAllActiveFilters = () => {
     <div class="flex flex-col gap-3">
         <div class="text-sm font-semibold">Filtres</div>
 
-        <div class="flex flex-wrap items-end gap-x-3 gap-y-3">
+        <div class="flex flex-wrap items-center gap-2">
             <div v-for="col in visibleFilterColumns()" :key="col.id" :class="filterShellClass(col)">
-                <div class="text-xs opacity-70">{{ getFilterLabel(col) }}</div>
 
                 <!-- toggle (switch ON=actif, OFF=pas de filtre) -->
                 <div
@@ -415,27 +399,24 @@ const clearAllActiveFilters = () => {
                     class="inline-flex items-center gap-2"
                 >
                     <div class="flex items-center gap-3">
-                        <div class="w-12 flex items-center justify-center shrink-0">
-                            <ToggleCore
-                                :model-value="Boolean(values?.[col.filter.id]) === true"
-                                size="sm"
-                                :color="uiColor"
-                                @update:model-value="(v) => updateFilter(col.filter.id, Boolean(v) ? true : '')"
-                            />
-                        </div>
-                        <span class="text-sm opacity-80">
-                            {{ Boolean(values?.[col.filter.id]) === true ? (col.filter?.onLabel || 'Activé') : (col.filter?.offLabel || 'Tous') }}
+                        <span class="text-sm">
+                            {{ getFilterLabel(col) }}
                         </span>
+                        <ToggleCore
+                            :model-value="Boolean(values?.[col.filter.id]) === true"
+                            size="sm"
+                            :color="uiColor"
+                            @update:model-value="(v) => updateFilter(col.filter.id, Boolean(v) ? true : '')"
+                        />
                     </div>
                     <Btn
+                        v-if="Boolean(values?.[col.filter.id]) === true"
                         type="button"
                         size="xs"
                         variant="ghost"
                         square
                         class="w-7 h-7 min-h-0 px-0 flex items-center justify-center"
                         title="Retirer le filtre"
-                        :disabled="Boolean(values?.[col.filter.id]) !== true"
-                        :class="{ 'opacity-40 cursor-default': Boolean(values?.[col.filter.id]) !== true }"
                         @click="updateFilter(col.filter.id, '')"
                     >
                         ✕
@@ -448,111 +429,34 @@ const clearAllActiveFilters = () => {
                     class="inline-flex items-center gap-2"
                 >
                     <div class="flex items-center gap-3">
-                        <!-- wrapper fixe pour éviter tout micro-shift de layout -->
-                        <div class="w-12 flex items-center justify-center shrink-0">
-                            <ToggleCore
-                                :model-value="isBooleanChecked(getRawFilterValue(col.filter.id))"
-                                :indeterminate="isBooleanIndeterminate(getRawFilterValue(col.filter.id))"
-                                size="sm"
-                                :color="uiColor"
-                                @update:model-value="(v) => toggleBooleanFilter(col.filter.id, v)"
-                            />
-                        </div>
-
-                        <span
-                            class="text-sm min-w-10"
-                            :class="{ 'opacity-70 italic': !hasBooleanFilter(col.filter.id) }"
-                        >
-                            {{ booleanStateLabel(getRawFilterValue(col.filter.id)) }}
-                        </span>
+                        <span class="text-sm">{{ getFilterLabel(col) }}</span>
+                        <ToggleCore
+                            :model-value="isBooleanChecked(getRawFilterValue(col.filter.id))"
+                            :indeterminate="isBooleanIndeterminate(getRawFilterValue(col.filter.id))"
+                            size="sm"
+                            :color="uiColor"
+                            @update:model-value="(v) => toggleBooleanFilter(col.filter.id, v)"
+                        />
                     </div>
 
                     <Btn
+                        v-if="hasBooleanFilter(col.filter.id)"
                         type="button"
                         size="xs"
                         variant="ghost"
                         square
                         class="w-7 h-7 min-h-0 px-0 flex items-center justify-center"
                         title="Retirer le filtre"
-                        :disabled="!hasBooleanFilter(col.filter.id)"
-                        :class="{ 'opacity-40 cursor-default': !hasBooleanFilter(col.filter.id) }"
                         @click="clearBooleanFilter(col.filter.id)"
                     >
                         ✕
                     </Btn>
                 </div>
 
-                <div
-                    v-else-if="col.filter.type === 'select' && !isBooleanSelect(col) && getFilterLayout(col) === 'chips'"
-                    class="flex flex-wrap items-center gap-1.5"
-                    role="radiogroup"
-                    :aria-label="getFilterLabel(col)"
-                >
-                    <Btn
-                        type="button"
-                        size="xs"
-                        :variant="chipVariant(getRawFilterValue(col.filter.id) === '')"
-                        :color="uiColor"
-                        :active="getRawFilterValue(col.filter.id) === ''"
-                        role="radio"
-                        :aria-checked="getRawFilterValue(col.filter.id) === ''"
-                        title="Tous"
-                        @click="handleSelectUpdate(col.filter.id, null)"
-                    >
-                        Tous
-                    </Btn>
-                    <Btn
-                        v-for="opt in getOptions(col)"
-                        :key="String(opt.value)"
-                        type="button"
-                        size="xs"
-                        :variant="chipVariant(getRawFilterValue(col.filter.id) === String(opt.value))"
-                        :color="uiColor"
-                        :active="getRawFilterValue(col.filter.id) === String(opt.value)"
-                        role="radio"
-                        :aria-checked="getRawFilterValue(col.filter.id) === String(opt.value)"
-                        :title="String(opt.label ?? opt.value)"
-                        @click="onSelectChipClick(col, opt)"
-                    >
-                        <span
-                            v-if="isOptionBadgeEnabled(col)"
-                            class="inline-flex items-center gap-1.5 min-w-0"
-                        >
-                            <span
-                                v-if="optionBadgeProps(col, opt).stateDotClass"
-                                class="w-2 h-2 rounded-full shrink-0 ring-1 ring-base-300 opacity-90"
-                                :class="optionBadgeProps(col, opt).stateDotClass"
-                                aria-hidden="true"
-                            />
-                            <Badge
-                                :color="optionBadgeProps(col, opt).color"
-                                :auto-label="optionBadgeProps(col, opt).autoLabel"
-                                :auto-scheme="optionBadgeProps(col, opt).autoScheme || undefined"
-                                :auto-tone="optionBadgeProps(col, opt).autoTone || undefined"
-                                :variant="optionBadgeProps(col, opt).variant"
-                                :glassy="Boolean(optionBadgeProps(col, opt).glassy)"
-                                :strong="Boolean(optionBadgeProps(col, opt).strong)"
-                                :text-color="optionBadgeProps(col, opt).textColor || ''"
-                                size="sm"
-                            >
-                                {{ opt.label }}
-                            </Badge>
-                        </span>
-                        <SpellTypeBadge
-                            v-else-if="isSpellTypeBadgeEnabled(col)"
-                            :name="String(opt.label ?? opt.value ?? '')"
-                            :color="opt.color || null"
-                            :icon-hint="opt.icon ?? null"
-                            size="sm"
-                        />
-                        <span v-else>{{ opt.label }}</span>
-                    </Btn>
-                </div>
-
                 <!-- select => dropdown single -->
                 <div
                     v-else-if="col.filter.type === 'select' && !isBooleanSelect(col)"
-                    class="inline-flex items-center gap-1 w-full sm:w-auto"
+                    class="inline-flex items-center gap-1"
                 >
                     <Dropdown placement="bottom-start" :close-on-content-click="false">
                         <template #trigger>
@@ -561,16 +465,16 @@ const clearAllActiveFilters = () => {
                                 variant="outline"
                                 :color="uiColor"
                                 opacity="lg"
-                                class="gap-2 w-full sm:w-auto max-w-full"
+                                class="gap-2"
                                 title="Choisir une valeur"
                             >
-                                <Icon source="fa-solid fa-filter" alt="Filtre" size="sm" />
-                                <span class="truncate max-w-40">{{ getSelectedLabel(col) }}</span>
+                                <span class="truncate max-w-52">{{ menuTriggerLabel(col, getSelectedLabel(col)) }}</span>
                             </Btn>
                         </template>
                         <template #content>
                             <div class="p-3 w-72 space-y-2">
                                 <InputCore
+                                    v-if="showMenuSearch(col)"
                                     type="search"
                                     variant="glass"
                                     :color="uiColor"
@@ -646,14 +550,13 @@ const clearAllActiveFilters = () => {
                     </Dropdown>
 
                     <Btn
+                        v-if="getRawFilterValue(col.filter.id) !== ''"
                         type="button"
                         size="xs"
                         variant="ghost"
                         square
                         class="w-7 h-7 min-h-0 px-0 flex items-center justify-center"
                         title="Retirer le filtre"
-                        :disabled="getRawFilterValue(col.filter.id) === ''"
-                        :class="{ 'opacity-40 cursor-default': getRawFilterValue(col.filter.id) === '' }"
                         @click="handleSelectUpdate(col.filter.id, null)"
                     >
                         ✕
@@ -666,96 +569,34 @@ const clearAllActiveFilters = () => {
                     class="inline-flex items-center gap-2"
                 >
                     <div class="flex items-center gap-3">
-                        <div class="w-12 flex items-center justify-center shrink-0">
-                            <ToggleCore
-                                :model-value="isBooleanChecked(getRawFilterValue(col.filter.id))"
-                                :indeterminate="isBooleanIndeterminate(getRawFilterValue(col.filter.id))"
-                                size="sm"
-                                :color="uiColor"
-                                @update:model-value="(v) => toggleBooleanFilter(col.filter.id, v)"
-                            />
-                        </div>
-
-                        <span
-                            class="text-sm min-w-10"
-                            :class="{ 'opacity-70 italic': !hasBooleanFilter(col.filter.id) }"
-                        >
-                            {{ booleanStateLabel(getRawFilterValue(col.filter.id)) }}
-                        </span>
+                        <span class="text-sm">{{ getFilterLabel(col) }}</span>
+                        <ToggleCore
+                            :model-value="isBooleanChecked(getRawFilterValue(col.filter.id))"
+                            :indeterminate="isBooleanIndeterminate(getRawFilterValue(col.filter.id))"
+                            size="sm"
+                            :color="uiColor"
+                            @update:model-value="(v) => toggleBooleanFilter(col.filter.id, v)"
+                        />
                     </div>
 
                     <Btn
+                        v-if="hasBooleanFilter(col.filter.id)"
                         type="button"
                         size="xs"
                         variant="ghost"
                         square
                         class="w-7 h-7 min-h-0 px-0 flex items-center justify-center"
                         title="Retirer le filtre"
-                        :disabled="!hasBooleanFilter(col.filter.id)"
-                        :class="{ 'opacity-40 cursor-default': !hasBooleanFilter(col.filter.id) }"
                         @click="clearBooleanFilter(col.filter.id)"
                     >
                         ✕
                     </Btn>
                 </div>
 
-                <div
-                    v-else-if="col.filter.type === 'multi' && getFilterLayout(col) === 'chips'"
-                    class="flex flex-wrap items-center gap-1.5"
-                    role="group"
-                    :aria-label="getFilterLabel(col)"
-                >
-                    <Btn
-                        v-for="opt in getOptions(col)"
-                        :key="String(opt.value)"
-                        type="button"
-                        size="xs"
-                        :variant="chipVariant(isMultiValueOn(col, opt))"
-                        :color="uiColor"
-                        :active="isMultiValueOn(col, opt)"
-                        :aria-pressed="isMultiValueOn(col, opt)"
-                        :title="String(opt.label ?? opt.value)"
-                        @click="onMultiChipClick(col, opt)"
-                    >
-                        <span
-                            v-if="isOptionBadgeEnabled(col)"
-                            class="inline-flex items-center gap-1.5 min-w-0"
-                        >
-                            <span
-                                v-if="optionBadgeProps(col, opt).stateDotClass"
-                                class="w-2 h-2 rounded-full shrink-0 ring-1 ring-base-300 opacity-90"
-                                :class="optionBadgeProps(col, opt).stateDotClass"
-                                aria-hidden="true"
-                            />
-                            <Badge
-                                :color="optionBadgeProps(col, opt).color"
-                                :auto-label="optionBadgeProps(col, opt).autoLabel"
-                                :auto-scheme="optionBadgeProps(col, opt).autoScheme || undefined"
-                                :auto-tone="optionBadgeProps(col, opt).autoTone || undefined"
-                                :variant="optionBadgeProps(col, opt).variant"
-                                :glassy="Boolean(optionBadgeProps(col, opt).glassy)"
-                                :strong="Boolean(optionBadgeProps(col, opt).strong)"
-                                :text-color="optionBadgeProps(col, opt).textColor || ''"
-                                size="sm"
-                            >
-                                {{ opt.label }}
-                            </Badge>
-                        </span>
-                        <SpellTypeBadge
-                            v-else-if="isSpellTypeBadgeEnabled(col)"
-                            :name="String(opt.label ?? opt.value ?? '')"
-                            :color="opt.color || null"
-                            :icon-hint="opt.icon ?? null"
-                            size="sm"
-                        />
-                        <span v-else>{{ opt.label }}</span>
-                    </Btn>
-                </div>
-
                 <!-- multi (dropdown + checkboxes) -->
                 <div
                     v-else-if="col.filter.type === 'multi'"
-                    class="inline-flex items-center gap-1 w-full sm:w-auto"
+                    class="inline-flex items-center gap-1"
                 >
                     <Dropdown
                         placement="bottom-start"
@@ -767,17 +608,16 @@ const clearAllActiveFilters = () => {
                                 variant="outline"
                                 :color="uiColor"
                                 opacity="lg"
-                                class="gap-2 w-full sm:w-auto max-w-full"
+                                class="gap-2"
                                 title="Choisir plusieurs valeurs"
                             >
-                                <Icon source="fa-solid fa-filter" alt="Filtre" size="sm" />
-                                <span class="truncate max-w-40">{{ multiSummary(col) }}</span>
+                                <span class="truncate max-w-52">{{ menuTriggerLabel(col, multiSummary(col)) }}</span>
                             </Btn>
                         </template>
                         <template #content>
                             <div class="p-3 w-72 space-y-2">
                                 <InputCore
-                                    v-if="getFilterUi(col).searchable !== false"
+                                    v-if="showMenuSearch(col)"
                                     type="search"
                                     variant="glass"
                                     :color="uiColor"
@@ -848,14 +688,13 @@ const clearAllActiveFilters = () => {
                     </Dropdown>
 
                     <Btn
+                        v-if="getRawFilterArrayValue(col.filter.id).length > 0"
                         type="button"
                         size="xs"
                         variant="ghost"
                         square
                         class="w-7 h-7 min-h-0 px-0 flex items-center justify-center"
                         title="Retirer le filtre"
-                        :disabled="getRawFilterArrayValue(col.filter.id).length === 0"
-                        :class="{ 'opacity-40 cursor-default': getRawFilterArrayValue(col.filter.id).length === 0 }"
                         @click="clearMultiFilter(col.filter.id)"
                     >
                         ✕
@@ -863,16 +702,33 @@ const clearAllActiveFilters = () => {
                 </div>
 
                 <!-- text -->
-                <InputCore
+                <div
                     v-else-if="col.filter.type === 'text'"
-                    class="w-full"
-                    type="text"
-                    variant="glass"
-                    :color="uiColor"
-                    size="sm"
-                    :model-value="getTextModelValue(col.filter.id)"
-                    @update:model-value="(v) => handleTextUpdate(col.filter.id, v)"
-                />
+                    class="inline-flex items-center gap-1"
+                >
+                    <InputCore
+                        class="w-full"
+                        type="text"
+                        variant="glass"
+                        :color="uiColor"
+                        size="sm"
+                        :label-in-start="getFilterLabel(col)"
+                        :model-value="getTextModelValue(col.filter.id)"
+                        @update:model-value="(v) => handleTextUpdate(col.filter.id, v)"
+                    />
+                    <Btn
+                        v-if="getTextModelValue(col.filter.id) !== ''"
+                        type="button"
+                        size="xs"
+                        variant="ghost"
+                        square
+                        class="w-7 h-7 min-h-0 px-0 flex items-center justify-center"
+                        title="Retirer le filtre"
+                        @click="handleTextUpdate(col.filter.id, '')"
+                    >
+                        ✕
+                    </Btn>
+                </div>
 
                 <!-- unsupported (Phase 1) -->
                 <div v-else class="text-xs opacity-50">

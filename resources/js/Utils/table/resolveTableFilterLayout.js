@@ -1,27 +1,20 @@
 /**
- * Densité d’un filtre de tableau : chips (petit ensemble) ou menu (liste longue).
+ * Contrôle d’un filtre de tableau : liste (menu), interrupteur, ou saisie.
  *
  * @example
- * resolveTableFilterLayout({ type: "multi", optionCount: 6 }) // "chips"
- * resolveTableFilterLayout({ type: "multi", optionCount: 40 }) // "menu"
+ * resolveTableFilterLayout({ type: "multi" }) // "menu"
+ * resolveTableFilterLayout({ type: "boolean" }) // "toggle"
  */
 
-export const TABLE_FILTER_CHIP_MAX_OPTIONS = 8;
+export const TABLE_FILTER_MENU_SEARCH_MIN_OPTIONS = 8;
 
 /**
  * @param {object} params
  * @param {string} [params.type]
- * @param {string} [params.uiLayout] `"chips"` | `"menu"` (forcé)
- * @param {number} [params.optionCount]
  * @param {boolean} [params.isBooleanSelect]
- * @returns {"toggle"|"text"|"chips"|"menu"|"unsupported"}
+ * @returns {"toggle"|"text"|"menu"|"unsupported"}
  */
-export function resolveTableFilterLayout({
-    type,
-    uiLayout = "",
-    optionCount = 0,
-    isBooleanSelect = false,
-} = {}) {
+export function resolveTableFilterLayout({ type, isBooleanSelect = false } = {}) {
     const kind = String(type || "");
     if (kind === "toggle" || kind === "boolean" || isBooleanSelect) {
         return "toggle";
@@ -29,18 +22,23 @@ export function resolveTableFilterLayout({
     if (kind === "text") {
         return "text";
     }
-    if (kind !== "multi" && kind !== "select") {
-        return "unsupported";
+    if (kind === "multi" || kind === "select") {
+        return "menu";
     }
+    return "unsupported";
+}
 
-    const forced = String(uiLayout || "").toLowerCase();
-    if (forced === "chips" || forced === "menu") {
-        return forced;
+/**
+ * Recherche dans le menu seulement si la liste est longue.
+ *
+ * @param {object} params
+ * @param {number} [params.optionCount]
+ * @param {boolean} [params.searchable]
+ * @returns {boolean}
+ */
+export function shouldShowTableFilterMenuSearch({ optionCount = 0, searchable = true } = {}) {
+    if (searchable === false) {
+        return false;
     }
-
-    const count = Number(optionCount);
-    if (Number.isFinite(count) && count > 0 && count <= TABLE_FILTER_CHIP_MAX_OPTIONS) {
-        return "chips";
-    }
-    return "menu";
+    return Number(optionCount) > TABLE_FILTER_MENU_SEARCH_MIN_OPTIONS;
 }

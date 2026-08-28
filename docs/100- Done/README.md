@@ -1,8 +1,8 @@
 # Ce qui a été fait
 
-## Août 2026 — Filtres de tableau : largeur selon le contenu
+## Août 2026 — Filtres de tableau : listes compactes
 
-Les filtres des catalogues ne s’alignent plus sur trois colonnes identiques. Rareté, état et autres listes courtes s’affichent en pastilles ; type, race et listes longues restent un menu avec recherche. Les interrupteurs et champs texte prennent seulement la place dont ils ont besoin.
+Les filtres des catalogues restent des listes compactes : le bouton affiche le nom du champ et la valeur (`Rareté · Tous`). Un interrupteur sert pour les oui/non, un champ texte pour la saisie. La recherche dans le menu n’apparaît que s’il y a plus de 8 options. Le bouton pour retirer un filtre n’est là que lorsqu’il est actif.
 
 ## Août 2026 — Tableaux : plus de quick edit, sélection et raccourcis
 
