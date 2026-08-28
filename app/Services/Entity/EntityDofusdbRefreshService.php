@@ -86,13 +86,14 @@ class EntityDofusdbRefreshService
 
         return [
             'convert' => true,
-            'validate' => true,
+            'validate' => ! $imagesOnly,
             'integrate' => ! $preview,
             'dry_run' => $preview,
             'force_update' => $adminForce || ! $preview,
             'replace_mode' => $adminForce ? 'always' : null,
             'respect_auto_update' => ! $adminForce,
             'include_relations' => ! $imagesOnly,
+            'images_only' => $imagesOnly,
             'exclude_from_update' => $imagesOnly ? DofusdbRefreshableEntities::IMAGE_ONLY_EXCLUDE : [],
             'download_images' => $imagesOnly || $mode === 'full' || $preview,
             'lang' => 'fr',
