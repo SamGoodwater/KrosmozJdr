@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Filtres de tableau : largeur selon le contenu
+
+Les filtres des catalogues ne s’alignent plus sur trois colonnes identiques. Rareté, état et autres listes courtes s’affichent en pastilles ; type, race et listes longues restent un menu avec recherche. Les interrupteurs et champs texte prennent seulement la place dont ils ont besoin.
+
 ## Août 2026 — Tableaux : plus de quick edit, sélection et raccourcis
 
 L’édition groupée dans les catalogues (panneau latéral, toggle Quick edit) a été retirée : on modifie une fiche via la page Modifier. On peut à nouveau cocher des lignes dans les trois vues (minimal, ligne, colonnes) pour l’export CSV ou le PDF. Les cases restent visibles. Les raccourcis du tableau ne volent plus la saisie (recherche, filtres) ni Entrée/Espace sur un bouton ; Ctrl+N (nouvelle fenêtre du navigateur) n’est plus intercepté.

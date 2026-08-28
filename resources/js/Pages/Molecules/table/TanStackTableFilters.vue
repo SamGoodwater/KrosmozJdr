@@ -18,6 +18,7 @@ import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import SpellTypeBadge from "@/Pages/Molecules/entity/spell/SpellTypeBadge.vue";
 import { computed, unref, ref } from "vue";
 import { buildSelectOptionBadgeProps } from "@/Utils/Entity/selectOptionBadge.js";
+import { resolveTableFilterLayout } from "@/Utils/table/resolveTableFilterLayout.js";
 
 const props = defineProps({
     columns: { type: Array, required: true },
@@ -58,8 +59,30 @@ const values = computed(() => unref(props.filterValues) || {});
 
 const getOptions = (col) => {
     const id = col?.filter?.id;
-    if (id && Array.isArray(props.filterOptions?.[id])) return props.filterOptions[id];
+    if (id && Array.isArray(props.filterOptions?.[id]) && props.filterOptions[id].length > 0) {
+        return props.filterOptions[id];
+    }
+    if (Array.isArray(col?.filter?.options) && col.filter.options.length > 0) {
+        return col.filter.options;
+    }
     return [];
+};
+
+const getFilterLayout = (col) =>
+    resolveTableFilterLayout({
+        type: col?.filter?.type,
+        uiLayout: getFilterUi(col).layout,
+        optionCount: (getOptions(col) || []).length,
+        isBooleanSelect: isBooleanSelect(col),
+    });
+
+/** Classes littérales (Tailwind n’accepte pas de classes construites). */
+const filterShellClass = (col) => {
+    const layout = getFilterLayout(col);
+    if (layout === "text") return "flex flex-col gap-1 w-full max-w-xs";
+    if (layout === "toggle") return "flex flex-col gap-1 w-auto";
+    if (layout === "chips") return "flex flex-col gap-1 min-w-0 max-w-full";
+    return "flex flex-col gap-1 w-full sm:w-auto";
 };
 
 /**
@@ -174,6 +197,25 @@ const toggleMultiValue = (filterId, value, checked) => {
     else current.delete(v);
     setMultiValues(filterId, Array.from(current));
 };
+
+const isMultiValueOn = (col, opt) =>
+    getRawFilterArrayValue(col?.filter?.id).includes(String(opt?.value));
+
+const onMultiChipClick = (col, opt) => {
+    const v = String(opt?.value);
+    toggleMultiValue(col.filter.id, v, !isMultiValueOn(col, opt));
+};
+
+const onSelectChipClick = (col, opt) => {
+    const v = String(opt?.value);
+    if (getRawFilterValue(col.filter.id) === v) {
+        handleSelectUpdate(col.filter.id, null);
+        return;
+    }
+    handleSelectUpdate(col.filter.id, v);
+};
+
+const chipVariant = (on) => (on ? "glass" : "outline");
 
 const clearMultiFilter = (filterId) => setMultiValues(filterId, []);
 const selectAllMulti = (col) => {
@@ -363,14 +405,14 @@ const clearAllActiveFilters = () => {
     <div class="flex flex-col gap-3">
         <div class="text-sm font-semibold">Filtres</div>
 
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-            <div v-for="col in visibleFilterColumns()" :key="col.id" class="space-y-1">
+        <div class="flex flex-wrap items-end gap-x-3 gap-y-3">
+            <div v-for="col in visibleFilterColumns()" :key="col.id" :class="filterShellClass(col)">
                 <div class="text-xs opacity-70">{{ getFilterLabel(col) }}</div>
 
                 <!-- toggle (switch ON=actif, OFF=pas de filtre) -->
                 <div
                     v-if="col.filter.type === 'toggle'"
-                    class="flex items-center justify-between gap-3 w-full rounded-box border border-base-300 px-2 py-1"
+                    class="inline-flex items-center gap-2"
                 >
                     <div class="flex items-center gap-3">
                         <div class="w-12 flex items-center justify-center shrink-0">
@@ -403,7 +445,7 @@ const clearAllActiveFilters = () => {
                 <!-- boolean (switch) -->
                 <div
                     v-else-if="col.filter.type === 'boolean'"
-                    class="flex items-center justify-between gap-3 w-full rounded-box border border-base-300 px-2 py-1"
+                    class="inline-flex items-center gap-2"
                 >
                     <div class="flex items-center gap-3">
                         <!-- wrapper fixe pour éviter tout micro-shift de layout -->
@@ -440,10 +482,77 @@ const clearAllActiveFilters = () => {
                     </Btn>
                 </div>
 
+                <div
+                    v-else-if="col.filter.type === 'select' && !isBooleanSelect(col) && getFilterLayout(col) === 'chips'"
+                    class="flex flex-wrap items-center gap-1.5"
+                    role="radiogroup"
+                    :aria-label="getFilterLabel(col)"
+                >
+                    <Btn
+                        type="button"
+                        size="xs"
+                        :variant="chipVariant(getRawFilterValue(col.filter.id) === '')"
+                        :color="uiColor"
+                        :active="getRawFilterValue(col.filter.id) === ''"
+                        role="radio"
+                        :aria-checked="getRawFilterValue(col.filter.id) === ''"
+                        title="Tous"
+                        @click="handleSelectUpdate(col.filter.id, null)"
+                    >
+                        Tous
+                    </Btn>
+                    <Btn
+                        v-for="opt in getOptions(col)"
+                        :key="String(opt.value)"
+                        type="button"
+                        size="xs"
+                        :variant="chipVariant(getRawFilterValue(col.filter.id) === String(opt.value))"
+                        :color="uiColor"
+                        :active="getRawFilterValue(col.filter.id) === String(opt.value)"
+                        role="radio"
+                        :aria-checked="getRawFilterValue(col.filter.id) === String(opt.value)"
+                        :title="String(opt.label ?? opt.value)"
+                        @click="onSelectChipClick(col, opt)"
+                    >
+                        <span
+                            v-if="isOptionBadgeEnabled(col)"
+                            class="inline-flex items-center gap-1.5 min-w-0"
+                        >
+                            <span
+                                v-if="optionBadgeProps(col, opt).stateDotClass"
+                                class="w-2 h-2 rounded-full shrink-0 ring-1 ring-base-300 opacity-90"
+                                :class="optionBadgeProps(col, opt).stateDotClass"
+                                aria-hidden="true"
+                            />
+                            <Badge
+                                :color="optionBadgeProps(col, opt).color"
+                                :auto-label="optionBadgeProps(col, opt).autoLabel"
+                                :auto-scheme="optionBadgeProps(col, opt).autoScheme || undefined"
+                                :auto-tone="optionBadgeProps(col, opt).autoTone || undefined"
+                                :variant="optionBadgeProps(col, opt).variant"
+                                :glassy="Boolean(optionBadgeProps(col, opt).glassy)"
+                                :strong="Boolean(optionBadgeProps(col, opt).strong)"
+                                :text-color="optionBadgeProps(col, opt).textColor || ''"
+                                size="sm"
+                            >
+                                {{ opt.label }}
+                            </Badge>
+                        </span>
+                        <SpellTypeBadge
+                            v-else-if="isSpellTypeBadgeEnabled(col)"
+                            :name="String(opt.label ?? opt.value ?? '')"
+                            :color="opt.color || null"
+                            :icon-hint="opt.icon ?? null"
+                            size="sm"
+                        />
+                        <span v-else>{{ opt.label }}</span>
+                    </Btn>
+                </div>
+
                 <!-- select => dropdown single -->
                 <div
                     v-else-if="col.filter.type === 'select' && !isBooleanSelect(col)"
-                    class="flex items-center justify-between gap-2 w-full rounded-box border border-base-300 px-2 py-1"
+                    class="inline-flex items-center gap-1 w-full sm:w-auto"
                 >
                     <Dropdown placement="bottom-start" :close-on-content-click="false">
                         <template #trigger>
@@ -452,7 +561,7 @@ const clearAllActiveFilters = () => {
                                 variant="outline"
                                 :color="uiColor"
                                 opacity="lg"
-                                class="gap-2"
+                                class="gap-2 w-full sm:w-auto max-w-full"
                                 title="Choisir une valeur"
                             >
                                 <Icon source="fa-solid fa-filter" alt="Filtre" size="sm" />
@@ -554,7 +663,7 @@ const clearAllActiveFilters = () => {
                 <!-- select(2 choix booléen) => toggle -->
                 <div
                     v-else-if="col.filter.type === 'select' && isBooleanSelect(col)"
-                    class="flex items-center justify-between gap-3 w-full rounded-box border border-base-300 px-2 py-1"
+                    class="inline-flex items-center gap-2"
                 >
                     <div class="flex items-center gap-3">
                         <div class="w-12 flex items-center justify-center shrink-0">
@@ -590,10 +699,63 @@ const clearAllActiveFilters = () => {
                     </Btn>
                 </div>
 
+                <div
+                    v-else-if="col.filter.type === 'multi' && getFilterLayout(col) === 'chips'"
+                    class="flex flex-wrap items-center gap-1.5"
+                    role="group"
+                    :aria-label="getFilterLabel(col)"
+                >
+                    <Btn
+                        v-for="opt in getOptions(col)"
+                        :key="String(opt.value)"
+                        type="button"
+                        size="xs"
+                        :variant="chipVariant(isMultiValueOn(col, opt))"
+                        :color="uiColor"
+                        :active="isMultiValueOn(col, opt)"
+                        :aria-pressed="isMultiValueOn(col, opt)"
+                        :title="String(opt.label ?? opt.value)"
+                        @click="onMultiChipClick(col, opt)"
+                    >
+                        <span
+                            v-if="isOptionBadgeEnabled(col)"
+                            class="inline-flex items-center gap-1.5 min-w-0"
+                        >
+                            <span
+                                v-if="optionBadgeProps(col, opt).stateDotClass"
+                                class="w-2 h-2 rounded-full shrink-0 ring-1 ring-base-300 opacity-90"
+                                :class="optionBadgeProps(col, opt).stateDotClass"
+                                aria-hidden="true"
+                            />
+                            <Badge
+                                :color="optionBadgeProps(col, opt).color"
+                                :auto-label="optionBadgeProps(col, opt).autoLabel"
+                                :auto-scheme="optionBadgeProps(col, opt).autoScheme || undefined"
+                                :auto-tone="optionBadgeProps(col, opt).autoTone || undefined"
+                                :variant="optionBadgeProps(col, opt).variant"
+                                :glassy="Boolean(optionBadgeProps(col, opt).glassy)"
+                                :strong="Boolean(optionBadgeProps(col, opt).strong)"
+                                :text-color="optionBadgeProps(col, opt).textColor || ''"
+                                size="sm"
+                            >
+                                {{ opt.label }}
+                            </Badge>
+                        </span>
+                        <SpellTypeBadge
+                            v-else-if="isSpellTypeBadgeEnabled(col)"
+                            :name="String(opt.label ?? opt.value ?? '')"
+                            :color="opt.color || null"
+                            :icon-hint="opt.icon ?? null"
+                            size="sm"
+                        />
+                        <span v-else>{{ opt.label }}</span>
+                    </Btn>
+                </div>
+
                 <!-- multi (dropdown + checkboxes) -->
                 <div
                     v-else-if="col.filter.type === 'multi'"
-                    class="flex items-center justify-between gap-2 w-full rounded-box border border-base-300 px-2 py-1"
+                    class="inline-flex items-center gap-1 w-full sm:w-auto"
                 >
                     <Dropdown
                         placement="bottom-start"
@@ -605,7 +767,7 @@ const clearAllActiveFilters = () => {
                                 variant="outline"
                                 :color="uiColor"
                                 opacity="lg"
-                                class="gap-2"
+                                class="gap-2 w-full sm:w-auto max-w-full"
                                 title="Choisir plusieurs valeurs"
                             >
                                 <Icon source="fa-solid fa-filter" alt="Filtre" size="sm" />
