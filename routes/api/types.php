@@ -10,10 +10,11 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 |
 | Administration : liste + flags `allow_scrap` / `show_in_catalog`.
+| Réservé aux admins (même contrat que les pages `/admin/content/types/*`).
 |
 */
 
-Route::middleware(['web', 'auth'])->prefix('types')->group(function () {
+Route::middleware(['web', 'auth', 'role:admin'])->prefix('types')->group(function () {
     Route::prefix('monster-races')->group(function () {
         Route::get('/', [MonsterRaceTypeApiController::class, 'index'])
             ->name('types.monster-races.index');

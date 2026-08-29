@@ -63,6 +63,62 @@ class TypeRegistryFlagsTest extends TestCase
         $this->assertFalse((bool) $type->fresh()->allow_scrap);
     }
 
+    public function test_game_master_cannot_toggle_allow_scrap_via_types_api(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $race = MonsterRace::factory()->create([
+            'name' => 'Race GM scrap',
+            'dofusdb_race_id' => 41,
+            'state' => MonsterRace::STATE_DRAFT,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'allow_scrap' => false,
+        ]);
+
+        $this->actingAs($gm)
+            ->patchJson('/api/types/monster-races/bulk', [
+                'ids' => [$race->id],
+                'allow_scrap' => true,
+            ])
+            ->assertForbidden();
+
+        $this->assertFalse((bool) $race->fresh()->allow_scrap);
+    }
+
+    public function test_game_master_cannot_delete_monster_race_via_types_api(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $race = MonsterRace::factory()->create([
+            'name' => 'Race GM delete',
+            'dofusdb_race_id' => 43,
+            'state' => MonsterRace::STATE_DRAFT,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $this->actingAs($gm)
+            ->deleteJson("/api/types/monster-races/{$race->id}")
+            ->assertForbidden();
+
+        $this->assertNotNull($race->fresh());
+    }
+
+    public function test_game_master_cannot_toggle_spell_type_catalog_via_types_api(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $spellType = SpellType::factory()->create([
+            'name' => 'Type sort GM',
+            'write_level' => User::ROLE_GAME_MASTER,
+            'show_in_catalog' => false,
+        ]);
+
+        $this->actingAs($gm)
+            ->patchJson("/api/types/spell-types/{$spellType->id}/catalog", [
+                'show_in_catalog' => true,
+            ])
+            ->assertForbidden();
+
+        $this->assertFalse((bool) $spellType->fresh()->show_in_catalog);
+    }
+
     public function test_admin_can_toggle_race_flags(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
