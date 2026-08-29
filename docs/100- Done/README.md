@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Registres de types : API réservée aux admins
+
+Les pages Types étaient déjà interdites aux MJ, mais l’API `/api/types/*` (races, types de sorts) restait ouverte à tout compte connecté. Un MJ pouvait donc cocher « scrap » ou supprimer une race créée automatiquement. Ces actions sont maintenant admin uniquement, comme le reste de la gestion du contenu.
+
 ## Août 2026 — Filtres de tableau : largeur selon le contenu
 
 Les filtres des catalogues ne s’alignent plus sur trois colonnes identiques. Rareté, état et autres listes courtes s’affichent en pastilles ; type, race et listes longues restent un menu avec recherche. Les interrupteurs et champs texte prennent seulement la place dont ils ont besoin.
