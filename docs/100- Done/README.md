@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Registres de types : API réservée aux admins
+
+Les pages Types étaient déjà interdites aux MJ, mais l’API `/api/types/*` (races, types de sorts) restait ouverte à tout compte connecté. Un MJ pouvait donc cocher « scrap » ou supprimer une race créée automatiquement. Ces actions sont maintenant admin uniquement, comme le reste de la gestion du contenu.
+
 ## Septembre 2026 — Maj DofusDB « images seules » sans écraser la fiche
 
 Le bouton « Images seules » d’une fiche ne réécrit plus le contenu (sorts, bonus d’objet, pièces de panoplie). Seule l’image est mise à jour.
