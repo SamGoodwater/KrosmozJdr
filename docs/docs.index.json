@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Lien admin ↔ gestion du contenu ; suivi live des jobs console (%, log filtré, un actif par domaine)."
+    "description": "Les filtres des catalogues restent des listes compactes : le bouton affiche le nom du champ et la valeur (`Rareté · Tous`). Un interrupteur sert pour les oui/non, un champ texte pour la saisie. La recherche dans le menu n’apparaît que s’il y a plus de 8 options. Le bouton pour retirer un filtre n’est là que lorsqu’il est actif."
   },
   {
     "path": "backend/_ai.md",
@@ -247,12 +247,12 @@
   {
     "path": "operations/_ai.md",
     "title": "Operations — IA",
-    "description": "Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. Vocabulaire : app/Console/COMMANDS.md."
+    "description": "Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interaction` (Symfony). Helper : `App\\Console\\YesNoFlags`."
   },
   {
     "path": "operations/README.md",
     "title": "Operations",
-    "description": "Vocabulaire Artisan : app/Console/COMMANDS.md. Ici : orphelins Media, planning, import règles."
+    "description": "Commandes métier hors recettes CLI quotidiennes. Vocabulaire Artisan : [app/Console/COMMANDS.md](../../app/Console/COMMANDS.md)."
   },
   {
     "path": "project/_ai.md",

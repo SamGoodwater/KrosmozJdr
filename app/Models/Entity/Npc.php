@@ -31,7 +31,6 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $scenarios_count
  * @property-read Shop|null $shop
  * @property-read Specialization|null $specialization
- *
  * @method static \Database\Factories\Entity\NpcFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc newQuery()
@@ -46,11 +45,9 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereSpecializationId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereStory($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereUpdatedAt($value)
- *
  * @property string $state
  * @property int $read_level
  * @property int $write_level
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereWriteLevel($value)
@@ -59,11 +56,8 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc withoutTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc visibleToUser(?\App\Models\User $user)
- *
  * @property int|null $created_by
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereCreatedBy($value)
- *
  * @mixin \Eloquent
  */
 class Npc extends Model

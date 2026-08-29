@@ -28,7 +28,6 @@ use Illuminate\Support\Carbon;
  * @property-read User|null $createdBy
  * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
- *
  * @method static \Database\Factories\Type\SpellTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType newQuery()
@@ -48,7 +47,13 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType withoutTrashed()
- *
+ * @property bool|null $show_in_catalog
+ * @property bool|null $allow_scrap
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType allowScrap()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType allowed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType visibleInCatalog()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereAllowScrap($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereShowInCatalog($value)
  * @mixin \Eloquent
  */
 class SpellType extends Model

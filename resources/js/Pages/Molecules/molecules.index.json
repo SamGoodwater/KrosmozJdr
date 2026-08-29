@@ -756,6 +756,13 @@
     "file": "entity/EntityEditFormFieldBody.vue"
   },
   {
+    "name": "EntityDofusdbRefreshPanel",
+    "description": "Panneau de confirmation d’une maj DofusDB unitaire (aperçu puis apply).",
+    "props": [],
+    "slots": [],
+    "file": "entity/EntityDofusdbRefreshPanel.vue"
+  },
+  {
     "name": "EntityActionsList",
     "description": "EntityActionsList Molecule",
     "props": [],
@@ -2746,6 +2753,13 @@
     ],
     "slots": [],
     "file": "data-display/AbilityScoreStack.vue"
+  },
+  {
+    "name": "TypeRegistryRowMenu",
+    "description": "Menu icône d’une ligne de registre de types (scrap, en jeu, déplacer, supprimer).",
+    "props": [],
+    "slots": [],
+    "file": "content/TypeRegistryRowMenu.vue"
   },
   {
     "name": "ThemeController",

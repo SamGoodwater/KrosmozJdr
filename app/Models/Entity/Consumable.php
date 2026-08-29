@@ -52,7 +52,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $scenarios_count
  * @property-read Collection<int, Shop> $shops
  * @property-read int|null $shops_count
- *
  * @method static \Database\Factories\Entity\ConsumableFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable newQuery()
@@ -81,16 +80,13 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withoutTrashed()
- *
  * @property-read Collection<int, EffectUsage> $effectUsages
  * @property-read int|null $effect_usages_count
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
  * @property-read Collection<int, ObjectEffect> $objectEffects
  * @property-read int|null $object_effects_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable visibleToUser(?\App\Models\User $user)
- *
  * @mixin \Eloquent
  */
 class Consumable extends Model implements HasMedia

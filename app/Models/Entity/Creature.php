@@ -139,7 +139,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $resources_count
  * @property-read Collection<int, Spell> $spells
  * @property-read int|null $spells_count
- *
  * @method static \Database\Factories\Entity\CreatureFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature newQuery()
@@ -237,12 +236,10 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereVitality($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withoutTrashed()
- *
  * @property string $critical_hit
  * @property string $heal_bonus
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereCriticalHit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoSagesse($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoVitalite($value)
@@ -261,7 +258,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveVitalityMastery($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveWisdomBonus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereSaveWisdomMastery($value)
- *
  * @property-read Collection<int, CreatureTrait> $creatureTraits
  * @property-read int|null $creature_traits_count
  * @property string|null $life_context
@@ -328,7 +324,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $save_intelligence_bonus_context
  * @property string|null $save_chance_bonus_context
  * @property string|null $save_agility_bonus_context
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereAcrobatieBonusContext($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereAgiContext($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereArcaneBonusContext($value)
@@ -395,7 +390,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature visibleToUser(?\App\Models\User $user)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoFixeMultiple($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoFixeMultipleContext($value)
- *
  * @mixin \Eloquent
  */
 class Creature extends Model implements HasMedia
