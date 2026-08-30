@@ -4,11 +4,14 @@ namespace Tests\Feature;
 
 use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Breed;
+use App\Models\Entity\Specialization;
+use App\Models\Entity\Spell;
 use App\Models\Page;
 use App\Models\User;
 use App\Services\PageService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 /**
@@ -549,6 +552,123 @@ class PageControllerTest extends TestCase
         $this->assertContains('Créatures', $childTitles);
         $this->assertContains('Objets', $childTitles);
         $this->assertContains('Sorts', $childTitles);
+    }
+
+    public function test_guest_does_not_see_draft_spells_on_linked_breed_library_page(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $breed = Breed::factory()->create([
+            'name' => 'Iop Public',
+            'state' => Breed::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+
+        $playableSpell = Spell::factory()->create([
+            'name' => 'Sort public biblio',
+            'state' => Spell::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $draftSpell = Spell::factory()->create([
+            'name' => 'Sort secret biblio',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $breed->spells()->attach($playableSpell->id, [
+            'character_level' => 1,
+            'slot_index' => 1,
+            'choice_order' => 0,
+        ]);
+        $breed->spells()->attach($draftSpell->id, [
+            'character_level' => 1,
+            'slot_index' => 2,
+            'choice_order' => 0,
+        ]);
+
+        $page = Page::factory()->create([
+            'title' => 'Iop Public',
+            'slug' => 'classe-iop-public',
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'entity_key' => 'breed',
+            'settings' => [
+                'linked_entity' => [
+                    'type' => 'breed',
+                    'id' => $breed->id,
+                ],
+            ],
+        ]);
+
+        $this->get(route('pages.show', $page->slug))
+            ->assertOk()
+            ->assertInertia(fn (Assert $inertia) => $inertia
+                ->component('Pages/page/LinkedEntityShow')
+                ->has('linkedEntity.data.spells', 1)
+                ->where('linkedEntity.data.spells.0.name', 'Sort public biblio'));
+
+        $this->actingAs($author)
+            ->get(route('pages.show', $page->slug))
+            ->assertOk()
+            ->assertInertia(fn (Assert $inertia) => $inertia
+                ->component('Pages/page/LinkedEntityShow')
+                ->has('linkedEntity.data.spells', 2));
+    }
+
+    public function test_guest_does_not_see_draft_spells_on_linked_specialization_library_page(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $spec = Specialization::factory()->create([
+            'name' => 'Voie publique',
+            'state' => Specialization::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+
+        $playableSpell = Spell::factory()->create([
+            'name' => 'Sort public spec',
+            'state' => Spell::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $draftSpell = Spell::factory()->create([
+            'name' => 'Sort secret spec',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $spec->spells()->attach($playableSpell->id, ['level' => 1]);
+        $spec->spells()->attach($draftSpell->id, ['level' => 1]);
+
+        $page = Page::factory()->create([
+            'title' => 'Voie publique',
+            'slug' => 'specialisation-voie-publique',
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'entity_key' => 'specialization',
+            'settings' => [
+                'linked_entity' => [
+                    'type' => 'specialization',
+                    'id' => $spec->id,
+                ],
+            ],
+        ]);
+
+        $this->get(route('pages.show', $page->slug))
+            ->assertOk()
+            ->assertInertia(fn (Assert $inertia) => $inertia
+                ->component('Pages/page/LinkedEntityShow')
+                ->has('linkedEntity.data.spells', 1)
+                ->where('linkedEntity.data.spells.0.name', 'Sort public spec'));
     }
 
     private function seedMjCreationMenuPages(): void
