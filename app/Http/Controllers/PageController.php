@@ -161,6 +161,9 @@ class PageController extends Controller
     /**
      * Affiche une page CMS liée à une fiche classe ou spécialisation (sous-page bibliothèque).
      *
+     * Les liaisons (sorts, capacités, etc.) sont filtrées comme sur la fiche entité :
+     * un sort brouillon ne fuit pas via une classe ou spécialisation jouable.
+     *
      * @param  array{type?: string, id?: int}  $linked
      */
     private function renderLinkedEntityPage(Page $page, array $linked, ?User $user): Response
@@ -191,13 +194,15 @@ class PageController extends Controller
             $entity->load([
                 'createdBy',
                 'elementOrientations',
-                'spells' => fn ($q) => $q->orderBy('breed_spell.character_level')
+                'spells' => fn ($q) => $q
+                    ->visibleToUser($user)
+                    ->orderBy('breed_spell.character_level')
                     ->orderBy('breed_spell.slot_index')
                     ->orderBy('breed_spell.choice_order')
                     ->orderBy('spells.name'),
-                'npcs' => fn ($q) => $q->limit(100),
-                'capabilities' => fn ($q) => $q->orderBy('name'),
-                'creatureTraits' => fn ($q) => $q->orderBy('name'),
+                'npcs' => fn ($q) => $q->visibleToUser($user)->limit(100),
+                'capabilities' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
+                'creatureTraits' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
                 'languages',
                 'sections' => Breed::orderedSectionsEagerLoadConstraint(),
             ]);
@@ -206,13 +211,13 @@ class PageController extends Controller
             /** @var Specialization $entity */
             $entity->load([
                 'createdBy',
-                'npcs' => fn ($q) => $q->limit(100),
-                'capabilities' => fn ($q) => $q->orderBy('name'),
-                'spells' => fn ($q) => $q->orderBy('name'),
-                'creatureTraits' => fn ($q) => $q->orderBy('name'),
-                'consumables' => fn ($q) => $q->orderBy('name'),
-                'resources' => fn ($q) => $q->orderBy('name'),
-                'items' => fn ($q) => $q->orderBy('name'),
+                'npcs' => fn ($q) => $q->visibleToUser($user)->limit(100),
+                'capabilities' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
+                'spells' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
+                'creatureTraits' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
+                'consumables' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
+                'resources' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
+                'items' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
                 'sections' => Specialization::orderedSectionsEagerLoadConstraint(),
             ]);
             $payload['linkedEntity'] = new SpecializationResource($entity);

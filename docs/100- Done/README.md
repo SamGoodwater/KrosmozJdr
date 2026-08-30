@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Bibliothèques CMS : plus de sorts brouillon
+
+Les pages Classes / Spécialisations du menu Bibliothèques affichaient encore les sorts (et autres liaisons) en brouillon aux visiteurs. Elles suivent maintenant la même règle que la fiche entité : seul ce qui est visible pour le visiteur est chargé.
+
 ## Août 2026 — Filtres de tableau : largeur selon le contenu
 
 Les filtres des catalogues ne s’alignent plus sur trois colonnes identiques. Rareté, état et autres listes courtes s’affichent en pastilles ; type, race et listes longues restent un menu avec recherche. Les interrupteurs et champs texte prennent seulement la place dont ils ont besoin.
