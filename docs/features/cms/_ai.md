@@ -9,7 +9,7 @@
 
 ## Concepts clés
 
-- **Page** : `slug` unique, `state`, `read_level`/`write_level`, `parent_id`, `in_menu`/`menu_order`/`menu_group`, `settings` JSON (dont `linked_entity`). Code : `app/Models/Page.php`. Slugs critiques : `accueil`, `cgu`.
+- **Page** : `slug` unique, `state`, `read_level`/`write_level`, `parent_id`, `in_menu`/`menu_order`/`menu_group`, `settings` JSON (dont `linked_entity`). Code : `app/Models/Page.php`. Slugs critiques : `accueil`, `cgu`. Sous-pages bibliothèque (`LinkedEntityShow`) : liaisons de la fiche filtrées `visibleToUser` comme sur show/table/PDF.
 - **Section** : appartient à une page, `template` (enum `SectionType`), `data`/`settings`, `order`, médias Spatie. Code : `app/Models/Section.php`, `app/Enums/SectionType.php`.
 - **10 templates** : `text`, `image`, `gallery`, `video`, `entity_table`, `legal_markdown`, `characteristic_norms`, `characteristic_norms_catalog`, `characteristic_reference_table`, `equipment_bonus_table`. Détail : [README](./README.md#templates-de-sections).
 - **`entity_table` (Bibliothèques)** : lecture en pagination serveur via `api.tables.*` (`SectionEntityTableRead`) — ne plus compter sur `settings.limit` (plafond legacy 50).
