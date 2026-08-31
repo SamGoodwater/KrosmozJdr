@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Août 2026 — Maj DofusDB d’une panoplie : on ne dépublie plus
+
+Mettre à jour une panoplie déjà publiée depuis DofusDB (bouton sur la fiche, ou import de masse forcé) ne la repasse plus en « brut » et ne change plus l’auteur ni les droits de lecture/écriture. Le contenu (nom, description, bonus, pièces) est bien rafraîchi. Une panoplie nouvelle reste créée en brut, à relire.
+
 ## Août 2026 — Filtres de tableau : largeur selon le contenu
 
 Les filtres des catalogues ne s’alignent plus sur trois colonnes identiques. Rareté, état et autres listes courtes s’affichent en pastilles ; type, race et listes longues restent un menu avec recherche. Les interrupteurs et champs texte prennent seulement la place dont ils ont besoin.
