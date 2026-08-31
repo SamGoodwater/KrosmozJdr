@@ -27,7 +27,7 @@
 - `app/Services/Scrapping/Core/Orchestrator/Orchestrator.php` + `ScrappingPipelineFactory.php` — assemblage du pipeline.
 - `app/Services/Scrapping/Core/Collect/CollectService.php` + `app/Services/Scrapping/Http/DofusDbClient.php` — collecte API.
 - `app/Services/Scrapping/Core/Conversion/ConversionService.php` (+ `FormatterApplicator.php`, `ItemEffectsToBonusConverter.php`, `SpellEffects/SpellEffectsConversionService.php`) — conversion.
-- `app/Services/Scrapping/Core/Integration/IntegrationService.php` — écriture BDD ; état de sort : jeton `raw` + liaison vers le canon `playable` (`ConditionCanonicalMapper`).
+- `app/Services/Scrapping/Core/Integration/IntegrationService.php` — écriture BDD ; état de sort : jeton `raw` + liaison vers le canon `playable` (`ConditionCanonicalMapper`). Maj d’une **panoplie déjà en base** : contenu DofusDB seulement (`name`/`description`/`bonus`/pièces), **sans** réécrire `state`, `read_level`, `write_level`, `created_by`.
 - `app/Services/Scrapping/Core/Config/ConfigLoader.php` + `ScrappingMappingService.php` — config + mapping.
 - `app/Jobs/ProcessScrappingJob.php` — exécution asynchrone.
 - `routes/api/scrapping.php` — endpoints `/api/dofusdb` (search, preview, jobs, import, registries, catalogues). Noms de routes `scrapping.*`.
