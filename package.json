@@ -36,7 +36,7 @@
         "project:review:cursor-agents": "node scripts/cursor-dev-review-agents.mjs"
     },
     "devDependencies": {
-        "@cursor/sdk": "^1.0.28",
+        "@cursor/sdk": "^1.0.30",
         "@eslint/js": "^9.39.5",
         "@inertiajs/vue3": "^2.3.27",
         "@tailwindcss/forms": "^0.5.11",
@@ -45,10 +45,10 @@
         "@tailwindcss/vite": "^4.3.3",
         "@vitejs/plugin-vue": "^5.2.4",
         "@vitest/ui": "^3.2.7",
-        "@vue/server-renderer": "^3.5.41",
-        "@vue/test-utils": "^2.4.11",
+        "@vue/server-renderer": "^3.5.42",
+        "@vue/test-utils": "^2.5.0",
         "autoprefixer": "^10.5.4",
-        "axios": "^1.19.0",
+        "axios": "^1.20.0",
         "concurrently": "^9.2.4",
         "csso-cli": "^4.0.2",
         "daisyui": "^5.7.22",
@@ -64,7 +64,7 @@
         "vite": "^6.4.3",
         "vitest": "^3.2.7",
         "vitest-axe": "^0.1.0",
-        "vue": "^3.5.41"
+        "vue": "^3.5.42"
     },
     "dependencies": {
         "@csstools/postcss-oklab-function": "^4.0.12",
@@ -107,7 +107,7 @@
         "glob": "^11.1.0",
         "interactjs": "^1.10.28",
         "marked": "^17.0.6",
-        "mysql2": "^3.24.1",
+        "mysql2": "^3.24.2",
         "photoswipe": "^5.4.4",
         "pinia": "^3.0.4",
         "playwright": "^1.62.1"
