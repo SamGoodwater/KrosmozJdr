@@ -1850,11 +1850,15 @@ final class IntegrationService
             'name' => (string) ($data['name'] ?? ''),
             'description' => isset($data['description']) && (string) $data['description'] !== '' ? (string) $data['description'] : null,
             'bonus' => $bonusStr !== '' ? $bonusStr : null,
-            'state' => Panoply::STATE_RAW,
-            'read_level' => 0,
-            'write_level' => 3,
-            'created_by' => $userId,
         ];
+        // state / read_level / write_level / created_by : uniquement à la création.
+        // Un refresh (fiche ou masse) ne doit pas dépublier une panoplie jouable ni voler l’auteur.
+        if ($existingPanoply === null) {
+            $payload['state'] = Panoply::STATE_RAW;
+            $payload['read_level'] = 0;
+            $payload['write_level'] = 3;
+            $payload['created_by'] = $userId;
+        }
         if ($propertyWhitelist !== []) {
             $payload = $this->filterByWhitelist($payload, $propertyWhitelist);
         }

@@ -27,7 +27,7 @@ JSON brut. Pour les panoplies, elles deviennent des paliers de `-2` à `2` aux s
 et `13`. L'ID DofusDB `0` est volontairement ignoré car il regroupe des effets techniques hétérogènes ;
 les dommages multi-éléments utilisent l'ID `16`.
 
-Accès **réservé aux administrateurs** : les routes API de masse passent par `role:admin` + `password.confirm`. L’atelier UI est `/admin/content/dofusdb` (même confirmation). `/scrapping` et `/admin/project-maintenance` redirigent vers cet atelier. La maj **unitaire** depuis une fiche est ouverte aux MJ+ (`POST /api/entities/{type}/{id}/dofusdb-refresh`).
+Accès **réservé aux administrateurs** : les routes API de masse passent par `role:admin` + `password.confirm`. L’atelier UI est `/admin/content/dofusdb` (même confirmation). `/scrapping` et `/admin/project-maintenance` redirigent vers cet atelier. La maj **unitaire** depuis une fiche est ouverte aux MJ+ (`POST /api/entities/{type}/{id}/dofusdb-refresh`). Une panoplie **déjà en base** ne voit pas son `state` / ses droits / son auteur réécrits par l’intégration : seuls nom, description, bonus et pièces sont mis à jour.
 
 ## Pipeline
 

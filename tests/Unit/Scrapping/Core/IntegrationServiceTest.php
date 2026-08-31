@@ -17,6 +17,7 @@ use App\Models\Type\ConsumableType;
 use App\Models\Type\MonsterRace;
 use App\Models\Type\ResourceType;
 use App\Models\Type\SpellType;
+use App\Models\User;
 use App\Services\Scrapping\Core\Integration\IntegrationResult;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -949,6 +950,52 @@ class IntegrationServiceTest extends TestCase
         $this->assertSame('Panoplie Integration Test', $panoply->name);
         $this->assertSame('100', $panoply->dofusdb_id);
         $this->assertSame('[{"effectId":1,"value":10}]', $panoply->bonus);
+        $this->assertSame(Panoply::STATE_RAW, $panoply->state);
+    }
+
+    /**
+     * Un force_update DofusDB met à jour le contenu sans dépublier ni réécrire les droits.
+     */
+    public function test_integrate_panoply_force_update_does_not_downgrade_playable_state(): void
+    {
+        $this->createSystemUser();
+        $author = User::factory()->create();
+        $existing = Panoply::factory()->create([
+            'dofusdb_id' => '200',
+            'name' => 'Panoplie jouable',
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'created_by' => $author->id,
+            'bonus' => 'old-bonus',
+        ]);
+
+        $convertedData = [
+            'panoplies' => [
+                'dofusdb_id' => '200',
+                'name' => 'Panoplie DofusDB',
+                'description' => 'Nouvelle desc',
+                'bonus' => '[{"effectId":1}]',
+                'item_dofusdb_ids' => [],
+            ],
+        ];
+
+        $result = $this->service->integrate('panoply', $convertedData, [
+            'force_update' => true,
+            'replace_mode' => 'always',
+            'respect_auto_update' => false,
+        ]);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('updated', $result->getPrimaryAction());
+        $existing->refresh();
+        $this->assertSame(Panoply::STATE_PLAYABLE, $existing->state);
+        $this->assertSame(User::ROLE_GUEST, $existing->read_level);
+        $this->assertSame(User::ROLE_ADMIN, $existing->write_level);
+        $this->assertSame($author->id, $existing->created_by);
+        $this->assertSame('Panoplie DofusDB', $existing->name);
+        $this->assertSame('[{"effectId":1}]', $existing->bonus);
+        $this->assertSame('Nouvelle desc', $existing->description);
     }
 
     public function test_integrate_panoply_incomplete_returns_fail(): void
