@@ -296,6 +296,34 @@ class MonsterTableControllerTest extends TestCase
         $this->assertSame(['Low', 'High'], $sortNames);
     }
 
+    public function test_creature_level_range_and_monster_state_filters(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $low = Creature::factory()->create(['name' => 'Low', 'level' => '1']);
+        $mid = Creature::factory()->create(['name' => 'Mid', 'level' => '50']);
+        $high = Creature::factory()->create(['name' => 'High', 'level' => '200']);
+        Monster::factory()->create(['creature_id' => $low->id, 'state' => 'playable']);
+        Monster::factory()->create(['creature_id' => $mid->id, 'state' => 'playable']);
+        Monster::factory()->create(['creature_id' => $high->id, 'state' => 'draft']);
+
+        $rangeResponse = $this->actingAs($user)
+            ->getJson('/api/tables/monsters?format=entities&limit=20&filters[creature_level][min]=1&filters[creature_level][max]=50');
+        $rangeResponse->assertOk();
+        $rangeNames = collect($rangeResponse->json('entities'))->pluck('creature.name')->sort()->values()->all();
+        $this->assertSame(['Low', 'Mid'], $rangeNames);
+
+        $stateResponse = $this->actingAs($user)
+            ->getJson('/api/tables/monsters?format=entities&limit=20&filters[state][]=playable');
+        $stateResponse->assertOk();
+        $stateNames = collect($stateResponse->json('entities'))->pluck('creature.name')->sort()->values()->all();
+        $this->assertSame(['Low', 'Mid'], $stateNames);
+
+        $bounds = $rangeResponse->json('meta.filterOptions.creature_level');
+        $this->assertIsArray($bounds);
+        $this->assertArrayHasKey('min', $bounds);
+        $this->assertArrayHasKey('max', $bounds);
+    }
+
     public function test_entities_format_nested_spells_include_effect_chips(): void
     {
         $user = User::factory()->create(['role' => User::ROLE_ADMIN]);

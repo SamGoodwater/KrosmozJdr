@@ -68,7 +68,6 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
         order: 5,
         sortable: true,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
-        filterable: { id: "id", type: "text", defaultVisible: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {
@@ -119,12 +118,9 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
         sortable: true,
         filterable: {
           id: "level",
-          type: "multi",
+          type: "range",
           defaultVisible: true,
-          ui: {
-            optionsMode: "rows",
-            maxOptions: 250,
-          },
+          ui: { min: 1, max: 200, step: 1 },
         },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
@@ -156,7 +152,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       table: {
         order: 150,
         sortable: true,
-        filterable: { id: "pa", type: "multi", defaultVisible: false },
+        filterable: { id: "pa", type: "range", defaultVisible: false, ui: { min: 0, max: 12, step: 1 } },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -187,7 +183,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       table: {
         order: 151,
         sortable: true,
-        filterable: { id: "po", type: "multi", defaultVisible: false },
+        filterable: { id: "po", type: "range", defaultVisible: false, ui: { min: 0, max: 20, step: 1 } },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -281,7 +277,6 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
         order: 15,
         sortable: true,
         searchable: true,
-        filterable: { id: "description", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -312,7 +307,6 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
         order: 35,
         sortable: true,
         searchable: true,
-        filterable: { id: "effect", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -344,7 +338,6 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       table: {
         order: 161,
         sortable: true,
-        filterable: { id: "time_before_use_again", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -375,7 +368,6 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       table: {
         order: 162,
         sortable: true,
-        filterable: { id: "casting_time", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -406,7 +398,6 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       table: {
         order: 163,
         sortable: true,
-        filterable: { id: "duration", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -597,7 +588,6 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       table: {
         order: 170,
         sortable: true,
-        filterable: { id: "powerful", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -631,6 +621,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
           id: "state",
           type: "multi",
           defaultVisible: true,
+          defaultValue: ["playable"],
           options: getEntityStateOptions(),
         },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },

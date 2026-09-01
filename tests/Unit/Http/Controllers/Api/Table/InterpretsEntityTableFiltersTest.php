@@ -30,6 +30,14 @@ class InterpretsEntityTableFiltersTest extends TestCase
             {
                 return $this->hasFilterValue($filters, $key);
             }
+
+            /**
+             * @return array{0: ?int, 1: ?int}|null
+             */
+            public function bounds(mixed $raw): ?array
+            {
+                return $this->normalizeRangeBounds($raw);
+            }
         };
     }
 
@@ -52,5 +60,14 @@ class InterpretsEntityTableFiltersTest extends TestCase
         $this->assertFalse($s->has(['level' => []], 'level'));
         $this->assertTrue($s->has(['level' => '5'], 'level'));
         $this->assertTrue($s->has(['level' => ['5', '12']], 'level'));
+    }
+
+    public function test_has_filter_value_accepts_range_bounds(): void
+    {
+        $s = $this->subject();
+        $this->assertTrue($s->has(['level' => ['min' => '5', 'max' => '50']], 'level'));
+        $this->assertFalse($s->has(['level' => ['min' => '', 'max' => '']], 'level'));
+        $this->assertSame([5, 50], $s->bounds(['min' => '5', 'max' => '50']));
+        $this->assertSame([5, 12], $s->bounds(['min' => '12', 'max' => '5']));
     }
 }

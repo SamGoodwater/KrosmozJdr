@@ -161,7 +161,12 @@ export function getNpcFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         searchable: true,
-        filterable: { id: "creature_level", type: "multi", defaultVisible: true },
+        filterable: {
+          id: "creature_level",
+          type: "range",
+          defaultVisible: true,
+          ui: { min: 1, max: 200, step: 1 },
+        },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -174,7 +179,6 @@ export function getNpcFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         searchable: true,
-        filterable: { id: "creature_state", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -308,7 +312,6 @@ export function getNpcFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-book",
       table: {
         searchable: true,
-        filterable: { id: "story", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -337,7 +340,6 @@ export function getNpcFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-scroll",
       table: {
         searchable: true,
-        filterable: { id: "historical", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -366,7 +368,6 @@ export function getNpcFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-birthday-cake",
       table: {
         sortable: true,
-        filterable: { id: "age", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -395,7 +396,6 @@ export function getNpcFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-expand",
       table: {
         sortable: true,
-        filterable: { id: "size", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -424,7 +424,13 @@ export function getNpcFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-circle-info",
       table: {
         sortable: true,
-        filterable: { id: "state", type: "multi", defaultVisible: true },
+        filterable: {
+          id: "state",
+          type: "multi",
+          defaultVisible: true,
+          defaultValue: ["playable"],
+          options: getEntityStateOptions(),
+        },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },

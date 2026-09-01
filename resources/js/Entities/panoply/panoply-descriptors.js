@@ -112,7 +112,6 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-align-left",
       table: {
         searchable: true,
-        filterable: { id: "description", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -141,7 +140,6 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-star",
       table: {
         searchable: true,
-        filterable: { id: "bonus", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },
@@ -171,7 +169,12 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-boxes",
       table: {
         sortable: true,
-        filterable: { id: "items_count", type: "text", defaultVisible: false },
+        filterable: {
+          id: "items_count",
+          type: "range",
+          defaultVisible: true,
+          ui: { min: 0, max: 20, step: 1 },
+        },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -182,6 +185,32 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
           md: { mode: "text" },
           lg: { mode: "text" },
           xl: { mode: "text" },
+        },
+      },
+    },
+    item_type: {
+      key: "item_type",
+      label: "Type d'objets",
+      icon: "fa-solid fa-tags",
+      table: {
+        sortable: false,
+        sortField: "item_type_id",
+        filterable: {
+          id: "item_type_id",
+          type: "multi",
+          defaultVisible: true,
+          defaultByCatalog: true,
+        },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
         },
       },
     },
@@ -214,7 +243,6 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         searchable: true,
-        filterable: { id: "dofusdb_id", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -247,6 +275,7 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
           id: "state",
           type: "multi",
           defaultVisible: true,
+          defaultValue: ["playable"],
           options: getEntityStateOptions(),
         },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },

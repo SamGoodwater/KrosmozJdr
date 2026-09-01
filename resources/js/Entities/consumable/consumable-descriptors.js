@@ -71,7 +71,6 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
-        filterable: { id: "id", type: "text", defaultVisible: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {
@@ -118,7 +117,6 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-sparkles",
       table: {
         searchable: true,
-        filterable: { id: "effect", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },
@@ -150,12 +148,9 @@ export function getConsumableFieldDescriptors(ctx = {}) {
         sortable: true,
         filterable: {
           id: "level",
-          type: "multi",
-          defaultVisible: false,
-          ui: {
-            optionsMode: "rows",
-            maxOptions: 250,
-          },
+          type: "range",
+          defaultVisible: true,
+          ui: { min: 1, max: 200, step: 1 },
         },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
@@ -228,6 +223,7 @@ export function getConsumableFieldDescriptors(ctx = {}) {
           id: "state",
           type: "multi",
           defaultVisible: true,
+          defaultValue: ["playable"],
           options: getEntityStateOptions(),
         },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
@@ -350,7 +346,6 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-coins",
       table: {
         sortable: true,
-        filterable: { id: "price", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -380,7 +375,6 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-code-branch",
       table: {
         sortable: true,
-        filterable: { id: "dofus_version", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },

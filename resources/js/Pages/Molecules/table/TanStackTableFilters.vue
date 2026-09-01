@@ -3,12 +3,13 @@
  * TanStackTableFilters Molecule
  *
  * @description
- * UI générique des filtres côté client (select/boolean/text) à partir de la config.
+ * UI générique des filtres (menu select / boolean / range) à partir de la config.
  * Les options peuvent venir de `filterOptions` (serveur) ou de la colonne (fallback).
+ * Les filtres texte sont ignorés : la recherche globale du tableau suffit.
  */
 
 import ToggleCore from "@/Pages/Atoms/data-input/ToggleCore.vue";
-import InputCore from "@/Pages/Atoms/data-input/InputCore.vue";
+import RangeDualCore from "@/Pages/Atoms/data-input/RangeDualCore.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
@@ -16,9 +17,18 @@ import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import RadioCore from "@/Pages/Atoms/data-input/RadioCore.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import SpellTypeBadge from "@/Pages/Molecules/entity/spell/SpellTypeBadge.vue";
-import { computed, unref, ref } from "vue";
+import InputCore from "@/Pages/Atoms/data-input/InputCore.vue";
+import { computed, unref, ref, watch } from "vue";
 import { buildSelectOptionBadgeProps } from "@/Utils/Entity/selectOptionBadge.js";
+import { getEntityStateDotClass } from "@/Utils/Entity/SharedConstants.js";
 import { resolveTableFilterLayout } from "@/Utils/table/resolveTableFilterLayout.js";
+import {
+    isTableRangeActive,
+    normalizeTableRangeValue,
+    rangeBoundsFromFilterOption,
+} from "@/Utils/table/tableRangeFilter.js";
+import { resolveFilterCharacteristicMeta } from "@/Utils/table/filterCharacteristicMeta.js";
+import { getCharacteristicColorStyle } from "@/Composables/entity/useCharacteristicDisplay";
 
 const props = defineProps({
     columns: { type: Array, required: true },
@@ -28,6 +38,10 @@ const props = defineProps({
      * Couleur UI (Design System) appliquée aux contrôles de filtres.
      */
     uiColor: { type: String, default: "primary" },
+    /**
+     * Type d’entité du tableau (`spell`, `monster`…) pour icônes / couleurs de caractéristiques.
+     */
+    entityType: { type: String, default: "" },
     presetsEnabled: { type: Boolean, default: false },
     showPresetPanel: { type: Boolean, default: false },
     isActivePresetDirty: { type: Boolean, default: false },
@@ -35,24 +49,59 @@ const props = defineProps({
 
 const emit = defineEmits(["update:filters", "reset", "apply", "toggle-presets"]);
 
-const filterableColumns = () => (Array.isArray(props.columns) ? props.columns : []).filter((c) => c?.filter?.id && c?.filter?.type);
+const isStateFilterColumn = (col) => String(col?.filter?.id || "") === "state";
 
-/** Filtres visibles par défaut (state, boss, race, etc.) */
+const filterableColumns = () =>
+    (Array.isArray(props.columns) ? props.columns : []).filter(
+        (c) => c?.filter?.id && c?.filter?.type && c.filter.type !== "text",
+    );
+
+const stateFilterColumn = () => filterableColumns().find(isStateFilterColumn) || null;
+
+/** Filtres visibles par défaut (niveau, type, race…) — l’état est dans l’en-tête. */
 const mainFilterColumns = () =>
-  filterableColumns().filter((c) => c?.filter?.defaultVisible !== false);
+    filterableColumns().filter((c) => c?.filter?.defaultVisible !== false && !isStateFilterColumn(c));
 
 /** Filtres masqués par défaut, affichés via "Afficher plus de filtres" */
 const extraFilterColumns = () =>
-  filterableColumns().filter((c) => c?.filter?.defaultVisible === false);
+    filterableColumns().filter((c) => c?.filter?.defaultVisible === false && !isStateFilterColumn(c));
 
 const showExtraFilters = ref(false);
 const toggleExtraFilters = () => {
   showExtraFilters.value = !showExtraFilters.value;
 };
 
-/** Colonnes de filtres actuellement affichées (principales seules ou toutes) */
-const visibleFilterColumns = () =>
-  showExtraFilters.value ? filterableColumns() : mainFilterColumns();
+/** Colonnes de filtres actuellement affichées (principales puis avancées), hors état. */
+const visibleFilterColumns = () => {
+    const mains = mainFilterColumns();
+    if (!showExtraFilters.value) return mains;
+    return [...mains, ...extraFilterColumns()];
+};
+
+const isFirstExtraFilter = (col) => {
+    if (!showExtraFilters.value) return false;
+    const extras = extraFilterColumns();
+    return extras.length > 0 && extras[0]?.filter?.id === col?.filter?.id;
+};
+
+const filterCharMetaById = computed(() => {
+    const out = {};
+    for (const col of filterableColumns()) {
+        const id = col?.filter?.id;
+        if (!id) continue;
+        out[id] = resolveFilterCharacteristicMeta(id, { entityType: props.entityType });
+    }
+    return out;
+});
+
+const filterCharMeta = (col) => filterCharMetaById.value[col?.filter?.id] ?? null;
+
+const filterCharLabelStyle = (col) => {
+    const color = filterCharMeta(col)?.color;
+    return color ? getCharacteristicColorStyle(color) : undefined;
+};
+
+const filterCharAccent = (col) => filterCharMeta(col)?.cssColor || "";
 
 // Support: le parent peut passer soit un objet, soit un ref({}) (compat).
 const values = computed(() => unref(props.filterValues) || {});
@@ -80,6 +129,7 @@ const getFilterLayout = (col) =>
 const filterShellClass = (col) => {
     const layout = getFilterLayout(col);
     if (layout === "text") return "flex flex-col gap-1 w-full max-w-xs";
+    if (layout === "range") return "flex flex-col gap-1 w-full max-w-xs min-w-40";
     if (layout === "toggle") return "flex flex-col gap-1 w-auto";
     if (layout === "chips") return "flex flex-col gap-1 min-w-0 max-w-full";
     return "flex flex-col gap-1 w-full sm:w-auto";
@@ -234,14 +284,53 @@ const handleSelectUpdate = (filterId, modelValue) => {
     updateFilter(filterId, modelValue === null ? "" : String(modelValue));
 };
 
-const getTextModelValue = (filterId) => {
-    const raw = values.value?.[filterId];
-    if (raw === null || typeof raw === "undefined") return "";
-    return String(raw);
+const getRangeBounds = (col) =>
+    rangeBoundsFromFilterOption(
+        props.filterOptions?.[col?.filter?.id],
+        { min: 0, max: 20 },
+        col?.filter?.ui || {},
+    );
+
+const getRangeModelValue = (col) => {
+    const raw = values.value?.[col?.filter?.id];
+    if (!isTableRangeActive(raw, getRangeBounds(col))) {
+        return null;
+    }
+    return normalizeTableRangeValue(raw, getRangeBounds(col));
 };
 
-const handleTextUpdate = (filterId, modelValue) => {
-    updateFilter(filterId, modelValue === null || typeof modelValue === "undefined" ? "" : String(modelValue));
+const handleRangeUpdate = (col, next) => {
+    const bounds = getRangeBounds(col);
+    if (!isTableRangeActive(next, bounds)) {
+        updateFilter(col.filter.id, "");
+        return;
+    }
+    updateFilter(col.filter.id, normalizeTableRangeValue(next, bounds));
+};
+
+const extraFilterIsActive = (col) => {
+    const id = col?.filter?.id;
+    if (!id) return false;
+    const raw = values.value?.[id];
+    if (col?.filter?.type === "range") {
+        return isTableRangeActive(raw, getRangeBounds(col));
+    }
+    if (raw === "" || raw == null) return false;
+    if (Array.isArray(raw)) return raw.length > 0;
+    return true;
+};
+
+watch(
+    () => extraFilterColumns().some(extraFilterIsActive),
+    (active) => {
+        if (active) showExtraFilters.value = true;
+    },
+    { immediate: true },
+);
+
+const rangeSummary = (col, raw) => {
+    const v = normalizeTableRangeValue(raw, getRangeBounds(col));
+    return `${v.min}–${v.max}`;
 };
 
 const booleanStateLabel = (raw) => {
@@ -326,6 +415,18 @@ const activeBadges = computed(() => {
             continue;
         }
 
+        if (f.type === "range") {
+            if (!isTableRangeActive(raw, getRangeBounds(col))) continue;
+            badges.push({
+                key: `${f.id}`,
+                filterId: f.id,
+                type: "range",
+                value: rangeSummary(col, raw),
+                label: `${getFilterLabel(col)}: ${rangeSummary(col, raw)}`,
+            });
+            continue;
+        }
+
         // text/select/boolean => un badge si valeur non vide
         if (raw === null || typeof raw === "undefined" || String(raw) === "") continue;
 
@@ -403,11 +504,60 @@ const clearAllActiveFilters = () => {
 
 <template>
     <div class="flex flex-col gap-3">
-        <div class="text-sm font-semibold">Filtres</div>
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="text-sm font-semibold">Filtres</div>
+            <div
+                v-if="stateFilterColumn()"
+                class="flex flex-wrap items-center justify-end gap-1"
+                role="group"
+                :aria-label="getFilterLabel(stateFilterColumn())"
+            >
+                <button
+                    v-for="opt in getOptions(stateFilterColumn())"
+                    :key="String(opt.value)"
+                    type="button"
+                    class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium transition-colors"
+                    :class="
+                        isMultiValueOn(stateFilterColumn(), opt)
+                            ? 'bg-primary/25 text-base-content'
+                            : 'bg-transparent text-base-content/80 hover:bg-base-content/10'
+                    "
+                    :aria-pressed="isMultiValueOn(stateFilterColumn(), opt)"
+                    :title="String(opt.label ?? opt.value)"
+                    @click="onMultiChipClick(stateFilterColumn(), opt)"
+                >
+                    <span
+                        class="inline-block h-2 w-2 shrink-0 rounded-full"
+                        :class="getEntityStateDotClass(opt.value)"
+                        aria-hidden="true"
+                    />
+                    <span>{{ opt.label ?? opt.value }}</span>
+                </button>
+            </div>
+        </div>
 
-        <div class="flex flex-wrap items-end gap-x-3 gap-y-3">
-            <div v-for="col in visibleFilterColumns()" :key="col.id" :class="filterShellClass(col)">
-                <div class="text-xs opacity-70">{{ getFilterLabel(col) }}</div>
+        <div class="flex flex-wrap items-end gap-x-8 gap-y-4">
+            <template v-for="col in visibleFilterColumns()" :key="col.id">
+                <div
+                    v-if="isFirstExtraFilter(col)"
+                    class="basis-full w-full h-0"
+                    aria-hidden="true"
+                />
+            <div :class="filterShellClass(col)">
+                <div
+                    class="flex items-center gap-1 text-xs"
+                    :class="filterCharMeta(col) ? 'font-medium' : 'opacity-70'"
+                    :style="filterCharLabelStyle(col)"
+                >
+                    <Icon
+                        v-if="filterCharMeta(col)?.icon"
+                        :source="filterCharMeta(col).icon"
+                        :alt="getFilterLabel(col)"
+                        size="xs"
+                        class="shrink-0"
+                    />
+                    <span>{{ getFilterLabel(col) }}</span>
+                </div>
 
                 <!-- toggle (switch ON=actif, OFF=pas de filtre) -->
                 <div
@@ -862,23 +1012,33 @@ const clearAllActiveFilters = () => {
                     </Btn>
                 </div>
 
-                <!-- text -->
-                <InputCore
-                    v-else-if="col.filter.type === 'text'"
-                    class="w-full"
-                    type="text"
-                    variant="glass"
+                <!-- range (min / max) -->
+                <RangeDualCore
+                    v-else-if="col.filter.type === 'range'"
+                    :model-value="getRangeModelValue(col)"
+                    :min="getRangeBounds(col).min"
+                    :max="getRangeBounds(col).max"
+                    :step="Number(col.filter?.ui?.step) || 1"
                     :color="uiColor"
+                    :accent="filterCharAccent(col)"
                     size="sm"
-                    :model-value="getTextModelValue(col.filter.id)"
-                    @update:model-value="(v) => handleTextUpdate(col.filter.id, v)"
+                    @update:model-value="(v) => handleRangeUpdate(col, v)"
                 />
+
+                <!-- text (legacy, masqué : la recherche globale suffit) -->
+                <div
+                    v-else-if="col.filter.type === 'text'"
+                    class="text-xs opacity-50"
+                >
+                    Recherche globale
+                </div>
 
                 <!-- unsupported (Phase 1) -->
                 <div v-else class="text-xs opacity-50">
                     Filtre non supporté ({{ col.filter.type }})
                 </div>
             </div>
+            </template>
         </div>
 
         <!-- Barre d'actions : + filtres + presets à gauche, Appliquer + Réinitialiser à droite -->

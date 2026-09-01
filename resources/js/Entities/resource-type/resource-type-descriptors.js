@@ -103,7 +103,6 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       visibleIf: () => canUpdateAny,
       table: {
         sortable: true,
-        filterable: { id: "dofusdb_type_id", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -195,7 +194,13 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       format: "enum",
       table: {
         sortable: true,
-        filterable: { id: "state", type: "multi", defaultVisible: true },
+        filterable: {
+          id: "state",
+          type: "multi",
+          defaultVisible: true,
+          defaultValue: ["playable"],
+          options: getEntityStateOptions(),
+        },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -290,7 +295,6 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       format: "number",
       table: {
         sortable: true,
-        filterable: { id: "seen_count", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -331,7 +335,6 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       format: "number",
       table: {
         sortable: true,
-        filterable: { id: "resources_count", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },

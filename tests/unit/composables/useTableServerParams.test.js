@@ -42,4 +42,18 @@ describe("buildFetchUrl", () => {
         expect(url).toContain("search=");
         expect(decodeURIComponent(url)).toContain("search=épée");
     });
+
+    it("sérialise les filtres plage en filters[key][min] et [max]", () => {
+        const url = buildFetchUrl(
+            {
+                page: 1,
+                pageSize: 25,
+                filters: { creature_level: { min: 5, max: 50 } },
+            },
+            "https://example.test/api/t",
+            0,
+        );
+        expect(url).toContain("filters%5Bcreature_level%5D%5Bmin%5D=5");
+        expect(url).toContain("filters%5Bcreature_level%5D%5Bmax%5D=50");
+    });
 });

@@ -296,6 +296,27 @@ class ItemTableControllerTest extends TestCase
         $this->assertSame(['Five', 'Twelve'], $csvNames);
     }
 
+    public function test_level_range_filter_accepts_min_max(): void
+    {
+        $user = User::factory()->create();
+        Item::factory()->create($this->playableAttrs(['name' => 'Five', 'level' => '5']));
+        Item::factory()->create($this->playableAttrs(['name' => 'Twelve', 'level' => '12']));
+        Item::factory()->create($this->playableAttrs(['name' => 'Twenty', 'level' => '20']));
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/items?format=entities&limit=20&filters[level][min]=5&filters[level][max]=12');
+        $response->assertOk();
+        $names = collect($response->json('entities'))->pluck('name')->sort()->values()->all();
+        $this->assertSame(['Five', 'Twelve'], $names);
+
+        $bounds = $response->json('meta.filterOptions.level');
+        $this->assertIsArray($bounds);
+        $this->assertArrayHasKey('min', $bounds);
+        $this->assertArrayHasKey('max', $bounds);
+        $this->assertSame(5, (int) $bounds['min']);
+        $this->assertSame(20, (int) $bounds['max']);
+    }
+
     public function test_sort_alias_item_type_uses_item_type_id(): void
     {
         $user = User::factory()->create();

@@ -19,7 +19,7 @@ import { provideCharacteristicRuntime } from "@/Composables/entity/characteristi
 import CapabilityMinimalUsageMetaRow from "@/Pages/Molecules/entity/capability/CapabilityMinimalUsageMetaRow.vue";
 import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
 import { getRowEntity } from "@/Utils/Entity/rowEntity";
-import { getElementGlassSurfaceStyle, resolveEntityElementValue } from "@/Utils/Entity/Elements";
+import { getElementGlassSurfaceStyle, getElementSurfaceRingClass, resolveEntityElementValue } from "@/Utils/Entity/Elements";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -121,13 +121,14 @@ const elementSurfaceStyle = computed(() => ({
     "--bg-color": "var(--color-base-100)",
     ...getElementGlassSurfaceStyle(resolveEntityElementValue(entity.value)),
 }));
+const elementRingClass = computed(() => getElementSurfaceRingClass(elementSurfaceStyle.value));
 
 </script>
 
 <template>
     <div
         class="group relative rounded-box border border-base-300 bg-glass-2xl p-3 flex flex-col gap-2 transition-colors hover:bg-glass-3xl"
-        :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
+        :class="[{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }, elementRingClass]"
         :style="elementSurfaceStyle"
         data-row-contextmenu-target
         @click="(e) => emitLineRowClick(emit, row, e)"

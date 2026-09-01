@@ -8,14 +8,10 @@ describe("resolveTableFilterLayout", () => {
         expect(resolveTableFilterLayout({ type: "select", isBooleanSelect: true, optionCount: 2 })).toBe("toggle");
     });
 
-    it("met un petit multi en chips", () => {
-        expect(resolveTableFilterLayout({ type: "multi", optionCount: 6 })).toBe("chips");
-        expect(resolveTableFilterLayout({ type: "select", optionCount: 5 })).toBe("chips");
-        expect(resolveTableFilterLayout({ type: "multi", optionCount: 8 })).toBe("chips");
-    });
-
-    it("met une liste longue ou vide en menu", () => {
-        expect(resolveTableFilterLayout({ type: "multi", optionCount: 9 })).toBe("menu");
+    it("met les listes en menu par défaut (compact)", () => {
+        expect(resolveTableFilterLayout({ type: "multi", optionCount: 6 })).toBe("menu");
+        expect(resolveTableFilterLayout({ type: "select", optionCount: 5 })).toBe("menu");
+        expect(resolveTableFilterLayout({ type: "multi", optionCount: 8 })).toBe("menu");
         expect(resolveTableFilterLayout({ type: "multi", optionCount: 40 })).toBe("menu");
         expect(resolveTableFilterLayout({ type: "multi", optionCount: 0 })).toBe("menu");
     });
@@ -27,5 +23,9 @@ describe("resolveTableFilterLayout", () => {
 
     it("classe le texte à part", () => {
         expect(resolveTableFilterLayout({ type: "text" })).toBe("text");
+    });
+
+    it("classe une plage à part", () => {
+        expect(resolveTableFilterLayout({ type: "range" })).toBe("range");
     });
 });

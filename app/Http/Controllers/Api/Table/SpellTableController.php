@@ -72,8 +72,6 @@ class SpellTableController extends Controller
     private function applySpellTableFilters(Builder $query, array $filters): void
     {
         $scalar = [
-            'level' => ['level', 'string'],
-            'pa' => ['pa', 'string'],
             'id' => ['id', 'int'],
             'category' => ['category', 'int'],
             'element' => ['element', 'int'],
@@ -86,6 +84,11 @@ class SpellTableController extends Controller
             'ritual_available' => ['ritual_available', 'int'],
             'auto_update' => ['auto_update', 'int'],
         ];
+        foreach (['level', 'pa'] as $rangeKey) {
+            if ($this->hasFilterValue($filters, $rangeKey)) {
+                $this->applyIntegerRangeFilter($query, $rangeKey, $filters[$rangeKey]);
+            }
+        }
         foreach ($scalar as $key => [$column, $cast]) {
             if ($this->hasFilterValue($filters, $key)) {
                 $this->applyEqualityFilter($query, $column, $filters[$key], $cast);
@@ -105,17 +108,21 @@ class SpellTableController extends Controller
         }
 
         if ($this->hasFilterValue($filters, 'po')) {
-            $values = $this->normalizeFilterList($filters['po']);
-            $query->where(function (Builder $q) use ($values) {
-                foreach ($values as $value) {
-                    if ($value === '6') {
-                        $q->orWhere('po_min', '>=', 6)->orWhere('po_max', '>=', 6);
+            if ($this->isRangeFilterValue($filters['po'])) {
+                $this->applyIntegerRangeOverlapFilter($query, 'po_min', 'po_max', $filters['po']);
+            } else {
+                $values = $this->normalizeFilterList($filters['po']);
+                $query->where(function (Builder $q) use ($values) {
+                    foreach ($values as $value) {
+                        if ($value === '6') {
+                            $q->orWhere('po_min', '>=', 6)->orWhere('po_max', '>=', 6);
 
-                        continue;
+                            continue;
+                        }
+                        $q->orWhere('po_min', $value)->orWhere('po_max', $value);
                     }
-                    $q->orWhere('po_min', $value)->orWhere('po_max', $value);
-                }
-            });
+                });
+            }
         }
 
         if ($this->hasFilterValue($filters, 'area')) {
@@ -304,14 +311,11 @@ class SpellTableController extends Controller
             'manageAny' => Gate::allows('manageAny', Spell::class),
         ];
 
+        $visibleSpells = Spell::query()->visibleToUser($request->user());
+        $poMinBounds = $this->integerColumnBounds($visibleSpells, 'po_min', 0, 20);
+        $poMaxBounds = $this->integerColumnBounds($visibleSpells, 'po_max', 0, 20);
         $filterOptions = [
-            'level' => [
-                ['value' => '1', 'label' => '1'],
-                ['value' => '50', 'label' => '50'],
-                ['value' => '100', 'label' => '100'],
-                ['value' => '150', 'label' => '150'],
-                ['value' => '200', 'label' => '200'],
-            ],
+            'level' => $this->integerColumnBounds($visibleSpells, 'level', 1, 200),
             'area' => collect(AreaConstants::SHAPES)
                 ->map(fn (string $shape) => ['value' => $shape, 'label' => AreaConstants::getShapeLabel($shape)])
                 ->values()->all(),
@@ -324,22 +328,10 @@ class SpellTableController extends Controller
                     'show_in_catalog' => (bool) $t->show_in_catalog,
                 ])
                 ->values()->all(),
-            'pa' => [
-                ['value' => '1', 'label' => '1'],
-                ['value' => '2', 'label' => '2'],
-                ['value' => '3', 'label' => '3'],
-                ['value' => '4', 'label' => '4'],
-                ['value' => '5', 'label' => '5'],
-                ['value' => '6', 'label' => '6'],
-            ],
+            'pa' => $this->integerColumnBounds($visibleSpells, 'pa', 0, 12),
             'po' => [
-                ['value' => '0', 'label' => '0 (soi)'],
-                ['value' => '1', 'label' => '1 (CàC)'],
-                ['value' => '2', 'label' => '2'],
-                ['value' => '3', 'label' => '3'],
-                ['value' => '4', 'label' => '4'],
-                ['value' => '5', 'label' => '5'],
-                ['value' => '6', 'label' => '6+'],
+                'min' => min($poMinBounds['min'], $poMaxBounds['min']),
+                'max' => max($poMinBounds['max'], $poMaxBounds['max']),
             ],
             'sub_effect' => SubEffect::query()->orderBy('type_slug')->orderBy('slug')->get(['id', 'slug', 'type_slug'])
                 ->map(fn (SubEffect $s) => ['value' => $s->slug, 'label' => $s->slug])

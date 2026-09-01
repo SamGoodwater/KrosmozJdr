@@ -97,18 +97,7 @@ class ConditionTableController extends Controller
             $this->applyEqualityFilter($query, 'write_level', $filters['write_level'], 'int');
         }
         if ($this->hasFilterValue($filters, 'dissipable')) {
-            $rawD = $filters['dissipable'];
-            $parts = $this->normalizeFilterList($rawD);
-            $bools = [];
-            foreach ($parts as $p) {
-                $b = $this->normalizeDissipableFilter($p);
-                if ($b !== null) {
-                    $bools[$b ? 't' : 'f'] = $b;
-                }
-            }
-            if (count($bools) === 1) {
-                $query->where('dissipable', (bool) reset($bools));
-            }
+            $this->applyEqualityFilter($query, 'dissipable', $filters['dissipable'], 'bool');
         }
 
         $this->applyEntityTableIdList($query, $request);
@@ -134,10 +123,6 @@ class ConditionTableController extends Controller
             'state' => EntityState::options(),
             'read_level' => self::LEVEL_OPTIONS,
             'write_level' => self::LEVEL_OPTIONS,
-            'dissipable' => [
-                ['value' => '1', 'label' => 'Dissipable'],
-                ['value' => '0', 'label' => 'Non dissipable'],
-            ],
         ];
 
         // Mode "entities" : retourner les entités brutes
@@ -296,25 +281,6 @@ class ConditionTableController extends Controller
             ],
             'rows' => $tableRows,
         ]);
-    }
-
-    private function normalizeDissipableFilter(mixed $v): ?bool
-    {
-        if ($v === '' || $v === null) {
-            return null;
-        }
-        if (is_bool($v)) {
-            return $v;
-        }
-        $s = strtolower(trim((string) $v));
-        if (in_array($s, ['1', 'true', 'yes', 'oui'], true)) {
-            return true;
-        }
-        if (in_array($s, ['0', 'false', 'no', 'non'], true)) {
-            return false;
-        }
-
-        return null;
     }
 
     /**

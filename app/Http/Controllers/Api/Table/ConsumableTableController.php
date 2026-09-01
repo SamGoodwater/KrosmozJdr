@@ -68,7 +68,10 @@ class ConsumableTableController extends Controller
             $this->applyEqualityFilter($query, 'id', $filters['id'], 'int');
         }
         if ($this->hasFilterValue($filters, 'level')) {
-            $this->applyEqualityFilter($query, 'level', $filters['level']);
+            $this->applyIntegerRangeFilter($query, 'level', $filters['level']);
+        }
+        if ($this->hasFilterValue($filters, 'state')) {
+            $this->applyEqualityFilter($query, 'state', $filters['state']);
         }
         if ($this->hasFilterValue($filters, 'rarity')) {
             $this->applyEqualityFilter($query, 'rarity', $filters['rarity'], 'int');
@@ -119,6 +122,20 @@ class ConsumableTableController extends Controller
             ->values()
             ->all();
 
+        $filterOptions = [
+            'rarity' => collect(Resource::RARITY)->map(fn ($label, $value) => [
+                'value' => (string) $value,
+                'label' => (string) $label,
+            ])->values()->all(),
+            'consumable_type_id' => $consumableTypeOptions,
+            'level' => $this->integerColumnBounds(
+                Consumable::query()->visibleToUser($request->user()),
+                'level',
+                1,
+                200
+            ),
+        ];
+
         // Mode "entities" : retourner les entités brutes
         if ($format === 'entities') {
             $entities = $rows->map(function (Consumable $c) {
@@ -164,13 +181,7 @@ class ConsumableTableController extends Controller
                         'page' => $page,
                     ],
                     'capabilities' => $capabilities,
-                    'filterOptions' => [
-                        'rarity' => collect(Resource::RARITY)->map(fn ($label, $value) => [
-                            'value' => (string) $value,
-                            'label' => (string) $label,
-                        ])->values()->all(),
-                        'consumable_type_id' => $consumableTypeOptions,
-                    ],
+                    'filterOptions' => $filterOptions,
                     'pagination' => $pagination,
                     'format' => 'entities',
                 ],
@@ -303,13 +314,7 @@ class ConsumableTableController extends Controller
                     'page' => $page,
                 ],
                 'capabilities' => $capabilities,
-                'filterOptions' => [
-                    'rarity' => collect(Resource::RARITY)->map(fn ($label, $value) => [
-                        'value' => (string) $value,
-                        'label' => (string) $label,
-                    ])->values()->all(),
-                    'consumable_type_id' => $consumableTypeOptions,
-                ],
+                'filterOptions' => $filterOptions,
                 'pagination' => $pagination,
             ],
             'rows' => $tableRows,

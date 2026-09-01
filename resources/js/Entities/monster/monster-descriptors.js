@@ -196,12 +196,9 @@ export function getMonsterFieldDescriptors(ctx = {}) {
         searchable: true,
         filterable: {
           id: 'creature_level',
-          type: 'multi',
+          type: 'range',
           defaultVisible: true,
-          ui: {
-            optionsMode: 'rows',
-            maxOptions: 250,
-          },
+          ui: { min: 1, max: 200, step: 1 },
         },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'badge' }, sm: { mode: 'badge' }, md: { mode: 'badge' }, lg: { mode: 'badge' }, xl: { mode: 'badge' } } },
@@ -213,7 +210,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         searchable: true,
-        filterable: { id: 'creature_life', type: 'multi', defaultVisible: false },
+        filterable: { id: 'creature_life', type: 'range', defaultVisible: false, ui: { min: 0, max: 500, step: 1 } },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'text' }, sm: { mode: 'text' }, md: { mode: 'text' }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
       },
@@ -223,7 +220,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       general: { label: 'PA', icon: 'fa-solid fa-bolt', tooltip: 'Points d’action de la créature' },
       table: {
         sortable: true,
-        filterable: { id: 'creature_pa', type: 'text', defaultVisible: false },
+        filterable: { id: 'creature_pa', type: 'range', defaultVisible: false, ui: { min: 0, max: 20, step: 1 } },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'text' }, sm: { mode: 'text' }, md: { mode: 'text' }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
       },
@@ -233,7 +230,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       general: { label: 'PM', icon: 'fa-solid fa-shoe-prints', tooltip: 'Points de mouvement de la créature' },
       table: {
         sortable: true,
-        filterable: { id: 'creature_pm', type: 'text', defaultVisible: false },
+        filterable: { id: 'creature_pm', type: 'range', defaultVisible: false, ui: { min: 0, max: 20, step: 1 } },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'text' }, sm: { mode: 'text' }, md: { mode: 'text' }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
       },
@@ -243,7 +240,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       general: { label: 'PO', icon: 'fa-solid fa-crosshairs', tooltip: 'Portée de la créature' },
       table: {
         sortable: true,
-        filterable: { id: 'creature_po', type: 'text', defaultVisible: false },
+        filterable: { id: 'creature_po', type: 'range', defaultVisible: false, ui: { min: 0, max: 20, step: 1 } },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'text' }, sm: { mode: 'text' }, md: { mode: 'text' }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
       },
@@ -253,7 +250,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       general: { label: 'Initiative', icon: 'fa-solid fa-clock', tooltip: 'Initiative de la créature' },
       table: {
         sortable: true,
-        filterable: { id: 'creature_ini', type: 'text', defaultVisible: false },
+        filterable: { id: 'creature_ini', type: 'range', defaultVisible: false, ui: { min: 0, max: 200, step: 1 } },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'text' }, sm: { mode: 'text' }, md: { mode: 'text' }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
       },
@@ -263,7 +260,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       general: { label: 'CA', icon: 'fa-solid fa-shield-halved', tooltip: 'Classe d’armure de la créature' },
       table: {
         sortable: true,
-        filterable: { id: 'creature_ca', type: 'text', defaultVisible: false },
+        filterable: { id: 'creature_ca', type: 'range', defaultVisible: false, ui: { min: 0, max: 50, step: 1 } },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'text' }, sm: { mode: 'text' }, md: { mode: 'text' }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
       },
@@ -284,7 +281,6 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         searchable: true,
-        filterable: { id: 'creature_location', type: 'text', defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'text', truncate: 15 }, sm: { mode: 'text', truncate: 20 }, md: { mode: 'text', truncate: 30 }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
       },
@@ -311,7 +307,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       general: { label: 'Force', icon: 'fa-solid fa-dumbbell', tooltip: 'Force de la créature' },
       table: {
         sortable: true,
-        filterable: { id: 'creature_strong', type: 'text', defaultVisible: false },
+        filterable: { id: 'creature_strong', type: 'range', defaultVisible: false, ui: { min: 0, max: 400, step: 1 } },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'text' }, sm: { mode: 'text' }, md: { mode: 'text' }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
       },
@@ -321,7 +317,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       general: { label: 'Intelligence', icon: 'fa-solid fa-brain', tooltip: 'Intelligence de la créature' },
       table: {
         sortable: true,
-        filterable: { id: 'creature_intel', type: 'text', defaultVisible: false },
+        filterable: { id: 'creature_intel', type: 'range', defaultVisible: false, ui: { min: 0, max: 400, step: 1 } },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'text' }, sm: { mode: 'text' }, md: { mode: 'text' }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
       },
@@ -331,7 +327,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       general: { label: 'Agilité', icon: 'fa-solid fa-wind', tooltip: 'Agilité de la créature' },
       table: {
         sortable: true,
-        filterable: { id: 'creature_agi', type: 'text', defaultVisible: false },
+        filterable: { id: 'creature_agi', type: 'range', defaultVisible: false, ui: { min: 0, max: 400, step: 1 } },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'text' }, sm: { mode: 'text' }, md: { mode: 'text' }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
       },
@@ -341,7 +337,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       general: { label: 'Chance', icon: 'fa-solid fa-clover', tooltip: 'Chance de la créature' },
       table: {
         sortable: true,
-        filterable: { id: 'creature_chance', type: 'text', defaultVisible: false },
+        filterable: { id: 'creature_chance', type: 'range', defaultVisible: false, ui: { min: 0, max: 400, step: 1 } },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'text' }, sm: { mode: 'text' }, md: { mode: 'text' }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
       },
@@ -351,7 +347,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       general: { label: 'Vitalité', icon: 'fa-solid fa-heart-pulse', tooltip: 'Vitalité de la créature' },
       table: {
         sortable: true,
-        filterable: { id: 'creature_vitality', type: 'text', defaultVisible: false },
+        filterable: { id: 'creature_vitality', type: 'range', defaultVisible: false, ui: { min: 0, max: 400, step: 1 } },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'text' }, sm: { mode: 'text' }, md: { mode: 'text' }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
       },
@@ -361,7 +357,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       general: { label: 'Bonus critique', icon: 'fa-solid fa-crosshairs', tooltip: 'Seuil de critique (0=nat 20, 3=dès 17)' },
       table: {
         sortable: true,
-        filterable: { id: 'creature_critical_hit', type: 'text', defaultVisible: false },
+        filterable: { id: 'creature_critical_hit', type: 'range', defaultVisible: false, ui: { min: 0, max: 50, step: 1 } },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'text' }, sm: { mode: 'text' }, md: { mode: 'text' }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
       },
@@ -371,7 +367,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       general: { label: 'Bonus soins', icon: 'fa-solid fa-hand-holding-medical', tooltip: 'Bonus ajouté à chaque soin' },
       table: {
         sortable: true,
-        filterable: { id: 'creature_heal_bonus', type: 'text', defaultVisible: false },
+        filterable: { id: 'creature_heal_bonus', type: 'range', defaultVisible: false, ui: { min: 0, max: 50, step: 1 } },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'text' }, sm: { mode: 'text' }, md: { mode: 'text' }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
       },
@@ -381,7 +377,6 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       general: { label: 'État', icon: 'fa-solid fa-circle-info', tooltip: 'État du cycle de vie de la créature' },
       table: {
         sortable: true,
-        filterable: { id: 'creature_state', type: 'multi', defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'text' }, sm: { mode: 'text' }, md: { mode: 'text' }, lg: { mode: 'text' }, xl: { mode: 'text' } } },
       },
@@ -595,6 +590,8 @@ export function getMonsterFieldDescriptors(ctx = {}) {
           id: 'state',
           type: 'multi',
           defaultVisible: true,
+          defaultValue: ['playable'],
+          options: getEntityStateOptions(),
         },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: {
