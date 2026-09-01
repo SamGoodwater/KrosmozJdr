@@ -21,6 +21,7 @@ use Database\Seeders\Type\TypeSeeder;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Tests\Concerns\SeedsAllowScrapMonsterRace;
 use Tests\CreatesSystemUser;
 use Tests\TestCase;
 
@@ -31,6 +32,7 @@ use Tests\TestCase;
 class ScrappingRunCommandTest extends TestCase
 {
     use CreatesSystemUser;
+    use SeedsAllowScrapMonsterRace;
 
     protected function setUp(): void
     {
@@ -47,6 +49,7 @@ class ScrappingRunCommandTest extends TestCase
             ScrappingEntityMappingCharacteristicSeeder::class,
         ]);
         $this->createSystemUser();
+        $this->seedAllowScrapMonsterRace();
     }
 
     // ---- Validation / options ----
@@ -306,6 +309,7 @@ class ScrappingRunCommandTest extends TestCase
             '--max-pages' => '2',
             '--simulate' => true,
             '--skip-cache' => true,
+            '--race-mode' => 'all',
         ]);
 
         $this->assertSame(0, $code);

@@ -6,6 +6,7 @@ use App\Enums\EntityState;
 use App\Models\Page;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
@@ -84,7 +85,7 @@ class UpdatePageRequest extends FormRequest
         $data = $this->all();
         if (isset($data['title']) && ! isset($data['slug'])) {
             $this->merge([
-                'slug' => \Str::slug($data['title']),
+                'slug' => Str::slug($data['title']),
             ]);
         }
         if (isset($data['in_menu'])) {

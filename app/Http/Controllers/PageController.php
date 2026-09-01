@@ -19,6 +19,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -261,7 +262,7 @@ class PageController extends Controller
             NotificationService::notifyEntityModified($page, $request->user(), $old);
         } catch (\Exception $e) {
             // Si les notifications échouent, on continue quand même
-            \Log::warning('Erreur lors de l\'envoi des notifications pour la page '.$page->id.': '.$e->getMessage());
+            Log::warning('Erreur lors de l\'envoi des notifications pour la page '.$page->id.': '.$e->getMessage());
         }
         PageService::clearMenuCache();
 

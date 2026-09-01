@@ -13,7 +13,33 @@ use Illuminate\Support\Facades\Vite;
 
 abstract class TestCase extends BaseTestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase {
+        refreshTestDatabase as private refreshTestDatabaseWithoutLock;
+    }
+
+    /**
+     * Sérialise migrate:fresh si un autre PHPUnit touche la même base `krosmoz_testing`.
+     */
+    protected function refreshTestDatabase()
+    {
+        $lockPath = storage_path('framework/testing-migrate.lock');
+        $dir = dirname($lockPath);
+        if (! is_dir($dir)) {
+            @mkdir($dir, 0775, true);
+        }
+        $handle = fopen($lockPath, 'c');
+        if (is_resource($handle)) {
+            flock($handle, LOCK_EX);
+        }
+        try {
+            $this->refreshTestDatabaseWithoutLock();
+        } finally {
+            if (is_resource($handle)) {
+                flock($handle, LOCK_UN);
+                fclose($handle);
+            }
+        }
+    }
 
     /**
      * Session comme après une confirmation mot de passe récente (middleware password.confirm).

@@ -8,6 +8,7 @@ use App\Models\Type\ConsumableType;
 use App\Models\User;
 use App\Support\CatalogTypeVisibility;
 use Database\Seeders\Concerns\LoadsSeederDataFile;
+use Database\Seeders\Concerns\RetriesWhenMysqlSchemaChanged;
 use Illuminate\Database\Seeder;
 
 /**
@@ -21,6 +22,7 @@ use Illuminate\Database\Seeder;
 class ConsumableTypeSeeder extends Seeder
 {
     use LoadsSeederDataFile;
+    use RetriesWhenMysqlSchemaChanged;
 
     private const DATA_FILE = 'database/seeders/data/consumable_types.php';
 
@@ -36,8 +38,9 @@ class ConsumableTypeSeeder extends Seeder
         }
 
         $rows = $this->loadDataFile(self::DATA_FILE);
-        $systemUser = User::getSystemUser();
-        $createdBy = $systemUser?->id;
+        $createdBy = $this->retryOnMysqlSchemaChanged(
+            static fn () => User::getSystemUser()?->id
+        );
 
         foreach ($rows as $row) {
             $typeId = (int) ($row['dofusdb_type_id'] ?? 0);

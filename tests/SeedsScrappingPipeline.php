@@ -13,12 +13,15 @@ use Database\Seeders\ScrappingEntityMappingCharacteristicSeeder;
 use Database\Seeders\ScrappingEntityMappingSeeder;
 use Database\Seeders\SpellCharacteristicSeeder;
 use Database\Seeders\Type\TypeSeeder;
+use Tests\Concerns\SeedsAllowScrapMonsterRace;
 
 /**
  * Seeders minimaux pour exécuter le pipeline scrapping en tests.
  */
 trait SeedsScrappingPipeline
 {
+    use SeedsAllowScrapMonsterRace;
+
     protected function seedScrappingPipeline(): void
     {
         $this->seed([
@@ -33,6 +36,7 @@ trait SeedsScrappingPipeline
             ScrappingEntityMappingCharacteristicSeeder::class,
         ]);
 
+        $this->seedAllowScrapMonsterRace();
         $this->ensurePanoplyMapping();
     }
 

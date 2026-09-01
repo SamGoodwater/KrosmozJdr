@@ -38,8 +38,9 @@ class ItemTypeSeeder extends Seeder
         }
 
         $rows = $this->loadDataFile(self::DATA_FILE);
-        $systemUser = User::getSystemUser();
-        $createdBy = $systemUser?->id;
+        $createdBy = $this->retryOnMysqlSchemaChanged(
+            static fn () => User::getSystemUser()?->id
+        );
 
         foreach ($rows as $row) {
             $typeId = (int) ($row['dofusdb_type_id'] ?? 0);

@@ -44,7 +44,7 @@ trait RetriesWhenMysqlSchemaChanged
         $previous = $e->getPrevious();
         if ($previous instanceof \PDOException) {
             $code = (int) $previous->getCode();
-            if ($code === 1412 || $code === 1213 || $code === 1146) {
+            if ($code === 1412 || $code === 1213 || $code === 1146 || $code === 1054) {
                 return true;
             }
         }
@@ -54,7 +54,9 @@ trait RetriesWhenMysqlSchemaChanged
         return str_contains($message, '1412')
             || str_contains($message, '1213')
             || str_contains($message, '1146')
+            || str_contains($message, '1054')
             || str_contains($message, "doesn't exist")
+            || str_contains($message, 'Unknown column')
             || str_contains($message, 'Deadlock');
     }
 }

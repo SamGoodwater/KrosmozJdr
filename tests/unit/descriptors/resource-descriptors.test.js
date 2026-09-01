@@ -41,9 +41,7 @@ describe('resource-descriptors (nouveau système)', () => {
         it('pré-coche les types métier sur le filtre Type', () => {
             const descriptors = getResourceFieldDescriptors();
             const filterable = descriptors.resource_type.table.filterable;
-            expect(filterable.defaultByLabel).toContain('Bois');
-            expect(filterable.defaultByLabel).not.toContain('Souvenir');
-            expect(filterable.defaultByDofusTypeId).toContain(38);
+            expect(filterable.defaultByCatalog).toBe(true);
         });
 
         it('les options utilisent des constantes (RarityFormatter, rôles lecture/écriture)', () => {

@@ -14,6 +14,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -159,7 +160,7 @@ class SectionController extends Controller
             NotificationService::notifyEntityModified($section, $request->user(), $old);
         } catch (\Exception $e) {
             // Si les notifications échouent, on continue quand même (non bloquant)
-            \Log::warning('Erreur lors de l\'envoi des notifications pour la section '.$section->id.': '.$e->getMessage());
+            Log::warning('Erreur lors de l\'envoi des notifications pour la section '.$section->id.': '.$e->getMessage());
         }
 
         if ($request->expectsJson()) {

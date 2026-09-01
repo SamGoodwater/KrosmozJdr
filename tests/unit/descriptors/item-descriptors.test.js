@@ -137,7 +137,7 @@ describe('item-descriptors', () => {
             expect(d.level.table.defaultVisible).toEqual(fromSm);
             expect(d.item_type.table.defaultVisible).toEqual(fromSm);
             expect(d.rarity.table.defaultVisible).toEqual(fromSm);
-            expect(d.effect.table.defaultVisible).toEqual(fromMd);
+            expect(d.bonus.table.defaultVisible).toEqual(fromMd);
         });
 
         it('masque description, résumé, prix et version', () => {

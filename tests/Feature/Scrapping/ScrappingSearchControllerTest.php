@@ -37,7 +37,7 @@ class ScrappingSearchControllerTest extends TestCase
             ], 200);
         });
 
-        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/dofusdb/search/monster?name=Bouftou&limit=2&max_pages=1&skip_cache=true');
+        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/dofusdb/search/monster?name=Bouftou&limit=2&max_pages=1&skip_cache=true&race_mode=all');
 
         $res->assertOk();
         $res->assertJsonPath('success', true);
@@ -73,7 +73,7 @@ class ScrappingSearchControllerTest extends TestCase
             ], 200);
         });
 
-        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/dofusdb/search/monster?idMin=10&idMax=12&limit=2&max_pages=1');
+        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/dofusdb/search/monster?idMin=10&idMax=12&limit=2&max_pages=1&race_mode=all');
 
         $res->assertOk();
         $res->assertJsonPath('success', true);
@@ -112,7 +112,7 @@ class ScrappingSearchControllerTest extends TestCase
             ], 200);
         });
 
-        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/dofusdb/search/monster?limit=200&max_pages=2&skip_cache=true');
+        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])->getJson('/api/dofusdb/search/monster?limit=200&max_pages=2&skip_cache=true&race_mode=all');
 
         $res->assertOk();
         $res->assertJsonPath('success', true);

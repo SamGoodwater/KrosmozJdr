@@ -7,6 +7,7 @@ use App\Models\Page;
 use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 /**
@@ -57,7 +58,7 @@ class StorePageRequest extends FormRequest
         $data = $this->all();
         if (isset($data['title']) && ! isset($data['slug'])) {
             $this->merge([
-                'slug' => \Str::slug($data['title']),
+                'slug' => Str::slug($data['title']),
             ]);
         }
         if (isset($data['in_menu'])) {
