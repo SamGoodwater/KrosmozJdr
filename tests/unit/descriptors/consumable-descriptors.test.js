@@ -68,4 +68,14 @@ describe('consumable-descriptors', () => {
             });
         });
     });
+
+    describe('Filtres numériques', () => {
+        it('niveau est un slider de plage visible', () => {
+            const descriptors = getConsumableFieldDescriptors();
+            expect(descriptors.level.table.filterable).toMatchObject({
+                type: 'range',
+                defaultVisible: true,
+            });
+        });
+    });
 });

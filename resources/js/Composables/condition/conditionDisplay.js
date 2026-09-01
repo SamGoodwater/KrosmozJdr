@@ -144,10 +144,7 @@ export const CONDITION_MECHANICAL_FLAGS = Object.freeze([
  * @type {ReadonlyArray<string>}
  */
 export const CONDITION_CATALOG_STATE_DEFAULT = Object.freeze([
-    "draft",
-    "auto",
     "playable",
-    "archived",
 ]);
 
 /**

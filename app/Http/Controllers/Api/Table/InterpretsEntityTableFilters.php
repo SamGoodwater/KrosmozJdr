@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Table;
 
+use App\Services\Characteristic\Formula\FormulaMinInteger;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -56,7 +57,172 @@ trait InterpretsEntityTableFilters
             return false;
         }
 
+        if ($this->normalizeRangeBounds($raw) !== null) {
+            return true;
+        }
+
         return $this->normalizeFilterList($raw) !== [];
+    }
+
+    /**
+     * @return array{min: int, max: int}|null
+     */
+    protected function normalizeRangeBounds(mixed $raw): ?array
+    {
+        if (! is_array($raw) || array_is_list($raw)) {
+            return null;
+        }
+        if (! array_key_exists('min', $raw) && ! array_key_exists('max', $raw)) {
+            return null;
+        }
+
+        $min = isset($raw['min']) && $raw['min'] !== '' && $raw['min'] !== null
+            ? (int) $raw['min']
+            : null;
+        $max = isset($raw['max']) && $raw['max'] !== '' && $raw['max'] !== null
+            ? (int) $raw['max']
+            : null;
+        if ($min === null && $max === null) {
+            return null;
+        }
+        $lo = $min ?? $max;
+        $hi = $max ?? $min;
+        if ($lo === null || $hi === null) {
+            return null;
+        }
+
+        return ['min' => min($lo, $hi), 'max' => max($lo, $hi)];
+    }
+
+    /**
+     * Filtre une colonne texte/formule dont on compare l’entier minimal.
+     *
+     * @param  Builder<\Illuminate\Database\Eloquent\Model>  $query
+     */
+    protected function applyIntegerRangeFilter(Builder $query, string $column, mixed $raw): void
+    {
+        $range = $this->normalizeRangeBounds($raw);
+        if ($range === null) {
+            return;
+        }
+
+        $matching = $this->matchingFormulaMinValues(
+            $query->clone()->reorder()->select($column)->distinct()->pluck($column)->all(),
+            $range['min'],
+            $range['max']
+        );
+        if ($matching === []) {
+            $query->whereRaw('0 = 1');
+
+            return;
+        }
+
+        $query->whereIn($column, $matching);
+    }
+
+    /**
+     * @param  Builder<\Illuminate\Database\Eloquent\Model>  $query
+     */
+    protected function applyRelationIntegerRangeFilter(
+        Builder $query,
+        string $relation,
+        string $column,
+        mixed $raw
+    ): void {
+        $range = $this->normalizeRangeBounds($raw);
+        if ($range === null) {
+            return;
+        }
+
+        $related = $query->getModel()->{$relation}()->getRelated();
+        $matching = $this->matchingFormulaMinValues(
+            $related->newQuery()->select($column)->distinct()->pluck($column)->all(),
+            $range['min'],
+            $range['max']
+        );
+        if ($matching === []) {
+            $query->whereRaw('0 = 1');
+
+            return;
+        }
+
+        $query->whereHas($relation, function (Builder $q) use ($column, $matching) {
+            $q->whereIn($column, $matching);
+        });
+    }
+
+    /**
+     * @param  Builder<\Illuminate\Database\Eloquent\Model>  $query
+     * @return array{min: int, max: int}
+     */
+    protected function integerColumnBounds(Builder $query, string $column, int $fallbackMin = 0, int $fallbackMax = 20): array
+    {
+        $values = $this->formulaMinsForValues(
+            $query->clone()->reorder()->select($column)->distinct()->pluck($column)->all()
+        );
+        if ($values === []) {
+            return ['min' => $fallbackMin, 'max' => $fallbackMax];
+        }
+
+        return ['min' => min($values), 'max' => max($values)];
+    }
+
+    /**
+     * @param  Builder<\Illuminate\Database\Eloquent\Model>  $query
+     * @return array{min: int, max: int}
+     */
+    protected function relationIntegerColumnBounds(
+        Builder $query,
+        string $relation,
+        string $column,
+        int $fallbackMin = 0,
+        int $fallbackMax = 20
+    ): array {
+        $related = $query->getModel()->{$relation}()->getRelated();
+
+        return $this->integerColumnBounds($related->newQuery(), $column, $fallbackMin, $fallbackMax);
+    }
+
+    /**
+     * @param  list<mixed>  $values
+     * @return list<mixed>
+     */
+    private function matchingFormulaMinValues(array $values, int $min, int $max): array
+    {
+        $matching = [];
+        foreach ($values as $value) {
+            $int = $this->formulaMinInteger()->min($value === null ? null : (string) $value);
+            if ($int === null) {
+                continue;
+            }
+            if ($int >= $min && $int <= $max) {
+                $matching[] = $value;
+            }
+        }
+
+        return $matching;
+    }
+
+    /**
+     * @param  list<mixed>  $values
+     * @return list<int>
+     */
+    private function formulaMinsForValues(array $values): array
+    {
+        $out = [];
+        foreach ($values as $value) {
+            $int = $this->formulaMinInteger()->min($value === null ? null : (string) $value);
+            if ($int !== null) {
+                $out[] = $int;
+            }
+        }
+
+        return $out;
+    }
+
+    private function formulaMinInteger(): FormulaMinInteger
+    {
+        return app(FormulaMinInteger::class);
     }
 
     /**

@@ -1114,6 +1114,33 @@
     "file": "data-input/RangeCore.vue"
   },
   {
+    "name": "RangeDualCore",
+    "description": "Slider min/max sur une barre, valeurs au-dessus des curseurs",
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "Object",
+        "desc": "- { min, max }"
+      },
+      {
+        "name": "min",
+        "type": "Number",
+        "desc": "- Borne basse"
+      },
+      {
+        "name": "max",
+        "type": "Number",
+        "desc": "- Borne haute"
+      },
+      {
+        "name": "accent",
+        "type": "String",
+        "desc": "- Couleur CSS (hex ou var) qui surcharge --color"
+      }
+    ],
+    "file": "data-input/RangeDualCore.vue"
+  },
+  {
     "name": "RadioCore",
     "description": "RadioCore Atom (DaisyUI, Atomic Design)",
     "props": [

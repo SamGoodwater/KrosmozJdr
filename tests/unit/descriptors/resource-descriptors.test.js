@@ -145,5 +145,13 @@ describe('resource-descriptors (nouveau système)', () => {
             expect(opts1.some((o) => o.value === 1 && o.label === 'Type 1')).toBe(true);
             expect(opts2.some((o) => o.value === 2 && o.label === 'Type 2')).toBe(true);
         });
+
+        it('niveau est un slider de plage visible', () => {
+            const descriptors = getResourceFieldDescriptors();
+            expect(descriptors.level.table.filterable).toMatchObject({
+                type: 'range',
+                defaultVisible: true,
+            });
+        });
     });
 });

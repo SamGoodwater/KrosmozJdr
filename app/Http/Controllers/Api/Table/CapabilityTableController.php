@@ -120,10 +120,8 @@ class CapabilityTableController extends Controller
 
         $capFilters = [
             'state' => ['state', 'string'],
-            'level' => ['level', 'string'],
             'element' => ['element', 'int'],
             'id' => ['id', 'int'],
-            'pa' => ['pa', 'string'],
             'is_magic' => ['is_magic', 'int'],
             'ritual_available' => ['ritual_available', 'int'],
             'po_editable' => ['po_editable', 'int'],
@@ -132,6 +130,13 @@ class CapabilityTableController extends Controller
         foreach ($capFilters as $key => [$column, $cast]) {
             if ($this->hasFilterValue($filters, $key)) {
                 $this->applyEqualityFilter($query, $column, $filters[$key], $cast);
+            }
+        }
+        foreach (['level' => 'level', 'pa' => 'pa', 'po' => 'po'] as $key => $column) {
+            if ($this->normalizeRangeBounds($filters[$key] ?? null) !== null) {
+                $this->applyIntegerRangeFilter($query, $column, $filters[$key]);
+            } elseif ($this->hasFilterValue($filters, $key)) {
+                $this->applyEqualityFilter($query, $column, $filters[$key]);
             }
         }
 
@@ -160,31 +165,9 @@ class CapabilityTableController extends Controller
         ];
 
         $filterOptions = [
-            'level' => [
-                ['value' => '0', 'label' => '0'],
-                ['value' => '1', 'label' => '1'],
-                ['value' => '3', 'label' => '3'],
-                ['value' => '5', 'label' => '5'],
-                ['value' => '7', 'label' => '7'],
-                ['value' => '8', 'label' => '8'],
-            ],
-            'pa' => [
-                ['value' => '1', 'label' => '1'],
-                ['value' => '2', 'label' => '2'],
-                ['value' => '3', 'label' => '3'],
-                ['value' => '4', 'label' => '4'],
-                ['value' => '5', 'label' => '5'],
-                ['value' => '6', 'label' => '6'],
-            ],
-            'po' => [
-                ['value' => '0', 'label' => '0 (soi)'],
-                ['value' => '1', 'label' => '1 (CàC)'],
-                ['value' => '2', 'label' => '2'],
-                ['value' => '3', 'label' => '3'],
-                ['value' => '4', 'label' => '4'],
-                ['value' => '5', 'label' => '5'],
-                ['value' => '6', 'label' => '6+'],
-            ],
+            'level' => $this->integerColumnBounds(Capability::query()->visibleToUser($request->user()), 'level', 0, 20),
+            'pa' => $this->integerColumnBounds(Capability::query()->visibleToUser($request->user()), 'pa', 0, 12),
+            'po' => $this->integerColumnBounds(Capability::query()->visibleToUser($request->user()), 'po', 0, 20),
             'state' => EntityState::options(),
             'element' => ElementBitmask::allFilterOptions(),
             'is_magic' => [

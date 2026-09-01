@@ -195,7 +195,7 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       format: "enum",
       table: {
         sortable: true,
-        filterable: { id: "state", type: "multi", defaultVisible: true },
+        filterable: { id: "state", type: "multi", defaultVisible: true, defaultValue: ["playable"], options: getEntityStateOptions() },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },

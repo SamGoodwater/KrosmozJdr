@@ -9,6 +9,7 @@
 
 import ToggleCore from "@/Pages/Atoms/data-input/ToggleCore.vue";
 import InputCore from "@/Pages/Atoms/data-input/InputCore.vue";
+import RangeDualCore from "@/Pages/Atoms/data-input/RangeDualCore.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
@@ -16,9 +17,13 @@ import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import RadioCore from "@/Pages/Atoms/data-input/RadioCore.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import SpellTypeBadge from "@/Pages/Molecules/entity/spell/SpellTypeBadge.vue";
-import { computed, unref, ref } from "vue";
+import { computed, unref, ref, watch } from "vue";
 import { buildSelectOptionBadgeProps } from "@/Utils/Entity/selectOptionBadge.js";
-import { resolveTableFilterLayout } from "@/Utils/table/resolveTableFilterLayout.js";
+import { getEntityStateDotClass } from "@/Utils/Entity/SharedConstants.js";
+import { resolveTableFilterLayout, shouldShowTableFilterMenuSearch } from "@/Utils/table/resolveTableFilterLayout.js";
+import { isTableRangeActive, normalizeTableRangeValue, rangeBoundsFromFilterOption } from "@/Utils/table/tableRangeFilter.js";
+import { resolveFilterCharacteristicMeta } from "@/Utils/table/filterCharacteristicMeta.js";
+import { getCharacteristicColorStyle } from "@/Composables/entity/useCharacteristicDisplay";
 
 const props = defineProps({
     columns: { type: Array, required: true },
@@ -28,6 +33,10 @@ const props = defineProps({
      * Couleur UI (Design System) appliquée aux contrôles de filtres.
      */
     uiColor: { type: String, default: "primary" },
+    /**
+     * Type d’entité du tableau (`spell`, `monster`…) pour icônes / couleurs de caractéristiques.
+     */
+    entityType: { type: String, default: "" },
     presetsEnabled: { type: Boolean, default: false },
     showPresetPanel: { type: Boolean, default: false },
     isActivePresetDirty: { type: Boolean, default: false },
@@ -43,19 +52,109 @@ const mainFilterColumns = () =>
 
 /** Filtres masqués par défaut, affichés via "Afficher plus de filtres" */
 const extraFilterColumns = () =>
-  filterableColumns().filter((c) => c?.filter?.defaultVisible === false);
+  filterableColumns().filter((c) => c?.filter?.defaultVisible === false && !isStateFilterCol(c));
 
 const showExtraFilters = ref(false);
 const toggleExtraFilters = () => {
   showExtraFilters.value = !showExtraFilters.value;
 };
 
-/** Colonnes de filtres actuellement affichées (principales seules ou toutes) */
-const visibleFilterColumns = () =>
-  showExtraFilters.value ? filterableColumns() : mainFilterColumns();
+const isStateFilterCol = (c) => String(c?.filter?.id || "") === "state";
+const stateFilterColumn = () => filterableColumns().find(isStateFilterCol) || null;
+
+/** Colonnes de filtres actuellement affichées (principales puis avancées), hors état. */
+const visibleFilterColumns = () => {
+    const mains = mainFilterColumns().filter((c) => !isStateFilterCol(c));
+    if (!showExtraFilters.value) return mains;
+    return [...mains, ...extraFilterColumns()];
+};
+
+const isFirstExtraFilter = (col) => {
+    if (!showExtraFilters.value) return false;
+    const extras = extraFilterColumns();
+    return extras.length > 0 && extras[0]?.filter?.id === col?.filter?.id;
+};
+
+const filterCharMetaById = computed(() => {
+    const out = {};
+    for (const col of filterableColumns()) {
+        const id = col?.filter?.id;
+        if (!id) continue;
+        out[id] = resolveFilterCharacteristicMeta(id, { entityType: props.entityType });
+    }
+    return out;
+});
+
+const filterCharMeta = (col) => filterCharMetaById.value[col?.filter?.id] ?? null;
+
+const filterCharLabelStyle = (col) => {
+    const color = filterCharMeta(col)?.color;
+    return color ? getCharacteristicColorStyle(color) : undefined;
+};
+
+const filterCharAccent = (col) => filterCharMeta(col)?.cssColor || "";
+
+const showMenuSearch = (col) =>
+    shouldShowTableFilterMenuSearch({
+        optionCount: (getOptions(col) || []).length,
+        searchable: getFilterUi(col).searchable !== false,
+    });
+
+const getRangeBounds = (col) => {
+    const id = col?.filter?.id;
+    const fromServer = rangeBoundsFromFilterOption(props.filterOptions?.[id]);
+    if (fromServer) return fromServer;
+    const fromCol = rangeBoundsFromFilterOption(col?.filter?.bounds);
+    if (fromCol) return fromCol;
+    return { min: 0, max: 20 };
+};
+
+const getRangeValue = (col) => {
+    const bounds = getRangeBounds(col);
+    const raw = normalizeTableRangeValue(values.value?.[col?.filter?.id]);
+    if (raw) return raw;
+    return { min: bounds.min, max: bounds.max };
+};
+
+const updateRangeValue = (col, next) => {
+    const bounds = getRangeBounds(col);
+    const raw = normalizeTableRangeValue(next) || getRangeValue(col);
+    const patched = {
+        min: Math.max(bounds.min, Math.min(bounds.max, raw.min)),
+        max: Math.max(bounds.min, Math.min(bounds.max, raw.max)),
+    };
+    if (patched.min > patched.max) {
+        patched.max = patched.min;
+    }
+    if (patched.min === bounds.min && patched.max === bounds.max) {
+        updateFilter(col.filter.id, "");
+        return;
+    }
+    updateFilter(col.filter.id, patched);
+};
 
 // Support: le parent peut passer soit un objet, soit un ref({}) (compat).
 const values = computed(() => unref(props.filterValues) || {});
+
+const extraFilterIsActive = (col) => {
+    const id = col?.filter?.id;
+    if (!id) return false;
+    const raw = values.value?.[id];
+    if (col?.filter?.type === "range") {
+        return isTableRangeActive(normalizeTableRangeValue(raw), getRangeBounds(col));
+    }
+    if (raw === "" || raw == null) return false;
+    if (Array.isArray(raw)) return raw.length > 0;
+    return true;
+};
+
+watch(
+    () => extraFilterColumns().some(extraFilterIsActive),
+    (active) => {
+        if (active) showExtraFilters.value = true;
+    },
+    { immediate: true },
+);
 
 const getOptions = (col) => {
     const id = col?.filter?.id;
@@ -79,6 +178,7 @@ const getFilterLayout = (col) =>
 /** Classes littérales (Tailwind n’accepte pas de classes construites). */
 const filterShellClass = (col) => {
     const layout = getFilterLayout(col);
+    if (layout === "range") return "flex flex-col gap-0.5 w-40 pe-3";
     if (layout === "text") return "flex flex-col gap-1 w-full max-w-xs";
     if (layout === "toggle") return "flex flex-col gap-1 w-auto";
     if (layout === "chips") return "flex flex-col gap-1 min-w-0 max-w-full";
@@ -283,6 +383,20 @@ const activeBadges = computed(() => {
 
         const raw = values.value?.[f.id];
 
+        if (f.type === "range") {
+            const bounds = getRangeBounds(col);
+            if (!isTableRangeActive(raw, bounds)) continue;
+            const v = getRangeValue(col);
+            badges.push({
+                key: `${f.id}`,
+                filterId: f.id,
+                type: "range",
+                value: `${v.min}-${v.max}`,
+                label: `${getFilterLabel(col)}: ${v.min}–${v.max}`,
+            });
+            continue;
+        }
+
         // multi => un badge par valeur sélectionnée
         if (f.type === "multi") {
             const arr = Array.isArray(raw) ? raw : [];
@@ -403,11 +517,59 @@ const clearAllActiveFilters = () => {
 
 <template>
     <div class="flex flex-col gap-3">
-        <div class="text-sm font-semibold">Filtres</div>
+        <div class="flex items-center justify-between gap-2">
+            <div class="text-sm font-semibold">Filtres</div>
+            <div
+                v-if="stateFilterColumn()"
+                class="inline-flex flex-wrap items-center justify-end gap-1"
+                role="group"
+                :aria-label="getFilterLabel(stateFilterColumn())"
+            >
+                <Btn
+                    v-for="opt in getOptions(stateFilterColumn())"
+                    :key="String(opt.value)"
+                    type="button"
+                    size="xs"
+                    :variant="getRawFilterArrayValue(stateFilterColumn().filter.id).includes(String(opt.value)) ? 'soft' : 'ghost'"
+                    :color="uiColor"
+                    :active="getRawFilterArrayValue(stateFilterColumn().filter.id).includes(String(opt.value))"
+                    :aria-pressed="getRawFilterArrayValue(stateFilterColumn().filter.id).includes(String(opt.value))"
+                    :title="String(opt.label ?? opt.value)"
+                    class="gap-1.5"
+                    @click="toggleMultiValue(stateFilterColumn().filter.id, opt.value, !getRawFilterArrayValue(stateFilterColumn().filter.id).includes(String(opt.value)))"
+                >
+                    <span
+                        class="w-2 h-2 rounded-full shrink-0 ring-1 ring-base-300"
+                        :class="getEntityStateDotClass(opt.value)"
+                        aria-hidden="true"
+                    />
+                    <span>{{ opt.label }}</span>
+                </Btn>
+            </div>
+        </div>
 
-        <div class="flex flex-wrap items-end gap-x-3 gap-y-3">
-            <div v-for="col in visibleFilterColumns()" :key="col.id" :class="filterShellClass(col)">
-                <div class="text-xs opacity-70">{{ getFilterLabel(col) }}</div>
+        <div class="flex flex-wrap items-end gap-x-8 gap-y-4">
+            <template v-for="col in visibleFilterColumns()" :key="col.id">
+                <div
+                    v-if="isFirstExtraFilter(col)"
+                    class="basis-full w-full h-0"
+                    aria-hidden="true"
+                />
+            <div :class="filterShellClass(col)">
+                <div
+                    class="flex items-center gap-1 text-xs"
+                    :class="filterCharMeta(col) ? 'font-medium' : 'opacity-70'"
+                    :style="filterCharLabelStyle(col)"
+                >
+                    <Icon
+                        v-if="filterCharMeta(col)?.icon"
+                        :source="filterCharMeta(col).icon"
+                        :alt="getFilterLabel(col)"
+                        size="xs"
+                        class="shrink-0"
+                    />
+                    <span>{{ getFilterLabel(col) }}</span>
+                </div>
 
                 <!-- toggle (switch ON=actif, OFF=pas de filtre) -->
                 <div
@@ -571,6 +733,7 @@ const clearAllActiveFilters = () => {
                         <template #content>
                             <div class="p-3 w-72 space-y-2">
                                 <InputCore
+                                    v-if="showMenuSearch(col)"
                                     type="search"
                                     variant="glass"
                                     :color="uiColor"
@@ -777,7 +940,7 @@ const clearAllActiveFilters = () => {
                         <template #content>
                             <div class="p-3 w-72 space-y-2">
                                 <InputCore
-                                    v-if="getFilterUi(col).searchable !== false"
+                                    v-if="showMenuSearch(col)"
                                     type="search"
                                     variant="glass"
                                     :color="uiColor"
@@ -862,6 +1025,23 @@ const clearAllActiveFilters = () => {
                     </Btn>
                 </div>
 
+                <!-- range (slider min/max inline) -->
+                <div
+                    v-else-if="col.filter.type === 'range'"
+                    class="w-full"
+                >
+                    <RangeDualCore
+                        :min="getRangeBounds(col).min"
+                        :max="getRangeBounds(col).max"
+                        :model-value="getRangeValue(col)"
+                        :color="uiColor"
+                        :accent="filterCharAccent(col)"
+                        :aria-label-min="`${getFilterLabel(col)} minimum`"
+                        :aria-label-max="`${getFilterLabel(col)} maximum`"
+                        @update:model-value="(v) => updateRangeValue(col, v)"
+                    />
+                </div>
+
                 <!-- text -->
                 <InputCore
                     v-else-if="col.filter.type === 'text'"
@@ -879,6 +1059,7 @@ const clearAllActiveFilters = () => {
                     Filtre non supporté ({{ col.filter.type }})
                 </div>
             </div>
+            </template>
         </div>
 
         <!-- Barre d'actions : + filtres + presets à gauche, Appliquer + Réinitialiser à droite -->

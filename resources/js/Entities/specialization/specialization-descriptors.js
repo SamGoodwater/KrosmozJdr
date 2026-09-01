@@ -115,7 +115,6 @@ export function getSpecializationFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-align-left",
       table: {
         searchable: true,
-        filterable: { id: "description", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -144,7 +143,6 @@ export function getSpecializationFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-align-left",
       table: {
         searchable: true,
-        filterable: { id: "description", type: "text", defaultVisible: true },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text", truncate: 30 }, sm: { mode: "text", truncate: 40 }, md: { mode: "text", truncate: 60 }, lg: { mode: "text", truncate: 80 }, xl: { mode: "text" } } },
       },
@@ -213,7 +211,7 @@ export function getSpecializationFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-circle-info",
       table: {
         sortable: true,
-        filterable: { id: "state", type: "multi", defaultVisible: true },
+        filterable: { id: "state", type: "multi", defaultVisible: true, defaultValue: ["playable"], options: getEntityStateOptions() },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },

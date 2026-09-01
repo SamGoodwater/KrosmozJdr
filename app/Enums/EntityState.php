@@ -74,13 +74,13 @@ enum EntityState: string
      *
      * @example
      * EntityState::catalogDefaultValues();
-     * // ['draft', 'auto', 'playable', 'archived']
+     * // ['playable']
      */
     public static function catalogDefaultValues(): array
     {
         return array_values(array_filter(
             self::values(),
-            static fn (string $value): bool => $value !== self::Raw->value
+            static fn (string $value): bool => $value === self::Playable->value
         ));
     }
 

@@ -69,4 +69,26 @@ describe('npc-descriptors', () => {
             });
         });
     });
+
+    describe('Filtres numériques', () => {
+        it('Niveau en slider principal, PA / PM / PO en plages avancées', () => {
+            const descriptors = getNpcFieldDescriptors();
+            expect(descriptors.creature_level.table.filterable).toMatchObject({
+                type: 'range',
+                defaultVisible: true,
+            });
+            expect(descriptors.creature_pa.table.filterable).toMatchObject({
+                type: 'range',
+                defaultVisible: false,
+            });
+            expect(descriptors.creature_pm.table.filterable).toMatchObject({
+                type: 'range',
+                defaultVisible: false,
+            });
+            expect(descriptors.creature_po.table.filterable).toMatchObject({
+                type: 'range',
+                defaultVisible: false,
+            });
+        });
+    });
 });

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Table;
 use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Breed;
+use App\Models\Entity\Creature;
 use App\Models\Entity\Npc;
 use App\Models\Entity\Specialization;
 use App\Support\Creature\CreatureMasteryColumns;
@@ -36,7 +37,7 @@ class NpcTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['breed_id', 'specialization_id', 'creature_level', 'creature_state'] as $k) {
+        foreach (['breed_id', 'specialization_id', 'creature_level', 'creature_state', 'creature_pa', 'creature_pm', 'creature_po'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -75,8 +76,18 @@ class NpcTableController extends Controller
         if ($this->hasFilterValue($filters, 'specialization_id')) {
             $this->applyEqualityFilter($query, 'specialization_id', $filters['specialization_id'], 'int');
         }
-        if ($this->hasFilterValue($filters, 'creature_level')) {
-            $this->applyRelationEqualityFilter($query, 'creature', 'level', $filters['creature_level']);
+        $creatureRanges = [
+            'creature_level' => 'level',
+            'creature_pa' => 'pa',
+            'creature_pm' => 'pm',
+            'creature_po' => 'po',
+        ];
+        foreach ($creatureRanges as $key => $column) {
+            if ($this->normalizeRangeBounds($filters[$key] ?? null) !== null) {
+                $this->applyRelationIntegerRangeFilter($query, 'creature', $column, $filters[$key]);
+            } elseif ($this->hasFilterValue($filters, $key)) {
+                $this->applyRelationEqualityFilter($query, 'creature', $column, $filters[$key]);
+            }
         }
         if ($this->hasFilterValue($filters, 'creature_state')) {
             $this->applyRelationEqualityFilter($query, 'creature', 'state', $filters['creature_state']);
@@ -115,19 +126,14 @@ class NpcTableController extends Controller
             ->map(fn ($s) => ['value' => (string) $s->id, 'label' => (string) $s->name])
             ->values()
             ->all();
-        $toDistinctOptions = function ($values, $sort = true) {
-            $collected = collect($values)->filter(fn ($v) => $v !== null && $v !== '')->map(fn ($v) => (string) $v)->unique()->values();
-            if ($sort) {
-                $collected = $collected->sort(SORT_NATURAL)->values();
-            }
-
-            return $collected->map(fn ($v) => ['value' => $v, 'label' => $v])->all();
-        };
         $creatureStateOptions = EntityState::options();
         $filterOptions = [
             'breed_id' => $breedOptions,
             'specialization_id' => $specializationOptions,
-            'creature_level' => $toDistinctOptions($rows->pluck('creature.level')),
+            'creature_level' => $this->integerColumnBounds(Creature::query(), 'level', 1, 200),
+            'creature_pa' => $this->integerColumnBounds(Creature::query(), 'pa', 0, 20),
+            'creature_pm' => $this->integerColumnBounds(Creature::query(), 'pm', 0, 20),
+            'creature_po' => $this->integerColumnBounds(Creature::query(), 'po', 0, 20),
             'creature_state' => $creatureStateOptions,
         ];
 

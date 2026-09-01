@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
 use App\Models\TableFilterPreset;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -30,8 +31,10 @@ class TableFilterPresetController extends Controller
         $includeGlobal = (bool) ($data['include_global'] ?? true);
 
         $query = TableFilterPreset::query()
-            ->where('user_id', $user->id)
-            ->where('entity_type', $entityType);
+            ->where('entity_type', $entityType)
+            ->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)->orWhere('is_public', true);
+            });
 
         if ($tableId !== null && $tableId !== '') {
             $query->where(function ($q) use ($tableId, $includeGlobal) {
@@ -46,7 +49,7 @@ class TableFilterPresetController extends Controller
             ->orderByDesc('is_default')
             ->orderBy('name')
             ->get()
-            ->map(fn (TableFilterPreset $preset) => $this->toPayload($preset))
+            ->map(fn (TableFilterPreset $preset) => $this->toPayload($preset, $user))
             ->values()
             ->all();
 
@@ -68,9 +71,14 @@ class TableFilterPresetController extends Controller
             'filters' => ['nullable', 'array'],
             'limit' => ['nullable', 'integer', 'min:1', 'max:5000'],
             'is_default' => ['sometimes', 'boolean'],
+            'is_public' => ['sometimes', 'boolean'],
         ]);
 
         $isDefault = (bool) ($data['is_default'] ?? false);
+        $isPublic = (bool) ($data['is_public'] ?? false);
+        if ($isPublic && ! $user->isGameMaster()) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
         $tableId = $data['table_id'] ?? null;
 
         if ($isDefault) {
@@ -86,9 +94,10 @@ class TableFilterPresetController extends Controller
             'filters' => $data['filters'] ?? [],
             'limit' => $data['limit'] ?? null,
             'is_default' => $isDefault,
+            'is_public' => $isPublic,
         ]);
 
-        return response()->json(['preset' => $this->toPayload($preset)], 201);
+        return response()->json(['preset' => $this->toPayload($preset, $user)], 201);
     }
 
     public function update(Request $request, TableFilterPreset $tablePreset): JsonResponse
@@ -109,6 +118,7 @@ class TableFilterPresetController extends Controller
             'filters' => ['sometimes', 'nullable', 'array'],
             'limit' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:5000'],
             'is_default' => ['sometimes', 'boolean'],
+            'is_public' => ['sometimes', 'boolean'],
         ]);
 
         $nextEntityType = (string) ($data['entity_type'] ?? $tablePreset->entity_type);
@@ -116,6 +126,12 @@ class TableFilterPresetController extends Controller
         $nextIsDefault = array_key_exists('is_default', $data)
             ? (bool) $data['is_default']
             : (bool) $tablePreset->is_default;
+        $nextIsPublic = array_key_exists('is_public', $data)
+            ? (bool) $data['is_public']
+            : (bool) $tablePreset->is_public;
+        if ($nextIsPublic && ! $user->isGameMaster()) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
 
         if ($nextIsDefault) {
             $this->clearDefaultForScope($user->id, $nextEntityType, $nextTableId, $tablePreset->id);
@@ -129,9 +145,10 @@ class TableFilterPresetController extends Controller
             'filters' => array_key_exists('filters', $data) ? ($data['filters'] ?? []) : $tablePreset->filters,
             'limit' => array_key_exists('limit', $data) ? $data['limit'] : $tablePreset->limit,
             'is_default' => $nextIsDefault,
+            'is_public' => $nextIsPublic,
         ]);
 
-        return response()->json(['preset' => $this->toPayload($tablePreset->fresh())]);
+        return response()->json(['preset' => $this->toPayload($tablePreset->fresh(), $user)]);
     }
 
     public function destroy(Request $request, TableFilterPreset $tablePreset): JsonResponse
@@ -168,7 +185,7 @@ class TableFilterPresetController extends Controller
         $query->update(['is_default' => false]);
     }
 
-    private function toPayload(TableFilterPreset $preset): array
+    private function toPayload(TableFilterPreset $preset, ?User $user = null): array
     {
         return [
             'id' => (string) $preset->id,
@@ -179,6 +196,8 @@ class TableFilterPresetController extends Controller
             'filters' => $preset->filters ?? [],
             'limit' => $preset->limit,
             'is_default' => (bool) $preset->is_default,
+            'is_public' => (bool) $preset->is_public,
+            'is_owner' => $user ? (int) $preset->user_id === (int) $user->id : false,
             'created_at' => $preset->created_at?->toISOString(),
             'updated_at' => $preset->updated_at?->toISOString(),
         ];

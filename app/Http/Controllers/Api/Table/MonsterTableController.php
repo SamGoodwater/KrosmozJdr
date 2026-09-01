@@ -71,27 +71,37 @@ class MonsterTableController extends Controller
         }
 
         $creature = [
-            'creature_level' => ['level', 'string'],
-            'creature_life' => ['life', 'string'],
-            'creature_pa' => ['pa', 'string'],
-            'creature_pm' => ['pm', 'string'],
-            'creature_po' => ['po', 'string'],
-            'creature_ini' => ['ini', 'string'],
-            'creature_ca' => ['ca', 'string'],
             'creature_hostility' => ['hostility', 'int'],
             'creature_state' => ['state', 'string'],
             'creature_location' => ['location', 'string'],
-            'creature_strong' => ['strong', 'string'],
-            'creature_intel' => ['intel', 'string'],
-            'creature_agi' => ['agi', 'string'],
-            'creature_chance' => ['chance', 'string'],
-            'creature_vitality' => ['vitality', 'string'],
-            'creature_critical_hit' => ['critical_hit', 'string'],
-            'creature_heal_bonus' => ['heal_bonus', 'string'],
         ];
         foreach ($creature as $key => [$column, $cast]) {
             if ($this->hasFilterValue($filters, $key)) {
                 $this->applyRelationEqualityFilter($query, 'creature', $column, $filters[$key], $cast);
+            }
+        }
+
+        $creatureRanges = [
+            'creature_level' => 'level',
+            'creature_pa' => 'pa',
+            'creature_pm' => 'pm',
+            'creature_po' => 'po',
+            'creature_life' => 'life',
+            'creature_ini' => 'ini',
+            'creature_ca' => 'ca',
+            'creature_strong' => 'strong',
+            'creature_intel' => 'intel',
+            'creature_agi' => 'agi',
+            'creature_chance' => 'chance',
+            'creature_vitality' => 'vitality',
+            'creature_critical_hit' => 'critical_hit',
+            'creature_heal_bonus' => 'heal_bonus',
+        ];
+        foreach ($creatureRanges as $key => $column) {
+            if ($this->normalizeRangeBounds($filters[$key] ?? null) !== null) {
+                $this->applyRelationIntegerRangeFilter($query, 'creature', $column, $filters[$key]);
+            } elseif ($this->hasFilterValue($filters, $key)) {
+                $this->applyRelationEqualityFilter($query, 'creature', $column, $filters[$key]);
             }
         }
     }
@@ -263,14 +273,6 @@ class MonsterTableController extends Controller
             ['value' => '4', 'label' => 'Agressif'],
         ];
         $creatureStateOptions = EntityState::options();
-        $toDistinctOptions = function ($values, $sort = true) {
-            $collected = collect($values)->filter(fn ($v) => $v !== null && $v !== '')->map(fn ($v) => (string) $v)->unique()->values();
-            if ($sort) {
-                $collected = $collected->sort(SORT_NATURAL)->values();
-            }
-
-            return $collected->map(fn ($v) => ['value' => $v, 'label' => $v])->all();
-        };
         $filterOptions = [
             'size' => collect(Monster::SIZE)->map(fn ($label, $value) => ['value' => (string) $value, 'label' => (string) $label])->values()->all(),
             'is_boss' => [
@@ -278,13 +280,20 @@ class MonsterTableController extends Controller
                 ['value' => '0', 'label' => 'Non'],
             ],
             'monster_race_id' => $monsterRaceOptions,
-            'creature_level' => $toDistinctOptions($rows->pluck('creature.level')),
-            'creature_life' => $toDistinctOptions($rows->pluck('creature.life')),
-            'creature_pa' => $toDistinctOptions($rows->pluck('creature.pa')),
-            'creature_pm' => $toDistinctOptions($rows->pluck('creature.pm')),
-            'creature_po' => $toDistinctOptions($rows->pluck('creature.po')),
-            'creature_ini' => $toDistinctOptions($rows->pluck('creature.ini')),
-            'creature_ca' => $toDistinctOptions($rows->pluck('creature.ca')),
+            'creature_level' => $this->integerColumnBounds(Creature::query(), 'level', 1, 200),
+            'creature_life' => $this->integerColumnBounds(Creature::query(), 'life', 0, 1000),
+            'creature_pa' => $this->integerColumnBounds(Creature::query(), 'pa', 0, 20),
+            'creature_pm' => $this->integerColumnBounds(Creature::query(), 'pm', 0, 20),
+            'creature_po' => $this->integerColumnBounds(Creature::query(), 'po', 0, 20),
+            'creature_ini' => $this->integerColumnBounds(Creature::query(), 'ini', 0, 50),
+            'creature_ca' => $this->integerColumnBounds(Creature::query(), 'ca', 0, 30),
+            'creature_strong' => $this->integerColumnBounds(Creature::query(), 'strong', 0, 30),
+            'creature_intel' => $this->integerColumnBounds(Creature::query(), 'intel', 0, 30),
+            'creature_agi' => $this->integerColumnBounds(Creature::query(), 'agi', 0, 30),
+            'creature_chance' => $this->integerColumnBounds(Creature::query(), 'chance', 0, 30),
+            'creature_vitality' => $this->integerColumnBounds(Creature::query(), 'vitality', 0, 30),
+            'creature_critical_hit' => $this->integerColumnBounds(Creature::query(), 'critical_hit', 0, 3),
+            'creature_heal_bonus' => $this->integerColumnBounds(Creature::query(), 'heal_bonus', 0, 20),
             'creature_hostility' => $creatureHostilityOptions,
             'creature_state' => $creatureStateOptions,
         ];

@@ -30,6 +30,14 @@ class InterpretsEntityTableFiltersTest extends TestCase
             {
                 return $this->hasFilterValue($filters, $key);
             }
+
+            /**
+             * @return array{min: int, max: int}|null
+             */
+            public function range(mixed $raw): ?array
+            {
+                return $this->normalizeRangeBounds($raw);
+            }
         };
     }
 
@@ -52,5 +60,16 @@ class InterpretsEntityTableFiltersTest extends TestCase
         $this->assertFalse($s->has(['level' => []], 'level'));
         $this->assertTrue($s->has(['level' => '5'], 'level'));
         $this->assertTrue($s->has(['level' => ['5', '12']], 'level'));
+        $this->assertTrue($s->has(['level' => ['min' => 1, 'max' => 10]], 'level'));
+    }
+
+    public function test_normalize_range_bounds_from_min_max_object(): void
+    {
+        $s = $this->subject();
+        $this->assertSame(['min' => 3, 'max' => 12], $s->range(['min' => 3, 'max' => 12]));
+        $this->assertSame(['min' => 1, 'max' => 10], $s->range(['min' => 10, 'max' => 1]));
+        $this->assertNull($s->range(['1', '10']));
+        $this->assertNull($s->range('5'));
+        $this->assertNull($s->range([]));
     }
 }

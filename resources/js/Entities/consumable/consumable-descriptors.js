@@ -118,7 +118,6 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-sparkles",
       table: {
         searchable: true,
-        filterable: { id: "effect", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },
@@ -150,12 +149,8 @@ export function getConsumableFieldDescriptors(ctx = {}) {
         sortable: true,
         filterable: {
           id: "level",
-          type: "multi",
-          defaultVisible: false,
-          ui: {
-            optionsMode: "rows",
-            maxOptions: 250,
-          },
+          type: "range",
+          defaultVisible: true,
         },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
@@ -228,6 +223,7 @@ export function getConsumableFieldDescriptors(ctx = {}) {
           id: "state",
           type: "multi",
           defaultVisible: true,
+          defaultValue: ["playable"],
           options: getEntityStateOptions(),
         },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },

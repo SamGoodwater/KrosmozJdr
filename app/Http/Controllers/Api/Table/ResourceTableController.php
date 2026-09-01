@@ -91,7 +91,9 @@ class ResourceTableController extends Controller
         }
 
         // Filtres (select / multi)
-        if ($this->hasFilterValue($filters, 'level')) {
+        if ($this->normalizeRangeBounds($filters['level'] ?? null) !== null) {
+            $this->applyIntegerRangeFilter($query, 'level', $filters['level']);
+        } elseif ($this->hasFilterValue($filters, 'level')) {
             $this->applyEqualityFilter($query, 'level', $filters['level']);
         }
         if ($this->hasFilterValue($filters, 'resource_type_id')) {
@@ -156,13 +158,7 @@ class ResourceTableController extends Controller
                 ->values()
                 ->all(),
             'state' => EntityState::options(),
-            'level' => [
-                ['value' => '1', 'label' => '1'],
-                ['value' => '50', 'label' => '50'],
-                ['value' => '100', 'label' => '100'],
-                ['value' => '150', 'label' => '150'],
-                ['value' => '200', 'label' => '200'],
-            ],
+            'level' => $this->integerColumnBounds(Resource::query()->visibleToUser($request->user()), 'level', 1, 200),
         ];
 
         // Option B: renvoyer des entités brutes (le front génère `cells`).

@@ -80,4 +80,20 @@ describe('monster-descriptors', () => {
             });
         });
     });
+
+    describe('Filtres numériques', () => {
+        it('Niveau en slider principal, stats combat en plages avancées', () => {
+            const descriptors = getMonsterFieldDescriptors();
+            expect(descriptors.creature_level.table.filterable).toMatchObject({
+                type: 'range',
+                defaultVisible: true,
+            });
+            for (const key of ['creature_pa', 'creature_pm', 'creature_po', 'creature_life', 'creature_ini', 'creature_ca']) {
+                expect(descriptors[key].table.filterable).toMatchObject({
+                    type: 'range',
+                    defaultVisible: false,
+                });
+            }
+        });
+    });
 });

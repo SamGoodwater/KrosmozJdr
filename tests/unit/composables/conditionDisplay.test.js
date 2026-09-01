@@ -6,13 +6,8 @@ import {
 } from "@/Composables/condition/conditionDisplay";
 
 describe("conditionDisplay mechanical flags", () => {
-    it("ne précoché pas Brut dans le catalogue", () => {
-        expect(CONDITION_CATALOG_STATE_DEFAULT).toEqual([
-            "draft",
-            "auto",
-            "playable",
-            "archived",
-        ]);
+    it("précoché seulement Jouable dans le catalogue", () => {
+        expect(CONDITION_CATALOG_STATE_DEFAULT).toEqual(["playable"]);
         expect(CONDITION_CATALOG_STATE_DEFAULT).not.toContain("raw");
     });
 

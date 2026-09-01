@@ -149,6 +149,7 @@ const showSpellTypesCell = computed(() => spellTypesCellHasRenderableContent(spe
                     property-size="xs"
                     row-class="gap-2 text-sm"
                     hover-inner-gap-class="gap-2"
+                    notes-class="mt-1 text-xs leading-snug text-base-content/70"
                 />
                 <p
                     v-if="descriptionFull"
@@ -166,6 +167,7 @@ const showSpellTypesCell = computed(() => spellTypesCellHasRenderableContent(spe
             :table-meta="tableMeta"
             :can-show-field="canShowField"
             :max-effect-rows="5"
+            :show-rule-notes="false"
             resolution-class="mb-1 text-sm text-base-content/75"
             effects-wrapper-class="spell-effects-line w-full pt-2 mt-1 border-t border-base-300"
             cell-class="leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"

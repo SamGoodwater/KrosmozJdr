@@ -42,4 +42,18 @@ describe("buildFetchUrl", () => {
         expect(url).toContain("search=");
         expect(decodeURIComponent(url)).toContain("search=épée");
     });
+
+    it("sérialise une plage en filters[key][min]/[max]", () => {
+        const url = buildFetchUrl(
+            {
+                page: 1,
+                pageSize: 25,
+                filters: { level: { min: 3, max: 12 } },
+            },
+            "https://example.test/api/t",
+            0,
+        );
+        expect(url).toContain("filters%5Blevel%5D%5Bmin%5D=3");
+        expect(url).toContain("filters%5Blevel%5D%5Bmax%5D=12");
+    });
 });

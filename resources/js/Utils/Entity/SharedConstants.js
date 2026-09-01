@@ -393,6 +393,34 @@ export function getEntityStateOptions() {
   return ENTITY_STATE_OPTIONS.map(({ value, label }) => ({ value, label }));
 }
 
+/** États précochés sur les catalogues (le plus utile à afficher). */
+export const ENTITY_STATE_CATALOG_DEFAULT = Object.freeze(["playable"]);
+
+/**
+ * Filtre État commun à tous les tableaux (ligne « Filtres », badges à points).
+ *
+ * @param {object} [overrides]
+ * @returns {object}
+ */
+export function getEntityStateTableFilter(overrides = {}) {
+  return {
+    id: "state",
+    type: "multi",
+    defaultVisible: true,
+    defaultValue: [...ENTITY_STATE_CATALOG_DEFAULT],
+    placement: "header",
+    options: getEntityStateOptions(),
+    ui: {
+      optionBadge: {
+        enabled: true,
+        leadingDot: "entity-state",
+        variant: "soft",
+      },
+    },
+    ...overrides,
+  };
+}
+
 /**
  * Classes Tailwind pour un point de couleur d'état (raw/draft/auto/playable/archived).
  * Aligné sur {@link EntityUsableDot} pour cohérence filtres / cartes.

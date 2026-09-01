@@ -494,6 +494,7 @@ const handleAction = async (actionKey) => {
                     property-size="sm"
                     row-class="gap-2 text-sm text-primary-100"
                     hover-inner-gap-class="gap-2"
+                    notes-class="mt-1.5 text-sm leading-snug text-primary-200/80"
                 />
             </div>
         </section>
@@ -573,6 +574,7 @@ const handleAction = async (actionKey) => {
                     :can-show-field="canShowField"
                     :max-effect-rows="6"
                     flush-effects
+                    notes-class="mb-2 text-sm leading-snug text-primary-200/80"
                     resolution-class="mb-1 text-sm text-primary-200/80"
                     cell-class="text-sm leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
                 />

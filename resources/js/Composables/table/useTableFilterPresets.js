@@ -13,6 +13,8 @@ export function useTableFilterPresets() {
         filters: typeof preset?.filters === "object" && preset?.filters !== null ? { ...preset.filters } : {},
         limit: Number.isFinite(Number(preset?.limit)) ? Number(preset.limit) : null,
         isDefault: Boolean(preset?.is_default),
+        isPublic: Boolean(preset?.is_public),
+        isOwner: preset?.is_owner !== false,
         createdAt: preset?.created_at || null,
         updatedAt: preset?.updated_at || null,
     });
@@ -41,6 +43,7 @@ export function useTableFilterPresets() {
             filters: payload.filters ?? {},
             limit: payload.limit ?? null,
             is_default: Boolean(payload.isDefault),
+            is_public: Boolean(payload.isPublic),
         });
 
         return normalizePreset(response?.data?.preset || {});
@@ -55,6 +58,7 @@ export function useTableFilterPresets() {
             filters: payload.filters,
             limit: payload.limit,
             is_default: payload.isDefault,
+            is_public: payload.isPublic,
         });
 
         return normalizePreset(response?.data?.preset || {});

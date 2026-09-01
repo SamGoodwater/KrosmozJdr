@@ -88,7 +88,7 @@ class ConditionTableController extends Controller
         if ($this->hasFilterValue($filters, 'state')) {
             $this->applyEqualityFilter($query, 'state', $filters['state']);
         } else {
-            $query->where('state', '!=', Condition::STATE_RAW);
+            $query->where('state', Condition::STATE_PLAYABLE);
         }
         if ($this->hasFilterValue($filters, 'read_level')) {
             $this->applyEqualityFilter($query, 'read_level', $filters['read_level'], 'int');

@@ -56,6 +56,7 @@ class TableFilterPreset extends Model
         'filters',
         'limit',
         'is_default',
+        'is_public',
     ];
 
     /**
@@ -65,6 +66,7 @@ class TableFilterPreset extends Model
         'filters' => 'array',
         'limit' => 'integer',
         'is_default' => 'boolean',
+        'is_public' => 'boolean',
     ];
 
     public function user(): BelongsTo

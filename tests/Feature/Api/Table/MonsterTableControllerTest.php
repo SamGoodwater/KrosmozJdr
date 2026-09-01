@@ -392,4 +392,33 @@ class MonsterTableControllerTest extends TestCase
         $spellIds = collect($response->json('entities.0.creature.spells'))->pluck('id')->all();
         $this->assertContains($draftSpell->id, $spellIds);
     }
+
+    /**
+     * Stats numériques créature : bornes min/max (pas une liste distincte) + filtre plage.
+     */
+    public function test_creature_numeric_filters_use_integer_range(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $low = Creature::factory()->create(['ini' => '5', 'pa' => '3']);
+        $high = Creature::factory()->create(['ini' => '40', 'pa' => '10']);
+        $lowMonster = Monster::factory()->create(['creature_id' => $low->id]);
+        $highMonster = Monster::factory()->create(['creature_id' => $high->id]);
+
+        $optionsResponse = $this->actingAs($user)
+            ->getJson('/api/tables/monsters?format=entities&limit=20');
+        $optionsResponse->assertOk();
+        $iniBounds = $optionsResponse->json('meta.filterOptions.creature_ini');
+        $this->assertIsArray($iniBounds);
+        $this->assertArrayHasKey('min', $iniBounds);
+        $this->assertArrayHasKey('max', $iniBounds);
+        $this->assertLessThanOrEqual(5, (int) $iniBounds['min']);
+        $this->assertGreaterThanOrEqual(40, (int) $iniBounds['max']);
+
+        $filtered = $this->actingAs($user)
+            ->getJson('/api/tables/monsters?format=entities&limit=20&filters[creature_ini][min]=30&filters[creature_ini][max]=50');
+        $filtered->assertOk();
+        $ids = collect($filtered->json('entities'))->pluck('id')->all();
+        $this->assertContains($highMonster->id, $ids);
+        $this->assertNotContains($lowMonster->id, $ids);
+    }
 }

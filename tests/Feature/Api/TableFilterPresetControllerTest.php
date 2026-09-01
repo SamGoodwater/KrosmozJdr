@@ -87,4 +87,51 @@ class TableFilterPresetControllerTest extends TestCase
         $p1->refresh();
         $this->assertFalse((bool) $p1->is_default);
     }
+
+    public function test_player_cannot_create_public_preset(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_PLAYER]);
+        $this->actingAs($user);
+
+        $this->postJson(route('api.table-presets.store'), [
+            'entity_type' => 'spells',
+            'name' => 'Public interdit',
+            'filters' => ['state' => ['playable']],
+            'is_public' => true,
+        ])->assertForbidden();
+    }
+
+    public function test_game_master_can_create_public_preset_visible_to_others(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $player = User::factory()->create(['role' => User::ROLE_PLAYER]);
+
+        $this->actingAs($gm);
+        $create = $this->postJson(route('api.table-presets.store'), [
+            'entity_type' => 'spells',
+            'table_id' => 'spells.index',
+            'name' => 'Sorts jouables',
+            'filters' => ['state' => ['playable']],
+            'is_public' => true,
+        ]);
+        $create->assertCreated();
+        $create->assertJsonPath('preset.is_public', true);
+        $create->assertJsonPath('preset.is_owner', true);
+        $presetId = $create->json('preset.id');
+
+        $this->actingAs($player);
+        $index = $this->getJson(route('api.table-presets.index', [
+            'entity_type' => 'spells',
+            'table_id' => 'spells.index',
+            'include_global' => 1,
+        ]));
+        $index->assertOk();
+        $index->assertJsonPath('presets.0.id', (string) $presetId);
+        $index->assertJsonPath('presets.0.is_public', true);
+        $index->assertJsonPath('presets.0.is_owner', false);
+
+        $this->patchJson(route('api.table-presets.update', ['tablePreset' => $presetId]), [
+            'name' => 'Hack',
+        ])->assertForbidden();
+    }
 }

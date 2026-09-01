@@ -67,7 +67,9 @@ class ConsumableTableController extends Controller
         if (array_key_exists('id', $filters) && $this->hasFilterValue($filters, 'id')) {
             $this->applyEqualityFilter($query, 'id', $filters['id'], 'int');
         }
-        if ($this->hasFilterValue($filters, 'level')) {
+        if ($this->normalizeRangeBounds($filters['level'] ?? null) !== null) {
+            $this->applyIntegerRangeFilter($query, 'level', $filters['level']);
+        } elseif ($this->hasFilterValue($filters, 'level')) {
             $this->applyEqualityFilter($query, 'level', $filters['level']);
         }
         if ($this->hasFilterValue($filters, 'rarity')) {
@@ -170,6 +172,7 @@ class ConsumableTableController extends Controller
                             'label' => (string) $label,
                         ])->values()->all(),
                         'consumable_type_id' => $consumableTypeOptions,
+                        'level' => $this->integerColumnBounds(Consumable::query()->visibleToUser($request->user()), 'level', 1, 200),
                     ],
                     'pagination' => $pagination,
                     'format' => 'entities',

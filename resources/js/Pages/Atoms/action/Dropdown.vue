@@ -69,6 +69,7 @@ import { useClickOutside } from '@/Composables/layout/useClickOutside';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 import { variantList, colorList, sizeList } from '@/Pages/Atoms/atomMap';
 import { OVERLAY_Z_INDEX } from '@/Composables/overlay/overlayConstants';
+import { claimExclusiveDropdown, releaseExclusiveDropdown } from '@/Utils/ui/dropdownExclusive.js';
 
 const props = defineProps({
   ...getCommonProps(),
@@ -211,6 +212,7 @@ const { enable: enableClickOutside, disable: disableClickOutside } = useClickOut
 const open = () => {
   if (isOpen.value || props.disabled) return;
   isOpen.value = true;
+  claimExclusiveDropdown(dropdownId.value, close);
   const dialog = containerRef.value?.closest?.('dialog');
   if (dialog instanceof HTMLDialogElement && dialog.open) {
     teleportTarget.value = dialog;
@@ -227,6 +229,7 @@ const open = () => {
 const close = () => {
   if (!isOpen.value) return;
   isOpen.value = false;
+  releaseExclusiveDropdown(dropdownId.value);
   containerRef.value?.removeAttribute?.("data-dropdown-open");
   disableClickOutside();
 };
@@ -375,6 +378,8 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', updatePosition);
   window.removeEventListener('scroll', updatePosition);
+  close();
+  releaseExclusiveDropdown(dropdownId.value);
 });
 
 defineExpose({ open, close, toggle, isOpen });

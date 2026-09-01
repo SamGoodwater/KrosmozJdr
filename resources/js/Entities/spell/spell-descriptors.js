@@ -149,7 +149,6 @@ export function getSpellFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-align-left",
       table: {
         searchable: true,
-        filterable: { id: "description", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -181,12 +180,8 @@ export function getSpellFieldDescriptors(ctx = {}) {
         sortable: true,
         filterable: {
           id: "level",
-          type: "multi",
+          type: "range",
           defaultVisible: true,
-          ui: {
-            optionsMode: "rows",
-            maxOptions: 250,
-          },
         },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
@@ -218,7 +213,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       table: {
         order: 150,
         sortable: true,
-        filterable: { id: "pa", type: "multi", defaultVisible: false },
+        filterable: { id: "pa", type: "range", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -249,7 +244,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       table: {
         order: 151,
         sortable: true,
-        filterable: { id: "po", type: "multi", defaultVisible: false },
+        filterable: { id: "po", type: "range", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -845,6 +840,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
           id: "state",
           type: "multi",
           defaultVisible: true,
+          defaultValue: ["playable"],
           options: getEntityStateOptions(),
         },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },

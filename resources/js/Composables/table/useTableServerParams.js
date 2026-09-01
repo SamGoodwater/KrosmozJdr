@@ -66,6 +66,15 @@ export function buildFetchUrl(params, baseUrl, refreshToken = 0) {
             }
             continue;
         }
+        if (value && typeof value === "object") {
+            const min = value.min;
+            const max = value.max;
+            if (min === null || typeof min === "undefined" || min === "") continue;
+            if (max === null || typeof max === "undefined" || max === "") continue;
+            searchParams.set(`filters[${key}][min]`, String(min));
+            searchParams.set(`filters[${key}][max]`, String(max));
+            continue;
+        }
         const normalized = typeof value === "boolean"
             ? (value ? "1" : "0")
             : String(value);

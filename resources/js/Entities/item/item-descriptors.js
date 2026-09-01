@@ -127,7 +127,6 @@ export function getItemFieldDescriptors(ctx = {}) {
       helper: "Texte d’ambiance",
       table: {
         searchable: true,
-        filterable: { id: "description", type: "text", defaultVisible: false },
         defaultVisible: hiddenByDefault,
         cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text", truncate: 80 }, xl: { mode: "text" } } },
       },
@@ -157,7 +156,6 @@ export function getItemFieldDescriptors(ctx = {}) {
       helper: "Résumé converti (Krosmoz) ; les bonus complets sont dans Bonus",
       table: {
         searchable: true,
-        filterable: { id: "effect", type: "text", defaultVisible: false },
         defaultVisible: hiddenByDefault,
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },
@@ -219,12 +217,8 @@ export function getItemFieldDescriptors(ctx = {}) {
         sortable: true,
         filterable: {
           id: "level",
-          type: "multi",
-          defaultVisible: false,
-          ui: {
-            optionsMode: "rows",
-            maxOptions: 250,
-          },
+          type: "range",
+          defaultVisible: true,
         },
         defaultVisible: visibleFromSm,
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
@@ -299,6 +293,7 @@ export function getItemFieldDescriptors(ctx = {}) {
           id: "state",
           type: "multi",
           defaultVisible: true,
+          defaultValue: ["playable"],
           options: getEntityStateOptions(),
         },
         defaultVisible: visibleFromSm,

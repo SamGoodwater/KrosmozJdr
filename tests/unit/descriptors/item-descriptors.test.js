@@ -213,6 +213,14 @@ describe('item-descriptors', () => {
             expect(rarityDesc.edit.form.type).toBe('select');
             expect(rarityDesc.edit.form.bulk.enabled).toBe(true);
         });
+
+        it('niveau est un slider de plage visible', () => {
+            const descriptors = getItemFieldDescriptors();
+            expect(descriptors.level.table.filterable).toMatchObject({
+                type: "range",
+                defaultVisible: true,
+            });
+        });
     });
 });
 

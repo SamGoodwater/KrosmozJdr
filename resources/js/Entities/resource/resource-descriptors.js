@@ -334,16 +334,8 @@ export function getResourceFieldDescriptors(ctx = {}) {
         sortable: true,
         filterable: {
           id: "level",
-          // UI: multi => dropdown + checkboxes (permet plusieurs valeurs)
-          // Les options peuvent venir du serveur via meta.filterOptions.level
-          type: "multi",
-          defaultVisible: false,
-          ui: {
-            // Afficher uniquement les niveaux présents dans le dataset (et non une plage arbitraire)
-            optionsMode: "rows",
-            // Sécurité UX (au cas où dataset énorme)
-            maxOptions: 250,
-          },
+          type: "range",
+          defaultVisible: true,
         },
         // Masqué par défaut (colonne et filtre)
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
@@ -792,6 +784,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
           id: "state",
           type: "multi",
           defaultVisible: true,
+          defaultValue: ["playable"],
           options: getEntityStateOptions(),
         },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },

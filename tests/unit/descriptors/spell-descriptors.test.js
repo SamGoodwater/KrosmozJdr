@@ -211,5 +211,24 @@ describe('spell-descriptors', () => {
             }
         });
     });
+
+    describe('Filtres numériques', () => {
+        it('Niveau en slider principal, PA / PO en plages avancées, pas de PM', () => {
+            const descriptors = getSpellFieldDescriptors();
+            expect(descriptors.level.table.filterable).toMatchObject({
+                type: 'range',
+                defaultVisible: true,
+            });
+            expect(descriptors.pa.table.filterable).toMatchObject({
+                type: 'range',
+                defaultVisible: false,
+            });
+            expect(descriptors.po.table.filterable).toMatchObject({
+                type: 'range',
+                defaultVisible: false,
+            });
+            expect(descriptors.pm).toBeUndefined();
+        });
+    });
 });
 

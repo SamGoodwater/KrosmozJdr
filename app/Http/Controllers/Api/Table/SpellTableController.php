@@ -72,8 +72,6 @@ class SpellTableController extends Controller
     private function applySpellTableFilters(Builder $query, array $filters): void
     {
         $scalar = [
-            'level' => ['level', 'string'],
-            'pa' => ['pa', 'string'],
             'id' => ['id', 'int'],
             'category' => ['category', 'int'],
             'element' => ['element', 'int'],
@@ -92,6 +90,16 @@ class SpellTableController extends Controller
             }
         }
 
+        if ($this->normalizeRangeBounds($filters['level'] ?? null) !== null) {
+            $this->applyIntegerRangeFilter($query, 'level', $filters['level']);
+        }
+        if ($this->normalizeRangeBounds($filters['pa'] ?? null) !== null) {
+            $this->applyIntegerRangeFilter($query, 'pa', $filters['pa']);
+        }
+        if ($this->normalizeRangeBounds($filters['po'] ?? null) !== null) {
+            $this->applyIntegerRangeFilter($query, 'po_min', $filters['po']);
+        }
+
         if ($this->hasFilterValue($filters, 'types')) {
             $ids = array_values(array_filter(
                 $this->castFilterList($filters['types'], 'int'),
@@ -102,20 +110,6 @@ class SpellTableController extends Controller
                     $q->whereIn($q->qualifyColumn('id'), $ids);
                 });
             }
-        }
-
-        if ($this->hasFilterValue($filters, 'po')) {
-            $values = $this->normalizeFilterList($filters['po']);
-            $query->where(function (Builder $q) use ($values) {
-                foreach ($values as $value) {
-                    if ($value === '6') {
-                        $q->orWhere('po_min', '>=', 6)->orWhere('po_max', '>=', 6);
-
-                        continue;
-                    }
-                    $q->orWhere('po_min', $value)->orWhere('po_max', $value);
-                }
-            });
         }
 
         if ($this->hasFilterValue($filters, 'area')) {
@@ -305,13 +299,9 @@ class SpellTableController extends Controller
         ];
 
         $filterOptions = [
-            'level' => [
-                ['value' => '1', 'label' => '1'],
-                ['value' => '50', 'label' => '50'],
-                ['value' => '100', 'label' => '100'],
-                ['value' => '150', 'label' => '150'],
-                ['value' => '200', 'label' => '200'],
-            ],
+            'level' => $this->integerColumnBounds(Spell::query()->visibleToUser($request->user()), 'level', 1, 20),
+            'pa' => $this->integerColumnBounds(Spell::query()->visibleToUser($request->user()), 'pa', 0, 12),
+            'po' => $this->integerColumnBounds(Spell::query()->visibleToUser($request->user()), 'po_min', 0, 20),
             'area' => collect(AreaConstants::SHAPES)
                 ->map(fn (string $shape) => ['value' => $shape, 'label' => AreaConstants::getShapeLabel($shape)])
                 ->values()->all(),
@@ -324,23 +314,6 @@ class SpellTableController extends Controller
                     'show_in_catalog' => (bool) $t->show_in_catalog,
                 ])
                 ->values()->all(),
-            'pa' => [
-                ['value' => '1', 'label' => '1'],
-                ['value' => '2', 'label' => '2'],
-                ['value' => '3', 'label' => '3'],
-                ['value' => '4', 'label' => '4'],
-                ['value' => '5', 'label' => '5'],
-                ['value' => '6', 'label' => '6'],
-            ],
-            'po' => [
-                ['value' => '0', 'label' => '0 (soi)'],
-                ['value' => '1', 'label' => '1 (CàC)'],
-                ['value' => '2', 'label' => '2'],
-                ['value' => '3', 'label' => '3'],
-                ['value' => '4', 'label' => '4'],
-                ['value' => '5', 'label' => '5'],
-                ['value' => '6', 'label' => '6+'],
-            ],
             'sub_effect' => SubEffect::query()->orderBy('type_slug')->orderBy('slug')->get(['id', 'slug', 'type_slug'])
                 ->map(fn (SubEffect $s) => ['value' => $s->slug, 'label' => $s->slug])
                 ->values()->all(),

@@ -74,7 +74,9 @@ class ItemTableController extends Controller
             });
         }
 
-        if ($this->hasFilterValue($filters, 'level')) {
+        if ($this->normalizeRangeBounds($filters['level'] ?? null) !== null) {
+            $this->applyIntegerRangeFilter($query, 'level', $filters['level']);
+        } elseif ($this->hasFilterValue($filters, 'level')) {
             $this->applyEqualityFilter($query, 'level', $filters['level']);
         }
         if ($this->hasFilterValue($filters, 'item_type_id')) {
@@ -140,13 +142,7 @@ class ItemTableController extends Controller
                 ->map(fn ($label, $value) => ['value' => (string) $value, 'label' => (string) $label])
                 ->values()
                 ->all(),
-            'level' => [
-                ['value' => '1', 'label' => '1'],
-                ['value' => '50', 'label' => '50'],
-                ['value' => '100', 'label' => '100'],
-                ['value' => '150', 'label' => '150'],
-                ['value' => '200', 'label' => '200'],
-            ],
+            'level' => $this->integerColumnBounds(Item::query()->visibleToUser($request->user()), 'level', 1, 200),
         ];
 
         // Option B: renvoyer des entités brutes (le front génère `cells`).

@@ -161,11 +161,47 @@ export function getNpcFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         searchable: true,
-        filterable: { id: "creature_level", type: "multi", defaultVisible: true },
+        filterable: { id: "creature_level", type: "range", defaultVisible: true },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+    },
+    creature_pa: {
+      key: "creature_pa",
+      label: "PA",
+      icon: "fa-solid fa-bolt",
+      table: {
+        sortable: true,
+        filterable: { id: "creature_pa", type: "range", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
+      display: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+    },
+    creature_pm: {
+      key: "creature_pm",
+      label: "PM",
+      icon: "fa-solid fa-shoe-prints",
+      table: {
+        sortable: true,
+        filterable: { id: "creature_pm", type: "range", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
+      display: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+    },
+    creature_po: {
+      key: "creature_po",
+      label: "PO",
+      icon: "fa-solid fa-crosshairs",
+      table: {
+        sortable: true,
+        filterable: { id: "creature_po", type: "range", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
+      display: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
     },
     creature_state: {
       key: "creature_state",
@@ -424,7 +460,7 @@ export function getNpcFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-circle-info",
       table: {
         sortable: true,
-        filterable: { id: "state", type: "multi", defaultVisible: true },
+        filterable: { id: "state", type: "multi", defaultVisible: true, defaultValue: ["playable"], options: getEntityStateOptions() },
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },

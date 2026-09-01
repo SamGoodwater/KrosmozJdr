@@ -18,6 +18,11 @@ Ne pas créer `ViewLarge` ni `ViewCompact`. Utiliser `resolveEntityViewComponent
 Line et le bandeau Full. Props `parts` : `meta` | `effects` | `all` (méta sous le
 titre, effets en pleine largeur). Full : section Utilisation via la même méta ;
 bandeau chips au-dessus du journal ; empty states structurés vs texte libre.
+Notes de règles (`spellTypeRuleNotes`) sous la méta dans Minimal / Line, et dans
+les sections Utilisation **et** Effets de Full : soin (PA tant que le combat a un
+enjeu), invocation, piège, glyphe, vol de vie, cible consentante, réaction, PV
+temp. Le bloc `parts="effects"` des vues Minimal/Line les coupe (`show-rule-notes`)
+pour éviter le doublon.
 
 ## Parcours d’ouverture
 
@@ -85,7 +90,7 @@ Les en-têtes affichent `helper` / `general.tooltip` au survol (`TanStackTableHe
 
 ## Tableaux d’entités (filtres, tri, recherche)
 
-Index server-side (`items`, `monsters`, `spells`, `resources`, `consumables`, `conditions`) : changer un filtre relance la requête (debounce) ; Réinitialiser vide `filters` (puis réapplique les défauts déclarés, s’il y en a) et revient à la page 1. Les multi-sélections partent en `filters[key][]`. Les listes courtes (rareté, état…) s’affichent en pastilles ; les listes longues (type, race) restent un menu. Le tri envoie `sorts[i][field]` avec l’alias SQL (`item_type` → `item_type_id`, `creature_level` via jointure). La barre de recherche envoie `search=`. Les champs de saisie des filtres (texte, recherche dans un multi) ne sont pas réinitialisés à chaque refetch : les défauts ne s’appliquent que si le filtre n’a pas encore de valeur, et les `initialFilterValues` ne remplacent une clé que si son contenu a vraiment changé.
+Index server-side (`items`, `monsters`, `spells`, `resources`, `consumables`, `conditions`) : changer un filtre relance la requête (debounce) ; Réinitialiser vide `filters` (puis réapplique les défauts déclarés, s’il y en a) et revient à la page 1. Les multi-sélections partent en `filters[key][]`. Les listes (rareté, type, race…) s’affichent en menu compact, un seul ouvert à la fois. Le **niveau** est un slider min/max en ligne principale sur tous les catalogues qui en ont un (`RangeDualCore`, `filters[key][min]` / `[max]`) : une formule est réduite à son entier minimal (niveau d’entité 1). Les stats numériques liées à une caractéristique — PA / PO (sorts, capacités), PA / PO / PM et autres caracs créature (monstres), PA / PO / PM (PNJ) — sont dans les **filtres avancés**, avec l’icône et la couleur BDD (`icons/caracteristics/`, `filterCharacteristicMeta` ; les pages Index passent souvent le pluriel `spells`, `monsters`…). Un sort n’a pas de coût PM. L’état est une rangée de badges à points, à droite du titre « Filtres », **Jouable** coché par défaut. Les presets de filtres sont en base (`table_filter_presets`) : chaque utilisateur a les siens ; un MJ ou un admin peut en publier un pour tout le monde. Le tri envoie `sorts[i][field]` avec l’alias SQL (`item_type` → `item_type_id`, `creature_level` via jointure). La barre de recherche envoie `search=`. Les champs de saisie des filtres (recherche dans un multi) ne sont pas réinitialisés à chaque refetch : les défauts ne s’appliquent que si le filtre n’a pas encore de valeur, et les `initialFilterValues` ne remplacent une clé que si son contenu a vraiment changé.
 
 Le catalogue **objets** coche par défaut les types utiles en jeu (amulette, armes, cape, dofus, trophée, etc.). Apparats, costumes et autres cosmétiques restent dans le filtre Type, décochés tant qu’on ne les demande pas.
 
@@ -93,7 +98,7 @@ Le catalogue **ressources** coche par défaut les types métier (bois, minerai, 
 
 Le catalogue **consommables** coche par défaut potions, nourritures, boissons, parchemins, pierres d’âme, objets utilisables, etc. Certificats, coffres, fées d’artifice et types d’événement restent dans le filtre, décochés.
 
-Le catalogue **états** coche par défaut Brouillon, Auto, Jouable et Archivé. Brut (import Dofus) reste dans le filtre, décoché. Les effets mécaniques (ne pas être déplacé, invulnérable, etc.) apparaissent en chips sur les fiches et en colonne Effets.
+Le catalogue **états** (conditions) coche par défaut **Jouable**. Brut (import Dofus) reste dans le filtre, décoché. Les effets mécaniques (ne pas être déplacé, invulnérable, etc.) apparaissent en chips sur les fiches et en colonne Effets.
 
 Index client (`npcs`, etc.) : le filtre/tri/recherche portent sur le dataset déjà chargé ; la recherche cible le nom (et les colonnes `searchable`) même si le payload n’a pas de `cells` pré-générées.
 

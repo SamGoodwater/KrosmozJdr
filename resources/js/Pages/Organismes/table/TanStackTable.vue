@@ -16,6 +16,7 @@
  */
 
 import { computed, ref, watch, onMounted, onUnmounted, toValue, shallowRef, nextTick } from "vue";
+import { usePage } from "@inertiajs/vue3";
 import { getCoreRowModel, getPaginationRowModel, getSortedRowModel, useVueTable } from "@tanstack/vue-table";
 import TanStackTableHeader from "@/Pages/Molecules/table/TanStackTableHeader.vue";
 import TanStackTableRow from "@/Pages/Molecules/table/TanStackTableRow.vue";
@@ -39,6 +40,8 @@ import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import TanStackTableShortcutsModal from "@/Pages/Molecules/table/TanStackTableShortcutsModal.vue";
 import { matchTableEnterIntent, isTableTypingTarget, shouldIgnoreTableRowIntent } from "@/Composables/table/useTanStackTableKeyboard.js";
 import { resolveFilterDefaultValue } from "@/Utils/table/resolveFilterDefaultValue.js";
+import { minFormulaInteger } from "@/Utils/table/minFormulaInteger.js";
+import { normalizeTableRangeValue, isTableRangeActive } from "@/Utils/table/tableRangeFilter.js";
 import { normalizeTableRowId, toSelectedIdSet, selectedSetHas } from "@/Utils/table/normalizeTableRowId.js";
 import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import {
@@ -401,6 +404,8 @@ const presetFileInput = ref(null);
 const showPresetPanel = ref(false);
 const ariaLiveMessage = ref("");
 const { listPresets, createPreset, updatePreset, deletePreset } = useTableFilterPresets();
+const page = usePage();
+const canPublishFilterPreset = computed(() => Number(page.props?.auth?.user?.role) >= 3);
 const presetsLoading = ref(false);
 const presetsEnabled = computed(() => {
     const fromProp = String(props.entityType || "");
@@ -417,6 +422,7 @@ const activePreset = computed(() => {
     if (!id) return null;
     return (filterPresets.value || []).find((preset) => preset.id === id) || null;
 });
+const selectedPresetIsOwned = computed(() => Boolean(activePreset.value && activePreset.value.isOwner !== false));
 const defaultPreset = computed(() => {
     return (filterPresets.value || []).find((preset) => preset.isDefault) || null;
 });
@@ -543,6 +549,9 @@ const saveCurrentPreset = () => {
     if (typeof window === "undefined" || !presetsEnabled.value || !presetEntityType.value) return;
     const name = window.prompt("Nom du preset de filtres", "")?.trim();
     if (!name) return;
+    const isPublic = canPublishFilterPreset.value
+        ? Boolean(window.confirm("Rendre ce preset public (visible par tout le monde) ? Seuls MJ et admins peuvent le faire."))
+        : false;
 
     createPreset({
         entityType: presetEntityType.value,
@@ -552,6 +561,7 @@ const saveCurrentPreset = () => {
         filters: { ...(activeFilters.value || {}) },
         limit: Number(paginationState.value?.pageSize || 25),
         isDefault: false,
+        isPublic,
     })
         .then(async (created) => {
             await reloadPresetsFromApi();
@@ -862,6 +872,7 @@ const resolvedFilterOptions = computed(() => {
         if (!f?.id || !f?.type) return false;
         if (f.type !== "multi" && f.type !== "select") return false;
         const mode = String(f?.ui?.optionsMode || "");
+        if (f.type === "range") return false;
         if (mode === "rows") return true;
         const hasServer = Array.isArray(base?.[f.id]) && base[f.id].length > 0;
         return !hasServer;
@@ -1004,6 +1015,9 @@ const hasActiveFilters = computed(() => {
     const filters = activeFilters.value || {};
     return Object.values(filters).some((value) => {
         if (Array.isArray(value)) return value.length > 0;
+        if (value && typeof value === "object") {
+            return isTableRangeActive(value, null) || Object.keys(value).length > 0;
+        }
         if (value === null || typeof value === "undefined") return false;
         if (typeof value === "boolean") return value;
         return String(value).trim() !== "";
@@ -1029,8 +1043,9 @@ const applyDefaultFilters = () => {
         if (!f?.id || !f?.type) continue;
         if (Object.prototype.hasOwnProperty.call(next, f.id)) continue;
         const resolved = resolveFilterDefaultValue(f, optionsById[f.id] || []);
-        if (typeof resolved === "undefined") continue;
-        next[f.id] = resolved;
+        const fallback = typeof resolved === "undefined" && f.id === "state" ? ["playable"] : resolved;
+        if (typeof fallback === "undefined") continue;
+        next[f.id] = fallback;
         changed = true;
     }
 
@@ -1253,6 +1268,14 @@ const passesFilter = (row, col) => {
 
     if (f.type === "text") {
         return normalize(rowValue).includes(normalize(raw));
+    }
+
+    if (f.type === "range") {
+        const range = normalizeTableRangeValue(raw);
+        if (!range) return true;
+        const n = minFormulaInteger(rowValue);
+        if (n === null) return false;
+        return n >= range.min && n <= range.max;
     }
 
     // multi
@@ -2251,6 +2274,9 @@ const handleExport = () => {
                     <span v-if="activePreset.isDefault" class="badge badge-soft badge-info">
                         Défaut
                     </span>
+                    <span v-if="activePreset.isPublic" class="badge badge-soft badge-secondary">
+                        Public
+                    </span>
                     <span v-if="isActivePresetDirty" class="badge badge-soft badge-warning">
                         Non sauvegardé
                     </span>
@@ -2278,7 +2304,7 @@ const handleExport = () => {
                         Revenir au preset actif
                     </Btn>
                     <Btn
-                        v-if="isActivePresetDirty"
+                        v-if="isActivePresetDirty && selectedPresetIsOwned"
                         size="xs"
                         variant="outline"
                         :color="uiColor"
@@ -2312,7 +2338,7 @@ const handleExport = () => {
                         :key="preset.id"
                         :value="preset.id"
                     >
-                        {{ preset.isDefault ? `★ ${preset.name}` : preset.name }}
+                        {{ preset.isDefault ? "★ " : "" }}{{ preset.name }}{{ preset.isPublic ? " (public)" : "" }}
                     </option>
                 </select>
                 <Btn
@@ -2320,7 +2346,7 @@ const handleExport = () => {
                     size="xs"
                     variant="ghost"
                     :color="uiColor"
-                    :disabled="!selectedPresetId"
+                    :disabled="!selectedPresetId || !selectedPresetIsOwned"
                     title="Renommer le preset sélectionné"
                     @click="renameSelectedPreset"
                 >
@@ -2331,7 +2357,7 @@ const handleExport = () => {
                     size="xs"
                     variant="ghost"
                     :color="uiColor"
-                    :disabled="!selectedPresetId"
+                    :disabled="!selectedPresetId || !selectedPresetIsOwned"
                     title="Définir ce preset par défaut"
                     @click="setSelectedPresetAsDefault"
                 >
@@ -2368,7 +2394,7 @@ const handleExport = () => {
                     size="xs"
                     variant="ghost"
                     :color="uiColor"
-                    :disabled="!selectedPresetId"
+                    :disabled="!selectedPresetId || !selectedPresetIsOwned"
                     @click="deleteSelectedPreset"
                 >
                     Supprimer preset
@@ -2379,6 +2405,7 @@ const handleExport = () => {
                 :filter-values="activeFilters"
                 :filter-options="resolvedFilterOptions"
                 :ui-color="uiColor"
+                :entity-type="entityType"
                 :presets-enabled="presetsEnabled"
                 :show-preset-panel="showPresetPanel"
                 :is-active-preset-dirty="isActivePresetDirty"
