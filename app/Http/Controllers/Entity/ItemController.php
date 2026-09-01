@@ -33,9 +33,15 @@ class ItemController extends Controller
     {
         $this->authorize('viewAny', Item::class);
 
+        $viewer = request()->user();
         $query = Item::query()
-            ->visibleToUser(request()->user())
-            ->with(['createdBy', 'itemType', 'resources', ...ItemPanoplyPayload::eagerLoad(request()->user())]);
+            ->visibleToUser($viewer)
+            ->with([
+                'createdBy',
+                'itemType',
+                'resources' => fn ($q) => $q->visibleToUser($viewer),
+                ...ItemPanoplyPayload::eagerLoad($viewer),
+            ]);
 
         // Recherche
         if (request()->has('search') && request()->search) {
@@ -130,13 +136,14 @@ class ItemController extends Controller
     {
         $this->authorize('view', $item);
 
+        $viewer = request()->user();
         $item->load([
             'itemType',
             'createdBy',
-            'resources',
+            'resources' => fn ($q) => $q->visibleToUser($viewer),
             'effectUsages.effectDegree.effect',
             'objectEffects',
-            ...ItemPanoplyPayload::eagerLoad(request()->user()),
+            ...ItemPanoplyPayload::eagerLoad($viewer),
         ]);
 
         return Inertia::render('Pages/entity/item/Show', [

@@ -165,12 +165,13 @@ class ResourceController extends Controller
     {
         $this->authorize('view', $resource);
 
+        $viewer = request()->user();
         $resource->load([
             'createdBy',
             'resourceType',
-            'recipeIngredients',
-            'consumables',
-            'items',
+            'recipeIngredients' => fn ($q) => $q->visibleToUser($viewer),
+            'consumables' => fn ($q) => $q->visibleToUser($viewer),
+            'items' => fn ($q) => $q->visibleToUser($viewer),
             'creatures',
             'scenarios',
             'campaigns',
