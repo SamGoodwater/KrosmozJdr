@@ -39,6 +39,11 @@ import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import TanStackTableShortcutsModal from "@/Pages/Molecules/table/TanStackTableShortcutsModal.vue";
 import { matchTableEnterIntent, isTableTypingTarget, shouldIgnoreTableRowIntent } from "@/Composables/table/useTanStackTableKeyboard.js";
 import { resolveFilterDefaultValue } from "@/Utils/table/resolveFilterDefaultValue.js";
+import {
+    isTableRangeActive,
+    minFormulaInteger,
+    rangeBoundsFromFilterOption,
+} from "@/Utils/table/tableRangeFilter.js";
 import { normalizeTableRowId, toSelectedIdSet, selectedSetHas } from "@/Utils/table/normalizeTableRowId.js";
 import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import {
@@ -841,7 +846,9 @@ const searchDebounceMs = computed(() => Number(props.config?.features?.search?.d
 
 const filtersEnabled = computed(() => Boolean(props.config?.features?.filters?.enabled));
 const hasFilterableColumns = computed(() => {
-    return (columnsWithoutActions.value || []).some((c) => Boolean(c?.filter?.id && c?.filter?.type));
+    return (columnsWithoutActions.value || []).some(
+        (c) => Boolean(c?.filter?.id && c?.filter?.type) && c.filter.type !== "text",
+    );
 });
 const filterOptions = computed(() => {
     if (props.filterOptions && typeof props.filterOptions === "object") return props.filterOptions;
@@ -906,6 +913,9 @@ const activeFilters = ref({});
 function cloneFilterValue(value) {
     if (Array.isArray(value)) {
         return value.map((item) => item);
+    }
+    if (value && typeof value === "object") {
+        return { ...value };
     }
     return value;
 }
@@ -1002,10 +1012,20 @@ watch(
 
 const hasActiveFilters = computed(() => {
     const filters = activeFilters.value || {};
-    return Object.values(filters).some((value) => {
+    const cols = columnsWithoutActions.value || [];
+    return Object.entries(filters).some(([key, value]) => {
         if (Array.isArray(value)) return value.length > 0;
         if (value === null || typeof value === "undefined") return false;
         if (typeof value === "boolean") return value;
+        if (typeof value === "object") {
+            const col = cols.find((c) => c?.filter?.id === key);
+            const bounds = rangeBoundsFromFilterOption(
+                filterOptions.value?.[key],
+                { min: 0, max: 20 },
+                col?.filter?.ui || {},
+            );
+            return isTableRangeActive(value, bounds);
+        }
         return String(value).trim() !== "";
     });
 });
@@ -1253,6 +1273,22 @@ const passesFilter = (row, col) => {
 
     if (f.type === "text") {
         return normalize(rowValue).includes(normalize(raw));
+    }
+
+    if (f.type === "range") {
+        const bounds = rangeBoundsFromFilterOption(
+            filterOptions.value?.[f.id],
+            { min: 0, max: 20 },
+            f.ui || {},
+        );
+        if (!isTableRangeActive(raw, bounds)) return true;
+        const n = minFormulaInteger(rowValue);
+        if (n === null) return false;
+        const min = Number(raw.min);
+        const max = Number(raw.max);
+        if (Number.isFinite(min) && n < min) return false;
+        if (Number.isFinite(max) && n > max) return false;
+        return true;
     }
 
     // multi
@@ -2379,6 +2415,7 @@ const handleExport = () => {
                 :filter-values="activeFilters"
                 :filter-options="resolvedFilterOptions"
                 :ui-color="uiColor"
+                :entity-type="entityType"
                 :presets-enabled="presetsEnabled"
                 :show-preset-panel="showPresetPanel"
                 :is-active-preset-dirty="isActivePresetDirty"

@@ -13,7 +13,7 @@
  * @slot expanded - Contenu affiché au hover (ou toujours si display-mode="extended")
  *
  * @props displayMode - 'hover' : expansion au survol | 'extended' : toujours étendu | 'compact' : jamais étendu
- * @props surfaceStyle - style de surface (teinte `--bg-color`, dégradé multi-élément)
+ * @props surfaceStyle - style de surface (bordure élément `--element-border-color` / `--element-border-image`)
  */
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { provideEntityMinimalCardOverlayHold } from "@/Composables/overlay/entityMinimalCardOverlayHold";
@@ -34,7 +34,7 @@ const props = defineProps({
         default: "",
     },
     /**
-     * Style de surface (ex. teinte élément via `--bg-color`).
+     * Style de surface (ex. bordure élément via `--element-border-color`).
      * Appliqué au compact et à l’overlay étendu.
      */
     surfaceStyle: {
@@ -63,6 +63,12 @@ const showExpanded = computed(() => {
 });
 
 const canHover = computed(() => props.displayMode === "hover");
+
+const elementRingClass = computed(() =>
+    props.surfaceStyle && props.surfaceStyle["--element-border-color"]
+        ? "entity-element-ring"
+        : "",
+);
 
 function onEnter() {
     if (canHover.value) isHovered.value = true;
@@ -143,8 +149,8 @@ onUnmounted(() => {
         <!-- Compact : réserve la place en grille. Absent en extended (une seule carte, hauteur du contenu). -->
         <div
             v-if="displayMode !== 'extended'"
-            class="entity-minimal-card__compact bg-glass-2xl border border-base-300 overflow-hidden"
-            :class="{ 'opacity-0 pointer-events-none': showExpanded && canHover }"
+            class="entity-minimal-card__compact bg-glass-2xl border border-base-300 overflow-hidden rounded-box"
+            :class="[{ 'opacity-0 pointer-events-none': showExpanded && canHover }, elementRingClass]"
             :style="surfaceStyle"
         >
             <slot name="compact" />
@@ -155,7 +161,7 @@ onUnmounted(() => {
             <div
                 v-if="showExpanded"
                 class="entity-minimal-card__expanded bg-glass-3xl"
-                :class="{ 'entity-minimal-card__expanded--overlay': canHover }"
+                :class="[{ 'entity-minimal-card__expanded--overlay': canHover }, elementRingClass]"
                 :style="surfaceStyle"
                 role="region"
                 aria-label="Détails"
@@ -170,6 +176,7 @@ onUnmounted(() => {
 .entity-minimal-card__compact {
     --bg-color: var(--color-base-100, #0f172a);
     min-height: 6rem;
+    border-radius: var(--rounded-box, 0.1rem);
     transition: opacity 0.15s ease-out;
     backdrop-filter: blur(34px) saturate(1.12);
     -webkit-backdrop-filter: blur(34px) saturate(1.12);

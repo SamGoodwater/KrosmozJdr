@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Table;
 use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Breed;
+use App\Models\Entity\Creature;
 use App\Models\Entity\Npc;
 use App\Models\Entity\Specialization;
 use App\Support\Creature\CreatureMasteryColumns;
@@ -36,7 +37,7 @@ class NpcTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['breed_id', 'specialization_id', 'creature_level', 'creature_state'] as $k) {
+        foreach (['breed_id', 'specialization_id', 'creature_level', 'state'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -76,10 +77,10 @@ class NpcTableController extends Controller
             $this->applyEqualityFilter($query, 'specialization_id', $filters['specialization_id'], 'int');
         }
         if ($this->hasFilterValue($filters, 'creature_level')) {
-            $this->applyRelationEqualityFilter($query, 'creature', 'level', $filters['creature_level']);
+            $this->applyRelationIntegerRangeFilter($query, 'creature', 'level', $filters['creature_level']);
         }
-        if ($this->hasFilterValue($filters, 'creature_state')) {
-            $this->applyRelationEqualityFilter($query, 'creature', 'state', $filters['creature_state']);
+        if ($this->hasFilterValue($filters, 'state')) {
+            $this->applyEqualityFilter($query, 'state', $filters['state']);
         }
 
         $this->applyEntityTableIdList($query, $request);
@@ -115,20 +116,18 @@ class NpcTableController extends Controller
             ->map(fn ($s) => ['value' => (string) $s->id, 'label' => (string) $s->name])
             ->values()
             ->all();
-        $toDistinctOptions = function ($values, $sort = true) {
-            $collected = collect($values)->filter(fn ($v) => $v !== null && $v !== '')->map(fn ($v) => (string) $v)->unique()->values();
-            if ($sort) {
-                $collected = $collected->sort(SORT_NATURAL)->values();
-            }
-
-            return $collected->map(fn ($v) => ['value' => $v, 'label' => $v])->all();
-        };
-        $creatureStateOptions = EntityState::options();
         $filterOptions = [
             'breed_id' => $breedOptions,
             'specialization_id' => $specializationOptions,
-            'creature_level' => $toDistinctOptions($rows->pluck('creature.level')),
-            'creature_state' => $creatureStateOptions,
+            'creature_level' => $this->relatedIntegerColumnBounds(
+                Npc::query()->visibleToUser($request->user()),
+                'creature_id',
+                Creature::class,
+                'level',
+                1,
+                200
+            ),
+            'state' => EntityState::options(),
         ];
 
         // Mode "entities" : retourner les entités brutes (créature complète pour colonnes résumé comme Monster)

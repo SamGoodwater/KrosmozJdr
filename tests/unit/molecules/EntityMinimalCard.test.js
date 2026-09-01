@@ -77,14 +77,16 @@ describe("EntityMinimalCard", () => {
 
     it("applique surfaceStyle sur compact et expanded", async () => {
         const wrapper = mountCard({
-            surfaceStyle: { "--bg-color": "var(--color-red-600)" },
+            surfaceStyle: { "--element-border-color": "var(--color-error-600)" },
         });
         const compact = wrapper.find(".entity-minimal-card__compact");
-        expect(compact.attributes("style")).toContain("--bg-color: var(--color-red-600)");
+        expect(compact.attributes("style")).toContain("--element-border-color: var(--color-error-600)");
+        expect(compact.classes()).toContain("entity-element-ring");
 
         await wrapper.trigger("mouseenter");
         const expanded = wrapper.find(".entity-minimal-card__expanded");
-        expect(expanded.attributes("style")).toContain("--bg-color: var(--color-red-600)");
+        expect(expanded.attributes("style")).toContain("--element-border-color: var(--color-error-600)");
+        expect(expanded.classes()).toContain("entity-element-ring");
     });
 
     it("reste déployé tant qu’un overlay issu de la carte est ouvert", async () => {

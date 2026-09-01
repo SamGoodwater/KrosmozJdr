@@ -32,15 +32,15 @@ export const ELEMENT_PRIMARY_COLORS = Object.freeze({
   6: 'lime-600',
 });
 
-/** Variables CSS thème (dégradés ElementDisplay). */
+/** Variables CSS thème (badges + bordure de carte). Jetons DaisyUI / entités, pas la palette Tailwind brute (amber/lime absents du root). */
 export const ELEMENT_PRIMARY_CSS_VARS = Object.freeze({
-  0: 'var(--color-slate-500)',
-  1: 'var(--color-amber-700)',
-  2: 'var(--color-red-600)',
-  3: 'var(--color-emerald-600)',
-  4: 'var(--color-blue-600)',
-  5: 'var(--color-violet-500)',
-  6: 'var(--color-lime-600)',
+  0: 'var(--color-neutral-500)',
+  1: 'var(--color-shop-700)',
+  2: 'var(--color-error-600)',
+  3: 'var(--color-success-600)',
+  4: 'var(--color-primary-600)',
+  5: 'var(--color-spell-500)',
+  6: 'var(--color-specialization-600)',
 });
 
 /** @type {Readonly<Record<number, string>>} */
@@ -251,15 +251,16 @@ export function resolveEntityElementValue(entity) {
 }
 
 /**
- * Style glass Minimal / Line : teinte `--bg-color`, dégradé si plusieurs primaires.
+ * Style Minimal / Line : bordure colorée par l’élément (le glass reste le fond du thème).
  *
- * Sans valeur d’élément, objet vide : le fond reste le glass par défaut.
+ * Un primaire → `--element-border-color`. Plusieurs → `--element-border-image` (dégradé).
+ * Sans valeur d’élément, objet vide.
  *
  * @param {unknown} raw
  * @returns {Record<string, string>}
  *
  * @example
- * getElementGlassSurfaceStyle(4) // { '--bg-color': 'var(--color-blue-600)' }
+ * getElementGlassSurfaceStyle(4) // { '--element-border-color': 'var(--color-primary-600)' }
  */
 export function getElementGlassSurfaceStyle(raw) {
   if (raw === null || typeof raw === "undefined" || raw === "") {
@@ -269,19 +270,34 @@ export function getElementGlassSurfaceStyle(raw) {
   if (primaries.length === 0) {
     return {};
   }
-  const cols = primaries.map((i) => ELEMENT_PRIMARY_CSS_VARS[i] ?? "var(--color-slate-500)");
+  const cols = primaries.map((i) => ELEMENT_PRIMARY_CSS_VARS[i] ?? "var(--color-neutral-500)");
   const first = cols[0];
   if (cols.length === 1) {
-    return { "--bg-color": first };
+    return { "--element-border-color": first };
   }
   const stops = cols.map((c, idx) => {
     const pct = (idx / (cols.length - 1)) * 100;
-    return `color-mix(in srgb, ${c} 48%, transparent) ${pct}%`;
+    return `${c} ${pct}%`;
   });
+  const gradient = `linear-gradient(90deg, ${stops.join(", ")})`;
   return {
-    "--bg-color": first,
-    "background-image": `linear-gradient(90deg, ${stops.join(", ")})`,
+    "--element-border-color": first,
+    "--element-border-image": gradient,
   };
+}
+
+/**
+ * Classe CSS de l’anneau d’élément (bordure / dégradé) si le style en expose une.
+ *
+ * @param {Record<string, string>|null|undefined} style
+ * @returns {string}
+ *
+ * @example
+ * getElementSurfaceRingClass({ "--element-border-color": "var(--color-error-600)" })
+ * // "entity-element-ring"
+ */
+export function getElementSurfaceRingClass(style) {
+  return style && style["--element-border-color"] ? "entity-element-ring" : "";
 }
 
 /**
@@ -296,7 +312,7 @@ export function getElementBadgeStyle(raw) {
   if (primaries.length === 0) {
     return {};
   }
-  const cols = primaries.map((i) => ELEMENT_PRIMARY_CSS_VARS[i] ?? 'var(--color-slate-500)');
+  const cols = primaries.map((i) => ELEMENT_PRIMARY_CSS_VARS[i] ?? 'var(--color-neutral-500)');
   const first = cols[0];
   let background;
   if (cols.length === 1) {

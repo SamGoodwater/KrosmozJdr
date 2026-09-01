@@ -1,9 +1,9 @@
 /**
- * Densité d’un filtre de tableau : chips (petit ensemble) ou menu (liste longue).
+ * Densité d’un filtre de tableau : menu (défaut, compact) ou chips (opt-in).
  *
  * @example
- * resolveTableFilterLayout({ type: "multi", optionCount: 6 }) // "chips"
- * resolveTableFilterLayout({ type: "multi", optionCount: 40 }) // "menu"
+ * resolveTableFilterLayout({ type: "multi", optionCount: 6 }) // "menu"
+ * resolveTableFilterLayout({ type: "multi", uiLayout: "chips", optionCount: 6 }) // "chips"
  */
 
 export const TABLE_FILTER_CHIP_MAX_OPTIONS = 8;
@@ -14,7 +14,7 @@ export const TABLE_FILTER_CHIP_MAX_OPTIONS = 8;
  * @param {string} [params.uiLayout] `"chips"` | `"menu"` (forcé)
  * @param {number} [params.optionCount]
  * @param {boolean} [params.isBooleanSelect]
- * @returns {"toggle"|"text"|"chips"|"menu"|"unsupported"}
+ * @returns {"toggle"|"text"|"chips"|"menu"|"range"|"unsupported"}
  */
 export function resolveTableFilterLayout({
     type,
@@ -29,6 +29,9 @@ export function resolveTableFilterLayout({
     if (kind === "text") {
         return "text";
     }
+    if (kind === "range") {
+        return "range";
+    }
     if (kind !== "multi" && kind !== "select") {
         return "unsupported";
     }
@@ -38,9 +41,5 @@ export function resolveTableFilterLayout({
         return forced;
     }
 
-    const count = Number(optionCount);
-    if (Number.isFinite(count) && count > 0 && count <= TABLE_FILTER_CHIP_MAX_OPTIONS) {
-        return "chips";
-    }
     return "menu";
 }

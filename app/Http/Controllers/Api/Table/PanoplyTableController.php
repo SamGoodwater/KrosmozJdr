@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Api\Table;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Panoply;
+use App\Models\Type\ItemType;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -17,6 +20,7 @@ use Illuminate\Support\Facades\Gate;
  */
 class PanoplyTableController extends Controller
 {
+    use InterpretsEntityTableFilters;
     use InterpretsEntityTableSort;
     use PaginatesEntityTable;
 
@@ -29,6 +33,13 @@ class PanoplyTableController extends Controller
         // - "entities" : renvoie `entities[]` (données brutes + meta) pour laisser le frontend générer les `cells`.
         //   Objectif : supporter une architecture "field descriptors" (Option B).
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
+
+        $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
+        foreach (['state', 'items_count', 'item_type_id'] as $k) {
+            if (! array_key_exists($k, $filters) && $request->has($k)) {
+                $filters[$k] = $request->get($k);
+            }
+        }
 
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
@@ -51,7 +62,7 @@ class PanoplyTableController extends Controller
                 'createdBy',
                 'items' => fn ($q) => $q
                     ->visibleToUser($viewer)
-                    ->select(['items.id', 'items.name', 'items.level', 'items.image']),
+                    ->select(['items.id', 'items.name', 'items.level', 'items.image', 'items.item_type_id']),
             ])
             ->withCount([
                 'items' => fn ($q) => $q->visibleToUser($viewer),
@@ -68,7 +79,11 @@ class PanoplyTableController extends Controller
             });
         }
 
-        $allowedSort = ['id', 'name', 'items_count', 'dofusdb_id', 'created_at', 'updated_at'];
+        $this->applyPanoplyTableFilters($query, $filters, $viewer);
+
+        $this->applyEntityTableIdList($query, $request);
+
+        $allowedSort = ['id', 'name', 'items_count', 'state', 'dofusdb_id', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $pageResult = $this->paginateEntityTable($query, $request);
@@ -84,6 +99,8 @@ class PanoplyTableController extends Controller
             'deleteAny' => Gate::allows('deleteAny', Panoply::class),
             'manageAny' => Gate::allows('manageAny', Panoply::class),
         ];
+
+        $filterOptions = $this->buildPanoplyFilterOptions($viewer);
 
         // Mode "entities" : retourner les entités brutes
         if ($format === 'entities') {
@@ -125,7 +142,7 @@ class PanoplyTableController extends Controller
                         'page' => $page,
                     ],
                     'capabilities' => $capabilities,
-                    'filterOptions' => [],
+                    'filterOptions' => $filterOptions,
                     'pagination' => $pagination,
                     'format' => 'entities',
                 ],
@@ -230,10 +247,68 @@ class PanoplyTableController extends Controller
                     'page' => $page,
                 ],
                 'capabilities' => $capabilities,
-                'filterOptions' => [],
+                'filterOptions' => $filterOptions,
                 'pagination' => $pagination,
             ],
             'rows' => $tableRows,
         ]);
+    }
+
+    /**
+     * Filtres panoplie : état, nombre de pièces, types d’objets présents.
+     *
+     * @param  Builder<Panoply>  $query
+     * @param  array<string, mixed>  $filters
+     */
+    private function applyPanoplyTableFilters(Builder $query, array $filters, mixed $viewer): void
+    {
+        if ($this->hasFilterValue($filters, 'state')) {
+            $this->applyEqualityFilter($query, 'state', $filters['state']);
+        }
+        if ($this->hasFilterValue($filters, 'items_count')) {
+            $this->applyHavingRangeFilter($query, 'items_count', $filters['items_count']);
+        }
+        if ($this->hasFilterValue($filters, 'item_type_id')) {
+            $ids = $this->castFilterList($filters['item_type_id'], 'int');
+            if ($ids !== []) {
+                $query->whereHas('items', function (Builder $q) use ($ids, $viewer) {
+                    $q->visibleToUser($viewer)->whereIn('item_type_id', $ids);
+                });
+            }
+        }
+    }
+
+    /**
+     * @return array{
+     *     state: list<array{value: string, label: string}>,
+     *     item_type_id: list<array{value: string, label: string, dofusdb_type_id: int|null, show_in_catalog: bool}>,
+     *     items_count: array{min: int, max: int}
+     * }
+     */
+    private function buildPanoplyFilterOptions(mixed $viewer): array
+    {
+        $itemTypes = ItemType::query()
+            ->select(['id', 'name', 'dofusdb_type_id', 'show_in_catalog'])
+            ->orderBy('name')
+            ->limit(5000)
+            ->get()
+            ->map(fn ($t) => [
+                'value' => (string) $t->id,
+                'label' => (string) $t->name,
+                'dofusdb_type_id' => $t->dofusdb_type_id !== null ? (int) $t->dofusdb_type_id : null,
+                'show_in_catalog' => (bool) $t->show_in_catalog,
+            ])
+            ->values()
+            ->all();
+
+        $countQuery = Panoply::query()
+            ->visibleToUser($viewer)
+            ->withCount(['items' => fn ($q) => $q->visibleToUser($viewer)]);
+
+        return [
+            'state' => EntityState::options(),
+            'item_type_id' => $itemTypes,
+            'items_count' => $this->withCountColumnBounds($countQuery, 'items_count', 0, 20),
+        ];
     }
 }

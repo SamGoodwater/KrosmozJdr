@@ -1,0 +1,24 @@
+/**
+ * Anneau d’élément (sorts / capacités) : bordure 2px, dégradé si plusieurs primaires.
+ * Les variables `--element-border-color` et `--element-border-image` viennent de
+ * `getElementGlassSurfaceStyle` (Elements.js).
+ */
+.entity-element-ring {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: var(--element-border-image, var(--element-border-color, transparent));
+    pointer-events: none;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    z-index: 1;
+  }
+}

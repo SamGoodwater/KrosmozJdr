@@ -5,6 +5,7 @@ namespace Tests\Feature\Api\Table;
 use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Item;
 use App\Models\Entity\Panoply;
+use App\Models\Type\ItemType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -191,5 +192,141 @@ class PanoplyTableControllerTest extends TestCase
         $data = $response->json();
         $this->assertLessThanOrEqual(5, count($data['entities']));
         $this->assertEquals(5, $data['meta']['query']['limit']);
+    }
+
+    public function test_filter_options_include_all_entity_states(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        Panoply::factory()->create([
+            'created_by' => $user->id,
+            'state' => Panoply::STATE_RAW,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/panoplies?format=entities&limit=10');
+
+        $response->assertOk();
+        $states = collect($response->json('meta.filterOptions.state'))->pluck('value')->all();
+        $this->assertEqualsCanonicalizing(
+            ['raw', 'draft', 'auto', 'playable', 'archived'],
+            $states
+        );
+    }
+
+    public function test_filters_by_items_count_range(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $small = Panoply::factory()->create([
+            'created_by' => $user->id,
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $large = Panoply::factory()->create([
+            'created_by' => $user->id,
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $itemA = Item::factory()->create([
+            'created_by' => $user->id,
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $itemB = Item::factory()->create([
+            'created_by' => $user->id,
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $itemC = Item::factory()->create([
+            'created_by' => $user->id,
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $small->items()->attach($itemA->id);
+        $large->items()->attach([$itemA->id, $itemB->id, $itemC->id]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/panoplies?format=entities&limit=20&filters[items_count][min]=2&filters[items_count][max]=10');
+
+        $response->assertOk();
+        $ids = collect($response->json('entities'))->pluck('id')->all();
+        $this->assertContains($large->id, $ids);
+        $this->assertNotContains($small->id, $ids);
+        $bounds = $response->json('meta.filterOptions.items_count');
+        $this->assertIsArray($bounds);
+        $this->assertArrayHasKey('min', $bounds);
+        $this->assertArrayHasKey('max', $bounds);
+    }
+
+    public function test_filters_by_item_type_present_in_panoply(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $hatType = ItemType::factory()->create([
+            'name' => 'CoiffeFiltrePano',
+            'show_in_catalog' => true,
+            'created_by' => $user->id,
+        ]);
+        $capeType = ItemType::factory()->create([
+            'name' => 'CapeFiltrePano',
+            'show_in_catalog' => true,
+            'created_by' => $user->id,
+        ]);
+        $withHat = Panoply::factory()->create([
+            'created_by' => $user->id,
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $withCape = Panoply::factory()->create([
+            'created_by' => $user->id,
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $hat = Item::factory()->create([
+            'created_by' => $user->id,
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'item_type_id' => $hatType->id,
+        ]);
+        $cape = Item::factory()->create([
+            'created_by' => $user->id,
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'item_type_id' => $capeType->id,
+        ]);
+        $withHat->items()->attach($hat->id);
+        $withCape->items()->attach($cape->id);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/panoplies?format=entities&limit=20&filters[item_type_id][]='.$hatType->id);
+
+        $response->assertOk();
+        $ids = collect($response->json('entities'))->pluck('id')->all();
+        $this->assertContains($withHat->id, $ids);
+        $this->assertNotContains($withCape->id, $ids);
+        $typeValues = collect($response->json('meta.filterOptions.item_type_id'))->pluck('value')->all();
+        $this->assertContains((string) $hatType->id, $typeValues);
+        $this->assertContains((string) $capeType->id, $typeValues);
+    }
+
+    public function test_filters_by_state(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $playable = Panoply::factory()->create([
+            'created_by' => $user->id,
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $raw = Panoply::factory()->create([
+            'created_by' => $user->id,
+            'state' => Panoply::STATE_RAW,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/panoplies?format=entities&limit=20&filters[state][]=playable');
+
+        $response->assertOk();
+        $ids = collect($response->json('entities'))->pluck('id')->all();
+        $this->assertContains($playable->id, $ids);
+        $this->assertNotContains($raw->id, $ids);
     }
 }

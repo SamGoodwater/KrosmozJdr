@@ -73,4 +73,15 @@ describe('condition-descriptors', () => {
             });
         });
     });
+
+    describe('Filtres tableau', () => {
+        it('dissipable est un interrupteur', () => {
+            const descriptors = getConditionFieldDescriptors();
+            expect(descriptors.dissipable.table.filterable).toMatchObject({
+                id: 'dissipable',
+                type: 'boolean',
+                defaultVisible: true,
+            });
+        });
+    });
 });

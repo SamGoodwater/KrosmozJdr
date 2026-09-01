@@ -78,7 +78,6 @@ export function getItemFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         defaultVisible: hiddenByDefault,
-        filterable: { id: "id", type: "text", defaultVisible: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {
@@ -127,7 +126,6 @@ export function getItemFieldDescriptors(ctx = {}) {
       helper: "Texte d’ambiance",
       table: {
         searchable: true,
-        filterable: { id: "description", type: "text", defaultVisible: false },
         defaultVisible: hiddenByDefault,
         cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text", truncate: 80 }, xl: { mode: "text" } } },
       },
@@ -157,7 +155,6 @@ export function getItemFieldDescriptors(ctx = {}) {
       helper: "Résumé converti (Krosmoz) ; les bonus complets sont dans Bonus",
       table: {
         searchable: true,
-        filterable: { id: "effect", type: "text", defaultVisible: false },
         defaultVisible: hiddenByDefault,
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },
@@ -187,7 +184,6 @@ export function getItemFieldDescriptors(ctx = {}) {
       helper: "Bonus de l’équipement",
       table: {
         searchable: true,
-        filterable: { id: "bonus", type: "text", defaultVisible: false },
         defaultVisible: visibleFromMd,
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },
@@ -219,12 +215,9 @@ export function getItemFieldDescriptors(ctx = {}) {
         sortable: true,
         filterable: {
           id: "level",
-          type: "multi",
-          defaultVisible: false,
-          ui: {
-            optionsMode: "rows",
-            maxOptions: 250,
-          },
+          type: "range",
+          defaultVisible: true,
+          ui: { min: 1, max: 200, step: 1 },
         },
         defaultVisible: visibleFromSm,
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
@@ -299,6 +292,7 @@ export function getItemFieldDescriptors(ctx = {}) {
           id: "state",
           type: "multi",
           defaultVisible: true,
+          defaultValue: ["playable"],
           options: getEntityStateOptions(),
         },
         defaultVisible: visibleFromSm,
@@ -423,7 +417,6 @@ export function getItemFieldDescriptors(ctx = {}) {
       helper: "Prix en kamas",
       table: {
         sortable: true,
-        filterable: { id: "price", type: "text", defaultVisible: false },
         defaultVisible: hiddenByDefault,
         cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -454,7 +447,6 @@ export function getItemFieldDescriptors(ctx = {}) {
       helper: "Version Dofus d’origine",
       table: {
         sortable: true,
-        filterable: { id: "dofus_version", type: "text", defaultVisible: false },
         defaultVisible: hiddenByDefault,
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },

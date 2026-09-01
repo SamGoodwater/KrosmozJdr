@@ -215,4 +215,30 @@ class ConditionTableControllerTest extends TestCase
         $this->assertSame([$raw->id], $ids);
         $this->assertArrayHasKey('cant_be_moved', $response->json('entities.0'));
     }
+
+    public function test_filters_by_dissipable_boolean(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $yes = Condition::factory()->create([
+            'name' => 'DissipableOui',
+            'state' => Condition::STATE_PLAYABLE,
+            'dissipable' => true,
+            'created_by' => $user->id,
+        ]);
+        $no = Condition::factory()->create([
+            'name' => 'DissipableNon',
+            'state' => Condition::STATE_PLAYABLE,
+            'dissipable' => false,
+            'created_by' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/conditions?format=entities&limit=50&filters[dissipable]=1');
+
+        $response->assertOk();
+        $ids = collect($response->json('entities'))->pluck('id')->all();
+        $this->assertContains($yes->id, $ids);
+        $this->assertNotContains($no->id, $ids);
+        $this->assertArrayNotHasKey('dissipable', $response->json('meta.filterOptions') ?? []);
+    }
 }

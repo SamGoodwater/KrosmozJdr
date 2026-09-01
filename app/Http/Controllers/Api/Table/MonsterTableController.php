@@ -63,6 +63,7 @@ class MonsterTableController extends Controller
             'is_boss' => ['is_boss', 'int'],
             'id' => ['id', 'int'],
             'monster_race_id' => ['monster_race_id', 'int'],
+            'state' => ['state', 'string'],
         ];
         foreach ($own as $key => [$column, $cast]) {
             if ($this->hasFilterValue($filters, $key)) {
@@ -70,29 +71,30 @@ class MonsterTableController extends Controller
             }
         }
 
-        $creature = [
-            'creature_level' => ['level', 'string'],
-            'creature_life' => ['life', 'string'],
-            'creature_pa' => ['pa', 'string'],
-            'creature_pm' => ['pm', 'string'],
-            'creature_po' => ['po', 'string'],
-            'creature_ini' => ['ini', 'string'],
-            'creature_ca' => ['ca', 'string'],
-            'creature_hostility' => ['hostility', 'int'],
-            'creature_state' => ['state', 'string'],
-            'creature_location' => ['location', 'string'],
-            'creature_strong' => ['strong', 'string'],
-            'creature_intel' => ['intel', 'string'],
-            'creature_agi' => ['agi', 'string'],
-            'creature_chance' => ['chance', 'string'],
-            'creature_vitality' => ['vitality', 'string'],
-            'creature_critical_hit' => ['critical_hit', 'string'],
-            'creature_heal_bonus' => ['heal_bonus', 'string'],
+        $creatureRange = [
+            'creature_level' => 'level',
+            'creature_life' => 'life',
+            'creature_pa' => 'pa',
+            'creature_pm' => 'pm',
+            'creature_po' => 'po',
+            'creature_ini' => 'ini',
+            'creature_ca' => 'ca',
+            'creature_strong' => 'strong',
+            'creature_intel' => 'intel',
+            'creature_agi' => 'agi',
+            'creature_chance' => 'chance',
+            'creature_vitality' => 'vitality',
+            'creature_critical_hit' => 'critical_hit',
+            'creature_heal_bonus' => 'heal_bonus',
         ];
-        foreach ($creature as $key => [$column, $cast]) {
+        foreach ($creatureRange as $key => $column) {
             if ($this->hasFilterValue($filters, $key)) {
-                $this->applyRelationEqualityFilter($query, 'creature', $column, $filters[$key], $cast);
+                $this->applyRelationIntegerRangeFilter($query, 'creature', $column, $filters[$key]);
             }
+        }
+
+        if ($this->hasFilterValue($filters, 'creature_hostility')) {
+            $this->applyRelationEqualityFilter($query, 'creature', 'hostility', $filters['creature_hostility'], 'int');
         }
     }
 
@@ -173,7 +175,7 @@ class MonsterTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['size', 'is_boss', 'monster_race_id', 'creature_level', 'creature_state', 'creature_hostility'] as $k) {
+        foreach (['size', 'is_boss', 'monster_race_id', 'creature_level', 'creature_hostility', 'state'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -263,14 +265,7 @@ class MonsterTableController extends Controller
             ['value' => '4', 'label' => 'Agressif'],
         ];
         $creatureStateOptions = EntityState::options();
-        $toDistinctOptions = function ($values, $sort = true) {
-            $collected = collect($values)->filter(fn ($v) => $v !== null && $v !== '')->map(fn ($v) => (string) $v)->unique()->values();
-            if ($sort) {
-                $collected = $collected->sort(SORT_NATURAL)->values();
-            }
-
-            return $collected->map(fn ($v) => ['value' => $v, 'label' => $v])->all();
-        };
+        $visibleMonsters = Monster::query()->visibleToUser($request->user());
         $filterOptions = [
             'size' => collect(Monster::SIZE)->map(fn ($label, $value) => ['value' => (string) $value, 'label' => (string) $label])->values()->all(),
             'is_boss' => [
@@ -278,15 +273,22 @@ class MonsterTableController extends Controller
                 ['value' => '0', 'label' => 'Non'],
             ],
             'monster_race_id' => $monsterRaceOptions,
-            'creature_level' => $toDistinctOptions($rows->pluck('creature.level')),
-            'creature_life' => $toDistinctOptions($rows->pluck('creature.life')),
-            'creature_pa' => $toDistinctOptions($rows->pluck('creature.pa')),
-            'creature_pm' => $toDistinctOptions($rows->pluck('creature.pm')),
-            'creature_po' => $toDistinctOptions($rows->pluck('creature.po')),
-            'creature_ini' => $toDistinctOptions($rows->pluck('creature.ini')),
-            'creature_ca' => $toDistinctOptions($rows->pluck('creature.ca')),
+            'creature_level' => $this->relatedIntegerColumnBounds($visibleMonsters, 'creature_id', Creature::class, 'level', 1, 200),
+            'creature_life' => $this->relatedIntegerColumnBounds($visibleMonsters, 'creature_id', Creature::class, 'life', 0, 500),
+            'creature_pa' => $this->relatedIntegerColumnBounds($visibleMonsters, 'creature_id', Creature::class, 'pa', 0, 20),
+            'creature_pm' => $this->relatedIntegerColumnBounds($visibleMonsters, 'creature_id', Creature::class, 'pm', 0, 20),
+            'creature_po' => $this->relatedIntegerColumnBounds($visibleMonsters, 'creature_id', Creature::class, 'po', 0, 20),
+            'creature_ini' => $this->relatedIntegerColumnBounds($visibleMonsters, 'creature_id', Creature::class, 'ini', 0, 200),
+            'creature_ca' => $this->relatedIntegerColumnBounds($visibleMonsters, 'creature_id', Creature::class, 'ca', 0, 50),
+            'creature_strong' => $this->relatedIntegerColumnBounds($visibleMonsters, 'creature_id', Creature::class, 'strong', 0, 400),
+            'creature_intel' => $this->relatedIntegerColumnBounds($visibleMonsters, 'creature_id', Creature::class, 'intel', 0, 400),
+            'creature_agi' => $this->relatedIntegerColumnBounds($visibleMonsters, 'creature_id', Creature::class, 'agi', 0, 400),
+            'creature_chance' => $this->relatedIntegerColumnBounds($visibleMonsters, 'creature_id', Creature::class, 'chance', 0, 400),
+            'creature_vitality' => $this->relatedIntegerColumnBounds($visibleMonsters, 'creature_id', Creature::class, 'vitality', 0, 400),
+            'creature_critical_hit' => $this->relatedIntegerColumnBounds($visibleMonsters, 'creature_id', Creature::class, 'critical_hit', 0, 50),
+            'creature_heal_bonus' => $this->relatedIntegerColumnBounds($visibleMonsters, 'creature_id', Creature::class, 'heal_bonus', 0, 50),
             'creature_hostility' => $creatureHostilityOptions,
-            'creature_state' => $creatureStateOptions,
+            'state' => $creatureStateOptions,
         ];
 
         // Mode "entities" : retourner les entités brutes (monstre + créature complète pour le tableau)

@@ -87,6 +87,23 @@ describe('panoply-descriptors', () => {
         });
     });
 
+    describe('Filtres tableau', () => {
+        it('filtre le nombre de pièces et les types d’objets', () => {
+            const descriptors = getPanoplyFieldDescriptors();
+            expect(descriptors.items_count.table.filterable).toMatchObject({
+                id: 'items_count',
+                type: 'range',
+                defaultVisible: true,
+            });
+            expect(descriptors.item_type.table.filterable).toMatchObject({
+                id: 'item_type_id',
+                type: 'multi',
+                defaultVisible: true,
+                defaultByCatalog: true,
+            });
+        });
+    });
+
     describe('Options des selects', () => {
         it('read_level a les bonnes options', () => {
             const descriptors = getPanoplyFieldDescriptors();

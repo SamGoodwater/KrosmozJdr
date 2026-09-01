@@ -1,5 +1,13 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Filtres panoplie, dissipable, bordure d’élément
+
+Le catalogue des panoplies filtre le nombre de pièces et les types d’objets du set ; les pastilles d’état listent tous les états (plus seulement Brut). Sur les états, « Dissipable » est un interrupteur. Les cartes sorts et capacités ne teintent plus tout le fond : une bordure reprend la couleur d’élément, en dégradé s’il y en a plusieurs (Terre comprise).
+
+## Septembre 2026 — Filtres de catalogue unifiés
+
+Les tableaux d’entités filtrent le **niveau** avec un curseur min/max (toute la bibliothèque, plus seulement la page affichée). L’**état** (Jouable, Brouillon…) se coche en pastilles à point à droite du titre « Filtres », Jouable par défaut. Types et listes longues restent un menu compact. PA, PO, PM (et les interrupteurs liés) sont dans les filtres avancés, avec l’icône et la couleur de chaque caractéristique. Les champs texte des filtres ont disparu : on cherche ça dans la barre de recherche. Sur les monstres, l’état de la fiche et le niveau de la créature suivent la même règle.
+
 ## Septembre 2026 — L’Essentiel = aide-mémoire
 
 Le menu L’Essentiel reprend les canons du livre (repos, maîtrise, DD, potions…) en pages courtes : un chapitre par sujet, pour retrouver une règle sans relire le tome. Source : `database/seeders/data/essential-pages.php`.
@@ -10,7 +18,7 @@ Les chiffres du livre parlent d’une seule voix (round de 6 s, maîtrise, carac
 
 ## Septembre 2026 — Cartes sorts / capacités teintées par l’élément
 
-En vue minimale et en ligne, le fond glass d’un sort ou d’une capacité reprend la couleur de son élément. S’il y en a plusieurs, le fond devient un dégradé. Sans élément, le glass reste bleu/thème comme avant.
+En vue minimale et en ligne, un sort ou une capacité garde le fond glass du thème. L’élément se lit sur la **bordure** (dégradé s’il y en a plusieurs). Sans élément, la bordure reste celle du thème.
 
 ## Septembre 2026 — Review : emplacements d’équipement et tests
 
