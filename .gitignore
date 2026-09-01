@@ -24,7 +24,8 @@ docker-compose.override.yml
 
 # --- Storage Laravel ---
 # Structure versionnée : .gitignore imbriqués sous storage/app, storage/framework, etc.
-# Contenu public versionné : storage/app/public/legal/*.md et changelog/*.md (voir storage/app/public/.gitignore)
+# Disque public versionné : storage/app/public/** sauf images/entity et images/users
+# (voir storage/app/public/.gitignore). Le lien public/storage n'est pas versionné.
 
 /storage/*.key
 /storage/pail
@@ -61,6 +62,7 @@ docker-compose.override.yml
 # --- Frontend / build ---
 /public/build
 /public/hot
+# Lien `php artisan storage:link` → storage/app/public (ne pas versionner le symlink)
 /public/storage
 
 # Fichiers SCSS compilés (public)

@@ -20,6 +20,7 @@ Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interact
 
 ## Chemins importants
 
+- Disque public versionné : `storage/app/public/` sauf `images/entity/` et `images/users/`. Lien web : `php artisan storage:link` (`public/storage` non versionné).
 - Source règles CMS : `private/game/rules/TABLE_DES_MATIERES.md`.
 - UI orphelins : `/admin/orphan-files` (super_admin).
 - UI nettoyage caches : `/admin/project-clear` (super_admin).

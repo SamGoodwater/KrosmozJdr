@@ -1,6 +1,8 @@
-*
-!.gitignore
-!legal/
-!legal/*.md
-!changelog/
-!changelog/*.md
+# Disque public versionné, sauf illustrations d'entités (scrapping)
+# et fichiers utilisateur. Le parent storage/app/.gitignore ré-inclut public/**.
+
+/images/entity/*
+!/images/entity/.gitignore
+
+/images/users/*
+!/images/users/.gitignore

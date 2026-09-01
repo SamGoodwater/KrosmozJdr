@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Storage public versionné (sauf entités et utilisateurs)
+
+Les fichiers de `storage/app/public` partent sur GitHub (icônes, fonds, logos, légal, fonts…). Restent locaux : les illustrations d’entités (`images/entity`) et les fichiers utilisateur (`images/users`). Le lien `public/storage` se recrée avec `php artisan storage:link`.
+
 ## Août 2026 — Filtres de tableau : largeur selon le contenu
 
 Les filtres des catalogues ne s’alignent plus sur trois colonnes identiques. Rareté, état et autres listes courtes s’affichent en pastilles ; type, race et listes longues restent un menu avec recherche. Les interrupteurs et champs texte prennent seulement la place dont ils ont besoin.

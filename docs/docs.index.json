@@ -252,7 +252,7 @@
   {
     "path": "operations/README.md",
     "title": "Operations",
-    "description": "Vocabulaire Artisan : app/Console/COMMANDS.md. Ici : orphelins Media, planning, import règles."
+    "description": "Vocabulaire Artisan : app/Console/COMMANDS.md. Ici : orphelins Media, disque public versionné, planning, import règles."
   },
   {
     "path": "project/_ai.md",

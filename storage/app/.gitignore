@@ -1,4 +1,7 @@
+# Ignorer le contenu local de storage/app, sauf les disques ci-dessous.
 *
 !private/
+!private/.gitignore
 !public/
+!public/**
 !.gitignore

@@ -24,6 +24,15 @@ UI : `/admin/orphan-files` (super_admin). Service : `app/Services/Media/OrphanPu
 
 Le récapitulatif `/admin/recap` liste les commandes `ui: true` pour le super-admin, avec un lien vers chaque page thématique (pas un second lanceur).
 
+## Disque public (`storage/app/public`)
+
+Le contenu de `storage/app/public` est versionné (icônes, fonds, logos, légal, changelog, fonts…). Deux dossiers restent locaux :
+
+- `images/entity/` — illustrations d’entités (scrapping, médias générés)
+- `images/users/` — fichiers utilisateur
+
+Le lien web `public/storage` n’est pas versionné : le recréer avec `php artisan storage:link`.
+
 ## Notifications de jobs
 
 Jobs Artisan admin (review, clear, deps, backup, `project:data sync`) : table `project_console_jobs`, poll `GET /admin/console-jobs/{id}`, toast animé + log filtré sur la page. Un seul job actif par domaine. Imports scrapping et nettoyage orphelins : suivi persisté (progression, annulation). Backup / sync planifiée : notification de résultat admin en plus du suivi live.
