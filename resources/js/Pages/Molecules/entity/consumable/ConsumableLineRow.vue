@@ -25,6 +25,8 @@ import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropert
 import EntityFieldTooltip from "@/Pages/Molecules/entity/shared/EntityFieldTooltip.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
+import EntityRuleNotes from "@/Pages/Molecules/entity/shared/EntityRuleNotes.vue";
+import { consumableRuleNotes } from "@/Utils/Entity/consumableRuleNotes";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -86,6 +88,7 @@ const imageCell = computed(() => getCell("image"));
 const typeCell = computed(() => getCell("consumable_type"));
 /** Description brute (non tronquée) */
 const descriptionFull = computed(() => entity.value?.description ?? entity.value?._data?.description ?? "");
+const ruleNotes = computed(() => consumableRuleNotes(entity.value));
 
 const effectItems = computed(() => {
     const cell = buildCharacteristicEffectCell({
@@ -222,6 +225,7 @@ const ingredients = computed(
             >
                 {{ descriptionFull }}
             </p>
+            <EntityRuleNotes :notes="ruleNotes" />
         </div>
         </div>
         <!-- Effets : pleine largeur sous le bloc Image/titre/propriétés -->

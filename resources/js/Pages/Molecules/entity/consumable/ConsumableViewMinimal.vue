@@ -25,6 +25,8 @@ import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropert
 import EntityFieldTooltip from "@/Pages/Molecules/entity/shared/EntityFieldTooltip.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
+import EntityRuleNotes from "@/Pages/Molecules/entity/shared/EntityRuleNotes.vue";
+import { consumableRuleNotes } from "@/Utils/Entity/consumableRuleNotes";
 
 const props = defineProps({
     consumable: {
@@ -112,6 +114,8 @@ const rarityConfig = computed(() => {
 const imageUrl = computed(() => entity.value?.image ?? entity.value?._data?.image ?? null);
 
 const ingredients = computed(() => entity.value?.resources ?? entity.value?._data?.resources ?? []);
+
+const ruleNotes = computed(() => consumableRuleNotes(entity.value));
 
 
 const {
@@ -206,6 +210,10 @@ const handleAction = async (actionKey) => {
                                 class="min-w-0"
                             />
                         </div>
+                        <EntityRuleNotes
+                            :notes="ruleNotes"
+                            notes-class="mt-0.5 text-[0.7rem] leading-snug text-base-content/75"
+                        />
                     </div>
                 </div>
                 <div
@@ -299,6 +307,7 @@ const handleAction = async (actionKey) => {
                         >
                             {{ descriptionFull }}
                         </p>
+                        <EntityRuleNotes :notes="ruleNotes" />
                     </div>
                 </div>
                 <div

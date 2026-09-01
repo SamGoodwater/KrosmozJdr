@@ -13,6 +13,7 @@
  * @slot expanded - Contenu affiché au hover (ou toujours si display-mode="extended")
  *
  * @props displayMode - 'hover' : expansion au survol | 'extended' : toujours étendu | 'compact' : jamais étendu
+ * @props surfaceStyle - style de surface (teinte `--bg-color`, dégradé multi-élément)
  */
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { provideEntityMinimalCardOverlayHold } from "@/Composables/overlay/entityMinimalCardOverlayHold";
@@ -31,6 +32,14 @@ const props = defineProps({
     pinnedEntityId: {
         type: [String, Number],
         default: "",
+    },
+    /**
+     * Style de surface (ex. teinte élément via `--bg-color`).
+     * Appliqué au compact et à l’overlay étendu.
+     */
+    surfaceStyle: {
+        type: Object,
+        default: () => ({}),
     },
 });
 
@@ -136,6 +145,7 @@ onUnmounted(() => {
             v-if="displayMode !== 'extended'"
             class="entity-minimal-card__compact bg-glass-2xl border border-base-300 overflow-hidden"
             :class="{ 'opacity-0 pointer-events-none': showExpanded && canHover }"
+            :style="surfaceStyle"
         >
             <slot name="compact" />
         </div>
@@ -146,6 +156,7 @@ onUnmounted(() => {
                 v-if="showExpanded"
                 class="entity-minimal-card__expanded bg-glass-3xl"
                 :class="{ 'entity-minimal-card__expanded--overlay': canHover }"
+                :style="surfaceStyle"
                 role="region"
                 aria-label="Détails"
             >

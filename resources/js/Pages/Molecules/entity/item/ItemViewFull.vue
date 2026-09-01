@@ -28,6 +28,8 @@ import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { getRarityConfig, getRoleConfig } from '@/Utils/Entity/SharedConstants';
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
 import EntityFieldTooltip from '@/Pages/Molecules/entity/shared/EntityFieldTooltip.vue';
+import EntityRuleNotes from '@/Pages/Molecules/entity/shared/EntityRuleNotes.vue';
+import { itemRuleNotes } from '@/Utils/Entity/itemRuleNotes';
 import ResourceIngredientsList from '@/Pages/Molecules/data-display/ResourceIngredientsList.vue';
 import RichTextReadonlyView from '@/Pages/Molecules/data-display/RichTextReadonlyView.vue';
 import CharacteristicEffectsGrid from '@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue';
@@ -91,6 +93,8 @@ const ingredients = computed(() => {
     const raw = props.item?.resources ?? props.item?._data?.resources ?? [];
     return Array.isArray(raw) ? raw : [];
 });
+
+const ruleNotes = computed(() => itemRuleNotes(props.item));
 
 const bonusItems = computed(() => {
     const bonus = props.item?.bonus ?? props.item?._data?.bonus;
@@ -324,6 +328,10 @@ const handleAction = async (actionKey) => {
             <template #mainInfos />
             <template #subtitle>
                 <p v-if="item.description" class="text-primary-300 mt-2 break-words">{{ item.description }}</p>
+                <EntityRuleNotes
+                    :notes="ruleNotes"
+                    notes-class="mt-1.5 text-sm leading-snug text-primary-200/80"
+                />
             </template>
 
             <template #actions>

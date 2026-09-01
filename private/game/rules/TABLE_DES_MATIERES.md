@@ -137,7 +137,7 @@ Cette table des matières présente la structure complète du livre de règles K
 
 - **3.1.3** Pièges
 
-- **3.1.4** Réactions hors combat
+- **3.1.4** Situations tendues (hors combat)
 
 
 

@@ -25,6 +25,8 @@ import EntityFieldTooltip from "@/Pages/Molecules/entity/shared/EntityFieldToolt
 import ItemPanoplyMark from "@/Pages/Molecules/entity/item/ItemPanoplyMark.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
+import EntityRuleNotes from "@/Pages/Molecules/entity/shared/EntityRuleNotes.vue";
+import { itemRuleNotes } from "@/Utils/Entity/itemRuleNotes";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -95,6 +97,7 @@ const imageCell = computed(() => getCell("image"));
 const typeCell = computed(() => getCell("item_type"));
 /** Description brute (non tronquée) */
 const descriptionFull = computed(() => entity.value?.description ?? entity.value?._data?.description ?? "");
+const ruleNotes = computed(() => itemRuleNotes(entity.value));
 
 const effectItems = computed(() => {
     const bonus = entity.value?.bonus ?? entity.value?._data?.bonus;
@@ -229,6 +232,7 @@ const rarityConfig = computed(() => {
             >
                 {{ descriptionFull }}
             </p>
+            <EntityRuleNotes :notes="ruleNotes" />
         </div>
         </div>
         <!-- Bonus : icônes (détail au survol) -->

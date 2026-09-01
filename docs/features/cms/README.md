@@ -73,6 +73,8 @@ Les « kref » sont des références inline insérées dans le texte riche.
 
 `GET /pages/menu` (`PageController::menu`, réponse JSON) → composable `useDynamicMenu` (axios) → `DynamicMenu.vue` dans `Layouts/Aside.vue`. L'arbre est construit par `PageService::getMenuPages` + `buildMenuTree`, regroupé selon `config/nav_menu.php` (`groups` : L'Essentiel, Règles, Bibliothèques, Pour les MJ, Informations), avec fallback `config('nav_menu.bibliotheques')` si le groupe Bibliothèques n’a pas encore de pages seedées. Un groupe sans enfants (après filtrage `read_level`) n’est pas renvoyé. Le cache menu est invalidé via `PageService::clearMenuCache()` après tout CRUD de page.
 
+**L’Essentiel** : aide-mémoire joueur (`database/seeders/data/essential-pages.php`), une page par sujet, chiffres alignés sur `private/game/rules`. Reseed : `php artisan db:seed --class=PageSeeder`.
+
 **Pour les MJ** n’est pas une page CMS : c’est un groupe de menu. L’atelier **Création** (`/pages/creation`, `read_level` MJ) y rassemble Équipements (`creation-equipements`) et les chartes (`contribution-creatures|objets|sorts`). Contribution (Informations) ne contient plus que **Nous rejoindre**.
 
 Le tableau `equipment_bonus_table` est alimenté par `GET /api/characteristics/equipment-bonus-table` (session web, rôle ≥ MJ).

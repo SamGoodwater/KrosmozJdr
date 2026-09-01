@@ -23,6 +23,7 @@ import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
+import { getElementGlassSurfaceStyle, resolveEntityElementValue } from "@/Utils/Entity/Elements";
 import ConditionBadges from "@/Pages/Molecules/entity/condition/ConditionBadges.vue";
 
 const props = defineProps({
@@ -159,6 +160,10 @@ const {
 const handleAction = async (actionKey) => {
     await handleMinimalAction(actionKey);
 };
+
+const elementSurfaceStyle = computed(() =>
+    getElementGlassSurfaceStyle(resolveEntityElementValue(entity.value))
+);
 </script>
 
 <template>
@@ -166,6 +171,7 @@ const handleAction = async (actionKey) => {
         :display-mode="displayMode"
         pinned-entity-type="capabilities"
         :pinned-entity-id="entity?.id"
+        :surface-style="elementSurfaceStyle"
         @open-quick-view="openQuickView"
     >
         <template #compact>

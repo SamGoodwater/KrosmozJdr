@@ -1,6 +1,7 @@
 <script setup>
 /**
  * Bloc usage unifié (Minimal / Line / bandeau Full) : méta PA-PO + résolution + chips d’effets.
+ * Notes de règles sous la méta et/ou les effets (Soin, Invocation, piège, glyphe, vol de vie…).
  *
  * @example
  * <SpellUsageBlock :entity="spell" :descriptors="descriptors" :can-show-field="canShowField" />
@@ -13,6 +14,7 @@ import {
     spellEffectsCellHasContent,
 } from "@/Composables/entity/useSpellEffectsDisplayCell";
 import { buildResolutionSummary } from "@/Utils/Entity/spellMinimalUsageDisplay";
+import { spellTypeRuleNotes } from "@/Utils/Entity/spellTypeRuleNotes";
 
 const props = defineProps({
     entity: { type: Object, required: true },
@@ -55,6 +57,12 @@ const props = defineProps({
     },
     /** Masque la bordure haute du bloc effets. */
     flushEffects: { type: Boolean, default: false },
+    /** Notes de règles. Laisser vrai en Line / Full / Minimal. */
+    showRuleNotes: { type: Boolean, default: true },
+    notesClass: {
+        type: String,
+        default: "mt-1 text-xs leading-snug opacity-80",
+    },
 });
 
 const showMeta = computed(() => props.parts === "all" || props.parts === "meta");
@@ -71,6 +79,7 @@ const effectDisplayCell = computed(() =>
 
 const hasEffects = computed(() => spellEffectsCellHasContent(effectDisplayCell.value));
 const resolutionUsage = computed(() => buildResolutionSummary(props.entity));
+const ruleNotes = computed(() => (props.showRuleNotes ? spellTypeRuleNotes(props.entity) : []));
 
 const showEffectsBlock = computed(
     () =>
@@ -96,6 +105,19 @@ const effectsClass = computed(() =>
             :row-class="rowClass"
             :hover-inner-gap-class="hoverInnerGapClass"
         />
+        <div
+            v-if="ruleNotes.length"
+            data-cy="spell-rule-notes"
+            class="spell-rule-notes"
+        >
+            <p
+                v-for="note in ruleNotes"
+                :key="note"
+                :class="notesClass"
+            >
+                {{ note }}
+            </p>
+        </div>
         <div v-if="showEffectsBlock" :class="effectsClass">
             <p v-if="resolutionUsage.show" :class="resolutionClass">
                 {{ resolutionUsage.text }}

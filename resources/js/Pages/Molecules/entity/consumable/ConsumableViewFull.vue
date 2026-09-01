@@ -29,6 +29,8 @@ import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { getRarityConfig } from '@/Utils/Entity/SharedConstants';
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
 import EntityFieldTooltip from '@/Pages/Molecules/entity/shared/EntityFieldTooltip.vue';
+import EntityRuleNotes from '@/Pages/Molecules/entity/shared/EntityRuleNotes.vue';
+import { consumableRuleNotes } from '@/Utils/Entity/consumableRuleNotes';
 import ResourceIngredientsList from '@/Pages/Molecules/data-display/ResourceIngredientsList.vue';
 import RichTextReadonlyView from '@/Pages/Molecules/data-display/RichTextReadonlyView.vue';
 
@@ -85,6 +87,8 @@ const ingredients = computed(() => {
     const raw = props.consumable?.resources ?? props.consumable?._data?.resources ?? [];
     return Array.isArray(raw) ? raw : [];
 });
+
+const ruleNotes = computed(() => consumableRuleNotes(props.consumable));
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -276,6 +280,10 @@ const handleAction = async (actionKey) => {
             <template #mainInfos />
             <template #subtitle>
                 <p v-if="consumable.description" class="text-primary-300 mt-2 break-words">{{ consumable.description }}</p>
+                <EntityRuleNotes
+                    :notes="ruleNotes"
+                    notes-class="mt-1.5 text-sm leading-snug text-primary-200/80"
+                />
             </template>
 
             <template #actions>

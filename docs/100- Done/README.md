@@ -1,5 +1,17 @@
 # Ce qui a été fait
 
+## Septembre 2026 — L’Essentiel = aide-mémoire
+
+Le menu L’Essentiel reprend les canons du livre (repos, maîtrise, DD, potions…) en pages courtes : un chapitre par sujet, pour retrouver une règle sans relire le tome. Source : `database/seeders/data/essential-pages.php`.
+
+## Septembre 2026 — Livre de règles aligné, notes sur les fiches
+
+Les chiffres du livre parlent d’une seule voix (round de 6 s, maîtrise, caracs, repos, DD, invocations, réactions, potions). Les chapitres se renvoient au lieu de se recopier. Sur les fiches, des rappels courts : sorts (soin, invocation, piège, glyphe, bouclier…), consommables (cumul, parchemin de sortilège) et montures.
+
+## Septembre 2026 — Cartes sorts / capacités teintées par l’élément
+
+En vue minimale et en ligne, le fond glass d’un sort ou d’une capacité reprend la couleur de son élément. S’il y en a plusieurs, le fond devient un dégradé. Sans élément, le glass reste bleu/thème comme avant.
+
 ## Septembre 2026 — Review : emplacements d’équipement et tests
 
 Les bonus d’objet (acrobaties, toucher, critique…) retrouvent leurs emplacements DofusDB (chapeau, cape, amulette…). Les catalogues alignent les tests sur la colonne Bonus et le pré-coche Type via « visible en jeu ». La recherche de monstres en test n’appelle plus DofusDB à vide : une race scrapable est posée, ou on demande toutes les races.

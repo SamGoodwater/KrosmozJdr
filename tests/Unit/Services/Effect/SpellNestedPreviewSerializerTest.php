@@ -25,6 +25,8 @@ class SpellNestedPreviewSerializerTest extends TestCase
         $this->assertArrayHasKey('effect_usages_summary', $payload);
         $this->assertArrayNotHasKey('effects', $payload);
         $this->assertArrayHasKey('resolution_mode', $payload);
+        $this->assertArrayHasKey('allows_reaction', $payload);
+        $this->assertIsBool($payload['allows_reaction']);
     }
 
     public function test_decorate_sets_chip_attributes_on_model(): void

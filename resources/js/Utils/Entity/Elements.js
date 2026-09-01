@@ -228,6 +228,63 @@ export function getElementColor(primaryIndex) {
 }
 
 /**
+ * Valeur élément d’une fiche sort / capacité.
+ *
+ * @param {{ element?: unknown, _data?: { element?: unknown } }|null|undefined} entity
+ * @returns {unknown}
+ *
+ * @example
+ * resolveEntityElementValue({ element: 4 }) // 4
+ */
+export function resolveEntityElementValue(entity) {
+  if (!entity || typeof entity !== "object") {
+    return null;
+  }
+  if (entity.element !== undefined && entity.element !== null && entity.element !== "") {
+    return entity.element;
+  }
+  const nested = entity._data?.element;
+  if (nested !== undefined && nested !== null && nested !== "") {
+    return nested;
+  }
+  return null;
+}
+
+/**
+ * Style glass Minimal / Line : teinte `--bg-color`, dégradé si plusieurs primaires.
+ *
+ * Sans valeur d’élément, objet vide : le fond reste le glass par défaut.
+ *
+ * @param {unknown} raw
+ * @returns {Record<string, string>}
+ *
+ * @example
+ * getElementGlassSurfaceStyle(4) // { '--bg-color': 'var(--color-blue-600)' }
+ */
+export function getElementGlassSurfaceStyle(raw) {
+  if (raw === null || typeof raw === "undefined" || raw === "") {
+    return {};
+  }
+  const primaries = getElementPrimaries(raw);
+  if (primaries.length === 0) {
+    return {};
+  }
+  const cols = primaries.map((i) => ELEMENT_PRIMARY_CSS_VARS[i] ?? "var(--color-slate-500)");
+  const first = cols[0];
+  if (cols.length === 1) {
+    return { "--bg-color": first };
+  }
+  const stops = cols.map((c, idx) => {
+    const pct = (idx / (cols.length - 1)) * 100;
+    return `color-mix(in srgb, ${c} 48%, transparent) ${pct}%`;
+  });
+  return {
+    "--bg-color": first,
+    "background-image": `linear-gradient(90deg, ${stops.join(", ")})`,
+  };
+}
+
+/**
  * Style inline pour badge dégradé (masque multi-primaires).
  *
  * @param {unknown} raw

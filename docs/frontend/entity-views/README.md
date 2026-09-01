@@ -18,6 +18,10 @@ Ne pas créer `ViewLarge` ni `ViewCompact`. Utiliser `resolveEntityViewComponent
 Line et le bandeau Full. Props `parts` : `meta` | `effects` | `all` (méta sous le
 titre, effets en pleine largeur). Full : section Utilisation via la même méta ;
 bandeau chips au-dessus du journal ; empty states structurés vs texte libre.
+Notes de règles (oubliables à table) sous la méta et, en Full, aussi sous les
+effets : `spellTypeRuleNotes.js`. Consommables et équipements : `EntityRuleNotes`
++ `consumableRuleNotes.js` / `itemRuleNotes.js` (cumul de buff, parchemin de
+sortilège, monture).
 
 ## Parcours d’ouverture
 
@@ -30,6 +34,7 @@ minimal compact → survol : overlay déployé → double-clic / quick-view : mo
 - En carte minimale **déployée**, la description des consommables, ressources et équipements n’est plus coupée.
 - Le menu d’options de la carte minimale n’a plus de fond : les icônes restent nues à droite du titre.
 - **Tous** les `*ViewMinimal` (hors `language`) passent par `EntityMinimalCard` : double-clic → modal, whitelist d’actions commune, pin flottant.
+- Sorts et capacités (Minimal / Line) : le fond glass reprend la couleur d’élément (`getElementGlassSurfaceStyle`, `--bg-color`). Plusieurs primaires → dégradé. Sans élément, le glass reste celui du thème.
 - Shell commun : `useEntityMinimalShell` + `EntityMinimalTitle`.
 - PNJ : mêmes densités de caractéristiques que les monstres (créature liée).
 - La **page** n’est pas l’entrée principale : **Agrandir** depuis la modal, ou Ctrl+clic.
@@ -85,7 +90,7 @@ Les en-têtes affichent `helper` / `general.tooltip` au survol (`TanStackTableHe
 
 ## Tableaux d’entités (filtres, tri, recherche)
 
-Index server-side (`items`, `monsters`, `spells`, `resources`, `consumables`, `conditions`) : changer un filtre relance la requête (debounce) ; Réinitialiser vide `filters` (puis réapplique les défauts déclarés, s’il y en a) et revient à la page 1. Les multi-sélections partent en `filters[key][]`. Les listes courtes (rareté, état…) s’affichent en pastilles ; les listes longues (type, race) restent un menu. Le tri envoie `sorts[i][field]` avec l’alias SQL (`item_type` → `item_type_id`, `creature_level` via jointure). La barre de recherche envoie `search=`. Les champs de saisie des filtres (texte, recherche dans un multi) ne sont pas réinitialisés à chaque refetch : les défauts ne s’appliquent que si le filtre n’a pas encore de valeur, et les `initialFilterValues` ne remplacent une clé que si son contenu a vraiment changé.
+Index server-side (`items`, `monsters`, `spells`, `resources`, `consumables`, `conditions`) : changer un filtre relance la requête (debounce) ; Réinitialiser vide `filters` (puis réapplique les défauts déclarés, s’il y en a) et revient à la page 1. Les multi-sélections partent en `filters[key][]` ; les plages (niveau, PA, stats créature) en `filters[key][min]` / `[max]`. Le **niveau** est un slider dual dont les bornes viennent de tout le catalogue, pas de la page courante. L’**état** se coche en badges à point à droite du titre « Filtres » (défaut Jouable ; catalogue des états : hors Brut). Il n’y a plus d’input texte sur les propriétés : la barre de recherche suffit. Les listes courtes (rareté…) s’affichent en pastilles ; les listes longues (type, race) restent un menu. Le tri envoie `sorts[i][field]` avec l’alias SQL (`item_type` → `item_type_id`, `creature_level` via sous-requête). Les champs de saisie des filtres (recherche dans un multi) ne sont pas réinitialisés à chaque refetch : les défauts ne s’appliquent que si le filtre n’a pas encore de valeur, et les `initialFilterValues` ne remplacent une clé que si son contenu a vraiment changé.
 
 Le catalogue **objets** coche par défaut les types utiles en jeu (amulette, armes, cape, dofus, trophée, etc.). Apparats, costumes et autres cosmétiques restent dans le filtre Type, décochés tant qu’on ne les demande pas.
 

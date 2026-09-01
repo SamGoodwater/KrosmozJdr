@@ -24,6 +24,7 @@ import { spellTypesCellHasRenderableContent } from "@/Utils/Entity/spellTypeVisu
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import SpellUsageBlock from "@/Pages/Molecules/entity/spell/SpellUsageBlock.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
+import { getElementGlassSurfaceStyle, resolveEntityElementValue } from "@/Utils/Entity/Elements";
 
 const props = defineProps({
     spell: {
@@ -132,6 +133,10 @@ const handleAction = async (actionKey) => {
     }
     await handleMinimalAction(actionKey);
 };
+
+const elementSurfaceStyle = computed(() =>
+    getElementGlassSurfaceStyle(resolveEntityElementValue(entity.value))
+);
 </script>
 
 <template>
@@ -139,6 +144,7 @@ const handleAction = async (actionKey) => {
         :display-mode="displayMode"
         pinned-entity-type="spells"
         :pinned-entity-id="entity?.id"
+        :surface-style="elementSurfaceStyle"
         @open-quick-view="openQuickView"
     >
         <template #compact>
@@ -193,6 +199,7 @@ const handleAction = async (actionKey) => {
                             :show-spell-types-cell="showSpellTypesCell"
                             property-size="xs"
                             row-class="gap-1.5 text-xs"
+                            notes-class="mt-0.5 text-[0.7rem] leading-snug text-base-content/75"
                         />
                     </div>
                 </div>
@@ -204,6 +211,7 @@ const handleAction = async (actionKey) => {
                     :can-show-field="canShowField"
                     :max-effect-rows="3"
                     :show-empty-effects="true"
+                    :show-rule-notes="false"
                 />
             </div>
         </template>
@@ -259,6 +267,7 @@ const handleAction = async (actionKey) => {
                             :show-spell-types-cell="showSpellTypesCell"
                             property-size="xs"
                             row-class="gap-1.5 text-xs"
+                            notes-class="mt-1 text-xs leading-snug text-base-content/70"
                         />
                         <p
                             v-if="descriptionFull"
@@ -277,6 +286,7 @@ const handleAction = async (actionKey) => {
                     :can-show-field="canShowField"
                     :max-effect-rows="3"
                     :show-empty-effects="true"
+                    :show-rule-notes="false"
                 />
             </div>
         </template>

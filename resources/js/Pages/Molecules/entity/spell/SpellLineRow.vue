@@ -18,6 +18,7 @@ import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
 import SpellUsageBlock from "@/Pages/Molecules/entity/spell/SpellUsageBlock.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
+import { getElementGlassSurfaceStyle, resolveEntityElementValue } from "@/Utils/Entity/Elements";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -85,13 +86,18 @@ const spellTypesCell = computed(() => getCell("spell_types"));
 const descriptionFull = computed(() => entity.value?.description ?? entity.value?._data?.description ?? "");
 
 const showSpellTypesCell = computed(() => spellTypesCellHasRenderableContent(spellTypesCell.value));
+
+const elementSurfaceStyle = computed(() => ({
+    "--bg-color": "var(--color-base-100)",
+    ...getElementGlassSurfaceStyle(resolveEntityElementValue(entity.value)),
+}));
 </script>
 
 <template>
     <div
         class="group relative flex flex-col gap-2 rounded-box border border-base-300 bg-glass-2xl p-3 transition-colors hover:bg-glass-3xl"
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
-        style="--bg-color: var(--color-base-100)"
+        :style="elementSurfaceStyle"
         data-row-contextmenu-target
         @click="(e) => emitLineRowClick(emit, row, e)"
         @dblclick="(e) => emitLineRowDblClick(emit, row, e)"
@@ -149,6 +155,7 @@ const showSpellTypesCell = computed(() => spellTypesCellHasRenderableContent(spe
                     property-size="xs"
                     row-class="gap-2 text-sm"
                     hover-inner-gap-class="gap-2"
+                    notes-class="mt-1 text-xs leading-snug text-base-content/70"
                 />
                 <p
                     v-if="descriptionFull"
@@ -166,6 +173,7 @@ const showSpellTypesCell = computed(() => spellTypesCellHasRenderableContent(spe
             :table-meta="tableMeta"
             :can-show-field="canShowField"
             :max-effect-rows="5"
+            :show-rule-notes="false"
             resolution-class="mb-1 text-sm text-base-content/75"
             effects-wrapper-class="spell-effects-line w-full pt-2 mt-1 border-t border-base-300"
             cell-class="leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"

@@ -75,6 +75,18 @@ describe("EntityMinimalCard", () => {
         expect(wrapper.find(".entity-minimal-card--extended").exists()).toBe(true);
     });
 
+    it("applique surfaceStyle sur compact et expanded", async () => {
+        const wrapper = mountCard({
+            surfaceStyle: { "--bg-color": "var(--color-red-600)" },
+        });
+        const compact = wrapper.find(".entity-minimal-card__compact");
+        expect(compact.attributes("style")).toContain("--bg-color: var(--color-red-600)");
+
+        await wrapper.trigger("mouseenter");
+        const expanded = wrapper.find(".entity-minimal-card__expanded");
+        expect(expanded.attributes("style")).toContain("--bg-color: var(--color-red-600)");
+    });
+
     it("reste déployé tant qu’un overlay issu de la carte est ouvert", async () => {
         const HoldChild = {
             setup() {

@@ -26,6 +26,8 @@ import EntityFieldTooltip from "@/Pages/Molecules/entity/shared/EntityFieldToolt
 import ItemPanoplyMark from "@/Pages/Molecules/entity/item/ItemPanoplyMark.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
+import EntityRuleNotes from "@/Pages/Molecules/entity/shared/EntityRuleNotes.vue";
+import { itemRuleNotes } from "@/Utils/Entity/itemRuleNotes";
 
 const props = defineProps({
     item: {
@@ -121,6 +123,8 @@ const imageUrl = computed(() => entity.value?.image ?? entity.value?._data?.imag
 
 const ingredients = computed(() => entity.value?.resources ?? entity.value?._data?.resources ?? []);
 
+const ruleNotes = computed(() => itemRuleNotes(entity.value));
+
 
 const {
     minimalActionsContext,
@@ -215,6 +219,10 @@ const handleAction = async (actionKey) => {
                                 hide-field-label
                             />
                         </div>
+                        <EntityRuleNotes
+                            :notes="ruleNotes"
+                            notes-class="mt-0.5 text-[0.7rem] leading-snug text-base-content/75"
+                        />
                     </div>
                 </div>
                 <div
@@ -310,6 +318,7 @@ const handleAction = async (actionKey) => {
                         >
                             {{ descriptionFull }}
                         </p>
+                        <EntityRuleNotes :notes="ruleNotes" />
                     </div>
                 </div>
                 <div
