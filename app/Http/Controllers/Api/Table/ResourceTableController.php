@@ -77,10 +77,17 @@ class ResourceTableController extends Controller
             $order = 'desc';
         }
 
+        $viewer = $request->user();
         $query = Resource::query()
-            ->visibleToUser($request->user())
-            ->with(['createdBy', 'resourceType', 'recipeIngredients'])
-            ->withCount(['recipeIngredients']);
+            ->visibleToUser($viewer)
+            ->with([
+                'createdBy',
+                'resourceType',
+                'recipeIngredients' => fn ($q) => $q->visibleToUser($viewer),
+            ])
+            ->withCount([
+                'recipeIngredients' => fn ($q) => $q->visibleToUser($viewer),
+            ]);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
