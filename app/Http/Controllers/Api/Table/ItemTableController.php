@@ -54,12 +54,18 @@ class ItemTableController extends Controller
             $order = 'desc';
         }
 
+        $viewer = $request->user();
         $query = Item::query()
-            ->visibleToUser($request->user())
-            ->with(['createdBy', 'itemType', 'resources', ...ItemPanoplyPayload::eagerLoad($request->user())])
+            ->visibleToUser($viewer)
+            ->with([
+                'createdBy',
+                'itemType',
+                'resources' => fn ($q) => $q->visibleToUser($viewer),
+                ...ItemPanoplyPayload::eagerLoad($viewer),
+            ])
             ->withCount([
-                'resources',
-                'panoplies' => fn ($q) => $q->visibleToUser($request->user()),
+                'resources' => fn ($q) => $q->visibleToUser($viewer),
+                'panoplies' => fn ($q) => $q->visibleToUser($viewer),
                 'shops',
                 'campaigns',
                 'scenarios',

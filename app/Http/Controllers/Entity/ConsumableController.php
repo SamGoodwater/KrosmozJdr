@@ -30,9 +30,14 @@ class ConsumableController extends Controller
     {
         $this->authorize('viewAny', Consumable::class);
 
+        $viewer = request()->user();
         $query = Consumable::query()
-            ->visibleToUser(request()->user())
-            ->with(['createdBy', 'consumableType', 'resources']);
+            ->visibleToUser($viewer)
+            ->with([
+                'createdBy',
+                'consumableType',
+                'resources' => fn ($q) => $q->visibleToUser($viewer),
+            ]);
 
         // Recherche
         if (request()->has('search') && request()->search) {
@@ -122,10 +127,11 @@ class ConsumableController extends Controller
     {
         $this->authorize('view', $consumable);
 
+        $viewer = request()->user();
         $consumable->load([
             'consumableType',
             'createdBy',
-            'resources',
+            'resources' => fn ($q) => $q->visibleToUser($viewer),
             'effectUsages.effectDegree.effect',
             'objectEffects',
         ]);

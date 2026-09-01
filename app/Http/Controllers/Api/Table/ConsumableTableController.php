@@ -52,10 +52,21 @@ class ConsumableTableController extends Controller
             $order = 'desc';
         }
 
+        $viewer = $request->user();
         $query = Consumable::query()
-            ->visibleToUser($request->user())
-            ->with(['createdBy', 'consumableType', 'resources'])
-            ->withCount(['resources', 'creatures', 'campaigns', 'scenarios', 'shops']);
+            ->visibleToUser($viewer)
+            ->with([
+                'createdBy',
+                'consumableType',
+                'resources' => fn ($q) => $q->visibleToUser($viewer),
+            ])
+            ->withCount([
+                'resources' => fn ($q) => $q->visibleToUser($viewer),
+                'creatures',
+                'campaigns',
+                'scenarios',
+                'shops',
+            ]);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {

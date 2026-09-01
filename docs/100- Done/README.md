@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Recettes : plus de fuite d’ingrédients brouillon
+
+Sur un objet, un consommable ou une ressource **jouable**, la liste d’ingrédients (catalogue, fiche, modal) ne montre plus les ressources encore en brouillon. Un MJ qui ouvre Modifier voit toujours toute la recette, pour ne pas perdre un ingrédient au prochain enregistrement.
+
 ## Août 2026 — Filtres de tableau : largeur selon le contenu
 
 Les filtres des catalogues ne s’alignent plus sur trois colonnes identiques. Rareté, état et autres listes courtes s’affichent en pastilles ; type, race et listes longues restent un menu avec recherche. Les interrupteurs et champs texte prennent seulement la place dont ils ont besoin.
