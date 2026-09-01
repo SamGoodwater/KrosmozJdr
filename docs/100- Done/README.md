@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Filtres numériques sur tous les catalogues
+
+Le slider min/max (Niveau en ligne principale, stats en filtres avancés avec icône et couleur) n’est plus réservé aux sorts. Il s’applique aux objets, ressources, consommables, capacités, monstres et PNJ. Un sort n’a toujours pas de coût PM ; les PM restent une stat de créature (monstres, PNJ).
+
 ## Septembre 2026 — Review : emplacements d’équipement et tests
 
 Les bonus d’objet (acrobaties, toucher, critique…) retrouvent leurs emplacements DofusDB (chapeau, cape, amulette…). Les catalogues alignent les tests sur la colonne Bonus et le pré-coche Type via « visible en jeu ». La recherche de monstres en test n’appelle plus DofusDB à vide : une race scrapable est posée, ou on demande toutes les races.
