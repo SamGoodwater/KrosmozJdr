@@ -3,12 +3,14 @@
 declare(strict_types=1);
 
 /**
- * Page CMS « Ressources » du groupe Règles : fichiers téléchargeables.
+ * Page CMS « Ressources » : fichiers téléchargeables, enfant du chapitre 5.
  *
  * @return array{
  *   title: string,
  *   slug: string,
+ *   parent_slug: string,
  *   menu_order: int,
+ *   fallback_menu_order: int,
  *   icon: string|null,
  *   sections: list<array{slug: string, title: string, template: string, html?: string, settings?: array<string, mixed>}>
  * }
@@ -16,7 +18,9 @@ declare(strict_types=1);
 return [
     'title' => 'Ressources',
     'slug' => 'ressources-de-jeu',
-    'menu_order' => 90,
+    'parent_slug' => 'regles-5-ressources-et-equilibrage',
+    'menu_order' => 4,
+    'fallback_menu_order' => 90,
     'icon' => 'fa-download',
     'sections' => [
         [

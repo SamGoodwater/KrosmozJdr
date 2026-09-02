@@ -438,7 +438,7 @@ HTML;
     }
 
     /**
-     * Page « Ressources » (groupe Règles) : livre compilé, fiches, logo.
+     * Page « Ressources » (sous « Ressources et équilibrage ») : livre compilé, fiches, logo.
      */
     private function seedResourcesPage(?int $creatorId): void
     {
@@ -452,6 +452,17 @@ HTML;
             return;
         }
 
+        $parentSlug = (string) ($config['parent_slug'] ?? '');
+        $parent = $parentSlug !== ''
+            ? Page::query()->where('slug', $parentSlug)->first()
+            : null;
+
+        if ($parentSlug !== '' && $parent === null && $this->command) {
+            $this->command->warn(
+                "Page parente « {$parentSlug} » introuvable : « {$config['slug']} » reste à la racine du menu Règles jusqu’à l’import TOC."
+            );
+        }
+
         $page = $this->createOrRestorePage([
             'title' => (string) $config['title'],
             'slug' => (string) $config['slug'],
@@ -459,9 +470,11 @@ HTML;
             'state' => Page::STATE_PLAYABLE,
             'read_level' => User::ROLE_GUEST,
             'write_level' => User::ROLE_ADMIN,
-            'menu_order' => (int) $config['menu_order'],
+            'menu_order' => $parent !== null
+                ? (int) $config['menu_order']
+                : (int) ($config['fallback_menu_order'] ?? $config['menu_order']),
             'menu_group' => 'Règles',
-            'parent_id' => null,
+            'parent_id' => $parent?->id,
             'icon' => $config['icon'] ?? null,
             'created_by' => $creatorId,
         ]);
