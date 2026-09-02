@@ -112,4 +112,12 @@ return [
         'settings' => [],
         'data' => [],
     ],
+    'forgemagie_rune_table' => [
+        'settings' => [
+            'sort_by' => 'name',
+            'sort_dir' => 'asc',
+            'show_base_price' => false,
+        ],
+        'data' => [],
+    ],
 ];

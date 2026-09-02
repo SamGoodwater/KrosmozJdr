@@ -118,6 +118,11 @@ class SectionTemplateValidationRules
                 'settings.show_only_with_equipment' => ['sometimes', 'boolean'],
             ],
             SectionType::EQUIPMENT_BONUS_TABLE => [],
+            SectionType::FORGEMAGIE_RUNE_TABLE => [
+                'settings.sort_by' => ['sometimes', 'nullable', 'string', Rule::in(['name', 'rune_price', 'max_bonus'])],
+                'settings.sort_dir' => ['sometimes', 'nullable', 'string', Rule::in(['asc', 'desc'])],
+                'settings.show_base_price' => ['sometimes', 'boolean'],
+            ],
             default => [],
         };
     }

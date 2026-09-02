@@ -29,6 +29,8 @@ enum SectionType: string
     case CHARACTERISTIC_REFERENCE_TABLE = 'characteristic_reference_table';
     /** Tableau vivant des plafonds de bonus d’équipement (slot × carac × bandes). */
     case EQUIPMENT_BONUS_TABLE = 'equipment_bonus_table';
+    /** Tableau des runes de forgemagie (bonus max, prix, équipements autorisés). */
+    case FORGEMAGIE_RUNE_TABLE = 'forgemagie_rune_table';
 
     /**
      * Retourne le label traduit du type.
@@ -46,6 +48,7 @@ enum SectionType: string
             self::CHARACTERISTIC_NORMS_CATALOG => 'Catalogue de chartes (normes)',
             self::CHARACTERISTIC_REFERENCE_TABLE => 'Référentiel des caractéristiques',
             self::EQUIPMENT_BONUS_TABLE => 'Tableau des bonus d’équipement',
+            self::FORGEMAGIE_RUNE_TABLE => 'Tableau des runes de forgemagie',
         };
     }
 
@@ -65,6 +68,7 @@ enum SectionType: string
             self::CHARACTERISTIC_NORMS_CATALOG => 'fa-table-list',
             self::CHARACTERISTIC_REFERENCE_TABLE => 'fa-table-columns',
             self::EQUIPMENT_BONUS_TABLE => 'fa-table',
+            self::FORGEMAGIE_RUNE_TABLE => 'fa-hammer',
         };
     }
 
@@ -128,6 +132,11 @@ enum SectionType: string
                 'show_only_with_equipment' => 'boolean (optional, default: false)',
             ],
             self::EQUIPMENT_BONUS_TABLE => [],
+            self::FORGEMAGIE_RUNE_TABLE => [
+                'sort_by' => 'string (optional: name|rune_price|max_bonus, default: name)',
+                'sort_dir' => 'string (optional: asc|desc)',
+                'show_base_price' => 'boolean (optional, default: false)',
+            ],
         };
     }
 

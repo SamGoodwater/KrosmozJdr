@@ -33,6 +33,16 @@ Le tableau MJ des bonus d’équipement (`EquipmentBonusTableService`, template 
 lit ces pivots et la table JSON `formula` (plus grand seuil ≤ début de bande 1, 3, … 19). Les méta
 (nom, description, niveau, rareté, prix, poids) sont ignorées. API : `GET /api/characteristics/equipment-bonus-table` (rôle ≥ MJ).
 
+Le tableau public des runes de forgemagie (`ForgemagieRuneTableService`, template CMS `forgemagie_rune_table`)
+lit les mêmes pivots, mais ne retient que les caractéristiques réellement forgemageables : `forgemagie_max > 0`
+et `rune_price_per_unit` renseigné. Le prix de la rune est stocké, pas calculé — en base il vaut le double de
+`base_price_per_unit`. La colonne « Équipements » vient de `characteristic_object_item_type` ; un pivot sans
+type autorisé signifie « tous les équipements ». Une caractéristique déclarée sur plusieurs entités n'apparaît
+qu'une fois. API : `GET /api/characteristics/forgemagie-rune-table` (lecture publique, invité compris).
+
+C'est la source de vérité affichée par le livre de règles : `private/game/rules/4-Le-monde-des-douze/4.3-les-metiers/4.3.4-forgemagie.md`
+ne recopie plus aucun prix et renvoie vers la page **Les métiers**.
+
 ## Surcharges des monstres
 
 Une définition `entities.monster` remplace les limites et la formule génériques uniquement pour les monstres.

@@ -1,5 +1,15 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Les métiers : 6 maximum, 5 niveaux, une page dédiée
+
+Un personnage apprend **6 métiers au maximum**, toutes catégories confondues : rien n’oblige à répartir entre récolte, artisanat et forgemagie. Les anciens paliers de niveau 1 à 50 avec titres et bonus « -10 % de ressources » ont disparu.
+
+Chaque métier a désormais **5 niveaux**. Pour l’artisanat et la forgemagie, le niveau dit jusqu’à quelle **rareté** on peut monter : 1 Commun, 2 Peu commun, 3 Rare, 4 Très rare, 5 Légendaire. Pour la récolte, il dit quelle **bande de ressources** on peut atteindre : 1 à 4, 5 à 8, 9 à 12, 13 à 16, 17 à 20. Fabriquer ou forgemager demande les deux conditions : le niveau de métier couvre la rareté, et le personnage a au moins le niveau de l’objet. Les objets de rareté **Unique** ne se fabriquent plus : ce sont des pièces de quête ou du MJ.
+
+La liste est fixée à **16 métiers** : 9 d’artisanat (Bijoutier, Cordonnier, Tailleur, Sculpteur, Forgeron, Bricoleur, Boulanger, Boucher, Poissonnier), 6 de récolte (Paysan, Bûcheron, Mineur, Chasseur, Pêcheur, Alchimiste) et la forgemagie, qui devient **un seul métier** au lieu d’une spécialisation par rune. « Sculpteur d’armes », « Forgeur d’armes » et « Forgeur de boucliers » fusionnent en Sculpteur et Forgeron ; « Herboriste » n’est plus qu’un autre nom de l’Alchimiste.
+
+Nouvelle page **Bibliothèques → Les métiers** : le système résumé, les 16 métiers illustrés avec leur caractéristique, et le **tableau des prix de runes**. Ce tableau se lit directement dans la base — plus aucun prix recopié dans le livre. Il affiche donc les vrais chiffres du jeu (une rune coûte le double du prix de la caractéristique sur équipement, soit 2 600 kamas pour un PA et non 3 900) ainsi que les emplacements réellement autorisés pour chaque rune.
+
 ## Septembre 2026 — Désenvoûtable devient dissipable
 
 Le livre et l’interface disaient déjà « dissipable ». Les textes scrapés (sorts) et deux sections CMS gardaient le mot Dofus « désenvoûtable ». Ils disent maintenant « dissipable » ; un prochain import DofusDB le réécrit tout seul. Les noms du type *Désenvoûtement* ne bougent pas.
