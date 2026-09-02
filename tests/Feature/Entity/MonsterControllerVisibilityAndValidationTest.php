@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Entity;
 
 use App\Models\Entity\Creature;
+use App\Models\Entity\CreatureTrait;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
 use App\Models\Type\MonsterRace;
@@ -95,6 +96,47 @@ class MonsterControllerVisibilityAndValidationTest extends TestCase
 
                 return in_array($playableSpell->id, $ids, true)
                     && ! in_array($draftSpell->id, $ids, true);
+            })
+        );
+    }
+
+    public function test_show_hides_foreign_draft_creature_traits_from_guest(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $creature = Creature::factory()->create(['created_by' => $author->id]);
+        $playableTrait = CreatureTrait::factory()->create([
+            'name' => 'Trait Public',
+            'state' => CreatureTrait::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $draftTrait = CreatureTrait::factory()->create([
+            'name' => 'Trait Brouillon',
+            'state' => CreatureTrait::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $creature->creatureTraits()->attach([$playableTrait->id, $draftTrait->id]);
+        $monster = Monster::factory()->create([
+            'creature_id' => $creature->id,
+            'state' => 'playable',
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->get(route('entities.monsters.show', $monster));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Pages/entity/monster/Show')
+            ->where('monster.data.creature', function ($creature) use ($playableTrait, $draftTrait) {
+                $traits = $creature['creatureTraits'] ?? $creature['creature_traits'] ?? [];
+                $ids = collect($traits)->pluck('id')->all();
+
+                return in_array($playableTrait->id, $ids, true)
+                    && ! in_array($draftTrait->id, $ids, true);
             })
         );
     }

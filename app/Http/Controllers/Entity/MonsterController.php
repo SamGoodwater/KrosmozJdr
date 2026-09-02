@@ -144,7 +144,9 @@ class MonsterController extends Controller
 
         $monster->load([
             'creature' => fn ($q) => $q->with([
-                'creatureTraits',
+                'creatureTraits' => fn ($tq) => $tq
+                    ->visibleToUser($request->user())
+                    ->orderBy('name'),
                 'spells' => fn ($sq) => $sq
                     ->visibleToUser($request->user())
                     ->orderBy('name')
