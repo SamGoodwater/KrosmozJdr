@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Traits et objets brouillon masqués sur les fiches monstres
+
+Un trait ou un équipement encore en brouillon, lié à un monstre jouable, n’apparaît plus dans le catalogue ni sur la fiche publique. Les stats calculées de la créature ignorent aussi ces objets : un anneau en cours d’édition ne gonfle plus les chiffres vus par les joueurs. Les MJ voient toujours leurs brouillons.
+
 ## Septembre 2026 — Filtres panoplie, dissipable, bordure d’élément
 
 Le catalogue des panoplies filtre le nombre de pièces et les types d’objets du set ; les pastilles d’état listent tous les états (plus seulement Brut). Sur les états, « Dissipable » est un interrupteur. Les cartes sorts et capacités ne teintent plus tout le fond : une bordure reprend la couleur d’élément, en dégradé s’il y en a plusieurs (Terre comprise).

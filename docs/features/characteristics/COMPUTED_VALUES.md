@@ -55,7 +55,7 @@ recalcule toute la fiche sans nouvel aller-retour (payload `levels[]` de
 `GET /entities/creatures/{id}/resolved-stats`). L’endpoint est public pour les fiches
 consultables, mais `CreaturePolicy::viewResolvedStats` n’autorise que si le **monstre
 ou le PNJ lié** est `view` pour le visiteur (un brouillon n’est pas lisible par id
-créature).
+créature). Les bonus d’objets agrégés ne gardent que les équipements `visibleToUser`.
 
 ## Décomposition UI
 
