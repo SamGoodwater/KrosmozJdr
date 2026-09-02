@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Désenvoûtable devient dissipable
+
+Le livre et l’interface disaient déjà « dissipable ». Les textes scrapés (sorts) et deux sections CMS gardaient le mot Dofus « désenvoûtable ». Ils disent maintenant « dissipable » ; un prochain import DofusDB le réécrit tout seul. Les noms du type *Désenvoûtement* ne bougent pas.
+
 ## Septembre 2026 — Filtres panoplie, dissipable, bordure d’élément
 
 Le catalogue des panoplies filtre le nombre de pièces et les types d’objets du set ; les pastilles d’état listent tous les états (plus seulement Brut). Sur les états, « Dissipable » est un interrupteur. Les cartes sorts et capacités ne teintent plus tout le fond : une bordure reprend la couleur d’élément, en dégradé s’il y en a plusieurs (Terre comprise).

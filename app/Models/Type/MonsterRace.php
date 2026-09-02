@@ -49,6 +49,15 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace withoutTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereDofusdbRaceId($value)
  *
+ * @property bool|null $show_in_catalog
+ * @property bool|null $allow_scrap
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace allowScrap()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace allowed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace visibleInCatalog()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereAllowScrap($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereShowInCatalog($value)
+ *
  * @mixin \Eloquent
  */
 class MonsterRace extends Model

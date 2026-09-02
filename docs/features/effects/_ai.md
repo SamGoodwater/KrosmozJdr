@@ -8,6 +8,7 @@
 - `app/Services/Effect/` (`SpellNestedPreviewSerializer` : chips d’aperçu sur sorts liés)
 - `app/Services/Scrapping/Core/Conversion/SpellEffects/`
 - `app/Support/DofusHyperlinkText.php` (libellés d’états `{{spell,…::Nom}}`)
+- `app/Support/KrosmozGameTerms.php` — désenvoûtable → dissipable (`pickLang`, descriptions d’effets ; `game-terms:rewrite-dissipable`)
 - `app/Services/Condition/ConditionCanonicalMapper.php` — jeton Dofus → état JDR `playable`
 - `php artisan conditions:remap-canonical` — recolle `condition_spell` + `params.condition_id`
 - Affichage sorts : `SpellEffectDefinitionsSerializer` ne lie que les états hors `raw`

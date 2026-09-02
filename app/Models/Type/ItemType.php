@@ -60,6 +60,14 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereLastSeenAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereSeenCount($value)
  *
+ * @property bool|null $show_in_catalog
+ * @property bool|null $allow_scrap
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType allowScrap()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType visibleInCatalog()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereAllowScrap($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereShowInCatalog($value)
+ *
  * @mixin \Eloquent
  */
 class ItemType extends Model

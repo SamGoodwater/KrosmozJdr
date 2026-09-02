@@ -76,6 +76,8 @@ La conversion borne les nombres ; elle ne produit pas un design JDR (sorts lisib
 
 Vocabulaire : un **formatter** est une fonction whitelistée appliquée à une valeur extraite (ex. `dofusdb_level`), enregistrée dans `FormatterApplicator`. Un **`from_path`** est un chemin en notation point dans les données brutes (ex. `spell_global.apCost`). Une **target** est un couple `(model, field)`.
 
+Les textes Dofus **désenvoûtable** / **Désenvoûtable** / **DÉSENVOÛTABLE** deviennent **dissipable** (casse conservée) via `KrosmozGameTerms`, appliqué par `pickLang` et par les descriptions d’effets de sorts. Relancer `php artisan game-terms:rewrite-dissipable` après un import ancien. Les noms *Désenvoûtement* ne sont pas renommés.
+
 ## Routes API (extrait)
 
 Toutes préfixées `/api/dofusdb` (`routes/api/scrapping.php`, noms `scrapping.*`). Ancien préfixe `/api/scrapping` : redirect 307.

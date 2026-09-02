@@ -333,6 +333,24 @@ Qualité effets : `scrapping:effects:quality-gate`, `scrapping:effects:pipeline`
 
 ---
 
+## `game-terms:rewrite-dissipable`
+
+```yaml
+signature: game-terms:rewrite-dissipable
+domain: data
+ui: false
+cron: false
+```
+
+Remplace l’adjectif Dofus « désenvoûtable » par « dissipable » dans les textes déjà en base (sorts, objets, capacités, CMS…). Les prochains scraps le font via `pickLang`. `--dry-run` pour compter sans écrire.
+
+```bash
+php artisan game-terms:rewrite-dissipable --dry-run
+php artisan game-terms:rewrite-dissipable
+```
+
+---
+
 ## `pages:import-rules-toc`
 
 ```yaml

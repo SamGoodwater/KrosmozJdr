@@ -1046,6 +1046,39 @@
     "file": "data-input/RatingCore.vue"
   },
   {
+    "name": "RangeDualCore",
+    "description": "RangeDualCore Atom",
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "Object",
+        "desc": "- `{ min: number, max: number }`"
+      },
+      {
+        "name": "min",
+        "type": "Number",
+        "desc": "- Borne basse du slider"
+      },
+      {
+        "name": "max",
+        "type": "Number",
+        "desc": "- Borne haute du slider"
+      },
+      {
+        "name": "step",
+        "type": "Number",
+        "desc": "- Pas"
+      },
+      {
+        "name": "accent",
+        "type": "String",
+        "desc": "- Couleur CSS qui surcharge `--range-color`"
+      }
+    ],
+    "slots": [],
+    "file": "data-input/RangeDualCore.vue"
+  },
+  {
     "name": "RangeCore",
     "description": "RangeCore Atom (DaisyUI, Atomic Design)",
     "props": [
