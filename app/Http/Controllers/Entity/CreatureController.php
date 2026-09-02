@@ -91,6 +91,7 @@ class CreatureController extends Controller
     /**
      * Stats runtime : variables fusionnées (créature + objets), formules évaluées, décomposition pour tooltips / API.
      * Autorisé si le monstre / PNJ lié est `view` pour le visiteur (fiches jouables sans compte).
+     * Les objets agrégés sont limités à ceux `visibleToUser` (un équipement brouillon n’entre pas dans les totaux publics).
      *
      * Query : entity=monster|class|npc (défaut monster) — aligné sur les surcharges characteristic_creature.
      */
@@ -99,7 +100,9 @@ class CreatureController extends Controller
         $this->authorize('viewResolvedStats', $creature);
 
         $entity = (string) $request->query('entity', 'monster');
-        $creature->load(['items']);
+        $creature->load([
+            'items' => fn ($q) => $q->visibleToUser($request->user()),
+        ]);
 
         return response()->json($runtimeStats->resolve($creature, $entity));
     }

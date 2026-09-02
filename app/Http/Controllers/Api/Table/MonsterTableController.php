@@ -200,7 +200,9 @@ class MonsterTableController extends Controller
                 'languages',
                 'creature' => fn ($q) => $q
                     ->with([
-                        'creatureTraits',
+                        'creatureTraits' => fn ($tq) => $tq
+                            ->visibleToUser($request->user())
+                            ->orderBy('name'),
                         // Sorts liés visibles du viewer : méta + chips d’effets (vue minimale), sans dump de l’arbre.
                         'spells' => fn ($sq) => $sq
                             ->visibleToUser($request->user())

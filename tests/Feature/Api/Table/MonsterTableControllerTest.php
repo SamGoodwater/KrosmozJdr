@@ -4,6 +4,7 @@ namespace Tests\Feature\Api\Table;
 
 use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Creature;
+use App\Models\Entity\CreatureTrait;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
@@ -419,5 +420,44 @@ class MonsterTableControllerTest extends TestCase
         $response->assertOk();
         $spellIds = collect($response->json('entities.0.creature.spells'))->pluck('id')->all();
         $this->assertContains($draftSpell->id, $spellIds);
+    }
+
+    /**
+     * Un joueur qui voit un monstre jouable ne doit pas recevoir les traits brouillon liés.
+     */
+    public function test_nested_creature_traits_hide_foreign_draft_from_player(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $player = User::factory()->create(['role' => User::ROLE_PLAYER]);
+        $creature = Creature::factory()->create(['created_by' => $author->id]);
+        $playableTrait = CreatureTrait::factory()->create([
+            'name' => 'Trait Public',
+            'state' => CreatureTrait::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $draftTrait = CreatureTrait::factory()->create([
+            'name' => 'Trait Secret XYZ',
+            'state' => CreatureTrait::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $creature->creatureTraits()->attach([$playableTrait->id, $draftTrait->id]);
+        Monster::factory()->create([
+            'creature_id' => $creature->id,
+            'state' => 'playable',
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->actingAs($player)
+            ->getJson('/api/tables/monsters?format=entities&limit=10');
+
+        $response->assertOk();
+        $traitIds = collect($response->json('entities.0.creature.creatureTraits'))->pluck('id')->all();
+        $this->assertContains($playableTrait->id, $traitIds);
+        $this->assertNotContains($draftTrait->id, $traitIds);
     }
 }
