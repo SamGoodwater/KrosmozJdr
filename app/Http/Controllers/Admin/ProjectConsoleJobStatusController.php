@@ -62,7 +62,7 @@ class ProjectConsoleJobStatusController extends Controller
     }
 
     /**
-     * Super-admin : tous les domaines. Admin : sync DofusDB uniquement.
+     * Super-admin : tous les domaines. Admin : sync DofusDB et compilation des règles.
      */
     private function authorizeConsoleJob(Request $request, ProjectConsoleJob $record): void
     {
@@ -73,7 +73,10 @@ class ProjectConsoleJobStatusController extends Controller
         if ($user->isInteractiveSuperAdmin()) {
             return;
         }
-        if ($user->isAdmin() && $record->domain === ProjectConsoleDomain::DATA_SYNC) {
+        if ($user->isAdmin() && in_array($record->domain, [
+            ProjectConsoleDomain::DATA_SYNC,
+            ProjectConsoleDomain::RULES_DOWNLOADS,
+        ], true)) {
             return;
         }
 

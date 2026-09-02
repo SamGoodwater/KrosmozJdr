@@ -26,3 +26,4 @@ require __DIR__.'/api/effects.php';
 require __DIR__.'/api/global-search.php';
 require __DIR__.'/api/object-effects.php';
 require __DIR__.'/api/cms.php';
+require __DIR__.'/api/game-downloads.php';

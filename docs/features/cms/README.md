@@ -31,7 +31,7 @@ Médias via Spatie Media Library (collection `files`, conversions `thumb`/`webp`
 
 ## Templates de sections
 
-L'enum `app/Enums/SectionType.php` définit 11 types (defaults PHP dans `config/section_templates.php`) :
+L'enum `app/Enums/SectionType.php` définit 12 types (defaults PHP dans `config/section_templates.php`) :
 
 | `value` | Usage |
 | --- | --- |
@@ -42,6 +42,7 @@ L'enum `app/Enums/SectionType.php` définit 11 types (defaults PHP dans `config/
 | `characteristic_norms`, `characteristic_norms_catalog`, `characteristic_reference_table` | Chartes/référentiels de caractéristiques |
 | `equipment_bonus_table` | Plafonds de bonus d’équipement (slot × carac × bandes 1–2…19–20, prix, FM) ; projection live de `characteristic_object.formula` |
 | `forgemagie_rune_table` | Prix et bonus max des runes de forgemagie ; projection live de `characteristic_object` (`forgemagie_max`, `rune_price_per_unit`) |
+| `download_catalog` | Fichiers téléchargeables (livre PDF/ODT, fiches, logo) d’après `config/game_downloads.php` |
 
 Côté front, chaque template est un dossier `resources/js/Pages/Organismes/section/templates/<type>/` avec `config.js` + `Section*Read.vue` + `Section*Edit.vue`, auto-découvert par `templates/index.js` (`import.meta.glob('./*/config.js')`) et exposé via `composables/useTemplateRegistry.js`.
 
@@ -79,6 +80,8 @@ Les « kref » sont des références inline insérées dans le texte riche.
 **Pour les MJ** n’est pas une page CMS : c’est un groupe de menu. L’atelier **Création** (`/pages/creation`, `read_level` MJ) y rassemble Équipements (`creation-equipements`) et les chartes (`contribution-creatures|objets|sorts`). Contribution (Informations) ne contient plus que **Nous rejoindre**.
 
 Le tableau `equipment_bonus_table` est alimenté par `GET /api/characteristics/equipment-bonus-table` (session web, rôle ≥ MJ).
+
+**Règles** contient aussi **Ressources** (`ressources-de-jeu`, `database/seeders/data/ressources-page.php`) : livre PDF/ODT, fiches de personnage, logo. Catalogue `config/game_downloads.php`, template `download_catalog`, API `GET /api/game-downloads`, téléchargement `GET /telechargements/{key}`. Compilation : `php artisan rules:compile-downloads` (bouton admin sur `/admin/content`).
 
 **Bibliothèques** contient aussi une page documentaire sans entité associée : **Les métiers** (`les-metiers`, `database/seeders/data/jobs-page.php`). Elle décrit les 16 métiers, illustrés par `storage/app/public/images/jobs/*.webp`, et se termine par une section `forgemagie_rune_table` alimentée par `GET /api/characteristics/forgemagie-rune-table` (lecture publique). Reseed : `php artisan db:seed --class=PageSeeder`.
 

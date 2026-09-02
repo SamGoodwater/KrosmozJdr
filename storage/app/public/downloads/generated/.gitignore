@@ -1,0 +1,3 @@
+# Garder le dossier, ignorer les compilations (PDF/ODT régénérables).
+*
+!.gitignore

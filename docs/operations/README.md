@@ -4,11 +4,14 @@ Commandes métier hors recettes CLI quotidiennes. Vocabulaire Artisan : [app/Con
 
 ## Import des règles CMS
 
-`php artisan pages:import-rules-toc` importe `private/game/rules/TABLE_DES_MATIERES.md` vers les pages règles. Appelé par `project:init` / `project:seed`.
+`php artisan pages:import-rules-toc` importe `private/game/rules/TABLE_DES_MATIERES.md` vers les pages règles. Appelé par `project:init` / `project:seed`. `--compile-downloads` enchaîne la compilation PDF/ODT.
 
 ```bash
 php artisan pages:import-rules-toc --dry-run
+php artisan rules:compile-downloads
 ```
+
+Le livre compilé vit dans `storage/app/public/downloads/generated/` (non versionné). Téléchargement public : `/telechargements/{key}`. Page CMS **Ressources** (`ressources-de-jeu`) dans le menu Règles. Bouton admin : `/admin/content`.
 
 ## Nettoyage des fichiers orphelins
 
@@ -30,6 +33,7 @@ Le contenu de `storage/app/public` est versionné (icônes, fonds, logos, légal
 
 - `images/entity/` — illustrations d’entités (scrapping, médias générés)
 - `images/users/` — fichiers utilisateur
+- `downloads/generated/` — PDF/ODT du livre de règles (régénérés par `rules:compile-downloads`)
 
 Le lien web `public/storage` n’est pas versionné : le recréer avec `php artisan storage:link`.
 

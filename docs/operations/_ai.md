@@ -11,6 +11,8 @@ Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interact
 - `app/Console/COMMANDS.md` — vocabulaire CLI unique
 - `app/Console/Commands/Project/ProjectInitCommand.php`
 - `app/Console/Commands/Pages/PagesImportRulesTocCommand.php`
+- `app/Console/Commands/Rules/RulesCompileDownloadsCommand.php`
+- `app/Services/Rules/`
 - `app/Console/Commands/Project/ProjectClearOrphanFilesCommand.php`
 - `app/Console/Commands/Effects/ConditionsRemapCanonicalCommand.php`
 - `app/Console/Commands/Scrapping/`
@@ -20,8 +22,8 @@ Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interact
 
 ## Chemins importants
 
-- Disque public versionné : `storage/app/public/` sauf `images/entity/` et `images/users/`. Lien web : `php artisan storage:link` (`public/storage` non versionné).
-- Source règles CMS : `private/game/rules/TABLE_DES_MATIERES.md`.
+- Disque public versionné : `storage/app/public/` sauf `images/entity/`, `images/users/` et `downloads/generated/`. Lien web : `php artisan storage:link` (`public/storage` non versionné).
+- Source règles CMS : `private/game/rules/TABLE_DES_MATIERES.md`. Livre PDF/ODT : `php artisan rules:compile-downloads`.
 - UI orphelins : `/admin/orphan-files` (super_admin).
 - UI nettoyage caches : `/admin/project-clear` (super_admin).
 - UI atelier DofusDB : `/admin/content/dofusdb` (admin). Cron `project_data_sync` inchangé.

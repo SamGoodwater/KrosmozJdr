@@ -31,6 +31,8 @@ enum SectionType: string
     case EQUIPMENT_BONUS_TABLE = 'equipment_bonus_table';
     /** Tableau des runes de forgemagie (bonus max, prix, équipements autorisés). */
     case FORGEMAGIE_RUNE_TABLE = 'forgemagie_rune_table';
+    /** Catalogue de fichiers téléchargeables (livre, fiches, logo). */
+    case DOWNLOAD_CATALOG = 'download_catalog';
 
     /**
      * Retourne le label traduit du type.
@@ -49,6 +51,7 @@ enum SectionType: string
             self::CHARACTERISTIC_REFERENCE_TABLE => 'Référentiel des caractéristiques',
             self::EQUIPMENT_BONUS_TABLE => 'Tableau des bonus d’équipement',
             self::FORGEMAGIE_RUNE_TABLE => 'Tableau des runes de forgemagie',
+            self::DOWNLOAD_CATALOG => 'Catalogue de téléchargements',
         };
     }
 
@@ -69,6 +72,7 @@ enum SectionType: string
             self::CHARACTERISTIC_REFERENCE_TABLE => 'fa-table-columns',
             self::EQUIPMENT_BONUS_TABLE => 'fa-table',
             self::FORGEMAGIE_RUNE_TABLE => 'fa-hammer',
+            self::DOWNLOAD_CATALOG => 'fa-download',
         };
     }
 
@@ -136,6 +140,9 @@ enum SectionType: string
                 'sort_by' => 'string (optional: name|rune_price|max_bonus, default: name)',
                 'sort_dir' => 'string (optional: asc|desc)',
                 'show_base_price' => 'boolean (optional, default: false)',
+            ],
+            self::DOWNLOAD_CATALOG => [
+                'groups' => 'array (optional: clés de groupes du catalogue)',
             ],
         };
     }

@@ -123,6 +123,10 @@ class SectionTemplateValidationRules
                 'settings.sort_dir' => ['sometimes', 'nullable', 'string', Rule::in(['asc', 'desc'])],
                 'settings.show_base_price' => ['sometimes', 'boolean'],
             ],
+            SectionType::DOWNLOAD_CATALOG => [
+                'settings.groups' => ['sometimes', 'nullable', 'array'],
+                'settings.groups.*' => ['string', 'max:64'],
+            ],
             default => [],
         };
     }

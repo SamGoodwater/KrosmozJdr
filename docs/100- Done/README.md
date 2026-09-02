@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Livre de règles en PDF et ODT
+
+Le livre se télécharge, plus seulement se lit en ligne. Un administrateur lance la compilation (bouton dans la gestion du contenu, ou après un import des règles) : ça produit un PDF et un OpenDocument, stockés une fois pour toutes. Les joueurs les récupèrent sur **Règles → Ressources**, avec la fiche de personnage et le logo. Ajouter un fichier plus tard, c’est une ligne dans le catalogue.
+
 ## Septembre 2026 — Les métiers : 6 maximum, 5 niveaux, une page dédiée
 
 Un personnage apprend **6 métiers au maximum**, toutes catégories confondues : rien n’oblige à répartir entre récolte, artisanat et forgemagie. Les anciens paliers de niveau 1 à 50 avec titres et bonus « -10 % de ressources » ont disparu.

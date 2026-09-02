@@ -79,6 +79,7 @@ class ProjectInitCommand extends Command
         {--skip-clear-queue : Ne pas vider la queue avant le scrapping}
         {--skip-notify : Ne pas notifier les admin à la fin}
         {--skip-super-admin-prompt : Ne pas demander la création du super_admin (CI / scripts)}
+        {--skip-downloads : Ne pas compiler le livre de règles (PDF / ODT)}
         {--verify : Exécuter project:init:verify à la fin (échec si socle incomplet)}
         {--verify-with-rules : Comme --verify avec contrôle des pages règles CMS}
         '.YesNoFlags::SIGNATURE;
@@ -124,6 +125,7 @@ class ProjectInitCommand extends Command
             'scrapping' => 'pending',
             'breed_sections' => 'pending',
             'bibliotheque_pages' => 'pending',
+            'rules_downloads' => 'pending',
             'scheduler' => 'pending',
         ];
 
@@ -169,6 +171,14 @@ class ProjectInitCommand extends Command
                 $this->warn('Import des règles ignoré (dépend de la création des pages/sections seedées).');
                 $phaseStatuses['seeders'] = 'skipped';
                 $phaseStatuses['rules_import'] = 'skipped';
+            }
+            $this->newLine();
+
+            if ((bool) $this->option('skip-downloads')) {
+                $this->warn('Compilation du livre de règles ignorée (--skip-downloads).');
+                $phaseStatuses['rules_downloads'] = 'skipped';
+            } else {
+                $phaseStatuses['rules_downloads'] = $this->runRulesDownloadsCompile() ? 'ok' : 'warn';
             }
             $this->newLine();
 
@@ -276,6 +286,7 @@ class ProjectInitCommand extends Command
             'storage_link' => 'Storage link',
             'seeders' => 'Seeders',
             'rules_import' => 'Import règles CMS',
+            'rules_downloads' => 'Compilation livre PDF/ODT',
             'capabilities' => 'Capabilities (fichier local)',
             'types' => 'Types DofusDB (API)',
             'scrapping' => 'Scrapping entités (API)',
@@ -406,6 +417,27 @@ class ProjectInitCommand extends Command
         }
 
         $this->info('  ✅ Import des règles terminé.');
+
+        return true;
+    }
+
+    /**
+     * Compile PDF et ODT du livre pour la page Ressources.
+     */
+    private function runRulesDownloadsCompile(): bool
+    {
+        $this->info('Phase 2c : Compilation du livre de règles (PDF / ODT)');
+        $this->line('  → rules:compile-downloads');
+        $code = Artisan::call('rules:compile-downloads');
+        $this->output->write(Artisan::output());
+        if ($code !== 0) {
+            $this->warn('  Avertissement : compilation du livre de règles échouée.');
+            $this->warn('  Relance : php artisan rules:compile-downloads');
+
+            return false;
+        }
+
+        $this->info('  ✅ Livre de règles compilé.');
 
         return true;
     }

@@ -19,6 +19,8 @@ final class ProjectConsoleDomain
 
     public const DATA_SYNC = 'data-sync';
 
+    public const RULES_DOWNLOADS = 'rules-downloads';
+
     /**
      * @return list<string>
      */
@@ -30,6 +32,7 @@ final class ProjectConsoleDomain
             self::DEPS,
             self::BACKUP,
             self::DATA_SYNC,
+            self::RULES_DOWNLOADS,
         ];
     }
 
@@ -41,6 +44,7 @@ final class ProjectConsoleDomain
             self::DEPS => 'Mise à jour stack',
             self::BACKUP => 'Sauvegarde',
             self::DATA_SYNC => 'Synchronisation données',
+            self::RULES_DOWNLOADS => 'Compilation du livre de règles',
             default => $domain,
         };
     }
@@ -53,6 +57,7 @@ final class ProjectConsoleDomain
             self::DEPS => route('admin.project-update.index'),
             self::BACKUP => route('admin.backup.index'),
             self::DATA_SYNC => route('admin.content.dofusdb.index'),
+            self::RULES_DOWNLOADS => route('admin.content.dashboard.index'),
             default => '/admin',
         };
     }
