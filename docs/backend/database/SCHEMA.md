@@ -301,6 +301,7 @@ erDiagram
   CONDITIONS {
     id : bigint(20) unsigned
     dofusdb_id : int(10) unsigned
+    canonical_condition_id : bigint(20) unsigned
     name : varchar(255)
     description : text
     state : varchar(255)
@@ -376,6 +377,8 @@ erDiagram
     updated_at : timestamp
     deleted_at : timestamp
     created_by : bigint(20) unsigned
+    show_in_catalog : tinyint(1)
+    allow_scrap : tinyint(1)
   }
   CONSUMABLES {
     id : bigint(20) unsigned
@@ -777,6 +780,8 @@ erDiagram
     updated_at : timestamp
     deleted_at : timestamp
     created_by : bigint(20) unsigned
+    show_in_catalog : tinyint(1)
+    allow_scrap : tinyint(1)
   }
   ITEMS {
     id : bigint(20) unsigned
@@ -898,6 +903,8 @@ erDiagram
     deleted_at : timestamp
     created_by : bigint(20) unsigned
     id_super_race : bigint(20) unsigned
+    show_in_catalog : tinyint(1)
+    allow_scrap : tinyint(1)
   }
   MONSTER_SCENARIO {
     monster_id : bigint(20) unsigned
@@ -1064,6 +1071,24 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
+  PROJECT_CONSOLE_JOBS {
+    id : char(36)
+    domain : varchar(32)
+    status : varchar(16)
+    progress : tinyint(3) unsigned
+    progress_label : varchar(255)
+    command : varchar(512)
+    page_url : varchar(512)
+    output : longtext
+    error : text
+    exit_code : smallint(6)
+    triggered_by : bigint(20) unsigned
+    notification_id : char(36)
+    started_at : timestamp
+    finished_at : timestamp
+    created_at : timestamp
+    updated_at : timestamp
+  }
   PROJECT_SCHEDULE_TASKS {
     id : bigint(20) unsigned
     task_key : varchar(80)
@@ -1115,6 +1140,8 @@ erDiagram
     updated_at : timestamp
     deleted_at : timestamp
     created_by : bigint(20) unsigned
+    show_in_catalog : tinyint(1)
+    allow_scrap : tinyint(1)
   }
   RESOURCES {
     id : bigint(20) unsigned
@@ -1344,6 +1371,8 @@ erDiagram
     updated_at : timestamp
     deleted_at : timestamp
     created_by : bigint(20) unsigned
+    show_in_catalog : tinyint(1)
+    allow_scrap : tinyint(1)
   }
   SPELLS {
     id : bigint(20) unsigned
@@ -1412,6 +1441,7 @@ erDiagram
     filters : longtext
     limit : smallint(5) unsigned
     is_default : tinyint(1)
+    is_public : tinyint(1)
     created_at : timestamp
     updated_at : timestamp
   }
@@ -1485,6 +1515,7 @@ erDiagram
   CONDITION_CREATURE }o--|| CREATURES : "FK creature_id"
   CONDITION_SPELL }o--|| CONDITIONS : "FK condition_id"
   CONDITION_SPELL }o--|| SPELLS : "FK spell_id"
+  CONDITIONS }o--|| CONDITIONS : "FK canonical_condition_id"
   CONDITIONS }o--|| USERS : "FK created_by"
   CONSUMABLE_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   CONSUMABLE_CAMPAIGN }o--|| CONSUMABLES : "FK consumable_id"
@@ -1574,6 +1605,7 @@ erDiagram
   PRIVACY_AUDIT_LOGS }o--|| USERS : "FK subject_user_id"
   PRIVACY_EXPORTS }o--|| DATA_SUBJECT_REQUESTS : "FK data_subject_request_id"
   PRIVACY_EXPORTS }o--|| USERS : "FK user_id"
+  PROJECT_CONSOLE_JOBS }o--|| USERS : "FK triggered_by"
   RESOURCE_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   RESOURCE_CAMPAIGN }o--|| RESOURCES : "FK resource_id"
   RESOURCE_RECIPE }o--|| RESOURCES : "FK ingredient_resource_id"

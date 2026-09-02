@@ -756,6 +756,13 @@
     "file": "entity/EntityEditFormFieldBody.vue"
   },
   {
+    "name": "EntityDofusdbRefreshPanel",
+    "description": "Panneau de confirmation d’une maj DofusDB unitaire (aperçu puis apply).",
+    "props": [],
+    "slots": [],
+    "file": "entity/EntityDofusdbRefreshPanel.vue"
+  },
+  {
     "name": "EntityActionsList",
     "description": "EntityActionsList Molecule",
     "props": [],
@@ -843,7 +850,7 @@
   },
   {
     "name": "SpellUsageBlock",
-    "description": "Bloc usage unifié (Minimal / Line / bandeau Full) : méta PA-PO + résolution + chips d’effets.",
+    "description": "Bloc usage unifié (Minimal / Line / bandeau Full) : méta PA-PO + résolution + chips d’effets. Notes de règles sous la méta et/ou les effets (Soin, Invocation, piège, glyphe, vol de vie…).",
     "props": [],
     "slots": [],
     "file": "entity/spell/SpellUsageBlock.vue"
@@ -1214,6 +1221,13 @@
     "file": "entity/shared/EntitySearchHitCard.vue"
   },
   {
+    "name": "EntityRuleNotes",
+    "description": "Phrases de rappel de règles sous une fiche d’entité.",
+    "props": [],
+    "slots": [],
+    "file": "entity/shared/EntityRuleNotes.vue"
+  },
+  {
     "name": "EntityPropertyDisplay",
     "description": "EntityPropertyDisplay — façade par `fieldKey` vers CharacteristicProperty + view model unifié.",
     "props": [
@@ -1331,6 +1345,11 @@
         "name": "displayMode",
         "type": "",
         "desc": "- 'hover' : expansion au survol | 'extended' : toujours étendu | 'compact' : jamais étendu"
+      },
+      {
+        "name": "surfaceStyle",
+        "type": "",
+        "desc": "- style de surface (bordure élément `--element-border-color` / `--element-border-image`)"
       }
     ],
     "slots": [
@@ -2746,6 +2765,13 @@
     ],
     "slots": [],
     "file": "data-display/AbilityScoreStack.vue"
+  },
+  {
+    "name": "TypeRegistryRowMenu",
+    "description": "Menu icône d’une ligne de registre de types (scrap, en jeu, déplacer, supprimer).",
+    "props": [],
+    "slots": [],
+    "file": "content/TypeRegistryRowMenu.vue"
   },
   {
     "name": "ThemeController",

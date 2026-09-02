@@ -26,6 +26,31 @@ use Illuminate\Support\Str;
  * @property string|null $notification_id
  * @property Carbon|null $started_at
  * @property Carbon|null $finished_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User|null $user
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereCommand($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereDomain($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereError($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereExitCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereFinishedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereNotificationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereOutput($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob wherePageUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereProgress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereProgressLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereStartedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereTriggeredBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 class ProjectConsoleJob extends Model
 {

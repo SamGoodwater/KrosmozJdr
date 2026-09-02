@@ -12,6 +12,7 @@ use App\Services\Jdr\DiceNotationService;
 use App\Services\Scrapping\Config\DofusDbConditionCatalog;
 use App\Services\Scrapping\Config\DofusDbEffectCatalog;
 use App\Support\DofusHyperlinkText;
+use App\Support\KrosmozGameTerms;
 use Illuminate\Support\Str;
 
 /**
@@ -772,21 +773,19 @@ final class SpellEffectsConversionService
     {
         $desc = $definition['description'] ?? null;
         if (is_string($desc)) {
-            return $desc;
-        }
-        if (is_array($desc) && isset($desc[$lang])) {
-            return (string) $desc[$lang];
-        }
-        if (is_array($desc) && isset($desc['fr'])) {
-            return (string) $desc['fr'];
-        }
-        if (is_array($desc)) {
+            $text = $desc;
+        } elseif (is_array($desc) && isset($desc[$lang])) {
+            $text = (string) $desc[$lang];
+        } elseif (is_array($desc) && isset($desc['fr'])) {
+            $text = (string) $desc['fr'];
+        } elseif (is_array($desc)) {
             $first = reset($desc);
-
-            return $first !== false ? (string) $first : '';
+            $text = $first !== false ? (string) $first : '';
+        } else {
+            $text = '';
         }
 
-        return '';
+        return KrosmozGameTerms::replaceDesenvoutableWithDissipable($text);
     }
 
     /**

@@ -49,6 +49,15 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType withoutTrashed()
  *
+ * @property bool|null $show_in_catalog
+ * @property bool|null $allow_scrap
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType allowScrap()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType allowed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType visibleInCatalog()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereAllowScrap($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereShowInCatalog($value)
+ *
  * @mixin \Eloquent
  */
 class SpellType extends Model

@@ -98,6 +98,10 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition withoutTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition visibleToUser(?\App\Models\User $user)
  *
+ * @property-read int|null $aliases_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereCanonicalConditionId($value)
+ *
  * @mixin \Eloquent
  */
 class Condition extends Model implements HasMedia

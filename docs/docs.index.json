@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Filtres de catalogue unifiés (niveau en plage, état en badges, plus d’inputs texte)."
+    "description": "Les textes scrapés disent « dissipable » à la place de « désenvoûtable » (le livre et l’UI le faisaient déjà). Les noms du type Désenvoûtement restent."
   },
   {
     "path": "backend/_ai.md",
@@ -247,12 +247,12 @@
   {
     "path": "operations/_ai.md",
     "title": "Operations — IA",
-    "description": "Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. Vocabulaire : app/Console/COMMANDS.md."
+    "description": "Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interaction` (Symfony). Helper : `App\\Console\\YesNoFlags`."
   },
   {
     "path": "operations/README.md",
     "title": "Operations",
-    "description": "Vocabulaire Artisan : app/Console/COMMANDS.md. Ici : orphelins Media, disque public versionné, planning, import règles."
+    "description": "Commandes métier hors recettes CLI quotidiennes. Vocabulaire Artisan : [app/Console/COMMANDS.md](../../app/Console/COMMANDS.md)."
   },
   {
     "path": "project/_ai.md",

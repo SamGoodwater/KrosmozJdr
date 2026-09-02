@@ -11,6 +11,7 @@ use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectsConversionService;
 use App\Support\DofusDbElementId;
+use App\Support\KrosmozGameTerms;
 
 /**
  * Applique les formatters utilisés par la conversion.
@@ -362,20 +363,19 @@ final class FormatterApplicator
     private function pickLang(mixed $value, string $lang, string $fallback): string
     {
         if (is_string($value)) {
-            return $value;
+            $picked = $value;
+        } elseif (! is_array($value)) {
+            $picked = '';
+        } elseif (isset($value[$lang]) && is_string($value[$lang])) {
+            $picked = $value[$lang];
+        } elseif (isset($value[$fallback]) && is_string($value[$fallback])) {
+            $picked = $value[$fallback];
+        } else {
+            $first = reset($value);
+            $picked = is_string($first) ? $first : '';
         }
-        if (! is_array($value)) {
-            return '';
-        }
-        if (isset($value[$lang]) && is_string($value[$lang])) {
-            return $value[$lang];
-        }
-        if (isset($value[$fallback]) && is_string($value[$fallback])) {
-            return $value[$fallback];
-        }
-        $first = reset($value);
 
-        return is_string($first) ? $first : '';
+        return KrosmozGameTerms::replaceDesenvoutableWithDissipable($picked);
     }
 
     private function clampInt(mixed $value, int $min, int $max): int

@@ -88,6 +88,16 @@ class FormatterApplicatorTest extends TestCase
         $this->assertNull($applicator->apply('nullableId', ['name' => 'Sans identifiant'], [], [], []));
     }
 
+    public function test_pick_lang_rewrites_desenvoutable_to_dissipable(): void
+    {
+        $applicator = new FormatterApplicator(null, null);
+
+        $this->assertSame(
+            'PAS DISSIPABLE.',
+            $applicator->apply('pickLang', ['fr' => 'PAS DÉSENVOÛTABLE.'], ['lang' => 'fr', 'fallback' => 'fr'], [], [])
+        );
+    }
+
     public function test_apply_clamp_to_characteristic_uses_getter_limits(): void
     {
         $getter = $this->app->make(CharacteristicGetterService::class);

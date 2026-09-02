@@ -57,6 +57,14 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereLastSeenAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereSeenCount($value)
  *
+ * @property bool|null $show_in_catalog
+ * @property bool|null $allow_scrap
+ *
+ * @method static Builder<static>|ResourceType allowScrap()
+ * @method static Builder<static>|ResourceType visibleInCatalog()
+ * @method static Builder<static>|ResourceType whereAllowScrap($value)
+ * @method static Builder<static>|ResourceType whereShowInCatalog($value)
+ *
  * @mixin \Eloquent
  */
 class ResourceType extends Model
