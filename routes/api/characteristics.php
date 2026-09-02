@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CharacteristicNormsCatalogController;
 use App\Http\Controllers\Api\CharacteristicNormsController;
 use App\Http\Controllers\Api\CharacteristicReferenceTableController;
 use App\Http\Controllers\Api\EquipmentBonusTableController;
+use App\Http\Controllers\Api\ForgemagieRuneTableController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -31,3 +32,6 @@ Route::middleware(['web'])->get('/characteristics/reference-table', [Characteris
 
 Route::middleware(['web'])->get('/characteristics/equipment-bonus-table', [EquipmentBonusTableController::class, 'index'])
     ->name('api.characteristics.equipment-bonus-table');
+
+Route::middleware(['web'])->get('/characteristics/forgemagie-rune-table', [ForgemagieRuneTableController::class, 'index'])
+    ->name('api.characteristics.forgemagie-rune-table');

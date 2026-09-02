@@ -18,6 +18,7 @@
 - **Runtime créature** : `CreatureRuntimeStatsService` → `levels[]` pour le sélecteur de niveau. Endpoint `resolved-stats` : `CreaturePolicy::viewResolvedStats` (visibilité monstre/PNJ).
 - **Conversion Dofus** : pipeline séparé (`conversion_formula`, `[d]`).
 - **Bonus équipement (MJ)** : `EquipmentBonusTableService` projette `formula` JSON par bandes 1–2…19–20 + types d’item ; API `GET /api/characteristics/equipment-bonus-table` (rôle ≥ MJ).
+- **Runes de forgemagie (public)** : `ForgemagieRuneTableService` filtre `characteristic_object` sur `forgemagie_max > 0` + `rune_price_per_unit` non nul, joint `characteristic_object_item_type` (vide = tous les équipements) ; API `GET /api/characteristics/forgemagie-rune-table`. Source de vérité des prix : la base, pas les règles.
 
 ## Fichiers pivots
 
