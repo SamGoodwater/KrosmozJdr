@@ -120,4 +120,10 @@ return [
         ],
         'data' => [],
     ],
+    'download_catalog' => [
+        'settings' => [
+            'groups' => [],
+        ],
+        'data' => [],
+    ],
 ];

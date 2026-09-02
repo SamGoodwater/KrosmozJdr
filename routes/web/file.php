@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GameDownloadController;
 use App\Http\Controllers\ImageController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,3 +21,7 @@ Route::prefix('media')->group(function () {
         ->middleware(['auth', 'role:admin'])
         ->name('media.clean-thumbnails');
 });
+
+Route::get('/telechargements/{key}', [GameDownloadController::class, 'show'])
+    ->where('key', '[a-z0-9-]+')
+    ->name('game-downloads.show');

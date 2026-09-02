@@ -29,7 +29,8 @@ class ProjectSeedCommand extends Command
         {--skip-specializations : Ne pas exécuter SpecializationSeeder (HTML legacy)}
         {--init-scheduler : Afficher la ligne cron scheduler (comme project:init)}
         {--skip-notify : Ne pas notifier les admin à la fin}
-        {--skip-super-admin-prompt : Ne pas demander la création du super_admin (CI / scripts)}';
+        {--skip-super-admin-prompt : Ne pas demander la création du super_admin (CI / scripts)}
+        {--skip-downloads : Ne pas compiler le livre de règles (PDF / ODT)}';
 
     protected $description = 'Seeders et données locales (sans types ni scrapping DofusDB) — délègue à project:init';
 
@@ -66,6 +67,7 @@ class ProjectSeedCommand extends Command
             'init-scheduler',
             'skip-notify',
             'skip-super-admin-prompt',
+            'skip-downloads',
         ] as $name) {
             if ($this->option($name)) {
                 $arguments['--'.$name] = true;

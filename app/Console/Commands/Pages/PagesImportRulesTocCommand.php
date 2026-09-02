@@ -33,7 +33,8 @@ class PagesImportRulesTocCommand extends Command
     protected $signature = 'pages:import-rules-toc
         {path? : Chemin du fichier TABLE_DES_MATIERES.md}
         {--dry-run : Affiche le plan sans écrire en base}
-        {--force-content : Remplace le HTML des sections par celui généré depuis les .md (krefs, liens) ; sans ce flag, une section déjà remplie garde son ancien contenu}';
+        {--force-content : Remplace le HTML des sections par celui généré depuis les .md (krefs, liens) ; sans ce flag, une section déjà remplie garde son ancien contenu}
+        {--compile-downloads : Compile ensuite le livre de règles (PDF et ODT)}';
 
     protected $description = 'Crée/maj pages et sections depuis la table des matières des règles.';
 
@@ -140,6 +141,15 @@ class PagesImportRulesTocCommand extends Command
                 .'php artisan pages:import-rules-toc --force-content',
                 $this->skippedExistingSectionBodyFromMarkdown
             ));
+        }
+
+        if ((bool) $this->option('compile-downloads')) {
+            $this->newLine();
+            $this->info('Compilation du livre de règles (PDF / ODT)…');
+            $compileCode = $this->call('rules:compile-downloads');
+            if ($compileCode !== 0) {
+                $this->warn('La compilation des téléchargements a échoué. Relance : php artisan rules:compile-downloads');
+            }
         }
 
         return ArtisanExitCode::SUCCESS;

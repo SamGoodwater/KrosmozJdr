@@ -364,6 +364,27 @@ Importe `private/game/rules/TABLE_DES_MATIERES.md` vers les pages CMS. Appelé p
 
 ```bash
 php artisan pages:import-rules-toc --dry-run
+php artisan pages:import-rules-toc --force-content --compile-downloads
+```
+
+---
+
+## `rules:compile-downloads`
+
+```yaml
+signature: rules:compile-downloads
+domain: data
+ui: true
+cron: false
+admin: /admin/content
+```
+
+Compile le livre de règles Markdown en PDF et ODT dans `storage/app/public/downloads/generated/`. Le PDF passe par Chromium en impression headless (DomPDF est trop lent sur le livre complet). Lancé après `project:init` / `project:seed`, via `pages:import-rules-toc --compile-downloads`, ou depuis le bouton de la gestion du contenu (admin+).
+
+```bash
+php artisan rules:compile-downloads
+php artisan rules:compile-downloads --pdf
+php artisan rules:compile-downloads --dry-run
 ```
 
 ---
