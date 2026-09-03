@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Une capacité jouable ne fuit plus ses liaisons brouillon
+
+La fiche d’une capacité publiée listait toutes les spécialisations, créatures et états liés, y compris ceux encore en brouillon. Un visiteur voyait donc des contenus pas encore validés. La lecture filtre maintenant comme les classes et les spécialisations ; l’écran Modifier continue de tout afficher pour l’éditeur.
+
 ## Septembre 2026 — Un dé pour toucher, l’esquive PA/PM en second seuil
 
 En combat, plus de troisième « jet d’esquive ». Un sort à touche lance **un** d20 : ça sert pour les dégâts (contre la CA) **et** pour un retrait de PA ou de PM (contre l’esquive). Un sort à sauvegarde se lance toujours ; si ton esquive PA/PM est au moins égale au DD du sort, tu évites le retrait même quand le reste te tombe dessus. Pas de moitié de dégâts automatique : c’est écrit sur la fiche, ou pas.
