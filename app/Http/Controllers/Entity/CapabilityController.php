@@ -30,9 +30,15 @@ class CapabilityController extends Controller
     {
         $this->authorize('viewAny', Capability::class);
 
+        $viewer = request()->user();
         $query = Capability::query()
-            ->visibleToUser(request()->user())
-            ->with(['createdBy', 'specializations', 'creatures', 'conditions']);
+            ->visibleToUser($viewer)
+            ->with([
+                'createdBy',
+                'specializations' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
+                'creatures' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
+                'conditions' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
+            ]);
 
         if (request()->has('search') && request()->search) {
             $search = request()->search;
@@ -106,7 +112,13 @@ class CapabilityController extends Controller
     {
         $this->authorize('view', $capability);
 
-        $capability->load(['createdBy', 'specializations', 'creatures', 'conditions']);
+        $viewer = request()->user();
+        $capability->load([
+            'createdBy',
+            'specializations' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
+            'creatures' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
+            'conditions' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
+        ]);
 
         return Inertia::render('Pages/entity/capability/Show', [
             'capability' => new CapabilityResource($capability),
