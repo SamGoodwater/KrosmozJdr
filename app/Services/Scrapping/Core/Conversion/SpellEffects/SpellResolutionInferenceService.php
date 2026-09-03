@@ -11,8 +11,9 @@ use App\Support\DofusDbElementId;
  * Déduit la résolution Krosmoz d'un sort à partir de ses sous-effets convertis.
  *
  * Aligné sur les règles 3.3.2.3 :
- * - physique monocible à dégâts seuls → jet d'attaque vs CA ;
- * - effets magiques, états, zones, retraits → jet de sauvegarde ;
+ * - dégâts monocibles (même avec retrait PA/PM) → jet d'attaque vs CA + esquive ;
+ * - états hostiles, zones, placement offensif → jet de sauvegarde ;
+ * - un retrait PA/PM seul ne force pas une sauvegarde ;
  * - soutien pur → réussite automatique.
  *
  * DofusDB n'expose pas `isMagic` : le booléen Wakfu/physique est donc inféré ici.
@@ -47,13 +48,13 @@ final class SpellResolutionInferenceService
                 'save_characteristic_key' => $signals['save_ability'] ?? 'sagesse',
                 'save_dc_formula' => self::SAVE_DC_DEFAULT_FORMULA,
                 'save_success_note' => $signals['has_damage']
-                    ? "En cas de sauvegarde réussie, réduire l'effet (ex: demi-dégâts) et annuler les effets de contrôle."
+                    ? 'En cas de sauvegarde réussie, appliquer uniquement ce que la fiche indique.'
                     : "En cas de sauvegarde réussie, annuler l'effet du sort.",
                 'is_magic' => true,
             ];
         }
 
-        if ($signals['has_damage']) {
+        if ($signals['has_damage'] || $signals['has_removal']) {
             return [
                 'resolution_mode' => Spell::RESOLUTION_ATTACK_ROLL,
                 'attack_characteristic_key' => $this->inferAttackCharacteristic($signals, $spellRaw),
@@ -213,16 +214,12 @@ final class SpellResolutionInferenceService
      */
     private function shouldUseSavingThrow(array $signals): bool
     {
-        if ($signals['has_removal'] || $signals['has_hostile_state']) {
+        if ($signals['has_hostile_state'] || $signals['has_placement']) {
             return true;
         }
 
-        if ($signals['has_placement'] && ! $signals['has_damage']) {
-            return true;
-        }
-
-        // Dégâts de zone ou dégâts + contrôle : sorts Wakfu (sauvegarde), pas jet vs CA.
-        if ($signals['has_damage'] && ($signals['has_area'] || $signals['has_placement'])) {
+        // Zone hostile → sauvegarde. Un retrait PA/PM monocible reste une touche.
+        if ($signals['has_area'] && ($signals['has_damage'] || $signals['has_removal'])) {
             return true;
         }
 

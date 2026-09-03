@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Un dé pour toucher, l’esquive PA/PM en second seuil
+
+En combat, plus de troisième « jet d’esquive ». Un sort à touche lance **un** d20 : ça sert pour les dégâts (contre la CA) **et** pour un retrait de PA ou de PM (contre l’esquive). Un sort à sauvegarde se lance toujours ; si ton esquive PA/PM est au moins égale au DD du sort, tu évites le retrait même quand le reste te tombe dessus. Pas de moitié de dégâts automatique : c’est écrit sur la fiche, ou pas.
+
 ## Septembre 2026 — Livre de règles en PDF et ODT
 
 Le livre se télécharge, plus seulement se lit en ligne. Un administrateur lance la compilation (bouton dans la gestion du contenu, ou après un import des règles) : ça produit un PDF et un OpenDocument, stockés une fois pour toutes. Les joueurs les récupèrent sur **Règles → Ressources et équilibrage → Ressources**, avec la fiche de personnage et le logo. Ajouter un fichier plus tard, c’est une ligne dans le catalogue.

@@ -159,7 +159,7 @@ return [
         'icon' => null,
         'menu_order' => 40,
         'intro_title' => 'En bref',
-        'intro_html' => '<p>Initiative, budget [[kref:characteristic:action_points_creature|PA]]/[[kref:characteristic:movement_points_creature|PM]], [[kref:characteristic:tackle_creature|tacle]], 1 réaction / round.</p>'
+        'intro_html' => '<p>Initiative, budget [[kref:characteristic:action_points_creature|PA]]/[[kref:characteristic:movement_points_creature|PM]], [[kref:characteristic:tackle_creature|tacle]], 1 réaction / round. Un d20 pour toucher <em>et</em> pour le retrait.</p>'
             .'<p>→ [[kref:page:regles-3-2-combat|Combat complet]]</p>',
         'sections' => [
             [
@@ -184,9 +184,21 @@ return [
                     .'<tr><td>Réaction (hors de ton tour)</td><td>2–3 [[kref:characteristic:action_points_creature|PA]] (1×/round)</td></tr>'
                     .'<tr><td>Utiliser un objet / potion</td><td>1 [[kref:characteristic:action_points_creature|PA]]</td></tr>'
                     .'<tr><td>Case</td><td>1 [[kref:characteristic:movement_points_creature|PM]]</td></tr>'
-                    .'<tr><td>Esquiver</td><td>3 [[kref:characteristic:action_points_creature|PA]] + 2 [[kref:characteristic:movement_points_creature|PM]]</td></tr>'
+                    .'<tr><td>Esquiver (action, pas l’esquive [[kref:characteristic:action_points_creature|PA]]/[[kref:characteristic:movement_points_creature|PM]])</td><td>3 [[kref:characteristic:action_points_creature|PA]] + 2 [[kref:characteristic:movement_points_creature|PM]]</td></tr>'
                     .'</tbody></table>'
                     .'<p><strong>Fin</strong> : effets de fin de tour, tour suivant.</p>',
+            ],
+            [
+                'slug' => 'resoudre',
+                'title' => 'Résoudre une attaque',
+                'html' => '<p>Un seul d20. Égalité : <strong>≥ réussit</strong>. Un retrait [[kref:characteristic:action_points_creature|PA]]/[[kref:characteristic:movement_points_creature|PM]] ne change pas le mode du sort.</p>'
+                    .'<table>'
+                    .'<thead><tr><th></th><th>Touche (attaquant)</th><th>Sauvegarde (cible)</th></tr></thead>'
+                    .'<tbody>'
+                    .'<tr><td><strong>Dégâts / effets</strong></td><td>1d20 + mod (carac du sort) ≥ [[kref:characteristic:armor_class_creature|CA]]</td><td>1d20 + save (carac du sort) ≥ DD. DD = 8 + mod <strong>du lanceur</strong> + [[kref:characteristic:mastery_bonus_creature|maîtrise]]. Save réussie : seulement ce que la fiche dit (pas de moitié par défaut).</td></tr>'
+                    .'<tr><td><strong>Retrait [[kref:characteristic:action_points_creature|PA]]/[[kref:characteristic:movement_points_creature|PM]]</strong></td><td><strong>Le même d20</strong> ≥ [[kref:characteristic:dodge_action_points_creature|Esquive PA]] ou [[kref:characteristic:dodge_movement_points_creature|Esquive PM]]</td><td>Si l’esquive ≥ DD : retrait esquivé <strong>même si la save est ratée</strong>. Sinon le retrait suit la save.</td></tr>'
+                    .'</tbody></table>'
+                    .'<p>Les deux caracs (lanceur / save) peuvent différer. Soutien : auto. → [[kref:page:regles-3-3-sorts|3.3.2]]</p>',
             ],
             [
                 'slug' => 'reactions',
@@ -260,7 +272,7 @@ return [
             [
                 'slug' => 'lancement',
                 'title' => 'Lancer',
-                'html' => '<p><strong>Physique</strong> : 1d20 + mod vs [[kref:characteristic:armor_class_creature|CA]]. <strong>Magique</strong> : sauvegarde (souvent [[kref:characteristic:wisdom_creature|Sagesse]]) vs DD <strong>8 + mod + [[kref:characteristic:mastery_bonus_creature|maîtrise]]</strong>. Retrait [[kref:characteristic:movement_points_creature|PM]]/[[kref:characteristic:action_points_creature|PA]] : vs esquive, ou save Sag en version simple.</p>'
+                'html' => '<p><strong>Touche</strong> : 1d20 + mod (carac du sort) vs [[kref:characteristic:armor_class_creature|CA]] (dégâts) et <strong>le même total</strong> vs esquive [[kref:characteristic:action_points_creature|PA]]/[[kref:characteristic:movement_points_creature|PM]] (retraits). <strong>Sauvegarde</strong> : 1d20 + save (carac du sort, souvent [[kref:characteristic:wisdom_creature|Sagesse]]) vs DD <strong>8 + mod du lanceur + [[kref:characteristic:mastery_bonus_creature|maîtrise]]</strong>. Si l’esquive ≥ DD, le retrait est esquivé même si la save est ratée. Pas de moitié de dégâts par défaut.</p>'
                     .'<p>Cible consentante : réussite auto si la fiche le dit.</p>'
                     .'<p>→ [[kref:page:regles-3-3-sorts|3.3.2]]</p>',
             ],

@@ -66,7 +66,7 @@ Une clé **`_comment_limits`** (préfixe `_`, ignorée au seed) rappelle cette c
 | **Initiative** | pas de plafond | valeur Dofus conservée directement |
 | **Bonus de soin** | 0–7 | progression linéaire de 5–40 Dofus vers 0–7 |
 | **Lancement** | ligne, diagonale, cible, cumul et délai global | caractéristiques de fiche explicites ; le moteur d’effets les exploitera séparément |
-| **Résolution** | physique → jet vs CA ; Wakfu → sauvegarde (DD 8+mod+maîtrise) ; soutien → auto | `SpellResolutionInferenceService` : `is_magic` et `resolution_*` inférés des sous-effets (DofusDB n’a pas `isMagic`) |
+| **Résolution** | touche → 1d20 vs CA (dégâts) et vs esquive PA/PM (retraits) ; sauvegarde → 1d20 vs DD, esquive ≥ DD ignore le retrait même si save ratée ; soutien → auto | `SpellResolutionInferenceService` : un retrait PA/PM **ne** force **pas** une sauvegarde ; `is_magic` / `resolution_*` inférés des sous-effets (DofusDB n’a pas `isMagic`) |
 
 Les zones et durées restent des notations textuelles structurées : elles ne doivent pas être traitées comme des nombres par le convertisseur de caractéristiques.
 

@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Les textes scrapés disent « dissipable » à la place de « désenvoûtable » (le livre et l’UI le faisaient déjà). Les noms du type Désenvoûtement restent."
+    "description": "En combat, plus de troisième « jet d’esquive ». Un sort à touche lance un d20 pour les dégâts (CA) et le retrait PA/PM (esquive). Sur une sauvegarde, si l’esquive ≥ DD, le retrait est esquivé même si le reste passe."
   },
   {
     "path": "backend/_ai.md",

@@ -26,6 +26,5 @@
 Niveau 1 : toutes les caractéristiques à 8 (mod −1). Répartis 10 points (ou 12 si tu descends une caractéristique à 6) en respectant les limites de niveau.
 
 
-Sorts physique : CA
-Sorts magiques : Save
-Sorts ret PM PA : esquive PM PA
+Sorts à touche : 1d20 vs CA (dégâts) et vs esquive PA/PM (retraits), même dé.
+Sorts à sauvegarde : 1d20 vs DD ; si esquive ≥ DD, le retrait est esquivé même si la save est ratée.

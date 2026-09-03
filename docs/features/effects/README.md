@@ -71,9 +71,10 @@ en `autre` / `none` plutôt qu’en booster orphelin. Détail : [MAPPINGS_HORS_P
 DofusDB n'expose pas de champ `isMagic`. `SpellResolutionInferenceService` déduit donc la résolution
 Krosmoz à partir des sous-effets convertis, conformément aux règles 3.3.2.3 :
 
-- dégâts monocibles seuls → `attack_roll` (physique), caractéristique d'attaque selon l'élément ;
-- retraits, états hostiles, zone ou placement offensif → `saving_throw` (Wakfu), DD =
+- dégâts monocibles (même avec retrait PA/PM) → `attack_roll` (touche vs CA + esquive) ;
+- états hostiles, zone hostile ou placement offensif → `saving_throw`, DD =
   `8 + modificateur de caractéristique + bonus de maîtrise` ;
+- un retrait PA/PM seul ne force pas une sauvegarde ;
 - soutien pur (soin, bouclier, PV temporaires, boost, auto-état) → `auto_success`.
 
 `is_magic` suit cette inférence : `false` pour un jet d'attaque, `true` sinon.

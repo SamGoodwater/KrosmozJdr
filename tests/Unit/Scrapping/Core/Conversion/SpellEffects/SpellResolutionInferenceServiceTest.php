@@ -85,7 +85,7 @@ final class SpellResolutionInferenceServiceTest extends TestCase
         $this->assertTrue($resolution['is_magic']);
     }
 
-    public function test_pa_removal_uses_wisdom_save(): void
+    public function test_single_target_pa_removal_uses_attack_roll(): void
     {
         $resolution = $this->service->infer([
             [
@@ -99,7 +99,49 @@ final class SpellResolutionInferenceServiceTest extends TestCase
             ],
         ]);
 
+        $this->assertSame(Spell::RESOLUTION_ATTACK_ROLL, $resolution['resolution_mode']);
+        $this->assertFalse($resolution['is_magic']);
+    }
+
+    public function test_damage_plus_pa_removal_stays_attack_roll(): void
+    {
+        $resolution = $this->service->infer([
+            [
+                'area' => 'point',
+                'sub_effects' => [
+                    [
+                        'sub_effect_slug' => 'frapper',
+                        'params' => ['characteristic' => 'air', 'value_converted' => 8],
+                    ],
+                    [
+                        'sub_effect_slug' => 'retirer',
+                        'params' => ['characteristic' => 'pm', 'value_converted' => 1],
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->assertSame(Spell::RESOLUTION_ATTACK_ROLL, $resolution['resolution_mode']);
+        $this->assertSame('agi', $resolution['attack_characteristic_key']);
+        $this->assertFalse($resolution['is_magic']);
+    }
+
+    public function test_area_pa_removal_uses_saving_throw(): void
+    {
+        $resolution = $this->service->infer([
+            [
+                'area' => 'circle-2',
+                'sub_effects' => [
+                    [
+                        'sub_effect_slug' => 'retirer',
+                        'params' => ['characteristic' => 'pa', 'value_converted' => 1],
+                    ],
+                ],
+            ],
+        ]);
+
         $this->assertSame(Spell::RESOLUTION_SAVING_THROW, $resolution['resolution_mode']);
+        $this->assertTrue($resolution['is_magic']);
         $this->assertSame('sagesse', $resolution['save_characteristic_key']);
     }
 
