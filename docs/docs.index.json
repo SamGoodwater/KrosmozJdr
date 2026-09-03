@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "En combat, plus de troisième « jet d’esquive ». Un sort à touche lance un d20 pour les dégâts (CA) et le retrait PA/PM (esquive). Sur une sauvegarde, si l’esquive ≥ DD, le retrait est esquivé même si le reste passe."
+    "description": "Le pied de page desktop tient sur deux lignes compactes : nom et version, logo centré, liens à droite ; texte et bouton cookies en dessous."
   },
   {
     "path": "backend/_ai.md",
@@ -212,7 +212,7 @@
   {
     "path": "frontend/README.md",
     "title": "Frontend",
-    "description": "Frontend Vue 3 en JavaScript, servi par Inertia.js. L'UI suit Atomic Design et utilise Tailwind CSS + DaisyUI."
+    "description": "Frontend Vue 3 en JavaScript, servi par Inertia.js. L'UI suit Atomic Design et utilise Tailwind CSS + DaisyUI. Le footer desktop est sur deux lignes (logo centré)."
   },
   {
     "path": "IA/_ai.md",

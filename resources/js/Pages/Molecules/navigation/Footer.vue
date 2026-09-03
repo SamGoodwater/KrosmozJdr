@@ -66,7 +66,7 @@ const moleculeClasses = computed(() =>
             props.center ? 'items-center justify-center' : '',
             props.color,
             props.textColor,
-            'p-10 sm:p-5 gap-2',
+            'gap-1',
             props.class
         ],
         getCustomUtilityClasses(props)

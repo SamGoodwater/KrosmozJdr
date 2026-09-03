@@ -3,16 +3,12 @@
  * Footer Layout (Atomic Design, DaisyUI)
  *
  * @description
- * Layout Footer du projet KrosmozJDR, refactorisé pour n'utiliser que la molecule Footer et les atoms du design system.
- * - Utilise :
- * - Molecule Footer comme conteneur principal (slots logo, section, copyright)
- * - Atom Icon pour les icônes
- * - Atom Route pour les liens
- * - Atom Tooltip pour les tooltips
- * - Responsive : version desktop (footer classique), version mobile (dock/btm-nav)
- * - Accessibilité et props transmises via les helpers du design system
+ * Pied de page desktop en deux lignes compactes :
+ * - ligne 1 : nom + version à gauche, logo au centre, liens (contact, Discord, GitHub) à droite ;
+ * - ligne 2 : texte de présentation à gauche, bouton cookies à droite.
+ * Mobile : bouton cookies dans le flux, dock de navigation en bas.
  *
- * @see Footer, Icon, Route, Tooltip
+ * @see Footer, Icon, Route, Tooltip, CookieConsentTriggerButton
  */
 import { ref } from "vue";
 import FooterMolecule from "@/Pages/Molecules/navigation/Footer.vue";
@@ -38,7 +34,8 @@ const appName = ref(import.meta.env.VITE_APP_NAME);
 const appVersion = ref(import.meta.env.VITE_APP_VERSION);
 const appDescription = ref(import.meta.env.VITE_APP_DESCRIPTION);
 const appStability = ref(convertStability[import.meta.env.VITE_APP_STABILITY] ?? "");
-const githubUrl = import.meta.env.VITE_GITHUB_URL ?? "";
+const githubUrl = import.meta.env.VITE_GITHUB_URL || "https://github.com/SamGoodwater/KrosmozJdr";
+const currentYear = new Date().getFullYear();
 
 const footerItems = [
     {
@@ -56,66 +53,83 @@ const footerItems = [
         tooltip: "Rejoindre notre serveur Discord",
         target: "_blank",
     },
-    ...(githubUrl ? [{
+    {
         icon: "fa-github",
         pack: "brands",
         href: githubUrl,
         label: "GitHub",
         tooltip: "Voir le dépôt GitHub",
         target: "_blank",
-    }] : []),
+    },
 ];
 </script>
 
 <template>
     <FooterMolecule
-        direction="vertical"
+        class="relative box-glass-t-xs w-full border-t border-base-content/10 bg-base-300/30 px-4 py-1.5 max-sm:hidden"
         textColor="text-base-content"
-        class="box-glass-t-xs border-t border-base-content/10 bg-base-300/30 px-4 py-5 max-sm:hidden"
         v-bind="$attrs"
     >
-        <template #logo>
-            <Image source="logos/logo.webp" :alt="`Logo de ${appName}`" height="28px" class="mx-auto opacity-90" />
-        </template>
-        <template #section>
-            <div class="flex w-full max-w-6xl flex-col gap-4 text-sm lg:flex-row lg:items-center lg:justify-between">
-                <div class="min-w-0 space-y-1 text-center lg:text-left">
-                    <p class="font-medium text-base-content">
-                        {{ appName }}
-                        | version {{ appVersion + " " + appStability }}
-                        | {{ new Date().getFullYear() }}
-                    </p>
-                    <p class="text-xs text-base-content/70">
-                        {{ appDescription }}
-                    </p>
-                </div>
-                <div class="flex flex-wrap items-center justify-center gap-2 lg:justify-end">
-                    <span v-for="item in footerItems" :key="item.label">
-                        <Tooltip :content="item.tooltip" placement="top">
-                            <Route
-                                :href="item.href"
-                                :target="item.target"
-                                hover
-                                class="inline-flex items-center gap-2 rounded-box border border-base-content/10 bg-base-100/40 px-3 py-2 text-base-content/80 transition-colors hover:bg-base-100/70 hover:text-base-content"
-                            >
-                                <Icon :source="item.icon" :pack="item.pack" :alt="item.tooltip" size="sm" class="h-4 w-4" />
-                                <span>{{ item.label }}</span>
-                            </Route>
-                        </Tooltip>
+        <div class="pointer-events-none absolute inset-x-0 top-1.5 z-0 flex justify-center">
+            <div class="pointer-events-auto">
+                <Image
+                    source="logos/logo.webp"
+                    :alt="`Logo de ${appName}`"
+                    width="24px"
+                    height="24px"
+                    fit="contain"
+                    rounded="full"
+                    class="opacity-90"
+                />
+            </div>
+        </div>
+        <div class="flex w-full flex-col gap-0.5 pr-16">
+            <div class="relative z-10 flex min-h-6 items-center justify-between gap-3">
+                <p class="min-w-0 truncate text-sm font-medium text-base-content">
+                    {{ appName }}
+                    <span class="font-normal text-base-content/70">
+                        v{{ appVersion }}{{ appStability ? ` ${appStability}` : "" }}
                     </span>
-                    <div class="ml-1">
-                        <CookieConsentTriggerButton />
-                    </div>
+                </p>
+                <nav
+                    class="flex shrink-0 items-center justify-end gap-x-3"
+                    aria-label="Liens du pied de page"
+                >
+                    <Tooltip
+                        v-for="item in footerItems"
+                        :key="item.label"
+                        :content="item.tooltip"
+                        placement="top"
+                    >
+                        <Route
+                            :href="item.href"
+                            :target="item.target"
+                            :rel="item.target === '_blank' ? 'noopener noreferrer' : undefined"
+                            hover
+                            class="inline-flex items-center gap-1.5 text-sm text-base-content/80 hover:text-base-content"
+                        >
+                            <Icon :source="item.icon" :pack="item.pack" :alt="item.tooltip" size="sm" class="h-3.5 w-3.5" />
+                            <span class="hidden md:inline">{{ item.label }}</span>
+                        </Route>
+                    </Tooltip>
+                </nav>
+            </div>
+            <div class="relative z-10 flex items-center justify-between gap-3">
+                <p class="min-w-0 truncate text-xs text-base-content/70" :title="appDescription">
+                    © {{ currentYear }} · {{ appDescription }}
+                </p>
+                <div class="shrink-0">
+                    <CookieConsentTriggerButton />
                 </div>
             </div>
-        </template>
+        </div>
     </FooterMolecule>
     <!-- Mobile : cookies dans le flux (au-dessus du dock), aligné à droite — non fixe -->
     <div class="flex w-full justify-end px-3 py-2 sm:hidden">
         <CookieConsentTriggerButton />
     </div>
     <!-- Mobile Footer (Dock) -->
-    <div class="fixed bottom-0 left-0 right-0 z-50 max-sm:block hidden">
+    <div class="fixed bottom-0 left-0 right-0 z-50 hidden max-sm:block">
         <Dock size="md" class="px-1 py-2 flex justify-between box-glass-md">
             <!-- Bouton sidebar -->
             <DockItem

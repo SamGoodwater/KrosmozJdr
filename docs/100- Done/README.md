@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Pied de page plus bas, sur deux lignes
+
+Le bandeau en bas d’écran ne s’étale plus en un bloc haut. Deux lignes : le nom et la version à gauche, le logo au milieu, Contact / Discord / GitHub à droite ; en dessous le texte du projet, et le bouton Cookies tout à droite. Sur téléphone, le dock en bas ne change pas.
+
 ## Septembre 2026 — Un dé pour toucher, l’esquive PA/PM en second seuil
 
 En combat, plus de troisième « jet d’esquive ». Un sort à touche lance **un** d20 : ça sert pour les dégâts (contre la CA) **et** pour un retrait de PA ou de PM (contre l’esquive). Un sort à sauvegarde se lance toujours ; si ton esquive PA/PM est au moins égale au DD du sort, tu évites le retrait même quand le reste te tombe dessus. Pas de moitié de dégâts automatique : c’est écrit sur la fiche, ou pas.
