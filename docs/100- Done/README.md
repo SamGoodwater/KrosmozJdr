@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Une ressource jouable ne fuit plus ses liaisons brouillon
+
+La fiche d’une ressource publique listait tous les objets, consommables et campagnes qui l’utilisent, y compris ceux encore en brouillon. Un joueur qui ouvrait « Bois de frêne » voyait donc le nom d’une épée ou d’une campagne encore secrète. La lecture filtre maintenant ces liaisons ; l’écran Modifier les garde toutes, pour ne pas les détacher par accident.
+
 ## Septembre 2026 — Pied de page plus bas, sur deux lignes
 
 Le bandeau en bas d’écran ne s’étale plus en un bloc haut. Deux lignes : le nom et la version à gauche, le logo au milieu, Contact / Discord / GitHub à droite ; en dessous le texte du projet, et le bouton Cookies tout à droite. Sur téléphone, le dock en bas ne change pas.
