@@ -165,18 +165,7 @@ class ResourceController extends Controller
     {
         $this->authorize('view', $resource);
 
-        $viewer = request()->user();
-        $resource->load([
-            'createdBy',
-            'resourceType',
-            'recipeIngredients' => fn ($q) => $q->visibleToUser($viewer),
-            'consumables' => fn ($q) => $q->visibleToUser($viewer),
-            'items' => fn ($q) => $q->visibleToUser($viewer),
-            'creatures',
-            'scenarios',
-            'campaigns',
-            'shops',
-        ]);
+        $resource->load($this->viewerRelations());
 
         return Inertia::render('Pages/entity/resource/Show', [
             'resource' => new ResourceResource($resource),
@@ -459,5 +448,32 @@ class ResourceController extends Controller
         $filename = 'resource-'.$resource->id.'-'.now()->format('Y-m-d-His').'.pdf';
 
         return $pdf->download($filename);
+    }
+
+    /**
+     * Relations de lecture : liaisons filtrées par `visibleToUser` du visiteur.
+     *
+     * L’édition charge ces relations sans ce filtre pour ne pas masquer un
+     * brouillon déjà lié (un sync suivant le détacherait).
+     *
+     * @return array<string, mixed>
+     *
+     * @example $resource->load($this->viewerRelations());
+     */
+    private function viewerRelations(): array
+    {
+        $user = request()->user();
+
+        return [
+            'createdBy',
+            'resourceType',
+            'recipeIngredients' => fn ($q) => $q->visibleToUser($user),
+            'consumables' => fn ($q) => $q->visibleToUser($user),
+            'items' => fn ($q) => $q->visibleToUser($user),
+            'creatures' => fn ($q) => $q->visibleToUser($user),
+            'scenarios' => fn ($q) => $q->visibleToUser($user),
+            'campaigns' => fn ($q) => $q->visibleToUser($user),
+            'shops' => fn ($q) => $q->visibleToUser($user),
+        ];
     }
 }
