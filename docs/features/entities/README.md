@@ -89,6 +89,7 @@ La restauration et la suppression définitive (`restore`, `forceDelete`) sont r�
 - **Aperçu sort depuis un monstre** : sorts liés avec `effect_usages_chips` (`SpellNestedPreviewSerializer`) ; eager-load table/show filtré `visibleToUser` (un sort brouillon ne fuit pas via un monstre jouable). Clic → `SpellViewMinimal` étendu (effets + actions à droite du titre, overflow dropdown). Fetch `api.tables.spells` seulement si les chips manquent.
 - **Classes** : sur show / table / PDF, les sorts, capacités, traits et PNJ liés passent par `visibleToUser` (pas de fuite d’un sort brouillon via une classe jouable). L’écran Modifier charge toutes les liaisons.
 - **Spécialisations** : sur show / table / PDF, les sorts, capacités, traits, objets, consommables, ressources et PNJ liés passent par `visibleToUser` (pas de fuite d’un sort brouillon via une spécialisation jouable). L’écran Modifier charge toutes les liaisons.
+- **Ressources** : sur la fiche lecture, les objets, consommables, créatures, scénarios, campagnes et boutiques liés passent par `visibleToUser` (pas de fuite d’un objet brouillon via une ressource jouable). L’écran Modifier charge toutes les liaisons.
 - **Édition** : `resources/js/Pages/Organismes/entity/EntityEditForm.vue`, modales (`EntityModal`, `CreateEntityModal`).
 - **Suppression UI** : `useEntityActionDispatcher` ouvre une `ConfirmModal` avec le récapitulatif `delete-impact` (relations détachées, médias) avant soft delete depuis page/modal d’entité.
 
