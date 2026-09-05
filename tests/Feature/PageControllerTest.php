@@ -546,9 +546,28 @@ class PageControllerTest extends TestCase
 
         $childTitles = collect($creation['children'] ?? [])->pluck('title')->all();
         $this->assertContains('Équipements', $childTitles);
-        $this->assertContains('Créatures', $childTitles);
-        $this->assertContains('Objets', $childTitles);
+        $this->assertContains('Monstres', $childTitles);
         $this->assertContains('Sorts', $childTitles);
+        $this->assertContains('Classes', $childTitles);
+        $this->assertNotContains('Créatures', $childTitles);
+        $this->assertNotContains('Objets', $childTitles);
+    }
+
+    public function test_legacy_contribution_charte_slug_redirects_to_creation_guide(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        Page::factory()->create([
+            'title' => 'Monstres',
+            'slug' => 'creation-monstres',
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->actingAs($gm)->get('/pages/contribution-creatures');
+
+        $response->assertRedirect(route('pages.show', 'creation-monstres'));
+        $response->assertStatus(301);
     }
 
     private function seedMjCreationMenuPages(): void
@@ -564,10 +583,10 @@ class PageControllerTest extends TestCase
         ]);
 
         foreach ([
-            ['title' => 'Équipements', 'slug' => 'creation-equipements', 'order' => 0],
-            ['title' => 'Créatures', 'slug' => 'contribution-creatures', 'order' => 1],
-            ['title' => 'Objets', 'slug' => 'contribution-objets', 'order' => 2],
-            ['title' => 'Sorts', 'slug' => 'contribution-sorts', 'order' => 3],
+            ['title' => 'Classes', 'slug' => 'creation-classes', 'order' => 0],
+            ['title' => 'Sorts', 'slug' => 'creation-sorts', 'order' => 2],
+            ['title' => 'Monstres', 'slug' => 'creation-monstres', 'order' => 4],
+            ['title' => 'Équipements', 'slug' => 'creation-equipements', 'order' => 6],
         ] as $child) {
             Page::factory()->create([
                 'title' => $child['title'],

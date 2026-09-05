@@ -16,6 +16,7 @@
 - **Rendu front** : `PageRenderer` → `SectionLazyGate` (lazy) → `SectionRenderer` → template via registry auto-discovery. Détail : [README](./README.md#rendu-frontend).
 - **kref** : références inline `@` (Tiptap) sérialisées en `<span class="kref">`, validées et prévisualisées via API CMS. Détail : [README](./README.md#references-kref).
 - **Menu dynamique** : `GET /pages/menu` (JSON) → `useDynamicMenu` → `DynamicMenu.vue`. Groupes dans `config/nav_menu.php` (L'Essentiel, Règles, Bibliothèques, Pour les MJ, Informations) ; un groupe sans enfants visibles n’apparaît pas. L’Essentiel = aide-mémoire (`database/seeders/data/essential-pages.php`), aligné sur `private/game/rules`.
+- **Atelier Création** (`/pages/creation`, MJ) : une page d’aide par type d’entité (`database/seeders/data/creation-pages.php`). Anciens slugs `contribution-creatures|objets|sorts` → 301.
 - **Page « Les métiers »** (`les-metiers`, Bibliothèques) : page documentaire sans entité, seedée depuis `database/seeders/data/jobs-page.php`. Icônes dans `storage/app/public/images/jobs/`, tableau des runes en section `forgemagie_rune_table`.
 - **Page « Ressources »** (`ressources-de-jeu`) : enfant du chapitre 5 (`regles-5-ressources-et-equilibrage`). Téléchargements (`download_catalog`, `config/game_downloads.php`). Compilation `rules:compile-downloads`.
 - **Sécurité contenu** : Mews\Purifier (profil `section_text`) sur le HTML de section.
@@ -26,7 +27,8 @@
 - `app/Http/Controllers/PageController.php`, `SectionController.php` ; API `app/Http/Controllers/Api/Cms*.php` (×3).
 - `app/Services/PageService.php` (menu + cache), `app/Services/SectionService.php` (save + Purifier + kref).
 - `app/Policies/PagePolicy.php`, `SectionPolicy.php` ; resources `PageResource`/`SectionResource`.
-- `routes/web/page.php`, `routes/api/cms.php`.
+- `database/seeders/data/creation-pages.php`, `database/seeders/CreationPagesSeeder.php` — atelier MJ Création.
+- `app/Support/Cms/CreationPageLegacyRedirects.php` — 301 des anciens slugs `contribution-*`.
 - `resources/js/Pages/Organismes/section/PageRenderer.vue` (+ `SectionRenderer`, `SectionLazyGate`, `templates/index.js`, `composables/useTemplateRegistry.js`).
 - `resources/js/Pages/Molecules/data-input/RichTextEditorField.vue` + `resources/js/Composables/richText/*` (kref).
 

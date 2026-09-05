@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 
 /**
  * Seed les pages CMS publiques : Contribution (Nous rejoindre), L'Essentiel, Bibliothèques.
- * Les chartes MJ (créatures, objets, sorts) sont gérées par {@see CreationPagesSeeder}.
+ * L’atelier MJ Création (guides par type d’entité) est géré par {@see CreationPagesSeeder}.
  */
 class PageSeeder extends Seeder
 {

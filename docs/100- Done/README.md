@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Atelier Création : un guide par entité
+
+L’atelier **Pour les MJ → Création** n’aligne plus trois chartes génériques (créatures / objets / sorts). Chaque type des Bibliothèques a sa page : une explication (comment créer, pièges, liens) puis le tableau utile — chartes en accordéon, ou le tableau des bonus d’équipement. Les capacités, panoplies, ressources, états et traits n’ont pas de grille dédiée : le texte le dit et renvoie au bon voisin. Les anciennes adresses `contribution-creatures` (etc.) redirigent. La page Contribution publique reste **Nous rejoindre**.
+
 ## Septembre 2026 — Pied de page plus bas, sur deux lignes
 
 Le bandeau en bas d’écran ne s’étale plus en un bloc haut. Deux lignes : le nom et la version à gauche, le logo au milieu, Contact / Discord / GitHub à droite ; en dessous le texte du projet, et le bouton Cookies tout à droite. Sur téléphone, le dock en bas ne change pas.
