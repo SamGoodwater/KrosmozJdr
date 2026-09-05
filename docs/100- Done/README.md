@@ -2,7 +2,7 @@
 
 ## Septembre 2026 — Atelier Création : un guide par entité
 
-L’atelier **Pour les MJ → Création** n’aligne plus trois chartes génériques (créatures / objets / sorts). Chaque type des Bibliothèques a sa page : une explication (comment créer, pièges, liens) puis le tableau utile — chartes en accordéon, ou le tableau des bonus d’équipement. Les capacités, panoplies, ressources, états et traits n’ont pas de grille dédiée : le texte le dit et renvoie au bon voisin. Les anciennes adresses `contribution-creatures` (etc.) redirigent. La page Contribution publique reste **Nous rejoindre**.
+L’atelier **Pour les MJ → Création** n’aligne plus trois chartes génériques. Chaque type des Bibliothèques a sa page : **philosophie** (à quoi sert la fiche), **marche à suivre** (comment la créer, bons chiffres, pièges), puis le tableau utile. Les capacités, panoplies, ressources, états et traits n’ont pas de grille dédiée. Les anciennes adresses `contribution-creatures` redirigent. Contribution publique reste **Nous rejoindre**.
 
 ## Septembre 2026 — Pied de page plus bas, sur deux lignes
 

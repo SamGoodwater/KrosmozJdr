@@ -110,6 +110,16 @@ class CreationPagesSeederTest extends TestCase
             'slug' => 'creation-monstres-catalog',
             'template' => SectionType::CHARACTERISTIC_NORMS_CATALOG->value,
         ]);
+        $this->assertDatabaseHas('sections', [
+            'page_id' => $monstres->id,
+            'slug' => 'creation-monstres-methode',
+            'template' => SectionType::TEXT->value,
+        ]);
+        $methode = Section::query()->where('slug', 'creation-monstres-methode')->first();
+        $this->assertNotNull($methode);
+        $html = (string) ($methode->data['content'] ?? '');
+        $this->assertStringContainsString('ligne faible', $html);
+        $this->assertStringContainsString('Boss', $html);
         $this->assertSame(
             0,
             Section::query()
@@ -137,6 +147,11 @@ class CreationPagesSeederTest extends TestCase
             'page_id' => $equipements->id,
             'slug' => 'creation-equipements-table',
             'template' => SectionType::EQUIPMENT_BONUS_TABLE->value,
+        ]);
+        $this->assertDatabaseHas('sections', [
+            'page_id' => $equipements->id,
+            'slug' => 'creation-equipements-methode',
+            'template' => SectionType::TEXT->value,
         ]);
         $this->assertDatabaseHas('sections', [
             'page_id' => $equipements->id,
