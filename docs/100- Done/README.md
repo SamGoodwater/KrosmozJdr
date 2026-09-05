@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Plus de fuite des effets d’un objet brouillon
+
+L’API publique des effets d’objet (`/api/object-effects`) renvoyait les bonus d’une fiche même en brouillon, dès qu’on connaissait son numéro. Elle vérifie maintenant le droit de voir la fiche, et un monstre invoqué resté en brouillon n’apparaît plus sur un objet jouable.
+
 ## Septembre 2026 — Pied de page plus bas, sur deux lignes
 
 Le bandeau en bas d’écran ne s’étale plus en un bloc haut. Deux lignes : le nom et la version à gauche, le logo au milieu, Contact / Discord / GitHub à droite ; en dessous le texte du projet, et le bouton Cookies tout à droite. Sur téléphone, le dock en bas ne change pas.

@@ -15,6 +15,11 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ObjectEffectController extends Controller
 {
+    /**
+     * Liste les effets d’une fiche item/consommable/ressource visible pour le visiteur.
+     *
+     * @example GET /api/object-effects?entity_type=item&entity_id=12
+     */
     public function index(Request $request): AnonymousResourceCollection
     {
         $validated = $request->validate([
@@ -25,14 +30,20 @@ class ObjectEffectController extends Controller
         if ($class === null) {
             abort(422, 'Invalid entity_type');
         }
-        if (! $class::query()->whereKey($validated['entity_id'])->exists()) {
+
+        $parent = $class::query()->find($validated['entity_id']);
+        if ($parent === null) {
             abort(404);
         }
+        $this->authorize('view', $parent);
 
         $list = ObjectEffect::query()
             ->where('object_effectable_type', $class)
             ->where('object_effectable_id', $validated['entity_id'])
-            ->with(['characteristic', 'monster.creature'])
+            ->with([
+                'characteristic',
+                'monster' => fn ($q) => $q->visibleToUser($request->user())->with(['creature']),
+            ])
             ->orderBy('id')
             ->get();
 
