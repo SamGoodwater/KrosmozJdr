@@ -5,6 +5,7 @@
 ## Fichiers pivots
 
 - `app/Models/Effect*.php`, `app/Models/ObjectEffect.php`
+- `GET /api/object-effects` — liste par fiche ; `view` sur le parent + `visibleToUser` sur le monstre invoqué (session `web`)
 - `app/Services/Effect/` (`SpellNestedPreviewSerializer` : chips d’aperçu sur sorts liés)
 - `app/Services/Scrapping/Core/Conversion/SpellEffects/`
 - `app/Support/DofusHyperlinkText.php` (libellés d’états `{{spell,…::Nom}}`)

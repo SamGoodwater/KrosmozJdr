@@ -21,12 +21,14 @@ class ObjectEffectResource extends JsonResource
         /** @var ObjectEffect $effect */
         $effect = $this->resource;
 
+        $monsterVisible = ! $effect->relationLoaded('monster') || $effect->monster !== null;
+
         return [
             'id' => $effect->id,
             'action' => $effect->action->value,
             'action_label' => $effect->action->label(),
             'characteristic_id' => $effect->characteristic_id,
-            'monster_id' => $effect->monster_id,
+            'monster_id' => $monsterVisible ? $effect->monster_id : null,
             'value' => $effect->value,
             'characteristic' => $this->whenLoaded('characteristic', fn () => $effect->characteristic ? [
                 'id' => $effect->characteristic->id,
