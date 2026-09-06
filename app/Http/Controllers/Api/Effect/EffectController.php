@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Effect;
 
+use App\Http\Controllers\Concerns\AuthorizesEffectParentView;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Effect\StoreEffectRequest;
 use App\Http\Requests\Effect\UpdateEffectRequest;
@@ -11,7 +12,6 @@ use App\Http\Resources\Effect\EffectResource;
 use App\Http\Resources\Effect\ResolvedEffectDegreeResource;
 use App\Models\Effect;
 use App\Models\EffectDegree;
-use App\Models\EffectUsage;
 use App\Models\Entity\Spell;
 use App\Models\User;
 use App\Services\Effect\EffectResolutionService;
@@ -22,6 +22,8 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class EffectController extends Controller
 {
+    use AuthorizesEffectParentView;
+
     public function __construct(
         private readonly EffectService $effectService,
         private readonly EffectResolutionService $effectResolutionService
@@ -174,16 +176,7 @@ class EffectController extends Controller
         $context = $validated['context'] ?? null;
         $formatDiceHuman = (bool) ($validated['format_dice_human'] ?? false);
 
-        if ($entityType === 'spell') {
-            if (! Spell::query()->whereKey($entityId)->exists()) {
-                return response()->json(['message' => 'Sort introuvable.'], 422);
-            }
-        } else {
-            $class = EffectUsage::entityTypeToClass($entityType);
-            if ($class === null) {
-                return response()->json(['message' => 'Invalid entity_type'], 422);
-            }
-        }
+        $this->authorizeEffectParentView($entityType, $entityId);
 
         $degrees = $this->effectService->getEffectDegreesForEntity($entityType, $entityId, $level, $context);
         $baseContext = ['level' => $level];
