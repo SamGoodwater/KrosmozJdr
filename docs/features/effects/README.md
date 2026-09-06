@@ -15,6 +15,9 @@ Le système d'effets décrit les effets de sorts et d'objets : effets principaux
 - Liaison depuis la fiche sort : `GET /api/effects/definitions?q=&exclude_spell_id=` (pas de liste
   complète dans le payload d’édition).
 - Index API : `GET /api/effects/effects?q=&per_page=` (paginé).
+- Prévisualisation : `GET /api/effects/for-entity` et liste `GET /api/effects/usages` exigent
+  `view` sur la fiche parente (sort, objet, consommable ou ressource). Un brouillon n’est
+  pas enumerable par identifiant.
 - Reclassement post-import : `php artisan scrapping:effects:reapply-mappings`.
 
 ## Données
