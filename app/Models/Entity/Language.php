@@ -16,13 +16,18 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @property string|null $description
  * @property string $color Hex #RRGGBB
+ *
  * @method static LanguageFactory factory($count = null, $state = [])
+ *
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Breed> $breeds
  * @property-read int|null $breeds_count
  * @property-read Collection<int, Monster> $monsters
  * @property-read int|null $monsters_count
+ * @property-read Collection<int, Npc> $npcs
+ * @property-read int|null $npcs_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language query()
@@ -32,6 +37,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Language whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Language extends Model
@@ -56,6 +62,14 @@ class Language extends Model
     public function monsters(): BelongsToMany
     {
         return $this->belongsToMany(Monster::class, 'monster_language')
+            ->withPivot('sort_order')
+            ->withTimestamps()
+            ->orderByPivot('sort_order');
+    }
+
+    public function npcs(): BelongsToMany
+    {
+        return $this->belongsToMany(Npc::class, 'npc_language')
             ->withPivot('sort_order')
             ->withTimestamps()
             ->orderByPivot('sort_order');

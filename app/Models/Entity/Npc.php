@@ -3,6 +3,8 @@
 namespace App\Models\Entity;
 
 use App\Models\Concerns\VisibleToViewer;
+use App\Support\Creature\CreatureSize;
+use App\Support\Npc\NpcRole;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +17,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $story
  * @property string|null $historical
  * @property string|null $age
- * @property string|null $size
+ * @property int|null $size
+ * @property string|null $npc_role
  * @property int|null $breed_id
  * @property int|null $specialization_id
  * @property Carbon|null $created_at
@@ -27,6 +30,8 @@ use Illuminate\Support\Carbon;
  * @property-read Creature|null $creature
  * @property-read Collection<int, Panoply> $panoplies
  * @property-read int|null $panoplies_count
+ * @property-read Collection<int, Language> $languages
+ * @property-read int|null $languages_count
  * @property-read Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @property-read Shop|null $shop
@@ -83,6 +88,10 @@ class Npc extends Model
 
     public const STATE_ARCHIVED = 'archived';
 
+    public const SIZE = CreatureSize::LABELS;
+
+    public const ROLES = NpcRole::LABELS;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -94,6 +103,7 @@ class Npc extends Model
         'historical',
         'age',
         'size',
+        'npc_role',
         'breed_id',
         'specialization_id',
         'state',
@@ -107,6 +117,7 @@ class Npc extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'size' => 'integer',
         'read_level' => 'integer',
         'write_level' => 'integer',
     ];
@@ -133,6 +144,17 @@ class Npc extends Model
     public function breed()
     {
         return $this->belongsTo(Breed::class, 'breed_id');
+    }
+
+    /**
+     * Langues parlées par le PNJ.
+     */
+    public function languages()
+    {
+        return $this->belongsToMany(Language::class, 'npc_language')
+            ->withPivot('sort_order')
+            ->withTimestamps()
+            ->orderByPivot('sort_order');
     }
 
     /**

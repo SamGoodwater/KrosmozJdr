@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Npc;
+use App\Support\Npc\NpcRole;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\DB;
  *
  * @example
  * PATCH /api/entities/npcs/bulk
- * { "ids":[1,2,3], "breed_id":5, "specialization_id":2, "age":"25 ans", "size":"1m75" }
+ * { "ids":[1,2,3], "breed_id":5, "npc_role":"guard", "size":2 }
  */
 class NpcBulkController extends Controller
 {
@@ -34,7 +35,8 @@ class NpcBulkController extends Controller
             'story' => ['sometimes', 'nullable', 'string'],
             'historical' => ['sometimes', 'nullable', 'string'],
             'age' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'size' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'size' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
+            'npc_role' => ['sometimes', 'nullable', 'string', NpcRole::rule()],
         ]);
 
         $ids = array_values(array_unique(array_map('intval', $validated['ids'])));
@@ -53,6 +55,7 @@ class NpcBulkController extends Controller
             'historical',
             'age',
             'size',
+            'npc_role',
         ] as $k) {
             if (array_key_exists($k, $validated)) {
                 $patch[$k] = $validated[$k];

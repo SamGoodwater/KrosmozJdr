@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Les PNJ ont une vraie fiche de jeu
+
+Un personnage non-joueur n’est plus une coquille vide collée à une créature. On le crée depuis le catalogue (nom, lieu, classe, rôle), on lui donne une taille comme aux monstres, des langues, une histoire. Sur la fiche : sorts, équipement porté (un objet par emplacement, deux anneaux), panoplies associées et boutique s’il en a une. Pas d’import DofusDB : ces gens-là s’écrivent à la main.
+
 ## Septembre 2026 — Pied de page plus bas, sur deux lignes
 
 Le bandeau en bas d’écran ne s’étale plus en un bloc haut. Deux lignes : le nom et la version à gauche, le logo au milieu, Contact / Discord / GitHub à droite ; en dessous le texte du projet, et le bouton Cookies tout à droite. Sur téléphone, le dock en bas ne change pas.

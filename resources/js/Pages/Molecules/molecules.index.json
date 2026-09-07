@@ -1688,6 +1688,13 @@
     "file": "entity/npc/NpcViewFull.vue"
   },
   {
+    "name": "NpcLineRow",
+    "description": "NpcLineRow — Une ligne de la vue Line pour NPC",
+    "props": [],
+    "slots": [],
+    "file": "entity/npc/NpcLineRow.vue"
+  },
+  {
     "name": "MonsterViewText",
     "description": "MonsterViewText — Vue Texte pour Monster",
     "props": [

@@ -31,7 +31,27 @@ export class Npc extends BaseModel {
     }
 
     get classe_id() {
-        return this._data.classe_id ?? null;
+        return this._data.classe_id ?? this._data.breed_id ?? null;
+    }
+
+    get npcRole() {
+        return this._data.npc_role || null;
+    }
+
+    get location() {
+        return this._data.location ?? this.creature?.location ?? null;
+    }
+
+    get hostility() {
+        return this._data.hostility ?? this.creature?.hostility ?? null;
+    }
+
+    get level() {
+        return this._data.level ?? this.creature?.level ?? null;
+    }
+
+    get description() {
+        return this._data.description ?? this.creature?.description ?? null;
     }
 
     get story() {
@@ -47,7 +67,7 @@ export class Npc extends BaseModel {
     }
 
     get size() {
-        return this._data.size || null;
+        return this._data.size ?? null;
     }
 
     get breedId() {
@@ -88,6 +108,10 @@ export class Npc extends BaseModel {
 
     get shop() {
         return this._data.shop || null;
+    }
+
+    get languages() {
+        return this._data.languages || [];
     }
 
     get panopliesCount() {
@@ -150,6 +174,12 @@ export class Npc extends BaseModel {
                 return this._toAgeCell(format, size, options);
             case 'size':
                 return this._toSizeCell(format, size, options);
+            case 'npc_role':
+                return this._toNpcRoleCell(format, size, options);
+            case 'creature_location':
+                return this._toCreatureLocationCell(options);
+            case 'creature_hostility':
+                return this._toCreatureFieldCell('hostility', options);
             case 'created_at':
                 return this._toCreatedAtCell(format, size, options);
             case 'updated_at':
@@ -611,14 +641,67 @@ export class Npc extends BaseModel {
      * @private
      */
     _toSizeCell(format, size, options) {
-        const sizeValue = this.size || '-';
-        
+        const sizeValue = this.size ?? this._data.size ?? null;
+        const sizeLabels = {
+            0: 'Minuscule',
+            1: 'Petit',
+            2: 'Moyen',
+            3: 'Grand',
+            4: 'Colossal',
+            5: 'Gigantesque',
+        };
+        const numeric = sizeValue === null || sizeValue === '' ? null : Number(sizeValue);
+        const label =
+            numeric !== null && Number.isFinite(numeric) && sizeLabels[numeric]
+                ? sizeLabels[numeric]
+                : sizeValue
+                  ? String(sizeValue)
+                  : '-';
+
+        return {
+            type: 'badge',
+            value: label,
+            params: {
+                sortValue: Number.isFinite(numeric) ? numeric : label,
+                searchValue: label === '-' ? '' : label,
+                filterValue: Number.isFinite(numeric) ? String(numeric) : '',
+            },
+        };
+    }
+
+    /** @private */
+    _toNpcRoleCell(_format, _size, _options) {
+        const roles = {
+            social: 'Social',
+            merchant: 'Marchand',
+            guard: 'Garde',
+            ally: 'Allié',
+            enemy: 'Ennemi',
+            other: 'Autre',
+        };
+        const raw = this.npcRole;
+        const label = raw ? roles[raw] || String(raw) : '-';
+        return {
+            type: 'badge',
+            value: label,
+            params: {
+                sortValue: raw || '',
+                searchValue: label === '-' ? '' : label,
+                filterValue: raw || '',
+            },
+        };
+    }
+
+    /** @private */
+    _toCreatureLocationCell(_options) {
+        const location = this.location || '-';
         return {
             type: 'text',
-            value: sizeValue,
+            value: location,
             params: {
-                sortValue: sizeValue === '-' ? '' : sizeValue,
-                searchValue: sizeValue === '-' ? '' : sizeValue,
+                searchValue: location === '-' ? '' : location,
+                sortValue: location === '-' ? '' : location,
+                filterValue: location === '-' ? '' : location,
             },
         };
     }
@@ -652,12 +735,21 @@ export class Npc extends BaseModel {
     toFormData() {
         return {
             creature_id: this.creatureId,
+            name: this.name,
+            description: this.description,
+            level: this.level,
+            location: this.location,
+            hostility: this.hostility,
             story: this.story,
             historical: this.historical,
             age: this.age,
             size: this.size,
+            npc_role: this.npcRole,
             breed_id: this.breedId,
-            specialization_id: this.specializationId
+            specialization_id: this.specializationId,
+            state: this._data.state ?? 'draft',
+            read_level: this._data.read_level ?? 0,
+            write_level: this._data.write_level ?? 3,
         };
     }
 }

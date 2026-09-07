@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * Resource légère pour le référentiel des langues (M2M breed / monster / …).
+ * Resource légère pour le référentiel des langues (M2M breed / monster / PNJ / …).
  */
 class LanguageResource extends JsonResource
 {

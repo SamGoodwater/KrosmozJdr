@@ -2,7 +2,10 @@
 
 namespace Database\Factories\Entity;
 
-use App\Models\Npc;
+use App\Models\Entity\Creature;
+use App\Models\Entity\Npc;
+use App\Support\Creature\CreatureSize;
+use App\Support\Npc\NpcRole;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -11,21 +14,22 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class NpcFactory extends Factory
 {
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
         return [
-            'creature_id' => null, // Doit être fourni lors de la création
-            // Colonnes SQL en `string` (255) => borner la longueur pour éviter les tests non déterministes.
+            'creature_id' => Creature::factory(),
             'story' => fake()->optional()->text(200),
             'historical' => fake()->optional()->text(200),
-            'age' => fake()->optional()->numberBetween(18, 200),
-            'size' => fake()->optional()->numberBetween(100, 250),
+            'age' => fake()->optional()->numerify('## ans'),
+            'size' => fake()->numberBetween(CreatureSize::MINUSCULE, CreatureSize::GIGANTESQUE),
+            'npc_role' => fake()->optional()->randomElement(NpcRole::values()),
             'breed_id' => null,
             'specialization_id' => null,
+            'state' => Npc::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
         ];
     }
 }

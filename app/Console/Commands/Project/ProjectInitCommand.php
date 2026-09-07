@@ -18,6 +18,7 @@ use Database\Seeders\Entity\BreedSeeder;
 use Database\Seeders\Entity\ConditionSeeder;
 use Database\Seeders\Entity\CreatureTraitSeeder;
 use Database\Seeders\Entity\LanguageSeeder;
+use Database\Seeders\Entity\NpcSeeder;
 use Database\Seeders\Entity\SpecializationSeeder;
 use Database\Seeders\NavMenuSeeder;
 use Database\Seeders\PageSeeder;
@@ -371,6 +372,7 @@ class ProjectInitCommand extends Command
             ConditionSeeder::class,
             CreatureTraitSeeder::class,
             CreationPagesSeeder::class,
+            NpcSeeder::class,
         ];
         foreach ($seeders as $seeder) {
             $this->line("  → {$seeder}");

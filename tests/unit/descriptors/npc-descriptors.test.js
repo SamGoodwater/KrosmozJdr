@@ -28,6 +28,15 @@ describe('npc-descriptors', () => {
             });
         });
 
+        it('expose rôle, taille enum et lieu créature', () => {
+            const descriptors = getNpcFieldDescriptors();
+            expect(descriptors.npc_role.edit.form.type).toBe('select');
+            expect(descriptors.size.edit.form.type).toBe('select');
+            expect(descriptors.size.table.filterable.id).toBe('size');
+            expect(descriptors.creature_location.table.searchable).toBe(true);
+            expect(descriptors._tableConfig.features.search.placeholder).toContain('PNJ');
+        });
+
         it('tous les descriptors ont une propriété display avec sizes (pour les tableaux)', () => {
             const descriptors = getNpcFieldDescriptors();
             Object.values(descriptors).forEach((desc) => {

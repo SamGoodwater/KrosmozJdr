@@ -172,7 +172,7 @@ class PdfService
             'item' => ['itemType', 'createdBy', 'resources', 'panoplies'],
             'spell' => ['spellType', 'createdBy', 'breeds'],
             'monster' => ['monsterRace', 'creature.createdBy', 'creature'],
-            'npc' => ['creature.createdBy', 'creature', 'breed', 'specialization'],
+            'npc' => ['creature.createdBy', 'creature', 'breed', 'specialization', 'languages'],
             'breed' => ['createdBy', 'npcs', 'spells'],
             'panoply' => ['createdBy', 'items'],
             'campaign' => ['createdBy', 'users', 'scenarios'],
@@ -240,6 +240,9 @@ class PdfService
                 'breed' => $entity->breed?->name ?? null,
                 'specialization' => $entity->specialization?->name ?? null,
                 'creature' => $entity->creature?->name ?? null,
+                'location' => $entity->creature?->location ?? null,
+                'npc_role' => $entity->npc_role,
+                'size' => $entity->size,
             ],
             'breed' => [
                 'life_dice' => $entity->life_dice,

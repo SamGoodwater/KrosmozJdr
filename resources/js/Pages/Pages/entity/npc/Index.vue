@@ -50,7 +50,7 @@ const props = defineProps({
 
 const { setPageTitle } = usePageTitle();
 
-setPageTitle('Liste des NPCs');
+setPageTitle('Liste des PNJ');
 
 // Permissions
 const { canCreate: canCreatePermission, canUpdateAny } = usePermissions();
@@ -222,18 +222,18 @@ const handleModalDelete = (entity) => {
 </script>
 
 <template>
-    <Head title="Liste des NPCs" />
+    <Head title="Liste des PNJ" />
     
     <div class="space-y-6 pb-8 w-full">
         <!-- En-tête -->
         <div class="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
             <div>
-                <h1 class="text-3xl font-bold text-primary-100">Liste des NPCs</h1>
+                <h1 class="text-3xl font-bold text-primary-100">Liste des PNJ</h1>
                 <p class="text-primary-200 mt-2">Gérez les personnages non-joueurs</p>
             </div>
             <Btn v-if="canCreate" @click="handleCreate" color="primary">
                 <i class="fa-solid fa-plus mr-2"></i>
-                Créer un NPC
+                Créer un PNJ
             </Btn>
         </div>
         <div class="min-w-0 overflow-x-auto">

@@ -36,14 +36,14 @@ class NpcBulkControllerTest extends TestCase
     public function test_admin_can_bulk_update_npcs(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $npc1 = Npc::factory()->create(['age' => '25', 'size' => 'Moyen']);
-        $npc2 = Npc::factory()->create(['age' => '30', 'size' => 'Grand']);
+        $npc1 = Npc::factory()->create(['age' => '25', 'size' => 2]);
+        $npc2 = Npc::factory()->create(['age' => '30', 'size' => 3]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/npcs/bulk', [
                 'ids' => [$npc1->id, $npc2->id],
                 'age' => '40',
-                'size' => 'Petit',
+                'size' => 1,
             ]);
 
         $response->assertOk()
@@ -56,12 +56,12 @@ class NpcBulkControllerTest extends TestCase
         $this->assertDatabaseHas('npcs', [
             'id' => $npc1->id,
             'age' => '40',
-            'size' => 'Petit',
+            'size' => 1,
         ]);
         $this->assertDatabaseHas('npcs', [
             'id' => $npc2->id,
             'age' => '40',
-            'size' => 'Petit',
+            'size' => 1,
         ]);
     }
 
@@ -135,7 +135,7 @@ class NpcBulkControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $npc = Npc::factory()->create([
             'age' => '25',
-            'size' => 'Moyen',
+            'size' => 2,
         ]);
 
         $response = $this->actingAs($admin)
@@ -149,7 +149,7 @@ class NpcBulkControllerTest extends TestCase
 
         $npc->refresh();
         $this->assertEquals('40', $npc->age);
-        $this->assertEquals('Moyen', $npc->size); // Non modifié
+        $this->assertEquals(2, $npc->size); // Non modifié
     }
 
     /**

@@ -50,7 +50,6 @@ import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/Shared
  * 
  * @param {Object} ctx - Contexte d'exécution
  * @param {Object} [ctx.capabilities] - Permissions disponibles (ou ctx.meta.capabilities)
- * @param {Array} [ctx.creatures] - Liste des créatures (ou ctx.meta.creatures)
  * @param {Array} [ctx.breeds] - Liste des breeds / classes (ou ctx.meta.breeds)
  * @param {Array} [ctx.specializations] - Liste des spécialisations (ou ctx.meta.specializations)
  * @returns {Record<string, NpcFieldDescriptor>} Objet avec tous les descripteurs
@@ -59,10 +58,6 @@ export function getNpcFieldDescriptors(ctx = {}) {
   const can = ctx?.capabilities || ctx?.meta?.capabilities || null;
   const canUpdateAny = Boolean(can?.updateAny);
   const canCreateAny = Boolean(can?.createAny);
-  
-  const creatures = Array.isArray(ctx?.creatures) 
-    ? ctx.creatures 
-    : (Array.isArray(ctx?.meta?.creatures) ? ctx.meta.creatures : []);
   
   const breeds = Array.isArray(ctx?.breeds)
     ? ctx.breeds
@@ -95,7 +90,7 @@ export function getNpcFieldDescriptors(ctx = {}) {
     },
     creature_name: {
       key: "creature_name",
-      label: "Créature",
+      label: "Nom",
       icon: "fa-solid fa-user",
       table: {
         sortable: true,
@@ -112,13 +107,80 @@ export function getNpcFieldDescriptors(ctx = {}) {
           xl: { mode: "text" },
         },
       },
+    },
+    name: {
+      key: "name",
+      label: "Nom",
+      icon: "fa-solid fa-user",
+      edit: {
+        form: {
+          type: "text",
+          group: "Identité",
+          required: true,
+          showInCompact: true,
+          bulk: { enabled: false },
+        },
+      },
+    },
+    location: {
+      key: "location",
+      label: "Lieu",
+      icon: "fa-solid fa-map-marker-alt",
+      edit: {
+        form: {
+          type: "text",
+          group: "Identité",
+          required: false,
+          showInCompact: true,
+          bulk: { enabled: false },
+        },
+      },
+    },
+    level: {
+      key: "level",
+      label: "Niveau",
+      icon: "fa-solid fa-level-up-alt",
+      edit: {
+        form: {
+          type: "text",
+          group: "Identité",
+          required: false,
+          showInCompact: true,
+          bulk: { enabled: false },
+        },
+      },
+    },
+    hostility: {
+      key: "hostility",
+      label: "Hostilité",
+      icon: "fa-solid fa-mask",
       edit: {
         form: {
           type: "select",
-          group: "Relations",
-          required: true,
+          group: "Identité",
+          required: false,
           showInCompact: true,
-          options: () => [{ value: "", label: "—" }, ...creatures.map((c) => ({ value: c.id, label: c.name }))],
+          options: [
+            { value: 0, label: "Amical" },
+            { value: 1, label: "Curieux" },
+            { value: 2, label: "Neutre" },
+            { value: 3, label: "Hostile" },
+            { value: 4, label: "Agressif" },
+          ],
+          bulk: { enabled: false },
+        },
+      },
+    },
+    description: {
+      key: "description",
+      label: "Description",
+      icon: "fa-solid fa-align-left",
+      edit: {
+        form: {
+          type: "textarea",
+          group: "Identité",
+          required: false,
+          showInCompact: false,
           bulk: { enabled: false },
         },
       },
@@ -143,10 +205,15 @@ export function getNpcFieldDescriptors(ctx = {}) {
           xl: { mode: "text" },
         },
       },
+    },
+    breed_id: {
+      key: "breed_id",
+      label: "Classe",
+      icon: "fa-solid fa-user-tie",
       edit: {
         form: {
           type: "select",
-          group: "Relations",
+          group: "Identité",
           required: false,
           showInCompact: true,
           options: () => [{ value: "", label: "—" }, ...breeds.map((b) => ({ value: b.id, label: b.name }))],
@@ -204,14 +271,81 @@ export function getNpcFieldDescriptors(ctx = {}) {
           xl: { mode: "text" },
         },
       },
+    },
+    specialization_id: {
+      key: "specialization_id",
+      label: "Spécialisation",
+      icon: "fa-solid fa-star",
       edit: {
         form: {
           type: "select",
-          group: "Relations",
+          group: "Identité",
           required: false,
           showInCompact: false,
           options: () => [{ value: "", label: "—" }, ...specializations.map((s) => ({ value: s.id, label: s.name }))],
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
+        },
+      },
+    },
+    npc_role: {
+      key: "npc_role",
+      label: "Rôle",
+      icon: "fa-solid fa-masks-theater",
+      table: {
+        sortable: true,
+        filterable: {
+          id: "npc_role",
+          type: "multi",
+          defaultVisible: true,
+        },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "select",
+          group: "Identité",
+          required: false,
+          showInCompact: true,
+          options: [
+            { value: "", label: "—" },
+            { value: "social", label: "Social" },
+            { value: "merchant", label: "Marchand" },
+            { value: "guard", label: "Garde" },
+            { value: "ally", label: "Allié" },
+            { value: "enemy", label: "Ennemi" },
+            { value: "other", label: "Autre" },
+          ],
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+        },
+      },
+    },
+    creature_location: {
+      key: "creature_location",
+      label: "Lieu",
+      icon: "fa-solid fa-map-marker-alt",
+      table: {
+        sortable: true,
+        searchable: true,
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 15 }, sm: { mode: "text", truncate: 20 }, md: { mode: "text", truncate: 30 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "text", truncate: 15 },
+          sm: { mode: "text", truncate: 20 },
+          md: { mode: "text", truncate: 30 },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
         },
       },
     },
@@ -396,25 +530,40 @@ export function getNpcFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-expand",
       table: {
         sortable: true,
+        filterable: {
+          id: "size",
+          type: "multi",
+          ui: { searchable: false },
+          defaultVisible: false,
+        },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
-        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {
         sizes: {
-          xs: { mode: "text" },
-          sm: { mode: "text" },
-          md: { mode: "text" },
-          lg: { mode: "text" },
-          xl: { mode: "text" },
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
         },
       },
       edit: {
         form: {
-          type: "text",
+          type: "select",
           group: "Caractéristiques",
           required: false,
           showInCompact: true,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+          defaultValue: 2,
+          options: [
+            { value: 0, label: "Minuscule" },
+            { value: 1, label: "Petit" },
+            { value: 2, label: "Moyen" },
+            { value: 3, label: "Grand" },
+            { value: 4, label: "Colossal" },
+            { value: 5, label: "Gigantesque" },
+          ],
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
         },
       },
     },
@@ -574,7 +723,7 @@ export function getNpcFieldDescriptors(ctx = {}) {
       features: {
         search: {
           enabled: true,
-          placeholder: "Rechercher un NPC…",
+          placeholder: "Rechercher un PNJ",
           debounceMs: 200,
         },
         filters: { enabled: true },

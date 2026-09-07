@@ -272,11 +272,18 @@ async function runRemoteSearch(query) {
     remoteSearchAbort = new AbortController();
     remoteSearchLoading.value = true;
     try {
-        const params = new URLSearchParams({
+        $params = new URLSearchParams({
             format: 'entities',
             limit: '40',
             search: String(query).trim(),
         });
+        const extraParams = props.config?.searchApiParams;
+        if (extraParams && typeof extraParams === 'object') {
+            Object.entries(extraParams).forEach(([key, value]) => {
+                if (value == null || value === '') return;
+                params.set(key, String(value));
+            });
+        }
         const res = await fetch(`${route(`api.tables.${entityKey}`)}?${params}`, {
             headers: { Accept: 'application/json' },
             credentials: 'same-origin',

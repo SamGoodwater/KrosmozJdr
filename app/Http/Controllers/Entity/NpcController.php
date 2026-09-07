@@ -2,24 +2,41 @@
 
 namespace App\Http\Controllers\Entity;
 
+use App\Http\Controllers\Concerns\RedirectsAfterEntityCreate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreNpcRequest;
+use App\Http\Requests\Entity\UpdateNpcCreatureTraitsRequest;
+use App\Http\Requests\Entity\UpdateNpcLanguagesRequest;
 use App\Http\Requests\Entity\UpdateNpcRequest;
+use App\Http\Resources\Entity\CreatureTraitResource;
+use App\Http\Resources\Entity\LanguageResource;
 use App\Http\Resources\Entity\NpcResource;
+use App\Models\Entity\Breed;
 use App\Models\Entity\Campaign;
+use App\Models\Entity\Creature;
+use App\Models\Entity\CreatureTrait;
+use App\Models\Entity\Item;
+use App\Models\Entity\Language;
 use App\Models\Entity\Npc;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Scenario;
+use App\Models\Entity\Specialization;
+use App\Models\Entity\Spell;
 use App\Models\User;
 use App\Services\Entity\EntityDeletionService;
+use App\Services\Npc\NpcEquipmentSlotValidator;
 use App\Services\PdfService;
+use App\Support\Creature\CreatureSize;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 
 class NpcController extends Controller
 {
+    use RedirectsAfterEntityCreate;
+
     /**
      * Display a listing of the resource.
      */
@@ -31,15 +48,14 @@ class NpcController extends Controller
             ->visibleToUser(request()->user())
             ->with(['creature', 'breed', 'specialization']);
 
-        // Recherche
         if (request()->has('search') && request()->search) {
             $search = request()->search;
             $query->whereHas('creature', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('location', 'like', "%{$search}%");
             });
         }
 
-        // Filtres
         if (request()->has('breed_id') && request()->breed_id !== '') {
             $query->where('breed_id', request()->breed_id);
         }
@@ -48,7 +64,6 @@ class NpcController extends Controller
             $query->where('specialization_id', request()->specialization_id);
         }
 
-        // Tri
         $sortColumn = request()->get('sort', 'id');
         $sortOrder = request()->get('order', 'desc');
 
@@ -66,50 +81,154 @@ class NpcController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $this->authorize('create', Npc::class);
+
+        return redirect()->route('entities.npcs.index');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreNpcRequest $request)
+    public function store(StoreNpcRequest $request): RedirectResponse
     {
-        //
+        $this->authorize('create', Npc::class);
+
+        $data = $request->validated();
+        $creatureId = $data['creature_id'] ?? null;
+        $state = $data['state'] ?? 'draft';
+
+        if ($creatureId === null) {
+            $creature = Creature::factory()->create([
+                'name' => $data['name'],
+                'description' => $data['description'] ?? '',
+                'level' => (string) ($data['level'] ?? '1'),
+                'location' => $data['location'] ?? null,
+                'hostility' => array_key_exists('hostility', $data) && $data['hostility'] !== null
+                    ? (int) $data['hostility'] : 2,
+                'state' => $state,
+                'created_by' => $request->user()?->id,
+            ]);
+            $creatureId = $creature->id;
+        }
+
+        $npc = Npc::create([
+            'creature_id' => $creatureId,
+            'story' => $data['story'] ?? null,
+            'historical' => $data['historical'] ?? null,
+            'age' => $data['age'] ?? null,
+            'size' => array_key_exists('size', $data) && $data['size'] !== null
+                ? (int) $data['size'] : CreatureSize::MOYEN,
+            'npc_role' => $data['npc_role'] ?? null,
+            'breed_id' => $data['breed_id'] ?? null,
+            'specialization_id' => $data['specialization_id'] ?? null,
+            'state' => $state,
+            'read_level' => array_key_exists('read_level', $data) && $data['read_level'] !== null
+                ? (int) $data['read_level'] : User::ROLE_GUEST,
+            'write_level' => array_key_exists('write_level', $data) && $data['write_level'] !== null
+                ? (int) $data['write_level'] : User::ROLE_GAME_MASTER,
+        ]);
+
+        return $this->redirectAfterEntityStore(
+            $request,
+            $npc,
+            'entities.npcs.edit',
+            'entities.npcs.index',
+            'PNJ créé avec succès.',
+            'edit',
+        );
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Npc $npc)
+    public function show(Request $request, Npc $npc): InertiaResponse
     {
-        //
+        $this->authorize('view', $npc);
+
+        $npc->load($this->npcShowRelations($request));
+
+        return Inertia::render('Pages/entity/npc/Show', [
+            'npc' => new NpcResource($npc),
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Npc $npc)
+    public function edit(Request $request, Npc $npc): InertiaResponse
     {
         $this->authorize('update', $npc);
 
-        $npc->load(['creature', 'breed', 'specialization', 'panoplies', 'scenarios', 'campaigns']);
+        $npc->load([
+            'creature.creatureTraits',
+            'breed',
+            'specialization',
+            'panoplies',
+            'scenarios',
+            'campaigns',
+            'languages',
+            'shop',
+            'creature.spells',
+            'creature.items.itemType',
+        ]);
 
-        // Charger toutes les entités disponibles pour la recherche
-        $availablePanoplies = Panoply::select('id', 'name', 'description')
+        $viewer = $request->user();
+
+        $availablePanoplies = Panoply::query()
+            ->visibleToUser($viewer)
+            ->select('id', 'name', 'description')
             ->orderBy('name')
+            ->limit(200)
             ->get();
 
-        $availableScenarios = Scenario::select('id', 'name', 'description')
+        $availableScenarios = Scenario::query()
+            ->visibleToUser($viewer)
+            ->select('id', 'name', 'description')
             ->orderBy('name')
+            ->limit(200)
             ->get();
 
-        $availableCampaigns = Campaign::select('id', 'name', 'description')
+        $availableCampaigns = Campaign::query()
+            ->visibleToUser($viewer)
+            ->select('id', 'name', 'description')
             ->orderBy('name')
+            ->limit(200)
+            ->get();
+
+        $spellQuery = Spell::query()
+            ->visibleToUser($viewer)
+            ->select('id', 'name', 'description', 'level')
+            ->orderBy('name');
+        if ($npc->breed_id) {
+            $spellQuery->whereHas('breeds', fn ($q) => $q->where('breeds.id', $npc->breed_id));
+        }
+        $availableSpells = $spellQuery->limit(200)->get();
+
+        $availableItems = Item::query()
+            ->visibleToUser($viewer)
+            ->whereHas('itemType', fn ($q) => $q->where('show_in_catalog', true))
+            ->select('id', 'name', 'description', 'level', 'item_type_id')
+            ->orderBy('name')
+            ->limit(100)
+            ->get();
+
+        $availableLanguages = LanguageResource::collection(
+            Language::query()->orderBy('name')->limit(500)->get()
+        )->toArray($request);
+
+        $availableCreatureTraits = CreatureTraitResource::collection(
+            CreatureTrait::query()
+                ->visibleToUser($viewer)
+                ->orderBy('name')
+                ->limit(500)
+                ->get()
+        )->toArray($request);
+
+        $availableBreeds = Breed::query()
+            ->visibleToUser($viewer)
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->limit(200)
+            ->get();
+
+        $availableSpecializations = Specialization::query()
+            ->visibleToUser($viewer)
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->limit(200)
             ->get();
 
         return Inertia::render('Pages/entity/npc/Edit', [
@@ -117,23 +236,132 @@ class NpcController extends Controller
             'availablePanoplies' => $availablePanoplies,
             'availableScenarios' => $availableScenarios,
             'availableCampaigns' => $availableCampaigns,
+            'availableSpells' => $availableSpells,
+            'availableItems' => $availableItems,
+            'availableLanguages' => $availableLanguages,
+            'availableCreatureTraits' => $availableCreatureTraits,
+            'availableBreeds' => $availableBreeds,
+            'availableSpecializations' => $availableSpecializations,
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateNpcRequest $request, Npc $npc)
+    public function update(UpdateNpcRequest $request, Npc $npc): RedirectResponse
     {
-        //
+        $this->authorize('update', $npc);
+
+        $data = $request->validated();
+        $npcPayload = [];
+        foreach ([
+            'creature_id', 'story', 'historical', 'age', 'size', 'npc_role',
+            'breed_id', 'specialization_id', 'state', 'read_level', 'write_level',
+        ] as $key) {
+            if (array_key_exists($key, $data)) {
+                $npcPayload[$key] = $data[$key];
+            }
+        }
+        if ($npcPayload !== []) {
+            $npc->update($npcPayload);
+        }
+
+        $creature = $npc->creature;
+        if ($creature) {
+            $creaturePayload = [];
+            foreach (['name', 'description', 'level', 'location', 'hostility'] as $key) {
+                if (array_key_exists($key, $data)) {
+                    $creaturePayload[$key] = $data[$key];
+                }
+            }
+            if (array_key_exists('state', $data) && $data['state'] !== null) {
+                $creaturePayload['state'] = $data['state'];
+            }
+            if ($creaturePayload !== []) {
+                $creature->update($creaturePayload);
+            }
+        }
+
+        return redirect()->route('entities.npcs.show', $npc)
+            ->with('success', 'PNJ mis à jour avec succès.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    /**
-     * Place le PNJ en corbeille (soft delete).
-     */
+    public function updateLanguages(UpdateNpcLanguagesRequest $request, Npc $npc): RedirectResponse
+    {
+        $sync = [];
+        foreach ($request->validatedLanguageIdsOrdered() as $index => $id) {
+            $sync[$id] = ['sort_order' => $index];
+        }
+        $npc->languages()->sync($sync);
+
+        return redirect()->back()
+            ->with('success', 'Langues du PNJ mises à jour.');
+    }
+
+    public function updateCreatureTraits(UpdateNpcCreatureTraitsRequest $request, Npc $npc): RedirectResponse
+    {
+        $this->authorize('update', $npc);
+        $creature = $npc->creature;
+        if (! $creature) {
+            return redirect()->back()
+                ->withErrors(['creature_traits' => 'Ce PNJ n’a pas de créature associée.']);
+        }
+
+        $creature->creatureTraits()->sync($request->validatedCreatureTraitIds());
+
+        return redirect()->back()
+            ->with('success', 'Traits du PNJ mis à jour.');
+    }
+
+    public function updateSpells(Request $request, Npc $npc): RedirectResponse
+    {
+        $this->authorize('update', $npc);
+        $creature = $npc->creature;
+        if (! $creature) {
+            return redirect()->back()
+                ->withErrors(['spells' => 'Ce PNJ n’a pas de créature associée.']);
+        }
+
+        $request->validate([
+            'spells' => 'array',
+            'spells.*' => 'exists:spells,id',
+        ]);
+
+        $creature->spells()->sync($request->spells ?? []);
+
+        return redirect()->back()
+            ->with('success', 'Sorts du PNJ mis à jour.');
+    }
+
+    public function updateItems(Request $request, Npc $npc, NpcEquipmentSlotValidator $slotValidator): RedirectResponse
+    {
+        $this->authorize('update', $npc);
+        $creature = $npc->creature;
+        if (! $creature) {
+            return redirect()->back()
+                ->withErrors(['items' => 'Ce PNJ n’a pas de créature associée.']);
+        }
+
+        $request->validate([
+            'items' => 'array',
+            'items.*' => 'integer|exists:items,id',
+        ]);
+
+        $ids = array_values(array_unique(array_map('intval', $request->input('items', []))));
+        $items = Item::query()
+            ->with('itemType')
+            ->whereIn('id', $ids)
+            ->get();
+
+        $slotValidator->assertWornKit($items);
+
+        $sync = [];
+        foreach ($ids as $id) {
+            $sync[$id] = ['quantity' => 1];
+        }
+        $creature->items()->sync($sync);
+
+        return redirect()->back()
+            ->with('success', 'Équipement du PNJ mis à jour.');
+    }
+
     public function delete(Request $request, Npc $npc, EntityDeletionService $deletionService): RedirectResponse
     {
         $actor = $request->user();
@@ -146,10 +374,7 @@ class NpcController extends Controller
             ->with('success', 'PNJ placé en corbeille.');
     }
 
-    /**
-     * Update the panoplies of an NPC.
-     */
-    public function updatePanoplies(Request $request, Npc $npc)
+    public function updatePanoplies(Request $request, Npc $npc): RedirectResponse
     {
         $this->authorize('update', $npc);
 
@@ -164,10 +389,7 @@ class NpcController extends Controller
             ->with('success', 'Panoplies du PNJ mises à jour avec succès.');
     }
 
-    /**
-     * Update the scenarios of an NPC.
-     */
-    public function updateScenarios(Request $request, Npc $npc)
+    public function updateScenarios(Request $request, Npc $npc): RedirectResponse
     {
         $this->authorize('update', $npc);
 
@@ -182,10 +404,7 @@ class NpcController extends Controller
             ->with('success', 'Scénarios du PNJ mis à jour avec succès.');
     }
 
-    /**
-     * Update the campaigns of an NPC.
-     */
-    public function updateCampaigns(Request $request, Npc $npc)
+    public function updateCampaigns(Request $request, Npc $npc): RedirectResponse
     {
         $this->authorize('update', $npc);
 
@@ -200,13 +419,7 @@ class NpcController extends Controller
             ->with('success', 'Campagnes du PNJ mises à jour avec succès.');
     }
 
-    /**
-     * Télécharge un PDF pour un ou plusieurs npcs.
-     *
-     * @param  Npc|null  $npc  Le npc unique (si un seul)
-     * @return Response
-     */
-    public function downloadPdf(?Npc $npc = null)
+    public function downloadPdf(?Npc $npc = null): Response
     {
         $ids = request()->get('ids');
 
@@ -239,5 +452,37 @@ class NpcController extends Controller
         $filename = 'npc-'.$npc->id.'-'.now()->format('Y-m-d-His').'.pdf';
 
         return $pdf->download($filename);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function npcShowRelations(Request $request): array
+    {
+        return [
+            'creature' => fn ($q) => $q->with([
+                'creatureTraits',
+                'spells' => fn ($sq) => $sq
+                    ->visibleToUser($request->user())
+                    ->orderBy('name')
+                    ->with([
+                        'spellTypes',
+                        'effects.degrees.effectSubEffects.subEffect',
+                    ]),
+                'items' => fn ($iq) => $iq
+                    ->visibleToUser($request->user())
+                    ->orderBy('name')
+                    ->with(['itemType:id,name']),
+            ]),
+            'breed',
+            'specialization',
+            'languages',
+            'panoplies' => fn ($q) => $q->with([
+                'items' => fn ($iq) => $iq->visibleToUser($request->user()),
+            ]),
+            'shop',
+            'scenarios',
+            'campaigns',
+        ];
     }
 }

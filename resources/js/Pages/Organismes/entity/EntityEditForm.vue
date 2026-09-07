@@ -455,6 +455,24 @@ const defaultFieldsConfig = computed(() => {
             life: { type: 'number', label: 'Vie', required: false, showInCompact: true },
             size: { type: 'number', label: 'Taille', required: false, showInCompact: false },
             is_boss: { type: 'checkbox', label: 'Boss', required: false, showInCompact: true }
+        },
+        npc: {
+            name: { type: 'text', label: 'Nom', required: true, showInCompact: true },
+            location: { type: 'text', label: 'Lieu', required: false, showInCompact: true },
+            level: { type: 'text', label: 'Niveau', required: false, showInCompact: true },
+            hostility: {
+                type: 'select',
+                label: 'Hostilité',
+                required: false,
+                showInCompact: true,
+                options: [
+                    { value: 0, label: 'Amical' },
+                    { value: 1, label: 'Curieux' },
+                    { value: 2, label: 'Neutre' },
+                    { value: 3, label: 'Hostile' },
+                    { value: 4, label: 'Agressif' },
+                ],
+            },
         }
     };
 

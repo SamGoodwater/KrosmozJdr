@@ -149,6 +149,8 @@ function getCell(fieldKey) {
 
 const breedCell = computed(() => getCell("breed"));
 const specializationCell = computed(() => getCell("specialization"));
+const roleCell = computed(() => getCell("npc_role"));
+const locationCell = computed(() => getCell("creature_location"));
 const showBreed = computed(
     () => canShowField("breed") && cellHasRenderableContent(breedCell.value),
 );
@@ -156,6 +158,14 @@ const showSpecialization = computed(
     () =>
         canShowField("specialization") &&
         cellHasRenderableContent(specializationCell.value),
+);
+const showRole = computed(
+    () => canShowField("npc_role") && cellHasRenderableContent(roleCell.value),
+);
+const showLocation = computed(
+    () =>
+        canShowField("creature_location") &&
+        cellHasRenderableContent(locationCell.value),
 );
 </script>
 
@@ -186,6 +196,16 @@ const showSpecialization = computed(
                             <CellRenderer
                                 v-if="showBreed"
                                 :cell="breedCell"
+                                class="inline-flex text-[11px]"
+                            />
+                            <CellRenderer
+                                v-if="showRole"
+                                :cell="roleCell"
+                                class="inline-flex text-[11px]"
+                            />
+                            <CellRenderer
+                                v-if="showLocation"
+                                :cell="locationCell"
                                 class="inline-flex text-[11px]"
                             />
                             <CellRenderer
@@ -239,6 +259,16 @@ const showSpecialization = computed(
                             <CellRenderer
                                 v-if="showBreed"
                                 :cell="breedCell"
+                                class="inline-flex text-[11px]"
+                            />
+                            <CellRenderer
+                                v-if="showRole"
+                                :cell="roleCell"
+                                class="inline-flex text-[11px]"
+                            />
+                            <CellRenderer
+                                v-if="showLocation"
+                                :cell="locationCell"
                                 class="inline-flex text-[11px]"
                             />
                             <CellRenderer

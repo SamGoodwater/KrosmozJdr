@@ -4,11 +4,17 @@ namespace App\Http\Controllers\Api\Table;
 
 use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Entity\LanguageResource;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Creature;
+use App\Models\Entity\Item;
 use App\Models\Entity\Npc;
 use App\Models\Entity\Specialization;
+use App\Models\Entity\Spell;
+use App\Services\Effect\SpellNestedPreviewSerializer;
 use App\Support\Creature\CreatureMasteryColumns;
+use App\Support\Creature\CreatureSize;
+use App\Support\Npc\NpcRole;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -26,6 +32,10 @@ class NpcTableController extends Controller
     use InterpretsEntityTableSort;
     use PaginatesEntityTable;
 
+    public function __construct(
+        private readonly SpellNestedPreviewSerializer $spellNestedPreviewSerializer,
+    ) {}
+
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Npc::class);
@@ -37,7 +47,7 @@ class NpcTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['breed_id', 'specialization_id', 'creature_level', 'state'] as $k) {
+        foreach (['breed_id', 'specialization_id', 'creature_level', 'state', 'npc_role', 'size'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -58,13 +68,33 @@ class NpcTableController extends Controller
 
         $query = Npc::query()
             ->visibleToUser($request->user())
-            ->with(['creature', 'breed', 'specialization'])
+            ->with([
+                'languages',
+                'breed',
+                'specialization',
+                'creature' => fn ($q) => $q->with([
+                    'creatureTraits',
+                    'spells' => fn ($sq) => $sq
+                        ->visibleToUser($request->user())
+                        ->orderBy('name')
+                        ->with([
+                            'spellTypes',
+                            'effects.degrees.effectSubEffects.subEffect',
+                        ]),
+                    'items' => fn ($iq) => $iq
+                        ->visibleToUser($request->user())
+                        ->orderBy('name')
+                        ->with(['itemType:id,name']),
+                ]),
+            ])
             ->withCount(['panoplies', 'campaigns', 'scenarios'])
             ->withExists('shop');
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
-                $q->orWhereHas('creature', fn ($qq) => $qq->where('name', 'like', "%{$search}%"))
+                $q->orWhereHas('creature', fn ($qq) => $qq
+                    ->where('name', 'like', "%{$search}%")
+                    ->orWhere('location', 'like', "%{$search}%"))
                     ->orWhereHas('breed', fn ($qq) => $qq->where('name', 'like', "%{$search}%"))
                     ->orWhereHas('specialization', fn ($qq) => $qq->where('name', 'like', "%{$search}%"));
             });
@@ -76,6 +106,12 @@ class NpcTableController extends Controller
         if ($this->hasFilterValue($filters, 'specialization_id')) {
             $this->applyEqualityFilter($query, 'specialization_id', $filters['specialization_id'], 'int');
         }
+        if ($this->hasFilterValue($filters, 'npc_role')) {
+            $this->applyEqualityFilter($query, 'npc_role', $filters['npc_role'], 'string');
+        }
+        if ($this->hasFilterValue($filters, 'size')) {
+            $this->applyEqualityFilter($query, 'size', $filters['size'], 'int');
+        }
         if ($this->hasFilterValue($filters, 'creature_level')) {
             $this->applyRelationIntegerRangeFilter($query, 'creature', 'level', $filters['creature_level']);
         }
@@ -85,7 +121,7 @@ class NpcTableController extends Controller
 
         $this->applyEntityTableIdList($query, $request);
 
-        $allowedSort = ['id', 'created_at', 'updated_at'];
+        $allowedSort = ['id', 'created_at', 'updated_at', 'size', 'npc_role'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $pageResult = $this->paginateEntityTable($query, $request);
@@ -128,11 +164,19 @@ class NpcTableController extends Controller
                 200
             ),
             'state' => EntityState::options(),
+            'size' => collect(CreatureSize::LABELS)->map(fn ($label, $value) => [
+                'value' => (string) $value,
+                'label' => (string) $label,
+            ])->values()->all(),
+            'npc_role' => collect(NpcRole::LABELS)->map(fn ($label, $value) => [
+                'value' => (string) $value,
+                'label' => (string) $label,
+            ])->values()->all(),
         ];
 
         // Mode "entities" : retourner les entités brutes (créature complète pour colonnes résumé comme Monster)
         if ($format === 'entities') {
-            $entities = $rows->map(function (Npc $n) {
+            $entities = $rows->map(function (Npc $n) use ($request) {
                 $creature = null;
                 if ($n->creature) {
                     $c = $n->creature;
@@ -191,6 +235,41 @@ class NpcTableController extends Controller
                         'res_sagesse' => $c->res_sagesse,
                         'res_vitalite' => $c->res_vitalite,
                         ...CreatureMasteryColumns::extractFrom($c),
+                        'spells' => $c->relationLoaded('spells')
+                            ? $c->spells
+                                ->map(fn (Spell $s) => $this->spellNestedPreviewSerializer->serialize($s))
+                                ->values()
+                                ->all()
+                            : [],
+                        'items' => $c->relationLoaded('items')
+                            ? $c->items->map(fn (Item $item) => [
+                                'id' => $item->id,
+                                'name' => $item->name,
+                                'description' => $item->description,
+                                'level' => $item->level,
+                                'image' => $item->image,
+                                'rarity' => $item->rarity,
+                                'bonus' => $item->bonus,
+                                'item_type_id' => $item->item_type_id,
+                                'itemType' => $item->relationLoaded('itemType') && $item->itemType
+                                    ? [
+                                        'id' => $item->itemType->id,
+                                        'name' => $item->itemType->name,
+                                    ]
+                                    : null,
+                                'pivot' => [
+                                    'quantity' => $item->pivot->quantity ?? 1,
+                                ],
+                            ])->values()->all()
+                            : [],
+                        'creatureTraits' => $c->relationLoaded('creatureTraits')
+                            ? $c->creatureTraits->map(fn ($t) => [
+                                'id' => $t->id,
+                                'name' => $t->name,
+                                'description' => $t->description,
+                                'image' => $t->image ?? null,
+                            ])->values()->all()
+                            : [],
                     ];
                 }
 
@@ -201,8 +280,10 @@ class NpcTableController extends Controller
                     'historical' => $n->historical,
                     'age' => $n->age,
                     'size' => $n->size,
+                    'npc_role' => $n->npc_role,
                     'breed_id' => $n->breed_id,
                     'specialization_id' => $n->specialization_id,
+                    'state' => $n->state,
                     'creature_level' => $n->creature?->level,
                     'creature_state' => $n->creature?->state,
                     'creature' => $creature,
@@ -214,6 +295,7 @@ class NpcTableController extends Controller
                         'id' => $n->specialization->id,
                         'name' => $n->specialization->name,
                     ] : null,
+                    'languages' => LanguageResource::collection($n->languages)->resolve($request),
                     'panoplies_count' => (int) ($n->panoplies_count ?? 0),
                     'campaigns_count' => (int) ($n->campaigns_count ?? 0),
                     'scenarios_count' => (int) ($n->scenarios_count ?? 0),

@@ -6,6 +6,7 @@ namespace Database\Seeders;
 use Database\Seeders\Entity\ConditionSeeder;
 use Database\Seeders\Entity\CreatureTraitSeeder;
 use Database\Seeders\Entity\LanguageSeeder;
+use Database\Seeders\Entity\NpcSeeder;
 use Database\Seeders\Type\TypeSeeder;
 use Illuminate\Database\Seeder;
 
@@ -26,6 +27,7 @@ class DatabaseSeeder extends Seeder
             LanguageSeeder::class,
             ConditionSeeder::class,
             CreatureTraitSeeder::class,
+            NpcSeeder::class,
             CharacteristicSeeder::class,
             CreatureCharacteristicSeeder::class,
             ObjectCharacteristicSeeder::class,

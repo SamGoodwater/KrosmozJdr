@@ -24,11 +24,11 @@ const props = defineProps({
         type: Number,
         required: true,
     },
-    /** breed | monster */
+    /** breed | monster | npc */
     entityType: {
         type: String,
         required: true,
-        validator: (v) => ["breed", "monster"].includes(v),
+        validator: (v) => ["breed", "monster", "npc"].includes(v),
     },
 });
 
@@ -105,14 +105,14 @@ const form = useForm({ languages: [] });
 
 const save = () => {
     form.languages = [...localIds.value];
-    const routeName =
-        props.entityType === "breed"
-            ? "entities.breeds.updateLanguages"
-            : "entities.monsters.updateLanguages";
-    const params =
-        props.entityType === "breed"
-            ? { breed: props.entityId }
-            : { monster: props.entityId };
+    const routeByType = {
+        breed: { name: "entities.breeds.updateLanguages", param: "breed" },
+        monster: { name: "entities.monsters.updateLanguages", param: "monster" },
+        npc: { name: "entities.npcs.updateLanguages", param: "npc" },
+    };
+    const target = routeByType[props.entityType] || routeByType.monster;
+    const routeName = target.name;
+    const params = { [target.param]: props.entityId };
     form.patch(route(routeName, params), {
         preserveScroll: true,
         onSuccess: () => {

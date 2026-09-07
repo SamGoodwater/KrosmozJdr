@@ -4,6 +4,7 @@ namespace App\Models\Entity;
 
 use App\Models\Concerns\VisibleToViewer;
 use App\Models\Type\MonsterRace;
+use App\Support\Creature\CreatureSize;
 use Database\Factories\MonsterFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,6 +32,7 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $scenarios_count
  * @property-read Collection<int, Spell> $spellInvocations
  * @property-read int|null $spell_invocations_count
+ *
  * @method static \Database\Factories\Entity\MonsterFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster newQuery()
@@ -45,39 +47,40 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereOfficialId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereSize($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereUpdatedAt($value)
+ *
  * @property int $is_boss
  * @property string $boss_pa
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereBossPa($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereIsBoss($value)
+ *
  * @property string $state
  * @property int $read_level
  * @property int $write_level
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereWriteLevel($value)
+ *
  * @property-read Collection<int, Language> $languages
  * @property-read int|null $languages_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster withoutTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster visibleToUser(?\App\Models\User $user)
+ *
  * @mixin \Eloquent
  */
 class Monster extends Model
 {
     /** @use HasFactory<MonsterFactory> */
     use HasFactory, VisibleToViewer;
+
     use SoftDeletes;
 
-    const SIZE = [
-        0 => 'Minuscule',
-        1 => 'Petit',
-        2 => 'Moyen',
-        3 => 'Grand',
-        4 => 'Colossal',
-        5 => 'Gigantesque',
-    ];
+    const SIZE = CreatureSize::LABELS;
 
     const HOSTILITY = [
         0 => 'Amical',

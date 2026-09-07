@@ -43,8 +43,8 @@ const CREATE_ALLOW_FIELD_KEYS_BY_TYPE = {
     scenario: [],
     shops: ['dofusdb_id'],
     shop: ['dofusdb_id'],
-    npcs: ['dofusdb_id', 'auto_update'],
-    npc: ['dofusdb_id', 'auto_update'],
+    npcs: ['name', 'level', 'location', 'breed_id', 'npc_role'],
+    npc: ['name', 'level', 'location', 'breed_id', 'npc_role'],
 };
 
 /**

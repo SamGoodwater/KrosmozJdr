@@ -47,7 +47,7 @@ class NpcTableControllerTest extends TestCase
     public function test_format_entities_returns_raw_data(): void
     {
         $user = User::factory()->create();
-        $npc = Npc::factory()->create($this->playableAttrs(['age' => '25', 'size' => 'Moyen']));
+        $npc = Npc::factory()->create($this->playableAttrs(['age' => '25', 'size' => 2]));
 
         $response = $this->actingAs($user)
             ->getJson('/api/tables/npcs?format=entities&limit=10');

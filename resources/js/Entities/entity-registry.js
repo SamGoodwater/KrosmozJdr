@@ -142,7 +142,7 @@ export function getEntityConfig(entityType) {
         model: Npc,
         getDescriptors: getNpcFieldDescriptors,
         responseAdapter: createEntityAdapter(Npc),
-        defaults: { minimalImportantFields: ["creature_name", "breed", "specialization"] },
+        defaults: { minimalImportantFields: ["creature_name", "breed", "npc_role", "creature_location"] },
       };
     case "breeds":
       return {

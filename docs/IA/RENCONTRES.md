@@ -46,7 +46,9 @@ Réécriture JDR d’un sort Dofus `raw` :
 
 ## PNJ
 
-Le modèle existe déjà (`Npc` + `Creature` + `breed_id` + `specialization_id` + panoplies) mais le gameplay PNJ (stuff porté, sorts connus comme kit) n’est pas abouti. La génération peut **forcer** à préciser ce schéma.
+Le modèle est en place : coquille `Npc` + corps `Creature` + `breed_id` / `specialization_id`, langues, panoplies, boutique. Le **kit de jeu** (sorts connus, stuff porté 1/slot sauf 2 anneaux, sync d’état coquille → créature) est du **code applicatif** (`NpcController`, `NpcEquipmentSlotValidator`) — pas de génération LLM.
+
+La génération IA peut s’appuyer sur ce schéma déjà persisté, elle ne le définit plus. Toujours hors scope d’implémentation ici.
 
 Paquet :
 
