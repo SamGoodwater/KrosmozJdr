@@ -16,6 +16,10 @@ Le plugin qui traduit `oklch()` en RGB de repli (tooltips, ombres) passe en vers
 
 Les infobulles et menus flottants utilisent `@floating-ui/vue` 2 (Vue 3.5, plus de `vue-demi`). L’API `useFloating` ne change pas.
 
+## Septembre 2026 — Tests front : jsdom 30
+
+L’environnement Vitest passe de jsdom 26 à 30. Aucun test à réécrire : la suite Vitest passe. jsdom 30 demande Node 22.22.2+, 24.15+ ou 26+.
+
 ## Septembre 2026 — Changer l’état depuis une carte minimale
 
 Sur une petite fiche (catalogue, grille), le menu d’état et le menu « ⋮ » s’ouvraient hors de la carte. Dès qu’on quittait la carte pour cliquer une option, la fiche se repliait et le menu disparaissait : impossible de changer l’état. La carte reste maintenant ouverte tant que le menu est là, pour toutes les entités.
