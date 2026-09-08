@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Trois spécialisations en brouillon : Artisan, Négociant, Sylvain
+
+Le livre parlait déjà de neuf spécialisations, mais la bibliothèque n’en avait que six. **Artisan·e**, **Négociant·e** et **Sylvain·e** existent maintenant en **brouillon** : une fiche, une présentation, des pistes d’aptitudes et de capacités palier par palier. Ce n’est pas jouable. Les chiffres, les coûts et les vrais liens vers les capacités restent à écrire. Le menu Bibliothèques n’affiche que les spécialisations déjà jouables ; les brouillons se voient dans le catalogue (filtre Brouillon) si tu as le droit d’éditer.
+
 ## Septembre 2026 — Fiches brouillon : plus de fuites via l’API et les liaisons
 
 Un invité ne lit plus les effets d’une fiche brouillon (`/api/effects/for-entity`, `/api/effects/usages`, `/api/object-effects`). Sur une fiche jouable, les liaisons encore en brouillon disparaissent : ingrédients de recette, objets/campagnes liés à une ressource, spécialisations d’une capacité, traits d’un monstre, bonus d’équipement dans `resolved-stats`, sorts d’une page bibliothèque CMS. Une maj DofusDB forcée ne dépublie plus une panoplie jouable.

@@ -11,8 +11,9 @@ use Illuminate\Support\Str;
 /**
  * Synchronise les sous-pages CMS « Bibliothèques » pour chaque classe et spécialisation.
  *
- * Chaque entité jouable reçoit une page enfant (menu déroulant) pointant vers la fiche
- * via {@code settings.linked_entity}.
+ * Chaque entité **jouable** reçoit une page enfant (menu déroulant) pointant vers la fiche
+ * via {@code settings.linked_entity}. Les brouillons, bruts, auto et archives n’entrent pas
+ * dans le menu public.
  */
 class BibliothequeEntityPageService
 {
@@ -55,6 +56,7 @@ class BibliothequeEntityPageService
         $order = 0;
 
         $modelClass::query()
+            ->where('state', $modelClass::STATE_PLAYABLE)
             ->orderBy('name')
             ->each(function ($entity) use ($parent, $entityType, $creatorId, &$synced, &$activeSlugs, &$order): void {
                 $slug = $this->buildChildSlug($entityType, (string) $entity->name);

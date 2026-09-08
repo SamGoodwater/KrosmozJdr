@@ -114,6 +114,7 @@ class LegacyEntitySectionImportService
         array $parsedSections,
         ?int $creatorId = null,
         ?callable $onCapabilityNames = null,
+        string $sectionState = Section::STATE_PLAYABLE,
     ): array {
         $this->assertHasLeveledSections($entity);
 
@@ -136,6 +137,7 @@ class LegacyEntitySectionImportService
                 contentHtml: $contentHtml,
                 order: $index + 1,
                 creatorId: $creatorId,
+                state: $sectionState,
             );
 
             $sync[$section->id] = ['level' => $legacyLevel];
@@ -161,6 +163,7 @@ class LegacyEntitySectionImportService
         string $contentHtml,
         int $order = 1,
         ?int $creatorId = null,
+        string $state = Section::STATE_PLAYABLE,
     ): Section {
         $creatorId ??= $this->resolveDefaultCreatorId();
 
@@ -174,7 +177,7 @@ class LegacyEntitySectionImportService
                 'type' => SectionType::TEXT->value,
                 'settings' => ['enableRichReferences' => true],
                 'data' => ['content' => $contentHtml],
-                'state' => Section::STATE_PLAYABLE,
+                'state' => $state,
                 'read_level' => User::ROLE_GUEST,
                 'write_level' => User::ROLE_ADMIN,
                 'created_by' => $creatorId,
@@ -182,8 +185,12 @@ class LegacyEntitySectionImportService
         );
     }
 
-    public function ensureImportPage(string $slug, string $title, ?int $creatorId = null): Page
-    {
+    public function ensureImportPage(
+        string $slug,
+        string $title,
+        ?int $creatorId = null,
+        string $state = Page::STATE_PLAYABLE,
+    ): Page {
         $creatorId ??= $this->resolveDefaultCreatorId();
 
         return Page::query()->firstOrCreate(
@@ -191,7 +198,7 @@ class LegacyEntitySectionImportService
             [
                 'title' => $title,
                 'in_menu' => false,
-                'state' => Page::STATE_PLAYABLE,
+                'state' => $state,
                 'read_level' => User::ROLE_GUEST,
                 'write_level' => User::ROLE_ADMIN,
                 'created_by' => $creatorId,

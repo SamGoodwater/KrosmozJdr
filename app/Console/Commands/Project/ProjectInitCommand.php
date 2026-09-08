@@ -67,7 +67,7 @@ class ProjectInitCommand extends Command
         {--skip-seeders : Ne pas exécuter les seeders (socle déjà fait)}
         {--skip-scrapping : Ne pas scraper}
         {--skip-capabilities : Ne pas importer les capabilities}
-        {--skip-specializations : Ne pas exécuter le seeder legacy des spécialisations (HTML locaux)}
+        {--skip-specializations : Ne pas exécuter le seeder des spécialisations (HTML legacy + brouillons)}
         {--skip-breeds : Ne pas reconstruire les sections CMS des classes (après scrapping)}
         {--skip-types : Ne pas extraire/seed les types (resources, consommables, équipements, races monstres)}
         {--noimage : Désactiver le téléchargement des images}
@@ -387,7 +387,7 @@ class ProjectInitCommand extends Command
         }
 
         if (! (bool) $this->option('skip-specializations')) {
-            $this->line('  → '.SpecializationSeeder::class.' (legacy HTML si fichiers présents sous database/seeders/data/legacy-specializations/)');
+            $this->line('  → '.SpecializationSeeder::class.' (HTML legacy si présents, brouillons Artisan·e / Négociant·e / Sylvain·e)');
             $code = Artisan::call('db:seed', ['--class' => SpecializationSeeder::class, '--force' => true]);
             $this->output->write(Artisan::output());
             if ($code !== 0) {

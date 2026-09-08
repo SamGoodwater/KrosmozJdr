@@ -5,15 +5,20 @@ namespace Database\Seeders\Entity;
 use App\Console\Concerns\WritesArtisanCommandOutput;
 use App\Models\Entity\Capability;
 use App\Models\Entity\Specialization;
+use App\Models\Page;
+use App\Models\Section;
 use App\Models\User;
 use App\Services\Entity\LegacyEntitySectionImportService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
 
 /**
- * Importe des spécialisations depuis des exports HTML statiques (sans réseau).
+ * Importe des spécialisations depuis des exports HTML statiques (sans réseau)
+ * et pose les fiches brouillon manquantes (Artisan·e, Négociant·e, Sylvain·e).
  *
- * Fichiers : {@code database/seeders/data/legacy-specializations/{slug}.html} (ignorés par Git, à placer en local).
+ * Fichiers legacy : {@code database/seeders/data/legacy-specializations/{slug}.html}
+ * (ignorés par Git, à placer en local).
+ * Brouillons : {@code database/seeders/data/draft-specializations.php}.
  */
 class SpecializationSeeder extends Seeder
 {
@@ -83,11 +88,94 @@ class SpecializationSeeder extends Seeder
             shortDescription: 'Spécialisation orientée découverte, terrain et autonomie.'
         );
 
+        $this->seedDraftSpecializations($importer);
+
         $code = Artisan::call('pages:sync-bibliotheque-entities');
         $this->writeArtisanCommandOutput();
         if ($code !== 0) {
             $this->command?->error('Échec de pages:sync-bibliotheque-entities après import des spécialisations.');
         }
+    }
+
+    /**
+     * Pose les spécialisations encore en rédaction (absentes du HTML legacy).
+     *
+     * N’écrase pas une fiche déjà présente (jouable ou retravaillée à la main).
+     */
+    private function seedDraftSpecializations(LegacyEntitySectionImportService $importer): void
+    {
+        $path = database_path('seeders/data/draft-specializations.php');
+        if (! is_file($path)) {
+            $this->command?->warn('Brouillons de spécialisations ignorés : fichier data/draft-specializations.php manquant.');
+
+            return;
+        }
+
+        /** @var mixed $drafts */
+        $drafts = require $path;
+        if (! is_array($drafts)) {
+            $this->command?->error('Brouillons de spécialisations ignorés : le fichier data ne retourne pas un tableau.');
+
+            return;
+        }
+
+        $renderer = new DraftSpecializationContentRenderer;
+        $creatorId = $importer->resolveDefaultCreatorId();
+        $created = 0;
+        $skipped = 0;
+
+        foreach ($drafts as $draft) {
+            if (! is_array($draft)) {
+                continue;
+            }
+
+            $name = trim((string) ($draft['name'] ?? ''));
+            if ($name === '') {
+                continue;
+            }
+
+            if (Specialization::query()->where('name', $name)->exists()) {
+                $skipped++;
+                $this->command?->info("Spécialisation {$name} déjà présente, brouillon ignoré.");
+
+                continue;
+            }
+
+            $specialization = Specialization::query()->create([
+                'name' => $name,
+                'short_description' => (string) ($draft['shortDescription'] ?? ''),
+                'description' => (string) ($draft['description'] ?? ''),
+                'state' => Specialization::STATE_DRAFT,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+                'created_by' => $creatorId,
+            ]);
+
+            $page = $importer->ensureImportPage(
+                (string) ($draft['importPageSlug'] ?? 'import-specialization-draft'),
+                (string) ($draft['importPageTitle'] ?? 'Brouillon — Spécialisation '.$name),
+                $creatorId,
+                Page::STATE_DRAFT,
+            );
+
+            $importer->importParsedSections(
+                $specialization,
+                $page,
+                (string) ($draft['sectionSlugPrefix'] ?? 'draft-specialization'),
+                $renderer->sections($draft),
+                $creatorId,
+                null,
+                Section::STATE_DRAFT,
+            );
+
+            $created++;
+        }
+
+        $this->command?->info(sprintf(
+            'Brouillons de spécialisations : %d créée(s), %d déjà présente(s).',
+            $created,
+            $skipped,
+        ));
     }
 
     private function importLegacySpecialization(

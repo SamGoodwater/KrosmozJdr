@@ -26,7 +26,7 @@ class ProjectSeedCommand extends Command
         {--fresh : migrate:fresh --force avant les seeders}
         {--skip-migrate : Ne pas lancer les migrations}
         {--skip-capabilities : Ne pas importer capabilities:import-legacy}
-        {--skip-specializations : Ne pas exécuter SpecializationSeeder (HTML legacy)}
+        {--skip-specializations : Ne pas exécuter SpecializationSeeder (HTML legacy + brouillons)}
         {--init-scheduler : Afficher la ligne cron scheduler (comme project:init)}
         {--skip-notify : Ne pas notifier les admin à la fin}
         {--skip-super-admin-prompt : Ne pas demander la création du super_admin (CI / scripts)}

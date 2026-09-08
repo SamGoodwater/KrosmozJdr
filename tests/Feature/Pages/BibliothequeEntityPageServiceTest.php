@@ -3,6 +3,7 @@
 namespace Tests\Feature\Pages;
 
 use App\Models\Entity\Breed;
+use App\Models\Entity\Specialization;
 use App\Models\Page;
 use App\Models\User;
 use App\Services\BibliothequeEntityPageService;
@@ -37,6 +38,31 @@ class BibliothequeEntityPageServiceTest extends TestCase
         $this->assertSame('breed', $child->settings['linked_entity']['type'] ?? null);
         $this->assertSame($breed->id, $child->settings['linked_entity']['id'] ?? null);
         $this->assertSame('/storage/images/entity/breeds/icon-test.webp', $child->icon);
+
+        PageService::clearMenuCache();
+    }
+
+    public function test_sync_skips_draft_specializations_and_keeps_playable_in_menu(): void
+    {
+        $this->seed(PageSeeder::class);
+
+        Specialization::factory()->create([
+            'name' => 'Artisan Draft Test',
+            'state' => Specialization::STATE_DRAFT,
+        ]);
+        $playable = Specialization::factory()->create([
+            'name' => 'Milicien Playable Test',
+            'state' => Specialization::STATE_PLAYABLE,
+        ]);
+
+        app(BibliothequeEntityPageService::class)->syncAll(User::factory()->create()->id);
+
+        $this->assertNull(Page::query()->where('slug', 'specialisation-artisan-draft-test')->first());
+
+        $playablePage = Page::query()->where('slug', 'specialisation-milicien-playable-test')->first();
+        $this->assertNotNull($playablePage);
+        $this->assertTrue($playablePage->in_menu);
+        $this->assertSame($playable->id, $playablePage->settings['linked_entity']['id'] ?? null);
 
         PageService::clearMenuCache();
     }
