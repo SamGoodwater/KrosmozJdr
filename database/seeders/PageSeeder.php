@@ -587,6 +587,7 @@ HTML;
             'spell' => 'spells',
             'capability' => 'capabilities',
             'monster' => 'monsters',
+            'npc' => 'npcs',
             'item' => 'items',
             'panoply' => 'panoplies',
             'consumable' => 'consumables',

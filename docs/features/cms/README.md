@@ -83,7 +83,7 @@ Le tableau `equipment_bonus_table` est alimenté par `GET /api/characteristics/e
 
 **Règles → Ressources et équilibrage** contient aussi **Ressources** (`ressources-de-jeu`, enfant de `regles-5-ressources-et-equilibrage`, `database/seeders/data/ressources-page.php`) : livre PDF/ODT, fiches de personnage, logo. Catalogue `config/game_downloads.php`, template `download_catalog`, API `GET /api/game-downloads`, téléchargement `GET /telechargements/{key}`. Compilation : `php artisan rules:compile-downloads` (bouton admin sur `/admin/content`). Si le chapitre 5 n’est pas encore importé, le seeder laisse la page à la racine du groupe Règles.
 
-**Bibliothèques** contient aussi une page documentaire sans entité associée : **Les métiers** (`les-metiers`, `database/seeders/data/jobs-page.php`). Elle décrit les 16 métiers, illustrés par `storage/app/public/images/jobs/*.webp`, et se termine par une section `forgemagie_rune_table` alimentée par `GET /api/characteristics/forgemagie-rune-table` (lecture publique). Reseed : `php artisan db:seed --class=PageSeeder`.
+**Bibliothèques** contient aussi une page documentaire sans entité associée : **Les métiers** (`les-metiers`, `database/seeders/data/jobs-page.php`). Elle décrit les 16 métiers, illustrés par `storage/app/public/images/jobs/*.webp`, et se termine par une section `forgemagie_rune_table` alimentée par `GET /api/characteristics/forgemagie-rune-table` (lecture publique). Le catalogue **PNJ** (`bibliotheque-npc`) est une entrée d’entité comme les monstres (`config/nav_menu.php`). Reseed : `php artisan db:seed --class=PageSeeder`.
 
 ## Routes (extrait)
 

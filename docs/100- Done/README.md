@@ -14,7 +14,7 @@ Le bouton « Images seules » d’une fiche ne réécrit plus le contenu (sorts,
 
 ## Septembre 2026 — Les PNJ ont une vraie fiche de jeu
 
-Un personnage non-joueur n’est plus une coquille vide collée à une créature. On le crée depuis le catalogue (nom, lieu, classe, rôle), on lui donne une taille comme aux monstres, des langues, une histoire. Le catalogue se feuille comme celui des monstres : page par page, on filtre l’hostilité ou les stats, on trie par nom. Sur la fiche et la petite carte : sorts, compétences, équipement porté (un objet par emplacement, deux anneaux), panoplies associées et boutique s’il en a une. Pas d’import DofusDB : ces gens-là s’écrivent à la main.
+Un personnage non-joueur n’est plus une coquille vide collée à une créature. On le crée depuis le catalogue (nom, lieu, classe, rôle), on lui donne une taille comme aux monstres, des langues, une histoire. Le catalogue se feuille comme celui des monstres : page par page, on filtre l’hostilité ou les stats, on trie par nom. Il est dans **Bibliothèques**, juste après les monstres. Sur la fiche et la petite carte : sorts, compétences, équipement porté (un objet par emplacement, deux anneaux), panoplies associées et boutique s’il en a une. Pas d’import DofusDB : ces gens-là s’écrivent à la main.
 
 ## Septembre 2026 — Pied de page plus bas, sur deux lignes
 

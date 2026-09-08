@@ -55,7 +55,7 @@ $strength = '[[kref:characteristic:strength_creature|Force]]';
 return [
     'title' => 'Les métiers',
     'slug' => 'les-metiers',
-    'menu_order' => 11,
+    'menu_order' => 12,
     'icon' => null,
     'sections' => [
         [
