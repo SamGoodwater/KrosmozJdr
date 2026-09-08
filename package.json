@@ -68,7 +68,7 @@
         "vue-eslint-parser": "^10.4.1"
     },
     "dependencies": {
-        "@csstools/postcss-oklab-function": "^4.0.12",
+        "@csstools/postcss-oklab-function": "^5.0.11",
         "@floating-ui/vue": "^1.1.11",
         "@playwright/test": "^1.63.0",
         "@tailwindcss/postcss": "^4.3.3",
