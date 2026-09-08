@@ -7,7 +7,8 @@
  * L'overlay ne modifie pas le flux du DOM : la carte conserve sa place,
  * le contenu étendu passe par-dessus le reste (z-index &lt; tooltips).
  * En `display-mode="extended"` (popover, favoris) : une seule carte, hauteur du contenu.
- * Un tooltip ouvert (OverlayTrigger téléporté) maintient la carte déployée.
+ * Un tooltip (`OverlayTrigger`) ou un menu (`Dropdown`) ouvert, téléporté hors de
+ * la carte, maintient celle-ci déployée.
  *
  * @slot compact - Contenu toujours visible, définit la taille du slot dans la grille
  * @slot expanded - Contenu affiché au hover (ou toujours si display-mode="extended")
@@ -48,8 +49,11 @@ const emit = defineEmits(["open-quick-view"]);
 const isHovered = ref(props.displayMode === "extended");
 const isFocusWithin = ref(false);
 const isExpandedLocked = ref(false);
+const ownedDropdownOpen = ref(false);
 const cardRef = ref(null);
 const overlayHoldCount = provideEntityMinimalCardOverlayHold();
+/** @type {MutationObserver | null} */
+let dropdownOpenObserver = null;
 
 const showExpanded = computed(() => {
     if (props.displayMode === "compact") return false;
@@ -58,7 +62,8 @@ const showExpanded = computed(() => {
         isExpandedLocked.value ||
         isHovered.value ||
         isFocusWithin.value ||
-        overlayHoldCount.value > 0
+        overlayHoldCount.value > 0 ||
+        ownedDropdownOpen.value
     );
 });
 
@@ -106,11 +111,32 @@ function unlockExpanded() {
     isExpandedLocked.value = false;
 }
 
+function syncOwnedDropdownOpen() {
+    const root = cardRef.value;
+    ownedDropdownOpen.value = Boolean(root?.querySelector?.('[data-dropdown-open="true"]'));
+}
+
+/**
+ * Le menu Dropdown est téléporté sur `body` : un clic dessus n’est pas `contains` de la carte.
+ *
+ * @param {Event} event
+ * @returns {boolean}
+ */
+function isPointerOnOwnedDropdown(event) {
+    const root = cardRef.value;
+    const dropdownEl = event.target?.closest?.("[data-dropdown-id]");
+    if (!root || !dropdownEl) return false;
+    const id = dropdownEl.getAttribute("data-dropdown-id");
+    if (!id) return false;
+    return Boolean(root.querySelector(`[data-dropdown-id="${id}"]`));
+}
+
 function onDocumentPointerDown(event) {
     if (!canHover.value || !isExpandedLocked.value) return;
     const root = cardRef.value;
     if (!root) return;
     if (root.contains(event.target)) return;
+    if (isPointerOnOwnedDropdown(event)) return;
     unlockExpanded();
 }
 
@@ -123,11 +149,23 @@ function onDocumentKeydown(event) {
 onMounted(() => {
     document.addEventListener("pointerdown", onDocumentPointerDown, true);
     document.addEventListener("keydown", onDocumentKeydown);
+    const root = cardRef.value;
+    if (root && typeof MutationObserver !== "undefined") {
+        dropdownOpenObserver = new MutationObserver(syncOwnedDropdownOpen);
+        dropdownOpenObserver.observe(root, {
+            attributes: true,
+            attributeFilter: ["data-dropdown-open"],
+            subtree: true,
+        });
+        syncOwnedDropdownOpen();
+    }
 });
 
 onUnmounted(() => {
     document.removeEventListener("pointerdown", onDocumentPointerDown, true);
     document.removeEventListener("keydown", onDocumentKeydown);
+    dropdownOpenObserver?.disconnect();
+    dropdownOpenObserver = null;
 });
 </script>
 

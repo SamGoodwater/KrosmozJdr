@@ -233,7 +233,7 @@ const entityName = computed(() => getEntityName());
             <Dropdown
                 v-if="showMenuTrigger"
                 :placement="placement"
-                :close-on-content-click="true"
+                :close-on-content-click="false"
             >
                 <template #trigger>
                     <Btn

@@ -29,7 +29,7 @@ sortilège, monture).
 minimal compact → survol : overlay déployé → double-clic / quick-view : modal full → agrandir : page full
 ```
 
-- L’overlay (`EntityMinimalCard`) ne décale pas la grille. En popover (`displayMode="extended"`), une seule carte (slot expanded, hauteur du contenu) : pas de coquille compacte ni de chrome tooltip autour (`OverlayTrigger` `chromeless`). En mode `hover`, la carte reste déployée tant qu’un tooltip issu d’elle est ouvert (le panneau est téléporté hors de la carte). Les tooltips et popovers d’entités n’ont **qu’une** boîte : `OverlayTrigger` n’ajoute `tooltip-floating-surface` que si le panneau n’a pas déjà de chrome (`chromeless`, contenu sort / chips, ou `panelClass` Popover).
+- L’overlay (`EntityMinimalCard`) ne décale pas la grille. En popover (`displayMode="extended"`), une seule carte (slot expanded, hauteur du contenu) : pas de coquille compacte ni de chrome tooltip autour (`OverlayTrigger` `chromeless`). En mode `hover`, la carte reste déployée tant qu’un tooltip **ou un menu Dropdown** issu d’elle est ouvert (panneaux téléportés hors de la carte : changement d’état, actions « ⋮ »). Les tooltips et popovers d’entités n’ont **qu’une** boîte : `OverlayTrigger` n’ajoute `tooltip-floating-surface` que si le panneau n’a pas déjà de chrome (`chromeless`, contenu sort / chips, ou `panelClass` Popover).
 - Les bibliothèques (TanStack) s’ouvrent en **vue minimale**. Le mode ligne reste disponible ; le mode colonnes déjà choisi est conservé.
 - En carte minimale **déployée**, la description des consommables, ressources et équipements n’est plus coupée.
 - Le menu d’options de la carte minimale n’a plus de fond : les icônes restent nues à droite du titre.

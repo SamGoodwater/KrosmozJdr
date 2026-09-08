@@ -74,7 +74,10 @@ export function useEntityStateAction(entityType, entity, action = null) {
             notifyError("Vous n'avez pas les droits pour modifier cet état.");
             return false;
         }
-        if (!normalizedEntityType.value || !entityId.value) return false;
+        if (!normalizedEntityType.value || !entityId.value) {
+            notifyError("Impossible de modifier l'état : fiche inconnue.");
+            return false;
+        }
 
         const csrfToken = getCsrfToken();
         if (!csrfToken) {
@@ -86,10 +89,12 @@ export function useEntityStateAction(entityType, entity, action = null) {
         try {
             const response = await fetch(`/api/entities/${normalizedEntityType.value}/${entityId.value}/state`, {
                 method: "PATCH",
+                credentials: "same-origin",
                 headers: {
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": csrfToken,
                     Accept: "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
                 },
                 body: JSON.stringify({ state }),
             });

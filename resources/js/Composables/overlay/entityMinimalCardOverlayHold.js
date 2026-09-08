@@ -1,9 +1,10 @@
 /**
- * Maintient une carte minimale déployée tant qu’un overlay (tooltip) issu d’elle est ouvert.
+ * Maintient une carte minimale déployée tant qu’un overlay issu d’elle est ouvert.
  *
  * @description
- * Le panneau OverlayTrigger est téléporté hors de la carte : le `mouseleave` replierait
- * sinon la vue et démonterait le déclencheur avant d’atteindre le tooltip.
+ * Tooltips (`OverlayTrigger`) et menus (`Dropdown`) sont téléportés hors de la carte :
+ * le `mouseleave` replierait sinon la vue et démonterait le déclencheur avant
+ * d’atteindre le panneau (changement d’état, actions « ⋮ », etc.).
  *
  * @example
  * const holdCount = provideEntityMinimalCardOverlayHold();

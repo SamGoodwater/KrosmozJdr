@@ -101,7 +101,7 @@ function onOptionsKeydown(event) {
         :disabled="pending"
     >
         <template #trigger>
-            <Tooltip :content="tooltip" placement="top">
+            <Tooltip :content="tooltip" placement="top" :interactive="false">
                 <button
                     v-if="mode === 'menu'"
                     type="button"
@@ -164,7 +164,7 @@ function onOptionsKeydown(event) {
         </template>
     </Dropdown>
 
-    <Tooltip v-else :content="tooltip" placement="top">
+    <Tooltip v-else :content="tooltip" placement="top" :interactive="false">
         <button
             v-if="mode === 'menu'"
             type="button"

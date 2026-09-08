@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
 import { nextTick } from "vue";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
+import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
 import { useEntityMinimalCardOverlayHold } from "@/Composables/overlay/entityMinimalCardOverlayHold";
 
 function mountCard(props = {}) {
@@ -128,5 +129,95 @@ describe("EntityMinimalCard", () => {
         wrapper.findComponent(HoldChild).vm.closeOverlay();
         await nextTick();
         expect(wrapper.find('[data-test="expanded"]').exists()).toBe(false);
+    });
+
+    it("reste déployé tant qu’un dropdown issu de la carte est ouvert", async () => {
+        const wrapper = mount(
+            {
+                components: { EntityMinimalCard, Dropdown },
+                template: `
+                    <EntityMinimalCard display-mode="hover">
+                        <template #compact><div data-test="compact">compact</div></template>
+                        <template #expanded>
+                            <div data-test="expanded">
+                                <Dropdown trigger="État">
+                                    <template #content>
+                                        <button type="button" data-test="state-option">Brouillon</button>
+                                    </template>
+                                </Dropdown>
+                            </div>
+                        </template>
+                    </EntityMinimalCard>
+                `,
+            },
+            { attachTo: document.body },
+        );
+
+        await wrapper.find(".entity-minimal-card").trigger("mouseenter");
+        expect(wrapper.find('[data-test="expanded"]').exists()).toBe(true);
+
+        wrapper.findComponent(Dropdown).vm.open();
+        await nextTick();
+        expect(wrapper.findComponent(Dropdown).vm.isOpen).toBe(true);
+
+        await wrapper.find(".entity-minimal-card").trigger("mouseleave");
+        expect(wrapper.find('[data-test="expanded"]').exists()).toBe(true);
+        expect(wrapper.findComponent(Dropdown).vm.isOpen).toBe(true);
+
+        wrapper.findComponent(Dropdown).vm.close();
+        await nextTick();
+        await Promise.resolve();
+        await nextTick();
+        expect(wrapper.find('[data-test="expanded"]').exists()).toBe(false);
+
+        wrapper.unmount();
+    });
+
+    it("reste déployé tant qu’un menu du DOM de la carte a data-dropdown-open", async () => {
+        const wrapper = mountCard();
+        await wrapper.trigger("mouseenter");
+        const expanded = wrapper.find('[data-test="expanded"]');
+        expanded.element.setAttribute("data-dropdown-open", "true");
+        await Promise.resolve();
+        await nextTick();
+        await wrapper.trigger("mouseleave");
+        expect(wrapper.find('[data-test="expanded"]').exists()).toBe(true);
+
+        expanded.element.removeAttribute("data-dropdown-open");
+        await Promise.resolve();
+        await nextTick();
+        expect(wrapper.find('[data-test="expanded"]').exists()).toBe(false);
+    });
+
+    it("ne se replie pas au pointerdown sur un dropdown téléporté issu de la carte", async () => {
+        const wrapper = mount(
+            {
+                components: { EntityMinimalCard },
+                template: `
+                    <EntityMinimalCard display-mode="hover">
+                        <template #compact><div data-test="compact">compact</div></template>
+                        <template #expanded>
+                            <div data-test="expanded" data-dropdown-id="dropdown-test">trigger</div>
+                        </template>
+                    </EntityMinimalCard>
+                `,
+            },
+            { attachTo: document.body },
+        );
+
+        await wrapper.find(".entity-minimal-card").trigger("mouseenter");
+        await wrapper.find(".entity-minimal-card").trigger("click");
+        await wrapper.find(".entity-minimal-card").trigger("mouseleave");
+        expect(wrapper.find('[data-test="expanded"]').exists()).toBe(true);
+
+        const teleported = document.createElement("div");
+        teleported.setAttribute("data-dropdown-id", "dropdown-test");
+        document.body.appendChild(teleported);
+        teleported.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }));
+        await nextTick();
+        expect(wrapper.find('[data-test="expanded"]').exists()).toBe(true);
+
+        teleported.remove();
+        wrapper.unmount();
     });
 });

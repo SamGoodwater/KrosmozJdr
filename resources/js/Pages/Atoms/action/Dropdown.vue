@@ -69,6 +69,7 @@ import { useClickOutside } from '@/Composables/layout/useClickOutside';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 import { variantList, colorList, sizeList } from '@/Pages/Atoms/atomMap';
 import { OVERLAY_Z_INDEX } from '@/Composables/overlay/overlayConstants';
+import { useEntityMinimalCardOverlayHold } from '@/Composables/overlay/entityMinimalCardOverlayHold';
 
 const props = defineProps({
   ...getCommonProps(),
@@ -193,6 +194,26 @@ function isPointerInsideDropdownBridge(event) {
   return coords.x >= left && coords.x <= right && coords.y >= top && coords.y <= bottom;
 }
 
+const cardOverlayHold = useEntityMinimalCardOverlayHold();
+let cardOverlayHoldAcquired = false;
+
+/**
+ * Un menu téléporté hors d’une carte minimale doit la garder déployée.
+ *
+ * @param {boolean} open
+ */
+function syncCardOverlayHold(open) {
+  if (open && !cardOverlayHoldAcquired) {
+    cardOverlayHold?.acquire();
+    cardOverlayHoldAcquired = true;
+    return;
+  }
+  if (!open && cardOverlayHoldAcquired) {
+    cardOverlayHold?.release();
+    cardOverlayHoldAcquired = false;
+  }
+}
+
 // Composable de clic extérieur
 const { enable: enableClickOutside, disable: disableClickOutside } = useClickOutside(
   (event) => {
@@ -202,7 +223,8 @@ const { enable: enableClickOutside, disable: disableClickOutside } = useClickOut
   {
     enabled: true,
     escapeKey: true,
-    excludeSelectors: [`[data-dropdown-id="${dropdownId.value}"]`],
+    // Tous les menus téléportés (état imbriqué dans « ⋮ », etc.)
+    excludeSelectors: ["[data-dropdown-id]"],
     closeOnContentClick: props.closeOnContentClick,
   }
 );
@@ -220,7 +242,10 @@ const open = () => {
     zIndex.value = OVERLAY_Z_INDEX.floatingPanel + 80;
   }
   containerRef.value?.setAttribute?.("data-dropdown-open", "true");
-  enableClickOutside();
+  syncCardOverlayHold(true);
+  nextTick(() => {
+    if (isOpen.value) enableClickOutside();
+  });
   updatePosition();
 };
 
@@ -229,6 +254,7 @@ const close = () => {
   isOpen.value = false;
   containerRef.value?.removeAttribute?.("data-dropdown-open");
   disableClickOutside();
+  syncCardOverlayHold(false);
 };
 
 const toggle = () => {
@@ -375,6 +401,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', updatePosition);
   window.removeEventListener('scroll', updatePosition);
+  syncCardOverlayHold(false);
 });
 
 defineExpose({ open, close, toggle, isOpen });
