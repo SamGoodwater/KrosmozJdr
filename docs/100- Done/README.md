@@ -4,6 +4,10 @@
 
 Sur une petite fiche (catalogue, grille), le menu d’état et le menu « ⋮ » s’ouvraient hors de la carte. Dès qu’on quittait la carte pour cliquer une option, la fiche se repliait et le menu disparaissait : impossible de changer l’état. La carte reste maintenant ouverte tant que le menu est là, pour toutes les entités.
 
+## Septembre 2026 — Correctif `qs` (Inertia)
+
+La librairie `qs` tirée par Inertia passait encore en 6.15.3 dans le lockfile : GitHub signalait deux failles modérées (parsing d’objets trop profond, DoS). Elle est forcée en 6.16.0, sans changer Inertia ni le code du site.
+
 ## Septembre 2026 — Fiches brouillon : plus de fuites via l’API et les liaisons
 
 Un invité ne lit plus les effets d’une fiche brouillon (`/api/effects/for-entity`, `/api/effects/usages`, `/api/object-effects`). Sur une fiche jouable, les liaisons encore en brouillon disparaissent : ingrédients de recette, objets/campagnes liés à une ressource, spécialisations d’une capacité, traits d’un monstre, bonus d’équipement dans `resolved-stats`, sorts d’une page bibliothèque CMS. Une maj DofusDB forcée ne dépublie plus une panoplie jouable.
