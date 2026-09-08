@@ -324,6 +324,20 @@
     "file": "section/templates/gallery/SectionGalleryEdit.vue"
   },
   {
+    "name": "SectionForgemagieRuneTableRead",
+    "description": "Lecture du tableau des runes de forgemagie. Les lignes viennent du référentiel des caractéristiques : toute caractéristique objet forgemageable et dotée d'un prix de rune devient une ligne.",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/forgemagie_rune_table/SectionForgemagieRuneTableRead.vue"
+  },
+  {
+    "name": "SectionForgemagieRuneTableEdit",
+    "description": "Édition du tableau des runes de forgemagie : le contenu vient du référentiel, seuls le tri et l'affichage du prix de base se règlent ici.",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/forgemagie_rune_table/SectionForgemagieRuneTableEdit.vue"
+  },
+  {
     "name": "SectionEquipmentBonusTableRead",
     "description": "Lecture du tableau vivant des bonus d’équipement (un tableau par emplacement).",
     "props": [],
@@ -350,6 +364,20 @@
     "props": [],
     "slots": [],
     "file": "section/templates/entity_table/SectionEntityTableEdit.vue"
+  },
+  {
+    "name": "SectionDownloadCatalogRead",
+    "description": "Lecture du catalogue de fichiers téléchargeables.",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/download_catalog/SectionDownloadCatalogRead.vue"
+  },
+  {
+    "name": "SectionDownloadCatalogEdit",
+    "description": "Édition du catalogue de téléchargements : filtre optionnel de groupes.",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/download_catalog/SectionDownloadCatalogEdit.vue"
   },
   {
     "name": "SectionCharacteristicNormsCatalogRead",

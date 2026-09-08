@@ -1672,18 +1672,7 @@
   {
     "name": "NpcViewFull",
     "description": "NpcViewFull — Vue Full pour NPC",
-    "props": [
-      {
-        "name": "npc",
-        "type": "Npc",
-        "desc": "- Instance du modèle NPC"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
+    "props": [],
     "slots": [],
     "file": "entity/npc/NpcViewFull.vue"
   },

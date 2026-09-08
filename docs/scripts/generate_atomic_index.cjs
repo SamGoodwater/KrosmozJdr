@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const glob = require("glob");
+const { globSync } = require("glob");
 const { parse } = require("comment-parser");
 
 // Dossiers à indexer
@@ -116,7 +116,7 @@ function generateIndex({ name, dir, output }) {
         console.error(`❌ Dossier introuvable : ${dir}`);
         return;
     }
-    const files = glob.sync(dir.replace(/\\/g, "/") + "/**/*.vue");
+    const files = globSync(dir.replace(/\\/g, "/") + "/**/*.vue");
     if (files.length === 0) {
         console.warn(
             `⚠️  Aucun fichier .vue trouvé dans ${dir} (y compris sous-dossiers).`,

@@ -8,6 +8,10 @@ Sur une petite fiche (catalogue, grille), le menu d’état et le menu « ⋮ »
 
 La librairie `qs` tirée par Inertia passait encore en 6.15.3 dans le lockfile : GitHub signalait deux failles modérées (parsing d’objets trop profond, DoS). Elle est forcée en 6.16.0, sans changer Inertia ni le code du site.
 
+## Septembre 2026 — Index atomic design : glob 13
+
+Le script qui liste les Atoms / Molecules / Organismes utilise `glob` 13 au lieu de 11 (version abandonnée). L’index a été régénéré : les templates CMS forgemagie et téléchargements y figurent maintenant.
+
 ## Septembre 2026 — Fiches brouillon : plus de fuites via l’API et les liaisons
 
 Un invité ne lit plus les effets d’une fiche brouillon (`/api/effects/for-entity`, `/api/effects/usages`, `/api/object-effects`). Sur une fiche jouable, les liaisons encore en brouillon disparaissent : ingrédients de recette, objets/campagnes liés à une ressource, spécialisations d’une capacité, traits d’un monstre, bonus d’équipement dans `resolved-stats`, sorts d’une page bibliothèque CMS. Une maj DofusDB forcée ne dépublie plus une panoplie jouable.
