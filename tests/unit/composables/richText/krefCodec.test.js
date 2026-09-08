@@ -1,4 +1,3 @@
-/* eslint-env browser */
 /* global document */
 import { describe, it, expect } from "vitest";
 import {

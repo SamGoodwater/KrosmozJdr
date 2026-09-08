@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Lint du front : ESLint 10
+
+Le contrôle de qualité du JavaScript et des composants Vue passe en ESLint 10. On lance toujours `pnpm lint` ; la config plate ne change pas. Il faut Node 20.19+, 22.13+ ou 24+ (déjà couvert par Node 22+ du projet).
+
 ## Septembre 2026 — concurrently 10 (Node 22+)
 
 Les scripts qui lancent Vite et le CSS en même temps (`dev:css`, `composer run dev:network`) utilisent concurrently 10. Ça impose **Node 22 ou plus** (plus de Node 20). Les options `--kill-others` et les couleurs de préfixe n’ont pas changé pour nous.
