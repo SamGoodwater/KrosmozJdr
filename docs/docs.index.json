@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Le pied de page desktop tient sur deux lignes compactes : nom et version, logo centré, liens à droite ; texte et bouton cookies en dessous."
+    "description": "Un invité ne lit plus les effets d’une fiche brouillon. Sur une fiche jouable, les liaisons encore en brouillon disparaissent. Une maj DofusDB forcée ne dépublie plus une panoplie jouable."
   },
   {
     "path": "backend/_ai.md",
@@ -212,7 +212,7 @@
   {
     "path": "frontend/README.md",
     "title": "Frontend",
-    "description": "Frontend Vue 3 en JavaScript, servi par Inertia.js. L'UI suit Atomic Design et utilise Tailwind CSS + DaisyUI. Le footer desktop est sur deux lignes (logo centré)."
+    "description": "Frontend Vue 3 en JavaScript, servi par Inertia.js. L'UI suit Atomic Design et utilise Tailwind CSS + DaisyUI."
   },
   {
     "path": "IA/_ai.md",

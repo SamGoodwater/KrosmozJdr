@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Fiches brouillon : plus de fuites via l’API et les liaisons
+
+Un invité ne lit plus les effets d’une fiche brouillon (`/api/effects/for-entity`, `/api/effects/usages`, `/api/object-effects`). Sur une fiche jouable, les liaisons encore en brouillon disparaissent : ingrédients de recette, objets/campagnes liés à une ressource, spécialisations d’une capacité, traits d’un monstre, bonus d’équipement dans `resolved-stats`, sorts d’une page bibliothèque CMS. Une maj DofusDB forcée ne dépublie plus une panoplie jouable.
+
 ## Septembre 2026 — Registres de types : API réservée aux admins
 
 Les pages Types étaient déjà interdites aux MJ, mais l’API `/api/types/*` (races, types de sorts) restait ouverte à tout compte connecté. Un MJ pouvait donc cocher « scrap » ou supprimer une race créée automatiquement. Ces actions sont maintenant admin uniquement, comme le reste de la gestion du contenu.
