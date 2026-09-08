@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Artisan;
 
 /**
  * Importe des spécialisations depuis des exports HTML statiques (sans réseau)
- * et pose les fiches brouillon manquantes (Artisan·e, Négociant·e, Sylvain·e).
+ * et pose les fiches brouillon manquantes (Artisan·e, Négociant·e, Sylvain·e, Marin·e, Courtisan·e).
  *
  * Fichiers legacy : {@code database/seeders/data/legacy-specializations/{slug}.html}
  * (ignorés par Git, à placer en local).

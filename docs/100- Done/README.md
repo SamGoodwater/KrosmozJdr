@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Marin et Courtisan en brouillon
+
+Deux spécialisations de plus, toujours en **brouillon** : **Marin·e** (mer, navires, Sufokia) et **Courtisan·e** (cours, étiquette, intrigue). Comme Artisan, Négociant et Sylvain, ce n’est pas jouable : des pistes palier par palier, pas encore de chiffres ni de capacités liées. On les trouve dans le catalogue (filtre Brouillon), pas dans le menu public.
+
 ## Septembre 2026 — Trois spécialisations en brouillon : Artisan, Négociant, Sylvain
 
 Le livre parlait déjà de neuf spécialisations, mais la bibliothèque n’en avait que six. **Artisan·e**, **Négociant·e** et **Sylvain·e** existent maintenant en **brouillon** : une fiche, une présentation, des pistes d’aptitudes et de capacités palier par palier. Ce n’est pas jouable. Les chiffres, les coûts et les vrais liens vers les capacités restent à écrire. Le menu Bibliothèques n’affiche que les spécialisations déjà jouables ; les brouillons se voient dans le catalogue (filtre Brouillon) si tu as le droit d’éditer.

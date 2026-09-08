@@ -512,4 +512,338 @@ return [
             ],
         ],
     ],
+    [
+        'name' => 'Marin·e',
+        'importPageSlug' => 'import-specialization-marin-e',
+        'importPageTitle' => 'Brouillon — Spécialisation Marin·e',
+        'sectionSlugPrefix' => 'draft-marin-e',
+        'shortDescription' => 'Spécialisation tournée vers la mer, les navires, l’équipage et Sufokia.',
+        'description' => 'BROUILLON — à retravailler. L’Explorateur·rice lit la carte ; toi, tu lis la houle. Sufokia, l’île de Moon, un pont qui penche : tu vis du large, pas du sentier.',
+        'identity' => 'Tu as le sel dans les coutures et un nœud de marin plus fiable qu’un serment de Brâkmar. Pirate, pêcheur·euse, corsaire de Bonta ou simple matelot d’Astrub : tu sais ce qu’un bateau peut encaisser, et ce qu’un équipage ne pardonnera pas.',
+        'focus' => 'Mer, navires, équipage, météo',
+        'characteristics' => 'Agilité ou Chance (au choix — à calibrer)',
+        'idealFor' => 'Pandawa, Roublard, Enutrof chasseurs de cartes, personnages de Sufokia, pirates, escortes de convois maritimes.',
+        'difference' => 'L’Explorateur·rice oriente, piste, désamorce. Le Marin·e manœuvre un navire, lit le ciel, tient un équipage et nage quand ça coule. La « Navigation » de l’Explorateur·rice reste surtout terrestre / donjon ; ici, c’est le pont et la crique.',
+        'synergies' => [
+            'Pandawa' => 'Rhum, mer, équilibre douteux sur un pont mouillé.',
+            'Roublard / Sram' => 'Abordage, contrebande, criques sans douane.',
+            'Enutrof' => 'Chasse au trésor, cartes mouillées, épaves.',
+            'Steamer / Forgelance' => 'Navire comme machine, abordage comme formation.',
+        ],
+        'todo' => [
+            'Tranchir le recouvrement Explorateur·rice (Navigation, Survie, Perception).',
+            'Décider si un navire est un lieu de campagne (règles de manœuvre) ou du pur narratif.',
+            'Aligner Pêcheur / Poissonnier (métiers) sans obliger le craft alimentaire.',
+            'Calibrer nage, tempête et naufrage : ne pas voler le combat de classe.',
+        ],
+        'levels' => [
+            1 => [
+                'flavor' => 'Tu reconnais un gréement pourri, un nœud qui va lâcher, une odeur de tempête. La mer n’est pas un décor : c’est un patron.',
+                'masteries' => [
+                    'Outils' => 'Matériel de navigation (sextant / boussole, cartes marines, cordages).',
+                    'Jets de sauvegarde' => 'Agilité, Chance (à confirmer).',
+                    'Compétences' => 'Choisis-en deux parmi : Athlétisme (nage), Acrobaties, Perception, Survie.',
+                    'Métiers' => 'Piste : Pêcheur ou Poissonnier au niveau 1. Pas d’artisanat d’armes offert.',
+                    'Langues' => 'Piste : jargon des ports (Sufokia, Moon) — narratif, à aligner sur 4.1.4.',
+                ],
+            ],
+            3 => [
+                'choice' => '1 aptitude',
+                'aptitudes' => [
+                    [
+                        'name' => 'Pied marin',
+                        'effect' => 'Sur un pont, une jetée, un sol qui bouge, tu ignores le malus d’équilibre du terrain agité. (Chiffre à poser ; pas un bonus en donjon stable.)',
+                    ],
+                    [
+                        'name' => 'Lire la houle',
+                        'effect' => '10 minutes d’observation : tu prévois météo côtière, courant, ou si un navire à l’horizon file ou chasse. Pas une divination magique.',
+                    ],
+                    [
+                        'name' => 'Nœud qui tient',
+                        'effect' => 'Tu attaches, hisses, répares un gréement simple en quelques minutes. Utile pour ponts de corde, filets, sangles d’équipement. DD à écrire.',
+                    ],
+                ],
+            ],
+            6 => [
+                'choice' => '1 aptitude ou 1 capacité',
+                'aptitudes' => [
+                    [
+                        'name' => 'À l’eau',
+                        'effect' => 'Tu nages longtemps, tu aides un·e allié·e à ne pas couler, tu récupères un objet à faible profondeur. Hors combat d’abord ; version combat très limitée (PM / Athlétisme) à discuter.',
+                    ],
+                    [
+                        'name' => 'Cri de pont',
+                        'effect' => 'Une fois par scène, tu donnes un ordre clair à un petit groupe (hisser, abattre, larguer). Hors navire : ça marche pour une manœuvre de groupe simple (reculer un chariot, tenir une porte).',
+                    ],
+                ],
+                'capacities' => [
+                    [
+                        'name' => 'Estomac de mer',
+                        'type' => 'Passive',
+                        'effect' => 'Tu ignores mal de mer, roulis, et une partie de la fatigue de veilles en mer. En carrosse : optionnel. En donjon : rien.',
+                    ],
+                    [
+                        'name' => 'Port d’attache',
+                        'type' => 'Contextuelle (villes portuaires)',
+                        'effect' => 'À Sufokia, Moon, un quai d’Astrub : tu trouves un bateau, un passage, ou un marin qui te doit une bière. Le MJ peut refuser un vaisseau de guerre.',
+                    ],
+                ],
+            ],
+            9 => [
+                'choice' => '1 aptitude ou 1 capacité ; expertise possible',
+                'aptitudes' => [
+                    [
+                        'name' => 'Abordage calculé',
+                        'effect' => 'Tu prépares une approche (angles morts, grappins, qui tient la barre). Avantage au premier round d’un abordage / d’une intrusion par les toits ? Trop combat : à nerfer ou à garder narratif.',
+                    ],
+                    [
+                        'name' => 'Sondeur d’épave',
+                        'effect' => 'Tu estimes si une épave, une cale, une crique cache de l’air, du Wakfu pourri, ou un trou qui aspire. Pas un sort de détection magique complet (Érudit).',
+                    ],
+                ],
+                'capacities' => [
+                    [
+                        'name' => 'Yeux de vigie',
+                        'type' => 'Contextuelle (horizon / mer)',
+                        'effect' => 'Bonus à la Perception pour voiles, récifs, silhouettes sur l’eau. En forêt dense : annulé.',
+                    ],
+                ],
+            ],
+            12 => [
+                'choice' => '1 aptitude ou 1 capacité',
+                'aptitudes' => [
+                    [
+                        'name' => 'Tenir la barre',
+                        'effect' => 'Pendant une tempête ou une poursuite navale, tu peux transformer un échec collectif en « on encaisse, on ne chavire pas ». Une fois par traversée ? Table MJ à écrire.',
+                    ],
+                    [
+                        'name' => 'Cale sèche improvisée',
+                        'effect' => 'Tu répares un navire ou un gros engin (roue, gouvernail, pompe) avec du temps et des ressources. Recouvrement Artisan·e : ici, c’est le bateau, pas l’épée.',
+                    ],
+                ],
+                'capacities' => [
+                    [
+                        'name' => 'Langue des quais',
+                        'type' => 'Contextuelle (ports)',
+                        'effect' => 'Marins, contrebandiers, pêcheurs te parlent comme à un pair. Bonus social dans les ports, pas à la cour de Bonta (voir Courtisan·e).',
+                    ],
+                ],
+            ],
+            15 => [
+                'choice' => '1 aptitude ou 1 capacité ; expertise possible',
+                'aptitudes' => [
+                    [
+                        'name' => 'Route secrète',
+                        'effect' => 'Tu connais une passe, un brouillard, un horaire de douane qui raccourcit ou cache une traversée. Le MJ pose le prix (temps, bakchich, risque).',
+                    ],
+                ],
+                'capacities' => [
+                    [
+                        'name' => 'Jamais noyé longtemps',
+                        'type' => 'Réactive',
+                        'effect' => 'Quand tu tombes à l’eau ou qu’un navire coule, tu as déjà un réflexe (bouée, cordage, crique). Pas une immunité aux dégâts de chute dans un puits.',
+                    ],
+                ],
+            ],
+            18 => [
+                'choice' => '1 aptitude ou 1 capacité',
+                'aptitudes' => [
+                    [
+                        'name' => 'Capitaine d’occasion',
+                        'effect' => 'Tu prends le commandement d’un équipage PNJ le temps d’une traversée. Moral, mutinerie, manœuvre : le MJ joue l’équipage, toi tu as les leviers.',
+                    ],
+                ],
+                'capacities' => [
+                    [
+                        'name' => 'La mer te connaît',
+                        'type' => 'Passive',
+                        'effect' => 'En mer, tu n’es jamais « perdu·e » au sens carte : tu retrouves une côte. Pas la bonne crique, pas un zaap. Recouvrement Explorateur·rice à surveiller.',
+                    ],
+                ],
+            ],
+            20 => [
+                'choice' => '1 aptitude ou 1 capacité ; expertise possible',
+                'aptitudes' => [
+                    [
+                        'name' => 'Légende des quais',
+                        'effect' => 'Capstone narratif : un port, une flotte ou un vieux capitaine te doit une traversée impossible (blocus, tempête, île taboue). Pas un sort de contrôle du climat (Érudit haut niveau).',
+                    ],
+                ],
+                'capacities' => [
+                    [
+                        'name' => 'Équipage dans le sang',
+                        'type' => 'Passive',
+                        'effect' => 'Les allié·e·s qui ont voyagé avec toi en mer gagnent un petit bonus de manœuvre / nage tant que tu es là. Chiffre bas, ou purement narratif.',
+                    ],
+                ],
+            ],
+        ],
+    ],
+    [
+        'name' => 'Courtisan·e',
+        'importPageSlug' => 'import-specialization-courtisan-e',
+        'importPageTitle' => 'Brouillon — Spécialisation Courtisan·e',
+        'sectionSlugPrefix' => 'draft-courtisan-e',
+        'shortDescription' => 'Spécialisation tournée vers les cours, l’étiquette et l’intrigue politique.',
+        'description' => 'BROUILLON — à retravailler. Le Négociant·e tient le comptoir ; toi, le salon. Bonta, Brâkmar, un couloir trop silencieux : tu vis de l’étiquette et des non-dits.',
+        'identity' => 'Tu sais qui saluer en premier, qui ne jamais contredire en public, et quelle rumeur faire circuler pour qu’elle arrive « toute seule ». Noble fauché·e, secrétaire de milice, espion·ne en habit clair : le palais est ton donjon.',
+        'focus' => 'Cours, étiquette, intrigue, réputation',
+        'characteristics' => 'Chance ou Intelligence (au choix — à calibrer)',
+        'idealFor' => 'Eniripsa de cour, Sram en habit, Féca diplomatiques, personnages alignés Bonta/Brâkmar, espions mondains.',
+        'difference' => 'Le Négociant·e vend et achète. L’Artiste monte sur scène. Le Voleur·euse s’infiltre par les toits. Le Courtisan·e s’infiltre par l’invitation, tue par le protocole, et perd tout si on le·la démasque en public.',
+        'synergies' => [
+            'Sram / Roublard' => 'Le poignard sous la cape, mais la cape est brodée.',
+            'Eniripsa / Eliotrope' => 'Soin, image, parole qui porte à la cour.',
+            'Féca / Steamer' => 'Garde du corps officiel, bouclier diplomatique.',
+            'Ecaflip' => 'Paris sociaux, réputation qui bascule en une phrase.',
+        ],
+        'todo' => [
+            'Tranchir le recouvrement Négociant·e (Persuasion, Supercherie, Perspicacité) et Artiste (Représentation).',
+            'Ne pas en faire un « charme de sort » : l’étiquette n’est pas un Eniripsa.',
+            'Aligner avec les langues de cour (4.1.4) et les alignements Bonta / Brâkmar.',
+            'Définir ce qu’est une « faveur de cour » (une fois par ville ? par arc ?).',
+        ],
+        'levels' => [
+            1 => [
+                'flavor' => 'Tu as appris à sourire sans montrer les dents. Un salon, c’est un champ de bataille où l’on ne sort pas l’épée — pas tout de suite.',
+                'masteries' => [
+                    'Outils' => 'Trousse de toilette / sceaux / éventail ou carnet de protocoles. Piste : un jeu de société de cour.',
+                    'Jets de sauvegarde' => 'Chance, Intelligence (à confirmer).',
+                    'Compétences' => 'Choisis-en deux parmi : Persuasion, Perspicacité, Supercherie, Histoire, Représentation.',
+                    'Métiers' => 'Aucun métier d’artisanat offert. Piste : rien — la cour n’est pas un établi.',
+                    'Langues' => 'Une langue de cour ou de capitale au choix (à aligner sur 4.1.4).',
+                ],
+            ],
+            3 => [
+                'choice' => '1 aptitude',
+                'aptitudes' => [
+                    [
+                        'name' => 'Le bon titre',
+                        'effect' => 'Tu formules une adresse, un salut, une excuse protocolaire. Avantage (ou succès auto sur les cas simples) pour entrer dans un lieu « sur invitation ». Pas un laissez-passer de donjon militaire.',
+                    ],
+                    [
+                        'name' => 'Lire le salon',
+                        'effect' => '1 minute : tu repères qui s’ennuie, qui ment par politesse, qui a le vrai pouvoir dans la pièce. Jet de Perspicacité, DD à poser.',
+                    ],
+                    [
+                        'name' => 'Rumeur légère',
+                        'effect' => 'Tu plantes une information anodine qui circule d’ici le soir. Pas une calomnie de fin de campagne. Le MJ décide qui l’entend.',
+                    ],
+                ],
+            ],
+            6 => [
+                'choice' => '1 aptitude ou 1 capacité',
+                'aptitudes' => [
+                    [
+                        'name' => 'Invitation de rechange',
+                        'effect' => 'Tu improvises une raison d’être là (cousin, secrétaire, artiste invitée). Une fois par lieu et par jour. Échec = humiliation narrative, pas des dégâts.',
+                    ],
+                    [
+                        'name' => 'Duel de mots',
+                        'effect' => 'Tu forces un échange social en public : l’autre doit répondre ou perdre la face. Remplace un jet d’Intimidation maladroit. Pas un sort de charme.',
+                    ],
+                ],
+                'capacities' => [
+                    [
+                        'name' => 'Tenue correcte exigée',
+                        'type' => 'Contextuelle (cours, salons, temples riches)',
+                        'effect' => 'Tant que tu es « présentable », bonus aux tests sociaux officiels. En haillons, en donjon, en forêt : annulé.',
+                    ],
+                    [
+                        'name' => 'On ne touche pas à ça',
+                        'type' => 'Réactive',
+                        'effect' => 'Une fois par scène, tu désamorces une insulte ou un geste déplacé par le protocole (« pas devant les témoins »). N’arrête pas une lame déjà sortie.',
+                    ],
+                ],
+            ],
+            9 => [
+                'choice' => '1 aptitude ou 1 capacité ; expertise possible',
+                'aptitudes' => [
+                    [
+                        'name' => 'Faveur mineure',
+                        'effect' => 'Tu obtiens un rendez-vous, un sauf-conduit mondain, une place à une table. Pas les clés de la milice. Une fois par ville et par séjour ?',
+                    ],
+                    [
+                        'name' => 'Masque de cour',
+                        'effect' => 'Pendant une scène, tu joues un rôle social (allié·e d’une maison, neutre, envoyé·e). Les PNJ de rang croient le masque tant que personne ne te démasque avec des faits.',
+                    ],
+                ],
+                'capacities' => [
+                    [
+                        'name' => 'Mémoire des blasons',
+                        'type' => 'Passive',
+                        'effect' => 'Tu retenez maisons, dettes d’honneur, alliances récentes. Bonus à Histoire / Perspicacité dès qu’il s’agit de « qui doit quoi à qui ».',
+                    ],
+                ],
+            ],
+            12 => [
+                'choice' => '1 aptitude ou 1 capacité',
+                'aptitudes' => [
+                    [
+                        'name' => 'Scandale dirigé',
+                        'effect' => 'Tu fais porter le blâme sur quelqu’un d’autre — ou tu l’évites de justesse. Arc social, pas un combat. Abuse, et la cour se ferme.',
+                    ],
+                    [
+                        'name' => 'Oreille derrière le rideau',
+                        'effect' => 'Tu places ou tu es un·e écouteur·euse (serviteur, musicien, garde). Tu apprends un secret de salon. Recouvrement Voleur·euse : ici, pas de crochetage, que de la présence.',
+                    ],
+                ],
+                'capacities' => [
+                    [
+                        'name' => 'Nom qui ouvre',
+                        'type' => 'Contextuelle (Bonta, Brâkmar, capitales)',
+                        'effect' => 'On te reçoit. Obligations en face : tu dois des politesses, des cadeaux, des silences. Pas un bonus au marché aux poissons (Négociant·e).',
+                    ],
+                ],
+            ],
+            15 => [
+                'choice' => '1 aptitude ou 1 capacité ; expertise possible',
+                'aptitudes' => [
+                    [
+                        'name' => 'Conseil du prince',
+                        'effect' => 'Tu pèses sur une décision d’un PNJ de rang (milice, temple, maison). Une fois par arc, avec le MJ. Échec possible, et ça se sait.',
+                    ],
+                ],
+                'capacities' => [
+                    [
+                        'name' => 'Réputation blindée',
+                        'type' => 'Passive',
+                        'effect' => 'Une rumeur contre toi a besoin de preuves, ou elle glisse. Trop fort contre un Sram enquêteur : limiter aux rumeurs mondaines, pas aux crimes flagrants.',
+                    ],
+                ],
+            ],
+            18 => [
+                'choice' => '1 aptitude ou 1 capacité',
+                'aptitudes' => [
+                    [
+                        'name' => 'Changer de camp sans bouger',
+                        'effect' => 'Tu survives à un retournement politique (purge, changement d’alignement de ville) en te recasant. Narratif de fin d’arc. Pas une téléportation.',
+                    ],
+                ],
+                'capacities' => [
+                    [
+                        'name' => 'La cour te doit un sourire',
+                        'type' => 'Contextuelle (grande ville alignée)',
+                        'effect' => 'À Bonta ou Brâkmar, un PNJ de rang te reçoit même après une gaffe, une fois. La deuxième fois, il faut payer.',
+                    ],
+                ],
+            ],
+            20 => [
+                'choice' => '1 aptitude ou 1 capacité ; expertise possible',
+                'aptitudes' => [
+                    [
+                        'name' => 'Une parole pour la ville',
+                        'effect' => 'Capstone : tu fais basculer une décision publique (trêve, décret, mariage politique, embargo). Avec le MJ, une fois. Ça change la campagne, pas un jet de dégâts.',
+                    ],
+                ],
+                'capacities' => [
+                    [
+                        'name' => 'Intouchable en public',
+                        'type' => 'Réactive',
+                        'effect' => 'Tant que des témoins « comme il faut » sont là, t’attaquer ouvertement coûte cher politiquement à l’agresseur. N’empêche pas un assassinat dans l’ombre.',
+                    ],
+                ],
+            ],
+        ],
+    ],
 ];

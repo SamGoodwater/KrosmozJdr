@@ -387,7 +387,7 @@ class ProjectInitCommand extends Command
         }
 
         if (! (bool) $this->option('skip-specializations')) {
-            $this->line('  → '.SpecializationSeeder::class.' (HTML legacy si présents, brouillons Artisan·e / Négociant·e / Sylvain·e)');
+            $this->line('  → '.SpecializationSeeder::class.' (HTML legacy si présents, plus brouillons manquants)');
             $code = Artisan::call('db:seed', ['--class' => SpecializationSeeder::class, '--force' => true]);
             $this->output->write(Artisan::output());
             if ($code !== 0) {

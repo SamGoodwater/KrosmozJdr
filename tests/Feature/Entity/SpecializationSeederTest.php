@@ -11,7 +11,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
- * Seed des spécialisations brouillon (Artisan·e, Négociant·e, Sylvain·e).
+ * Seed des spécialisations brouillon (Artisan·e, Négociant·e, Sylvain·e, Marin·e, Courtisan·e).
  */
 class SpecializationSeederTest extends TestCase
 {
@@ -23,7 +23,7 @@ class SpecializationSeederTest extends TestCase
 
         $this->seed(SpecializationSeeder::class);
 
-        foreach (['Artisan·e', 'Négociant·e', 'Sylvain·e'] as $name) {
+        foreach (['Artisan·e', 'Négociant·e', 'Sylvain·e', 'Marin·e', 'Courtisan·e'] as $name) {
             $specialization = Specialization::query()->where('name', $name)->first();
             $this->assertNotNull($specialization, "Fiche manquante : {$name}");
             $this->assertSame(Specialization::STATE_DRAFT, $specialization->state);
@@ -35,7 +35,10 @@ class SpecializationSeederTest extends TestCase
         }
 
         $this->assertTrue(
-            Page::query()->where('slug', 'import-specialization-artisan-e')->where('state', Page::STATE_DRAFT)->exists()
+            Page::query()->where('slug', 'import-specialization-marin-e')->where('state', Page::STATE_DRAFT)->exists()
+        );
+        $this->assertTrue(
+            Page::query()->where('slug', 'import-specialization-courtisan-e')->where('state', Page::STATE_DRAFT)->exists()
         );
     }
 
