@@ -36,7 +36,7 @@ minimal compact → survol : overlay déployé → double-clic / quick-view : mo
 - **Tous** les `*ViewMinimal` (hors `language`) passent par `EntityMinimalCard` : double-clic → modal, whitelist d’actions commune, pin flottant.
 - Sorts et capacités (Minimal / Line) : le glass reste celui du thème ; l’élément se lit en bordure (`getElementGlassSurfaceStyle`, `--element-border-color` / dégradé si plusieurs primaires). Sans élément, bordure thème.
 - Shell commun : `useEntityMinimalShell` + `EntityMinimalTitle`.
-- PNJ : mêmes densités de caractéristiques que les monstres (créature liée).
+- PNJ : mêmes densités de caractéristiques que les monstres (créature liée). Carte minimale déployée : description, langues, traits, compétences, sorts et équipements. Catalogue Index en pagination serveur.
 - La **page** n’est pas l’entrée principale : **Agrandir** depuis la modal, ou Ctrl+clic.
 - En `line` : même logique → modal full (`EntityLineRowActions`).
 - Badges type / rareté / niveau (ressources, équipements, consommables) : infobulle via `EntityFieldTooltip`. Hors tableau `characteristics` (type, rareté) : description courte (`FIELD_HELPERS`). Caractéristiques BDD (poids, prix, stats) : helper + limites min/max figées.

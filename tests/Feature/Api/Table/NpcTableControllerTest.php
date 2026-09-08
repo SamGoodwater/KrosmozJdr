@@ -3,8 +3,11 @@
 namespace Tests\Feature\Api\Table;
 
 use App\Http\Middleware\CheckRole;
+use App\Models\Entity\Creature;
 use App\Models\Entity\Npc;
+use App\Models\Entity\Spell;
 use App\Models\User;
+use App\Support\Npc\NpcRole;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -161,5 +164,126 @@ class NpcTableControllerTest extends TestCase
         $data = $response->json();
         $this->assertCount(5, $data['entities']);
         $this->assertEquals(5, $data['meta']['query']['limit']);
+    }
+
+    public function test_non_admin_can_sort_playable_npcs_by_creature_name(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_USER]);
+        $creatureZ = Creature::factory()->create(['name' => 'Zibouya']);
+        $creatureA = Creature::factory()->create(['name' => 'Abraknyde']);
+        Npc::factory()->create($this->playableAttrs(['creature_id' => $creatureZ->id]));
+        Npc::factory()->create($this->playableAttrs(['creature_id' => $creatureA->id]));
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/npcs?format=entities&sort=creature_name&order=asc&limit=10');
+
+        $response->assertOk();
+        $names = collect($response->json('entities'))->pluck('creature.name')->all();
+        $this->assertSame(['Abraknyde', 'Zibouya'], $names);
+    }
+
+    public function test_creature_hostility_filter_and_sort(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $friendly = Creature::factory()->create(['name' => 'Ami', 'hostility' => 0]);
+        $hostile = Creature::factory()->create(['name' => 'Ennemi', 'hostility' => 3]);
+        Npc::factory()->create($this->playableAttrs(['creature_id' => $friendly->id]));
+        Npc::factory()->create($this->playableAttrs(['creature_id' => $hostile->id]));
+
+        $filterResponse = $this->actingAs($user)
+            ->getJson('/api/tables/npcs?format=entities&limit=20&filters[creature_hostility][]=3');
+        $filterResponse->assertOk();
+        $filterNames = collect($filterResponse->json('entities'))->pluck('creature.name')->all();
+        $this->assertSame(['Ennemi'], $filterNames);
+
+        $sortResponse = $this->actingAs($user)
+            ->getJson('/api/tables/npcs?format=entities&limit=20&sort=creature_hostility&order=asc');
+        $sortResponse->assertOk();
+        $sortNames = collect($sortResponse->json('entities'))->pluck('creature.name')->all();
+        $this->assertSame(['Ami', 'Ennemi'], $sortNames);
+    }
+
+    public function test_filter_options_include_creature_combat_bounds(): void
+    {
+        $user = User::factory()->create();
+        Npc::factory()->create($this->playableAttrs());
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/npcs?format=entities&limit=1');
+
+        $response->assertOk();
+        $options = $response->json('meta.filterOptions');
+        $this->assertArrayHasKey('creature_hostility', $options);
+        $this->assertArrayHasKey('creature_pa', $options);
+        $this->assertArrayHasKey('creature_life', $options);
+    }
+
+    public function test_creature_level_range_and_npc_role_filters(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $low = Creature::factory()->create(['name' => 'Low', 'level' => '1']);
+        $mid = Creature::factory()->create(['name' => 'Mid', 'level' => '50']);
+        $high = Creature::factory()->create(['name' => 'High', 'level' => '200']);
+        Npc::factory()->create($this->playableAttrs([
+            'creature_id' => $low->id,
+            'npc_role' => NpcRole::GUARD,
+        ]));
+        Npc::factory()->create($this->playableAttrs([
+            'creature_id' => $mid->id,
+            'npc_role' => NpcRole::MERCHANT,
+        ]));
+        Npc::factory()->create($this->playableAttrs([
+            'creature_id' => $high->id,
+            'npc_role' => NpcRole::GUARD,
+            'state' => Npc::STATE_DRAFT,
+        ]));
+
+        $rangeResponse = $this->actingAs($user)
+            ->getJson('/api/tables/npcs?format=entities&limit=20&filters[creature_level][min]=1&filters[creature_level][max]=50');
+        $rangeResponse->assertOk();
+        $rangeNames = collect($rangeResponse->json('entities'))->pluck('creature.name')->sort()->values()->all();
+        $this->assertSame(['Low', 'Mid'], $rangeNames);
+
+        $roleResponse = $this->actingAs($user)
+            ->getJson('/api/tables/npcs?format=entities&limit=20&filters[npc_role][]=merchant');
+        $roleResponse->assertOk();
+        $roleNames = collect($roleResponse->json('entities'))->pluck('creature.name')->all();
+        $this->assertSame(['Mid'], $roleNames);
+
+        $bounds = $rangeResponse->json('meta.filterOptions.creature_level');
+        $this->assertIsArray($bounds);
+        $this->assertArrayHasKey('min', $bounds);
+        $this->assertArrayHasKey('max', $bounds);
+    }
+
+    public function test_nested_spells_hide_foreign_draft_from_player(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $player = User::factory()->create(['role' => User::ROLE_PLAYER]);
+        $creature = Creature::factory()->create(['created_by' => $author->id]);
+        $playableSpell = Spell::factory()->create([
+            'name' => 'Coup Public',
+            'state' => Spell::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $draftSpell = Spell::factory()->create([
+            'name' => 'Mécanique Secrète',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $creature->spells()->attach([$playableSpell->id, $draftSpell->id]);
+        Npc::factory()->create($this->playableAttrs(['creature_id' => $creature->id]));
+
+        $response = $this->actingAs($player)
+            ->getJson('/api/tables/npcs?format=entities&limit=10');
+
+        $response->assertOk();
+        $spellIds = collect($response->json('entities.0.creature.spells'))->pluck('id')->all();
+        $this->assertContains($playableSpell->id, $spellIds);
+        $this->assertNotContains($draftSpell->id, $spellIds);
     }
 }

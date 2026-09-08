@@ -13,6 +13,7 @@ import { BaseModel } from '../BaseModel';
 import CharacteristicsCard from '@/Pages/Organismes/data-display/CharacteristicsCard.vue';
 import { buildCreatureCharacteristicGroups } from '@/Utils/Entity/buildCreatureCharacteristicGroups';
 import { getByDbColumnMap } from '@/Composables/store/useCharacteristicsStore';
+import { formatCharacteristicPropertyTooltip } from '@/Utils/Entity/entity-view-ui';
 
 export class Npc extends BaseModel {
     // ============================================
@@ -208,6 +209,14 @@ export class Npc extends BaseModel {
         }
     }
 
+    _resolveChipsLayoutForTraitDisplay(options = {}) {
+        const ctx = String(options?.context || 'table');
+        if (ctx === 'minimal' || ctx === 'line') {
+            return { labelMode: 'icon-only' };
+        }
+        return { labelMode: 'full' };
+    }
+
     /** @private Données brutes de la créature (pour buildCreatureCharacteristicGroups). */
     _getCreatureData() {
         return this._data?.creature ?? null;
@@ -271,6 +280,30 @@ export class Npc extends BaseModel {
         if (creatureKey === 'hostility') {
             const labels = { 0: 'Amical', 1: 'Curieux', 2: 'Neutre', 3: 'Hostile', 4: 'Agressif' };
             const displayRaw = labels[Number(raw)] ?? String(raw);
+            const def = this._getCreatureCharacteristicDef(options, ['hostility']);
+            if (def) {
+                return {
+                    type: 'chips',
+                    value: '',
+                    params: {
+                        items: [
+                            {
+                                icon: def.icon || null,
+                                color: def.color || null,
+                                value: displayRaw,
+                                name: def.name,
+                                shortLabel: def.short_name,
+                                helper: def.helper,
+                                descriptions: def.descriptions,
+                            },
+                        ],
+                        chipsLayout: this._resolveChipsLayoutForTraitDisplay(options),
+                        sortValue: Number(raw),
+                        searchValue: displayRaw,
+                        filterValue: String(raw),
+                    },
+                };
+            }
             return {
                 type: 'text',
                 value: displayRaw,
@@ -278,6 +311,7 @@ export class Npc extends BaseModel {
                     sortValue: Number(raw),
                     searchValue: displayRaw,
                     filterValue: String(raw),
+                    tooltip: formatCharacteristicPropertyTooltip(def, displayRaw) || displayRaw,
                 },
             };
         }

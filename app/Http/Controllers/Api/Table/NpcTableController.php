@@ -15,6 +15,7 @@ use App\Services\Effect\SpellNestedPreviewSerializer;
 use App\Support\Creature\CreatureMasteryColumns;
 use App\Support\Creature\CreatureSize;
 use App\Support\Npc\NpcRole;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -29,7 +30,6 @@ use Illuminate\Support\Facades\Gate;
 class NpcTableController extends Controller
 {
     use InterpretsEntityTableFilters;
-    use InterpretsEntityTableSort;
     use PaginatesEntityTable;
 
     public function __construct(
@@ -47,7 +47,7 @@ class NpcTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['breed_id', 'specialization_id', 'creature_level', 'state', 'npc_role', 'size'] as $k) {
+        foreach (['breed_id', 'specialization_id', 'creature_level', 'creature_hostility', 'state', 'npc_role', 'size'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -100,29 +100,11 @@ class NpcTableController extends Controller
             });
         }
 
-        if ($this->hasFilterValue($filters, 'breed_id')) {
-            $this->applyEqualityFilter($query, 'breed_id', $filters['breed_id'], 'int');
-        }
-        if ($this->hasFilterValue($filters, 'specialization_id')) {
-            $this->applyEqualityFilter($query, 'specialization_id', $filters['specialization_id'], 'int');
-        }
-        if ($this->hasFilterValue($filters, 'npc_role')) {
-            $this->applyEqualityFilter($query, 'npc_role', $filters['npc_role'], 'string');
-        }
-        if ($this->hasFilterValue($filters, 'size')) {
-            $this->applyEqualityFilter($query, 'size', $filters['size'], 'int');
-        }
-        if ($this->hasFilterValue($filters, 'creature_level')) {
-            $this->applyRelationIntegerRangeFilter($query, 'creature', 'level', $filters['creature_level']);
-        }
-        if ($this->hasFilterValue($filters, 'state')) {
-            $this->applyEqualityFilter($query, 'state', $filters['state']);
-        }
+        $this->applyNpcTableFilters($query, $filters);
 
         $this->applyEntityTableIdList($query, $request);
 
-        $allowedSort = ['id', 'created_at', 'updated_at', 'size', 'npc_role'];
-        $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
+        $this->applyNpcTableSort($query, $request, $sort, $order);
 
         $pageResult = $this->paginateEntityTable($query, $request);
         $rows = $pageResult['rows'];
@@ -152,17 +134,39 @@ class NpcTableController extends Controller
             ->map(fn ($s) => ['value' => (string) $s->id, 'label' => (string) $s->name])
             ->values()
             ->all();
+        $visibleNpcs = Npc::query()->visibleToUser($request->user());
+        $creatureHostilityOptions = [
+            ['value' => '0', 'label' => 'Amical'],
+            ['value' => '1', 'label' => 'Curieux'],
+            ['value' => '2', 'label' => 'Neutre'],
+            ['value' => '3', 'label' => 'Hostile'],
+            ['value' => '4', 'label' => 'Agressif'],
+        ];
         $filterOptions = [
             'breed_id' => $breedOptions,
             'specialization_id' => $specializationOptions,
             'creature_level' => $this->relatedIntegerColumnBounds(
-                Npc::query()->visibleToUser($request->user()),
+                $visibleNpcs,
                 'creature_id',
                 Creature::class,
                 'level',
                 1,
                 200
             ),
+            'creature_life' => $this->relatedIntegerColumnBounds($visibleNpcs, 'creature_id', Creature::class, 'life', 0, 500),
+            'creature_pa' => $this->relatedIntegerColumnBounds($visibleNpcs, 'creature_id', Creature::class, 'pa', 0, 20),
+            'creature_pm' => $this->relatedIntegerColumnBounds($visibleNpcs, 'creature_id', Creature::class, 'pm', 0, 20),
+            'creature_po' => $this->relatedIntegerColumnBounds($visibleNpcs, 'creature_id', Creature::class, 'po', 0, 20),
+            'creature_ini' => $this->relatedIntegerColumnBounds($visibleNpcs, 'creature_id', Creature::class, 'ini', 0, 200),
+            'creature_ca' => $this->relatedIntegerColumnBounds($visibleNpcs, 'creature_id', Creature::class, 'ca', 0, 50),
+            'creature_strong' => $this->relatedIntegerColumnBounds($visibleNpcs, 'creature_id', Creature::class, 'strong', 0, 400),
+            'creature_intel' => $this->relatedIntegerColumnBounds($visibleNpcs, 'creature_id', Creature::class, 'intel', 0, 400),
+            'creature_agi' => $this->relatedIntegerColumnBounds($visibleNpcs, 'creature_id', Creature::class, 'agi', 0, 400),
+            'creature_chance' => $this->relatedIntegerColumnBounds($visibleNpcs, 'creature_id', Creature::class, 'chance', 0, 400),
+            'creature_vitality' => $this->relatedIntegerColumnBounds($visibleNpcs, 'creature_id', Creature::class, 'vitality', 0, 400),
+            'creature_critical_hit' => $this->relatedIntegerColumnBounds($visibleNpcs, 'creature_id', Creature::class, 'critical_hit', 0, 50),
+            'creature_heal_bonus' => $this->relatedIntegerColumnBounds($visibleNpcs, 'creature_id', Creature::class, 'heal_bonus', 0, 50),
+            'creature_hostility' => $creatureHostilityOptions,
             'state' => EntityState::options(),
             'size' => collect(CreatureSize::LABELS)->map(fn ($label, $value) => [
                 'value' => (string) $value,
@@ -428,5 +432,123 @@ class NpcTableController extends Controller
             ],
             'rows' => $tableRows,
         ]);
+    }
+
+    /**
+     * Filtres PNJ (colonnes propres + créature liée).
+     *
+     * @param  Builder<Npc>  $query
+     * @param  array<string, mixed>  $filters
+     */
+    private function applyNpcTableFilters(Builder $query, array $filters): void
+    {
+        $own = [
+            'size' => ['size', 'int'],
+            'id' => ['id', 'int'],
+            'breed_id' => ['breed_id', 'int'],
+            'specialization_id' => ['specialization_id', 'int'],
+            'npc_role' => ['npc_role', 'string'],
+            'state' => ['state', 'string'],
+        ];
+        foreach ($own as $key => [$column, $cast]) {
+            if ($this->hasFilterValue($filters, $key)) {
+                $this->applyEqualityFilter($query, $column, $filters[$key], $cast);
+            }
+        }
+
+        $creatureRange = [
+            'creature_level' => 'level',
+            'creature_life' => 'life',
+            'creature_pa' => 'pa',
+            'creature_pm' => 'pm',
+            'creature_po' => 'po',
+            'creature_ini' => 'ini',
+            'creature_ca' => 'ca',
+            'creature_strong' => 'strong',
+            'creature_intel' => 'intel',
+            'creature_agi' => 'agi',
+            'creature_chance' => 'chance',
+            'creature_vitality' => 'vitality',
+            'creature_critical_hit' => 'critical_hit',
+            'creature_heal_bonus' => 'heal_bonus',
+        ];
+        foreach ($creatureRange as $key => $column) {
+            if ($this->hasFilterValue($filters, $key)) {
+                $this->applyRelationIntegerRangeFilter($query, 'creature', $column, $filters[$key]);
+            }
+        }
+
+        if ($this->hasFilterValue($filters, 'creature_hostility')) {
+            $this->applyRelationEqualityFilter($query, 'creature', 'hostility', $filters['creature_hostility'], 'int');
+        }
+    }
+
+    /**
+     * Tri PNJ : colonnes SQL + sous-requête créature (nom, niveau, stats).
+     *
+     * Un JOIN `creatures` rend `state`/`id` ambigus avec `visibleToUser()`.
+     *
+     * @param  Builder<Npc>  $query
+     */
+    private function applyNpcTableSort(Builder $query, Request $request, string $sort, string $order): void
+    {
+        $sortsPayload = $request->input('sorts');
+        if (is_array($sortsPayload) && isset($sortsPayload[0]) && is_array($sortsPayload[0])) {
+            $sort = (string) ($sortsPayload[0]['field'] ?? $sortsPayload[0]['column'] ?? $sort);
+            $order = strtolower((string) ($sortsPayload[0]['dir'] ?? $sortsPayload[0]['order'] ?? $order));
+        }
+        if (! in_array($order, ['asc', 'desc'], true)) {
+            $order = 'desc';
+        }
+
+        $creatureSort = [
+            'name' => 'name',
+            'creature_name' => 'name',
+            'creature_level' => 'level',
+            'creature_life' => 'life',
+            'creature_pa' => 'pa',
+            'creature_pm' => 'pm',
+            'creature_po' => 'po',
+            'creature_ini' => 'ini',
+            'creature_ca' => 'ca',
+            'creature_hostility' => 'hostility',
+            'creature_state' => 'state',
+            'creature_location' => 'location',
+            'creature_strong' => 'strong',
+            'creature_intel' => 'intel',
+            'creature_agi' => 'agi',
+            'creature_chance' => 'chance',
+            'creature_vitality' => 'vitality',
+            'creature_critical_hit' => 'critical_hit',
+            'creature_heal_bonus' => 'heal_bonus',
+        ];
+
+        $allowedOwn = ['id', 'size', 'npc_role', 'breed_id', 'specialization_id', 'created_at', 'updated_at'];
+        $aliases = [
+            'breed' => 'breed_id',
+            'specialization' => 'specialization_id',
+        ];
+        $ownField = $aliases[$sort] ?? $sort;
+
+        if (array_key_exists($sort, $creatureSort)) {
+            $column = $creatureSort[$sort];
+            $query->orderBy(
+                Creature::query()
+                    ->select($column)
+                    ->whereColumn('creatures.id', $query->qualifyColumn('creature_id'))
+                    ->limit(1),
+                $order
+            );
+
+            return;
+        }
+
+        if (in_array($ownField, $allowedOwn, true)) {
+            $query->orderBy($ownField, $order);
+
+            return;
+        }
+
+        $query->latest();
     }
 }

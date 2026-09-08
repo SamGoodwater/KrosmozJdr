@@ -9,6 +9,7 @@ import { computed } from "vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import { router } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
@@ -24,7 +25,7 @@ import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getNpcFieldDescriptors } from "@/Entities/npc/npc-descriptors";
-import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
+import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 import EntityLanguagesInline from "@/Pages/Molecules/entity/language/EntityLanguagesInline.vue";
 import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
 import MonsterCreatureSpellsList from "@/Pages/Molecules/entity/monster/MonsterCreatureSpellsList.vue";
@@ -110,6 +111,14 @@ const metaFields = computed(() =>
 );
 
 const displayMetaFields = computed(() => [...headlineFields.value, ...metaFields.value]);
+
+const userCanEditFields = computed(() =>
+    ["read_level", "write_level"].filter(canShowField),
+);
+
+const technicalFields = computed(() =>
+    ["created_at", "updated_at"].filter(canShowField),
+);
 
 const hasRelationsChips = computed(() => {
     const cell = props.npc.toCell("npc_summary_relations", {
@@ -207,6 +216,56 @@ const historicalText = computed(() => {
     const v = props.npc?.historical ?? props.npc?._data?.historical;
     return v && String(v).trim() ? String(v) : "";
 });
+
+const getBadgeColor = (fieldKey) => {
+    const colorMap = {
+        creature_level: "warning",
+        breed: "info",
+        npc_role: "secondary",
+        size: "secondary",
+        state: "neutral",
+        creature_hostility: "neutral",
+        read_level: "primary",
+        write_level: "secondary",
+        created_at: "neutral",
+        updated_at: "neutral",
+    };
+    return resolveEntityBadgeUi({
+        fieldKey,
+        cell: getCell(fieldKey),
+        fieldUi: resolveEntityFieldUi({
+            fieldKey,
+            descriptors: descriptors.value,
+            tableMeta: props.tableMeta,
+            entityType: "npc",
+        }),
+        localColorMap: colorMap,
+    }).color;
+};
+
+const getBadgeAutoParams = (fieldKey) => {
+    const { autoLabel, autoScheme, autoTone } = resolveEntityBadgeUi({
+        fieldKey,
+        cell: getCell(fieldKey),
+        fieldUi: resolveEntityFieldUi({
+            fieldKey,
+            descriptors: descriptors.value,
+            tableMeta: props.tableMeta,
+            entityType: "npc",
+        }),
+    });
+    return { autoLabel, autoScheme, autoTone };
+};
+
+const asTextCell = (cell) => {
+    if (!cell) return { type: "text", value: "-", params: {} };
+    const v = cell?.value;
+    return {
+        type: "text",
+        value: v === null || typeof v === "undefined" || String(v) === "" ? "-" : String(v),
+        params: cell?.params || {},
+    };
+};
 
 const handleAction = async (actionKey) => {
     const npcId = props.npc.id;
@@ -480,6 +539,59 @@ const handleAction = async (actionKey) => {
             <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">Boutique</h3>
             <ShopViewText :shop="linkedShop" />
         </section>
+
+        <div v-if="technicalFields.length > 0 || userCanEditFields.length > 0" class="border-t border-base-300 pt-3">
+            <div v-if="technicalFields.length > 0" class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">
+                <template v-for="fieldKey in technicalFields" :key="fieldKey">
+                    <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
+                        <div class="inline-flex min-w-0 items-center gap-2">
+                            <Icon
+                                :source="getFieldIcon(fieldKey)"
+                                :alt="getFieldLabel(fieldKey)"
+                                size="xs"
+                                class="flex-shrink-0 text-primary-300"
+                                :style="getFieldIconStyle(fieldKey)"
+                            />
+                            <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
+                            <span class="min-w-0 break-words">
+                                <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
+                            </span>
+                        </div>
+                    </Tooltip>
+                </template>
+            </div>
+
+            <div v-if="userCanEditFields.length > 0" class="mt-4">
+                <div class="mb-2 text-xs font-semibold uppercase tracking-wide text-primary-300">Paramètres</div>
+                <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">
+                    <template v-for="fieldKey in userCanEditFields" :key="fieldKey">
+                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
+                            <div class="inline-flex min-w-0 items-center gap-2">
+                                <Icon
+                                    :source="getFieldIcon(fieldKey)"
+                                    :alt="getFieldLabel(fieldKey)"
+                                    size="xs"
+                                    class="flex-shrink-0 text-primary-300"
+                                    :style="getFieldIconStyle(fieldKey)"
+                                />
+                                <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
+                                <span class="min-w-0 break-words">
+                                    <Badge
+                                        :color="getBadgeColor(fieldKey)"
+                                        :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
+                                        :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
+                                        :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
+                                        size="sm"
+                                    >
+                                        <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
+                                    </Badge>
+                                </span>
+                            </div>
+                        </Tooltip>
+                    </template>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 

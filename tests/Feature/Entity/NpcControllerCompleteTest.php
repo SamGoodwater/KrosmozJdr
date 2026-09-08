@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Support\Creature\CreatureSize;
 use App\Support\Npc\NpcRole;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 /**
@@ -187,5 +188,24 @@ class NpcControllerCompleteTest extends TestCase
                 'name' => 'Interdit',
             ])
             ->assertForbidden();
+    }
+
+    public function test_admin_index_passes_breeds_for_create_modal(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        Breed::factory()->create([
+            'name' => 'Iop',
+            'state' => Breed::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('entities.npcs.index'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Pages/entity/npc/Index')
+                ->has('breeds')
+                ->has('filters')
+                ->where('breeds.0.name', 'Iop'));
     }
 }

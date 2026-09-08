@@ -37,6 +37,14 @@ describe('npc-descriptors', () => {
             expect(descriptors._tableConfig.features.search.placeholder).toContain('PNJ');
         });
 
+        it('expose les colonnes combat créature comme les monstres', () => {
+            const descriptors = getNpcFieldDescriptors();
+            expect(descriptors.creature_hostility.table.filterable.id).toBe('creature_hostility');
+            expect(descriptors.creature_life.table.filterable.type).toBe('range');
+            expect(descriptors.creature_pa.table.filterable.id).toBe('creature_pa');
+            expect(descriptors.creature_image.table.cell.sizes.md.mode).toBe('thumb');
+        });
+
         it('tous les descriptors ont une propriété display avec sizes (pour les tableaux)', () => {
             const descriptors = getNpcFieldDescriptors();
             Object.values(descriptors).forEach((desc) => {

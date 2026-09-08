@@ -75,9 +75,17 @@ class NpcController extends Controller
 
         $npcs = $query->paginate(20)->withQueryString();
 
+        $breeds = Breed::query()
+            ->visibleToUser(request()->user())
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->limit(200)
+            ->get();
+
         return Inertia::render('Pages/entity/npc/Index', [
             'npcs' => NpcResource::collection($npcs),
-            'filters' => request()->only(['search', 'breed_id', 'specialization_id']),
+            'filters' => request()->only(['search', 'breed_id', 'specialization_id', 'npc_role', 'size']),
+            'breeds' => $breeds,
         ]);
     }
 
