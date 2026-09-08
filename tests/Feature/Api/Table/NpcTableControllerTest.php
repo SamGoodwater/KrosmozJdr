@@ -4,6 +4,7 @@ namespace Tests\Feature\Api\Table;
 
 use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Creature;
+use App\Models\Entity\CreatureTrait;
 use App\Models\Entity\Npc;
 use App\Models\Entity\Spell;
 use App\Models\User;
@@ -285,5 +286,39 @@ class NpcTableControllerTest extends TestCase
         $spellIds = collect($response->json('entities.0.creature.spells'))->pluck('id')->all();
         $this->assertContains($playableSpell->id, $spellIds);
         $this->assertNotContains($draftSpell->id, $spellIds);
+    }
+
+    /**
+     * Un joueur qui voit un PNJ jouable ne doit pas recevoir les traits brouillon liés.
+     */
+    public function test_nested_creature_traits_hide_foreign_draft_from_player(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $player = User::factory()->create(['role' => User::ROLE_PLAYER]);
+        $creature = Creature::factory()->create(['created_by' => $author->id]);
+        $playableTrait = CreatureTrait::factory()->create([
+            'name' => 'Trait Public PNJ',
+            'state' => CreatureTrait::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $draftTrait = CreatureTrait::factory()->create([
+            'name' => 'Trait Secret PNJ XYZ',
+            'state' => CreatureTrait::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $creature->creatureTraits()->attach([$playableTrait->id, $draftTrait->id]);
+        Npc::factory()->create($this->playableAttrs(['creature_id' => $creature->id]));
+
+        $response = $this->actingAs($player)
+            ->getJson('/api/tables/npcs?format=entities&limit=10');
+
+        $response->assertOk();
+        $traitIds = collect($response->json('entities.0.creature.creatureTraits'))->pluck('id')->all();
+        $this->assertContains($playableTrait->id, $traitIds);
+        $this->assertNotContains($draftTrait->id, $traitIds);
     }
 }
