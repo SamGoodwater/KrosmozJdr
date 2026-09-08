@@ -20,6 +20,10 @@ Les infobulles et menus flottants utilisent `@floating-ui/vue` 2 (Vue 3.5, plus 
 
 L’environnement Vitest passe de jsdom 26 à 30. Aucun test à réécrire : la suite Vitest passe. jsdom 30 demande Node 22.22.2+, 24.15+ ou 26+.
 
+## Septembre 2026 — CI GitHub : checkout v7 et composer-install v4
+
+Les workflows de PR clonent avec `actions/checkout@v7` et installent PHP avec `ramsey/composer-install@v4`. Ça reste déclenché par `pull_request` (pas de `pull_request_target`) : pas besoin du flag « checkout non sûr ». Un runner auto-hébergé doit être en 2.327.1 ou plus.
+
 ## Septembre 2026 — Changer l’état depuis une carte minimale
 
 Sur une petite fiche (catalogue, grille), le menu d’état et le menu « ⋮ » s’ouvraient hors de la carte. Dès qu’on quittait la carte pour cliquer une option, la fiche se repliait et le menu disparaissait : impossible de changer l’état. La carte reste maintenant ouverte tant que le menu est là, pour toutes les entités.

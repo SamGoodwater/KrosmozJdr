@@ -1,4 +1,4 @@
-# Weekly minor/patch only. Majors (Vitest 4, Tiptap 3, checkout v7…) stay manual.
+# Weekly minor/patch only. Majors (Vitest 5, Tiptap 3…) stay manual.
 version: 2
 updates:
   - package-ecosystem: npm

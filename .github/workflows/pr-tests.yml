@@ -2,7 +2,7 @@
 # Base MySQL : alignée sur phpunit.xml (krosmoz_testing). Durée : proche du run local (~25–30 min) tant que toute la suite Feature tourne.
 #
 # Exécution « interne » : remplacez `runs-on: ubuntu-latest` par `runs-on: [self-hosted, linux]` (ou vos labels)
-# et installez un GitHub Actions self-hosted runner sur votre infra.
+# et installez un GitHub Actions self-hosted runner ≥ 2.327.1 (Node 24 : checkout v7, composer-install v4).
 #
 # @see https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners
 name: PR — PHPUnit
@@ -50,7 +50,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -60,7 +60,7 @@ jobs:
           coverage: none
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@v3
+        uses: ramsey/composer-install@v4
         with:
           composer-options: '--prefer-dist --no-interaction --no-progress'
 
