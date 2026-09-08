@@ -1,5 +1,17 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Fiches brouillon : plus de fuites via l’API et les liaisons
+
+Un invité ne lit plus les effets d’une fiche brouillon (`/api/effects/for-entity`, `/api/effects/usages`, `/api/object-effects`). Sur une fiche jouable, les liaisons encore en brouillon disparaissent : ingrédients de recette, objets/campagnes liés à une ressource, spécialisations d’une capacité, traits d’un monstre, bonus d’équipement dans `resolved-stats`, sorts d’une page bibliothèque CMS. Une maj DofusDB forcée ne dépublie plus une panoplie jouable.
+
+## Septembre 2026 — Registres de types : API réservée aux admins
+
+Les pages Types étaient déjà interdites aux MJ, mais l’API `/api/types/*` (races, types de sorts) restait ouverte à tout compte connecté. Un MJ pouvait donc cocher « scrap » ou supprimer une race créée automatiquement. Ces actions sont maintenant admin uniquement, comme le reste de la gestion du contenu.
+
+## Septembre 2026 — Maj DofusDB « images seules » sans écraser la fiche
+
+Le bouton « Images seules » d’une fiche ne réécrit plus le contenu (sorts, bonus d’objet, pièces de panoplie). Seule l’image est mise à jour.
+
 ## Septembre 2026 — Les PNJ ont une vraie fiche de jeu
 
 Un personnage non-joueur n’est plus une coquille vide collée à une créature. On le crée depuis le catalogue (nom, lieu, classe, rôle), on lui donne une taille comme aux monstres, des langues, une histoire. Le catalogue se feuille comme celui des monstres : page par page, on filtre l’hostilité ou les stats, on trie par nom. Sur la fiche et la petite carte : sorts, compétences, équipement porté (un objet par emplacement, deux anneaux), panoplies associées et boutique s’il en a une. Pas d’import DofusDB : ces gens-là s’écrivent à la main.

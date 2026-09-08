@@ -16,9 +16,35 @@ class ObjectEffectControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_guest_can_list_object_effects(): void
+    /**
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
+    private function playableItemAttrs(array $overrides = []): array
     {
-        $item = Item::factory()->create();
+        return array_merge([
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ], $overrides);
+    }
+
+    /**
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
+    private function draftItemAttrs(array $overrides = []): array
+    {
+        return array_merge([
+            'state' => Item::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ], $overrides);
+    }
+
+    public function test_guest_can_list_object_effects_of_playable_item(): void
+    {
+        $item = Item::factory()->create($this->playableItemAttrs());
         ObjectEffect::query()->create([
             'object_effectable_type' => Item::class,
             'object_effectable_id' => $item->id,
@@ -32,6 +58,68 @@ class ObjectEffectControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertJsonPath('data.0.action', 'teleport');
+    }
+
+    public function test_guest_cannot_list_object_effects_of_draft_item(): void
+    {
+        $item = Item::factory()->create($this->draftItemAttrs());
+        ObjectEffect::query()->create([
+            'object_effectable_type' => Item::class,
+            'object_effectable_id' => $item->id,
+            'action' => 'teleport',
+            'characteristic_id' => null,
+            'monster_id' => null,
+            'value' => null,
+        ]);
+
+        $this->getJson('/api/object-effects?entity_type=item&entity_id='.$item->id)
+            ->assertForbidden();
+    }
+
+    public function test_game_master_can_list_object_effects_of_draft_item(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $item = Item::factory()->create($this->draftItemAttrs());
+        ObjectEffect::query()->create([
+            'object_effectable_type' => Item::class,
+            'object_effectable_id' => $item->id,
+            'action' => 'add',
+            'characteristic_id' => null,
+            'monster_id' => null,
+            'value' => 3,
+        ]);
+
+        $this->actingAs($gm)
+            ->getJson('/api/object-effects?entity_type=item&entity_id='.$item->id)
+            ->assertOk()
+            ->assertJsonPath('data.0.action', 'add')
+            ->assertJsonPath('data.0.value', 3);
+    }
+
+    public function test_guest_list_hides_draft_invoke_monster_on_playable_item(): void
+    {
+        $item = Item::factory()->create($this->playableItemAttrs());
+        $draftMonster = Monster::factory()->create([
+            'state' => 'draft',
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+        $draftMonster->creature()->update(['name' => 'Invocation secrète']);
+
+        ObjectEffect::query()->create([
+            'object_effectable_type' => Item::class,
+            'object_effectable_id' => $item->id,
+            'action' => 'invoke',
+            'characteristic_id' => null,
+            'monster_id' => $draftMonster->id,
+            'value' => null,
+        ]);
+
+        $this->getJson('/api/object-effects?entity_type=item&entity_id='.$item->id)
+            ->assertOk()
+            ->assertJsonPath('data.0.action', 'invoke')
+            ->assertJsonPath('data.0.monster_id', null)
+            ->assertJsonPath('data.0.monster', null);
     }
 
     public function test_game_master_can_create_update_and_delete_object_effect(): void

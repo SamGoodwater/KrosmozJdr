@@ -164,6 +164,18 @@ class EntityDofusdbRefreshControllerTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_images_only_refresh_skips_validation_and_relations(): void
+    {
+        $options = (new \ReflectionMethod(EntityDofusdbRefreshService::class, 'orchestratorOptions'))
+            ->invoke(app(EntityDofusdbRefreshService::class), 'images_only', false);
+
+        $this->assertTrue($options['images_only']);
+        $this->assertFalse($options['validate']);
+        $this->assertFalse($options['include_relations']);
+        $this->assertTrue($options['integrate']);
+        $this->assertTrue($options['download_images']);
+    }
+
     private function mockOrchestratorPreview(): void
     {
         $service = Mockery::mock(EntityDofusdbRefreshService::class);

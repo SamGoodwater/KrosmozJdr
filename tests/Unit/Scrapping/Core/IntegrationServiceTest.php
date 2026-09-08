@@ -17,6 +17,7 @@ use App\Models\Type\ConsumableType;
 use App\Models\Type\MonsterRace;
 use App\Models\Type\ResourceType;
 use App\Models\Type\SpellType;
+use App\Models\User;
 use App\Services\Scrapping\Core\Integration\IntegrationResult;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -949,6 +950,52 @@ class IntegrationServiceTest extends TestCase
         $this->assertSame('Panoplie Integration Test', $panoply->name);
         $this->assertSame('100', $panoply->dofusdb_id);
         $this->assertSame('[{"effectId":1,"value":10}]', $panoply->bonus);
+        $this->assertSame(Panoply::STATE_RAW, $panoply->state);
+    }
+
+    /**
+     * Un force_update DofusDB met à jour le contenu sans dépublier ni réécrire les droits.
+     */
+    public function test_integrate_panoply_force_update_does_not_downgrade_playable_state(): void
+    {
+        $this->createSystemUser();
+        $author = User::factory()->create();
+        $existing = Panoply::factory()->create([
+            'dofusdb_id' => '200',
+            'name' => 'Panoplie jouable',
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'created_by' => $author->id,
+            'bonus' => 'old-bonus',
+        ]);
+
+        $convertedData = [
+            'panoplies' => [
+                'dofusdb_id' => '200',
+                'name' => 'Panoplie DofusDB',
+                'description' => 'Nouvelle desc',
+                'bonus' => '[{"effectId":1}]',
+                'item_dofusdb_ids' => [],
+            ],
+        ];
+
+        $result = $this->service->integrate('panoply', $convertedData, [
+            'force_update' => true,
+            'replace_mode' => 'always',
+            'respect_auto_update' => false,
+        ]);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('updated', $result->getPrimaryAction());
+        $existing->refresh();
+        $this->assertSame(Panoply::STATE_PLAYABLE, $existing->state);
+        $this->assertSame(User::ROLE_GUEST, $existing->read_level);
+        $this->assertSame(User::ROLE_ADMIN, $existing->write_level);
+        $this->assertSame($author->id, $existing->created_by);
+        $this->assertSame('Panoplie DofusDB', $existing->name);
+        $this->assertSame('[{"effectId":1}]', $existing->bonus);
+        $this->assertSame('Nouvelle desc', $existing->description);
     }
 
     public function test_integrate_panoply_incomplete_returns_fail(): void
@@ -1011,6 +1058,141 @@ class IntegrationServiceTest extends TestCase
         $this->assertCount(2, $syncedIds);
         $this->assertContains($item1->id, $syncedIds);
         $this->assertContains($item2->id, $syncedIds);
+    }
+
+    public function test_images_only_does_not_overwrite_spell_fields_or_effects(): void
+    {
+        $this->createSystemUser();
+        $author = User::factory()->create();
+        $spell = Spell::factory()->create([
+            'dofusdb_id' => '54321',
+            'name' => 'Sort local',
+            'pa' => '9',
+            'cast_per_turn' => '7',
+            'created_by' => $author->id,
+            'auto_update' => true,
+        ]);
+
+        $result = $this->service->integrate('spell', [
+            'spells' => [
+                'dofusdb_id' => '54321',
+                'name' => 'Sort Dofus écrasé',
+                'description' => 'Nouvelle desc',
+                'pa' => '1',
+                'po' => '6',
+                'level' => '200',
+                'cast_per_turn' => '1',
+                'created_by' => 1,
+            ],
+            'spell_effects' => [
+                'effect_group' => ['name' => 'Groupe écrasé', 'slug' => 'groupe-ecrase'],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Effet écrasé',
+                        'slug' => 'effet-ecrase-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [],
+                    ],
+                ],
+            ],
+        ], [
+            'images_only' => true,
+            'force_update' => true,
+            'download_images' => false,
+        ]);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('updated', $result->getPrimaryAction());
+        $spell->refresh();
+        $this->assertSame('Sort local', $spell->name);
+        $this->assertSame('9', $spell->pa);
+        $this->assertSame('7', $spell->cast_per_turn);
+        $this->assertSame($author->id, $spell->created_by);
+        $this->assertSame(0, $spell->effects()->count());
+    }
+
+    public function test_images_only_does_not_overwrite_item_bonus_or_price(): void
+    {
+        $this->createSystemUser();
+        $item = Item::factory()->create([
+            'dofusdb_id' => '42',
+            'name' => 'Gelano local',
+            'bonus' => '{"chance":6}',
+            'price_custom' => 1234,
+        ]);
+
+        $result = $this->service->integrate('item', [
+            'items' => [
+                'dofusdb_id' => '42',
+                'name' => 'Gelano Dofus',
+                'description' => 'Écrasé',
+                'level' => '200',
+                'bonus' => '{"chance":1}',
+                'price' => 1,
+                'rarity' => 5,
+            ],
+        ], [
+            'images_only' => true,
+            'force_update' => true,
+            'download_images' => false,
+        ]);
+
+        $this->assertTrue($result->isSuccess());
+        $item->refresh();
+        $this->assertSame('Gelano local', $item->name);
+        $this->assertSame('{"chance":6}', $item->bonus);
+        $this->assertSame(1234, $item->price_custom);
+    }
+
+    public function test_images_only_does_not_detach_panoply_items(): void
+    {
+        $this->createSystemUser();
+        $piece = Item::factory()->create(['dofusdb_id' => '501']);
+        $panoply = Panoply::factory()->create([
+            'dofusdb_id' => '88',
+            'name' => 'Set local',
+        ]);
+        $panoply->items()->sync([$piece->id]);
+
+        $result = $this->service->integrate('panoply', [
+            'panoplies' => [
+                'dofusdb_id' => '88',
+                'name' => 'Set Dofus',
+                'item_dofusdb_ids' => ['99999'],
+            ],
+        ], [
+            'images_only' => true,
+            'force_update' => true,
+            'download_images' => false,
+        ]);
+
+        $this->assertTrue($result->isSuccess());
+        $panoply->refresh();
+        $this->assertSame('Set local', $panoply->name);
+        $this->assertTrue($panoply->items->contains($piece));
+        $this->assertCount(1, $panoply->items);
+    }
+
+    public function test_images_only_does_not_create_missing_entity(): void
+    {
+        $this->createSystemUser();
+
+        $result = $this->service->integrate('spell', [
+            'spells' => [
+                'dofusdb_id' => '404404',
+                'name' => 'Sort inexistant',
+                'pa' => '3',
+            ],
+        ], [
+            'images_only' => true,
+            'force_update' => true,
+            'download_images' => false,
+        ]);
+
+        $this->assertFalse($result->isSuccess());
+        $this->assertNull(Spell::query()->where('dofusdb_id', '404404')->first());
     }
 
     /**

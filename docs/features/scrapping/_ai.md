@@ -19,7 +19,7 @@
 - **Monstres** : niveau 1–30, caractéristiques principales 6–30, PA 3–14, PM 2–10, PO 0–10 ; résistances relatives par paliers `-100/-50/0/50/100`, sans conversion automatique vers les résistances fixes.
 - **Objets** : bonus/malus signés et bornes symétriques (caractéristiques ±6, PA ±5, PM ±2 hors forgemagie) ; résistances relatives converties uniquement sur les panoplies en paliers `-2/-1/0/1/2`.
 - **Audit / gates** : `scrapping:audit` valide le socle ; `scrapping:run` active la gate pré-import par défaut (hors simulate / `--no-quality-gate`) ; après import `spell`, `scrapping:effects:quality-gate` (`--allow-empty` si `--id`/`--ids`). Checklist mass scrap : [SERVER_MASS_SCRAP.md](./SERVER_MASS_SCRAP.md).
-- **Sécurité** : middleware `role:admin` + `password.confirm` sur `/api/dofusdb/*` (masse ; ancien préfixe `/api/scrapping` redirige en 307). Maj **unitaire** MJ+ : `POST /api/entities/{type}/{id}/dofusdb-refresh` (id local, policy `update`, throttle, pas de password.confirm) ; refusée si le type / la race a `allow_scrap=false`.
+- **Sécurité** : middleware `role:admin` + `password.confirm` sur `/api/dofusdb/*` (masse ; ancien préfixe `/api/scrapping` redirige en 307). Registres races / types de sorts : `/api/types/*` (`role:admin`, policies `TypeRegistryPolicy`). Maj **unitaire** MJ+ : `POST /api/entities/{type}/{id}/dofusdb-refresh` (id local, policy `update`, throttle, pas de password.confirm) ; refusée si le type / la race a `allow_scrap=false`. Mode `images_only` : télécharge l’image, n’écrase pas champs / effets / pièces.
 - **CLI** : `php artisan scrapping:setup` (socle) puis `scrapping:run` (exploitation). Masse sans `--id`/`--typeId` : `--type-mode=allowed` et `--race-mode=allowed` (défaut, `allow_scrap`). `--type-mode=all` / `--race-mode=all` pour tout récupérer. Liste vide (`raceIds=[]` / `typeIds=[]`) = pas d’appel DofusDB. En test : une race `allow_scrap` avec `dofusdb_race_id`, ou `race_mode=all`.
 
 ## Fichiers pivots
@@ -27,7 +27,7 @@
 - `app/Services/Scrapping/Core/Orchestrator/Orchestrator.php` + `ScrappingPipelineFactory.php` — assemblage du pipeline.
 - `app/Services/Scrapping/Core/Collect/CollectService.php` + `app/Services/Scrapping/Http/DofusDbClient.php` — collecte API.
 - `app/Services/Scrapping/Core/Conversion/ConversionService.php` (+ `FormatterApplicator.php`, `ItemEffectsToBonusConverter.php`, `SpellEffects/SpellEffectsConversionService.php`) — conversion.
-- `app/Services/Scrapping/Core/Integration/IntegrationService.php` — écriture BDD ; état de sort : jeton `raw` + liaison vers le canon `playable` (`ConditionCanonicalMapper`).
+- `app/Services/Scrapping/Core/Integration/IntegrationService.php` — écriture BDD ; état de sort : jeton `raw` + liaison vers le canon `playable` (`ConditionCanonicalMapper`). Maj d’une **panoplie déjà en base** : contenu DofusDB seulement (`name`/`description`/`bonus`/pièces), **sans** réécrire `state`, `read_level`, `write_level`, `created_by`.
 - `app/Services/Scrapping/Core/Config/ConfigLoader.php` + `ScrappingMappingService.php` — config + mapping.
 - `app/Jobs/ProcessScrappingJob.php` — exécution asynchrone.
 - `routes/api/scrapping.php` — endpoints `/api/dofusdb` (search, preview, jobs, import, registries, catalogues). Noms de routes `scrapping.*`.

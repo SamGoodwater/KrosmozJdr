@@ -7,11 +7,17 @@ Le système d'effets décrit les effets de sorts et d'objets : effets principaux
 - Modèles : `Effect`, `SubEffect`, `EffectDegree`, `EffectUsage`, `ObjectEffect`, `DofusdbEffectMapping`.
 - Services : `app/Services/Effect/`, `app/Services/Scrapping/Core/Conversion/SpellEffects/`.
 - Admin/API : contrôleurs sous `app/Http/Controllers/Admin/` et `app/Http/Controllers/Api/Effect/`.
+- Effets d’objet : `GET /api/object-effects?entity_type=&entity_id=` exige `view` sur la fiche
+  (item / consommable / ressource). Un monstre invoqué n’est renvoyé que s’il est `visibleToUser`.
+  La route lit la session (`web`) pour que l’éditeur d’une fiche brouillon recharge la liste.
 - Canal canon pour les sorts : pivot `effect_spell` + `effects_definitions` (resource). Les tables
   legacy `spell_effects` / `spell_effect_types` sont droppées.
 - Liaison depuis la fiche sort : `GET /api/effects/definitions?q=&exclude_spell_id=` (pas de liste
   complète dans le payload d’édition).
 - Index API : `GET /api/effects/effects?q=&per_page=` (paginé).
+- Prévisualisation : `GET /api/effects/for-entity` et liste `GET /api/effects/usages` exigent
+  `view` sur la fiche parente (sort, objet, consommable ou ressource). Un brouillon n’est
+  pas enumerable par identifiant.
 - Reclassement post-import : `php artisan scrapping:effects:reapply-mappings`.
 
 ## Données

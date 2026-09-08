@@ -5,6 +5,7 @@
 ## Fichiers pivots
 
 - `app/Models/Effect*.php`, `app/Models/ObjectEffect.php`
+- `GET /api/object-effects` — liste par fiche ; `view` sur le parent + `visibleToUser` sur le monstre invoqué (session `web`)
 - `app/Services/Effect/` (`SpellNestedPreviewSerializer` : chips d’aperçu sur sorts liés)
 - `app/Services/Scrapping/Core/Conversion/SpellEffects/`
 - `app/Support/DofusHyperlinkText.php` (libellés d’états `{{spell,…::Nom}}`)
@@ -15,6 +16,7 @@
 - `Spell::visibleToUser` / `EntityDisplayVisibilityService::constrainQueryToViewer` (listes)
 - `GET /api/effects/definitions` — recherche defs pour liaison sort (payload edit allégé)
 - `GET /api/effects/effects?q=&per_page=` — index paginé (plus de dump massif)
+- `GET /api/effects/for-entity` et `GET /api/effects/usages` : `view` sur la fiche parente (un sort/objet brouillon ne fuit pas)
 - `scrapping:effects:reapply-mappings` — reclasse les `autre` déjà mappés (ex. téléports)
 - Canal sorts : `effects_definitions` (legacy `spell_effects` / `spell_effect_types` droppés)
 - Invisibilité Dofus 150 → `appliquer-etat` (state 250)
