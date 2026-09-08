@@ -4,6 +4,10 @@
 
 Les scripts qui lancent Vite et le CSS en même temps (`dev:css`, `composer run dev:network`) utilisent concurrently 10. Ça impose **Node 22 ou plus** (plus de Node 20). Les options `--kill-others` et les couleurs de préfixe n’ont pas changé pour nous.
 
+## Septembre 2026 — Markdown légal : marked 18
+
+Les pages CMS qui affichent un markdown (mentions légales, etc.) passent par marked 18. L’appel `marked.parse` reste le même ; le HTML a juste moins de lignes vides en trop.
+
 ## Septembre 2026 — Changer l’état depuis une carte minimale
 
 Sur une petite fiche (catalogue, grille), le menu d’état et le menu « ⋮ » s’ouvraient hors de la carte. Dès qu’on quittait la carte pour cliquer une option, la fiche se repliait et le menu disparaissait : impossible de changer l’état. La carte reste maintenant ouverte tant que le menu est là, pour toutes les entités.
