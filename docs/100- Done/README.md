@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Miniatures d’images : Intervention 4
+
+Les miniatures (WebP, JPEG, etc.) passent par Intervention Image 4. Le recadrage cover/contain ne change pas ; l’enregistrement utilise le nouvel encodeur de format.
+
 ## Septembre 2026 — État Pinia 4
 
 Les petits stores (caractéristiques, panneau DofusDB, modal favoris) passent en Pinia 4. L’API ne change pas (`defineStore`, `storeToRefs`). Pinia 4 exige le paquet `@vue/devtools-api` à côté.

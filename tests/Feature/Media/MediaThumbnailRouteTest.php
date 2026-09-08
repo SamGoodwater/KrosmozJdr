@@ -31,7 +31,7 @@ class MediaThumbnailRouteTest extends TestCase
     public function test_thumbnail_generates_webp_when_source_exists(): void
     {
         if (! extension_loaded('imagick')) {
-            $this->markTestSkipped('L’extension imagick est requise pour la génération de miniatures (Intervention v3 + driver Imagick).');
+            $this->markTestSkipped('L’extension imagick est requise pour la génération de miniatures (Intervention v4 + driver Imagick).');
         }
 
         Storage::fake('public');

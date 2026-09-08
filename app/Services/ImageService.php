@@ -6,7 +6,9 @@ use Closure;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Imagick\Driver;
+use Intervention\Image\Format;
 use Intervention\Image\ImageManager;
+use Intervention\Image\Interfaces\ImageInterface;
 
 /**
  * Service de gestion des images
@@ -148,7 +150,7 @@ class ImageService
                 }
 
                 // Créer l'image avec Intervention/Imagick
-                $image = $this->imageManager->read($disk->path($path));
+                $image = $this->imageManager->decodePath($disk->path($path));
 
                 // Appliquer les transformations
                 if ($options['fit'] === 'cover') {
@@ -164,14 +166,7 @@ class ImageService
                 }
                 $format = strtolower((string) ($options['format'] ?? 'webp'));
                 $q = max(1, min(100, $options['quality']));
-
-                match ($format) {
-                    'jpg', 'jpeg' => $image->toJpeg($q)->save($targetPath),
-                    'png' => $image->toPng()->save($targetPath),
-                    'gif' => $image->toGif()->save($targetPath),
-                    'webp' => $image->toWebp($q)->save($targetPath),
-                    default => $image->toWebp($q)->save($targetPath),
-                };
+                $this->encodeAndSave($image, $targetPath, $format, $q);
 
                 return $cachePath;
             });
@@ -285,18 +280,41 @@ class ImageService
         $fullPath = $disk->path($path);
 
         // Créer une nouvelle image avec Intervention/Imagick
-        $image = $this->imageManager->read($fullPath);
+        $image = $this->imageManager->decodePath($fullPath);
 
         // Générer le nouveau chemin
         $newPath = pathinfo($path, PATHINFO_DIRNAME).'/'.
             pathinfo($path, PATHINFO_FILENAME).'.webp';
 
         // Sauvegarder en WebP avec une qualité de 80%
-        $image->toWebp(self::DEFAULT_QUALITY)->save($disk->path($newPath));
+        $this->encodeAndSave($image, $disk->path($newPath), 'webp', self::DEFAULT_QUALITY);
 
         // Supprimer l'ancien fichier
         $disk->delete($path);
 
         return $newPath;
+    }
+
+    /**
+     * Encode l’image au format demandé (API Intervention Image 4) et l’écrit sur disque.
+     *
+     * @param  ImageInterface  $image  Image déjà redimensionnée
+     * @param  string  $targetPath  Chemin de destination
+     * @param  string  $format  jpg|jpeg|png|gif|webp
+     * @param  int  $quality  1–100 (JPEG / WebP)
+     *
+     * @example
+     * $this->encodeAndSave($image, $path, 'webp', 80);
+     */
+    private function encodeAndSave(ImageInterface $image, string $targetPath, string $format, int $quality): void
+    {
+        $encoded = match ($format) {
+            'jpg', 'jpeg' => $image->encodeUsingFormat(Format::JPEG, quality: $quality),
+            'png' => $image->encodeUsingFormat(Format::PNG),
+            'gif' => $image->encodeUsingFormat(Format::GIF),
+            default => $image->encodeUsingFormat(Format::WEBP, quality: $quality),
+        };
+
+        $encoded->save($targetPath);
     }
 }
