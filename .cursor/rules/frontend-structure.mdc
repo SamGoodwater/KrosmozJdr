@@ -18,7 +18,7 @@ Frontend Vue 3 en **Composition API et JavaScript** (pas de TypeScript), lié au
 ## État (state management)
 
 - **Props Inertia** (`usePage().props`) = source principale (auth, permissions, données).
-- **Pinia** : minimal — essentiellement `useCharacteristicsPiniaStore`.
+- **Pinia 4** : minimal — `useCharacteristicsPiniaStore`, `useDofusDbReferenceStore`, `useFavoritesUiStore` ; peer `@vue/devtools-api`.
 - Sinon : composables module-level (notifications, overlays) + `localStorage` (préférences de vue/table).
 
 ## Points d'attention

@@ -6,7 +6,7 @@
 
 - Pas de TypeScript généralisé.
 - `vue-i18n` est documenté historiquement mais non branché côté `resources/js`.
-- State principal : props Inertia, composables, Pinia minimal.
+- State principal : props Inertia, composables, Pinia 4 (peer `@vue/devtools-api`).
 - Footer desktop (`Layouts/Footer.vue`) : 2 lignes, logo centré ; padding via le layout, pas la molécule.
 
 ## Descendre

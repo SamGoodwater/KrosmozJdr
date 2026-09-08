@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — État Pinia 4
+
+Les petits stores (caractéristiques, panneau DofusDB, modal favoris) passent en Pinia 4. L’API ne change pas (`defineStore`, `storeToRefs`). Pinia 4 exige le paquet `@vue/devtools-api` à côté.
+
 ## Septembre 2026 — Lint du front : ESLint 10
 
 Le contrôle de qualité du JavaScript et des composants Vue passe en ESLint 10. On lance toujours `pnpm lint` ; la config plate ne change pas. Il faut Node 20.19+, 22.13+ ou 24+ (déjà couvert par Node 22+ du projet).
