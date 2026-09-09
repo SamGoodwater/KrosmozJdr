@@ -45,6 +45,15 @@ class NpcControllerCompleteTest extends TestCase
         $this->assertSame(NpcRole::GUARD, $npc->npc_role);
         $this->assertSame(CreatureSize::MOYEN, (int) $npc->size);
         $this->assertSame($npc->state, $npc->creature->state);
+        $this->assertSame($admin->id, $npc->creature->created_by);
+        $this->assertNull($npc->creature->life);
+        $this->assertNull($npc->creature->pa);
+        $this->assertNull($npc->creature->pm);
+        $this->assertNull($npc->creature->ca);
+        $this->assertSame(0, (int) $npc->creature->acrobatie_mastery);
+        $this->assertSame(0, (int) $npc->creature->read_level);
+        $this->assertSame(3, (int) $npc->creature->write_level);
+        $this->assertNull($npc->creature->image);
         $response->assertRedirect(route('entities.npcs.edit', $npc));
     }
 

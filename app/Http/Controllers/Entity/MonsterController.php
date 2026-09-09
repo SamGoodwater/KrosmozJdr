@@ -99,10 +99,12 @@ class MonsterController extends Controller
         $creatureId = $data['creature_id'] ?? null;
 
         if ($creatureId === null) {
-            $creature = Creature::factory()->create([
+            // Fiche vide (totaux null = composition). Pas Creature::factory() : Faker écrirait des stats aléatoires.
+            $creature = Creature::query()->create([
                 'name' => $data['name'],
                 'description' => $data['description'] ?? '',
                 'level' => (string) ($data['level'] ?? '1'),
+                'state' => $data['state'] ?? 'draft',
                 'created_by' => $request->user()?->id,
             ]);
             $creatureId = $creature->id;

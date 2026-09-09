@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Créer un PNJ ou un monstre sans stats aléatoires
+
+Quand on créait un PNJ ou un monstre depuis le catalogue, le corps de créature était fabriqué avec la factory de tests : vie, PA, caractéristiques et image tiraient des valeurs Faker, ce qui écrasait le mode « composition » (totaux vides). Un nouveau garde pouvait donc naître avec 4000 PV et une URL d’image bidon. La création pose maintenant une fiche vide (totaux `null`, défauts SQL pour le reste).
+
 ## Septembre 2026 — Changer l’état depuis une carte minimale
 
 Sur une petite fiche (catalogue, grille), le menu d’état et le menu « ⋮ » s’ouvraient hors de la carte. Dès qu’on quittait la carte pour cliquer une option, la fiche se repliait et le menu disparaissait : impossible de changer l’état. La carte reste maintenant ouverte tant que le menu est là, pour toutes les entités.

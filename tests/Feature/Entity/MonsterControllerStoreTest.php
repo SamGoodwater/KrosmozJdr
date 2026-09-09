@@ -31,6 +31,16 @@ class MonsterControllerStoreTest extends TestCase
         $monster = Monster::query()->whereHas('creature', fn ($q) => $q->where('name', 'Bouftou test'))->first();
         $this->assertNotNull($monster);
         $this->assertInstanceOf(Creature::class, $monster->creature);
+        $this->assertSame($admin->id, $monster->creature->created_by);
+        $this->assertSame('draft', $monster->creature->state);
+        $this->assertNull($monster->creature->life);
+        $this->assertNull($monster->creature->pa);
+        $this->assertNull($monster->creature->pm);
+        $this->assertNull($monster->creature->ca);
+        $this->assertSame(0, (int) $monster->creature->acrobatie_mastery);
+        $this->assertSame(0, (int) $monster->creature->read_level);
+        $this->assertSame(3, (int) $monster->creature->write_level);
+        $this->assertNull($monster->creature->image);
         $response->assertRedirect(route('entities.monsters.edit', $monster));
     }
 

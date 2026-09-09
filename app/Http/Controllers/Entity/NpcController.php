@@ -105,7 +105,8 @@ class NpcController extends Controller
         $state = $data['state'] ?? 'draft';
 
         if ($creatureId === null) {
-            $creature = Creature::factory()->create([
+            // Fiche vide (totaux null = composition). Pas Creature::factory() : Faker écrirait des stats aléatoires.
+            $creature = Creature::query()->create([
                 'name' => $data['name'],
                 'description' => $data['description'] ?? '',
                 'level' => (string) ($data['level'] ?? '1'),
