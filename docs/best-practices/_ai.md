@@ -14,6 +14,7 @@
 - Backend Laravel classique, Form Requests, policies, services.
 - Frontend Vue 3 JS, Atomic Design, Tailwind/DaisyUI.
 - Lint JS/Vue : ESLint 10 + `eslint-plugin-vue` 10, config plate `eslint.config.js`, script `pnpm lint` (sous-ensemble de fichiers).
+- Tests PHP : PHPUnit 13 (`php artisan test`).
 - CVE transitives Node : `pnpm.overrides` dans `package.json` (`undici` 6.28.0, `qs` 6.16.0, `brace-expansion` 1.1.18 / 2.1.4 / 5.0.9).
 - Dependabot : `.github/dependabot.yml` (weekly minor+patch uniquement ; toutes les majors ignorées).
 - Git : `main` seule branche durable ; branche courte par sujet → commit → merge → suppression. PR optionnelle en solo. Rule : `.cursor/rules/git-github.mdc`.

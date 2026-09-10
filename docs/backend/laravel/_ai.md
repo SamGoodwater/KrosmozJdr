@@ -9,3 +9,4 @@
 - `app/Http/Middleware/HandleInertiaRequests.php` — props partagées.
 - `app/Services/` — logique métier.
 - `app/Services/ImageService.php` — miniatures (Intervention Image 4, driver Imagick).
+- Tests : PHPUnit 13 (`php artisan test`, `phpunit.xml`).

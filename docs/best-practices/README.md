@@ -22,4 +22,4 @@ Conventions appliquées au projet.
 
 ## Tests
 
-Adapter la couverture au risque : tests ciblés pour une modification locale, tests plus larges pour une feature partagée.
+Adapter la couverture au risque : tests ciblés pour une modification locale, tests plus larges pour une feature partagée. Backend : PHPUnit 13 (`php artisan test`).

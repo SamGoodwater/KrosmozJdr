@@ -413,7 +413,7 @@ class SpellEffectsConversionServiceValueConvertedTest extends TestCase
         ]);
 
         $stateCatalog = $this->createMock(DofusDbConditionCatalog::class);
-        $stateCatalog->method('get')->with(97, 'fr')->willReturn([
+        $stateCatalog->expects($this->atLeastOnce())->method('get')->with(97, 'fr')->willReturn([
             'id' => 97,
             'name' => ['fr' => 'Indéplaçable'],
             'icon' => 'stateUnshift',
@@ -468,7 +468,7 @@ class SpellEffectsConversionServiceValueConvertedTest extends TestCase
             'description' => ['fr' => 'Etat #3'],
         ]);
         $stateCatalog = $this->createMock(DofusDbConditionCatalog::class);
-        $stateCatalog->method('get')->with(7, 'fr')->willReturn([
+        $stateCatalog->expects($this->atLeastOnce())->method('get')->with(7, 'fr')->willReturn([
             'id' => 7,
             'name' => ['fr' => 'Pesanteur'],
             'cantSwitchPosition' => true,
