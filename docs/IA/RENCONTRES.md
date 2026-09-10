@@ -6,13 +6,12 @@ Monstres, sorts de créature et PNJ ne se génèrent **pas** en masse au départ
 
 Un monstre JDR n’est pas une créature Dofus + 8 sorts importés. C’est **une fiche + 1 à 3 actions**.
 
-À générer **dans le même appel** :
+À générer **dans le même appel** (les **stats** du monstre restent figées par défaut, voir `resources/ia/generation.json`) :
 
-- stats selon gabarit (niveau, rôle : brute, tireur, soutien…) ;
 - 2–3 sorts-créature (attaque, particularité, éventuellement un passif) ;
 - loot simple si besoin.
 
-Les sorts doivent coller aux caracs (Terre ↔ Force, peu de sorts, budget PA). Deux appels séparés recréent l’aberration « sorts Terre / Force 0 ».
+Les sorts doivent coller aux caracs déjà présentes (Terre ↔ Force, peu de sorts, budget PA). Deux appels séparés recréent l’aberration « sorts Terre / Force 0 ». Pour laisser l’IA retoucher une carac, l’ajouter dans `writable_characteristics` du JSON.
 
 ### Données
 
@@ -22,8 +21,8 @@ Les sorts doivent coller aux caracs (Terre ↔ Force, peu de sorts, budget PA). 
 
 Flux prévu :
 
-1. Brief MJ (« chef Bouftou niveau 10 ») → Laravel : gabarit 5.1.2 + quelques étalons `playable`.
-2. Un JSON `{ monster, spells: [ … ] }`.
+1. Brief MJ (« chef Bouftou niveau 10 ») → Laravel : fiche source + gabarit 5.1.2 (stats **hors** LLM par défaut) + `example_ids`.
+2. Un JSON `{ monster, spells: [ … ] }` : le monstre ne porte que les clés `writable` ; les sorts-créature sont le delta.
 3. Créer les `Spell` et le `Monster` en `auto`, lier le pivot.
 4. Relire **le paquet**, pas quatre fiches orphelines.
 

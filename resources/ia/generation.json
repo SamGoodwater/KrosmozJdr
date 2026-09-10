@@ -1,0 +1,45 @@
+{
+    "_doc": "Config IA métier. Clés _* ignorées. Caractéristiques = characteristics.key. * = tout figer. writable_* gagne sur frozen_*. Détail : docs/IA/CHAMPS.md",
+    "version": 1,
+    "generation": {
+        "max_retries": 2,
+        "few_shot_count": 8,
+        "max_effects_per_spell": 3
+    },
+    "entities": {
+        "item": {
+            "has_dofus_source": true,
+            "frozen_fields": "*",
+            "writable_fields": [],
+            "frozen_characteristics": "*",
+            "writable_characteristics": [],
+            "example_ids": []
+        },
+        "spell": {
+            "has_dofus_source": true,
+            "frozen_fields": "*",
+            "writable_fields": [
+                "effect"
+            ],
+            "frozen_characteristics": "*",
+            "writable_characteristics": [],
+            "example_ids": []
+        },
+        "monster": {
+            "has_dofus_source": true,
+            "frozen_fields": "*",
+            "writable_fields": [],
+            "frozen_characteristics": "*",
+            "writable_characteristics": [],
+            "example_ids": []
+        },
+        "npc": {
+            "has_dofus_source": false,
+            "frozen_fields": [],
+            "writable_fields": [],
+            "frozen_characteristics": [],
+            "writable_characteristics": [],
+            "example_ids": []
+        }
+    }
+}

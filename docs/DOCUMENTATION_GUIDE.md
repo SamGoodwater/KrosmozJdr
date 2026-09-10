@@ -22,4 +22,4 @@ Les feuilles n'ont pas de sous-dossiers. Si un sujet devient trop gros, il devie
 
 - `private/game/` : règles, lore, ressources de jeu.
 - `private/archive/` : historique, plans, prompts, backups.
-- `docs/IA/` : exception volontaire — cadrage de l’**IA générative métier** (LLM pour objets, sorts, monstres, PNJ). Ce n’est pas l’état du code ; les fichiers `_ai.md` ailleurs dans `/docs` servent à orienter les agents de développement.
+- `docs/IA/` : exception volontaire — cadrage de l’**IA générative métier** (LLM pour objets, sorts, monstres, PNJ). Config des champs figés : `resources/ia/generation.json`. Le pipeline LLM n’est pas branché ; les fichiers `_ai.md` ailleurs dans `/docs` orientent les agents de développement.

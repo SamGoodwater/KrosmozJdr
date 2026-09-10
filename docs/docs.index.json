@@ -222,12 +222,12 @@
   {
     "path": "IA/ARCHITECTURE.md",
     "title": "Architecture de la génération",
-    "description": "Cadrage, **pas encore de code dédié**. S’appuie sur le scrapping, les états d’entité et les validateurs déjà en place."
+    "description": "Cadrage. Config des champs figés : `resources/ia/generation.json` (`GenerationConfigLoader`). Le pipeline LLM n’est pas encore branché."
   },
   {
     "path": "IA/CHAMPS.md",
     "title": "Champs figés vs champs générés",
-    "description": "L’IA ne réécrit pas une fiche Dofus entière. Elle travaille un delta JDR. Exception : les PNJ."
+    "description": "Source de vérité : **`resources/ia/generation.json`**. Ce fichier se lit et se modifie à la main. Une UI admin n’est prévue que s’il devient trop lourd."
   },
   {
     "path": "IA/CATALOGUE.md",

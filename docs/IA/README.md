@@ -23,7 +23,7 @@ L’IA est pertinente là où il faut **du design** (simplifier, choisir, racont
 4. L’IA n’écrit jamais en `playable`. Elle dépose une **proposition à relire**.
 5. Les exemples donnés au modèle sont uniquement des fiches déjà `playable`.
 6. Les objets forment un **petit catalogue JDR** (algo + grille), pas un miroir de Dofus. Monstres, sorts de créature et PNJ se font **au fil de l’eau**.
-7. **L’IA ne réécrit pas l’identité** d’une fiche Dofus (nom, description, type, image). Elle touche le jouable à table (effets de sort, kit monstre). **PNJ** : création complète, éventuellement à partir d’une page de site. Détail : [CHAMPS.md](./CHAMPS.md).
+7. **L’IA ne réécrit pas l’identité** d’une fiche Dofus. Les caractéristiques figées sont listées dans `resources/ia/generation.json` (`*` = toutes ; `writable_*` pour une exception). **PNJ** : création complète, éventuellement à partir d’une page de site. Détail : [CHAMPS.md](./CHAMPS.md).
 
 ## Ce qu’on ne fait pas
 
@@ -36,12 +36,12 @@ L’IA est pertinente là où il faut **du design** (simplifier, choisir, racont
 
 ## Rôles de l’IA par type
 
-| Type | Rôle de l’IA | Rôle de l’algo | Figé (source Dofus) |
+| Type | Rôle de l’IA | Rôle de l’algo | Figé (défaut JSON) |
 | --- | --- | --- | --- |
-| **Objets** | Quasi rien ; uniques de scénario seulement | Conversion, 3–4 caracs par type, normes, dédoublonnage, grille | Nom, description, type, image |
-| **Sorts de classe** | Réécriture des **effets** (1 principal + 0–2 secondaires) | Bornes PA/portée, mapping d’effets, element ↔ carac d’attaque | Nom, classe, élément, image |
-| **Monstres** | Simplifier les stats hors gabarit + 2–3 actions, à la demande | Gabarit niveau / PV / dégâts (règles 5.1.2) | Nom, race, image |
-| **PNJ** | **Toute** la fiche (identité + build + choix dans les listes) | Pré-filtre stuff/sorts, validation ids, cohérence voie ↔ carac | Aucun (création) ; brief optionnel depuis une page de site |
+| **Objets** | Quasi rien ; uniques de scénario seulement | Conversion, 3–4 caracs par type, normes, dédoublonnage, grille | Tous champs + toutes caracs |
+| **Sorts de classe** | Réécriture du champ `effect` (1 principal + 0–2 secondaires) | Bornes PA/portée, mapping d’effets, element ↔ carac d’attaque | Tout sauf `effect` ; toutes caracs |
+| **Monstres** | 2–3 sorts-créature, à la demande | Gabarit niveau / PV / dégâts (règles 5.1.2) | Tous champs + toutes caracs |
+| **PNJ** | **Toute** la fiche (identité + build + choix dans les listes) | Pré-filtre stuff/sorts, validation ids, cohérence voie ↔ carac | Aucun |
 
 ## Ordre de livraison
 

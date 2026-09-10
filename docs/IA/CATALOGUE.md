@@ -35,7 +35,7 @@ Référence d’équilibrage : `private/game/rules/5-Ressources-et-equilibrage/5
 5. Pour chaque case de la grille, **garder un représentant** (nom, description, icône Dofus **inchangés**).
 6. Trou (pas d’anneau Terre 8) : **générer** un objet sans source Dofus (template + normes). Nom/description alors techniques ou, plus tard, LLM si on veut du flavour.
 
-L’IA **ne réécrit pas** le nom ni la description d’un item Dofus. Elle n’intervient que pour un **unique de scénario** (sans source) ou un cas que l’algo ne tranche pas. Un snap algo peut aller en revue humaine légère ; `auto` n’est obligatoire que s’il y a eu une passe LLM.
+L’IA **ne réécrit pas** le nom, la description ni les caracs d’un item Dofus (gel dans `resources/ia/generation.json`). Elle n’intervient que pour un **unique de scénario** (sans source) ou un cas que l’algo ne tranche pas. Un snap algo peut aller en revue humaine légère ; `auto` n’est obligatoire que s’il y a eu une passe LLM.
 
 ## Pré-filtre pour le LLM (pas d’API agent)
 

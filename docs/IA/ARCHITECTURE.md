@@ -1,6 +1,6 @@
 # Architecture de la génération
 
-Cadrage, **pas encore de code dédié**. S’appuie sur le scrapping, les états d’entité et les validateurs déjà en place.
+Cadrage. Config des champs figés : `resources/ia/generation.json` (`GenerationConfigLoader`). Le pipeline LLM n’est pas encore branché.
 
 ## Partage des responsabilités
 
@@ -9,10 +9,10 @@ Brief MJ  ou  entité raw (scrap)
         │
         ▼
 Laravel — assembleur de contexte
-  • JSON Schema du type (`frozen` vs `writable`)
-  • champs figés recopiés hors LLM (nom, description, type…)
-  • contraintes machine (extrait)
-  • 3–8 fiches or playable du même type
+  • Config `resources/ia/generation.json` (frozen / writable / étalons)
+  • JSON Schema du type (clés `writable` seulement)
+  • champs et caracs figés recopiés hors LLM
+  • 3–8 fiches or playable (`example_ids`)
   • catalogue pré-filtré (ids, noms, bonus) si besoin
   • normes / gabarit de niveau
   • PNJ : brief MJ et/ou extrait d’une page de site
@@ -83,7 +83,7 @@ Trois couches, pas un pavé unique :
 
 L’IA n’invente pas de types d’effets hors whitelist, ni d’ids d’objets/sorts hors liste fournie.
 
-Sur une fiche **sourcée Dofus**, le schéma n’expose pas `name`, `description`, type, image : Laravel les recopie. Sur un **PNJ** (et un objet unique sans source), le schéma inclut l’identité. Contrat : [CHAMPS.md](./CHAMPS.md).
+Sur une fiche **sourcée Dofus**, le schéma n’expose que les clés `writable` du JSON. Laravel recopie le reste. Sur un **PNJ** (et un objet unique sans source), le schéma inclut l’identité. Contrat : [CHAMPS.md](./CHAMPS.md).
 
 ## Validateurs (à étendre, déjà amorcés)
 
@@ -100,6 +100,7 @@ Un JSON « dans les normes » mais idiot (sorts Terre, Force 0) doit **échouer*
 ## Code et docs existants à réutiliser
 
 - Pipeline scrap : `app/Services/Scrapping/` — Collecte → Conversion → Validation → Intégration. L’IA s’insère **après** la conversion, sur du `raw`.
+- Config gel / étalons : `resources/ia/generation.json`, `app/Services/GenerativeAi/GenerationConfigLoader.php`.
 - Création intelligente objets v1 (preview, pas d’écriture auto) : `NormAwareEntityProcessor`, `ItemEffectsToBonusConverter`.
 - PNJ : `app/Models/Entity/Npc.php` (`creature_id`, `breed_id`, `specialization_id`, story, panoplies). Stats sur `Creature`.
 - Sorts d’une créature : pivot `creature_spell` (`Creature::spells()`).

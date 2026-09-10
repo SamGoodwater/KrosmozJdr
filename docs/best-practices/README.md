@@ -5,7 +5,7 @@ Conventions appliquées au projet.
 ## Documentation
 
 - Décrire l'état actuel, sans historique.
-- Exception : cadrage de l’IA générative métier dans `docs/IA/` (pas encore de code).
+- Exception : cadrage de l’IA générative métier dans `docs/IA/` (config JSON en code, pipeline LLM non branché).
 - Mettre les contenus de jeu dans `private/game/`.
 - Mettre les plans, prompts et anciennes notes dans `private/archive/`.
 - Ajouter un `README.md` humain et un `_ai.md` condensé à chaque nœud.
