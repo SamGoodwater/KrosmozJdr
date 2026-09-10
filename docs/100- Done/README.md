@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Grille d’équipements JDR
+
+On ne garde plus l’idée d’importer tout Dofus pour habiller un perso. Une commande (`ia:equipment-grid`) dresse la carte **niveau × emplacement × voie** (Terre, Feu, Eau, Air). Quand un objet Dofus colle à une case, on le note comme représentant **sans toucher à son nom ni à son icône**. Les cases vides peuvent être remplies par des fiches techniques en brouillon, à relire avant de les rendre jouables.
+
 ## Septembre 2026 — Tableaux : TanStack Table 9
 
 Les catalogues (tri, pagination, colonnes visibles) passent en TanStack Table 9. L’usage ne change pas : on trie, on pagine, on masque des colonnes comme avant.

@@ -1,0 +1,105 @@
+{
+    "_doc": "Grille JDR niveau × slot × voie. Sans LLM. Détail : docs/IA/CATALOGUE.md. Les ids DofusDB des types viennent de item-types.json.",
+    "version": 1,
+    "official_id_prefix": "ia-grid",
+    "name_prefix": "[Grille]",
+    "levels": {
+        "min": 1,
+        "max": 20
+    },
+    "include_neutral": false,
+    "max_characteristics": 4,
+    "bands": [
+        { "from": 1, "to": 5, "value": 1 },
+        { "from": 6, "to": 10, "value": 2 },
+        { "from": 11, "to": 15, "value": 3 },
+        { "from": 16, "to": 20, "value": 4 }
+    ],
+    "voies": {
+        "terre": {
+            "label": "Terre",
+            "keys": ["strength", "strong", "fixed_damage_earth"],
+            "primary_key": "strength",
+            "damage_key": "fixed_damage_earth",
+            "dofus_characteristic_ids": [10, 88],
+            "dofus_element_ids": [1]
+        },
+        "feu": {
+            "label": "Feu",
+            "keys": ["intelligence", "intel", "fixed_damage_fire"],
+            "primary_key": "intelligence",
+            "damage_key": "fixed_damage_fire",
+            "dofus_characteristic_ids": [15, 89],
+            "dofus_element_ids": [2]
+        },
+        "eau": {
+            "label": "Eau",
+            "keys": ["chance", "fixed_damage_water"],
+            "primary_key": "chance",
+            "damage_key": "fixed_damage_water",
+            "dofus_characteristic_ids": [13, 90],
+            "dofus_element_ids": [3]
+        },
+        "air": {
+            "label": "Air",
+            "keys": ["agility", "agi", "fixed_damage_air"],
+            "primary_key": "agility",
+            "damage_key": "fixed_damage_air",
+            "dofus_characteristic_ids": [14, 91],
+            "dofus_element_ids": [4]
+        },
+        "neutre": {
+            "label": "Neutre",
+            "keys": ["vitality", "wisdom", "fixed_damage_neutral", "fixed_damage_multiple"],
+            "primary_key": "vitality",
+            "damage_key": "fixed_damage_neutral",
+            "dofus_characteristic_ids": [11, 12, 16, 92],
+            "dofus_element_ids": [0, 5]
+        }
+    },
+    "slots": [
+        {
+            "key": "amulet",
+            "label": "Amulette",
+            "category": "accessory",
+            "dofusdb_type_ids": [1]
+        },
+        {
+            "key": "ring",
+            "label": "Anneau",
+            "category": "accessory",
+            "dofusdb_type_ids": [9]
+        },
+        {
+            "key": "belt",
+            "label": "Ceinture",
+            "category": "armor",
+            "dofusdb_type_ids": [10]
+        },
+        {
+            "key": "boots",
+            "label": "Bottes",
+            "category": "armor",
+            "dofusdb_type_ids": [11]
+        },
+        {
+            "key": "hat",
+            "label": "Coiffe",
+            "category": "armor",
+            "dofusdb_type_ids": [16]
+        },
+        {
+            "key": "cape",
+            "label": "Cape",
+            "category": "armor",
+            "dofusdb_type_ids": [17]
+        },
+        {
+            "key": "weapon",
+            "label": "Arme",
+            "category": "weapon",
+            "dofusdb_super_type_ids": [2],
+            "default_dofusdb_type_id": 6
+        }
+    ]
+}

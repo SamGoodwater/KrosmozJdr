@@ -2,6 +2,8 @@
 
 Les objets sont le **socle** : sans un petit référentiel `playable`, PNJ et rencontres n’ont rien de cohérent à porter. Ce n’est **pas** un import massif de tout Dofus.
 
+Commande : `php artisan ia:equipment-grid` (rapport). `--write` crée les **trous** en `draft` (`official_id` `ia-grid:slot:voie:niveau`), jamais `playable`. Config : `resources/ia/equipment-grid.json`. Les fiches Dofus ne sont pas réécrites.
+
 ## Pourquoi pas tout Dofus
 
 En JDR, un type d’équipement n’a que **3 ou 4 caractéristiques possibles**. Après conversion, des dizaines d’items Dofus **collapsent** vers la même signature (type + niveau + bonus).
@@ -29,13 +31,13 @@ Référence d’équilibrage : `private/game/rules/5-Ressources-et-equilibrage/5
 ## Pipeline objets (surtout algorithmique)
 
 1. Convertir Dofus (pipeline scrap actuel).
-2. Ne garder que les 3–4 caracs autorisées du type.
-3. Aligner sur `norms_grid`.
-4. Jeter les doublons de signature.
-5. Pour chaque case de la grille, **garder un représentant** (nom, description, icône Dofus **inchangés**).
-6. Trou (pas d’anneau Terre 8) : **générer** un objet sans source Dofus (template + normes). Nom/description alors techniques ou, plus tard, LLM si on veut du flavour.
+2. Classer dans la grille (niveau clampé 1–20 × slot × voie). La voie se lit sur `effect` (JSON converti) ou, à défaut, sur le tableau d’effets Dofus brut encore stocké dans `bonus` (Force / Int / Chance / Agi, dégâts élémentaires).
+3. Pour chaque case, **garder un représentant** sans le modifier (identité Dofus inchangée). En cas de doublon : source Dofus, puis état `playable` > `draft` > `auto` > `raw`.
+4. Trou : `ia:equipment-grid --write` crée un objet **sans** `dofusdb_id`, état `draft`, bonus de palier (règle 5.2.4 : 1 / 2 / 3 / 4 selon la bande de niveaux). Accessoires et armures : carac de voie. Armes : dégâts élémentaires. Relancer `--write` est idempotent.
 
-L’IA **ne réécrit pas** le nom, la description ni les caracs d’un item Dofus (gel admin / JSON). Elle n’intervient que pour un **unique de scénario** (sans source) ou un cas que l’algo ne tranche pas. Un snap algo peut aller en revue humaine légère ; `auto` n’est obligatoire que s’il y a eu une passe LLM.
+Le filtre « 3–4 caracs autorisées du type » (`item_type_dofus_ids`, aujourd’hui souvent **cape seule** pour Force) s’applique au scrap, pas à la classification de grille : un anneau Dofus avec de la Force reste un candidat Terre, même si la conversion JDR a droppé le bonus. Les trous générés portent volontairement la carac de voie (à relire).
+
+L’IA **ne réécrit pas** le nom, la description ni les caracs d’un item Dofus (gel admin / JSON). Elle n’intervient que pour un **unique de scénario** (sans source) ou un cas que l’algo ne tranche pas. Un snap algo peut aller en revue humaine légère ; `auto` n’est obligatoire que s’il y a eu une passe LLM. Ne pas publier `playable` tout seul.
 
 ## Pré-filtre pour le LLM (pas d’API agent)
 

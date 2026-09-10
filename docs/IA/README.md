@@ -1,6 +1,6 @@
 # IA générative — cadrage
 
-Fonctionnalité **non implémentée**. Ce dossier fixe l’intention : une IA qui aide à produire du contenu **jouable en JDR**, pas à recopier Dofus.
+Le **pipeline LLM** n’est pas branché. La **grille d’objets** algorithmique l’est : `php artisan ia:equipment-grid`. Ce dossier fixe l’intention : une IA qui aide à produire du contenu **jouable en JDR**, pas à recopier Dofus.
 
 À ne pas confondre avec les fichiers `_ai.md` du reste de `/docs` : ceux-là orientent les **agents de développement**. Ici, il s’agit d’un **LLM métier** (GPT, Claude, etc.) branché plus tard sur le site.
 
@@ -45,7 +45,7 @@ L’IA est pertinente là où il faut **du design** (simplifier, choisir, racont
 
 ## Ordre de livraison
 
-1. **Grille d’objets** par algorithme (~200–400 `playable`, pas tout Dofus). Sans ça, un PNJ n’a rien de cohérent à porter.
+1. **Grille d’objets** par algorithme (`ia:equipment-grid`, ~200–400 `playable` après relecture, pas tout Dofus). Sans ça, un PNJ n’a rien de cohérent à porter. Les représentants Dofus ne sont pas publiés tout seuls ; les trous sortent en `draft`.
 2. Descriptions machine + JSON Schema + ~20 étalons `playable` **par type** au moment où l’IA touche ce type.
 3. **Rencontre à la demande** : un monstre et ses sorts-créature dans le même JSON, état `auto`.
 4. **PNJ à la demande** : brief + listes préfiltrées (objets et sorts `playable`).

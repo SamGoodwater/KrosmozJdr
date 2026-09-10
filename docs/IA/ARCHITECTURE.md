@@ -1,6 +1,6 @@
 # Architecture de la génération
 
-Cadrage. Config des champs figés : page admin `/admin/content/ia-generation` (table `ia_generation_settings`) avec repli `resources/ia/generation.json`. Le pipeline LLM n’est pas encore branché.
+Cadrage. Config des champs figés : page admin `/admin/content/ia-generation` (table `ia_generation_settings`) avec repli `resources/ia/generation.json`. Grille objets : `ia:equipment-grid`. Le pipeline LLM n’est pas encore branché.
 
 ## Partage des responsabilités
 

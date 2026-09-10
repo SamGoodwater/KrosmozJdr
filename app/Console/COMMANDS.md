@@ -369,6 +369,27 @@ php artisan pages:import-rules-toc --force-content --compile-downloads
 
 ---
 
+## `ia:equipment-grid`
+
+```yaml
+signature: ia:equipment-grid
+domain: data
+ui: true
+cron: false
+admin: /admin/content/ia-generation
+```
+
+Rapport de couverture de la grille d’équipements JDR (niveau × slot × voie). Sans LLM : un représentant Dofus par case quand il existe (nom / icône inchangés), les trous restent vides. `--write` crée des objets `draft` techniques (`official_id` `ia-grid:…`, jamais `playable`, interdit en production). Relancer `--write` est idempotent.
+
+```bash
+php artisan ia:equipment-grid
+php artisan ia:equipment-grid --slot=ring --voie=terre --level=8
+php artisan ia:equipment-grid --write --limit=20
+php artisan ia:equipment-grid --json=storage/logs/equipment-grid.json
+```
+
+---
+
 ## `rules:compile-downloads`
 
 ```yaml

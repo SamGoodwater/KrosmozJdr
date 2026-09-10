@@ -2,6 +2,10 @@
 
 Commandes métier hors recettes CLI quotidiennes. Vocabulaire Artisan : [app/Console/COMMANDS.md](../../app/Console/COMMANDS.md).
 
+## Grille d’équipements JDR
+
+`php artisan ia:equipment-grid` dresse la couverture niveau × slot × voie. `--write` crée les cases vides en `draft` (interdit en production, jamais `playable`). Config : `resources/ia/equipment-grid.json`. Détail : [docs/IA/CATALOGUE.md](../IA/CATALOGUE.md).
+
 ## Import des règles CMS
 
 `php artisan pages:import-rules-toc` importe `private/game/rules/TABLE_DES_MATIERES.md` vers les pages règles. Appelé par `project:init` / `project:seed`. `--compile-downloads` enchaîne la compilation PDF/ODT.

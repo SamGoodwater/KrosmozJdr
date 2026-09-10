@@ -9,6 +9,7 @@ Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interact
 ## Fichiers pivots
 
 - `app/Console/COMMANDS.md` — vocabulaire CLI unique
+- `php artisan ia:equipment-grid` — grille d’équipements JDR (rapport ; `--write` = trous `draft`)
 - `app/Console/Commands/Project/ProjectInitCommand.php`
 - `app/Console/Commands/Pages/PagesImportRulesTocCommand.php`
 - `app/Console/Commands/Rules/RulesCompileDownloadsCommand.php`
