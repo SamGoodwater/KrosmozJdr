@@ -24,6 +24,7 @@ require __DIR__.'/web/favorites.php';
 require __DIR__.'/web/page.php';
 
 require __DIR__.'/admin/languages.php';
+require __DIR__.'/admin/ia-generation.php';
 require __DIR__.'/admin/characteristics.php';
 require __DIR__.'/admin/dofus-conversion-formulas.php';
 require __DIR__.'/admin/scrapping-mappings.php';

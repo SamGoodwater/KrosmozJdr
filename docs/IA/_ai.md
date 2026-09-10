@@ -1,6 +1,6 @@
 # IA générative — carte IA
 
-> Cadrage LLM métier. Config des champs figés en JSON. Pipeline d’appel **non branché**. Lis ce nœud avant d’ajouter un appel LLM.
+> Cadrage LLM métier. Config des champs figés (admin + JSON). Pipeline d’appel **non branché**. Lis ce nœud avant d’ajouter un appel LLM.
 
 ## Quand lire
 
@@ -14,7 +14,7 @@
 - **Laravel assemble le contexte** ; l’IA ne « browse » pas l’API en batch.
 - L’IA **propose**, jamais `playable`. État `auto` (UI « Auto ») : déjà dans le code. Pipeline LLM non branché.
 - **Objets** : catalogue réduit par **algorithme** (grille niveau × slot × voie), pas tout Dofus.
-- **L’IA ne réécrit pas l’identité** ni, par défaut, les **caractéristiques** d’une fiche Dofus. Liste éditable : `resources/ia/generation.json`. **PNJ** : création complète. Détail : [CHAMPS.md](./CHAMPS.md).
+- **L’IA ne réécrit pas l’identité** ni, par défaut, les **caractéristiques** d’une fiche Dofus. Liste éditable : page admin **IA métier** (`/admin/content/ia-generation`), fichier `resources/ia/generation.json` en repli. **PNJ** : création complète. Détail : [CHAMPS.md](./CHAMPS.md).
 - **Monstres / PNJ / sorts de créature** : génération **à la demande**, paquet cohérent.
 - Exemples few-shot : uniquement des fiches `playable` (une vingtaine par type quand l’IA s’en mêle).
 
@@ -23,7 +23,7 @@
 | Fichier | Contenu |
 | --- | --- |
 | [README](./README.md) | Problème, principes, ordre de livraison. |
-| [CHAMPS](./CHAMPS.md) | Figé vs généré : JSON `resources/ia/generation.json`. |
+| [CHAMPS](./CHAMPS.md) | Figé vs généré : admin `/admin/content/ia-generation`, JSON de repli. |
 | [ARCHITECTURE](./ARCHITECTURE.md) | Pipeline, état, prompts, validateurs, code existant. |
 | [CATALOGUE](./CATALOGUE.md) | Objets, pré-filtre, API caractéristiques. |
 | [RENCONTRES](./RENCONTRES.md) | Monstre + sorts, PNJ. |

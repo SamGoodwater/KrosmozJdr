@@ -1,6 +1,6 @@
 # Architecture de la génération
 
-Cadrage. Config des champs figés : `resources/ia/generation.json` (`GenerationConfigLoader`). Le pipeline LLM n’est pas encore branché.
+Cadrage. Config des champs figés : page admin `/admin/content/ia-generation` (table `ia_generation_settings`) avec repli `resources/ia/generation.json`. Le pipeline LLM n’est pas encore branché.
 
 ## Partage des responsabilités
 
@@ -9,7 +9,7 @@ Brief MJ  ou  entité raw (scrap)
         │
         ▼
 Laravel — assembleur de contexte
-  • Config `resources/ia/generation.json` (frozen / writable / étalons)
+  • Config IA (admin ou JSON de repli : frozen / writable / étalons)
   • JSON Schema du type (clés `writable` seulement)
   • champs et caracs figés recopiés hors LLM
   • 3–8 fiches or playable (`example_ids`)
@@ -100,7 +100,7 @@ Un JSON « dans les normes » mais idiot (sorts Terre, Force 0) doit **échouer*
 ## Code et docs existants à réutiliser
 
 - Pipeline scrap : `app/Services/Scrapping/` — Collecte → Conversion → Validation → Intégration. L’IA s’insère **après** la conversion, sur du `raw`.
-- Config gel / étalons : `resources/ia/generation.json`, `app/Services/GenerativeAi/GenerationConfigLoader.php`.
+- Config gel / étalons : page admin `/admin/content/ia-generation`, `GenerationConfigStore`, `resources/ia/generation.json`.
 - Création intelligente objets v1 (preview, pas d’écriture auto) : `NormAwareEntityProcessor`, `ItemEffectsToBonusConverter`.
 - PNJ : `app/Models/Entity/Npc.php` (`creature_id`, `breed_id`, `specialization_id`, story, panoplies). Stats sur `Creature`.
 - Sorts d’une créature : pivot `creature_spell` (`Creature::spells()`).

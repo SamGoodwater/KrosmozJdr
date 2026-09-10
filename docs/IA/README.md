@@ -23,7 +23,7 @@ L’IA est pertinente là où il faut **du design** (simplifier, choisir, racont
 4. L’IA n’écrit jamais en `playable`. Elle dépose une **proposition à relire**.
 5. Les exemples donnés au modèle sont uniquement des fiches déjà `playable`.
 6. Les objets forment un **petit catalogue JDR** (algo + grille), pas un miroir de Dofus. Monstres, sorts de créature et PNJ se font **au fil de l’eau**.
-7. **L’IA ne réécrit pas l’identité** d’une fiche Dofus. Les caractéristiques figées sont listées dans `resources/ia/generation.json` (`*` = toutes ; `writable_*` pour une exception). **PNJ** : création complète, éventuellement à partir d’une page de site. Détail : [CHAMPS.md](./CHAMPS.md).
+7. **L’IA ne réécrit pas l’identité** d’une fiche Dofus. Les caractéristiques figées se règlent dans l’admin **IA métier** (repli : `resources/ia/generation.json` ; `*` = toutes ; `writable_*` pour une exception). **PNJ** : création complète, éventuellement à partir d’une page de site. Détail : [CHAMPS.md](./CHAMPS.md).
 
 ## Ce qu’on ne fait pas
 

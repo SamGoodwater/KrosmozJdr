@@ -19,6 +19,7 @@ use App\Services\Characteristic\Formula\CharacteristicFormulaService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Characteristic\Limit\CharacteristicLimitService;
 use App\Services\GenerativeAi\GenerationConfigLoader;
+use App\Services\GenerativeAi\GenerationConfigStore;
 use App\Services\Media\EnsureDirectoryMediaFilesystem;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\CollectAliasResolver;
@@ -65,6 +66,7 @@ class AppServiceProvider extends ServiceProvider
             return new DofusdbEffectMappingService($app->make(DofusdbEffectMapping::class));
         });
         $this->app->singleton(Orchestrator::class, static fn () => Orchestrator::default());
+        $this->app->singleton(GenerationConfigStore::class, static fn () => GenerationConfigStore::default());
         $this->app->singleton(GenerationConfigLoader::class, static fn () => GenerationConfigLoader::default());
 
         // Filesystem Media Library : crée les dossiers avant écriture (scrapping, etc.)

@@ -1,12 +1,12 @@
 # Champs figés vs champs générés
 
-Source de vérité : **`resources/ia/generation.json`**. Ce fichier se lit et se modifie à la main. Une UI admin n’est prévue que s’il devient trop lourd.
+Source de vérité **effective** : une ligne en base (`ia_generation_settings`) si un admin a enregistré la page **Gestion du contenu → IA métier** (`/admin/content/ia-generation`). Sinon le fichier **`resources/ia/generation.json`**.
+
+L’UI n’écrit pas le JSON sur le disque (déploiement / git). Admin uniquement, enregistrement et reset protégés par `password.confirm`. Chargeur : `GenerationConfigStore` + `GenerationConfigLoader`.
 
 L’IA **ne réécrit pas une fiche Dofus entière**. Laravel recopie ce qui est figé ; le modèle ne reçoit que les clés `writable`. **Exception : les PNJ** (création complète, éventuellement à partir d’une page de site).
 
-Chargeur : `App\Services\GenerativeAi\GenerationConfigLoader`.
-
-## Comment éditer le JSON
+## Comment éditer
 
 Quatre types : `item`, `spell`, `monster`, `npc`.
 

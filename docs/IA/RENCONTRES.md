@@ -6,12 +6,12 @@ Monstres, sorts de créature et PNJ ne se génèrent **pas** en masse au départ
 
 Un monstre JDR n’est pas une créature Dofus + 8 sorts importés. C’est **une fiche + 1 à 3 actions**.
 
-À générer **dans le même appel** (les **stats** du monstre restent figées par défaut, voir `resources/ia/generation.json`) :
+À générer **dans le même appel** (les **stats** du monstre restent figées par défaut, voir les réglages IA) :
 
 - 2–3 sorts-créature (attaque, particularité, éventuellement un passif) ;
 - loot simple si besoin.
 
-Les sorts doivent coller aux caracs déjà présentes (Terre ↔ Force, peu de sorts, budget PA). Deux appels séparés recréent l’aberration « sorts Terre / Force 0 ». Pour laisser l’IA retoucher une carac, l’ajouter dans `writable_characteristics` du JSON.
+Les sorts doivent coller aux caracs déjà présentes (Terre ↔ Force, peu de sorts, budget PA). Deux appels séparés recréent l’aberration « sorts Terre / Force 0 ». Pour laisser l’IA retoucher une carac, l’ajouter dans les exceptions de l’admin IA (`writable_characteristics`).
 
 ### Données
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\GenerativeAi;
 
 /**
- * Charge `resources/ia/generation.json` (champs figés, caracs, étalons, variables libres).
+ * Charge la config IA (base si présente, sinon `resources/ia/generation.json`).
  *
  * @example
  * $loader = GenerationConfigLoader::default();
@@ -15,18 +15,49 @@ namespace App\Services\GenerativeAi;
 final class GenerationConfigLoader
 {
     /** @var list<string> */
-    private const REQUIRED_ENTITIES = ['item', 'spell', 'monster', 'npc'];
+    public const ENTITY_TYPES = ['item', 'spell', 'monster', 'npc'];
+
+    /** @var list<string> */
+    public const ENTITY_KNOWN_KEYS = [
+        'has_dofus_source',
+        'frozen_fields',
+        'writable_fields',
+        'frozen_characteristics',
+        'writable_characteristics',
+        'example_ids',
+    ];
 
     /** @var array<string, mixed>|null */
     private ?array $data = null;
 
+    /**
+     * @param  array<string, mixed>|null  $payloadOverride  Payload déjà lu (ex. ligne en base).
+     */
     public function __construct(
         private readonly string $configPath,
+        private readonly ?array $payloadOverride = null,
     ) {}
 
     public static function default(): self
     {
-        return new self(base_path('resources/ia/generation.json'));
+        $path = base_path('resources/ia/generation.json');
+        $override = null;
+        if (function_exists('app') && app()->bound(GenerationConfigStore::class)) {
+            $override = app(GenerationConfigStore::class)->storedPayload();
+        }
+
+        return new self($path, $override);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public static function assertValid(array $data): void
+    {
+        $loader = new self('/dev/null', $data);
+        foreach (self::ENTITY_TYPES as $entity) {
+            $loader->forEntity($entity);
+        }
     }
 
     /**
@@ -55,17 +86,9 @@ final class GenerationConfigLoader
         }
 
         $row = $entities[$entity];
-        $known = [
-            'has_dofus_source',
-            'frozen_fields',
-            'writable_fields',
-            'frozen_characteristics',
-            'writable_characteristics',
-            'example_ids',
-        ];
         $extra = [];
         foreach ($row as $key => $value) {
-            if (is_string($key) && ! in_array($key, $known, true) && ! str_starts_with($key, '_')) {
+            if (is_string($key) && ! in_array($key, self::ENTITY_KNOWN_KEYS, true) && ! str_starts_with($key, '_')) {
                 $extra[$key] = $value;
             }
         }
@@ -99,6 +122,18 @@ final class GenerationConfigLoader
             return $this->data;
         }
 
+        $decoded = $this->payloadOverride ?? $this->readFile();
+        $this->validate($decoded);
+        $this->data = $decoded;
+
+        return $this->data;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function readFile(): array
+    {
         if (! is_file($this->configPath)) {
             throw new \RuntimeException("Config JSON introuvable: {$this->configPath}");
         }
@@ -118,10 +153,7 @@ final class GenerationConfigLoader
             throw new \RuntimeException("JSON invalide: {$this->configPath}");
         }
 
-        $this->validate($decoded);
-        $this->data = $decoded;
-
-        return $this->data;
+        return $decoded;
     }
 
     /**
@@ -139,7 +171,7 @@ final class GenerationConfigLoader
             throw new \InvalidArgumentException('Config IA : entities doit être un objet.');
         }
 
-        foreach (self::REQUIRED_ENTITIES as $entity) {
+        foreach (self::ENTITY_TYPES as $entity) {
             if (! array_key_exists($entity, $entities) || ! is_array($entities[$entity])) {
                 throw new \InvalidArgumentException("Config IA : entities.{$entity} requis.");
             }

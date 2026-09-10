@@ -222,12 +222,12 @@
   {
     "path": "IA/ARCHITECTURE.md",
     "title": "Architecture de la génération",
-    "description": "Cadrage. Config des champs figés : `resources/ia/generation.json` (`GenerationConfigLoader`). Le pipeline LLM n’est pas encore branché."
+    "description": "Cadrage. Config des champs figés : page admin `/admin/content/ia-generation` (table `ia_generation_settings`) avec repli `resources/ia/generation.json`. Le pipeline LLM n’est pas encore branché."
   },
   {
     "path": "IA/CHAMPS.md",
     "title": "Champs figés vs champs générés",
-    "description": "Source de vérité : **`resources/ia/generation.json`**. Ce fichier se lit et se modifie à la main. Une UI admin n’est prévue que s’il devient trop lourd."
+    "description": "Source de vérité effective : admin `/admin/content/ia-generation` (table `ia_generation_settings`), sinon `resources/ia/generation.json`."
   },
   {
     "path": "IA/CATALOGUE.md",

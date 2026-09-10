@@ -93,6 +93,22 @@ final class GenerationConfigLoaderTest extends TestCase
         $this->assertSame('fallback', $loader->get('missing.key', 'fallback'));
     }
 
+    public function test_payload_override_skips_the_file(): void
+    {
+        $payload = json_decode(
+            (string) file_get_contents(dirname(__DIR__, 3).'/resources/ia/generation.json'),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+        $payload['generation']['max_retries'] = 4;
+
+        $loader = new GenerationConfigLoader('/tmp/krosmoz-ia-missing.json', $payload);
+
+        $this->assertSame(4, $loader->get('generation.max_retries'));
+        $this->assertTrue($loader->forEntity('item')->isFieldFrozen('name'));
+    }
+
     public function test_unknown_entity_throws(): void
     {
         $this->expectException(\InvalidArgumentException::class);

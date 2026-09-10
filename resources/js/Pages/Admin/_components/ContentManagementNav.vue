@@ -78,6 +78,13 @@ const navItems = computed(() => {
             show: canAccess("contentManagement") || canAccess("adminPanel"),
         },
         {
+            title: "IA métier",
+            href: "admin.content.ia-generation.edit",
+            path: "/admin/content/ia-generation",
+            icon: "fa-robot",
+            show: canAccess("contentManagement") || canAccess("adminPanel"),
+        },
+        {
             title: "Effets",
             href: "admin.effects.index",
             path: "/admin/content/effects",

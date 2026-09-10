@@ -12,4 +12,4 @@
 - `routes/api/types.php` — registres races / types de sorts (`role:admin`).
 - `routes/api/cms.php`
 - `routes/entities/*.php`
-- `routes/admin/*.php` — back-office ; référentiels contenu sous `/admin/content/{characteristics,effects,languages,…}` (anciennes URLs `/admin/…` redirigent).
+- `routes/admin/*.php` — back-office ; référentiels contenu sous `/admin/content/{characteristics,effects,languages,ia-generation,…}` (anciennes URLs `/admin/…` redirigent).
