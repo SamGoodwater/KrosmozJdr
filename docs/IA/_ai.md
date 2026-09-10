@@ -14,6 +14,7 @@
 - **Laravel assemble le contexte** ; l’IA ne « browse » pas l’API en batch.
 - L’IA **propose**, jamais `playable`. État `auto` (UI « Auto ») : déjà dans le code. Pipeline LLM non branché.
 - **Objets** : catalogue réduit par **algorithme** (grille niveau × slot × voie), pas tout Dofus.
+- **L’IA ne réécrit pas l’identité** (nom, description, type, image) d’une fiche Dofus. Elle travaille un delta JDR. **PNJ** : création complète, éventuellement à partir d’une page de site. Détail : [CHAMPS.md](./CHAMPS.md).
 - **Monstres / PNJ / sorts de créature** : génération **à la demande**, paquet cohérent.
 - Exemples few-shot : uniquement des fiches `playable` (une vingtaine par type quand l’IA s’en mêle).
 
@@ -22,6 +23,7 @@
 | Fichier | Contenu |
 | --- | --- |
 | [README](./README.md) | Problème, principes, ordre de livraison. |
+| [CHAMPS](./CHAMPS.md) | Figé vs généré : nom, description, type ; exception PNJ. |
 | [ARCHITECTURE](./ARCHITECTURE.md) | Pipeline, état, prompts, validateurs, code existant. |
 | [CATALOGUE](./CATALOGUE.md) | Objets, pré-filtre, API caractéristiques. |
 | [RENCONTRES](./RENCONTRES.md) | Monstre + sorts, PNJ. |

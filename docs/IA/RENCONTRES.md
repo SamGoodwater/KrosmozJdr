@@ -37,8 +37,8 @@ UX : un geste **« Générer cette rencontre »**, pas « générer un monstre �
 
 Réécriture JDR d’un sort Dofus `raw` :
 
-- garder l’identité (classe, élément, fantasy) ;
-- 1 effet principal + 0–2 secondaires jouables à table ;
+- **garder** nom, classe, élément, image, fantasy ;
+- 1 effet principal + 0–2 secondaires jouables à table (c’est le delta IA) ;
 - PA / portée / dés dans les grilles existantes ;
 - pas de nouveaux types d’effets hors catalogue.
 
@@ -48,7 +48,9 @@ Réécriture JDR d’un sort Dofus `raw` :
 
 Le modèle est en place : coquille `Npc` + corps `Creature` + `breed_id` / `specialization_id`, langues, panoplies, boutique. Le **kit de jeu** (sorts connus, stuff porté 1/slot sauf 2 anneaux, sync d’état coquille → créature) est du **code applicatif** (`NpcController`, `NpcEquipmentSlotValidator`) — pas de génération LLM.
 
-La génération IA peut s’appuyer sur ce schéma déjà persisté, elle ne le définit plus. Toujours hors scope d’implémentation ici.
+Contrairement aux objets / sorts / monstres Dofus, **il n’y a rien à figer** : l’IA crée nom, histoire, rôle, stats et kit. Option : partir d’une **page de site** (encyclopédie, wiki, DofusDB) — Laravel en extrait nom / portrait / lore, le modèle complète la fiche JDR. Pas de scrap de masse, pas de `dofusdb_id` sur `Npc` aujourd’hui.
+
+La génération IA s’appuie sur ce schéma déjà persisté, elle ne le définit plus. Toujours hors scope d’implémentation ici. Détail des champs : [CHAMPS.md](./CHAMPS.md).
 
 Paquet :
 
@@ -73,4 +75,4 @@ Un brief court suffit : rôle, niveau, ton, lieu optionnel.
 
 Exemples : « garde Iop d’Astrub, niveau 8, brutal, pas un boss » ; « chef Bouftou niveau 10 pour la fin de scène ».
 
-Laravel complète gabarit + listes. Le modèle choisit dans les listes et rédige nom / story / comportement.
+Laravel complète gabarit + listes (+ extrait de page si fourni). Le modèle **crée** nom / story / comportement et choisit dans les listes. Sur un monstre Dofus, le nom et la race restent ceux de la source.

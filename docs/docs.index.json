@@ -225,6 +225,11 @@
     "description": "Cadrage, **pas encore de code dédié**. S’appuie sur le scrapping, les états d’entité et les validateurs déjà en place."
   },
   {
+    "path": "IA/CHAMPS.md",
+    "title": "Champs figés vs champs générés",
+    "description": "L’IA ne réécrit pas une fiche Dofus entière. Elle travaille un delta JDR. Exception : les PNJ."
+  },
+  {
     "path": "IA/CATALOGUE.md",
     "title": "Catalogue objets et pré-filtre",
     "description": "Les objets sont le **socle** : sans un petit référentiel `playable`, PNJ et rencontres n’ont rien de cohérent à porter. Ce n’est **pas** un import massif de tout Dofus."

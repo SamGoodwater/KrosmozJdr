@@ -17,12 +17,13 @@ L’IA est pertinente là où il faut **du design** (simplifier, choisir, racont
 
 ## Principes
 
-1. **Le code compte, l’IA décide et raconte, un humain publie.**
+1. **Le code compte, l’IA propose un delta, un humain publie.**
 2. Pas de fine-tuning ni de modèle entraîné « Krosmoz » au départ. Un LLM du commerce + règles machine + exemples `playable` + JSON Schema + validateur PHP.
 3. On ne dump pas la base dans le prompt. Laravel **pré-filtre** (catalogue compact, normes, gabarit) puis appelle le modèle.
 4. L’IA n’écrit jamais en `playable`. Elle dépose une **proposition à relire**.
 5. Les exemples donnés au modèle sont uniquement des fiches déjà `playable`.
 6. Les objets forment un **petit catalogue JDR** (algo + grille), pas un miroir de Dofus. Monstres, sorts de créature et PNJ se font **au fil de l’eau**.
+7. **L’IA ne réécrit pas l’identité** d’une fiche Dofus (nom, description, type, image). Elle touche le jouable à table (effets de sort, kit monstre). **PNJ** : création complète, éventuellement à partir d’une page de site. Détail : [CHAMPS.md](./CHAMPS.md).
 
 ## Ce qu’on ne fait pas
 
@@ -31,15 +32,16 @@ L’IA est pertinente là où il faut **du design** (simplifier, choisir, racont
 - Importer tous les objets / sorts / monstres Dofus « pour que l’IA ait le choix ».
 - Publier une fiche générée sans relecture.
 - Remplacer `SpellEffectsConversionService` ou les formules de caractéristiques par le LLM.
+- Réécrire le nom, la description ou le type d’une fiche déjà sourcée Dofus (sauf unique de scénario / PNJ).
 
 ## Rôles de l’IA par type
 
-| Type | Rôle de l’IA | Rôle de l’algo |
-| --- | --- | --- |
-| **Objets** | Flavour, objets uniques de scénario, cas bizarres | Conversion, 3–4 caracs par type, normes, dédoublonnage, grille de couverture |
-| **Sorts de classe** | Réécriture JDR (1 effet principal + 0–2 secondaires) | Bornes PA/portée, mapping d’effets, element ↔ carac d’attaque |
-| **Monstres** | Fiche + 2–3 actions cohérentes, à la demande | Gabarit niveau / PV / dégâts (règles 5.1.2) |
-| **PNJ** | Concept, choix dans des listes, stats alignées | Pré-filtre stuff/sorts, validation ids, cohérence voie ↔ carac |
+| Type | Rôle de l’IA | Rôle de l’algo | Figé (source Dofus) |
+| --- | --- | --- | --- |
+| **Objets** | Quasi rien ; uniques de scénario seulement | Conversion, 3–4 caracs par type, normes, dédoublonnage, grille | Nom, description, type, image |
+| **Sorts de classe** | Réécriture des **effets** (1 principal + 0–2 secondaires) | Bornes PA/portée, mapping d’effets, element ↔ carac d’attaque | Nom, classe, élément, image |
+| **Monstres** | Simplifier les stats hors gabarit + 2–3 actions, à la demande | Gabarit niveau / PV / dégâts (règles 5.1.2) | Nom, race, image |
+| **PNJ** | **Toute** la fiche (identité + build + choix dans les listes) | Pré-filtre stuff/sorts, validation ids, cohérence voie ↔ carac | Aucun (création) ; brief optionnel depuis une page de site |
 
 ## Ordre de livraison
 
@@ -60,6 +62,7 @@ Les sorts de classe se réécrivent au fil de l’eau (quand un PNJ ou un perso 
 
 ## Suite de lecture
 
+- [CHAMPS.md](./CHAMPS.md) — ce que l’IA a le droit de modifier.
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — pipeline, état, prompts.
 - [CATALOGUE.md](./CATALOGUE.md) — objets et pré-filtre.
 - [RENCONTRES.md](./RENCONTRES.md) — monstres, sorts liés, PNJ.

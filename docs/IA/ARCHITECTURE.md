@@ -9,14 +9,16 @@ Brief MJ  ou  entité raw (scrap)
         │
         ▼
 Laravel — assembleur de contexte
-  • JSON Schema du type
+  • JSON Schema du type (`frozen` vs `writable`)
+  • champs figés recopiés hors LLM (nom, description, type…)
   • contraintes machine (extrait)
   • 3–8 fiches or playable du même type
   • catalogue pré-filtré (ids, noms, bonus) si besoin
   • normes / gabarit de niveau
+  • PNJ : brief MJ et/ou extrait d’une page de site
         │
         ▼
-LLM → JSON strict (structured output)
+LLM → JSON strict (clés `writable` seulement, sauf PNJ / unique)
         │
         ▼
 Validateurs PHP (limites, ids, cohérence)
@@ -80,6 +82,8 @@ Trois couches, pas un pavé unique :
 3. **Contrat d’API catalogue** — pour les développeurs Laravel. Version courte « outils » seulement si un agent PNJ existe un jour.
 
 L’IA n’invente pas de types d’effets hors whitelist, ni d’ids d’objets/sorts hors liste fournie.
+
+Sur une fiche **sourcée Dofus**, le schéma n’expose pas `name`, `description`, type, image : Laravel les recopie. Sur un **PNJ** (et un objet unique sans source), le schéma inclut l’identité. Contrat : [CHAMPS.md](./CHAMPS.md).
 
 ## Validateurs (à étendre, déjà amorcés)
 
