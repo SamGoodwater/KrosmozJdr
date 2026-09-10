@@ -204,6 +204,7 @@ class PanoplyControllerTest extends TestCase
         $otherUser = User::factory()->create();
         $panoply = Panoply::factory()->create([
             'created_by' => $otherUser->id,
+            'write_level' => User::ROLE_GAME_MASTER,
         ]);
         $item1 = Item::factory()->create();
 

@@ -31,11 +31,17 @@ class BreedTableControllerTest extends TestCase
         $user = User::factory()->create();
         $breed = Breed::factory()->create([
             'name' => 'Classe Test UX',
+            'state' => Breed::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
             'created_by' => $user->id,
         ]);
 
         $spell = Spell::factory()->create([
             'name' => 'Sort Pivot',
+            'state' => Spell::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
             'created_by' => $user->id,
         ]);
         $breed->spells()->attach($spell->id, [
@@ -46,6 +52,9 @@ class BreedTableControllerTest extends TestCase
 
         $cap = Capability::factory()->create([
             'name' => 'Passif test',
+            'state' => Capability::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
             'created_by' => $user->id,
             'is_passive' => true,
         ]);
@@ -163,6 +172,9 @@ class BreedTableControllerTest extends TestCase
         $user = User::factory()->create();
         Breed::factory()->create([
             'name' => 'Classe Cells',
+            'state' => Breed::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
             'created_by' => $user->id,
         ]);
 
