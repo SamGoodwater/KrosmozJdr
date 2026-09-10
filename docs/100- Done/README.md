@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Tableaux : TanStack Table 9
+
+Les catalogues (tri, pagination, colonnes visibles) passent en TanStack Table 9. L’usage ne change pas : on trie, on pagine, on masque des colonnes comme avant.
+
 ## Septembre 2026 — Tests PHP : PHPUnit 13
 
 Les tests backend tournent avec PHPUnit 13. On lance toujours `php artisan test`. Un mock qui filtrait `with()` sans `expects()` a été corrigé (PHPUnit 13 le déconseille).

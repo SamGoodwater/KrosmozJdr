@@ -3,7 +3,7 @@
  * TanStackTable Organism
  *
  * @description
- * Tableau générique basé sur TanStack Table (Table v2).
+ * Tableau générique basé sur TanStack Table 9.
  * - Client-first: tri côté client par défaut sur dataset
  * - Serveur opt-in: géré par wrapper (EntityTanStackTable) via `serverUrl` (Phase 2)
  * - Cellules: rend `Cell{type,value,params}` via `CellRenderer`
@@ -16,7 +16,15 @@
  */
 
 import { computed, ref, watch, onMounted, onUnmounted, toValue, shallowRef, nextTick } from "vue";
-import { getCoreRowModel, getPaginationRowModel, getSortedRowModel, useVueTable } from "@tanstack/vue-table";
+import {
+    columnVisibilityFeature,
+    createPaginatedRowModel,
+    createSortedRowModel,
+    rowPaginationFeature,
+    rowSortingFeature,
+    tableFeatures,
+    useTable,
+} from "@tanstack/vue-table";
 import TanStackTableHeader from "@/Pages/Molecules/table/TanStackTableHeader.vue";
 import TanStackTableRow from "@/Pages/Molecules/table/TanStackTableRow.vue";
 import TanStackTableSkeletonBody from "@/Pages/Molecules/table/TanStackTableSkeletonBody.vue";
@@ -1414,10 +1422,10 @@ const updateTanStackColumns = () => {
             },
             enableSorting: canSort,
         };
-        // IMPORTANT: ne pas passer sortingFn si ce n'est pas une fonction.
-        // Sinon TanStack peut tenter de l'appeler directement et crasher (sortingFn is not a function).
+        // IMPORTANT: ne pas passer sortFn si ce n'est pas une fonction.
+        // Sinon TanStack peut tenter de l'appeler directement et crasher (sortFn is not a function).
         if (typeof col?.sort?.sortingFn === "function") {
-            def.sortingFn = col.sort.sortingFn;
+            def.sortFn = col.sort.sortingFn;
         }
         return def;
     });
@@ -1586,17 +1594,28 @@ const columnVisibilityState = computed(() => {
     return state;
 });
 
+const tableFeaturesConfig = tableFeatures({
+    columnVisibilityFeature,
+    rowSortingFeature,
+    rowPaginationFeature,
+    ...(props.serverSide
+        ? {}
+        : {
+            sortedRowModel: createSortedRowModel(),
+            paginatedRowModel: createPaginatedRowModel(),
+        }),
+});
+
 // Utiliser directement les refs/computed pour TanStack Table
 // TanStack Table détecte mieux les changements avec des refs/computed directs
-const table = useVueTable({
+const table = useTable({
+    features: tableFeaturesConfig,
     get data() {
         return filteredRows.value;
     },
     get columns() {
         return tanstackColumnsRef.value;
     },
-    getCoreRowModel: getCoreRowModel(),
-    ...(props.serverSide ? {} : { getSortedRowModel: getSortedRowModel(), getPaginationRowModel: getPaginationRowModel() }),
     manualPagination: props.serverSide,
     manualSorting: props.serverSide,
     isMultiSortEvent: (e) => Boolean(e?.shiftKey),
@@ -2169,7 +2188,7 @@ const handleExport = () => {
     const cols = columnsWithoutActions.value;
     const headers = cols.map((c) => toCsvCell(c.label || c.id)).join(",");
 
-    const allSorted = table.getPrePaginationRowModel().rows.map((r) => r.original);
+    const allSorted = table.getPrePaginatedRowModel().rows.map((r) => r.original);
     const selected = selectedCount.value
         ? allSorted.filter((r) => selectedIds.value.has(r.id))
         : allSorted;
