@@ -87,8 +87,12 @@ class NpcTableController extends Controller
                         ->with(['itemType:id,name']),
                 ]),
             ])
-            ->withCount(['panoplies', 'campaigns', 'scenarios'])
-            ->withExists('shop');
+            ->withCount([
+                'panoplies' => fn ($q) => $q->visibleToUser($request->user()),
+                'campaigns' => fn ($q) => $q->visibleToUser($request->user()),
+                'scenarios' => fn ($q) => $q->visibleToUser($request->user()),
+            ])
+            ->withExists(['shop' => fn ($q) => $q->visibleToUser($request->user())]);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {

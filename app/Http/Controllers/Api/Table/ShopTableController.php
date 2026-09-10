@@ -46,14 +46,22 @@ class ShopTableController extends Controller
 
         $query = Shop::query()
             ->visibleToUser($request->user())
-            ->with(['createdBy', 'npc.creature'])
+            ->with([
+                'createdBy',
+                'npc' => fn ($q) => $q
+                    ->visibleToUser($request->user())
+                    ->with(['creature']),
+            ])
             ->withCount('items');
 
         if ($search !== '') {
-            $query->where(function ($q) use ($search) {
+            $query->where(function ($q) use ($search, $request) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('location', 'like', "%{$search}%")
-                    ->orWhereHas('npc.creature', fn ($qq) => $qq->where('name', 'like', "%{$search}%"));
+                    ->orWhereHas('npc', function ($nq) use ($search, $request) {
+                        $nq->visibleToUser($request->user())
+                            ->whereHas('creature', fn ($qq) => $qq->where('name', 'like', "%{$search}%"));
+                    });
             });
         }
 

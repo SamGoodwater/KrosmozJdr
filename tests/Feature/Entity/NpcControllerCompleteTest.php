@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace Tests\Feature\Entity;
 
 use App\Models\Entity\Breed;
+use App\Models\Entity\Campaign;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
 use App\Models\Entity\Language;
 use App\Models\Entity\Npc;
+use App\Models\Entity\Panoply;
+use App\Models\Entity\Scenario;
+use App\Models\Entity\Shop;
 use App\Models\Entity\Spell;
 use App\Models\Type\ItemType;
 use App\Models\User;
@@ -85,6 +89,89 @@ class NpcControllerCompleteTest extends TestCase
 
                 return in_array($playableSpell->id, $ids, true)
                     && ! in_array($draftSpell->id, $ids, true);
+            })
+        );
+    }
+
+    public function test_show_hides_foreign_draft_shop_panoply_and_campaign_from_guest(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $creature = Creature::factory()->create(['created_by' => $author->id]);
+        $npc = Npc::factory()->create([
+            'creature_id' => $creature->id,
+            'state' => Npc::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $visibility = [
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ];
+        Shop::factory()->create([
+            'name' => 'Réserve secrète',
+            'npc_id' => $npc->id,
+            'state' => Shop::STATE_DRAFT,
+            ...$visibility,
+        ]);
+        $playablePanoply = Panoply::factory()->create([
+            'name' => 'Panoplie publique PNJ',
+            'state' => Panoply::STATE_PLAYABLE,
+            ...$visibility,
+        ]);
+        $draftPanoply = Panoply::factory()->create([
+            'name' => 'Panoplie brouillon PNJ',
+            'state' => Panoply::STATE_DRAFT,
+            ...$visibility,
+        ]);
+        $npc->panoplies()->attach([$playablePanoply->id, $draftPanoply->id]);
+        $playableCampaign = Campaign::factory()->create([
+            'name' => 'Campagne publique PNJ',
+            'state' => Campaign::STATE_PLAYABLE,
+            ...$visibility,
+        ]);
+        $draftCampaign = Campaign::factory()->create([
+            'name' => 'Intrigue secrète',
+            'state' => Campaign::STATE_DRAFT,
+            ...$visibility,
+        ]);
+        $npc->campaigns()->attach([$playableCampaign->id, $draftCampaign->id]);
+        $playableScenario = Scenario::factory()->create([
+            'name' => 'Scénario public PNJ',
+            'state' => Scenario::STATE_PLAYABLE,
+            ...$visibility,
+        ]);
+        $draftScenario = Scenario::factory()->create([
+            'name' => 'Scénario brouillon PNJ',
+            'state' => Scenario::STATE_DRAFT,
+            ...$visibility,
+        ]);
+        $npc->scenarios()->attach([$playableScenario->id, $draftScenario->id]);
+
+        $response = $this->get(route('entities.npcs.show', $npc));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Pages/entity/npc/Show')
+            ->where('npc.data.shop', fn ($shop) => $shop === null)
+            ->where('npc.data.panoplies', function ($panoplies) use ($playablePanoply, $draftPanoply) {
+                $ids = collect($panoplies)->pluck('id')->all();
+
+                return in_array($playablePanoply->id, $ids, true)
+                    && ! in_array($draftPanoply->id, $ids, true);
+            })
+            ->where('npc.data.campaigns', function ($campaigns) use ($playableCampaign, $draftCampaign) {
+                $ids = collect($campaigns)->pluck('id')->all();
+
+                return in_array($playableCampaign->id, $ids, true)
+                    && ! in_array($draftCampaign->id, $ids, true);
+            })
+            ->where('npc.data.scenarios', function ($scenarios) use ($playableScenario, $draftScenario) {
+                $ids = collect($scenarios)->pluck('id')->all();
+
+                return in_array($playableScenario->id, $ids, true)
+                    && ! in_array($draftScenario->id, $ids, true);
             })
         );
     }

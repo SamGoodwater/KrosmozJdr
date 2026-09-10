@@ -485,12 +485,14 @@ class NpcController extends Controller
             'breed',
             'specialization',
             'languages',
-            'panoplies' => fn ($q) => $q->with([
-                'items' => fn ($iq) => $iq->visibleToUser($request->user()),
-            ]),
-            'shop',
-            'scenarios',
-            'campaigns',
+            'panoplies' => fn ($q) => $q
+                ->visibleToUser($request->user())
+                ->with([
+                    'items' => fn ($iq) => $iq->visibleToUser($request->user()),
+                ]),
+            'shop' => fn ($q) => $q->visibleToUser($request->user()),
+            'scenarios' => fn ($q) => $q->visibleToUser($request->user()),
+            'campaigns' => fn ($q) => $q->visibleToUser($request->user()),
         ];
     }
 }

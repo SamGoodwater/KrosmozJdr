@@ -5,6 +5,7 @@ namespace Tests\Feature\Api\Table;
 use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Npc;
+use App\Models\Entity\Shop;
 use App\Models\Entity\Spell;
 use App\Models\User;
 use App\Support\Npc\NpcRole;
@@ -285,5 +286,27 @@ class NpcTableControllerTest extends TestCase
         $spellIds = collect($response->json('entities.0.creature.spells'))->pluck('id')->all();
         $this->assertContains($playableSpell->id, $spellIds);
         $this->assertNotContains($draftSpell->id, $spellIds);
+    }
+
+    public function test_has_shop_ignores_foreign_draft_shop_for_player(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $player = User::factory()->create(['role' => User::ROLE_PLAYER]);
+        $creature = Creature::factory()->create(['created_by' => $author->id]);
+        $npc = Npc::factory()->create($this->playableAttrs(['creature_id' => $creature->id]));
+        Shop::factory()->create([
+            'name' => 'Réserve secrète',
+            'npc_id' => $npc->id,
+            'state' => Shop::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+
+        $response = $this->actingAs($player)
+            ->getJson('/api/tables/npcs?format=entities&limit=10');
+
+        $response->assertOk();
+        $this->assertFalse((bool) $response->json('entities.0.has_shop'));
     }
 }
