@@ -10,7 +10,7 @@
  * 
  * @props {Array} pages - Liste des pages disponibles (pour parent_id)
  */
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import { computed, watch } from 'vue';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
@@ -217,7 +217,7 @@ const submit = () => {
                         <Btn
                             type="button"
                             variant="ghost"
-                            @click="$inertia.visit(route('pages.index'))"
+                            @click="router.visit(route('pages.index'))"
                         >
                             Annuler
                         </Btn>

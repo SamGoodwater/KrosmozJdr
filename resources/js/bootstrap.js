@@ -5,15 +5,13 @@ window.axios = axios;
 window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
 /**
- * Gestion robuste des expirations de session en SPA (Inertia).
+ * Gestion des expirations de session sur les appels axios métier.
  *
  * @description
- * Quand la session Laravel expire, le token CSRF stocké côté client devient invalide.
- * Les requêtes XHR peuvent alors répondre 419 (Page Expired). Sur une SPA, cela donne
- * l'impression d'une déconnexion "aléatoire" (souvent 1–2h, par défaut `SESSION_LIFETIME=120`).
- *
- * On force alors un rechargement complet pour récupérer un token CSRF valide et
- * laisser Laravel ré-authentifier l'utilisateur via le cookie "remember me" (si présent).
+ * Inertia 3 n’utilise plus axios pour les visites (`router` / `useForm`) : un 419
+ * Inertia est géré côté Laravel (`Inertia::location` dans `bootstrap/app.php`).
+ * Cet interceptor ne couvre que les XHR axios (effets, tableaux API, etc.).
+ * 419 → reload pour un CSRF frais ; 401 → redirection login.
  *
  * @example
  * // Aucun usage direct : l'interceptor est global.

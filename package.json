@@ -38,7 +38,7 @@
     "devDependencies": {
         "@cursor/sdk": "^1.0.31",
         "@eslint/js": "^10.0.1",
-        "@inertiajs/vue3": "^2.3.27",
+        "@inertiajs/vue3": "^3.7.0",
         "@tailwindcss/forms": "^0.5.11",
         "@tailwindcss/oxide": "4.3.3",
         "@tailwindcss/typography": "^0.5.20",
