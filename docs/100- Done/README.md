@@ -4,6 +4,14 @@
 
 L’atelier **Pour les MJ → Création** n’aligne plus trois chartes génériques. Chaque type des Bibliothèques a sa page : **philosophie** (à quoi sert la fiche), **marche à suivre** (comment la créer, bons chiffres, pièges), puis le tableau utile. Les capacités, panoplies, ressources, états et traits n’ont pas de grille dédiée. Les anciennes adresses `contribution-creatures` redirigent. Contribution publique reste **Nous rejoindre**.
 
+## Septembre 2026 — Marin et Courtisan en brouillon
+
+Deux spécialisations de plus, toujours en **brouillon** : **Marin·e** (mer, navires, Sufokia) et **Courtisan·e** (cours, étiquette, intrigue). Comme Artisan, Négociant et Sylvain, ce n’est pas jouable : des pistes palier par palier, pas encore de chiffres ni de capacités liées. On les trouve dans le catalogue (filtre Brouillon), pas dans le menu public.
+
+## Septembre 2026 — Trois spécialisations en brouillon : Artisan, Négociant, Sylvain
+
+Le livre parlait déjà de neuf spécialisations, mais la bibliothèque n’en avait que six. **Artisan·e**, **Négociant·e** et **Sylvain·e** existent maintenant en **brouillon** : une fiche, une présentation, des pistes d’aptitudes et de capacités palier par palier. Ce n’est pas jouable. Les chiffres, les coûts et les vrais liens vers les capacités restent à écrire. Le menu Bibliothèques n’affiche que les spécialisations déjà jouables ; les brouillons se voient dans le catalogue (filtre Brouillon) si tu as le droit d’éditer.
+
 ## Septembre 2026 — PNJ : plus de fuites nested, création sans stats Faker
 
 Un PNJ publié n’embarque plus les traits, la boutique, les panoplies, scénarios, campagnes, ni une classe / spé encore en brouillon. Un PNJ brouillon ne fuit plus via le catalogue des boutiques. Créer un PNJ ou un monstre pose une fiche vide (totaux `null`), plus de stats Faker.
