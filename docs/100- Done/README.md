@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — L’écran de chargement ne reste plus bloqué
+
+Au lancement, l’app s’arrêtait sur « Chargement… » : un découpage trop agressif du JavaScript (layout d’un côté, formatters de l’autre) empêchait les scripts de s’initialiser. Le build ne sépare plus que les bibliothèques tierces. Le favicon pointe vers les fichiers logo qui existent vraiment (webp / png / ico), plus vers un SVG manquant qui déclenchait un accès refusé.
+
 ## Septembre 2026 — Compilation du livre depuis l’admin
 
 Le bouton **Compiler le livre de règles** (Gestion du contenu) avait perdu sa route lors de l’ajout du recalcul des prix. Elle est rétablie, et le bouton lance la génération même si aucun worker n’était déjà en route.

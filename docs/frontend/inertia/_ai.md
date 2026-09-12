@@ -4,7 +4,7 @@
 
 ## Fichiers pivots
 
-- `resources/js/app.js` — `createInertiaApp` + `setup({ el, App, props, plugin })`
+- `resources/js/app.js` — `createInertiaApp` + `setup({ el, App, props, plugin })` ; import statique `@/Utils/Formatters` (registre avant montage)
 - `resources/js/ssr.js` — compilé par Vite ; SSR off (`INERTIA_SSR_ENABLED`)
 - `app/Http/Middleware/HandleInertiaRequests.php`
 - `resources/js/Plugins/inertia-ziggy.js` — `router.on('navigate')` ; ignore `ziggy` absent (`shareOnce`)

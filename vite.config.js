@@ -83,15 +83,12 @@ export default defineConfig({
     build: {
         rollupOptions: {
             output: {
+                // Ne pas forcer de chunks sur le code applicatif (`layout`, `formatters`) :
+                // les formatters importent SharedConstants/Elements déjà tirés par Main.vue,
+                // ce qui créait un cycle de chunks (TDZ `Cannot access 'ok' before initialization`).
                 manualChunks(id) {
                     if (id.includes('node_modules/vue') || id.includes('node_modules/@vue') || id.includes('node_modules/@inertiajs')) {
                         return 'vendor';
-                    }
-                    if (id.includes('resources/js/Pages/Layouts/Main.vue')) {
-                        return 'layout';
-                    }
-                    if (id.includes('resources/js/Utils/Formatters')) {
-                        return 'formatters';
                     }
                     if (id.includes('node_modules/cally')) {
                         return 'cally';

@@ -58,6 +58,8 @@ Le contenu de `storage/app/public` est versionné (icônes, fonds, logos, légal
 
 Le lien web `public/storage` n’est pas versionné : le recréer avec `php artisan storage:link`.
 
+Un fichier **absent** de ce lien n’est pas servi en 404. La requête atteint la route framework `storage.local` (`GET storage/{path}`), qui lit le disque **privé** (`storage/app/private`, `serve: true` dans `config/filesystems.php`) et répond 403. Les URL `/storage/…` du front (favicon, fonds, icônes) doivent donc cibler des fichiers réellement présents.
+
 ## Notifications de jobs
 
 Jobs Artisan admin (review, clear, deps, backup, `project:data sync`) : table `project_console_jobs`, poll `GET /admin/console-jobs/{id}`, toast animé + log filtré sur la page. Un seul job actif par domaine. Imports scrapping et nettoyage orphelins : suivi persisté (progression, annulation). Backup / sync planifiée : notification de résultat admin en plus du suivi live.

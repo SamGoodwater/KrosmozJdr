@@ -25,7 +25,7 @@ Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interact
 
 ## Chemins importants
 
-- Disque public versionné : `storage/app/public/` sauf `images/entity/`, `images/users/` et `downloads/generated/`. Lien web : `php artisan storage:link` (`public/storage` non versionné).
+- Disque public versionné : `storage/app/public/` sauf `images/entity/`, `images/users/` et `downloads/generated/`. Lien web : `php artisan storage:link` (`public/storage` non versionné). Fichier public manquant sous `/storage/…` → route `storage.local` (disque `private`, `serve: true`) → **403**, pas 404.
 - Source règles CMS : `private/game/rules/TABLE_DES_MATIERES.md`. Livre PDF/ODT : `php artisan rules:compile-downloads` (bouton admin `/admin/content` : file `rules-downloads` + worker ponctuel, pas besoin d’un `queue:listen` déjà lancé).
 - UI orphelins : `/admin/orphan-files` (super_admin).
 - UI nettoyage caches : `/admin/project-clear` (super_admin).

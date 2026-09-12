@@ -9,10 +9,9 @@
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="keywords" content="@yield('keywords')" />
-    <link rel="icon" href="{{ asset('storage/images/logos/logo_mini.svg') }}" type="image/svg+xml">
     <link rel="icon" href="{{ asset('storage/images/logos/logo_mini.webp') }}" type="image/webp">
-    <link rel="icon" href="{{ asset('storage/images/logos/logo_mini.ico') }}" type="image/x-icon">
     <link rel="icon" href="{{ asset('storage/images/logos/logo_mini.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('storage/images/logos/logo_mini.ico') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ asset('storage/images/logos/logo_mini.ico') }}" type="image/x-icon">
     <link rel="apple-touch-icon" href="{{ asset('storage/images/logos/logo_mini.png') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
