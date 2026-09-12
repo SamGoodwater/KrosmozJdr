@@ -344,6 +344,7 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       key: "price",
       label: "Prix",
       icon: "fa-solid fa-coins",
+      helper: "Prix automatique : somme des ressources de la recette.",
       table: {
         sortable: true,
         defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },

@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Un invité ne lit plus les effets d’une fiche brouillon. Sur une fiche jouable, les liaisons encore en brouillon disparaissent. Une maj DofusDB forcée ne dépublie plus une panoplie jouable."
+    "description": "Les fiches d’équipement et de consommable portent maintenant un **prix calculé** par le site, que l’on peut encore ajuster à la main."
   },
   {
     "path": "backend/_ai.md",

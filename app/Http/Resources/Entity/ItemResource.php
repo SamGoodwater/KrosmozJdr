@@ -19,7 +19,6 @@ class ItemResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $request->user();
-        $canUpdate = $user && $user->can('update', $this->resource);
 
         return [
             'id' => $this->id,
@@ -32,8 +31,8 @@ class ItemResource extends JsonResource
             'bonus' => $this->bonus,
             'recipe' => $this->recipe,
             'price' => $this->displayPriceKamas(),
-            'price_calculated' => $canUpdate ? ($this->price_calculated !== null ? (int) $this->price_calculated : null) : null,
-            'price_custom' => $canUpdate ? ($this->price_custom !== null ? (int) $this->price_custom : null) : null,
+            'price_calculated' => $this->price_calculated !== null ? (int) $this->price_calculated : null,
+            'price_custom' => $this->price_custom !== null ? (int) $this->price_custom : null,
             'rarity' => $this->rarity,
             'dofus_version' => $this->dofus_version,
             'state' => $this->state,

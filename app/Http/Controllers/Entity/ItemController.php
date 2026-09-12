@@ -13,6 +13,7 @@ use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
 use App\Models\Type\ItemType;
 use App\Models\User;
+use App\Services\Characteristic\Pricing\EntityPriceRecalculator;
 use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
 use App\Support\Entity\ItemPanoplyPayload;
@@ -97,7 +98,7 @@ class ItemController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreItemRequest $request): RedirectResponse
+    public function store(StoreItemRequest $request, EntityPriceRecalculator $priceRecalculator): RedirectResponse
     {
         $this->authorize('create', Item::class);
 
@@ -119,6 +120,7 @@ class ItemController extends Controller
         }
 
         $item = Item::create($data);
+        $priceRecalculator->recalculateItem($item, resetCustom: ! array_key_exists('price_custom', $data));
 
         return $this->redirectAfterEntityStore(
             $request,
@@ -220,7 +222,6 @@ class ItemController extends Controller
         $this->authorize('update', $item);
 
         $item->update($request->validated());
-
         $item->load(['itemType', 'createdBy']);
 
         return redirect()->route('entities.items.show', $item)
@@ -260,6 +261,17 @@ class ItemController extends Controller
 
         return redirect()->back()
             ->with('success', 'Ressources de l\'objet mises à jour avec succès.');
+    }
+
+    /**
+     * Recalcule le prix automatique et remplace le total affiché (ajuste custom à null).
+     */
+    public function recalculatePrice(Item $item, EntityPriceRecalculator $priceRecalculator): RedirectResponse
+    {
+        $this->authorize('update', $item);
+        $priceRecalculator->recalculateItem($item, resetCustom: true);
+
+        return redirect()->back()->with('success', 'Prix recalculé.');
     }
 
     /**

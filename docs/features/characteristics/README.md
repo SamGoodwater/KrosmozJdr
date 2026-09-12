@@ -53,6 +53,14 @@ paliers des résistances relatives et des critiques.
 Les tables de formule acceptent des seuils négatifs. La tranche retenue est le plus grand seuil inférieur
 ou égal à la valeur source, ce qui permet de convertir les faiblesses Dofus en `-50` ou `-100`.
 
+## Prix des équipements et consommables
+
+`EquipmentPriceCalculator` calcule le prix automatique d’un objet : somme des (valeur JSON `bonus` × `characteristic_object.base_price_per_unit`) + 150 × niveau + 200 × rareté (0–5). Un malus baisse le total ; plancher 0. Les clés courtes du JSON (`strength`) sont résolues comme `strength_object`.
+
+`ConsumablePriceCalculator` somme les prix d’affichage des ressources de la recette (`consumable_resource.quantity`). `EntityPriceRecalculator` persiste `price_calculated`, remet `price_custom` à null, et synchronise `price` via le trait `HasKamasPrice`.
+
+Les ressources gardent le prix Dofus : pas de formule ni de recalcul.
+
 ## Conversion des bonus d'objets
 
 Les bonus et malus Dofus sont convertis de façon symétrique : hors métadonnées, la borne minimale d'une

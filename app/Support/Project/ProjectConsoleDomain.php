@@ -21,6 +21,8 @@ final class ProjectConsoleDomain
 
     public const RULES_DOWNLOADS = 'rules-downloads';
 
+    public const ENTITY_PRICES = 'entity-prices';
+
     /**
      * @return list<string>
      */
@@ -33,6 +35,7 @@ final class ProjectConsoleDomain
             self::BACKUP,
             self::DATA_SYNC,
             self::RULES_DOWNLOADS,
+            self::ENTITY_PRICES,
         ];
     }
 
@@ -45,6 +48,7 @@ final class ProjectConsoleDomain
             self::BACKUP => 'Sauvegarde',
             self::DATA_SYNC => 'Synchronisation données',
             self::RULES_DOWNLOADS => 'Compilation du livre de règles',
+            self::ENTITY_PRICES => 'Recalcul des prix',
             default => $domain,
         };
     }
@@ -58,6 +62,7 @@ final class ProjectConsoleDomain
             self::BACKUP => route('admin.backup.index'),
             self::DATA_SYNC => route('admin.content.dofusdb.index'),
             self::RULES_DOWNLOADS => route('admin.content.dashboard.index'),
+            self::ENTITY_PRICES => route('admin.content.dashboard.index'),
             default => '/admin',
         };
     }

@@ -20,6 +20,7 @@ const props = defineProps({
     stateColors: { type: Object, required: true },
     rulesDownloads: { type: Object, default: () => ({ generated_at: null, available: 0, missing: 0 }) },
     consoleJob: { type: Object, default: null },
+    pricesConsoleJob: { type: Object, default: null },
 });
 
 const { setPageTitle } = usePageTitle();
@@ -27,8 +28,23 @@ setPageTitle("Gestion du contenu");
 
 const page = usePage();
 const form = useForm({});
+const pricesForm = useForm({ type: "items" });
 const { liveJob, pollError, busy, cancelJob, cancelling } = useProjectConsoleJob(props, {
     title: "Compilation du livre de règles",
+});
+const pricesJobProps = {
+    get consoleJob() {
+        return props.pricesConsoleJob;
+    },
+};
+const {
+    liveJob: pricesLiveJob,
+    pollError: pricesPollError,
+    busy: pricesBusy,
+    cancelJob: cancelPricesJob,
+    cancelling: pricesCancelling,
+} = useProjectConsoleJob(pricesJobProps, {
+    title: "Recalcul des prix",
 });
 
 const cms = computed(() => props.overview?.cms ?? { pages: 0, sections: 0 });
@@ -61,6 +77,15 @@ const chartForEntity = (entity) => {
 
 function submitCompile() {
     form.post(route("admin.content.rules-downloads.run"), { preserveScroll: true });
+}
+
+function submitPrices(type) {
+    pricesForm.type = type;
+    pricesForm.post(route("admin.content.entity-prices.run"), { preserveScroll: true });
+}
+
+function canRecalculatePrices(entityKey) {
+    return entityKey === "items" || entityKey === "consumables";
 }
 </script>
 
@@ -147,7 +172,26 @@ function submitCompile() {
                     :title="''"
                     :height="180"
                 />
+                <div v-if="canRecalculatePrices(entity.key)" class="mt-2">
+                    <Btn
+                        type="button"
+                        color="primary"
+                        size="sm"
+                        variant="outline"
+                        :disabled="pricesBusy || pricesForm.processing"
+                        @click="submitPrices(entity.key)"
+                    >
+                        Mettre à jour les prix
+                    </Btn>
+                </div>
             </div>
         </div>
+        <AdminConsoleJobPanel
+            v-if="pricesLiveJob"
+            :job="pricesLiveJob"
+            :poll-error="pricesPollError"
+            :cancelling="pricesCancelling"
+            @cancel="cancelPricesJob"
+        />
     </div>
 </template>

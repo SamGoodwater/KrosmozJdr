@@ -22,6 +22,7 @@ use App\Models\Type\MonsterRace;
 use App\Models\Type\ResourceType;
 use App\Models\Type\SpellType;
 use App\Models\User;
+use App\Services\Characteristic\Pricing\EntityPriceRecalculator;
 use App\Services\Condition\ConditionCanonicalMapper;
 use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
@@ -1738,11 +1739,8 @@ final class IntegrationService
             'created_by' => $userId,
         ];
         if ($targetTable === 'items') {
-            $rawPrice = $data['price'] ?? null;
-            $payload['price_custom'] = $rawPrice !== null && $rawPrice !== ''
-                ? (int) (is_numeric($rawPrice) ? $rawPrice : preg_replace('/\D/', '', (string) $rawPrice))
-                : null;
-        } else {
+            // Prix Dofus ignoré : le total vient de la formule (recalcul après écriture).
+        } elseif ($targetTable === 'resources') {
             $payload['price'] = $data['price'] !== null ? (string) $data['price'] : null;
         }
         if (in_array($targetTable, ['items', 'resources', 'consumables'], true)) {
@@ -1798,6 +1796,9 @@ final class IntegrationService
                 }
             }
             $action = $existing ? 'updated' : 'created';
+            if ($entity instanceof Item) {
+                app(EntityPriceRecalculator::class)->recalculateItem($entity, resetCustom: true);
+            }
             DB::commit();
             $this->attachImageFromUrl($entity, $data['image'] ?? null, $options);
             Log::info('Intégration item', ['id' => $entity->id, 'table' => $targetTable, 'action' => $action]);

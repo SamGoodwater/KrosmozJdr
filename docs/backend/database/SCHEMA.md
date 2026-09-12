@@ -391,6 +391,8 @@ erDiagram
     effect : varchar(255)
     level : varchar(255)
     recipe : varchar(255)
+    price_calculated : bigint(20)
+    price_custom : bigint(20)
     price : varchar(255)
     rarity : int(11)
     state : varchar(255)

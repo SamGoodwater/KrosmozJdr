@@ -1146,6 +1146,29 @@ class IntegrationServiceTest extends TestCase
         $this->assertSame(1234, $item->price_custom);
     }
 
+    public function test_integrate_item_uses_formula_and_ignores_dofus_price(): void
+    {
+        $this->createSystemUser();
+
+        $result = $this->service->integrate('item', [
+            'items' => [
+                'dofusdb_id' => '88',
+                'name' => 'Cape test',
+                'description' => 'Desc',
+                'level' => '8',
+                'price' => 99999,
+                'rarity' => 1,
+                'bonus' => '{"strength":2}',
+            ],
+        ], []);
+
+        $this->assertTrue($result->isSuccess());
+        $item = Item::query()->where('dofusdb_id', '88')->first();
+        $this->assertNotNull($item);
+        $this->assertNull($item->price_custom);
+        $this->assertSame(150 * 8 + 200 * 1, $item->price_calculated);
+    }
+
     public function test_images_only_does_not_detach_panoply_items(): void
     {
         $this->createSystemUser();

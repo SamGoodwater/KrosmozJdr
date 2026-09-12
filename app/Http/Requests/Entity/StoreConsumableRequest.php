@@ -38,7 +38,7 @@ class StoreConsumableRequest extends FormRequest
             'effect' => ['nullable', 'string'],
             'level' => ['nullable', 'string', 'max:255'],
             'recipe' => ['nullable', 'string'],
-            'price' => ['nullable', 'string', 'max:255'],
+            'price_custom' => ['nullable', 'integer'],
             'rarity' => $this->characteristicRules('rarity', 'consumable') ?: ['nullable', 'integer', 'min:0'],
             'state' => ['nullable', 'string', EntityState::rule()],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],

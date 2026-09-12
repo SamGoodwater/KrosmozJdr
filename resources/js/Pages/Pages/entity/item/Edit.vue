@@ -106,9 +106,11 @@ setPageTitle(`Modifier l'item : ${item.value.name || 'Nouvel item'}`);
 
         <ItemPriceEditSection
             v-if="item.id"
-            :item-id="item.id"
+            :update-url="route('entities.items.update', { item: item.id })"
+            :recalculate-url="route('entities.items.recalculatePrice', { item: item.id })"
             :price-calculated="item.priceCalculated"
             :price-custom="item.priceCustom"
+            formula-hint="Bonus de caractéristiques + 150 kamas × niveau + 200 kamas × rareté."
         />
 
         <Collapse arrow bg-off="bg-base-100" class="border border-base-300">

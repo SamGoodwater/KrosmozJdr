@@ -1,20 +1,25 @@
 <script setup>
 /**
- * Bloc prix (édition item) : montant calculé (lecture seule), ajustement personnalisé (signé), total (lecture seule).
+ * Bloc prix (édition item / consommable) : calculé, ajustement, total, actualisation.
  *
- * @props {number} itemId - Identifiant de l'item
- * @props {number|null} priceCalculated - Part calculée (kamas entiers), peut être null si non calculée
- * @props {number|null} priceCustom - Ajustement (peut être négatif pour baisser le total)
+ * @props {string} updateUrl - Route PATCH de l’entité
+ * @props {string} recalculateUrl - Route POST de recalcul
+ * @props {number|null} priceCalculated - Part calculée (kamas)
+ * @props {number|null} priceCustom - Ajustement signé
+ * @props {string} formulaHint - Rappel de la formule
  */
 import { computed, watch } from 'vue';
-import { useForm } from '@inertiajs/vue3';
+import { router, useForm } from '@inertiajs/vue3';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import EditActionDock from '@/Pages/Molecules/action/EditActionDock.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
 
 const props = defineProps({
-    itemId: { type: Number, required: true },
+    updateUrl: { type: String, required: true },
+    recalculateUrl: { type: String, required: true },
     priceCalculated: { type: Number, default: null },
     priceCustom: { type: Number, default: null },
+    formulaHint: { type: String, default: '' },
 });
 
 const notifications = useNotificationStore();
@@ -58,10 +63,21 @@ function onCustomInput(event) {
 }
 
 function submit() {
-    form.patch(route('entities.items.update', { item: props.itemId }), {
+    form.patch(props.updateUrl, {
         preserveScroll: true,
         onSuccess: () => notifications.success('Prix enregistré.'),
     });
+}
+
+function recalculate() {
+    router.post(
+        props.recalculateUrl,
+        {},
+        {
+            preserveScroll: true,
+            onSuccess: () => notifications.success('Prix recalculé.'),
+        }
+    );
 }
 </script>
 
@@ -69,6 +85,7 @@ function submit() {
     <div class="card bg-base-200 shadow-sm border border-base-300">
         <div class="card-body gap-4">
             <h2 class="card-title text-lg">Prix (kamas)</h2>
+            <p v-if="formulaHint" class="text-sm text-base-content/70">{{ formulaHint }}</p>
             <div class="grid gap-3 sm:grid-cols-1 md:grid-cols-3">
                 <label class="form-control w-full">
                     <span class="label-text font-medium">Prix calculé</span>
@@ -90,7 +107,10 @@ function submit() {
                     <input type="text" class="input input-bordered w-full bg-base-300/50" readonly :value="String(totalPreview)" />
                 </label>
             </div>
-            <div class="card-actions justify-end">
+            <div class="card-actions justify-end gap-2">
+                <Btn type="button" color="neutral" variant="outline" size="sm" @click="recalculate">
+                    Actualiser le prix
+                </Btn>
                 <EditActionDock
                     primary-label="Enregistrer le prix"
                     processing-label="Enregistrement..."

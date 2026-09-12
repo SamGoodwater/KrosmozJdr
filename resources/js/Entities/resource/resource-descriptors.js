@@ -529,7 +529,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
       general: {
         label: "Prix",
         icon: "fa-solid fa-coins",
-        tooltip: "Prix de la ressource",
+        tooltip: "Prix proposé par Dofus.",
       },
       table: {
         sortable: true,

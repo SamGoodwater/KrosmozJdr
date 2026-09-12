@@ -3,6 +3,7 @@
 namespace App\Models\Entity;
 
 use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\Concerns\HasKamasPrice;
 use App\Models\Concerns\VisibleToViewer;
 use App\Models\EffectUsage;
 use App\Models\ObjectEffect;
@@ -29,7 +30,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $effect
  * @property string|null $level
  * @property string|null $recipe
- * @property string|null $price
+ * @property int|null $price_calculated
+ * @property int|null $price_custom
+ * @property string|null $price Total kamas affiché (entier, synchronisé depuis calculé + personnalisé)
  * @property int $rarity
  * @property string $state
  * @property int $read_level
@@ -52,7 +55,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $scenarios_count
  * @property-read Collection<int, Shop> $shops
  * @property-read int|null $shops_count
- *
  * @method static \Database\Factories\Entity\ConsumableFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable newQuery()
@@ -81,22 +83,21 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withoutTrashed()
- *
  * @property-read Collection<int, EffectUsage> $effectUsages
  * @property-read int|null $effect_usages_count
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
  * @property-read Collection<int, ObjectEffect> $objectEffects
  * @property-read int|null $object_effects_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable visibleToUser(?\App\Models\User $user)
- *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable wherePriceCalculated($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable wherePriceCustom($value)
  * @mixin \Eloquent
  */
 class Consumable extends Model implements HasMedia
 {
     /** @use HasFactory<ConsumableFactory> */
-    use HasEntityImageMedia, HasFactory, SoftDeletes, VisibleToViewer;
+    use HasEntityImageMedia, HasFactory, HasKamasPrice, SoftDeletes, VisibleToViewer;
 
     public const STATE_RAW = 'raw';
 
@@ -127,7 +128,8 @@ class Consumable extends Model implements HasMedia
         'effect',
         'level',
         'recipe',
-        'price',
+        'price_calculated',
+        'price_custom',
         'rarity',
         'state',
         'read_level',
@@ -145,6 +147,8 @@ class Consumable extends Model implements HasMedia
      * @var array<string, string>
      */
     protected $casts = [
+        'price_calculated' => 'integer',
+        'price_custom' => 'integer',
         'rarity' => 'integer',
         'read_level' => 'integer',
         'write_level' => 'integer',

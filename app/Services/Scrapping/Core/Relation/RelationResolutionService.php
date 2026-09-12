@@ -11,6 +11,7 @@ use App\Models\Entity\Item;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
+use App\Services\Characteristic\Pricing\EntityPriceRecalculator;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use Illuminate\Support\Facades\Log;
@@ -565,6 +566,9 @@ final class RelationResolutionService
 
         if (! $dryRun) {
             $consumable->resources()->sync($sync);
+            $consumable->unsetRelation('resources');
+            app(EntityPriceRecalculator::class)
+                ->recalculateConsumable($consumable, resetCustom: true);
         }
 
         return ['imported' => $importedIds, 'synced' => true];

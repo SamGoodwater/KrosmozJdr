@@ -6,11 +6,14 @@ use App\Http\Controllers\Concerns\RedirectsAfterEntityCreate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreConsumableRequest;
 use App\Http\Requests\Entity\UpdateConsumableRequest;
+use App\Http\Requests\Entity\UpdateItemResourcesRequest;
 use App\Http\Resources\Entity\ConsumableResource;
 use App\Models\Effect;
 use App\Models\Entity\Consumable;
+use App\Models\Entity\Resource;
 use App\Models\Type\ConsumableType;
 use App\Models\User;
+use App\Services\Characteristic\Pricing\EntityPriceRecalculator;
 use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
 use App\Support\Entity\ObjectEffectEditOptions;
@@ -89,7 +92,7 @@ class ConsumableController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreConsumableRequest $request): RedirectResponse
+    public function store(StoreConsumableRequest $request, EntityPriceRecalculator $priceRecalculator): RedirectResponse
     {
         $this->authorize('create', Consumable::class);
 
@@ -110,6 +113,7 @@ class ConsumableController extends Controller
         }
 
         $consumable = Consumable::create($data);
+        $priceRecalculator->recalculateConsumable($consumable, resetCustom: ! array_key_exists('price_custom', $data));
 
         return $this->redirectAfterEntityStore(
             $request,
@@ -189,6 +193,7 @@ class ConsumableController extends Controller
         return Inertia::render('Pages/entity/consumable/Edit', array_merge([
             'consumable' => new ConsumableResource($consumable),
             'availableConsumableTypes' => $availableConsumableTypes,
+            'availableResources' => Resource::query()->select('id', 'name', 'description', 'level')->orderBy('name')->get(),
             'effectUsages' => $effectUsages,
             'availableEffects' => $availableEffects,
             'effectEntityType' => 'consumable',
@@ -208,6 +213,35 @@ class ConsumableController extends Controller
 
         return redirect()->route('entities.consumables.show', $consumable)
             ->with('success', 'Consommable mis à jour avec succès.');
+    }
+
+    /**
+     * Recette de craft : ressources liées avec quantités.
+     */
+    public function updateResources(UpdateItemResourcesRequest $request, Consumable $consumable): RedirectResponse
+    {
+        $this->authorize('update', $consumable);
+
+        $resources = $request->input('resources', []);
+        $syncData = [];
+        foreach ($resources as $resourceId => $pivotData) {
+            $syncData[$resourceId] = ['quantity' => $pivotData['quantity']];
+        }
+        $consumable->resources()->sync($syncData);
+
+        return redirect()->back()
+            ->with('success', 'Ressources du consommable mises à jour avec succès.');
+    }
+
+    /**
+     * Recalcule le prix automatique et remplace le total affiché (ajuste custom à null).
+     */
+    public function recalculatePrice(Consumable $consumable, EntityPriceRecalculator $priceRecalculator): RedirectResponse
+    {
+        $this->authorize('update', $consumable);
+        $priceRecalculator->recalculateConsumable($consumable, resetCustom: true);
+
+        return redirect()->back()->with('success', 'Prix recalculé.');
     }
 
     /**

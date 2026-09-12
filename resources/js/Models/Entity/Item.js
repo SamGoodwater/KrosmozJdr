@@ -13,6 +13,7 @@ import { BaseModel } from '../BaseModel';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
 import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 import { getRarityConfig, FIELD_HELPERS } from '@/Utils/Entity/SharedConstants';
+import { buildKamasPriceTooltip } from '@/Utils/Entity/buildKamasPriceTooltip';
 
 export class Item extends BaseModel {
     // ============================================
@@ -419,7 +420,7 @@ export class Item extends BaseModel {
             { icon: 'fa-solid fa-tags', value: itemTypeName, tooltip: itemTypeName ? `Type: ${itemTypeName}` : '' },
             { icon: 'fa-solid fa-level-up-alt', value: levelValue, tooltip: levelValue ? `Niveau: ${levelValue}` : '' },
             { icon: 'fa-solid fa-star', value: rarityLabel, tooltip: rarityLabel ? `Rareté: ${rarityLabel}` : '' },
-            { icon: 'fa-solid fa-coins', value: priceValue, tooltip: priceValue ? `Prix: ${priceValue}` : '' },
+            { icon: 'fa-solid fa-coins', value: priceValue, tooltip: priceValue ? buildKamasPriceTooltip({ entityType: 'item', priceCalculated: this.priceCalculated, priceCustom: this.priceCustom }) : '' },
             { icon: 'fa-solid fa-code-branch', value: versionValue, tooltip: versionValue ? `Version: ${versionValue}` : '' },
             { icon: 'fa-solid fa-up-right-from-square', value: dofusdbValue, tooltip: dofusdbValue ? `DofusDB: ${dofusdbValue}` : '' },
             { icon: 'fa-solid fa-flask', value: resourcesValue, tooltip: resourcesValue ? `Ressources: ${this.resourcesCount}` : '' },

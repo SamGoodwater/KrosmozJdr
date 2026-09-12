@@ -6,6 +6,10 @@ Commandes métier hors recettes CLI quotidiennes. Vocabulaire Artisan : [app/Con
 
 `php artisan ia:equipment-grid` dresse la couverture niveau × slot × voie. `--write` crée les cases vides en `draft` (interdit en production, jamais `playable`). Config : `resources/ia/equipment-grid.json`. Détail : [docs/IA/CATALOGUE.md](../IA/CATALOGUE.md).
 
+## Recalcul des prix (kamas)
+
+`php artisan entities:recalculate-prices {items|consumables}` réécrit `price_calculated` et vide `price_custom`. Bouton admin sur `/admin/content` (cartes Équipements et Consommables). Les ressources ne sont pas concernées (prix Dofus).
+
 ## Étalons d’équipement versionnés
 
 Les objets relus à la main vivent en JSON sous `database/seeders/data/entities/items/` (un fichier par item), pour pouvoir reconstruire le socle jouable sur n’importe quelle base.

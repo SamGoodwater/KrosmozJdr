@@ -26,6 +26,7 @@ class ContentManagementDashboardController extends Controller
             'stateLabels' => AdminOverviewStatsService::stateLabels(),
             'stateColors' => AdminOverviewStatsService::stateColors(),
             'rulesDownloads' => $downloads->generatedStatus(),
+            'pricesConsoleJob' => \App\Models\ProjectConsoleJob::latestForDomain(ProjectConsoleDomain::ENTITY_PRICES)?->toStatusPayload(),
         ], $this->consoleJobProps(ProjectConsoleDomain::RULES_DOWNLOADS)));
     }
 }

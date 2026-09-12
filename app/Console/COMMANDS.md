@@ -462,7 +462,7 @@ cron: false
 admin: /admin/content
 ```
 
-Recalcule le prix automatique (kamas) de tous les équipements ou de tous les consommables : la formule remplace le total affiché (l’ajustement manuel est effacé). Les ressources ne sont pas concernées (prix Dofus). Lancé depuis les cartes de la gestion du contenu, ou en CLI.
+Réécrit `price_calculated` (formule) et vide `price_custom` pour tous les équipements ou tous les consommables. Les ressources (prix Dofus) ne sont pas concernées. Lancé aussi depuis les cartes Équipements / Consommables de la gestion du contenu.
 
 ```bash
 php artisan entities:recalculate-prices items

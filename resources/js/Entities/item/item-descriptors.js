@@ -414,7 +414,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "price",
       label: "Prix",
       icon: "fa-solid fa-coins",
-      helper: "Prix en kamas",
+      helper: "Prix automatique : bonus + 150 kamas × niveau + 200 kamas × rareté.",
       table: {
         sortable: true,
         defaultVisible: hiddenByDefault,

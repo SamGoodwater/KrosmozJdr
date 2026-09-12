@@ -56,6 +56,14 @@ Pour l'écriture (`update`/`delete`) : admin, auteur, ou `rôle ≥ write_level`
 
 La restauration et la suppression définitive (`restore`, `forceDelete`) sont réservées aux admins/super-admins via la policy de base.
 
+## Prix (kamas)
+
+- **Ressources** : `price` issu de Dofus, pas de formule.
+- **Équipements** et **consommables** : `price_calculated` + `price_custom` (trait `HasKamasPrice`) ; la colonne `price` est le total affiché.
+- Formule équipement : somme des (valeur JSON `bonus` × `characteristic_object.base_price_per_unit`) + 150 × niveau + 200 × rareté (0–5).
+- Formule consommable : somme des prix des ressources liées × quantité (`consumable_resource`).
+- Recalcul unitaire : `POST entities.items|{consumables}/{id}/recalculate-price`. Masse : `php artisan entities:recalculate-prices {items|consumables}` (gestion du contenu).
+
 ## Backend (CRUD)
 
 - Un contrôleur web par entité : `app/Http/Controllers/Entity/<Type>Controller.php` (ex. `SpellController`, `ItemController`, `MonsterController`). Pattern : `index`/`show` publics, `create`/`store`/`edit`/`update`/`destroy` sous `auth`, plus des routes relationnelles (ex. sorts d'une classe).

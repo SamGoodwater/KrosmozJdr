@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Admin\ContentDofusdbWorkshopController;
 use App\Http\Controllers\Admin\ContentManagementDashboardController;
 use App\Http\Controllers\Admin\ContentTypeRegistryController;
+use App\Http\Controllers\Admin\EntityPricesRecalculateController;
 use App\Http\Controllers\Admin\RulesDownloadsController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,9 +17,9 @@ Route::prefix('admin/content')
     ->middleware(['auth', 'content.area'])
     ->group(function () {
         Route::get('/', ContentManagementDashboardController::class)->name('dashboard.index');
-        Route::post('/rules-downloads', [RulesDownloadsController::class, 'store'])
+        Route::post('/entity-prices', [EntityPricesRecalculateController::class, 'store'])
             ->middleware(['throttle:6,1'])
-            ->name('rules-downloads.run');
+            ->name('entity-prices.run');
         Route::get('/dofusdb', [ContentDofusdbWorkshopController::class, 'index'])->name('dofusdb.index');
         Route::post('/dofusdb/sync', [ContentDofusdbWorkshopController::class, 'sync'])
             ->middleware(['password.confirm', 'throttle:6,1'])

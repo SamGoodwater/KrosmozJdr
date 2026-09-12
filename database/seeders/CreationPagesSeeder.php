@@ -107,9 +107,13 @@ class CreationPagesSeeder extends Seeder
             'creation-intro',
             'Introduction',
             '<h2>Atelier de création</h2>'
-            .'<p>Espace réservé aux MJ pour concevoir et équilibrer le contenu : tableau des bonus d’équipement, '
+            .            '<p>Espace réservé aux MJ pour concevoir et équilibrer le contenu : tableau des bonus d’équipement, '
             .'chartes des créatures, des objets et des sorts. Les chiffres affichés ici sont une <strong>projection</strong> '
-            .'du système de caractéristiques : on corrige les fiches, pas une grille figée.</p>',
+            .'du système de caractéristiques : on corrige les fiches, pas une grille figée.</p>'
+            .'<p><strong>Prix (kamas)</strong> : les ressources gardent le prix proposé par Dofus. Un consommable vaut la '
+            .'somme des prix de sa recette. Un équipement vaut la somme (valeur × prix unitaire de chaque bonus) '
+            .'+ 150 kamas par niveau + 200 kamas par palier de rareté (0 à 5). Le prix unitaire se lit dans le tableau '
+            .'des bonus d’équipement. On peut ajuster le total à la main ; « actualiser » réapplique la formule.</p>',
             0,
             $creatorId
         );
@@ -204,8 +208,11 @@ class CreationPagesSeeder extends Seeder
             .'Ce n’est pas une grille figée : si un chiffre est faux, on corrige la caractéristique, pas cette page.</p>'
             .'<p>Chaque colonne 1–2, 3–4, … 19–20 indique le plafond au début de la tranche (plus grand seuil de formule '
             .'≤ niveau de début). Un tiret signifie que le bonus n’est pas encore débloqué (valeur 0).</p>'
-            .'<p>Les colonnes Prix / unité, FM max et Prix rune viennent du même enregistrement. Les écarts entre '
-            .'<em>formula</em>, grille de normes et min/max se voient ici : ils se corrigent dans les fiches caractéristiques.</p>',
+            .            '<p>Les colonnes Prix / unité, FM max et Prix rune viennent du même enregistrement. Les écarts entre '
+            .'<em>formula</em>, grille de normes et min/max se voient ici : ils se corrigent dans les fiches caractéristiques.</p>'
+            .'<p><strong>Prix d’un objet</strong> : somme des (bonus × prix / unité) + <strong>150 kamas × niveau</strong> '
+            .'+ <strong>200 kamas × rareté</strong> (Commun = 0 … Unique = 5). Un malus diminue le sous-total. '
+            .'Le total peut être ajusté ensuite ; le bouton « actualiser » de la fiche réécrit le prix calculé.</p>',
             0,
             $creatorId
         );

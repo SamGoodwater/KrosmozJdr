@@ -1853,22 +1853,32 @@
   },
   {
     "name": "ItemPriceEditSection",
-    "description": "Bloc prix (édition item) : montant calculé (lecture seule), ajustement personnalisé (signé), total (lecture seule).",
+    "description": "Bloc prix (édition item / consommable) : calculé, ajustement, total, actualisation.",
     "props": [
       {
-        "name": "itemId",
-        "type": "number",
-        "desc": "- Identifiant de l'item"
+        "name": "updateUrl",
+        "type": "string",
+        "desc": "- Route PATCH de l’entité"
+      },
+      {
+        "name": "recalculateUrl",
+        "type": "string",
+        "desc": "- Route POST de recalcul"
       },
       {
         "name": "priceCalculated",
         "type": "number|null",
-        "desc": "- Part calculée (kamas entiers), peut être null si non calculée"
+        "desc": "- Part calculée (kamas)"
       },
       {
         "name": "priceCustom",
         "type": "number|null",
-        "desc": "- Ajustement (peut être négatif pour baisser le total)"
+        "desc": "- Ajustement signé"
+      },
+      {
+        "name": "formulaHint",
+        "type": "string",
+        "desc": "- Rappel de la formule"
       }
     ],
     "slots": [],

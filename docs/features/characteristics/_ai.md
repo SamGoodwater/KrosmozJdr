@@ -19,6 +19,7 @@
 - **Conversion Dofus** : pipeline séparé (`conversion_formula`, `[d]`).
 - **Bonus équipement (MJ)** : `EquipmentBonusTableService` projette `formula` JSON par bandes 1–2…19–20 + types d’item ; API `GET /api/characteristics/equipment-bonus-table` (rôle ≥ MJ).
 - **Runes de forgemagie (public)** : `ForgemagieRuneTableService` filtre `characteristic_object` sur `forgemagie_max > 0` + `rune_price_per_unit` non nul, joint `characteristic_object_item_type` (vide = tous les équipements) ; API `GET /api/characteristics/forgemagie-rune-table`. Source de vérité des prix : la base, pas les règles.
+- **Prix équipements / consommables** : `EquipmentPriceCalculator` (bonus × `base_price_per_unit` + 150×niveau + 200×rareté), `ConsumablePriceCalculator` (somme recette), `EntityPriceRecalculator`. Plus de multiplicateur puissance.
 
 ## Fichiers pivots
 
@@ -36,6 +37,9 @@
 - `resources/js/Pages/Organismes/data-display/CharacteristicsCard.vue`
 - `database/seeders/*CharacteristicSeeder.php`
 - `app/Services/Characteristic/Reference/EquipmentBonusTableService.php`
+- `app/Services/Characteristic/Pricing/EquipmentPriceCalculator.php`
+- `app/Services/Characteristic/Pricing/ConsumablePriceCalculator.php`
+- `app/Services/Characteristic/Pricing/EntityPriceRecalculator.php`
 
 ## Liens
 

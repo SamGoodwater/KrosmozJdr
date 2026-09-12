@@ -51,8 +51,37 @@ export class Consumable extends BaseModel {
         return this._data.recipe || null;
     }
 
+    /**
+     * Prix total pour affichage lecture (kamas entiers). Null si ≤ 0 ou absent.
+     */
     get price() {
-        return this._data.price || null;
+        const p = this._data.price;
+        if (p === null || p === undefined || p === '') {
+            return null;
+        }
+        const n = Math.round(Number(p));
+        if (!Number.isFinite(n) || n <= 0) {
+            return null;
+        }
+        return n;
+    }
+
+    get priceCalculated() {
+        const v = this._data.price_calculated;
+        if (v === null || v === undefined) {
+            return null;
+        }
+        const n = Math.round(Number(v));
+        return Number.isFinite(n) ? n : null;
+    }
+
+    get priceCustom() {
+        const v = this._data.price_custom;
+        if (v === null || v === undefined) {
+            return null;
+        }
+        const n = Math.round(Number(v));
+        return Number.isFinite(n) ? n : null;
     }
 
     get rarity() {

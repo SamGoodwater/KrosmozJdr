@@ -17,11 +17,14 @@ import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Consumable } from '@/Models/Entity/Consumable';
 import { getRarityOptions, getEntityStateOptions } from '@/Utils/Entity/SharedConstants';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
+import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import EffectUsagesManager from '@/Pages/Organismes/entity/EffectUsagesManager.vue';
 import ObjectEffectsManager from '@/Pages/Organismes/entity/ObjectEffectsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
+import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
+import ItemPriceEditSection from '@/Pages/Molecules/entity/item/ItemPriceEditSection.vue';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -32,6 +35,10 @@ const props = defineProps({
         required: true
     },
     availableConsumableTypes: {
+        type: Array,
+        default: () => []
+    },
+    availableResources: {
         type: Array,
         default: () => []
     },
@@ -78,12 +85,6 @@ const fieldsConfig = computed(() => ({
     recipe: {
         type: 'textarea',
         label: 'Recette',
-        required: false,
-        showInCompact: false
-    },
-    price: {
-        type: 'text',
-        label: 'Prix',
         required: false,
         showInCompact: false
     },
@@ -141,6 +142,36 @@ setPageTitle(`Modifier le consommable : ${consumable.value.name || 'Sans nom'}`)
             :fields-config="fieldsConfig"
             :is-updating="true"
         />
+
+        <ItemPriceEditSection
+            v-if="consumable.id"
+            :update-url="route('entities.consumables.update', { consumable: consumable.id })"
+            :recalculate-url="route('entities.consumables.recalculatePrice', { consumable: consumable.id })"
+            :price-calculated="consumable.priceCalculated"
+            :price-custom="consumable.priceCustom"
+            formula-hint="Somme des prix des ressources de la recette."
+        />
+
+        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
+            <template #title>Recette de craft</template>
+            <template #content>
+                <EntityRelationsManager
+                    :relations="consumable.resources || []"
+                    :available-items="availableResources"
+                    :entity-id="consumable.id"
+                    entity-type="consumables"
+                    relation-type="resources"
+                    relation-name="Ressources nécessaires (recette de craft)"
+                    :config="{
+                        displayFields: ['name', 'description', 'level'],
+                        searchFields: ['name', 'description'],
+                        pivotFields: ['quantity'],
+                        itemLabel: 'ressource',
+                        itemLabelPlural: 'ressources'
+                    }"
+                />
+            </template>
+        </Collapse>
 
         <!-- Gestion des usages d'effets (système unifié) -->
         <EffectUsagesManager

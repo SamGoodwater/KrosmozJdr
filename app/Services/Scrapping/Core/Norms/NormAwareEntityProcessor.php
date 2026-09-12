@@ -36,12 +36,9 @@ final class NormAwareEntityProcessor
         }
 
         $item = $converted['items'];
-        $bonus = $this->decodeBonus($item['effect'] ?? null);
-        if ($bonus === []) {
-            return $converted;
-        }
-
-        $level = max(1, min(NormsResolver::MAX_LEVEL, (int) ($item['level'] ?? 1)));
+        $bonus = $this->decodeBonus($item['bonus'] ?? $item['effect'] ?? null);
+        $level = max(0, (int) ($item['level'] ?? 0));
+        $rarity = isset($item['rarity']) && is_numeric($item['rarity']) ? max(0, (int) $item['rarity']) : 0;
         $itemTypeId = isset($item['item_type_id']) && is_numeric($item['item_type_id']) ? (int) $item['item_type_id'] : null;
         $powerIndex = $this->powerAssigner->assign('item:'.($item['dofusdb_id'] ?? $raw['id'] ?? spl_object_id((object) $item)));
 
@@ -54,7 +51,7 @@ final class NormAwareEntityProcessor
             $definition = $this->getter->getDefinition("{$shortKey}_object", 'item');
             $grid = is_array($definition['norms_grid'] ?? null) ? $definition['norms_grid'] : null;
             $conditions = is_array($definition['norms_conditions'] ?? null) ? $definition['norms_conditions'] : [];
-            $comparison = $this->normsResolver->compare((float) $value, $grid, $level, $powerIndex, $conditions);
+            $comparison = $this->normsResolver->compare((float) $value, $grid, max(1, min(NormsResolver::MAX_LEVEL, $level)), $powerIndex, $conditions);
             $priceUnits[$shortKey] = $definition['base_price_per_unit'] ?? null;
             $report[$shortKey] = [
                 'value' => (float) $value,
@@ -64,11 +61,15 @@ final class NormAwareEntityProcessor
             ];
         }
 
-        $converted['items']['price_calculated'] = $this->priceCalculator->calculate($bonus, $priceUnits, $level, $powerIndex);
+        $converted['items']['price_calculated'] = $this->priceCalculator->calculate($bonus, $priceUnits, $level, $rarity);
+        if ($bonus === []) {
+            return $converted;
+        }
+
         $converted['items']['_smart_creation'] = [
             'power_index' => $powerIndex,
             'power_label' => NormsResolver::POWER_LEVELS[$powerIndex] ?? 'neutral',
-            'bonus_signature' => $this->signatureChecker->signature($bonus, $level, $itemTypeId),
+            'bonus_signature' => $this->signatureChecker->signature($bonus, max(1, $level), $itemTypeId),
             'norms_report' => $report,
         ];
 

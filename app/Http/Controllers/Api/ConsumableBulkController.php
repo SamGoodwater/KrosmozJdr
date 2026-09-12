@@ -34,6 +34,7 @@ class ConsumableBulkController extends Controller
             'rarity' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
             'consumable_type_id' => ['sometimes', 'nullable', 'integer', 'exists:consumable_types,id'],
             'price' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'price_custom' => ['sometimes', 'nullable', 'integer'],
             'description' => ['sometimes', 'nullable', 'string'],
             'dofusdb_id' => ['sometimes', 'nullable', 'string', 'max:255'],
             'state' => ['sometimes', 'nullable', 'string', EntityState::rule()],
@@ -56,7 +57,7 @@ class ConsumableBulkController extends Controller
             'level',
             'rarity',
             'consumable_type_id',
-            'price',
+            'price_custom',
             'description',
             'dofusdb_id',
             'state',
@@ -68,6 +69,10 @@ class ConsumableBulkController extends Controller
             if (array_key_exists($k, $validated)) {
                 $patch[$k] = $validated[$k];
             }
+        }
+        if (array_key_exists('price', $validated)) {
+            $raw = $validated['price'];
+            $patch['price_custom'] = $raw === null || $raw === '' ? null : (int) (is_numeric($raw) ? $raw : preg_replace('/\D/', '', (string) $raw));
         }
 
         if (empty($patch)) {

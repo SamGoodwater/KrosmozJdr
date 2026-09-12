@@ -1,5 +1,13 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Prix automatiques en kamas
+
+Les fiches d’équipement et de consommable portent maintenant un **prix calculé** par le site, que l’on peut encore ajuster à la main.
+
+Un objet vaut la somme de ses bonus (chaque caractéristique a un prix unitaire dans le tableau MJ) plus 150 kamas par niveau et 200 kamas par palier de rareté. Un consommable vaut la somme des ressources de sa recette. Les ressources gardent le prix proposé par Dofus.
+
+À la création, à l’import, ou via « actualiser » sur la fiche (et en masse depuis **Gestion du contenu**), le calcul remplace le total affiché. Un ajustement manuel reste possible ensuite.
+
 ## Septembre 2026 — Client Inertia Vue 3
 
 Le pont entre Laravel et les pages Vue passe par Inertia 3 côté navigateur. Navigation, formulaires, titres de page et déconnexion restent les mêmes gestes ; le client HTTP interne d’Inertia gère les visites (axios reste pour les appels API métier).

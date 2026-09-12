@@ -35,6 +35,8 @@ import RichTextReadonlyView from '@/Pages/Molecules/data-display/RichTextReadonl
 import CharacteristicEffectsGrid from '@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
 import ItemPanoplyMark from '@/Pages/Molecules/entity/item/ItemPanoplyMark.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
+import { buildKamasPriceTooltip } from '@/Utils/Entity/buildKamasPriceTooltip';
 
 const props = defineProps({
     item: { type: Object, required: true },
@@ -125,7 +127,16 @@ const canShowField = (fieldKey) => {
 const getFieldUi = (fieldKey) =>
     resolveEntityFieldUi({ fieldKey, descriptors: descriptors.value, tableMeta: props.tableMeta, entityType: 'item' });
 const getFieldLabel = (fieldKey) => getFieldUi(fieldKey).label;
-const getFieldTooltip = (fieldKey) => getFieldUi(fieldKey).tooltip;
+const getFieldTooltip = (fieldKey) => {
+    if (fieldKey === 'price') {
+        return buildKamasPriceTooltip({
+            entityType: 'item',
+            priceCalculated: props.item?.priceCalculated ?? props.item?._data?.price_calculated,
+            priceCustom: props.item?.priceCustom ?? props.item?._data?.price_custom,
+        });
+    }
+    return getFieldUi(fieldKey).tooltip;
+};
 const getFieldIcon = (fieldKey) => getFieldUi(fieldKey).icon || 'fa-solid fa-info-circle';
 const getFieldIconStyle = (fieldKey) => {
     const color = getFieldUi(fieldKey).color;
@@ -190,6 +201,18 @@ const priceKamasDisplay = computed(() => {
     const n = Math.round(Number(raw));
     return Number.isFinite(n) && n > 0 ? n : null;
 });
+
+const canRecalculatePrice = computed(() =>
+    Boolean(props.item?.can?.update ?? props.item?._data?.can?.update)
+);
+
+function recalculatePrice() {
+    const itemId = props.item?.id ?? props.item?._data?.id;
+    if (!itemId) {
+        return;
+    }
+    router.post(route('entities.items.recalculatePrice', { item: itemId }), {}, { preserveScroll: true });
+}
 
 const handleAction = async (actionKey) => {
     const itemId = props.item.id;
@@ -313,13 +336,27 @@ const handleAction = async (actionKey) => {
                                 </span>
                             </Tooltip>
                         </template>
-                        <template v-if="canShowField('price') && priceKamasDisplay != null">
+                        <template v-if="canShowField('price') && (priceKamasDisplay != null || canRecalculatePrice)">
+                            <span class="inline-flex items-center gap-1">
                             <Tooltip :content="getFieldTooltip('price')" placement="top">
                                 <span class="inline-flex items-center gap-1" :style="getFieldIconStyle('price')">
                                     <Icon :source="getFieldIcon('price')" :alt="getFieldLabel('price')" size="xs" />
-                                    <span class="font-semibold">{{ getFieldLabel('price') }}</span><span> {{ priceKamasDisplay }}{{ getFieldUnit('price') ? ` ${getFieldUnit('price')}` : '' }}</span>
+                                    <span class="font-semibold">{{ getFieldLabel('price') }}</span><span> {{ priceKamasDisplay ?? 0 }}{{ getFieldUnit('price') ? ` ${getFieldUnit('price')}` : '' }}</span>
                                 </span>
                             </Tooltip>
+                            <Tooltip v-if="canRecalculatePrice" content="Actualiser le prix automatique" placement="top">
+                                <Btn
+                                    type="button"
+                                    variant="ghost"
+                                    size="xs"
+                                    circle
+                                    aria-label="Actualiser le prix"
+                                    @click="recalculatePrice"
+                                >
+                                    <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+                                </Btn>
+                            </Tooltip>
+                            </span>
                         </template>
                     </div>
                 </div>
