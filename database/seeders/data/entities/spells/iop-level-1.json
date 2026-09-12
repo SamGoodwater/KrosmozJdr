@@ -1,0 +1,229 @@
+{
+    "_schema_version": "1",
+    "breed": "Iop",
+    "entries": [
+        {
+            "key": "pression",
+            "name": "Pression",
+            "dofusdb_id": "13106",
+            "slot_index": 1,
+            "choice_order": 0,
+            "types": ["Offensif"],
+            "element": "earth",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "attack_characteristic_key": "strong",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour, PO 1.",
+            "description": "Tu frappes net, d’un coup de Wakfu terreux, à bout portant.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "value_formula_crit": "2d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "attaque-naturelle",
+            "name": "Attaque Naturelle",
+            "official_id": "jdr:attaque-naturelle",
+            "slot_index": 1,
+            "choice_order": 1,
+            "types": ["Offensif"],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "attack_characteristic_key": "intel",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour, PO 1–4 adapté.",
+            "description": "Tu concentres le Wakfu autour de toi et tu l’envoies en traits de feu.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "value_formula_crit": "2d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "fendoir",
+            "name": "Fendoir",
+            "dofusdb_id": "13149",
+            "slot_index": 2,
+            "choice_order": 0,
+            "types": ["Offensif"],
+            "element": "earth",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Tu abats une lame de Wakfu autour de toi. Ceux qui ne s’écartent pas prennent le choc.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "value_formula_crit": "2d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "intimidation",
+            "name": "Intimidation",
+            "dofusdb_id": "13108",
+            "slot_index": 2,
+            "choice_order": 1,
+            "types": ["Offensif"],
+            "element": "air",
+            "pa": "4",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "attack_characteristic_key": "agi",
+            "is_magic": false,
+            "powerful": 4,
+            "effect": "1d6 + Agilité (Air) et poussée de 1 case. Physique, 4 PA, 2×/tour, PO 1.",
+            "description": "Un coup sec qui fait reculer. L’air vibre, la cible cède le pas.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "order": 0,
+                    "params": {
+                        "characteristic": "air",
+                        "value": "1d6+Agilité",
+                        "value_formula": "1d6+[agi]",
+                        "dice_formula": "1d6+[agi]",
+                        "value_formula_crit": "2d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "order": 1,
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "bond",
+            "name": "Bond",
+            "dofusdb_id": "15660",
+            "slot_index": 3,
+            "choice_order": 0,
+            "types": ["Téléportation"],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 3,
+            "effect": "Téléportation 1–4 cases, pas de ligne de vue. Action bonus, 3 PA, 1×/tour.",
+            "description": "Tu disparais et tu réapparais plus loin. Assez pour coller Pression dans le même tour.",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "4",
+                        "teleport": true,
+                        "movement_kind": "teleport",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "concentration",
+            "name": "Concentration",
+            "dofusdb_id": "30767",
+            "slot_index": 3,
+            "choice_order": 1,
+            "types": ["Buff"],
+            "element": null,
+            "pa": "3",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "max_stack": 1,
+            "resolution_mode": "auto_success",
+            "auto_success_if_willing_target": true,
+            "is_magic": true,
+            "powerful": 3,
+            "duration": "jusqu’à la fin de ton prochain tour",
+            "effect": "+1d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+            "description": "Tu serres les dents, tu vises juste. Le prochain élan frappe plus fort.",
+            "sub_effects": [
+                {
+                    "slug": "booster",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "dommages_spell",
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
+                        "effect_direction": "self",
+                        "duration_formula": "1"
+                    }
+                }
+            ]
+        }
+    ]
+}

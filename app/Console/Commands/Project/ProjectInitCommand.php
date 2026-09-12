@@ -16,12 +16,14 @@ use Database\Seeders\CreationPagesSeeder;
 use Database\Seeders\CriticalPagesSeeder;
 use Database\Seeders\Entity\BreedSeeder;
 use Database\Seeders\Entity\ConditionSeeder;
+use Database\Seeders\Entity\ConsumableSeeder;
 use Database\Seeders\Entity\CreatureTraitSeeder;
 use Database\Seeders\Entity\ItemSeeder;
 use Database\Seeders\Entity\LanguageSeeder;
 use Database\Seeders\Entity\NpcSeeder;
 use Database\Seeders\Entity\PanoplySeeder;
 use Database\Seeders\Entity\SpecializationSeeder;
+use Database\Seeders\Entity\SpellSeeder;
 use Database\Seeders\NavMenuSeeder;
 use Database\Seeders\PageSeeder;
 use Database\Seeders\SectionSeeder;
@@ -379,6 +381,8 @@ class ProjectInitCommand extends Command
             // (phase 6) ne les écrase pas.
             ItemSeeder::class,
             PanoplySeeder::class,
+            ConsumableSeeder::class,
+            SpellSeeder::class,
         ];
         foreach ($seeders as $seeder) {
             $this->line("  → {$seeder}");

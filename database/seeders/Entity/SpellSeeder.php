@@ -1,9 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders\Entity;
 
+use App\Services\Seeder\Spell\ClassLevel1SpellSeederImporter;
 use Illuminate\Database\Seeder;
 
+/**
+ * Sorts de classe JDR (kit niveau 1, 3 emplacements × 2 variantes).
+ */
 class SpellSeeder extends Seeder
 {
     /**
@@ -11,6 +17,15 @@ class SpellSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $result = app(ClassLevel1SpellSeederImporter::class)->import();
+        $this->command?->info(sprintf(
+            '  SpellSeeder (classe niveau 1) : %d création(s), %d mise(s) à jour, %d avertissement(s).',
+            count($result['created']),
+            count($result['updated']),
+            count($result['skipped'])
+        ));
+        foreach ($result['skipped'] as $reason) {
+            $this->command?->warn('    '.$reason);
+        }
     }
 }

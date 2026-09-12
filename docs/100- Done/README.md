@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Six sorts d’Iop pour le niveau 1
+
+L’Iop commence avec **3 sorts parmi 6** : Pression (Terre) ou Attaque Naturelle (Feu), Fendoir (zone) ou Intimidation (poussée), Bond ou Concentration. Même budget que les autres classes (3 PA pour l’attaque de base, 1d6+mod). Bond + Pression tient dans un tour de 6 PA. Les autres sorts scrapés de la classe passent hors grille, en attendant leur palier.
+
 ## Septembre 2026 — Rappel, antidote, bière, café et renaissance
 
 Une **Potion de Rappel** à 800 kamas (le billet de zaap chez un PNJ reste à 80). Un **Antidote** à 1 500 kamas retire Empoisonné. La **Bière d’Amakna** (+1 Supercherie) et le **Café** (+1 Investigation) tiennent jusqu’au prochain repos long. L’**élixir de Wakfu** redonne 2 points de réserve pour 3 500 kamas. Le **Bonbon de Renaissance du Chanceux** (niveau 12, 10 000 kamas) te laisse à 1 PV au lieu de tomber à 0. Deux potions de bouclier et deux réserves de PV temporaires complètent le lot. Même type d’effet : pas de cumul. Les parchemins de caractéristique montent aussi en niveau et en rareté (petit niv. 3, puissant niv. 15 Très rare).

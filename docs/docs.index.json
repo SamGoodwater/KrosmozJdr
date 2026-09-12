@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Au lancement, l’app s’arrêtait sur « Chargement… » : un découpage trop agressif du JavaScript (layout d’un côté, formatters de l’autre) empêchait les scripts de s’initialiser."
+    "description": "L’Iop commence avec 3 sorts parmi 6 : Pression (Terre) ou Attaque Naturelle (Feu), Fendoir (zone) ou Intimidation (poussée), Bond ou Concentration. Même budget que les autres classes."
   },
   {
     "path": "backend/_ai.md",

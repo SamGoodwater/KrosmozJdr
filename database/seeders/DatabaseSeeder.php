@@ -11,6 +11,7 @@ use Database\Seeders\Entity\LanguageSeeder;
 use Database\Seeders\Entity\NpcSeeder;
 use Database\Seeders\Entity\PanoplySeeder;
 use Database\Seeders\Entity\ResourceSeeder;
+use Database\Seeders\Entity\SpellSeeder;
 use Database\Seeders\Type\TypeSeeder;
 use Illuminate\Database\Seeder;
 
@@ -35,6 +36,7 @@ class DatabaseSeeder extends Seeder
             ItemSeeder::class,
             ResourceSeeder::class,
             ConsumableSeeder::class,
+            SpellSeeder::class,
             PanoplySeeder::class,
             CharacteristicSeeder::class,
             CreatureCharacteristicSeeder::class,
