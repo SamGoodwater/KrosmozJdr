@@ -9,6 +9,7 @@ use Database\Seeders\Entity\ItemSeeder;
 use Database\Seeders\Entity\LanguageSeeder;
 use Database\Seeders\Entity\NpcSeeder;
 use Database\Seeders\Entity\PanoplySeeder;
+use Database\Seeders\Entity\ResourceSeeder;
 use Database\Seeders\Type\TypeSeeder;
 use Illuminate\Database\Seeder;
 
@@ -31,6 +32,7 @@ class DatabaseSeeder extends Seeder
             CreatureTraitSeeder::class,
             NpcSeeder::class,
             ItemSeeder::class,
+            ResourceSeeder::class,
             PanoplySeeder::class,
             CharacteristicSeeder::class,
             CreatureCharacteristicSeeder::class,

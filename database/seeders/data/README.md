@@ -44,6 +44,8 @@ Structure d’un fichier :
 
 Un item importé porte `auto_update = false` s’il a été exporté ainsi : le scrapping ne l’écrasera pas.
 
+Après l’import, les **ressources déjà liées** aux recettes des items `playable` passent en `playable` (`MarkPlayableItemRecipeResources`, aussi via `ResourceSeeder`). On ne réécrit pas nom, prix Dofus ni type. Les fiches ressource restent créées par le scrapping.
+
 ## Panoplies (`entities/panoplies/`)
 
 Un fichier JSON par set relu (bonus de palier + liste des `dofusdb_id` des pièces).

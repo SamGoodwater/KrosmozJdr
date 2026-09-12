@@ -7,6 +7,7 @@ namespace App\Services\Seeder\Item;
 use App\Models\Entity\Item;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
+use App\Services\Seeder\Resource\MarkPlayableItemRecipeResources;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -62,6 +63,10 @@ final class ItemSeederImporter
             $this->syncRelations($item, $payload);
 
             $wasNew ? $created[] = $relative : $updated[] = $relative;
+        }
+
+        if (! $dryRun) {
+            app(MarkPlayableItemRecipeResources::class)->mark();
         }
 
         return ['created' => $created, 'updated' => $updated, 'skipped' => $skipped];
