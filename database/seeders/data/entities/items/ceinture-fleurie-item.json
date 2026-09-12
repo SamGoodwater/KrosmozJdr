@@ -1,0 +1,46 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6796",
+        "official_id": null
+    },
+    "item": {
+        "name": "Ceinture Fleurie",
+        "level": "1",
+        "description": "Avec cette ceinture décorée de petits pétales autour de la taille, vous pourrez sans problème vous faire passer pour une danseuse étoile au milieu d'un combat perdu d'avance. De quoi décontenancer une armée de Chafers, pour retourner la situation à votre avantage.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 450,
+        "price_custom": null,
+        "effect": {
+            "tackle": 1
+        },
+        "bonus": {
+            "tackle": 1
+        },
+        "item_type_dofus_id": 10,
+        "item_type_name": "Ceinture"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "18"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "306",
+                "name": "Fleur de Pissenlit Diabolique",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "2318",
+                "name": "Feuille de Rose Obscure",
+                "quantity": 1
+            }
+        ]
+    }
+}

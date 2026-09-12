@@ -18,6 +18,10 @@ final class GenerationConfigLoaderTest extends TestCase
         $this->assertTrue($item->isFieldFrozen('name'));
         $this->assertTrue($item->isCharacteristicFrozen('intelligence_object'));
         $this->assertSame([], $item->exampleIds);
+        $fewShotPanoplies = $item->extra['few_shot_panoplies'] ?? null;
+        $this->assertIsArray($fewShotPanoplies);
+        $this->assertCount(54, $fewShotPanoplies);
+        $this->assertContains('Panoplie du Bouftou', $fewShotPanoplies);
 
         $spell = $loader->forEntity('spell');
         $this->assertTrue($spell->isFieldFrozen('name'));

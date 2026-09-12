@@ -16,6 +16,7 @@
             "8": {
                 "life_points_max": 2,
                 "strength": 1,
+                "intelligence": 1,
                 "action_points": 1
             }
         },

@@ -1,0 +1,30 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "26"
+    },
+    "panoply": {
+        "name": "Panoplie du Craqueleur",
+        "description": null,
+        "bonus": {
+            "7": {
+                "strength": 1,
+                "armor_class": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "6930",
+            "6933",
+            "6935",
+            "6957",
+            "18664",
+            "6931",
+            "6934"
+        ]
+    }
+}

@@ -1,0 +1,26 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "98"
+    },
+    "panoply": {
+        "name": "Panoplie Blop Griotte",
+        "description": null,
+        "bonus": {
+            "4": {
+                "intelligence": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "9149",
+            "9122",
+            "9158",
+            "9167"
+        ]
+    }
+}

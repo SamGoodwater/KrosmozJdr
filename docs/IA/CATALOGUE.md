@@ -120,7 +120,7 @@ Sets Dofus emblématiques des premiers niveaux, pièces **et** bonus de set relu
 | Piou Vert / Rouge / Bleu / Jaune | 1 | Terre / Feu / Eau / Air | Ceinture +1 tacle ou fuite ; **set complet** = carac de voie + portée |
 | Piou Rose | 1 | Soins | Anneau +1 soin ; **set complet** = soins + PV |
 | Piou Violet | 1 | Portée | **Set complet** = +1 PO |
-| Bouftou | 2 | Terre | Marteau +1 dgt terre, bouclier +1 CA, ceinture +1 tacle, coiffe +1 intimidation ; **8p** = force + PA |
+| Bouftou | 2 | Terre **et** Feu | Marteau +1 dgt terre, bouclier +1 CA, ceinture +1 tacle, coiffe +1 intimidation ; **8p** = force + intelligence + PA (comme Dofus, les deux caracs seulement au set complet) |
 | Tofu | 2 | Air | Baguette +1 dgt air, ceinture +1 fuite, kaskofu +1 acrobaties ; **7p** = agilité + PM |
 | Prespic | 3 | Sagesse | Anneau +1 soin, bouclier +1 CA, cape +1 discrétion ; **5p** = sagesse |
 | Sanglier | 1–2 | Terre | Ceinture +1 tacle ; **3p** = vitalité |
@@ -138,5 +138,40 @@ Sets Dofus emblématiques des premiers niveaux, pièces **et** bonus de set relu
 | Scara Vert / Rouge / Bleu | 4 | Terre / Feu / Eau | Cape +1 carac, ceinture tacle ou fuite ; 4p = carac + CA |
 | Scara Blanc | 4 | Sagesse / initiative | Cape +1 initiative, chapeau +1 sag ; 4p = sag + initiative |
 | Akwadala | 3–4 | Eau | Cape +1 chance, bâton +2 dgt eau, bouclier +1 CA ; 8p = chance + PO |
+| Champêtre | 1 | Terre / nature | Bâton +1 dgt terre, coiffe +1 nature ; **7p** = force + PV |
+| Homme Ours | 2 | Terre | Bâton +1 dgt terre, coiffe +1 intimidation ; **7p** = force |
+| Intrépide / Boune | 1 | Mixte / starter | Arme +1 dgt, bouclier +1 CA ; set complet = PV |
+| Invisible | 2 | Discrétion | Cape +1 discrétion, bouclier +1 CA ; **3p** = fuite |
+| Blop Coco / Griotte / Indigo / Reinette | 5 | Air / Feu / Eau / Terre | Pas de cape : **4p** = carac de voie ; ceinture tacle ou fuite |
+| Gelax | 6 | Feu | Cape +2 int ; **6p** = intelligence |
+| Craqueleur | 5–6 | Terre / tank | Cape +2 force, épée +3 dgt terre, bouclier +1 CA ; **7p** = force + CA |
+| Mulou | 4–6 | Terre | Cape +2 force, hache +3 dgt terre ; **7p** = force |
+| Koalak | 5–6 | Air | Cape +2 agi, arc +3 dgt air ; **7p** = agilité + PO |
+| Kitsou | 5–6 | Feu | Cape +2 int ; **4p** = intelligence |
+| Wabbit / Cawotte | 5–6 | Eau | **3p** = chance |
+| Tortue | 6 | Tank | Pas de bouclier ; **3p** = CA + vit |
+| Chef Crocodaille | 6–7 | Eau | Cape +2/3 chance, épée +3/4 dgt eau, bouclier +1 CA ; **8p** = chance + PO |
+| Aerdala / Terrdala | 5–8 | Air / Terre | Comme Akwadala : cape + carac, arme + dégâts, bouclier CA ; **8p** = carac + PO |
+| Scarafeuille Noir | 4–5 | Terre / tank | **4p** = force + CA |
+| Scarabosse Doré | 4–5 | Feu | Cape +2 int, baguette +3 dgt feu ; **7p** = intelligence |
+| Boostache | 4 | Feu | Cape +1 int ; **4p** = intelligence |
+| Kwakwa | 5 | Air | Épée +3 dgt air ; **4p** = agilité + PO |
+| Anciens Chafers | 4 | Terre | Marteau +2 dgt terre ; **4p** = force |
 
-À ces niveaux, Force / Int / Chance / Agilité sont encore **plafonnées à 0** sur la cape aux niv. 1–2 (formule) : la voie est portée par le **bonus de set complet**, pas par la pièce (une seule carac de voie, jamais For+Int sur le Bouftou). Les pièces peuvent rester vides. Quelques chapeaux / capes portent +1 compétence (intimidation, acrobaties, discrétion, survie) même si la `formula` objet des compétences est à 0 : impact faible, volontaire. À partir du niv. 3 la cape peut prendre +1 carac. `auto_update = false`. JSON panoplies : `database/seeders/data/entities/panoplies/` (`PanoplySeeder`, après `ItemSeeder`).
+À ces niveaux, Force / Int / Chance / Agilité sont encore **plafonnées à 0** sur la cape aux niv. 1–2 (formule) : la voie est portée par le **bonus de set complet**, pas par la pièce. Un set mixte Dofus (Bouftou For+Int) peut porter **les deux** au palier complet seulement, jamais sur les pièces. Les pièces peuvent rester vides. Quelques chapeaux / capes portent +1 compétence (intimidation, acrobaties, discrétion, survie, nature, athlétisme) même si la `formula` objet des compétences est à 0 : impact faible, volontaire. À partir du niv. 3 la cape prend +1, niv. 5 +2, niv. 7 +3. `auto_update = false`. JSON panoplies : `database/seeders/data/entities/panoplies/` (`PanoplySeeder`, après `ItemSeeder`).
+
+### Liste few-shot panoplies (ce que l’IA doit imiter)
+
+Quand l’IA relit un objet ou un set Dofus, elle ne s’appuie **que** sur les panoplies `playable` (et leurs pièces). C’est cette liste, pas tout le scrap. Noms aussi dans `resources/ia/generation.json` → `entities.item.few_shot_panoplies`.
+
+**Règles à recopier :**
+
+1. Identité Dofus (nom, illustration) inchangée.
+2. Bonus JDR dans `bonus` **et** `effect`, clés courtes, `auto_update = false`.
+3. Emplacements : cape = For/Int/Cha/Agi ; arme = dégâts fixes ; ceinture = tacle/fuite ; bouclier = CA ; chapeau = vit/sag ; anneau = soins/PO/invoc ; bottes = PM/initiative.
+4. Niv. 1–2 : pas de carac de voie sur la cape → la mettre sur le **set complet**. Pièces vides OK.
+5. Set mixte Dofus (Bouftou) : For **et** Int uniquement au palier complet.
+6. Compétences : +1 sur un chapeau ou une cape, sans viser l’équilibre parfait.
+7. Pas de raretés croisées à bas niveau.
+
+**Sets or :** Piou (6), Bouftou, Tofu, Prespic, Mousse, Sanglier, Arakne, Moskito, Champ Champ, Bandit, Jeune Aventurier, Paysan, Champêtre, Homme Ours, Intrépide, Boune, Invisible, Larvesque, Bouftou Royal, Abraknyde, Kwak (4), Kwakwa, Scara (5), Scarabosse Doré, Akwadala, Aerdala, Terrdala, Blop (4), Gelax, Craqueleur, Mulou, Koalak, Kitsou, Wabbit, Cawotte, Tortue, Chef Crocodaille, Boostache, Anciens Chafers.

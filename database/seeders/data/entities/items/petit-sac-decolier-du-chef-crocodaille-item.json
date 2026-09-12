@@ -1,0 +1,61 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6830",
+        "official_id": null
+    },
+    "item": {
+        "name": "Petit sac d'écolier du Chef Crocodaille",
+        "level": "7",
+        "description": "À Amakna aussi, la rentrée scolaire est une épreuve douloureuse pour les jeunes enfants. Surtout pour les jeunes Iops, pour qui la rentrée des classes est synonyme de véritable calvaire, parsemé d'épreuves insurmontables. Réconfortez-les avec ce magnifique sac d'écolier en peau et en écailles de Chef Crocodaille, et rembourré d'une multitude de poils.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 2550,
+        "price_custom": null,
+        "effect": {
+            "chance": 3
+        },
+        "bonus": {
+            "chance": 3
+        },
+        "item_type_dofus_id": 17,
+        "item_type_name": "Cape"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "20"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "749",
+                "name": "Bakélélite",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "2664",
+                "name": "Os de Crocodaille",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "1613",
+                "name": "Écaille de Chef Crocodaille",
+                "quantity": 8
+            },
+            {
+                "dofusdb_id": "2295",
+                "name": "Fragment d'Épée Reptilienne",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "8102",
+                "name": "Pierre du Craqueleur Légendaire",
+                "quantity": 3
+            }
+        ]
+    }
+}

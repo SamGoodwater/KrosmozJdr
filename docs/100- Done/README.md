@@ -1,8 +1,14 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Exemples de panoplies pour l’IA
+
+Le Bouftou complet donne **force et intelligence** (comme Dofus), plus le +1 PA : les deux caracs ne sont pas sur les pièces, seulement quand tout le set est porté.
+
+Une cinquantaine de sets connus sont maintenant jouables (Blop, Gelax, Craqueleur, Mulou, Koalak, Kitsou, Wabbit, Cawotte, Tortue, Chef Crocodaille, Aerdala, Terrdala, Invisible, Champêtre, Homme Ours, etc.). C’est la liste d’exemples que l’IA doit imiter, pas tout le catalogue scrapé.
+
 ## Septembre 2026 — Voie sur le set complet, pas sur chaque pièce
 
-Aux tout premiers niveaux, on ne peut pas coller Force / Intelligence / Chance / Agilité sur une cape sans dépasser le plafond. Ces bonus vont donc sur **toute la panoplie équipée** : +1 force pour le Bouftou (pas d’intelligence en plus), +1 agilité pour le Tofu, +1 vitalité pour le Sanglier, +1 sagesse pour le Prespic, +1 chance pour la Mousse (l’Éponge). Beaucoup de pièces restent vides, et ce n’est pas un problème.
+Aux tout premiers niveaux, on ne peut pas coller Force / Intelligence / Chance / Agilité sur une cape sans dépasser le plafond. Ces bonus vont donc sur **toute la panoplie équipée**. Le Bouftou complet reprend Dofus : +1 force **et** +1 intelligence (plus le PA). Beaucoup de pièces restent vides, et ce n’est pas un problème.
 
 Quelques chapeaux ou capes donnent +1 à une compétence (intimidation, acrobaties, discrétion, survie) : ça pèse moins qu’une caractéristique, donc on s’autorise un écart avec la grille stricte. On ne décline pas ces sets en plusieurs raretés : il n’y a pas assez de marge de bonus.
 

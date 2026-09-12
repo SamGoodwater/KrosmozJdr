@@ -1,0 +1,61 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6834",
+        "official_id": null
+    },
+    "item": {
+        "name": "Coiffe du Chef Crocodaille",
+        "level": "7",
+        "description": "Si vous avez toujours rêvé de ressembler à un Crocodaille sans pour autant vous transformer en Crocodaille, cette coiffe est faîte pour vous. N'espérez pas pour autant utiliser cette coiffe pour faire croire à vos amis que vous avez un jour réussi à tuer vous-même un Crocodaille. Personne n'y croira, à part vous peut-être.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 2850,
+        "price_custom": null,
+        "effect": {
+            "vitality": 3
+        },
+        "bonus": {
+            "vitality": 3
+        },
+        "item_type_dofus_id": 16,
+        "item_type_name": "Chapeau"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "20"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "749",
+                "name": "Bakélélite",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "1663",
+                "name": "Écaille de Crocodaille",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "8758",
+                "name": "Morceau de caleçon de Gourlo",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "1613",
+                "name": "Écaille de Chef Crocodaille",
+                "quantity": 11
+            },
+            {
+                "dofusdb_id": "6738",
+                "name": "Crâne de Chef Crocodaille",
+                "quantity": 1
+            }
+        ]
+    }
+}

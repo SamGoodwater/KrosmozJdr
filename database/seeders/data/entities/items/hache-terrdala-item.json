@@ -9,21 +9,19 @@
         "level": "8",
         "description": "Cette hache a été dès le début, pensée pour couper des êtres vivants. Attention, une seule erreur de manipulation de votre part, et vous pourriez vous retrouver diminué de moitié.",
         "recipe": null,
-        "rarity": 2,
+        "rarity": 0,
         "state": "playable",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,
         "auto_update": false,
-        "price_calculated": 6600,
-        "price_custom": 8300,
+        "price_calculated": 4000,
+        "price_custom": null,
         "effect": {
-            "fixed_damage_earth": 2,
-            "hit_bonus": 3
+            "fixed_damage_earth": 4
         },
         "bonus": {
-            "fixed_damage_earth": 2,
-            "hit_bonus": 3
+            "fixed_damage_earth": 4
         },
         "item_type_dofus_id": 19,
         "item_type_name": "Hache"

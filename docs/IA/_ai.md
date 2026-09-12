@@ -16,10 +16,10 @@
 - **Objets** : grille algo `ia:equipment-grid` (`resources/ia/equipment-grid.json`). Rapport ; `--write` = trous `draft`. Pas tout Dofus. Pipeline LLM non branché.
 - **L’IA ne réécrit pas l’identité** ni, par défaut, les **caractéristiques** d’une fiche Dofus. Liste éditable : page admin **IA métier** (`/admin/content/ia-generation`), fichier `resources/ia/generation.json` en repli. **PNJ** : création complète. Détail : [CHAMPS.md](./CHAMPS.md).
 - **Monstres / PNJ / sorts de créature** : génération **à la demande**, paquet cohérent.
-- Exemples few-shot : uniquement des fiches `playable` (une vingtaine par type quand l’IA s’en mêle).
+- Exemples few-shot : uniquement des fiches `playable`. **Panoplies or** : liste `entities.item.few_shot_panoplies` dans `generation.json` + [CATALOGUE](./CATALOGUE.md#liste-few-shot-panoplies-ce-que-lia-doit-imiter). ~54 sets (Piou, Bouftou For+Int au complet, Blop, Gelax, Craqueleur, Pandala, etc.).
 - **Étalons objets** : 32 items niveau 8 `playable` (4 éléments × 4 raretés), capes + armes seulement. L’élément n’existe que sur cape (For/Int/Cha/Agi) et armes (dégâts fixes) — pivot `characteristic_object_item_type`. Valeurs = `norms_grid` écrêtées par `formula`. Bonus JDR à écrire dans **`bonus`** (le front le fait gagner sur `effect`) + `auto_update = false`. Détail : [CATALOGUE](./CATALOGUE.md#kit-détalons-niveau-8-en-base-à-relire).
 - **Socle rejouable** : `database/seeders/data/entities/items/*-item.json` (1 fichier/item) + `database/seeders/data/entities/panoplies/*-panoply.json`. `items:seeder-export` / `items:seeder-import` ; `Entity\ItemSeeder` puis `Entity\PanoplySeeder` dans `project:seed`. Boutons super_admin items sur `/admin/content/ia-generation`.
-- **Sets Dofus playable** : Piou, Bouftou, Tofu, Prespic, Mousse (Éponge), puis Sanglier / Arakne / Moskito / Champ Champ / Bandit / Jeune Aventurier / Paysan / Larvesque / Bouftou Royal / Abraknyde / 4 Kwak / 4 Scara / Akwadala. Voie bas niveau = **set complet**. Détail : [CATALOGUE](./CATALOGUE.md#panoplies-bas-niveau-playable).
+- **Sets Dofus playable** : ~54 panoplies or (Piou, Bouftou For+Int au complet, Blop, Gelax, Craqueleur, Mulou, Koalak, Pandala, etc.). Liste few-shot : [CATALOGUE](./CATALOGUE.md#liste-few-shot-panoplies-ce-que-lia-doit-imiter).
 
 ## Fichiers
 

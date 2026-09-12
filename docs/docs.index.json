@@ -232,7 +232,7 @@
   {
     "path": "IA/CATALOGUE.md",
     "title": "Catalogue objets et pré-filtre",
-    "description": "Grille algo `ia:equipment-grid` (niveau × slot × voie). Config `resources/ia/equipment-grid.json`. `--write` = trous `draft`, jamais `playable` auto."
+    "description": "Grille algo `ia:equipment-grid` (niveau × slot × voie). Config `resources/ia/equipment-grid.json`. `--write` = trous `draft`, jamais `playable` auto. Panoplies or few-shot : `entities.item.few_shot_panoplies`."
   },
   {
     "path": "IA/COUTS.md",

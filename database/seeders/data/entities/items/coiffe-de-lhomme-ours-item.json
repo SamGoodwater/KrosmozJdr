@@ -1,0 +1,46 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6719",
+        "official_id": null
+    },
+    "item": {
+        "name": "Coiffe de l'Homme Ours",
+        "level": "2",
+        "description": "Cette étrange coiffe a appartenu au tristement célèbre Homme Ours. Cousue à partir des restes de la tête d'un ours en décomposition, cette coiffe vous permettra de ne pas passer inaperçu, et surtout, de laisser grâce à son odeur originale, une trace de votre passage.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 700,
+        "price_custom": null,
+        "effect": {
+            "intimidation": 1
+        },
+        "bonus": {
+            "intimidation": 1
+        },
+        "item_type_dofus_id": 16,
+        "item_type_name": "Chapeau"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "12"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "387",
+                "name": "Défense du Sanglier",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "1672",
+                "name": "Poils de Darit",
+                "quantity": 1
+            }
+        ]
+    }
+}
