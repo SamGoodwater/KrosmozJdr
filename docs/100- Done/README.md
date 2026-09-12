@@ -1,8 +1,8 @@
 # Ce qui a été fait
 
-## Septembre 2026 — Une compétence légère sur (presque) chaque set
+## Septembre 2026 — Catalogues sans types précochés, état « Jouable »
 
-Les compétences (+1 Athlétisme, Arcanes, Discrétion…) pèsent peu par rapport à une caractéristique : on s’en sert comme **bonus facile** sur les panoplies relues, y compris plus haut niveau. Si le chapeau ou la cape est vide, ça va sur la pièce ; sinon sur le palier complet du set. Les Pious Rose (vitalité) et Violet (portée) n’en ont toujours pas.
+Les catalogues (équipements, panoplies, consommables, ressources, monstres, sorts) arrivent avec le filtre **Type** (ou Race) sur **Tous** : plus de liste de types cochée d’avance. Survoler le point d’état d’une fiche (carte minimale ou fiche complète) dit **Jouable**, plus « Actif ».
 
 ## Septembre 2026 — Pious sans carac primaire, total set + pièces
 
