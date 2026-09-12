@@ -77,9 +77,9 @@ Les « kref » sont des références inline insérées dans le texte riche.
 
 **L’Essentiel** : aide-mémoire joueur (`database/seeders/data/essential-pages.php`), une page par sujet, chiffres alignés sur `private/game/rules`. Reseed : `php artisan db:seed --class=PageSeeder`.
 
-**Pour les MJ** n’est pas une page CMS : c’est un groupe de menu. L’atelier **Création** (`/pages/creation`, `read_level` MJ) y rassemble Équipements (`creation-equipements`) et les chartes (`contribution-creatures|objets|sorts`). Contribution (Informations) ne contient plus que **Nous rejoindre**.
+**Pour les MJ** n’est pas une page CMS : c’est un groupe de menu. L’atelier **Création** (`/pages/creation`, `read_level` MJ) propose une page d’aide par type d’entité : philosophie de conception, marche à suivre (stats, pièges), puis le tableau adapté (catalogue de chartes ou `equipment_bonus_table`). Contenu : `database/seeders/data/creation-pages.php`. Les anciens slugs `contribution-creatures|objets|sorts` redirigent (301). Contribution (Informations) ne contient que **Nous rejoindre**.
 
-Le tableau `equipment_bonus_table` est alimenté par `GET /api/characteristics/equipment-bonus-table` (session web, rôle ≥ MJ).
+Le tableau `equipment_bonus_table` est alimenté par `GET /api/characteristics/equipment-bonus-table` (session web, rôle ≥ MJ). Reseed atelier : `php artisan db:seed --class=CreationPagesSeeder`.
 
 **Règles → Ressources et équilibrage** contient aussi **Ressources** (`ressources-de-jeu`, enfant de `regles-5-ressources-et-equilibrage`, `database/seeders/data/ressources-page.php`) : livre PDF/ODT, fiches de personnage, logo. Catalogue `config/game_downloads.php`, template `download_catalog`, API `GET /api/game-downloads`, téléchargement `GET /telechargements/{key}`. Compilation : `php artisan rules:compile-downloads` (bouton admin sur `/admin/content`). Si le chapitre 5 n’est pas encore importé, le seeder laisse la page à la racine du groupe Règles.
 

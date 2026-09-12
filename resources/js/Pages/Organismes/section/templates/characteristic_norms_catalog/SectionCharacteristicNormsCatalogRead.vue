@@ -234,8 +234,8 @@ watch(searchTerm, (value) => {
                     class="cursor-pointer list-none px-3 py-2 text-sm font-medium marker:content-none flex flex-wrap items-baseline gap-2 [&::-webkit-details-marker]:hidden"
                 >
                     <i class="fa-solid fa-chevron-right text-xs text-base-content/50 transition-transform group-open:rotate-90" />
-                    <span class="font-mono text-xs text-base-content/60">{{ item.key }}</span>
                     <span>{{ item.name }}</span>
+                    <span class="font-mono text-xs text-base-content/50">{{ item.key }}</span>
                 </summary>
                 <div class="border-t border-base-300 bg-base-100/50">
                     <div v-if="loadingDetail[item.key]" class="flex justify-center py-8">

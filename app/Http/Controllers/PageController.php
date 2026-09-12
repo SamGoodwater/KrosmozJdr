@@ -15,6 +15,7 @@ use App\Services\BibliothequeEntityPageService;
 use App\Services\NotificationService;
 use App\Services\PageService;
 use App\Services\SectionService;
+use App\Support\Cms\CreationPageLegacyRedirects;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -94,6 +95,17 @@ class PageController extends Controller
 
         // Route `pages.show` utilise `{page:slug}` : on redirige explicitement avec le slug.
         return redirect()->route('pages.show', $page->slug)->with('success', 'Page créée avec succès.');
+    }
+
+    /**
+     * Redirige un ancien slug de charte (`contribution-*`) vers le guide Création.
+     */
+    public function redirectLegacy(string $legacySlug): RedirectResponse
+    {
+        $target = CreationPageLegacyRedirects::MAP[$legacySlug] ?? null;
+        abort_if(! is_string($target) || $target === '', 404);
+
+        return redirect()->route('pages.show', $target, 301);
     }
 
     /**

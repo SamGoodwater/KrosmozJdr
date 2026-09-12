@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SectionController;
+use App\Support\Cms\CreationPageLegacyRedirects;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('pages')->name('pages.')->group(function () {
     Route::get('/', [PageController::class, 'index'])->name('index');
     Route::get('/menu', [PageController::class, 'menu'])->name('menu');
+    Route::get('/{legacySlug}', [PageController::class, 'redirectLegacy'])
+        ->name('legacy-redirect')
+        ->where('legacySlug', CreationPageLegacyRedirects::routePattern());
     Route::get('/{page:slug}', [PageController::class, 'show'])->name('show')->where('page', '[a-z0-9]+(?:-[a-z0-9]+)*');
 
     Route::middleware('auth')->group(function () {
