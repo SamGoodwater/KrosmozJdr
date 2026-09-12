@@ -220,4 +220,31 @@ describe("EntityMinimalCard", () => {
         teleported.remove();
         wrapper.unmount();
     });
+
+    it("ne déploie pas les autres cartes au survol d’une seule", async () => {
+        const wrapper = mount({
+            components: { EntityMinimalCard },
+            template: `
+                <div class="group">
+                    <EntityMinimalCard display-mode="hover">
+                        <template #compact><div data-test="compact-a">a</div></template>
+                        <template #expanded><div data-test="expanded-a">a+</div></template>
+                    </EntityMinimalCard>
+                    <EntityMinimalCard display-mode="hover">
+                        <template #compact><div data-test="compact-b">b</div></template>
+                        <template #expanded><div data-test="expanded-b">b+</div></template>
+                    </EntityMinimalCard>
+                </div>
+            `,
+        });
+
+        const cards = wrapper.findAll(".entity-minimal-card");
+        expect(cards).toHaveLength(2);
+
+        await cards[0].trigger("mouseenter");
+        expect(wrapper.find('[data-test="expanded-a"]').exists()).toBe(true);
+        expect(wrapper.find('[data-test="expanded-b"]').exists()).toBe(false);
+
+        wrapper.unmount();
+    });
 });

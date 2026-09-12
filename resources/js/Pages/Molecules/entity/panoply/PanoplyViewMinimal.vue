@@ -16,7 +16,9 @@ import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard
 import EntityMinimalTitle from "@/Pages/Molecules/entity/shared/EntityMinimalTitle.vue";
 import { useEntityMinimalShell } from "@/Composables/entity/useEntityMinimalShell";
 import PanoplyEquipmentTextList from "@/Pages/Molecules/entity/panoply/PanoplyEquipmentTextList.vue";
+import PanoplyBonusTiers from "@/Pages/Molecules/entity/panoply/PanoplyBonusTiers.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
+import { visiblePanoplyBonusTiers } from "@/Utils/entity/panoplyBonus";
 
 const props = defineProps({
     panoply: {
@@ -45,7 +47,8 @@ const entity = computed(() => props.panoply);
 const cellOpts = () => ({ size: "xs", context: "minimal" });
 
 const itemsCountCell = computed(() => entity.value?.toCell?.("items_count", cellOpts()) ?? null);
-const bonusCell = computed(() => entity.value?.toCell?.("bonus", cellOpts()) ?? null);
+const bonusRaw = computed(() => entity.value?.bonus ?? entity.value?._data?.bonus ?? null);
+const hasBonus = computed(() => visiblePanoplyBonusTiers(bonusRaw.value).length > 0);
 const relationsCell = computed(() => entity.value?.toCell?.("panoply_summary_relations", cellOpts()) ?? null);
 
 const levelValue = computed(() => {
@@ -120,17 +123,22 @@ const handleAction = async (actionKey) => {
                         </div>
                         <div class="flex flex-col gap-1 text-xs">
                             <div
-                                v-if="bonusCell?.type === 'chips' && (bonusCell?.params?.items?.length ?? 0) > 0"
+                                v-if="hasBonus"
                                 class="min-w-0"
                             >
                                 <span class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">
                                     Effet
                                 </span>
-                                <CellRenderer :cell="bonusCell" class="inline-flex items-center max-w-full mt-0.5" />
+                                <PanoplyBonusTiers
+                                    :bonus="bonusRaw"
+                                    layout="stack"
+                                    label-mode="icon-only"
+                                    class="mt-0.5"
+                                />
                             </div>
                             <div
                                 v-if="hasLinkedItems && showEquipmentOnHover"
-                                class="max-h-0 overflow-hidden opacity-0 transition-all duration-150 group-hover:max-h-48 group-hover:opacity-100 group-focus-within:max-h-48 group-focus-within:opacity-100"
+                                class="max-h-0 overflow-hidden opacity-0 transition-all duration-150 group-hover/entity-minimal:max-h-48 group-hover/entity-minimal:opacity-100 group-focus-within/entity-minimal:max-h-48 group-focus-within/entity-minimal:opacity-100"
                             >
                                 <span class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">
                                     Équipements
@@ -191,17 +199,22 @@ const handleAction = async (actionKey) => {
                         </div>
                         <div class="flex flex-col gap-1 text-xs">
                             <div
-                                v-if="bonusCell?.type === 'chips' && (bonusCell?.params?.items?.length ?? 0) > 0"
+                                v-if="hasBonus"
                                 class="min-w-0"
                             >
                                 <span class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">
                                     Effet
                                 </span>
-                                <CellRenderer :cell="bonusCell" class="inline-flex items-center max-w-full mt-0.5" />
+                                <PanoplyBonusTiers
+                                    :bonus="bonusRaw"
+                                    layout="stack"
+                                    label-mode="icon-only"
+                                    class="mt-0.5"
+                                />
                             </div>
                             <div
                                 v-if="hasLinkedItems && showEquipmentOnHover"
-                                class="max-h-0 overflow-hidden opacity-0 transition-all duration-150 group-hover:max-h-48 group-hover:opacity-100 group-focus-within:max-h-48 group-focus-within:opacity-100"
+                                class="max-h-0 overflow-hidden opacity-0 transition-all duration-150 group-hover/entity-minimal:max-h-48 group-hover/entity-minimal:opacity-100 group-focus-within/entity-minimal:max-h-48 group-focus-within/entity-minimal:opacity-100"
                             >
                                 <span class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">
                                     Équipements

@@ -8,7 +8,9 @@
 import { computed } from "vue";
 import PanoplyThumb from "@/Pages/Molecules/entity/panoply/PanoplyThumb.vue";
 import PanoplyEquipmentTextList from "@/Pages/Molecules/entity/panoply/PanoplyEquipmentTextList.vue";
+import PanoplyBonusTiers from "@/Pages/Molecules/entity/panoply/PanoplyBonusTiers.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import { visiblePanoplyBonusTiers } from "@/Utils/entity/panoplyBonus";
 import EntityLineRowActions from "@/Pages/Molecules/entity/shared/EntityLineRowActions.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import { emitLineRowClick, emitLineRowDblClick } from "@/Composables/table/useEntityTableRowPointer";
@@ -38,7 +40,8 @@ const getCell = (fieldKey) => {
 };
 
 const nameCell = computed(() => getCell("name"));
-const bonusCell = computed(() => getCell("bonus"));
+const bonusRaw = computed(() => entity.value?.bonus ?? entity.value?._data?.bonus ?? null);
+const hasBonus = computed(() => visiblePanoplyBonusTiers(bonusRaw.value).length > 0);
 const relationsCell = computed(() => getCell("panoply_summary_relations"));
 
 const linkedItems = computed(() => {
@@ -63,7 +66,7 @@ const levelValue = computed(() => {
 
 <template>
     <div
-        class="group relative rounded-box border border-base-300 bg-glass-2xl p-3 flex flex-col gap-2 transition-colors hover:bg-glass-3xl"
+        class="group/entity-minimal relative rounded-box border border-base-300 bg-glass-2xl p-3 flex flex-col gap-2 transition-colors hover:bg-glass-3xl"
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
         style="--bg-color: var(--color-base-100)"
         data-row-contextmenu-target
@@ -113,11 +116,12 @@ const levelValue = computed(() => {
                 >
                     <PanoplyEquipmentTextList :items="linkedItems" :table-meta="tableMeta" />
                 </div>
-                <div class="flex flex-wrap items-center gap-2 text-sm">
-                    <CellRenderer
-                        v-if="bonusCell && bonusCell.type === 'chips' && (bonusCell?.params?.items?.length ?? 0) > 0"
-                        :cell="bonusCell"
-                        class="inline-flex max-w-full"
+                <div class="flex flex-col gap-2 text-sm">
+                    <PanoplyBonusTiers
+                        v-if="hasBonus"
+                        :bonus="bonusRaw"
+                        layout="stack"
+                        label-mode="icon-only"
                     />
                     <CellRenderer
                         v-if="relationsCell?.type === 'chips' && (relationsCell?.params?.items?.length ?? 0) > 0"

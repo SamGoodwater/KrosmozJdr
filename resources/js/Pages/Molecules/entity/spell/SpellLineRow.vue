@@ -96,7 +96,7 @@ const elementRingClass = computed(() => getElementSurfaceRingClass(elementSurfac
 
 <template>
     <div
-        class="group relative flex flex-col gap-2 rounded-box border border-base-300 bg-glass-2xl p-3 transition-colors hover:bg-glass-3xl"
+        class="group/entity-minimal relative flex flex-col gap-2 rounded-box border border-base-300 bg-glass-2xl p-3 transition-colors hover:bg-glass-3xl"
         :class="[{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }, elementRingClass]"
         :style="elementSurfaceStyle"
         data-row-contextmenu-target

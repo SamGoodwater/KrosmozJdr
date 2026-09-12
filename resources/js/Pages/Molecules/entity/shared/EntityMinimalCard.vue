@@ -8,7 +8,8 @@
  * le contenu étendu passe par-dessus le reste (z-index &lt; tooltips).
  * En `display-mode="extended"` (popover, favoris) : une seule carte, hauteur du contenu.
  * Un tooltip (`OverlayTrigger`) ou un menu (`Dropdown`) ouvert, téléporté hors de
- * la carte, maintient celle-ci déployée.
+ * la carte, maintient celle-ci déployée. Le groupe Tailwind est nommé
+ * (`group/entity-minimal`) pour qu’un survol ne déploie pas toute la grille.
  *
  * @slot compact - Contenu toujours visible, définit la taille du slot dans la grille
  * @slot expanded - Contenu affiché au hover (ou toujours si display-mode="extended")
@@ -172,7 +173,7 @@ onUnmounted(() => {
 <template>
     <div
         ref="cardRef"
-        class="entity-minimal-card group relative w-full"
+        class="entity-minimal-card group/entity-minimal relative w-full"
         :class="{
             'entity-minimal-card--expanded': showExpanded && canHover,
             'entity-minimal-card--extended': displayMode === 'extended',
@@ -211,6 +212,10 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.entity-minimal-card {
+    isolation: isolate;
+}
+
 .entity-minimal-card__compact {
     --bg-color: var(--color-base-100, #0f172a);
     min-height: 6rem;

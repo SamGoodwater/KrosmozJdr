@@ -162,7 +162,7 @@ const handleLinkedQuickView = (linkedEntity) => {
                         />
                         <div
                             v-if="hasLinkedLanguages"
-                            class="flex flex-wrap gap-1 max-h-0 overflow-hidden opacity-0 transition-all duration-150 group-hover:max-h-40 group-hover:opacity-100 group-focus-within:max-h-40 group-focus-within:opacity-100"
+                            class="flex flex-wrap gap-1 max-h-0 overflow-hidden opacity-0 transition-all duration-150 group-hover/entity-minimal:max-h-40 group-hover/entity-minimal:opacity-100 group-focus-within/entity-minimal:max-h-40 group-focus-within/entity-minimal:opacity-100"
                             role="region"
                             aria-label="Langues"
                         >
@@ -234,7 +234,7 @@ const handleLinkedQuickView = (linkedEntity) => {
                         />
                         <div
                             v-if="hasLinkedLanguages"
-                            class="flex flex-wrap gap-1 max-h-0 overflow-hidden opacity-0 transition-all duration-150 group-hover:max-h-40 group-hover:opacity-100 group-focus-within:max-h-40 group-focus-within:opacity-100"
+                            class="flex flex-wrap gap-1 max-h-0 overflow-hidden opacity-0 transition-all duration-150 group-hover/entity-minimal:max-h-40 group-hover/entity-minimal:opacity-100 group-focus-within/entity-minimal:max-h-40 group-focus-within/entity-minimal:opacity-100"
                             role="region"
                             aria-label="Langues"
                         >

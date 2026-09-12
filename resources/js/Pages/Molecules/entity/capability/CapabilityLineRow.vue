@@ -127,7 +127,7 @@ const elementRingClass = computed(() => getElementSurfaceRingClass(elementSurfac
 
 <template>
     <div
-        class="group relative rounded-box border border-base-300 bg-glass-2xl p-3 flex flex-col gap-2 transition-colors hover:bg-glass-3xl"
+        class="group/entity-minimal relative rounded-box border border-base-300 bg-glass-2xl p-3 flex flex-col gap-2 transition-colors hover:bg-glass-3xl"
         :class="[{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }, elementRingClass]"
         :style="elementSurfaceStyle"
         data-row-contextmenu-target
@@ -180,7 +180,7 @@ const elementRingClass = computed(() => getElementSurfaceRingClass(elementSurfac
                 />
                 <p
                     v-if="descriptionFull"
-                    class="text-[11px] italic text-base-content/45 max-h-0 opacity-0 overflow-hidden transition-all duration-200 ease-out group-hover:max-h-36 group-hover:opacity-100 group-hover:mt-0.5 leading-snug whitespace-normal wrap-break-word"
+                    class="text-[11px] italic text-base-content/45 max-h-0 opacity-0 overflow-hidden transition-all duration-200 ease-out group-hover/entity-minimal:max-h-36 group-hover/entity-minimal:opacity-100 group-hover/entity-minimal:mt-0.5 leading-snug whitespace-normal wrap-break-word"
                     :title="descriptionFull"
                 >
                     {{ descriptionFull }}

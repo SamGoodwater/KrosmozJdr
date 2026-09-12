@@ -14,6 +14,7 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import PanoplyEquipmentTextList from "@/Pages/Molecules/entity/panoply/PanoplyEquipmentTextList.vue";
+import PanoplyBonusTiers from "@/Pages/Molecules/entity/panoply/PanoplyBonusTiers.vue";
 import PanoplyThumb from "@/Pages/Molecules/entity/panoply/PanoplyThumb.vue";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
@@ -29,6 +30,7 @@ import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entit
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getPanoplyFieldDescriptors } from "@/Entities/panoply/panoply-descriptors";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
+import { visiblePanoplyBonusTiers } from "@/Utils/entity/panoplyBonus";
 
 const props = defineProps({
     panoply: {
@@ -109,7 +111,7 @@ const canShowField = (fieldKey) => {
 };
 
 const metaFields = computed(() =>
-    ["bonus", "panoply_summary_relations", "state"].filter(canShowField)
+    ["panoply_summary_relations", "state"].filter(canShowField)
 );
 
 const displayMetaFields = computed(() => metaFields.value);
@@ -118,6 +120,9 @@ const linkedItems = computed(() => {
     const raw = props.panoply?.items ?? props.panoply?._data?.items;
     return Array.isArray(raw) ? raw : [];
 });
+
+const bonusRaw = computed(() => props.panoply?.bonus ?? props.panoply?._data?.bonus ?? null);
+const hasBonus = computed(() => visiblePanoplyBonusTiers(bonusRaw.value).length > 0);
 
 const levelDisplay = computed(() => {
     const v = props.panoply?.level ?? props.panoply?._data?.level;
@@ -281,6 +286,20 @@ const handleAction = async (actionKey) => {
                         Équipements
                     </div>
                     <PanoplyEquipmentTextList :items="linkedItems" :table-meta="tableMeta" />
+                </div>
+                <div
+                    v-if="hasBonus && canShowField('bonus')"
+                    class="mt-3"
+                    data-cy="panoply-full-bonus"
+                >
+                    <div class="text-[0.625rem] font-semibold uppercase tracking-wide text-base-content/60 mb-2">
+                        Bonus de panoplie
+                    </div>
+                    <PanoplyBonusTiers
+                        :bonus="bonusRaw"
+                        layout="columns"
+                        label-mode="full"
+                    />
                 </div>
                 <div v-if="displayMetaFields.length > 0" class="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                     <EntityPropertyDisplay

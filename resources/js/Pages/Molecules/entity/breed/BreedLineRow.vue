@@ -78,7 +78,7 @@ const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
 
 <template>
     <div
-        class="group relative rounded-box border border-base-300 bg-glass-2xl p-3 flex flex-col gap-2 transition-colors hover:bg-glass-3xl"
+        class="group/entity-minimal relative rounded-box border border-base-300 bg-glass-2xl p-3 flex flex-col gap-2 transition-colors hover:bg-glass-3xl"
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
         style="--bg-color: var(--color-base-100)"
         data-row-contextmenu-target
@@ -135,7 +135,7 @@ const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
                 />
                 <div
                     v-if="hasLinkedLanguages"
-                    class="flex flex-wrap gap-1 max-h-0 overflow-hidden opacity-0 transition-all duration-150 group-hover:max-h-40 group-hover:opacity-100 group-focus-within:max-h-40 group-focus-within:opacity-100"
+                    class="flex flex-wrap gap-1 max-h-0 overflow-hidden opacity-0 transition-all duration-150 group-hover/entity-minimal:max-h-40 group-hover/entity-minimal:opacity-100 group-focus-within/entity-minimal:max-h-40 group-focus-within/entity-minimal:opacity-100"
                     role="region"
                     aria-label="Langues"
                 >
@@ -148,7 +148,7 @@ const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
                 </div>
                 <p
                     v-if="descriptionFull"
-                    class="wrap-break-word text-xs whitespace-normal text-base-content/80 italic line-clamp-3 transition-[line-clamp] duration-150 group-hover:line-clamp-none"
+                    class="wrap-break-word text-xs whitespace-normal text-base-content/80 italic line-clamp-3 transition-[line-clamp] duration-150 group-hover/entity-minimal:line-clamp-none"
                     :title="descriptionFull"
                 >
                     {{ descriptionFull }}
