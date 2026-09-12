@@ -580,6 +580,196 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         );
     }
 
+    public function test_imports_sadida_level_1_kit_and_parks_extra_spells(): void
+    {
+        $this->seed(SubEffectSeeder::class);
+        $this->seedSpellTypes();
+
+        $sadida = Breed::factory()->create([
+            'name' => 'Sadida',
+            'state' => Breed::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $extra = Spell::factory()->create([
+            'name' => 'Ronce Insolente',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $sadida->spells()->attach($extra->id, [
+            'character_level' => 1,
+            'slot_index' => 7,
+            'choice_order' => 0,
+        ]);
+
+        $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::sadidaPath());
+        $first = app(ClassLevel1SpellSeederImporter::class)->import($catalog);
+
+        $this->assertCount(6, $first['created']);
+        $this->assertSame([], $first['skipped']);
+
+        $ronce = Spell::query()->where('dofusdb_id', '13552')->first();
+        $this->assertSame('Ronce', $ronce?->name);
+        $this->assertSame('3', $ronce?->pa);
+        $this->assertSame('strong', $ronce?->attack_characteristic_key);
+
+        $poupee = Spell::query()->where('dofusdb_id', '29617')->first();
+        $this->assertSame(Spell::RESOLUTION_AUTO_SUCCESS, $poupee?->resolution_mode);
+        $this->assertTrue($poupee?->spellTypes()->where('name', 'Invocation')->exists());
+
+        $sadida->refresh();
+        $this->assertSame(1, (int) $sadida->spells()->where('spells.id', $ronce->id)->first()?->pivot->slot_index);
+        $this->assertSame(
+            ClassLevel1SpellSeederImporter::EXTRA_CHARACTER_LEVEL,
+            (int) $sadida->spells()->where('spells.id', $extra->id)->first()?->pivot->character_level
+        );
+    }
+
+    public function test_imports_sacrieur_level_1_kit_and_parks_extra_spells(): void
+    {
+        $this->seed(SubEffectSeeder::class);
+        $this->seedSpellTypes();
+
+        $sacri = Breed::factory()->create([
+            'name' => 'Sacrieur',
+            'state' => Breed::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $extra = Spell::factory()->create([
+            'name' => 'Transfert',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $sacri->spells()->attach($extra->id, [
+            'character_level' => 1,
+            'slot_index' => 7,
+            'choice_order' => 0,
+        ]);
+
+        $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::sacrieurPath());
+        $first = app(ClassLevel1SpellSeederImporter::class)->import($catalog);
+
+        $this->assertCount(6, $first['created']);
+        $this->assertSame([], $first['skipped']);
+
+        $punition = Spell::query()->where('dofusdb_id', '32373')->first();
+        $this->assertSame('Punition', $punition?->name);
+        $this->assertSame('3', $punition?->pa);
+
+        $attirance = Spell::query()->where('dofusdb_id', '30544')->first();
+        $this->assertSame(Spell::RESOLUTION_ATTACK_ROLL, $attirance?->resolution_mode);
+        $this->assertSame('agi', $attirance?->attack_characteristic_key);
+
+        $sacri->refresh();
+        $this->assertSame(3, (int) $sacri->spells()->where('spells.id', $attirance->id)->first()?->pivot->slot_index);
+        $this->assertSame(
+            ClassLevel1SpellSeederImporter::EXTRA_CHARACTER_LEVEL,
+            (int) $sacri->spells()->where('spells.id', $extra->id)->first()?->pivot->character_level
+        );
+    }
+
+    public function test_imports_pandawa_level_1_kit_and_parks_extra_spells(): void
+    {
+        $this->seed(SubEffectSeeder::class);
+        $this->seedSpellTypes();
+
+        $panda = Breed::factory()->create([
+            'name' => 'Pandawa',
+            'state' => Breed::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $extra = Spell::factory()->create([
+            'name' => 'Souillure',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $panda->spells()->attach($extra->id, [
+            'character_level' => 1,
+            'slot_index' => 7,
+            'choice_order' => 0,
+        ]);
+
+        $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::pandawaPath());
+        $first = app(ClassLevel1SpellSeederImporter::class)->import($catalog);
+
+        $this->assertCount(6, $first['created']);
+        $this->assertSame([], $first['skipped']);
+
+        $poing = Spell::query()->where('dofusdb_id', '2008')->first();
+        $this->assertSame('Poing Enflammé', $poing?->name);
+        $this->assertSame('3', $poing?->pa);
+        $this->assertSame('intel', $poing?->attack_characteristic_key);
+
+        $picole = Spell::query()->where('dofusdb_id', '12780')->first();
+        $this->assertSame(Spell::RESOLUTION_AUTO_SUCCESS, $picole?->resolution_mode);
+
+        $panda->refresh();
+        $this->assertSame(1, (int) $panda->spells()->where('spells.id', $poing->id)->first()?->pivot->slot_index);
+        $this->assertSame(
+            ClassLevel1SpellSeederImporter::EXTRA_CHARACTER_LEVEL,
+            (int) $panda->spells()->where('spells.id', $extra->id)->first()?->pivot->character_level
+        );
+    }
+
+    public function test_imports_ecaflip_level_1_kit_and_parks_extra_spells(): void
+    {
+        $this->seed(SubEffectSeeder::class);
+        $this->seedSpellTypes();
+
+        $eca = Breed::factory()->create([
+            'name' => 'Ecaflip',
+            'state' => Breed::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $extra = Spell::factory()->create([
+            'name' => 'Roulette',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $eca->spells()->attach($extra->id, [
+            'character_level' => 1,
+            'slot_index' => 7,
+            'choice_order' => 0,
+        ]);
+
+        $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::ecaflipPath());
+        $first = app(ClassLevel1SpellSeederImporter::class)->import($catalog);
+
+        $this->assertCount(6, $first['created']);
+        $this->assertSame([], $first['skipped']);
+
+        $topkaj = Spell::query()->where('dofusdb_id', '12846')->first();
+        $this->assertSame('Topkaj', $topkaj?->name);
+        $this->assertSame('3', $topkaj?->pa);
+        $this->assertSame('intel', $topkaj?->attack_characteristic_key);
+
+        $bond = Spell::query()->where('dofusdb_id', '12844')->first();
+        $this->assertSame(Spell::RESOLUTION_AUTO_SUCCESS, $bond?->resolution_mode);
+        $this->assertFalse($bond?->sight_line);
+
+        $eca->refresh();
+        $this->assertSame(1, (int) $eca->spells()->where('spells.id', $topkaj->id)->first()?->pivot->slot_index);
+        $this->assertSame(
+            ClassLevel1SpellSeederImporter::EXTRA_CHARACTER_LEVEL,
+            (int) $eca->spells()->where('spells.id', $extra->id)->first()?->pivot->character_level
+        );
+    }
+
     private function seedSpellTypes(): void
     {
         foreach (['Offensif', 'Buff', 'Debuff', 'Téléportation', 'Soin', 'Défensif', 'Invocation'] as $name) {

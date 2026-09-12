@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Six sorts de Sadida, Sacrieur, Pandawa et Ecaflip pour le niveau 1
+
+Le **Sadida** plante : Ronce (Terre) ou Larme (Eau), Tremblement ou Vent Empoisonné, Poupée ou Ronce Apaisante. Le **Sacrieur** encaisse : Punition ou Absorption (vol 1d4), Folie Sanguinaire ou Châtiment, Attirance ou Sacrifice. Le **Pandawa** frappe sans attendre d’être Saoul : Poing Enflammé ou Vague à Lame, Pandatak ou Flasque Explosive, Picole ou Chamrak. L’**Ecaflip** tape sans cartes : Topkaj ou Yams, Pelotage ou Kraps, Bond du Félin ou Entrechat. Même budget que l’Iop. Sacrieur et Pandawa n’ont pas encore de fiche classe en base : les sorts sont quand même jouables.
+
 ## Septembre 2026 — Six sorts de Féca, Osamodas et Enutrof pour le niveau 1
 
 Le **Féca** garde : Attaque Naturelle (Feu) ou Rempart (Terre), Glyphe Enflammé ou Escapade, Bouclier Féca (sur soi) ou Armure Aqueuse (sur un allié). L’**Osamodas** frappe puis invoque : Serres du Vautour (Air) ou Griffes du Chtigre (Feu), Déplumage ou Frappe du Craqueleur, Tofu ou Dragoune (1 invocation à 1d4). L’**Enutrof** jette et entrave : Lancer de Pièces (Eau) ou Roulage de Pelle (Feu), Pelle Aurifère (−1 PM) ou Lancer de Pelle (poussée), Maladresse ou Souterrain. Même budget que l’Iop.

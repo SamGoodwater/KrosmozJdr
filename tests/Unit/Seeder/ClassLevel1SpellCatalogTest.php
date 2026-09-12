@@ -196,13 +196,77 @@ final class ClassLevel1SpellCatalogTest extends TestCase
         $this->assertSame('saving_throw', $entries[4]['resolution_mode']);
     }
 
+    public function test_sadida_catalog_has_six_spells_in_three_slots(): void
+    {
+        $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::sadidaPath());
+
+        $this->assertSame('Sadida', $catalog->breedName());
+        $entries = $catalog->entries();
+        $this->assertCount(6, $entries);
+        $this->assertSame(
+            ['Ronce', 'Larme de Sadida', 'Tremblement', 'Vent Empoisonné', 'Poupée Sadida', 'Ronce Apaisante'],
+            array_column($entries, 'name')
+        );
+        $this->assertSame('3', $entries[0]['pa']);
+        $this->assertSame('5', $entries[2]['pa']);
+        $this->assertSame(['Invocation'], $entries[4]['types']);
+        $this->assertSame('soigner', $entries[5]['sub_effects'][0]['slug']);
+    }
+
+    public function test_sacrieur_catalog_has_six_spells_in_three_slots(): void
+    {
+        $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::sacrieurPath());
+
+        $this->assertSame('Sacrieur', $catalog->breedName());
+        $entries = $catalog->entries();
+        $this->assertCount(6, $entries);
+        $this->assertSame(
+            ['Punition', 'Absorption', 'Folie Sanguinaire', 'Châtiment', 'Attirance', 'Sacrifice'],
+            array_column($entries, 'name')
+        );
+        $this->assertSame('1d4', $entries[1]['sub_effects'][0]['params']['life_steal_formula']);
+        $this->assertSame('pull', $entries[4]['sub_effects'][0]['params']['movement_kind']);
+    }
+
+    public function test_pandawa_catalog_has_six_spells_in_three_slots(): void
+    {
+        $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::pandawaPath());
+
+        $this->assertSame('Pandawa', $catalog->breedName());
+        $entries = $catalog->entries();
+        $this->assertCount(6, $entries);
+        $this->assertSame(
+            ['Poing Enflammé', 'Vague à Lame', 'Pandatak', 'Flasque Explosive', 'Picole', 'Chamrak'],
+            array_column($entries, 'name')
+        );
+        $this->assertSame('5', $entries[2]['pa']);
+        $this->assertSame('booster', $entries[4]['sub_effects'][0]['slug']);
+        $this->assertSame('push', $entries[5]['sub_effects'][0]['params']['movement_kind']);
+    }
+
+    public function test_ecaflip_catalog_has_six_spells_in_three_slots(): void
+    {
+        $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::ecaflipPath());
+
+        $this->assertSame('Ecaflip', $catalog->breedName());
+        $entries = $catalog->entries();
+        $this->assertCount(6, $entries);
+        $this->assertSame(
+            ['Topkaj', 'Yams', 'Pelotage', 'Kraps', 'Bond du Félin', 'Entrechat'],
+            array_column($entries, 'name')
+        );
+        $this->assertSame('intel', $entries[0]['attack_characteristic_key']);
+        $this->assertSame('chance', $entries[1]['attack_characteristic_key']);
+        $this->assertSame('auto_success', $entries[4]['resolution_mode']);
+    }
+
     public function test_load_all_finds_all_class_kits(): void
     {
         $catalogs = ClassLevel1SpellCatalog::loadAllInDirectory();
         $breeds = array_map(static fn (ClassLevel1SpellCatalog $c): string => $c->breedName(), $catalogs);
         sort($breeds);
         $this->assertSame(
-            ['Crâ', 'Eniripsa', 'Enutrof', 'Féca', 'Iop', 'Osamodas', 'Sram', 'Xélor'],
+            ['Crâ', 'Ecaflip', 'Eniripsa', 'Enutrof', 'Féca', 'Iop', 'Osamodas', 'Pandawa', 'Sacrieur', 'Sadida', 'Sram', 'Xélor'],
             $breeds
         );
     }

@@ -67,6 +67,26 @@ final class ClassLevel1SpellCatalog
         return self::directory().'/enutrof-level-1.json';
     }
 
+    public static function sadidaPath(): string
+    {
+        return self::directory().'/sadida-level-1.json';
+    }
+
+    public static function sacrieurPath(): string
+    {
+        return self::directory().'/sacrieur-level-1.json';
+    }
+
+    public static function pandawaPath(): string
+    {
+        return self::directory().'/pandawa-level-1.json';
+    }
+
+    public static function ecaflipPath(): string
+    {
+        return self::directory().'/ecaflip-level-1.json';
+    }
+
     /**
      * @return list<self>
      */
