@@ -3,6 +3,8 @@
 namespace Tests\Feature\Api\Table;
 
 use App\Http\Middleware\CheckRole;
+use App\Models\Entity\Creature;
+use App\Models\Entity\Npc;
 use App\Models\Entity\Shop;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -160,5 +162,38 @@ class ShopTableControllerTest extends TestCase
         $data = $response->json();
         $this->assertLessThanOrEqual(5, count($data['entities']));
         $this->assertEquals(5, $data['meta']['query']['limit']);
+    }
+
+    public function test_entities_format_hides_foreign_draft_npc_from_player(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $player = User::factory()->create(['role' => User::ROLE_PLAYER]);
+        $creature = Creature::factory()->create([
+            'name' => 'Marchand secret',
+            'created_by' => $author->id,
+        ]);
+        $npc = Npc::factory()->create([
+            'creature_id' => $creature->id,
+            'story' => 'Intrigue encore en brouillon',
+            'state' => Npc::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+        Shop::factory()->create([
+            'name' => 'Boutique publique',
+            'npc_id' => $npc->id,
+            'state' => Shop::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+
+        $response = $this->actingAs($player)
+            ->getJson('/api/tables/shops?format=entities&limit=10');
+
+        $response->assertOk();
+        $this->assertCount(1, $response->json('entities'));
+        $this->assertNull($response->json('entities.0.npc'));
+        $this->assertSame('Boutique publique', $response->json('entities.0.name'));
     }
 }

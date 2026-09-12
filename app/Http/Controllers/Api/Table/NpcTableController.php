@@ -70,10 +70,12 @@ class NpcTableController extends Controller
             ->visibleToUser($request->user())
             ->with([
                 'languages',
-                'breed',
-                'specialization',
+                'breed' => fn ($q) => $q->visibleToUser($request->user()),
+                'specialization' => fn ($q) => $q->visibleToUser($request->user()),
                 'creature' => fn ($q) => $q->with([
-                    'creatureTraits',
+                    'creatureTraits' => fn ($tq) => $tq
+                        ->visibleToUser($request->user())
+                        ->orderBy('name'),
                     'spells' => fn ($sq) => $sq
                         ->visibleToUser($request->user())
                         ->orderBy('name')
@@ -87,8 +89,12 @@ class NpcTableController extends Controller
                         ->with(['itemType:id,name']),
                 ]),
             ])
-            ->withCount(['panoplies', 'campaigns', 'scenarios'])
-            ->withExists('shop');
+            ->withCount([
+                'panoplies' => fn ($q) => $q->visibleToUser($request->user()),
+                'campaigns' => fn ($q) => $q->visibleToUser($request->user()),
+                'scenarios' => fn ($q) => $q->visibleToUser($request->user()),
+            ])
+            ->withExists(['shop' => fn ($q) => $q->visibleToUser($request->user())]);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {

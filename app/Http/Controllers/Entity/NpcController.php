@@ -44,9 +44,14 @@ class NpcController extends Controller
     {
         $this->authorize('viewAny', Npc::class);
 
+        $viewer = request()->user();
         $query = Npc::query()
-            ->visibleToUser(request()->user())
-            ->with(['creature', 'breed', 'specialization']);
+            ->visibleToUser($viewer)
+            ->with([
+                'creature',
+                'breed' => fn ($q) => $q->visibleToUser($viewer),
+                'specialization' => fn ($q) => $q->visibleToUser($viewer),
+            ]);
 
         if (request()->has('search') && request()->search) {
             $search = request()->search;
@@ -105,7 +110,8 @@ class NpcController extends Controller
         $state = $data['state'] ?? 'draft';
 
         if ($creatureId === null) {
-            $creature = Creature::factory()->create([
+            // Fiche vide (totaux null = composition). Pas Creature::factory() : Faker écrirait des stats aléatoires.
+            $creature = Creature::query()->create([
                 'name' => $data['name'],
                 'description' => $data['description'] ?? '',
                 'level' => (string) ($data['level'] ?? '1'),
@@ -463,13 +469,17 @@ class NpcController extends Controller
     }
 
     /**
+     * Relations de la fiche lecture : classe / spé / sorts / stuff / traits filtrés `visibleToUser`.
+     *
      * @return array<string, mixed>
      */
     private function npcShowRelations(Request $request): array
     {
         return [
             'creature' => fn ($q) => $q->with([
-                'creatureTraits',
+                'creatureTraits' => fn ($tq) => $tq
+                    ->visibleToUser($request->user())
+                    ->orderBy('name'),
                 'spells' => fn ($sq) => $sq
                     ->visibleToUser($request->user())
                     ->orderBy('name')
@@ -482,15 +492,17 @@ class NpcController extends Controller
                     ->orderBy('name')
                     ->with(['itemType:id,name']),
             ]),
-            'breed',
-            'specialization',
+            'breed' => fn ($q) => $q->visibleToUser($request->user()),
+            'specialization' => fn ($q) => $q->visibleToUser($request->user()),
             'languages',
-            'panoplies' => fn ($q) => $q->with([
-                'items' => fn ($iq) => $iq->visibleToUser($request->user()),
-            ]),
-            'shop',
-            'scenarios',
-            'campaigns',
+            'panoplies' => fn ($q) => $q
+                ->visibleToUser($request->user())
+                ->with([
+                    'items' => fn ($iq) => $iq->visibleToUser($request->user()),
+                ]),
+            'shop' => fn ($q) => $q->visibleToUser($request->user()),
+            'scenarios' => fn ($q) => $q->visibleToUser($request->user()),
+            'campaigns' => fn ($q) => $q->visibleToUser($request->user()),
         ];
     }
 }

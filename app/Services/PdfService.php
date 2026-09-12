@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Models\Entity\Breed;
+use App\Models\Entity\Npc;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
+use App\Models\Entity\Shop;
 use App\Models\Entity\Specialization;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Model;
@@ -138,6 +140,21 @@ class PdfService
             $entity->load([
                 'capabilities' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
                 'npcs' => fn ($q) => $q->visibleToUser($viewer),
+            ]);
+        }
+
+        if ($entityType === 'npc' && $entity instanceof Npc) {
+            $viewer = request()->user();
+            $entity->load([
+                'breed' => fn ($q) => $q->visibleToUser($viewer),
+                'specialization' => fn ($q) => $q->visibleToUser($viewer),
+            ]);
+        }
+
+        if ($entityType === 'shop' && $entity instanceof Shop) {
+            $viewer = request()->user();
+            $entity->load([
+                'npc' => fn ($q) => $q->visibleToUser($viewer),
             ]);
         }
 

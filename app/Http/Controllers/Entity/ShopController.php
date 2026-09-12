@@ -29,7 +29,11 @@ class ShopController extends Controller
 
         $query = Shop::query()
             ->visibleToUser(request()->user())
-            ->with(['createdBy', 'npc', 'items']);
+            ->with([
+                'createdBy',
+                'npc' => fn ($q) => $q->visibleToUser(request()->user()),
+                'items',
+            ]);
 
         // Recherche
         if (request()->has('search') && request()->search) {

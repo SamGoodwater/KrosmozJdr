@@ -3,8 +3,12 @@
 namespace Tests\Feature\Api\Table;
 
 use App\Http\Middleware\CheckRole;
+use App\Models\Entity\Breed;
 use App\Models\Entity\Creature;
+use App\Models\Entity\CreatureTrait;
 use App\Models\Entity\Npc;
+use App\Models\Entity\Shop;
+use App\Models\Entity\Specialization;
 use App\Models\Entity\Spell;
 use App\Models\User;
 use App\Support\Npc\NpcRole;
@@ -285,5 +289,103 @@ class NpcTableControllerTest extends TestCase
         $spellIds = collect($response->json('entities.0.creature.spells'))->pluck('id')->all();
         $this->assertContains($playableSpell->id, $spellIds);
         $this->assertNotContains($draftSpell->id, $spellIds);
+    }
+
+    /**
+     * Un joueur qui voit un PNJ jouable ne doit pas recevoir les traits brouillon liés.
+     */
+    public function test_nested_creature_traits_hide_foreign_draft_from_player(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $player = User::factory()->create(['role' => User::ROLE_PLAYER]);
+        $creature = Creature::factory()->create(['created_by' => $author->id]);
+        $playableTrait = CreatureTrait::factory()->create([
+            'name' => 'Trait Public PNJ',
+            'state' => CreatureTrait::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $draftTrait = CreatureTrait::factory()->create([
+            'name' => 'Trait Secret PNJ XYZ',
+            'state' => CreatureTrait::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $creature->creatureTraits()->attach([$playableTrait->id, $draftTrait->id]);
+        Npc::factory()->create($this->playableAttrs(['creature_id' => $creature->id]));
+
+        $response = $this->actingAs($player)
+            ->getJson('/api/tables/npcs?format=entities&limit=10');
+
+        $response->assertOk();
+        $traitIds = collect($response->json('entities.0.creature.creatureTraits'))->pluck('id')->all();
+        $this->assertContains($playableTrait->id, $traitIds);
+        $this->assertNotContains($draftTrait->id, $traitIds);
+    }
+
+    public function test_has_shop_ignores_foreign_draft_shop_for_player(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $player = User::factory()->create(['role' => User::ROLE_PLAYER]);
+        $creature = Creature::factory()->create(['created_by' => $author->id]);
+        $npc = Npc::factory()->create($this->playableAttrs(['creature_id' => $creature->id]));
+        Shop::factory()->create([
+            'name' => 'Réserve secrète',
+            'npc_id' => $npc->id,
+            'state' => Shop::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+
+        $response = $this->actingAs($player)
+            ->getJson('/api/tables/npcs?format=entities&limit=10');
+
+        $response->assertOk();
+        $this->assertFalse((bool) $response->json('entities.0.has_shop'));
+    }
+
+    public function test_nested_breed_and_specialization_hide_foreign_draft_from_player(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $player = User::factory()->create(['role' => User::ROLE_PLAYER]);
+        $creature = Creature::factory()->create(['created_by' => $author->id, 'name' => 'Garde public']);
+        $draftBreed = Breed::factory()->create([
+            'name' => 'Classe Catalogue Secrète',
+            'state' => Breed::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $draftSpec = Specialization::factory()->create([
+            'name' => 'Spé Catalogue Secrète',
+            'state' => Specialization::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        Npc::factory()->create($this->playableAttrs([
+            'creature_id' => $creature->id,
+            'breed_id' => $draftBreed->id,
+            'specialization_id' => $draftSpec->id,
+        ]));
+
+        $playerResponse = $this->actingAs($player)
+            ->getJson('/api/tables/npcs?format=entities&limit=10');
+        $playerResponse->assertOk();
+        $playerEntity = $playerResponse->json('entities.0');
+        $this->assertNull($playerEntity['breed']);
+        $this->assertNull($playerEntity['specialization']);
+
+        $authorResponse = $this->actingAs($author)
+            ->getJson('/api/tables/npcs?format=entities&limit=10');
+        $authorResponse->assertOk();
+        $authorEntity = $authorResponse->json('entities.0');
+        $this->assertSame($draftBreed->id, $authorEntity['breed']['id']);
+        $this->assertSame('Classe Catalogue Secrète', $authorEntity['breed']['name']);
+        $this->assertSame($draftSpec->id, $authorEntity['specialization']['id']);
+        $this->assertSame('Spé Catalogue Secrète', $authorEntity['specialization']['name']);
     }
 }
