@@ -58,10 +58,10 @@ La restauration et la suppression définitive (`restore`, `forceDelete`) sont r�
 
 ## Prix (kamas)
 
-- **Ressources** : `price` issu de Dofus, pas de formule.
+- **Ressources** : `price` issu de Dofus, pas de formule ; une fiche **jouable** ne descend pas sous **1 kama**.
 - **Équipements** et **consommables** : `price_calculated` + `price_custom` (trait `HasKamasPrice`) ; la colonne `price` est le total affiché.
 - Formule équipement : somme des (valeur JSON `bonus` × `characteristic_object.base_price_per_unit`) + 150 × niveau + 200 × rareté (0–5).
-- Formule consommable : somme des prix des ressources liées × quantité (`consumable_resource`).
+- Formule consommable : somme des prix des ressources liées × quantité (`consumable_resource`). Soins hors combat (pain, poisson, viande, potion) : 11 paliers, recette = 10 × la ressource associée (prix ressource ≈ prix du consommable / 10), `ConsumableSeeder` + JSON `database/seeders/data/entities/consumables/healing-out-of-combat.json`.
 - Recalcul unitaire : `POST entities.items|{consumables}/{id}/recalculate-price`. Masse : `php artisan entities:recalculate-prices {items|consumables}` (gestion du contenu).
 
 ## Backend (CRUD)

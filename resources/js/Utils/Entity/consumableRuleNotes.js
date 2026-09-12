@@ -8,6 +8,8 @@
 export const CONSUMABLE_STACK_NOTE =
     "Même type d’effet : pas de cumul, le meilleur gagne.";
 
+export const OUT_OF_COMBAT_HEAL_NOTE = "Hors combat uniquement.";
+
 export const LEARN_SCROLL_NOTE = "Détruit seulement si le sort réussit.";
 
 const LEARN_SCROLL_TYPE_NAMES = new Set(["parchemin de sortilege"]);
@@ -77,5 +79,21 @@ export function consumableRuleNotes(entity) {
     if (BUFF_CONSUMABLE_TYPE_NAMES.has(name)) {
         notes.push(CONSUMABLE_STACK_NOTE);
     }
+    if (isOutOfCombatHeal(entity)) {
+        notes.push(OUT_OF_COMBAT_HEAL_NOTE);
+    }
     return notes;
+}
+
+/**
+ * @param {object|null|undefined} entity
+ * @returns {boolean}
+ */
+function isOutOfCombatHeal(entity) {
+    if (entity == null || typeof entity !== "object") {
+        return false;
+    }
+    const data = entity._data && typeof entity._data === "object" ? entity._data : entity;
+    const effect = String(entity.effect ?? data.effect ?? "");
+    return normalizeTypeName(effect).includes("hors combat");
 }

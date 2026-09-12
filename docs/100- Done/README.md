@@ -1,5 +1,13 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Pain, poisson, viande et potions de soin
+
+Une **dizaine de paliers** (onze) pour chaque type : +1, +3, +5, +7, +10, +12, +15, +17, +20, +25 et +30 PV, **hors combat uniquement**. Les prix vont de 20 à 10 000 kamas. Chaque recette prend **10** unités de la ressource du palier, vendue au dixième du prix du consommable. Les noms et images Dofus sont gardés quand la fiche existait (Pain d’Incarnam, Goujon en tranche, Potion de Mini Soin…) ; les plus gros flacons n’avaient pas d’équivalent, on les a créés.
+
+## Septembre 2026 — Plus de ressource jouable à 0 kama
+
+Une ressource **jouable** vaut au moins **1 kama** : on ne laisse plus le blé ou un minerai afficher 0. Les ingrédients de l’échelle de soin ont des prix plus hauts, calés sur le consommable.
+
 ## Septembre 2026 — Filtre état sur les équipements
 
 Le catalogue d’équipements a les mêmes pastilles d’état que les autres listes (Brut, Brouillon, Auto, Jouable, Archivé), à droite de « Filtres ». Au chargement, **Jouable** est coché.
@@ -14,7 +22,7 @@ Les catalogues (équipements, panoplies, consommables, ressources, monstres, sor
 
 ## Septembre 2026 — Ressources des recettes d’équipement jouables
 
-Les ingrédients des équipements relus (panoplies et pièces jusqu’au niveau 8) sont maintenant **jouables** : nom, prix Dofus et type inchangés. Quelques prix à 0, c’est comme dans Dofus (blé, minerais, alliages). Le set Intrépide n’a toujours pas de recette. On n’a pas publié tout l’arbre de métier Dofus collé derrière chaque ressource.
+Les ingrédients des équipements relus (panoplies et pièces jusqu’au niveau 8) sont maintenant **jouables** : nom et type Dofus inchangés. Un prix à 0 côté Dofus passe à **1 kama** une fois la fiche jouable. Le set Intrépide n’a toujours pas de recette. On n’a pas publié tout l’arbre de métier Dofus collé derrière chaque ressource.
 
 ## Septembre 2026 — Une compétence légère sur (presque) chaque set
 

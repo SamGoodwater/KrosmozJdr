@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Database\Seeders\Entity\ConditionSeeder;
+use Database\Seeders\Entity\ConsumableSeeder;
 use Database\Seeders\Entity\CreatureTraitSeeder;
 use Database\Seeders\Entity\ItemSeeder;
 use Database\Seeders\Entity\LanguageSeeder;
@@ -33,6 +34,7 @@ class DatabaseSeeder extends Seeder
             NpcSeeder::class,
             ItemSeeder::class,
             ResourceSeeder::class,
+            ConsumableSeeder::class,
             PanoplySeeder::class,
             CharacteristicSeeder::class,
             CreatureCharacteristicSeeder::class,

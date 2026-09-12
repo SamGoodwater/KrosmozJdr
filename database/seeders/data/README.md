@@ -44,7 +44,16 @@ Structure d’un fichier :
 
 Un item importé porte `auto_update = false` s’il a été exporté ainsi : le scrapping ne l’écrasera pas.
 
-Après l’import, les **ressources déjà liées** aux recettes des items `playable` passent en `playable` (`MarkPlayableItemRecipeResources`, aussi via `ResourceSeeder`). On ne réécrit pas nom, prix Dofus ni type. Les fiches ressource restent créées par le scrapping.
+Après l’import, les **ressources déjà liées** aux recettes des items `playable` passent en `playable` (`MarkPlayableItemRecipeResources`, aussi via `ResourceSeeder`). On ne réécrit pas nom ni type. Un prix Dofus à 0 sur une fiche jouable est porté à **1 kama** (`EnsureMinimumPlayableResourcePrice`). Les fiches ressource restent créées par le scrapping.
+
+## Consommables de soin hors combat (`entities/consumables/`)
+
+Un JSON unique `healing-out-of-combat.json` décrit 11 paliers × 4 types (pain, poisson comestible, viande comestible, potion). Soin fixe, **hors combat uniquement**. Recette = 10 unités de la ressource de palier, dont le prix est le barème du consommable / 10.
+
+- **Seed** : `Database\Seeders\Entity\ConsumableSeeder`, après `ResourceSeeder` (`project:seed` / `project:init`).
+- Upsert sur `dofusdb_id` (identités Dofus conservées, images incluses) ou `official_id` `jdr:heal:potion:N` pour les potions sans fiche Dofus.
+- Les ressources d’ingrédients passent en `playable` avec `auto_update = false` pour geler le prix JDR.
+- Sans ressource scrapée, le consommable est tout de même créé avec `price_custom` au barème.
 
 ## Panoplies (`entities/panoplies/`)
 

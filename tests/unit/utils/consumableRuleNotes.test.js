@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import {
     CONSUMABLE_STACK_NOTE,
     LEARN_SCROLL_NOTE,
+    OUT_OF_COMBAT_HEAL_NOTE,
     consumableRuleNotes,
 } from "@/Utils/Entity/consumableRuleNotes";
 
@@ -19,6 +20,12 @@ describe("consumableRuleNotes", () => {
         expect(consumableRuleNotes({ consumableType: { name: "Potion" } })).toEqual([
             CONSUMABLE_STACK_NOTE,
         ]);
+        expect(
+            consumableRuleNotes({
+                consumableType: { name: "Pain" },
+                effect: "Restaure 5 PV. Hors combat uniquement.",
+            }),
+        ).toEqual([CONSUMABLE_STACK_NOTE, OUT_OF_COMBAT_HEAL_NOTE]);
         expect(consumableRuleNotes({ consumable_type: { name: "Nourriture boost" } })).toEqual([
             CONSUMABLE_STACK_NOTE,
         ]);

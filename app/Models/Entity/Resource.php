@@ -8,6 +8,7 @@ use App\Models\EffectUsage;
 use App\Models\ObjectEffect;
 use App\Models\Type\ResourceType;
 use App\Models\User;
+use App\Services\Seeder\Resource\EnsureMinimumPlayableResourcePrice;
 use Database\Factories\ResourceFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -167,6 +168,13 @@ class Resource extends Model implements HasMedia
         'write_level' => 'integer',
         'auto_update' => 'boolean',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Resource $resource): void {
+            EnsureMinimumPlayableResourcePrice::clampPriceOnResource($resource);
+        });
+    }
 
     /**
      * Get the user that created the resource.
