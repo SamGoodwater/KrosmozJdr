@@ -394,4 +394,39 @@ class PanoplyControllerTest extends TestCase
             ->where('panoply.data.name', 'Panoplie du Gouffre')
         );
     }
+
+    /**
+     * Test : la fiche show embarque bonus et effect des pièces.
+     */
+    public function test_show_payload_includes_item_bonuses(): void
+    {
+        $user = User::factory()->create();
+        $panoply = Panoply::factory()->create([
+            'created_by' => $user->id,
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => 0,
+            'name' => 'Panoplie Bonus Pièces',
+        ]);
+        $item = Item::factory()->create([
+            'name' => 'Ceinture test',
+            'bonus' => json_encode(['dodge' => 1], JSON_THROW_ON_ERROR),
+            'effect' => json_encode(['dodge' => 1], JSON_THROW_ON_ERROR),
+            'created_by' => $user->id,
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => 0,
+        ]);
+        $panoply->items()->attach($item->id);
+
+        $response = $this->actingAs($user)
+            ->get(route('entities.panoplies.show', $panoply));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Pages/entity/panoply/Show')
+            ->where('panoply.data.items.0.id', $item->id)
+            ->where('panoply.data.items.0.name', 'Ceinture test')
+            ->has('panoply.data.items.0.bonus')
+            ->has('panoply.data.items.0.effect')
+        );
+    }
 }
