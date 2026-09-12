@@ -169,7 +169,7 @@ final class ClassLevel1SpellSeederImporter
             'number_between_two_cast' => '0',
             'cast_in_line' => false,
             'cast_in_diagonal' => false,
-            'target_type' => 'direct',
+            'target_type' => $this->targetType($entry),
             'max_stack' => $entry['max_stack'],
             'global_cooldown' => 0,
             'element' => $element,
@@ -237,18 +237,20 @@ final class ClassLevel1SpellSeederImporter
             $slug = substr($slug, 0, 64);
         }
 
+        $targetType = $this->targetType($entry);
+
         $effect = Effect::query()->firstOrCreate(
             ['slug' => $slug],
             [
                 'name' => $entry['name'],
                 'description' => $entry['effect'],
-                'target_type' => Effect::TARGET_DIRECT,
+                'target_type' => $targetType,
             ]
         );
         $effect->fill([
             'name' => $entry['name'],
             'description' => $entry['effect'],
-            'target_type' => Effect::TARGET_DIRECT,
+            'target_type' => $targetType,
         ]);
         $effect->save();
 
@@ -320,5 +322,15 @@ final class ClassLevel1SpellSeederImporter
         DB::transaction(function () use ($breed, $sync): void {
             $breed->spells()->sync($sync);
         });
+    }
+
+    /**
+     * @param  array<string, mixed>  $entry
+     */
+    private function targetType(array $entry): string
+    {
+        $value = $entry['target_type'] ?? 'direct';
+
+        return in_array($value, ['direct', 'trap', 'glyph'], true) ? $value : 'direct';
     }
 }

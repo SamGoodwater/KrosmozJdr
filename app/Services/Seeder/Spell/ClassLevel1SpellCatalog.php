@@ -37,6 +37,21 @@ final class ClassLevel1SpellCatalog
         return self::directory().'/cra-level-1.json';
     }
 
+    public static function eniripsaPath(): string
+    {
+        return self::directory().'/eniripsa-level-1.json';
+    }
+
+    public static function sramPath(): string
+    {
+        return self::directory().'/sram-level-1.json';
+    }
+
+    public static function xelorPath(): string
+    {
+        return self::directory().'/xelor-level-1.json';
+    }
+
     /**
      * @return list<self>
      */
@@ -105,6 +120,7 @@ final class ClassLevel1SpellCatalog
      *     is_magic: bool,
      *     powerful: int,
      *     duration: string|null,
+     *     target_type: string,
      *     effect: string,
      *     description: string,
      *     sub_effects: list<array<string, mixed>>
@@ -177,6 +193,7 @@ final class ClassLevel1SpellCatalog
                 'is_magic' => (bool) ($row['is_magic'] ?? false),
                 'powerful' => max(0, (int) ($row['powerful'] ?? 0)),
                 'duration' => $this->nullableString($row['duration'] ?? null),
+                'target_type' => $this->targetType($row['target_type'] ?? null),
                 'effect' => (string) ($row['effect'] ?? ''),
                 'description' => (string) ($row['description'] ?? ''),
                 'sub_effects' => $subEffects,
@@ -194,5 +211,12 @@ final class ClassLevel1SpellCatalog
         $trimmed = trim((string) $value);
 
         return $trimmed === '' ? null : $trimmed;
+    }
+
+    private function targetType(mixed $value): string
+    {
+        $trimmed = $this->nullableString($value) ?? 'direct';
+
+        return in_array($trimmed, ['direct', 'trap', 'glyph'], true) ? $trimmed : 'direct';
     }
 }

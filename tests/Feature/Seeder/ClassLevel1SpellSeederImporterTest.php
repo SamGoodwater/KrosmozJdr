@@ -202,9 +202,206 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         );
     }
 
+    public function test_imports_eniripsa_level_1_kit_and_parks_extra_spells(): void
+    {
+        $this->seed(SubEffectSeeder::class);
+        $this->seedSpellTypes();
+
+        $eni = Breed::factory()->create([
+            'name' => 'Eniripsa',
+            'state' => Breed::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $extra = Spell::factory()->create([
+            'name' => 'Mot de Reconstitution',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $eni->spells()->attach($extra->id, [
+            'character_level' => 1,
+            'slot_index' => 7,
+            'choice_order' => 0,
+        ]);
+
+        $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::eniripsaPath());
+        $importer = app(ClassLevel1SpellSeederImporter::class);
+        $first = $importer->import($catalog);
+
+        $this->assertCount(6, $first['created']);
+        $this->assertSame([], $first['skipped']);
+
+        $vivifiant = Spell::query()->where('dofusdb_id', '28572')->first();
+        $this->assertNotNull($vivifiant);
+        $this->assertSame('Mot Vivifiant', $vivifiant->name);
+        $this->assertSame(Spell::STATE_PLAYABLE, $vivifiant->state);
+        $this->assertFalse($vivifiant->auto_update);
+        $this->assertSame('3', $vivifiant->pa);
+        $this->assertSame('2', $vivifiant->cast_per_turn);
+        $this->assertSame(Spell::RESOLUTION_AUTO_SUCCESS, $vivifiant->resolution_mode);
+        $this->assertTrue($vivifiant->auto_success_if_willing_target);
+        $this->assertSame(4, $vivifiant->element);
+        $this->assertTrue($vivifiant->spellTypes()->where('name', 'Soin')->exists());
+
+        $interdit = Spell::query()->where('dofusdb_id', '25873')->first();
+        $this->assertSame('5', $interdit?->pa);
+        $this->assertSame(Spell::RESOLUTION_AUTO_SUCCESS, $interdit?->resolution_mode);
+
+        $frayeur = Spell::query()->where('dofusdb_id', '13175')->first();
+        $this->assertSame(Spell::RESOLUTION_ATTACK_ROLL, $frayeur?->resolution_mode);
+        $this->assertSame('agi', $frayeur?->attack_characteristic_key);
+
+        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
+
+        $eni->refresh();
+        $vivifiantPivot = $eni->spells()->where('spells.id', $vivifiant->id)->first()?->pivot;
+        $this->assertSame(1, (int) $vivifiantPivot?->character_level);
+        $this->assertSame(1, (int) $vivifiantPivot?->slot_index);
+        $this->assertSame(0, (int) $vivifiantPivot?->choice_order);
+
+        $extraPivot = $eni->spells()->where('spells.id', $extra->id)->first()?->pivot;
+        $this->assertSame(
+            ClassLevel1SpellSeederImporter::EXTRA_CHARACTER_LEVEL,
+            (int) $extraPivot?->character_level
+        );
+        $this->assertSame(
+            ClassLevel1SpellSeederImporter::EXTRA_SLOT_INDEX,
+            (int) $extraPivot?->slot_index
+        );
+    }
+
+    public function test_imports_sram_level_1_kit_and_parks_extra_spells(): void
+    {
+        $this->seed(SubEffectSeeder::class);
+        $this->seedSpellTypes();
+
+        $sram = Breed::factory()->create([
+            'name' => 'Sram',
+            'state' => Breed::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $extra = Spell::factory()->create([
+            'name' => 'Marque Mortuaire',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $sram->spells()->attach($extra->id, [
+            'character_level' => 1,
+            'slot_index' => 7,
+            'choice_order' => 0,
+        ]);
+
+        $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::sramPath());
+        $importer = app(ClassLevel1SpellSeederImporter::class);
+        $first = $importer->import($catalog);
+
+        $this->assertCount(6, $first['created']);
+        $this->assertSame([], $first['skipped']);
+
+        $sournoiserie = Spell::query()->where('dofusdb_id', '32536')->first();
+        $this->assertNotNull($sournoiserie);
+        $this->assertSame('Sournoiserie', $sournoiserie->name);
+        $this->assertSame('3', $sournoiserie->pa);
+        $this->assertSame('strong', $sournoiserie->attack_characteristic_key);
+        $this->assertSame(1, $sournoiserie->element);
+
+        $piege = Spell::query()->where('dofusdb_id', '12929')->first();
+        $this->assertSame('5', $piege?->pa);
+        $this->assertSame('trap', $piege?->target_type);
+        $this->assertSame(Spell::RESOLUTION_SAVING_THROW, $piege?->resolution_mode);
+        $this->assertSame('sagesse', $piege?->save_characteristic_key);
+
+        $invis = Spell::query()->where('dofusdb_id', '32367')->first();
+        $this->assertSame('5', $invis?->pa);
+        $this->assertSame(Spell::RESOLUTION_AUTO_SUCCESS, $invis?->resolution_mode);
+
+        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
+
+        $sram->refresh();
+        $piegePivot = $sram->spells()->where('spells.id', $piege->id)->first()?->pivot;
+        $this->assertSame(2, (int) $piegePivot?->slot_index);
+        $this->assertSame(0, (int) $piegePivot?->choice_order);
+
+        $extraPivot = $sram->spells()->where('spells.id', $extra->id)->first()?->pivot;
+        $this->assertSame(
+            ClassLevel1SpellSeederImporter::EXTRA_CHARACTER_LEVEL,
+            (int) $extraPivot?->character_level
+        );
+    }
+
+    public function test_imports_xelor_level_1_kit_and_parks_extra_spells(): void
+    {
+        $this->seed(SubEffectSeeder::class);
+        $this->seedSpellTypes();
+
+        $xelor = Breed::factory()->create([
+            'name' => 'Xélor',
+            'state' => Breed::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $extra = Spell::factory()->create([
+            'name' => 'Momification',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $xelor->spells()->attach($extra->id, [
+            'character_level' => 1,
+            'slot_index' => 7,
+            'choice_order' => 0,
+        ]);
+
+        $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::xelorPath());
+        $importer = app(ClassLevel1SpellSeederImporter::class);
+        $first = $importer->import($catalog);
+
+        $this->assertCount(6, $first['created']);
+        $this->assertSame([], $first['skipped']);
+
+        $aiguille = Spell::query()->where('dofusdb_id', '30842')->first();
+        $this->assertNotNull($aiguille);
+        $this->assertSame('Aiguille', $aiguille->name);
+        $this->assertSame('3', $aiguille->pa);
+        $this->assertSame('intel', $aiguille->attack_characteristic_key);
+        $this->assertSame(2, $aiguille->element);
+        $this->assertTrue($aiguille->po_editable);
+
+        $raule = Spell::query()->where('dofusdb_id', '31500')->first();
+        $this->assertSame('5', $raule?->pa);
+        $this->assertSame(Spell::RESOLUTION_SAVING_THROW, $raule?->resolution_mode);
+        $this->assertTrue($raule?->is_magic);
+
+        $flou = Spell::query()->where('dofusdb_id', '13246')->first();
+        $this->assertSame('5', $flou?->pa);
+        $this->assertSame('sagesse', $flou?->save_characteristic_key);
+
+        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
+
+        $xelor->refresh();
+        $aiguillePivot = $xelor->spells()->where('spells.id', $aiguille->id)->first()?->pivot;
+        $this->assertSame(1, (int) $aiguillePivot?->slot_index);
+        $this->assertSame(0, (int) $aiguillePivot?->choice_order);
+
+        $extraPivot = $xelor->spells()->where('spells.id', $extra->id)->first()?->pivot;
+        $this->assertSame(
+            ClassLevel1SpellSeederImporter::EXTRA_CHARACTER_LEVEL,
+            (int) $extraPivot?->character_level
+        );
+    }
+
     private function seedSpellTypes(): void
     {
-        foreach (['Offensif', 'Buff', 'Debuff', 'Téléportation'] as $name) {
+        foreach (['Offensif', 'Buff', 'Debuff', 'Téléportation', 'Soin'] as $name) {
             SpellType::factory()->create([
                 'name' => $name,
                 'state' => SpellType::STATE_PLAYABLE,

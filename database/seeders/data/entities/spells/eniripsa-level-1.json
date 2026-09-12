@@ -1,0 +1,209 @@
+{
+    "_schema_version": "1",
+    "breed": "Eniripsa",
+    "entries": [
+        {
+            "key": "mot-vivifiant",
+            "name": "Mot Vivifiant",
+            "dofusdb_id": "28572",
+            "slot_index": 1,
+            "choice_order": 0,
+            "types": ["Soin"],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "auto_success",
+            "auto_success_if_willing_target": true,
+            "is_magic": true,
+            "powerful": 3,
+            "effect": "1d4 + Sagesse (Eau). Magique, 3 PA, 2×/tour, PO 1–5 adapté. Soin automatique sur une cible consentante.",
+            "description": "Un mot d’eau qui recoud. Tu parles, la plaie se ferme un peu.",
+            "sub_effects": [
+                {
+                    "slug": "soigner",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "1d4+Sagesse",
+                        "value_formula": "1d4+[sagesse]",
+                        "dice_formula": "1d4+[sagesse]",
+                        "value_formula_crit": "2d4+[sagesse]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "mot-d-amitie",
+            "name": "Mot d’Amitié",
+            "dofusdb_id": "25817",
+            "slot_index": 1,
+            "choice_order": 1,
+            "types": ["Soin"],
+            "element": "air",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "auto_success",
+            "auto_success_if_willing_target": true,
+            "is_magic": true,
+            "powerful": 3,
+            "effect": "1d4 + Sagesse (Air). Magique, 3 PA, 2×/tour, PO 1–5 adapté. Soin automatique sur une cible consentante.",
+            "description": "Un souffle léger, le même rythme que Vivifiant. Autre voie, même main.",
+            "sub_effects": [
+                {
+                    "slug": "soigner",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "1d4+Sagesse",
+                        "value_formula": "1d4+[sagesse]",
+                        "dice_formula": "1d4+[sagesse]",
+                        "value_formula_crit": "2d4+[sagesse]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "mot-interdit",
+            "name": "Mot Interdit",
+            "dofusdb_id": "25873",
+            "slot_index": 2,
+            "choice_order": 0,
+            "types": ["Soin"],
+            "element": "water",
+            "pa": "5",
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "auto_success_if_willing_target": true,
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "2d4 + Sagesse (Eau). Magique, 5 PA, 1×/tour, PO 1–5 adapté. Soin automatique sur une cible consentante.",
+            "description": "Le mot qu’on ne dit qu’une fois par tour. La cible se redresse d’un coup.",
+            "sub_effects": [
+                {
+                    "slug": "soigner",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d4+Sagesse",
+                        "value_formula": "2d4+[sagesse]",
+                        "dice_formula": "2d4+[sagesse]",
+                        "value_formula_crit": "3d4+[sagesse]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "mot-tapageur",
+            "name": "Mot Tapageur",
+            "dofusdb_id": "25858",
+            "slot_index": 2,
+            "choice_order": 1,
+            "types": ["Soin"],
+            "element": "fire",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "auto_success_if_willing_target": true,
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d4 + Sagesse (Feu) en petite zone autour de toi, alliés consentants. Magique, 5 PA, 1×/tour.",
+            "description": "Tu cries. Ceux qui restent collés à toi reprennent un peu de vie.",
+            "sub_effects": [
+                {
+                    "slug": "soigner",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d4+Sagesse",
+                        "value_formula": "1d4+[sagesse]",
+                        "dice_formula": "1d4+[sagesse]",
+                        "value_formula_crit": "2d4+[sagesse]",
+                        "effect_direction": "self"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "mot-de-frayeur",
+            "name": "Mot de Frayeur",
+            "dofusdb_id": "13175",
+            "slot_index": 3,
+            "choice_order": 0,
+            "types": ["Debuff"],
+            "element": "air",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "attack_roll",
+            "attack_characteristic_key": "agi",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "Poussée de 2 cases, pas de dégâts. Physique, 3 PA, 1×/tour, PO 1–5 adapté.",
+            "description": "Un mot sec. L’ennemi recule. Tu gagnes de l’air pour soigner.",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "2",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "mot-d-envol",
+            "name": "Mot d’Envol",
+            "dofusdb_id": "13184",
+            "slot_index": 3,
+            "choice_order": 1,
+            "types": ["Téléportation"],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "auto_success_if_willing_target": true,
+            "is_magic": true,
+            "powerful": 3,
+            "effect": "Échange de position avec l’allié ciblé. Magique, 3 PA, 1×/tour, PO 1–5 adapté.",
+            "description": "Vous changez de place. Toi devant, lui à l’abri — ou l’inverse.",
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Échange de position avec l’allié ciblé.",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        }
+    ]
+}

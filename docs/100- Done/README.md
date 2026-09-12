@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Six sorts d’Eniripsa, Sram et Xélor pour le niveau 1
+
+L’**Eniripsa** soigne : Mot Vivifiant (Eau) ou Mot d’Amitié (Air) à 1d4+Sagesse, Mot Interdit (soin fort) ou Mot Tapageur (zone), Mot de Frayeur (poussée) ou Mot d’Envol (échange avec un allié). Le **Sram** frappe de près : Sournoiserie (Terre) ou Cruauté (Eau), Piège Sournois ou Invisibilité (le sort fort), Dérobade ou Peur. Le **Xélor** pique et contrôle le temps : Aiguille (Feu) ou Gelure (Eau), Raulebaque (dégâts + retour à la case de début de tour) ou Flou Temporel (−1 PA en zone), Téléportation ou Permutation. Même budget que l’Iop et le Crâ.
+
 ## Septembre 2026 — Six sorts de Crâ pour le niveau 1
 
 Le Crâ commence avec **3 sorts parmi 6** : Flèche Cinglante (Air) ou Flèche Glacée (Eau), Flèche Explosive (zone Feu) ou Tir Perforant (ligne Air), Œil de Lynx (+2 PO) ou Tir de Recul (poussée, sans dégâts). Même budget que l’Iop. Les flèches de base ont une portée minimale de 2 : collé, tu recules l’ennemi ou tu prends tes distances. Œil de Lynx + une flèche tient dans un tour de 6 PA.
