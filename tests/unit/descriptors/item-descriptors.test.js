@@ -163,6 +163,15 @@ describe('item-descriptors', () => {
             expect(d.effect.helper).toMatch(/Bonus/);
             expect(d.item_type.helper).toMatch(/Emplacement/);
         });
+
+        it('filtre les bonus via un sélecteur de caractéristique', () => {
+            const d = getItemFieldDescriptors();
+            expect(d.bonus.table.filterable).toMatchObject({
+                id: 'bonus',
+                type: 'picked-range',
+                defaultVisible: true,
+            });
+        });
     });
 
     describe('Options des selects', () => {

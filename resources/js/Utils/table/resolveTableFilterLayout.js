@@ -14,7 +14,7 @@ export const TABLE_FILTER_CHIP_MAX_OPTIONS = 8;
  * @param {string} [params.uiLayout] `"chips"` | `"menu"` (forcé)
  * @param {number} [params.optionCount]
  * @param {boolean} [params.isBooleanSelect]
- * @returns {"toggle"|"text"|"chips"|"menu"|"range"|"unsupported"}
+ * @returns {"toggle"|"text"|"chips"|"menu"|"range"|"picked-range"|"unsupported"}
  */
 export function resolveTableFilterLayout({
     type,
@@ -31,6 +31,9 @@ export function resolveTableFilterLayout({
     }
     if (kind === "range") {
         return "range";
+    }
+    if (kind === "picked-range") {
+        return "picked-range";
     }
     if (kind !== "multi" && kind !== "select") {
         return "unsupported";

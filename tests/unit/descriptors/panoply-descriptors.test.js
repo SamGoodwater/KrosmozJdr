@@ -106,6 +106,11 @@ describe('panoply-descriptors', () => {
                 defaultVisible: true,
                 defaultByCatalog: true,
             });
+            expect(descriptors.bonus.table.filterable).toMatchObject({
+                id: 'bonus',
+                type: 'picked-range',
+                defaultVisible: true,
+            });
             expect(descriptors._tableConfig.features.sort.initial).toMatchObject({
                 field: 'level',
                 dir: 'asc',

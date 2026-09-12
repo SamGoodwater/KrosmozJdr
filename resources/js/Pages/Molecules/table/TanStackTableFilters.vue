@@ -29,6 +29,11 @@ import {
 } from "@/Utils/table/tableRangeFilter.js";
 import { resolveFilterCharacteristicMeta } from "@/Utils/table/filterCharacteristicMeta.js";
 import { getCharacteristicColorStyle } from "@/Composables/entity/useCharacteristicDisplay";
+import {
+    bonusFilterOptions,
+    isPickedRangeActive,
+    pickedRangeEntries,
+} from "@/Utils/table/bonusFilter.js";
 
 const props = defineProps({
     columns: { type: Array, required: true },
@@ -62,25 +67,54 @@ const stateFilterColumn = () => filterableColumns().find(isStateFilterColumn) ||
 const mainFilterColumns = () =>
     filterableColumns().filter((c) => c?.filter?.defaultVisible !== false && !isStateFilterColumn(c));
 
-/** Filtres masqués par défaut, affichés via "Afficher plus de filtres" */
+/** Filtres masqués par défaut, affichés via le sélecteur « Ajouter un filtre ». */
 const extraFilterColumns = () =>
     filterableColumns().filter((c) => c?.filter?.defaultVisible === false && !isStateFilterColumn(c));
 
-const showExtraFilters = ref(false);
-const toggleExtraFilters = () => {
-  showExtraFilters.value = !showExtraFilters.value;
+const pickedExtraIds = ref([]);
+const extraPickerSearch = ref("");
+const extraPickerDropdown = ref(null);
+const bonusPickerSearch = ref("");
+const bonusPickerDropdown = ref(null);
+
+const visibleExtraFilterColumns = () => {
+    const extras = extraFilterColumns();
+    const picked = new Set(pickedExtraIds.value);
+    return extras.filter((c) => picked.has(c.filter.id) || extraFilterIsActive(c));
 };
 
-/** Colonnes de filtres actuellement affichées (principales puis avancées), hors état. */
-const visibleFilterColumns = () => {
-    const mains = mainFilterColumns();
-    if (!showExtraFilters.value) return mains;
-    return [...mains, ...extraFilterColumns()];
+const addableExtraFilterColumns = () => {
+    const visibleIds = new Set(visibleExtraFilterColumns().map((c) => c.filter.id));
+    const q = normalize(extraPickerSearch.value);
+    return extraFilterColumns().filter((c) => {
+        if (visibleIds.has(c.filter.id)) return false;
+        if (!q) return true;
+        return normalize(getFilterLabel(c)).includes(q);
+    });
 };
+
+const pickExtraFilter = (col) => {
+    const id = col?.filter?.id;
+    if (!id) return;
+    if (!pickedExtraIds.value.includes(id)) {
+        pickedExtraIds.value = [...pickedExtraIds.value, id];
+    }
+    extraPickerSearch.value = "";
+    extraPickerDropdown.value?.close?.();
+};
+
+const unpickExtraFilter = (col) => {
+    const id = col?.filter?.id;
+    if (!id) return;
+    pickedExtraIds.value = pickedExtraIds.value.filter((x) => x !== id);
+    updateFilter(id, col?.filter?.type === "multi" ? [] : "");
+};
+
+/** Colonnes de filtres actuellement affichées (principales puis extras choisis), hors état. */
+const visibleFilterColumns = () => [...mainFilterColumns(), ...visibleExtraFilterColumns()];
 
 const isFirstExtraFilter = (col) => {
-    if (!showExtraFilters.value) return false;
-    const extras = extraFilterColumns();
+    const extras = visibleExtraFilterColumns();
     return extras.length > 0 && extras[0]?.filter?.id === col?.filter?.id;
 };
 
@@ -130,6 +164,7 @@ const filterShellClass = (col) => {
     const layout = getFilterLayout(col);
     if (layout === "text") return "flex flex-col gap-1 w-full max-w-xs";
     if (layout === "range") return "flex flex-col gap-1 w-full max-w-xs min-w-40";
+    if (layout === "picked-range") return "flex flex-col gap-1 w-full max-w-xl min-w-56";
     if (layout === "toggle") return "flex flex-col gap-1 w-auto";
     if (layout === "chips") return "flex flex-col gap-1 min-w-0 max-w-full";
     return "flex flex-col gap-1 w-full sm:w-auto";
@@ -315,22 +350,97 @@ const extraFilterIsActive = (col) => {
     if (col?.filter?.type === "range") {
         return isTableRangeActive(raw, getRangeBounds(col));
     }
+    if (col?.filter?.type === "picked-range") {
+        return isPickedRangeActive(raw);
+    }
     if (raw === "" || raw == null) return false;
     if (Array.isArray(raw)) return raw.length > 0;
     return true;
 };
 
 watch(
-    () => extraFilterColumns().some(extraFilterIsActive),
-    (active) => {
-        if (active) showExtraFilters.value = true;
+    () => extraFilterColumns().filter((c) => extraFilterIsActive(c)).map((c) => c.filter.id),
+    (ids) => {
+        const next = new Set(pickedExtraIds.value);
+        for (const id of ids) {
+            next.add(id);
+        }
+        pickedExtraIds.value = Array.from(next);
     },
     { immediate: true },
 );
 
+const isExtraFilterColumn = (col) =>
+    extraFilterColumns().some((c) => c?.filter?.id === col?.filter?.id);
+
 const rangeSummary = (col, raw) => {
     const v = normalizeTableRangeValue(raw, getRangeBounds(col));
     return `${v.min}–${v.max}`;
+};
+
+const getBonusOptions = (col) =>
+    bonusFilterOptions(props.filterOptions?.[col?.filter?.id], { entityType: props.entityType });
+
+const getBonusMap = (filterId) => {
+    const raw = values.value?.[filterId];
+    return raw && typeof raw === "object" && !Array.isArray(raw) ? { ...raw } : {};
+};
+
+const bonusRowLabel = (col, key) => {
+    const opt = getBonusOptions(col).find((o) => o.value === key);
+    const meta = resolveFilterCharacteristicMeta(key, { entityType: props.entityType });
+    return opt?.short_name || meta?.name || opt?.label || key;
+};
+
+const addableBonusOptions = (col) => {
+    const picked = new Set(pickedRangeEntries(values.value?.[col?.filter?.id]).map((e) => e.key));
+    const q = normalize(bonusPickerSearch.value);
+    return getBonusOptions(col).filter((opt) => {
+        if (picked.has(opt.value)) return false;
+        if (!q) return true;
+        return normalize(`${opt.label} ${opt.short_name || ""} ${opt.value}`).includes(q);
+    });
+};
+
+const pickBonusKey = (col, key) => {
+    const id = col?.filter?.id;
+    if (!id || !key) return;
+    const next = getBonusMap(id);
+    next[key] = { on: "1" };
+    updateFilter(id, next);
+    bonusPickerSearch.value = "";
+    bonusPickerDropdown.value?.close?.();
+};
+
+const unpickBonusKey = (col, key) => {
+    const id = col?.filter?.id;
+    if (!id || !key) return;
+    const next = getBonusMap(id);
+    delete next[key];
+    updateFilter(id, Object.keys(next).length ? next : "");
+};
+
+const updateBonusBound = (col, key, side, rawValue) => {
+    const id = col?.filter?.id;
+    if (!id || !key) return;
+    const next = getBonusMap(id);
+    const current = next[key] && typeof next[key] === "object" ? { ...next[key] } : { on: "1" };
+    current.on = "1";
+    const trimmed = rawValue === "" || rawValue == null ? "" : String(rawValue);
+    if (trimmed === "") {
+        delete current[side];
+    } else {
+        current[side] = trimmed;
+    }
+    next[key] = current;
+    updateFilter(id, next);
+};
+
+const bonusBoundModel = (col, key, side) => {
+    const inner = getBonusMap(col?.filter?.id)?.[key];
+    if (!inner || typeof inner !== "object") return "";
+    const v = inner[side];
+    return v === null || typeof v === "undefined" ? "" : String(v);
 };
 
 const booleanStateLabel = (raw) => {
@@ -427,6 +537,23 @@ const activeBadges = computed(() => {
             continue;
         }
 
+        if (f.type === "picked-range") {
+            for (const entry of pickedRangeEntries(raw)) {
+                const bounds = entry.bounds;
+                const rangeLabel = bounds
+                    ? `${bounds.min ?? "…"}–${bounds.max ?? "…"}`
+                    : "présent";
+                badges.push({
+                    key: `${f.id}:${entry.key}`,
+                    filterId: f.id,
+                    type: "picked-range",
+                    value: entry.key,
+                    label: `${bonusRowLabel(col, entry.key)}: ${rangeLabel}`,
+                });
+            }
+            continue;
+        }
+
         // text/select/boolean => un badge si valeur non vide
         if (raw === null || typeof raw === "undefined" || String(raw) === "") continue;
 
@@ -488,11 +615,16 @@ const removeBadge = (badge) => {
         setMultiValues(badge.filterId, Array.from(current));
         return;
     }
+    if (badge.type === "picked-range") {
+        const col = filterableColumns().find((c) => c?.filter?.id === badge.filterId);
+        unpickBonusKey(col || { filter: { id: badge.filterId } }, badge.value);
+        return;
+    }
     if (badge.type === "toggle") {
         updateFilter(badge.filterId, "");
         return;
     }
-    // boolean/text/select => clear
+    // boolean/text/select/range => clear
     updateFilter(badge.filterId, "");
 };
 
@@ -557,6 +689,18 @@ const clearAllActiveFilters = () => {
                         class="shrink-0"
                     />
                     <span>{{ getFilterLabel(col) }}</span>
+                    <Btn
+                        v-if="isExtraFilterColumn(col)"
+                        type="button"
+                        size="xs"
+                        variant="ghost"
+                        square
+                        class="w-6 h-6 min-h-0 px-0 flex items-center justify-center ml-auto"
+                        title="Retirer ce filtre"
+                        @click="unpickExtraFilter(col)"
+                    >
+                        ✕
+                    </Btn>
                 </div>
 
                 <!-- toggle (switch ON=actif, OFF=pas de filtre) -->
@@ -1012,6 +1156,114 @@ const clearAllActiveFilters = () => {
                     </Btn>
                 </div>
 
+                <!-- picked-range (bonus : liste → min/max) -->
+                <div
+                    v-else-if="col.filter.type === 'picked-range'"
+                    class="flex flex-col gap-2 w-full"
+                >
+                    <div
+                        v-for="entry in pickedRangeEntries(values?.[col.filter.id])"
+                        :key="entry.key"
+                        class="flex flex-wrap items-center gap-1.5"
+                    >
+                        <Icon
+                            v-if="resolveFilterCharacteristicMeta(entry.key, { entityType })?.icon"
+                            :source="resolveFilterCharacteristicMeta(entry.key, { entityType }).icon"
+                            :alt="bonusRowLabel(col, entry.key)"
+                            size="xs"
+                            class="shrink-0"
+                        />
+                        <span class="text-xs font-medium min-w-16">{{ bonusRowLabel(col, entry.key) }}</span>
+                        <InputCore
+                            type="number"
+                            size="xs"
+                            variant="glass"
+                            :color="uiColor"
+                            class="w-20"
+                            placeholder="Min"
+                            :aria-label="`Minimum ${bonusRowLabel(col, entry.key)}`"
+                            :model-value="bonusBoundModel(col, entry.key, 'min')"
+                            @update:model-value="(v) => updateBonusBound(col, entry.key, 'min', v)"
+                        />
+                        <InputCore
+                            type="number"
+                            size="xs"
+                            variant="glass"
+                            :color="uiColor"
+                            class="w-20"
+                            placeholder="Max"
+                            :aria-label="`Maximum ${bonusRowLabel(col, entry.key)}`"
+                            :model-value="bonusBoundModel(col, entry.key, 'max')"
+                            @update:model-value="(v) => updateBonusBound(col, entry.key, 'max', v)"
+                        />
+                        <Btn
+                            type="button"
+                            size="xs"
+                            variant="ghost"
+                            square
+                            class="w-7 h-7 min-h-0 px-0 flex items-center justify-center"
+                            title="Retirer cette caractéristique"
+                            @click="unpickBonusKey(col, entry.key)"
+                        >
+                            ✕
+                        </Btn>
+                    </div>
+                    <Dropdown
+                        ref="bonusPickerDropdown"
+                        placement="bottom-start"
+                        :close-on-content-click="false"
+                    >
+                        <template #trigger>
+                            <Btn
+                                size="sm"
+                                variant="outline"
+                                :color="uiColor"
+                                opacity="lg"
+                                class="gap-2"
+                                title="Ajouter une caractéristique"
+                            >
+                                <Icon source="fa-solid fa-plus" alt="" size="sm" />
+                                <span>Caractéristique</span>
+                            </Btn>
+                        </template>
+                        <template #content>
+                            <div class="p-3 w-72 space-y-2">
+                                <InputCore
+                                    type="search"
+                                    variant="glass"
+                                    :color="uiColor"
+                                    size="sm"
+                                    class="w-full"
+                                    placeholder="Rechercher une caractéristique…"
+                                    :model-value="bonusPickerSearch"
+                                    @update:model-value="(v) => (bonusPickerSearch = String(v ?? ''))"
+                                />
+                                <div class="max-h-64 overflow-y-auto pr-1 space-y-1">
+                                    <button
+                                        v-for="opt in addableBonusOptions(col)"
+                                        :key="opt.value"
+                                        type="button"
+                                        class="flex w-full items-center gap-2 rounded-lg px-2 py-1 text-left text-sm hover:bg-base-content/10"
+                                        @click="pickBonusKey(col, opt.value)"
+                                    >
+                                        <Icon
+                                            v-if="resolveFilterCharacteristicMeta(opt.value, { entityType })?.icon"
+                                            :source="resolveFilterCharacteristicMeta(opt.value, { entityType }).icon"
+                                            :alt="opt.label"
+                                            size="xs"
+                                        />
+                                        <span class="truncate">{{ opt.label }}</span>
+                                        <span v-if="opt.short_name" class="ml-auto text-xs opacity-60">{{ opt.short_name }}</span>
+                                    </button>
+                                    <p v-if="addableBonusOptions(col).length === 0" class="text-xs opacity-60 px-1">
+                                        Aucune caractéristique
+                                    </p>
+                                </div>
+                            </div>
+                        </template>
+                    </Dropdown>
+                </div>
+
                 <!-- range (min / max) -->
                 <RangeDualCore
                     v-else-if="col.filter.type === 'range'"
@@ -1044,17 +1296,58 @@ const clearAllActiveFilters = () => {
         <!-- Barre d'actions : + filtres + presets à gauche, Appliquer + Réinitialiser à droite -->
         <div class="flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2">
-                <Btn
+                <Dropdown
                     v-if="extraFilterColumns().length"
-                    size="xs"
-                    variant="ghost"
-                    type="button"
-                    :title="showExtraFilters ? 'Masquer les filtres avancés' : `Afficher ${extraFilterColumns().length} filtre(s) de plus`"
-                    @click="toggleExtraFilters"
+                    ref="extraPickerDropdown"
+                    placement="bottom-start"
+                    :close-on-content-click="false"
                 >
-                    <Icon :source="showExtraFilters ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'" alt="" size="xs" />
-                    <span>{{ showExtraFilters ? 'Masquer les filtres avancés' : `+ ${extraFilterColumns().length} filtre(s)` }}</span>
-                </Btn>
+                    <template #trigger>
+                        <Btn
+                            size="xs"
+                            variant="ghost"
+                            type="button"
+                            title="Ajouter un filtre"
+                        >
+                            <Icon source="fa-solid fa-plus" alt="" size="xs" />
+                            <span>Ajouter un filtre</span>
+                        </Btn>
+                    </template>
+                    <template #content>
+                        <div class="p-3 w-72 space-y-2">
+                            <InputCore
+                                type="search"
+                                variant="glass"
+                                :color="uiColor"
+                                size="sm"
+                                class="w-full"
+                                placeholder="Rechercher un filtre…"
+                                :model-value="extraPickerSearch"
+                                @update:model-value="(v) => (extraPickerSearch = String(v ?? ''))"
+                            />
+                            <div class="max-h-64 overflow-y-auto pr-1 space-y-1">
+                                <button
+                                    v-for="col in addableExtraFilterColumns()"
+                                    :key="col.filter.id"
+                                    type="button"
+                                    class="flex w-full items-center gap-2 rounded-lg px-2 py-1 text-left text-sm hover:bg-base-content/10"
+                                    @click="pickExtraFilter(col)"
+                                >
+                                    <Icon
+                                        v-if="filterCharMeta(col)?.icon"
+                                        :source="filterCharMeta(col).icon"
+                                        :alt="getFilterLabel(col)"
+                                        size="xs"
+                                    />
+                                    <span class="truncate">{{ getFilterLabel(col) }}</span>
+                                </button>
+                                <p v-if="addableExtraFilterColumns().length === 0" class="text-xs opacity-60 px-1">
+                                    Tous les filtres sont affichés
+                                </p>
+                            </div>
+                        </div>
+                    </template>
+                </Dropdown>
                 <Btn
                     v-if="presetsEnabled"
                     size="xs"

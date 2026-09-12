@@ -27,5 +27,6 @@ describe("resolveTableFilterLayout", () => {
 
     it("classe une plage à part", () => {
         expect(resolveTableFilterLayout({ type: "range" })).toBe("range");
+        expect(resolveTableFilterLayout({ type: "picked-range" })).toBe("picked-range");
     });
 });

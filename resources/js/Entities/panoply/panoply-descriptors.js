@@ -138,8 +138,15 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
       key: "bonus",
       label: "Bonus",
       icon: "fa-solid fa-star",
+      helper: "Plus haut palier du set. Filtrer : choisir une caractéristique, puis éventuellement min/max (somme des paliers).",
       table: {
         searchable: true,
+        filterable: {
+          id: "bonus",
+          type: "picked-range",
+          defaultVisible: true,
+          label: "Bonus",
+        },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },

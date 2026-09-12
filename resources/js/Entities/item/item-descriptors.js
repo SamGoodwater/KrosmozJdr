@@ -181,9 +181,15 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "bonus",
       label: "Bonus",
       icon: "fa-solid fa-star",
-      helper: "Bonus de l’équipement",
+      helper: "Bonus de l’équipement. Filtrer : choisir une caractéristique, puis éventuellement min/max.",
       table: {
         searchable: true,
+        filterable: {
+          id: "bonus",
+          type: "picked-range",
+          defaultVisible: true,
+          label: "Bonus",
+        },
         defaultVisible: visibleFromMd,
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },

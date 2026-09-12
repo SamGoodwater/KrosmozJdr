@@ -91,7 +91,7 @@ describe("charte des filtres tableau", () => {
         }
     });
 
-    it("expose le nombre de pièces et les types d’objets sur les panoplies", () => {
+    it("expose le nombre de pièces, les types d’objets et le sélecteur de bonus sur les panoplies", () => {
         const filters = collectFilterables(getPanoplyFieldDescriptors());
         expect(filters.find((f) => f.id === "items_count")).toMatchObject({
             type: "range",
@@ -101,6 +101,14 @@ describe("charte des filtres tableau", () => {
             type: "multi",
             defaultVisible: true,
             defaultByCatalog: true,
+        });
+        expect(filters.find((f) => f.id === "bonus")).toMatchObject({
+            type: "picked-range",
+            defaultVisible: true,
+        });
+        expect(collectFilterables(getItemFieldDescriptors()).find((f) => f.id === "bonus")).toMatchObject({
+            type: "picked-range",
+            defaultVisible: true,
         });
     });
 

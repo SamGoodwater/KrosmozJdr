@@ -56,4 +56,26 @@ describe("buildFetchUrl", () => {
         expect(url).toContain("filters%5Bcreature_level%5D%5Bmin%5D=5");
         expect(url).toContain("filters%5Bcreature_level%5D%5Bmax%5D=50");
     });
+
+    it("sérialise les bonus choisis en filters[bonus][clé][on|min|max]", () => {
+        const url = buildFetchUrl(
+            {
+                page: 1,
+                pageSize: 25,
+                filters: {
+                    bonus: {
+                        strength: { on: "1", min: 2, max: 6 },
+                        vitality: { on: "1" },
+                    },
+                },
+            },
+            "https://example.test/api/t",
+            0,
+        );
+        const decoded = decodeURIComponent(url);
+        expect(decoded).toContain("filters[bonus][strength][on]=1");
+        expect(decoded).toContain("filters[bonus][strength][min]=2");
+        expect(decoded).toContain("filters[bonus][strength][max]=6");
+        expect(decoded).toContain("filters[bonus][vitality][on]=1");
+    });
 });

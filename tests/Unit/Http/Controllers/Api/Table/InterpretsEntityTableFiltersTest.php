@@ -70,4 +70,13 @@ class InterpretsEntityTableFiltersTest extends TestCase
         $this->assertSame([5, 50], $s->bounds(['min' => '5', 'max' => '50']));
         $this->assertSame([5, 12], $s->bounds(['min' => '12', 'max' => '5']));
     }
+
+    public function test_has_filter_value_accepts_picked_bonus_map(): void
+    {
+        $s = $this->subject();
+        $this->assertTrue($s->has(['bonus' => ['strength' => ['on' => '1']]], 'bonus'));
+        $this->assertTrue($s->has(['bonus' => ['strength' => ['min' => '2', 'max' => '6']]], 'bonus'));
+        $this->assertFalse($s->has(['bonus' => []], 'bonus'));
+        $this->assertFalse($s->has(['bonus' => ['min' => '', 'max' => '']], 'level'));
+    }
 }

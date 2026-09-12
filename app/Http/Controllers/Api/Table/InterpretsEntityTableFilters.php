@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\Table;
 
 use App\Services\Characteristic\Formula\CharacteristicFormulaService;
+use App\Support\Entity\JsonBonusValue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -59,11 +60,142 @@ trait InterpretsEntityTableFilters
             return false;
         }
 
+        if ($this->isPickedRangeMap($raw)) {
+            return $this->pickedRangeEntries($raw) !== [];
+        }
+
         if ($this->isRangeFilterValue($raw)) {
             return $this->normalizeRangeBounds($raw) !== null;
         }
 
         return $this->normalizeFilterList($raw) !== [];
+    }
+
+    /**
+     * Carte `{ strength: { min, max }, vitality: { on: 1 } }` (filtres bonus à la demande).
+     */
+    protected function isPickedRangeMap(mixed $raw): bool
+    {
+        if (! is_array($raw) || $raw === [] || array_is_list($raw)) {
+            return false;
+        }
+        if (array_key_exists('min', $raw) || array_key_exists('max', $raw)) {
+            return false;
+        }
+
+        foreach ($raw as $key => $inner) {
+            if (! is_string($key) || $key === '') {
+                return false;
+            }
+            if ($inner === true || $inner === 1 || $inner === '1' || $inner === 'on' || $inner === null || $inner === '' || $inner === []) {
+                continue;
+            }
+            if (! is_array($inner)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @return array<string, array{0: ?int, 1: ?int}|null>
+     */
+    protected function pickedRangeEntries(mixed $raw): array
+    {
+        if (! $this->isPickedRangeMap($raw)) {
+            return [];
+        }
+
+        $out = [];
+        foreach ($raw as $key => $inner) {
+            $safe = JsonBonusValue::sanitizeKey((string) $key);
+            if ($safe === null) {
+                continue;
+            }
+            $on = true;
+            $bounds = null;
+            if (is_array($inner)) {
+                if (array_key_exists('on', $inner) || array_key_exists('active', $inner)) {
+                    $flag = $inner['on'] ?? $inner['active'] ?? null;
+                    $on = in_array(strtolower((string) $flag), ['1', 'true', 'yes', 'on'], true);
+                }
+                $bounds = $this->normalizeRangeBounds($inner);
+            } elseif ($inner === false || $inner === 0 || $inner === '0') {
+                $on = false;
+            }
+            if (! $on && $bounds === null) {
+                continue;
+            }
+            $out[$safe] = $bounds;
+        }
+
+        return $out;
+    }
+
+    /**
+     * Filtre JSON `bonus` : chaque caractéristique choisie doit matcher (ET).
+     *
+     * Sans min/max : la clé est présente. Avec bornes : valeur numérique (somme des paliers si `$sumTiers`).
+     *
+     * @param  Builder<Model>  $query
+     */
+    protected function applyJsonBonusFilters(Builder $query, mixed $raw, string $column = 'bonus', bool $sumTiers = false): void
+    {
+        $entries = $this->pickedRangeEntries($raw);
+        if ($entries === []) {
+            return;
+        }
+
+        $qualified = $query->getModel()->qualifyColumn($column);
+        foreach ($entries as $key => $bounds) {
+            $hasSql = $this->jsonBonusHasKeySql($qualified, $key, $sumTiers);
+            $valueSql = $this->jsonBonusValueSql($qualified, $key, $sumTiers);
+            $query->where(function (Builder $q) use ($hasSql, $valueSql, $bounds) {
+                $q->whereRaw($hasSql);
+                if ($bounds === null) {
+                    return;
+                }
+                [$min, $max] = $bounds;
+                if ($min !== null) {
+                    $q->whereRaw("{$valueSql} >= ?", [$min]);
+                }
+                if ($max !== null) {
+                    $q->whereRaw("{$valueSql} <= ?", [$max]);
+                }
+            });
+        }
+    }
+
+    /**
+     * @param  int  $maxTier  palier max (2–12) pour les JSON panoplie
+     */
+    protected function jsonBonusHasKeySql(string $qualified, string $key, bool $sumTiers, int $maxTier = 12): string
+    {
+        $json = $qualified;
+        $checks = ["JSON_EXTRACT({$json}, '$.{$key}') IS NOT NULL"];
+        if ($sumTiers) {
+            for ($tier = 2; $tier <= $maxTier; $tier++) {
+                $checks[] = "JSON_EXTRACT({$json}, '$.{$tier}.{$key}') IS NOT NULL";
+            }
+        }
+
+        return '('.implode(' OR ', $checks).')';
+    }
+
+    protected function jsonBonusValueSql(string $qualified, string $key, bool $sumTiers, int $maxTier = 12): string
+    {
+        $json = $qualified;
+        $flat = "COALESCE(CAST(JSON_UNQUOTE(JSON_EXTRACT({$json}, '$.{$key}')) AS SIGNED), 0)";
+        if (! $sumTiers) {
+            return $flat;
+        }
+        $parts = [$flat];
+        for ($tier = 2; $tier <= $maxTier; $tier++) {
+            $parts[] = "COALESCE(CAST(JSON_UNQUOTE(JSON_EXTRACT({$json}, '$.{$tier}.{$key}')) AS SIGNED), 0)";
+        }
+
+        return '('.implode(' + ', $parts).')';
     }
 
     /**

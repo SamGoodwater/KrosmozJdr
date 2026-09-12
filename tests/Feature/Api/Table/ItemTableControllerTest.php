@@ -463,4 +463,31 @@ class ItemTableControllerTest extends TestCase
         $this->assertIsArray($panoplies);
         $this->assertSame('Panoplie Cells Payload', $panoplies[0]['name'] ?? null);
     }
+
+    public function test_bonus_filter_keeps_items_with_characteristic_in_range(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $strong = Item::factory()->create($this->playableAttrs([
+            'name' => 'Cape Force',
+            'bonus' => json_encode(['strength' => 5, 'vitality' => 1], JSON_THROW_ON_ERROR),
+        ]));
+        $weak = Item::factory()->create($this->playableAttrs([
+            'name' => 'Cape Vit',
+            'bonus' => json_encode(['strength' => 1, 'vitality' => 20], JSON_THROW_ON_ERROR),
+        ]));
+        $none = Item::factory()->create($this->playableAttrs([
+            'name' => 'Cape Vide',
+            'bonus' => json_encode(['vitality' => 8], JSON_THROW_ON_ERROR),
+        ]));
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/items?format=entities&limit=20&filters[bonus][strength][min]=3&filters[bonus][strength][max]=10');
+
+        $response->assertOk();
+        $ids = collect($response->json('entities'))->pluck('id')->all();
+        $this->assertContains($strong->id, $ids);
+        $this->assertNotContains($weak->id, $ids);
+        $this->assertNotContains($none->id, $ids);
+        $this->assertIsArray($response->json('meta.filterOptions.bonus'));
+    }
 }

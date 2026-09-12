@@ -71,9 +71,27 @@ export function buildFetchUrl(params, baseUrl, refreshToken = 0) {
             const max = value.max;
             const hasMin = min !== null && typeof min !== "undefined" && min !== "";
             const hasMax = max !== null && typeof max !== "undefined" && max !== "";
-            if (!hasMin && !hasMax) continue;
-            if (hasMin) searchParams.set(`filters[${key}][min]`, String(min));
-            if (hasMax) searchParams.set(`filters[${key}][max]`, String(max));
+            if (hasMin || hasMax) {
+                if (hasMin) searchParams.set(`filters[${key}][min]`, String(min));
+                if (hasMax) searchParams.set(`filters[${key}][max]`, String(max));
+                continue;
+            }
+            for (const [child, inner] of Object.entries(value)) {
+                if (!child) continue;
+                if (inner === false || inner === 0 || inner === "0") continue;
+                if (inner === true || inner === 1 || inner === "1" || inner == null || inner === "") {
+                    searchParams.set(`filters[${key}][${child}][on]`, "1");
+                    continue;
+                }
+                if (typeof inner !== "object" || Array.isArray(inner)) continue;
+                const cMin = inner.min;
+                const cMax = inner.max;
+                const cHasMin = cMin !== null && typeof cMin !== "undefined" && cMin !== "";
+                const cHasMax = cMax !== null && typeof cMax !== "undefined" && cMax !== "";
+                searchParams.set(`filters[${key}][${child}][on]`, "1");
+                if (cHasMin) searchParams.set(`filters[${key}][${child}][min]`, String(cMin));
+                if (cHasMax) searchParams.set(`filters[${key}][${child}][max]`, String(cMax));
+            }
             continue;
         }
         const normalized = typeof value === "boolean"

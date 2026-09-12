@@ -53,6 +53,8 @@ import {
     minFormulaInteger,
     rangeBoundsFromFilterOption,
 } from "@/Utils/table/tableRangeFilter.js";
+import { bonusNumericForKey } from "@/Utils/entity/bonusJson.js";
+import { pickedRangeEntries } from "@/Utils/table/bonusFilter.js";
 import { normalizeTableRowId, toSelectedIdSet, selectedSetHas } from "@/Utils/table/normalizeTableRowId.js";
 import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import {
@@ -1028,6 +1030,9 @@ const hasActiveFilters = computed(() => {
         if (typeof value === "boolean") return value;
         if (typeof value === "object") {
             const col = cols.find((c) => c?.filter?.id === key);
+            if (col?.filter?.type === "picked-range") {
+                return pickedRangeEntries(value).length > 0;
+            }
             const bounds = rangeBoundsFromFilterOption(
                 filterOptions.value?.[key],
                 { min: 0, max: 20 },
@@ -1297,6 +1302,21 @@ const passesFilter = (row, col) => {
         const max = Number(raw.max);
         if (Number.isFinite(min) && n < min) return false;
         if (Number.isFinite(max) && n > max) return false;
+        return true;
+    }
+
+    if (f.type === "picked-range") {
+        const entries = pickedRangeEntries(raw);
+        if (entries.length === 0) return true;
+        const entity = getRowEntity(row);
+        const bonusRaw = entity?._data?.bonus ?? entity?.bonus ?? getFilterValueFor(row, col);
+        for (const entry of entries) {
+            const n = bonusNumericForKey(bonusRaw, entry.key);
+            if (n === null) return false;
+            if (!entry.bounds) continue;
+            if (entry.bounds.min !== null && n < entry.bounds.min) return false;
+            if (entry.bounds.max !== null && n > entry.bounds.max) return false;
+        }
         return true;
     }
 

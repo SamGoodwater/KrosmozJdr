@@ -7,6 +7,7 @@ use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
 use App\Models\Type\ItemType;
 use App\Support\Entity\ItemPanoplyPayload;
+use App\Support\Entity\ObjectBonusFilterCatalog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -35,7 +36,7 @@ class ItemTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['level', 'rarity', 'item_type_id', 'state'] as $k) {
+        foreach (['level', 'rarity', 'item_type_id', 'state', 'bonus'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -95,6 +96,9 @@ class ItemTableController extends Controller
         if ($this->hasFilterValue($filters, 'state')) {
             $this->applyEqualityFilter($query, 'state', $filters['state']);
         }
+        if ($this->hasFilterValue($filters, 'bonus')) {
+            $this->applyJsonBonusFilters($query, $filters['bonus'], 'bonus', false);
+        }
 
         $this->applyEntityTableIdList($query, $request);
 
@@ -152,6 +156,7 @@ class ItemTableController extends Controller
                 1,
                 200
             ),
+            'bonus' => ObjectBonusFilterCatalog::options(),
         ];
 
         // Option B: renvoyer des entités brutes (le front génère `cells`).

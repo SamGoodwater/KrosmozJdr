@@ -6,6 +6,10 @@ Le Bouftou complet donne **force et intelligence** (comme Dofus), plus le +1 PA 
 
 Une cinquantaine de sets connus sont maintenant jouables (Blop, Gelax, Craqueleur, Mulou, Koalak, Kitsou, Wabbit, Cawotte, Tortue, Chef Crocodaille, Aerdala, Terrdala, Invisible, Champêtre, Homme Ours, etc.). C’est la liste d’exemples que l’IA doit imiter, pas tout le catalogue scrapé.
 
+## Septembre 2026 — Filtrer les équipements et panoplies par bonus
+
+Sur les catalogues d’équipements et de panoplies, on choisit **une caractéristique** (force, vitalité, PA…) dans une liste, et seulement alors le filtre min/max s’affiche — comme sur DofusDB. Les autres filtres avancés (PA d’un sort, stats d’un monstre, etc.) suivent la même idée : « Ajouter un filtre » plutôt que d’étaler tous les curseurs. Pour une panoplie, le chiffre filtré est la **somme** des bonus de tous les paliers du set.
+
 ## Septembre 2026 — Voie sur le set complet, pas sur chaque pièce
 
 Aux tout premiers niveaux, on ne peut pas coller Force / Intelligence / Chance / Agilité sur une cape sans dépasser le plafond. Ces bonus vont donc sur **toute la panoplie équipée**. Le Bouftou complet reprend Dofus : +1 force **et** +1 intelligence (plus le PA). Beaucoup de pièces restent vides, et ce n’est pas un problème.

@@ -8,6 +8,7 @@ use App\Models\Entity\Item;
 use App\Models\Entity\Panoply;
 use App\Models\Type\ItemType;
 use App\Models\User;
+use App\Support\Entity\ObjectBonusFilterCatalog;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -37,7 +38,7 @@ class PanoplyTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['state', 'items_count', 'item_type_id', 'level'] as $k) {
+        foreach (['state', 'items_count', 'item_type_id', 'level', 'bonus'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -290,6 +291,9 @@ class PanoplyTableController extends Controller
                 });
             }
         }
+        if ($this->hasFilterValue($filters, 'bonus')) {
+            $this->applyJsonBonusFilters($query, $filters['bonus'], 'bonus', true);
+        }
     }
 
     /**
@@ -388,7 +392,8 @@ class PanoplyTableController extends Controller
      *     state: list<array{value: string, label: string}>,
      *     item_type_id: list<array{value: string, label: string, dofusdb_type_id: int|null, show_in_catalog: bool}>,
      *     items_count: array{min: int, max: int},
-     *     level: array{min: int, max: int}
+     *     level: array{min: int, max: int},
+     *     bonus: list<array{value: string, label: string, short_name: string, min: int, max: int}>
      * }
      */
     private function buildPanoplyFilterOptions(mixed $viewer): array
@@ -420,6 +425,7 @@ class PanoplyTableController extends Controller
             'item_type_id' => $itemTypes,
             'items_count' => $this->withCountColumnBounds($countQuery, 'items_count', 0, 20),
             'level' => $this->integerColumnBounds($levelQuery, 'level', 1, 200),
+            'bonus' => ObjectBonusFilterCatalog::options(),
         ];
     }
 }

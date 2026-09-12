@@ -447,4 +447,37 @@ class PanoplyTableControllerTest extends TestCase
         $this->assertNotFalse($eightyPos);
         $this->assertLessThan($eightyPos, $ninePos);
     }
+
+    public function test_bonus_filter_sums_panoply_tiers_and_requires_the_stat(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $withForce = Panoply::factory()->create([
+            'created_by' => $user->id,
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'bonus' => json_encode(['2' => ['strength' => 1], '3' => ['strength' => 2]], JSON_THROW_ON_ERROR),
+        ]);
+        $lowForce = Panoply::factory()->create([
+            'created_by' => $user->id,
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'bonus' => json_encode(['2' => ['strength' => 1]], JSON_THROW_ON_ERROR),
+        ]);
+        $vitalOnly = Panoply::factory()->create([
+            'created_by' => $user->id,
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'bonus' => json_encode(['2' => ['vitality' => 10]], JSON_THROW_ON_ERROR),
+        ]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/panoplies?format=entities&limit=20&filters[bonus][strength][min]=3');
+
+        $response->assertOk();
+        $ids = collect($response->json('entities'))->pluck('id')->all();
+        $this->assertContains($withForce->id, $ids);
+        $this->assertNotContains($lowForce->id, $ids);
+        $this->assertNotContains($vitalOnly->id, $ids);
+        $this->assertIsArray($response->json('meta.filterOptions.bonus'));
+    }
 }
