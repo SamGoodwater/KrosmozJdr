@@ -75,7 +75,7 @@ Un JSON unique `healing-out-of-combat.json` décrit 11 paliers × 4 types (pain,
 
 ## Sorts de classe niveau 1 (`entities/spells/`)
 
-`iop-level-1.json` : 6 sorts Iop (3 emplacements × 2 variantes). Upsert sur `dofusdb_id` (Pression, Fendoir, Intimidation, Bond, Concentration) ou `official_id` `jdr:attaque-naturelle`. `auto_update = false`, état `playable`. Les autres sorts liés à la classe passent hors grille (`character_level` 0, `slot_index` 1).
+`iop-level-1.json` / `cra-level-1.json` : 6 sorts par classe (3 emplacements × 2 variantes). Upsert sur `dofusdb_id` ou `official_id` (`jdr:attaque-naturelle`, `jdr:oeil-de-lynx`). `auto_update = false`, état `playable`. Les autres sorts liés à la classe passent hors grille (`character_level` 0, `slot_index` 1).
 
 - **Seed** : `Database\Seeders\Entity\SpellSeeder` (`project:seed` / `project:init` / `DatabaseSeeder`).
 - Budget : attaque simple 3 PA 1d6+mod 2×/tour ; sort fort 4–5 PA ; identité 3 PA.

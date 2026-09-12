@@ -32,6 +32,11 @@ final class ClassLevel1SpellCatalog
         return self::directory().'/iop-level-1.json';
     }
 
+    public static function craPath(): string
+    {
+        return self::directory().'/cra-level-1.json';
+    }
+
     /**
      * @return list<self>
      */

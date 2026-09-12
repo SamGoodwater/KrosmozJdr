@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Six sorts de Crâ pour le niveau 1
+
+Le Crâ commence avec **3 sorts parmi 6** : Flèche Cinglante (Air) ou Flèche Glacée (Eau), Flèche Explosive (zone Feu) ou Tir Perforant (ligne Air), Œil de Lynx (+2 PO) ou Tir de Recul (poussée, sans dégâts). Même budget que l’Iop. Les flèches de base ont une portée minimale de 2 : collé, tu recules l’ennemi ou tu prends tes distances. Œil de Lynx + une flèche tient dans un tour de 6 PA.
+
 ## Septembre 2026 — Six sorts d’Iop pour le niveau 1
 
 L’Iop commence avec **3 sorts parmi 6** : Pression (Terre) ou Attaque Naturelle (Feu), Fendoir (zone) ou Intimidation (poussée), Bond ou Concentration. Même budget que les autres classes (3 PA pour l’attaque de base, 1d6+mod). Bond + Pression tient dans un tour de 6 PA. Les autres sorts scrapés de la classe passent hors grille, en attendant leur palier.
