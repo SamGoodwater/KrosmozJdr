@@ -1,0 +1,51 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8110",
+        "official_id": null
+    },
+    "item": {
+        "name": "Baguette du Tofu",
+        "level": "2",
+        "description": "Contrairement à ce que certains aventuriers peuvent croire, cette baguette n'est pas utilisée par les Tofus (bien trop stupides pour savoir se servir d'une telle arme), mais contre les Tofus. En effet, les plumes de Tofu qui la composent permettent aux chasseurs de simuler la parade nuptiale des Tofus pour ensuite mieux les attraper. Mais jusqu'où iront ces terribles chasseurs pour satisfaire leurs pulsions meurtrières ?",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 1000,
+        "price_custom": null,
+        "effect": {
+            "fixed_damage_air": 1
+        },
+        "bonus": {
+            "fixed_damage_air": 1
+        },
+        "item_type_dofus_id": 3,
+        "item_type_name": "Baguette"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "50"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "2659",
+                "name": "Pétale de Tournesol Sauvage",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "366",
+                "name": "Bec du Tofu",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "8682",
+                "name": "Peau de Mob l'Éponge",
+                "quantity": 1
+            }
+        ]
+    }
+}
