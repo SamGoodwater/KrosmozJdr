@@ -8,6 +8,9 @@
 export const CONSUMABLE_STACK_NOTE =
     "Même type d’effet : pas de cumul, le meilleur gagne.";
 
+export const CONSUMABLE_DURATION_NOTE =
+    "Jusqu’au prochain repos long (8 h max), sauf si l’effet est dépensé avant.";
+
 export const OUT_OF_COMBAT_HEAL_NOTE = "Hors combat uniquement.";
 
 export const LEARN_SCROLL_NOTE = "Détruit seulement si le sort réussit.";
@@ -32,7 +35,6 @@ const BUFF_CONSUMABLE_TYPE_NAMES = new Set([
     "benediction",
     "roleplay buffs",
     "potion de monture",
-    "potion de teleportation",
 ]);
 
 /**
@@ -91,10 +93,27 @@ export function consumableRuleNotes(entity) {
     if (BUFF_CONSUMABLE_TYPE_NAMES.has(name)) {
         notes.push(CONSUMABLE_STACK_NOTE);
     }
+    if (hasConsumableDuration(entity)) {
+        notes.push(CONSUMABLE_DURATION_NOTE);
+    }
     if (isOutOfCombatHeal(entity)) {
         notes.push(OUT_OF_COMBAT_HEAL_NOTE);
     }
     return notes;
+}
+
+/**
+ * @param {object|null|undefined} entity
+ * @returns {boolean}
+ */
+function hasConsumableDuration(entity) {
+    if (entity == null || typeof entity !== "object") {
+        return false;
+    }
+    const data = entity._data && typeof entity._data === "object" ? entity._data : entity;
+    const effect = normalizeTypeName(entity.effect ?? data.effect ?? "");
+
+    return effect.includes("repos long") || effect.includes("8 h");
 }
 
 /**

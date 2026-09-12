@@ -4,6 +4,7 @@
 import { describe, expect, it } from "vitest";
 import {
     CHARACTERISTIC_RESPEC_NOTE,
+    CONSUMABLE_DURATION_NOTE,
     CONSUMABLE_STACK_NOTE,
     LEARN_SCROLL_NOTE,
     OUT_OF_COMBAT_HEAL_NOTE,
@@ -33,6 +34,18 @@ describe("consumableRuleNotes", () => {
         expect(consumableRuleNotes({ _data: { consumableType: { name: "Bière" } } })).toEqual([
             CONSUMABLE_STACK_NOTE,
         ]);
+        expect(
+            consumableRuleNotes({
+                consumableType: { name: "Bière" },
+                effect: "+1 Supercherie jusqu’au prochain repos long (8 h max). Usage unique.",
+            }),
+        ).toEqual([CONSUMABLE_STACK_NOTE, CONSUMABLE_DURATION_NOTE]);
+        expect(
+            consumableRuleNotes({
+                consumableType: { name: "Potion de téléportation" },
+                effect: "Téléporte vers un zaap. Hors combat. Usage unique.",
+            }),
+        ).toEqual([OUT_OF_COMBAT_HEAL_NOTE]);
     });
 
     it("parchemin de sortilège : détruit si le sort réussit, pas de note de cumul", () => {

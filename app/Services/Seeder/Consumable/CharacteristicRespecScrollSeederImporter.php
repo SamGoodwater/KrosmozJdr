@@ -54,7 +54,7 @@ final class CharacteristicRespecScrollSeederImporter
                 'level' => $entry['level'],
                 'effect' => CharacteristicRespecScrollCatalog::effectText($entry['points'], $entry['of']),
                 'recipe' => null,
-                'rarity' => 0,
+                'rarity' => $entry['rarity'],
                 'state' => Consumable::STATE_PLAYABLE,
                 'read_level' => 0,
                 'write_level' => 3,

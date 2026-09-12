@@ -38,13 +38,15 @@ final class CharacteristicRespecScrollSeederImporterTest extends TestCase
         $this->assertSame(1000, $petitChance->price_custom);
         $this->assertSame(0, $petitChance->price_calculated);
         $this->assertSame(0, $petitChance->resources()->count());
-        $this->assertSame('1', $petitChance->level);
+        $this->assertSame('3', $petitChance->level);
+        $this->assertSame(0, $petitChance->rarity);
 
         $puissantInt = Consumable::query()->where('dofusdb_id', '817')->first();
         $this->assertNotNull($puissantInt);
         $this->assertSame('Puissant Parchemin d\'Intelligence', $puissantInt->name);
         $this->assertSame(10000, $puissantInt->totalPriceKamas());
         $this->assertSame('15', $puissantInt->level);
+        $this->assertSame(3, $puissantInt->rarity);
 
         $type = ConsumableType::query()->where('dofusdb_type_id', 76)->first();
         $this->assertSame(ConsumableType::STATE_PLAYABLE, $type?->state);

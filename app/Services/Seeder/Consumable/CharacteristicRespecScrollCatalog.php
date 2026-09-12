@@ -61,7 +61,7 @@ final class CharacteristicRespecScrollCatalog
     }
 
     /**
-     * @return list<array{prefix: string, points: int, price: int, level: string}>
+     * @return list<array{prefix: string, points: int, price: int, level: string, rarity: int}>
      */
     public function tiers(): array
     {
@@ -75,6 +75,7 @@ final class CharacteristicRespecScrollCatalog
                 'points' => (int) ($row['points'] ?? 0),
                 'price' => (int) ($row['price'] ?? 0),
                 'level' => (string) ($row['level'] ?? ''),
+                'rarity' => max(0, min(5, (int) ($row['rarity'] ?? 0))),
             ];
         }
 
@@ -109,6 +110,7 @@ final class CharacteristicRespecScrollCatalog
      *     points: int,
      *     price: int,
      *     level: string,
+     *     rarity: int,
      *     name: string,
      *     dofusdb_id: string,
      *     description: string|null
@@ -142,6 +144,7 @@ final class CharacteristicRespecScrollCatalog
                 'points' => $tier['points'],
                 'price' => $tier['price'],
                 'level' => $tier['level'],
+                'rarity' => $tier['rarity'],
                 'name' => (string) ($row['name'] ?? ''),
                 'dofusdb_id' => $dofusdbId,
                 'description' => $description,

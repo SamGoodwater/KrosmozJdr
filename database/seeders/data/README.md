@@ -62,7 +62,16 @@ Un JSON unique `healing-out-of-combat.json` décrit 11 paliers × 4 types (pain,
 - Même seeder `ConsumableSeeder`, après l’échelle de soins.
 - Upsert sur `dofusdb_id` (Petit / Parchemin / Grand / Puissant). Type Dofus 76 passé en `playable`.
 - Recette vidée à l’import. `auto_update = false`.
+- Niveaux / rareté : Petit niv. 3 Commun, normal niv. 6 Peu commun, Grand niv. 10 Rare, Puissant niv. 15 Très rare.
 - Un consommable `playable` n’est pas recalculé en masse ni via « Actualiser le prix » (le barème custom resterait à 0).
+
+## Consommables utilitaires (`entities/consumables/`)
+
+`utility-playable.json` : Potion de Rappel (800), Antidote (1 500), Bière d'Amakna (200), Café (250), Élixir de Wakfu (3 500), Bonbon de Renaissance du Chanceux (10 000, niv. 12), potions de bouclier et PV temporaires. **Pas de recette** ; `price_custom` = barème.
+
+- Même seeder `ConsumableSeeder`, après les parchemins.
+- Upsert sur `dofusdb_id` ou `official_id` `jdr:…`.
+- Buffs : durée jusqu’au prochain repos long (8 h max) ; même type d’effet, pas de cumul.
 
 ## Panoplies (`entities/panoplies/`)
 

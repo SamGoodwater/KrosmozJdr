@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Rappel, antidote, bière, café et renaissance
+
+Une **Potion de Rappel** à 800 kamas (le billet de zaap chez un PNJ reste à 80). Un **Antidote** à 1 500 kamas retire Empoisonné. La **Bière d’Amakna** (+1 Supercherie) et le **Café** (+1 Investigation) tiennent jusqu’au prochain repos long. L’**élixir de Wakfu** redonne 2 points de réserve pour 3 500 kamas. Le **Bonbon de Renaissance du Chanceux** (niveau 12, 10 000 kamas) te laisse à 1 PV au lieu de tomber à 0. Deux potions de bouclier et deux réserves de PV temporaires complètent le lot. Même type d’effet : pas de cumul. Les parchemins de caractéristique montent aussi en niveau et en rareté (petit niv. 3, puissant niv. 15 Très rare).
+
 ## Septembre 2026 — Parchemins pour rééquilibrer les caractéristiques
 
 Les parchemins Dofus qui **ajoutaient** de la Force, de la Chance, etc. ne collent pas au JDR (budget de points fermé). Ils **libèrent** maintenant des points déjà mis dans **une** caractéristique pour les replacer ailleurs : petit = 1 point (1 000 kamas), normal = 2 (3 000), grand = 3 (5 000), puissant = 4 (10 000). Six caractéristiques, donc vingt-quatre fiches. Pas de recette : on les achète. Hors combat, usage unique, on ne descend pas sous le plancher de création (8, ou 6 si c’était la faiblesse choisie).

@@ -18,6 +18,8 @@ final class CharacteristicRespecScrollCatalogTest extends TestCase
         $this->assertCount(4, $tiers);
         $this->assertSame([1, 2, 3, 4], array_column($tiers, 'points'));
         $this->assertSame([1000, 3000, 5000, 10000], array_column($tiers, 'price'));
+        $this->assertSame(['3', '6', '10', '15'], array_column($tiers, 'level'));
+        $this->assertSame([0, 1, 2, 3], array_column($tiers, 'rarity'));
         $this->assertCount(24, $entries);
         $this->assertCount(6, $catalog->characteristics());
         $this->assertSame(76, $catalog->consumableTypeDofusId());

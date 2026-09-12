@@ -6,10 +6,11 @@ namespace Database\Seeders\Entity;
 
 use App\Services\Seeder\Consumable\CharacteristicRespecScrollSeederImporter;
 use App\Services\Seeder\Consumable\HealingConsumableSeederImporter;
+use App\Services\Seeder\Consumable\UtilityConsumableSeederImporter;
 use Illuminate\Database\Seeder;
 
 /**
- * Consommables JDR : soins hors combat, puis parchemins de caractéristique (respec).
+ * Consommables JDR : soins hors combat, parchemins de caractéristique, utilitaires.
  */
 class ConsumableSeeder extends Seeder
 {
@@ -23,6 +24,9 @@ class ConsumableSeeder extends Seeder
 
         $scrolls = app(CharacteristicRespecScrollSeederImporter::class)->import();
         $this->report('parchemins de caractéristique', $scrolls);
+
+        $utility = app(UtilityConsumableSeederImporter::class)->import();
+        $this->report('utilitaires', $utility);
     }
 
     /**

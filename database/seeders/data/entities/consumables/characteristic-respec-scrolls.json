@@ -4,10 +4,10 @@
     "consumable_type_name": "Parchemin de caractéristique",
     "description": "Ce parchemin ne donne aucun point : il libère des points déjà investis dans cette caractéristique pour les replacer ailleurs, dans les limites habituelles.",
     "tiers": [
-        { "prefix": "Petit ", "points": 1, "price": 1000, "level": "1" },
-        { "prefix": "", "points": 2, "price": 3000, "level": "5" },
-        { "prefix": "Grand ", "points": 3, "price": 5000, "level": "10" },
-        { "prefix": "Puissant ", "points": 4, "price": 10000, "level": "15" }
+        { "prefix": "Petit ", "points": 1, "price": 1000, "level": "3", "rarity": 0 },
+        { "prefix": "", "points": 2, "price": 3000, "level": "6", "rarity": 1 },
+        { "prefix": "Grand ", "points": 3, "price": 5000, "level": "10", "rarity": 2 },
+        { "prefix": "Puissant ", "points": 4, "price": 10000, "level": "15", "rarity": 3 }
     ],
     "characteristics": {
         "force": { "label": "Force", "of": "de Force" },
