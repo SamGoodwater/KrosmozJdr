@@ -18,12 +18,12 @@ use Tests\TestCase;
 
 final class ClassBreedSeederImporterTest extends TestCase
 {
-    public function test_imports_sacrieur_then_pandawa_and_is_idempotent(): void
+    public function test_imports_twelve_base_classes_and_is_idempotent(): void
     {
         $importer = app(ClassBreedSeederImporter::class);
         $first = $importer->import();
 
-        $this->assertSame(['Sacrieur', 'Pandawa'], $first['created']);
+        $this->assertSame(ClassBreedCatalog::BASE_CLASS_NAMES, $first['created']);
         $this->assertSame([], $first['updated']);
         $this->assertSame([], $first['skipped']);
 
@@ -41,6 +41,11 @@ final class ClassBreedSeederImporterTest extends TestCase
         $this->assertSame('Pandawa', $panda->name);
         $this->assertSame('Bagarreur assoiffé', $panda->description_fast);
 
+        $iop = Breed::query()->where('dofusdb_id', '8')->first();
+        $this->assertNotNull($iop);
+        $this->assertSame('Iop', $iop->name);
+        $this->assertFalse($iop->auto_update);
+
         $this->assertSame(
             ['air' => 'tank', 'earth' => 'tank', 'water' => 'protection'],
             $this->orientationsOf($sacrieur)
@@ -49,11 +54,15 @@ final class ClassBreedSeederImporterTest extends TestCase
             ['air' => 'placement', 'earth' => 'tank', 'fire' => 'degats'],
             $this->orientationsOf($panda)
         );
+        $this->assertSame(
+            ['air' => 'degats', 'earth' => 'degats', 'fire' => 'degats'],
+            $this->orientationsOf($iop)
+        );
 
         $second = $importer->import();
         $this->assertSame([], $second['created']);
-        $this->assertSame(['Sacrieur', 'Pandawa'], $second['updated']);
-        $this->assertSame(2, Breed::query()->whereIn('name', ['Sacrieur', 'Pandawa'])->count());
+        $this->assertSame(ClassBreedCatalog::BASE_CLASS_NAMES, $second['updated']);
+        $this->assertSame(12, Breed::query()->whereIn('name', ClassBreedCatalog::BASE_CLASS_NAMES)->count());
     }
 
     public function test_class_breed_seeder_then_spell_kit_attaches_slots(): void
@@ -100,6 +109,51 @@ final class ClassBreedSeederImporterTest extends TestCase
         $this->assertSame(2, $existing->read_level);
         $this->assertFalse($existing->auto_update);
         $this->assertSame('tank', $existing->elementOrientations()->where('element', BreedElementOrientation::ELEMENT_EARTH)->value('orientation_key'));
+    }
+
+    public function test_updates_scraped_breeds_without_changing_state(): void
+    {
+        $feca = Breed::factory()->create([
+            'name' => 'Féca',
+            'dofusdb_id' => '1',
+            'state' => Breed::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'auto_update' => true,
+            'created_by' => null,
+        ]);
+        $cra = Breed::factory()->create([
+            'name' => 'Crâ',
+            'dofusdb_id' => '9',
+            'state' => Breed::STATE_RAW,
+            'read_level' => 0,
+            'write_level' => 3,
+            'auto_update' => true,
+            'created_by' => null,
+        ]);
+
+        $result = app(ClassBreedSeederImporter::class)->import();
+
+        $this->assertContains('Féca', $result['updated']);
+        $this->assertContains('Crâ', $result['updated']);
+        $this->assertContains('Iop', $result['created']);
+
+        $feca->refresh();
+        $cra->refresh();
+        $this->assertSame(Breed::STATE_DRAFT, $feca->state);
+        $this->assertFalse($feca->auto_update);
+        $this->assertSame('Protecteur', $feca->description_fast);
+        $this->assertSame(
+            ['earth' => 'tank', 'fire' => 'protection', 'water' => 'amelioration'],
+            $this->orientationsOf($feca)
+        );
+
+        $this->assertSame(Breed::STATE_RAW, $cra->state);
+        $this->assertFalse($cra->auto_update);
+        $this->assertSame(
+            ['air' => 'degats', 'fire' => 'degats', 'water' => 'degats'],
+            $this->orientationsOf($cra)
+        );
     }
 
     /**

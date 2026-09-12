@@ -8,7 +8,7 @@ use App\Services\Seeder\Breed\ClassBreedSeederImporter;
 use Illuminate\Database\Seeder;
 
 /**
- * Fiches classes JDR manquantes (Sacrieur, Pandawa) avant les kits de sorts.
+ * Fiches des 12 classes originales (voix §2.3.1) avant les kits de sorts.
  */
 class ClassBreedSeeder extends Seeder
 {

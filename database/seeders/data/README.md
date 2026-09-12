@@ -73,9 +73,9 @@ Un JSON unique `healing-out-of-combat.json` décrit 11 paliers × 4 types (pain,
 - Upsert sur `dofusdb_id` ou `official_id` `jdr:…`.
 - Buffs : durée jusqu’au prochain repos long (8 h max) ; même type d’effet, pas de cumul.
 
-## Classes de base manquantes (`entities/breeds/`)
+## Classes de base (`entities/breeds/`)
 
-`sacrieur.json` puis `pandawa.json` : fiches classes JDR (nom Dofus, `dofusdb_id` 11 / 12, résumé, voix élémentaires du §2.3.1). Upsert sur `dofusdb_id`, `official_id` ou `name`. `auto_update = false`. L’état n’est posé qu’à la création (`draft`) : une fiche déjà `playable` n’est pas rétrogradée. Description tronquée à 255 caractères (colonne `varchar`).
+Un JSON par classe originale (`feca.json` … `pandawa.json`, ids Dofus 1–12) : nom, résumé Dofus, voix élémentaires du §2.3.1. Upsert sur `dofusdb_id`, `official_id` ou `name`. `auto_update = false`. L’état n’est posé qu’à la création (`draft`) : une fiche déjà `playable` ou `raw` n’est pas rétrogradée. Description tronquée à 255 caractères (colonne `varchar`).
 
 - **Seed** : `Database\Seeders\Entity\ClassBreedSeeder`, **avant** `SpellSeeder` (`project:seed` / `project:init` / `DatabaseSeeder`), pour que les kits niveau 1 se collent aux emplacements.
 

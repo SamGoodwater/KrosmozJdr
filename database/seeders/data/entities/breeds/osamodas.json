@@ -1,0 +1,16 @@
+{
+    "_schema_version": "1",
+    "name": "Osamodas",
+    "dofusdb_id": "2",
+    "description_fast": "Invocateur de créatures",
+    "description": "Les Osamodas sont des dompteurs nés ! Ils ont le pouvoir d'invoquer des créatures et sont de remarquables dresseurs. Une rumeur prétend qu'ils taillent leurs vêtements dans la peau de leurs ennemis, mais allez donc leur demander ce qu'il en est... Si vous",
+    "dofus_version": "3",
+    "state": "draft",
+    "read_level": 0,
+    "write_level": 3,
+    "element_orientations": {
+        "fire": "invocation",
+        "earth": "protection",
+        "air": "degats"
+    }
+}

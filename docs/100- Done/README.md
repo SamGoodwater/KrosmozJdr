@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Voix des 12 classes originales
+
+Les **12 classes de base** ont maintenant leurs trois voix (Terre / Air / Feu / Eau) calées sur le tableau des rôles : Féca protection-tank-amélioration, Iop et Crâ et Ecaflip tout dégât, Eniripsa tout soin, Osamodas invocation, etc. Le seeder les rejoue, le scrapping ne les écrase plus. Sacrieur et Pandawa étaient déjà là ; les dix autres (Féca à Sadida) suivent le même modèle.
+
 ## Septembre 2026 — Fiches Sacrieur et Pandawa
 
 Les classes **Sacrieur** (berserker, Terre et Air tank, Eau protection) et **Pandawa** (bagarreur assoiffé, Terre tank, Air placement, Feu dégât) existent en base, comme les autres. Leurs six sorts de niveau 1 se collent maintenant sur la fiche. Pas d’image tant qu’on n’a pas scrapé : c’est cosmétique.

@@ -8,7 +8,7 @@ use App\Models\Entity\Breed;
 use App\Services\Entity\SyncBreedElementOrientations;
 
 /**
- * Importe les fiches classes JDR (Sacrieur, Pandawa, …) pour recoller les kits de sorts.
+ * Importe les fiches des 12 classes originales (voix §2.3.1) pour recoller les kits de sorts.
  *
  * Idempotent. Upsert sur `dofusdb_id`, `official_id` ou `name`. `auto_update = false`.
  *

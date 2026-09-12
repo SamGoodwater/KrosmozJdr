@@ -21,13 +21,41 @@ final class ClassBreedCatalog
     public const DESCRIPTION_MAX = 255;
 
     /**
-     * Ordre d’import (Sacrieur puis Pandawa), puis tout autre JSON du dossier.
+     * Ordre d’import des 12 classes originales (ids Dofus 1–12), puis tout autre JSON du dossier.
      *
      * @var list<string>
      */
     public const PREFERRED_FILES = [
+        'feca.json',
+        'osamodas.json',
+        'enutrof.json',
+        'sram.json',
+        'xelor.json',
+        'ecaflip.json',
+        'eniripsa.json',
+        'iop.json',
+        'cra.json',
+        'sadida.json',
         'sacrieur.json',
         'pandawa.json',
+    ];
+
+    /**
+     * @var list<string>
+     */
+    public const BASE_CLASS_NAMES = [
+        'Féca',
+        'Osamodas',
+        'Enutrof',
+        'Sram',
+        'Xélor',
+        'Ecaflip',
+        'Eniripsa',
+        'Iop',
+        'Crâ',
+        'Sadida',
+        'Sacrieur',
+        'Pandawa',
     ];
 
     /**
@@ -40,14 +68,29 @@ final class ClassBreedCatalog
         return database_path('seeders/data/entities/breeds');
     }
 
+    public static function path(string $basename): string
+    {
+        return self::directory().'/'.$basename;
+    }
+
+    public static function fecaPath(): string
+    {
+        return self::path('feca.json');
+    }
+
+    public static function iopPath(): string
+    {
+        return self::path('iop.json');
+    }
+
     public static function sacrieurPath(): string
     {
-        return self::directory().'/sacrieur.json';
+        return self::path('sacrieur.json');
     }
 
     public static function pandawaPath(): string
     {
-        return self::directory().'/pandawa.json';
+        return self::path('pandawa.json');
     }
 
     /**
