@@ -1,0 +1,33 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "3"
+    },
+    "panoply": {
+        "name": "Panoplie de l'Abraknyde",
+        "description": null,
+        "bonus": {
+            "4": {
+                "strength": 1
+            },
+            "7": {
+                "strength": 1,
+                "armor_class": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "2410",
+            "2413",
+            "2417",
+            "2420",
+            "2423",
+            "2426",
+            "2429"
+        ]
+    }
+}

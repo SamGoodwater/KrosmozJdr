@@ -19,7 +19,7 @@
 - Exemples few-shot : uniquement des fiches `playable` (une vingtaine par type quand l’IA s’en mêle).
 - **Étalons objets** : 32 items niveau 8 `playable` (4 éléments × 4 raretés), capes + armes seulement. L’élément n’existe que sur cape (For/Int/Cha/Agi) et armes (dégâts fixes) — pivot `characteristic_object_item_type`. Valeurs = `norms_grid` écrêtées par `formula`. Bonus JDR à écrire dans **`bonus`** (le front le fait gagner sur `effect`) + `auto_update = false`. Détail : [CATALOGUE](./CATALOGUE.md#kit-détalons-niveau-8-en-base-à-relire).
 - **Socle rejouable** : `database/seeders/data/entities/items/*-item.json` (1 fichier/item) + `database/seeders/data/entities/panoplies/*-panoply.json`. `items:seeder-export` / `items:seeder-import` ; `Entity\ItemSeeder` puis `Entity\PanoplySeeder` dans `project:seed`. Boutons super_admin items sur `/admin/content/ia-generation`.
-- **Sets bas niveau playable** : Piou (6 couleurs, niv. 1), Bouftou (2), Tofu (2), Prespic (3). Détail : [CATALOGUE](./CATALOGUE.md#panoplies-bas-niveau-playable).
+- **Sets Dofus playable** : Piou, Bouftou, Tofu, Prespic, puis Sanglier / Arakne / Moskito / Champ Champ / Bandit / Jeune Aventurier / Paysan / Larvesque / Bouftou Royal / Abraknyde / 4 Kwak / 4 Scara / Akwadala. Détail : [CATALOGUE](./CATALOGUE.md#panoplies-bas-niveau-playable).
 
 ## Fichiers
 

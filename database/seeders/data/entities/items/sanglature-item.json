@@ -1,0 +1,46 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6908",
+        "official_id": null
+    },
+    "item": {
+        "name": "Sanglature",
+        "level": "1",
+        "description": "Poilue mais élégante, cette ceinture devrait parfois vous faire penser à votre dulcinée.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 450,
+        "price_custom": null,
+        "effect": {
+            "tackle": 1
+        },
+        "bonus": {
+            "tackle": 1
+        },
+        "item_type_dofus_id": 10,
+        "item_type_name": "Ceinture"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "21"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "387",
+                "name": "Défense du Sanglier",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "1672",
+                "name": "Poils de Darit",
+                "quantity": 1
+            }
+        ]
+    }
+}

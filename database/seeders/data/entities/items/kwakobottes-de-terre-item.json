@@ -1,0 +1,51 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6754",
+        "official_id": null
+    },
+    "item": {
+        "name": "Kwakobottes de Terre",
+        "level": "4",
+        "description": "\"Rien de mieux que les Kwakobottes de Terre pour marcher dans la terre\", telles étaient les paroles de Rola Ingalsse la célèbre laboureuse, juste avant de devenir aveugle, en recevant une motte de terre géante dans les yeux.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 700,
+        "price_custom": null,
+        "effect": {
+            "initiative": 1
+        },
+        "bonus": {
+            "initiative": 1
+        },
+        "item_type_dofus_id": 11,
+        "item_type_name": "Bottes"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "14"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "1141",
+                "name": "Plume du Kwak de Terre",
+                "quantity": 5
+            },
+            {
+                "dofusdb_id": "12016",
+                "name": "Plume du Kwakwa",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "2648",
+                "name": "Griffes de Kwak",
+                "quantity": 5
+            }
+        ]
+    }
+}

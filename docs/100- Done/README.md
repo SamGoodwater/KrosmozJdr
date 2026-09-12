@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Niveau des panoplies
+
+Une panoplie n’a pas de niveau à elle : on affiche celui de **la pièce la plus élevée**. Sur le catalogue, un curseur min/max filtre comme pour les équipements, et la liste s’ordonne du plus petit niveau au plus grand. Le badge apparaît sur les cartes (repliées et déployées), en liste, sur la fiche, et en lecture seule à l’édition.
+
 ## Septembre 2026 — L’écran de chargement ne reste plus bloqué
 
 Au lancement, l’app s’arrêtait sur « Chargement… » : un découpage trop agressif du JavaScript (layout d’un côté, formatters de l’autre) empêchait les scripts de s’initialiser. Le build ne sépare plus que les bibliothèques tierces. Le favicon pointe vers les fichiers logo qui existent vraiment (webp / png / ico), plus vers un SVG manquant qui déclenchait un accès refusé.
@@ -39,6 +43,12 @@ Les objets validés à la main ne vivent plus uniquement en base : chacun a dés
 Deux boutons sur la page **IA métier** de l’administration : « Base → fichiers » enregistre l’état actuel des objets jouables dans le dépôt, « Fichiers → base » les remet en base. Réservé au super administrateur, avec confirmation par mot de passe ; l’écriture dans le dépôt n’est possible qu’en développement.
 
 Une réinstallation complète du projet recrée maintenant ces objets automatiquement. Les visuels ne sont pas concernés : ils restent gérés par la médiathèque.
+
+## Septembre 2026 — Panoplies connues d’Astrub / Amakna
+
+Après les Pious / Bouftou / Tofu / Prespic, les sets qu’on croise ensuite sont aussi **jouables** (filtre d’état sur le catalogue) : Sanglier, Arakne, Moskito, Champ Champ, Bandit, Jeune Aventurier, Paysan, Larvesque, Bouftou Royal, Abraknyde, les quatre Kwak, les quatre Scarafeuilles et Akwadala.
+
+Même logique qu’avant : chaque pièce garde son nom Dofus ; les bonus JDR restent calés sur l’emplacement (cape = élément à partir du niveau 3, arme = dégâts, ceinture = tacle ou fuite, bouclier = CA). Le Bouftou Royal reprend le +1 PA du Bouftou une fois le set complet ; les Kwak et Akwadala donnent de la portée au complet.
 
 ## Septembre 2026 — Panoplies des premiers niveaux
 

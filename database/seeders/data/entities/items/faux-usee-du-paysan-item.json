@@ -1,0 +1,46 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8127",
+        "official_id": null
+    },
+    "item": {
+        "name": "Faux usée du Paysan",
+        "level": "1",
+        "description": "Cette faux robuste mais abîmée a déjà beaucoup servi et coupe assez mal. En revanche, elle est très efficace pour arracher les chairs tendres et superficielles. Très utile pour lutter contre les varices de vos adversaires.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 850,
+        "price_custom": null,
+        "effect": {
+            "fixed_damage_earth": 1
+        },
+        "bonus": {
+            "fixed_damage_earth": 1
+        },
+        "item_type_dofus_id": 22,
+        "item_type_name": "Faux"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "47"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "306",
+                "name": "Fleur de Pissenlit Diabolique",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "8157",
+                "name": "Pétale Magique du Tournesol Affamé",
+                "quantity": 2
+            }
+        ]
+    }
+}

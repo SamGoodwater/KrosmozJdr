@@ -1,0 +1,42 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6920",
+        "official_id": null
+    },
+    "item": {
+        "name": "Alliance Du Champ Champ",
+        "level": "1",
+        "description": "Lorsque le Champ Champ se marie, il offre cette alliance à sa dulcinée. Cette dernière étant dépourvue de bras, l'alliance est déposée soigneusement sur une de ses épines. En vous équipant de cette alliance, vous briserez les liens du mariage qui unissaient ces deux créatures, et dans le meilleur des cas, le Champ Champ vous prendra pour sa dulcinée.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 150,
+        "price_custom": null,
+        "effect": [],
+        "bonus": [],
+        "item_type_dofus_id": 9,
+        "item_type_name": "Anneau"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "24"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "377",
+                "name": "Épine du Champ Champ",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "16513",
+                "name": "Pétale Diaphane",
+                "quantity": 3
+            }
+        ]
+    }
+}

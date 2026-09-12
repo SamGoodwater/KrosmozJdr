@@ -1,0 +1,56 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "7230",
+        "official_id": null
+    },
+    "item": {
+        "name": "Cape Akwadala",
+        "level": "4",
+        "description": "Cette cape qui vient du village d'Akwadala, peut servir de paillasson, ou même de serpillière si vous venez de sortir de l'eau.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 1100,
+        "price_custom": null,
+        "effect": {
+            "chance": 1
+        },
+        "bonus": {
+            "chance": 1
+        },
+        "item_type_dofus_id": 17,
+        "item_type_name": "Cape"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "34"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "13096",
+                "name": "Fémur du Chafer Rōnin",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "13339",
+                "name": "Sceau Royal Contrefait",
+                "quantity": 5
+            },
+            {
+                "dofusdb_id": "6475",
+                "name": "Casque Cassé du Chafer",
+                "quantity": 5
+            },
+            {
+                "dofusdb_id": "8745",
+                "name": "Pétale Kouraçao",
+                "quantity": 1
+            }
+        ]
+    }
+}

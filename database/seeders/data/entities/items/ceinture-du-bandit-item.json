@@ -1,0 +1,46 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6925",
+        "official_id": null
+    },
+    "item": {
+        "name": "Ceinture du Bandit",
+        "level": "1",
+        "description": "Cette ceinture saillante vous ira à ravir si vous rejoignez un jour la cause des bandits de grand chemin. En attendant, elle ne vous rendra que plus ridicule.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 450,
+        "price_custom": null,
+        "effect": {
+            "dodge": 1
+        },
+        "bonus": {
+            "dodge": 1
+        },
+        "item_type_dofus_id": 10,
+        "item_type_name": "Ceinture"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "25"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "2563",
+                "name": "Peau de Larve Jaune",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "388",
+                "name": "Poils d'Arakne Malade",
+                "quantity": 3
+            }
+        ]
+    }
+}
