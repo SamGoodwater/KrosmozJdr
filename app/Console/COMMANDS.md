@@ -423,7 +423,7 @@ cron: false
 admin: /admin/content/ia-generation
 ```
 
-Seeder → base : rejoue les fichiers d’équipements versionnés. Upsert sur `dofusdb_id` (`official_id` à défaut), résolution du type via `item_type_dofus_id`, synchronisation des panoplies et de la recette (références introuvables ignorées). Idempotent. Même code que `ItemSeeder`, donc `project:seed` et `project:init` rejouent ces items.
+Seeder → base : rejoue les fichiers d’équipements versionnés. Upsert sur `dofusdb_id` (`official_id` à défaut), résolution du type via `item_type_dofus_id`, synchronisation des panoplies et de la recette (références introuvables ignorées). Les ressources déjà liées aux items `playable` passent en `playable`. Idempotent. Même code que `ItemSeeder`, donc `project:seed` et `project:init` rejouent ces items.
 
 ```bash
 php artisan items:seeder-import

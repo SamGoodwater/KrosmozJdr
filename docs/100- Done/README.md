@@ -8,6 +8,10 @@ Survoler une petite carte (panoplie, équipement…) l’ouvre **par-dessus** ce
 
 Les catalogues (équipements, panoplies, consommables, ressources, monstres, sorts) arrivent avec le filtre **Type** (ou Race) sur **Tous** : plus de liste de types cochée d’avance. Survoler le point d’état d’une fiche (carte minimale ou fiche complète) dit **Jouable**, plus « Actif ».
 
+## Septembre 2026 — Ressources des recettes d’équipement jouables
+
+Les ingrédients des équipements relus (panoplies et pièces jusqu’au niveau 8) sont maintenant **jouables** : nom, prix Dofus et type inchangés. Quelques prix à 0, c’est comme dans Dofus (blé, minerais, alliages). Le set Intrépide n’a toujours pas de recette. On n’a pas publié tout l’arbre de métier Dofus collé derrière chaque ressource.
+
 ## Septembre 2026 — Une compétence légère sur (presque) chaque set
 
 Les compétences (+1 Athlétisme, Arcanes, Discrétion…) pèsent peu par rapport à une caractéristique : on s’en sert comme **bonus facile** sur les panoplies relues, y compris plus haut niveau. Si le chapeau ou la cape est vide, ça va sur la pièce ; sinon sur le palier complet du set. Les Pious Rose (vitalité) et Violet (portée) n’en ont toujours pas.

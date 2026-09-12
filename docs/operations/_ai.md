@@ -11,7 +11,7 @@ Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interact
 - `app/Console/COMMANDS.md` — vocabulaire CLI unique
 - `php artisan ia:equipment-grid` — grille d’équipements JDR (rapport ; `--write` = trous `draft`)
 - `php artisan entities:recalculate-prices {items|consumables}` — réécrit `price_calculated`, vide `price_custom` ; bouton admin sur `/admin/content`
-- `php artisan items:seeder-export` / `items:seeder-import` — aller-retour étalons d’équipement base ↔ `database/seeders/data/entities/items/` ; même code que `Database\Seeders\Entity\ItemSeeder` ; boutons super_admin sur `/admin/content/ia-generation`
+- `php artisan items:seeder-export` / `items:seeder-import` — aller-retour étalons d’équipement base ↔ `database/seeders/data/entities/items/` ; même code que `Database\Seeders\Entity\ItemSeeder` ; l’import marque aussi jouables les ressources des recettes ; boutons super_admin sur `/admin/content/ia-generation`
 - `app/Console/Commands/Project/ProjectInitCommand.php`
 - `app/Console/Commands/Pages/PagesImportRulesTocCommand.php`
 - `app/Console/Commands/Rules/RulesCompileDownloadsCommand.php`
