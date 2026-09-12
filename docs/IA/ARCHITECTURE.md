@@ -13,6 +13,7 @@ Laravel — assembleur de contexte
   • JSON Schema du type (clés `writable` seulement)
   • champs et caracs figés recopiés hors LLM
   • 3–8 fiches or playable (`example_ids`)
+  • panoplies or : noms `playable` dans `entities.item.few_shot_panoplies`
   • catalogue pré-filtré (ids, noms, bonus) si besoin
   • normes / gabarit de niveau
   • PNJ : brief MJ et/ou extrait d’une page de site

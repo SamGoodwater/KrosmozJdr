@@ -1,0 +1,46 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "30701",
+        "official_id": null
+    },
+    "item": {
+        "name": "La Halte Efkat",
+        "level": "1",
+        "description": "Si vous faites une halte au zaap d'Astrub pour la première fois, méfiez-vous des rumeurs colportées par certains aventuriers facétieux : il n'y pas de technique spéciale qui permette de gagner des kamas par magie... Quelle terrible révélation ! Vous avez du mal à respirer ? Ce bouclier tombe à pic, il vous servira d'éventail.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 1250,
+        "price_custom": null,
+        "effect": {
+            "armor_class": 1
+        },
+        "bonus": {
+            "armor_class": 1
+        },
+        "item_type_dofus_id": 82,
+        "item_type_name": "Bouclier"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "69"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "16489",
+                "name": "Planche Agglomérée",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "16663",
+                "name": "Viande Intangible",
+                "quantity": 2
+            }
+        ]
+    }
+}

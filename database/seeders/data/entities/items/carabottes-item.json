@@ -1,0 +1,56 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "2530",
+        "official_id": null
+    },
+    "item": {
+        "name": "Carabottes",
+        "level": "6",
+        "description": "Elles sont un peu lourdes, mais ces charmantes Carabottes feront de vous la reine de la nuit.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 1000,
+        "price_custom": null,
+        "effect": {
+            "initiative": 1
+        },
+        "bonus": {
+            "initiative": 1
+        },
+        "item_type_dofus_id": 11,
+        "item_type_name": "Bottes"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "9"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "2540",
+                "name": "Substrat de Futaie",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "2609",
+                "name": "Carapace Verte",
+                "quantity": 6
+            },
+            {
+                "dofusdb_id": "11695",
+                "name": "Carniflore",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "2610",
+                "name": "Carapace Rouge",
+                "quantity": 8
+            }
+        ]
+    }
+}

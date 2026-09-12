@@ -1,0 +1,31 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "20"
+    },
+    "panoply": {
+        "name": "Panoplie du Chef Crocodaille",
+        "description": null,
+        "bonus": {
+            "8": {
+                "chance": 1,
+                "range": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "6817",
+            "6819",
+            "6821",
+            "6825",
+            "6830",
+            "6831",
+            "6834",
+            "18713"
+        ]
+    }
+}

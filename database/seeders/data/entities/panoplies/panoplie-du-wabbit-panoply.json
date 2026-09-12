@@ -1,0 +1,25 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "293"
+    },
+    "panoply": {
+        "name": "Panoplie du Wabbit",
+        "description": null,
+        "bonus": {
+            "3": {
+                "chance": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "6492",
+            "6498",
+            "6499"
+        ]
+    }
+}

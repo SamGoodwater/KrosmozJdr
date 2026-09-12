@@ -1,0 +1,31 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "35"
+    },
+    "panoply": {
+        "name": "Panoplie Aerdala",
+        "description": null,
+        "bonus": {
+            "8": {
+                "agility": 1,
+                "range": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "7245",
+            "18661",
+            "7233",
+            "7253",
+            "7241",
+            "7229",
+            "7256",
+            "7249"
+        ]
+    }
+}

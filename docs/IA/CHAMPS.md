@@ -17,6 +17,7 @@ Quatre types : `item`, `spell`, `monster`, `npc`.
 | `frozen_characteristics` | Clés `characteristics.key` (ex. `intelligence_object`). `"*"` = toutes. |
 | `writable_characteristics` | Caracs que l’IA **peut** toucher malgré le joker. |
 | `example_ids` | Ids locaux `playable` à envoyer en few-shot. |
+| `few_shot_panoplies` (objets, extra) | Noms des panoplies `playable` que l’IA doit imiter. Portable entre bases. Détail : [CATALOGUE](./CATALOGUE.md#liste-few-shot-panoplies-ce-que-lia-doit-imiter). |
 | `has_dofus_source` | `true` : recopier l’identité depuis la fiche `raw`. |
 | `generation.*` | Variables globales (`max_retries`, `few_shot_count`, …). |
 

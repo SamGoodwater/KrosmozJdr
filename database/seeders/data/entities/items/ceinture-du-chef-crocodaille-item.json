@@ -1,0 +1,61 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6831",
+        "official_id": null
+    },
+    "item": {
+        "name": "Ceinture du Chef Crocodaille",
+        "level": "6",
+        "description": "Trop rigide pour servir de fouet, cette ceinture recouverte de minuscules pierres précieuses peut néanmoins être utilisée de manière plus conventionnelle, pour éviter que vos guêtres ne tombent sur vos genoux par exemple.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 1800,
+        "price_custom": null,
+        "effect": {
+            "dodge": 3
+        },
+        "bonus": {
+            "dodge": 3
+        },
+        "item_type_dofus_id": 10,
+        "item_type_name": "Ceinture"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "20"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "2540",
+                "name": "Substrat de Futaie",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "1664",
+                "name": "Dent de Crocodaille",
+                "quantity": 9
+            },
+            {
+                "dofusdb_id": "1663",
+                "name": "Écaille de Crocodaille",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "12076",
+                "name": "Duvet de Nelween",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "6738",
+                "name": "Crâne de Chef Crocodaille",
+                "quantity": 1
+            }
+        ]
+    }
+}

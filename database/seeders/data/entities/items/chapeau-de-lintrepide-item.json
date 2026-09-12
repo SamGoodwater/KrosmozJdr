@@ -1,0 +1,35 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "10801",
+        "official_id": null
+    },
+    "item": {
+        "name": "Chapeau de l'intrépide",
+        "level": "1",
+        "description": "Ce chapeau cache admirablement votre calvitie. Malheureusement, il n'en n'existe pas d'assez grand pour cacher votre fausse modestie.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 550,
+        "price_custom": null,
+        "effect": {
+            "athletics": 1
+        },
+        "bonus": {
+            "athletics": 1
+        },
+        "item_type_dofus_id": 16,
+        "item_type_name": "Chapeau"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "150"
+        ],
+        "resources": []
+    }
+}

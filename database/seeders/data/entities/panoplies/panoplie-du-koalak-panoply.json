@@ -1,0 +1,30 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "46"
+    },
+    "panoply": {
+        "name": "Panoplie du Koalak",
+        "description": null,
+        "bonus": {
+            "7": {
+                "agility": 1,
+                "range": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "8003",
+            "8004",
+            "8005",
+            "8006",
+            "8007",
+            "8008",
+            "8009"
+        ]
+    }
+}

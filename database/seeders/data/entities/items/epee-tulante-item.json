@@ -1,0 +1,35 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "10797",
+        "official_id": null
+    },
+    "item": {
+        "name": "Épée Tulante",
+        "level": "1",
+        "description": "Sortie de son fourreau, cette épée peut couper le jambon, les Enutrofs, les unijambistes, les danseurs et les Enutrofs unijambistes enroulés dans une tranche de jambon qui dansent un soir de pleine lune. En revanche pour trancher les monstres, elle est plutôt inefficace.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 850,
+        "price_custom": null,
+        "effect": {
+            "fixed_damage_earth": 1
+        },
+        "bonus": {
+            "fixed_damage_earth": 1
+        },
+        "item_type_dofus_id": 6,
+        "item_type_name": "Épée"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "150"
+        ],
+        "resources": []
+    }
+}

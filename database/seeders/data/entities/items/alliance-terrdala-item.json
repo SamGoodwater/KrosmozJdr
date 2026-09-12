@@ -1,0 +1,57 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "7247",
+        "official_id": null
+    },
+    "item": {
+        "name": "Alliance Terrdala",
+        "level": "7",
+        "description": "Cette alliance provient du village de Terrdala. Plus proche du porte-bonheur que de la relique magique, elle vous permettra tout de même de faire croire à vos amis que vous avez trouvé l'âme sœur.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 1050,
+        "price_custom": null,
+        "effect": [],
+        "bonus": [],
+        "item_type_dofus_id": 9,
+        "item_type_name": "Anneau"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "36"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "2543",
+                "name": "Substrat de Fascine",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "2321",
+                "name": "Babines de Macien",
+                "quantity": 13
+            },
+            {
+                "dofusdb_id": "14468",
+                "name": "Barbe du Wa Wobot",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "842",
+                "name": "Coquille de Dragoeuf Argile",
+                "quantity": 11
+            },
+            {
+                "dofusdb_id": "17044",
+                "name": "Poudre Explosive",
+                "quantity": 1
+            }
+        ]
+    }
+}

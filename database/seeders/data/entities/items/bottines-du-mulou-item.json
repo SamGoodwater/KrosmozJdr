@@ -1,0 +1,61 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6953",
+        "official_id": null
+    },
+    "item": {
+        "name": "Bottines du Mulou",
+        "level": "6",
+        "description": "Ces bottines recouvertes de poils de Mulou, sont très pratiques pour nettoyer les parquets poussiéreux, ou tout simplement pour nettoyer la tête de vos adversaires lorsqu'ils sont au sol en train d'agoniser.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 1000,
+        "price_custom": null,
+        "effect": {
+            "initiative": 1
+        },
+        "bonus": {
+            "initiative": 1
+        },
+        "item_type_dofus_id": 11,
+        "item_type_name": "Bottes"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "32"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "748",
+                "name": "Magnésite",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "9384",
+                "name": "Fleur de Blop Griotte Royal",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "13715",
+                "name": "Dent de Larve Dorée",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "2482",
+                "name": "Charnière Cassée",
+                "quantity": 7
+            },
+            {
+                "dofusdb_id": "2506",
+                "name": "Grelot",
+                "quantity": 1
+            }
+        ]
+    }
+}
