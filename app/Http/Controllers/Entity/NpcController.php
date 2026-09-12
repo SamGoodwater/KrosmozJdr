@@ -44,9 +44,14 @@ class NpcController extends Controller
     {
         $this->authorize('viewAny', Npc::class);
 
+        $viewer = request()->user();
         $query = Npc::query()
-            ->visibleToUser(request()->user())
-            ->with(['creature', 'breed', 'specialization']);
+            ->visibleToUser($viewer)
+            ->with([
+                'creature',
+                'breed' => fn ($q) => $q->visibleToUser($viewer),
+                'specialization' => fn ($q) => $q->visibleToUser($viewer),
+            ]);
 
         if (request()->has('search') && request()->search) {
             $search = request()->search;
@@ -463,6 +468,8 @@ class NpcController extends Controller
     }
 
     /**
+     * Relations de la fiche lecture : classe / spé / sorts / stuff filtrés `visibleToUser`.
+     *
      * @return array<string, mixed>
      */
     private function npcShowRelations(Request $request): array
@@ -482,8 +489,8 @@ class NpcController extends Controller
                     ->orderBy('name')
                     ->with(['itemType:id,name']),
             ]),
-            'breed',
-            'specialization',
+            'breed' => fn ($q) => $q->visibleToUser($request->user()),
+            'specialization' => fn ($q) => $q->visibleToUser($request->user()),
             'languages',
             'panoplies' => fn ($q) => $q->with([
                 'items' => fn ($iq) => $iq->visibleToUser($request->user()),

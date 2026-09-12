@@ -9,6 +9,7 @@ use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
 use App\Models\Entity\Language;
 use App\Models\Entity\Npc;
+use App\Models\Entity\Specialization;
 use App\Models\Entity\Spell;
 use App\Models\Type\ItemType;
 use App\Models\User;
@@ -207,5 +208,119 @@ class NpcControllerCompleteTest extends TestCase
                 ->has('breeds')
                 ->has('filters')
                 ->where('breeds.0.name', 'Iop'));
+    }
+
+    public function test_show_hides_foreign_draft_breed_and_specialization_from_guest(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $creature = Creature::factory()->create(['created_by' => $author->id]);
+        $draftBreed = Breed::factory()->create([
+            'name' => 'Classe Secrète PNJ',
+            'state' => Breed::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $draftSpec = Specialization::factory()->create([
+            'name' => 'Spé Secrète PNJ',
+            'state' => Specialization::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $npc = Npc::factory()->create([
+            'creature_id' => $creature->id,
+            'breed_id' => $draftBreed->id,
+            'specialization_id' => $draftSpec->id,
+            'state' => Npc::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $this->get(route('entities.npcs.show', $npc))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Pages/entity/npc/Show')
+                ->where('npc.data.breed', null)
+                ->where('npc.data.specialization', null));
+
+        $this->actingAs($author)
+            ->get(route('entities.npcs.show', $npc))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('npc.data.breed.id', $draftBreed->id)
+                ->where('npc.data.breed.name', 'Classe Secrète PNJ')
+                ->where('npc.data.specialization.id', $draftSpec->id)
+                ->where('npc.data.specialization.name', 'Spé Secrète PNJ'));
+    }
+
+    public function test_show_keeps_playable_breed_and_specialization_for_guest(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $creature = Creature::factory()->create(['created_by' => $author->id]);
+        $playableBreed = Breed::factory()->create([
+            'name' => 'Iop Public',
+            'state' => Breed::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $playableSpec = Specialization::factory()->create([
+            'name' => 'Voie Publique',
+            'state' => Specialization::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $npc = Npc::factory()->create([
+            'creature_id' => $creature->id,
+            'breed_id' => $playableBreed->id,
+            'specialization_id' => $playableSpec->id,
+            'state' => Npc::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $this->get(route('entities.npcs.show', $npc))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('npc.data.breed.id', $playableBreed->id)
+                ->where('npc.data.breed.name', 'Iop Public')
+                ->where('npc.data.specialization.id', $playableSpec->id)
+                ->where('npc.data.specialization.name', 'Voie Publique'));
+    }
+
+    public function test_edit_still_loads_draft_breed_and_specialization_for_admin(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $creature = Creature::factory()->create(['created_by' => $admin->id]);
+        $draftBreed = Breed::factory()->create([
+            'name' => 'Classe WIP Édition',
+            'state' => Breed::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $admin->id,
+        ]);
+        $draftSpec = Specialization::factory()->create([
+            'name' => 'Spé WIP Édition',
+            'state' => Specialization::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $admin->id,
+        ]);
+        $npc = Npc::factory()->create([
+            'creature_id' => $creature->id,
+            'breed_id' => $draftBreed->id,
+            'specialization_id' => $draftSpec->id,
+            'state' => Npc::STATE_DRAFT,
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('entities.npcs.edit', $npc))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Pages/entity/npc/Edit')
+                ->where('npc.data.breed.id', $draftBreed->id)
+                ->where('npc.data.specialization.id', $draftSpec->id));
     }
 }

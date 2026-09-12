@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Entity\Breed;
+use App\Models\Entity\Npc;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Specialization;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -137,6 +138,14 @@ class PdfService
             $entity->load([
                 'capabilities' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
                 'npcs' => fn ($q) => $q->visibleToUser($viewer),
+            ]);
+        }
+
+        if ($entityType === 'npc' && $entity instanceof Npc) {
+            $viewer = request()->user();
+            $entity->load([
+                'breed' => fn ($q) => $q->visibleToUser($viewer),
+                'specialization' => fn ($q) => $q->visibleToUser($viewer),
             ]);
         }
 

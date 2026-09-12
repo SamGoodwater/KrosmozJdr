@@ -70,8 +70,8 @@ class NpcTableController extends Controller
             ->visibleToUser($request->user())
             ->with([
                 'languages',
-                'breed',
-                'specialization',
+                'breed' => fn ($q) => $q->visibleToUser($request->user()),
+                'specialization' => fn ($q) => $q->visibleToUser($request->user()),
                 'creature' => fn ($q) => $q->with([
                     'creatureTraits',
                     'spells' => fn ($sq) => $sq

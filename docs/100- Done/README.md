@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Pas de classe ou spé brouillon via un PNJ jouable
+
+Un PNJ publié n’embarque plus sa classe ni sa spécialisation tant qu’elles sont en brouillon. Sur la fiche, le catalogue et le PDF, un invité ou un joueur ne voit que les classes / spés qu’il a le droit de lire. L’écran Modifier garde le lien pour l’éditeur.
+
 ## Septembre 2026 — Client Inertia Vue 3
 
 Le pont entre Laravel et les pages Vue passe par Inertia 3 côté navigateur. Navigation, formulaires, titres de page et déconnexion restent les mêmes gestes ; le client HTTP interne d’Inertia gère les visites (axios reste pour les appels API métier).
