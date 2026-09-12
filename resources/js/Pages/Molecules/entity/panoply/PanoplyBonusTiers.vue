@@ -1,16 +1,18 @@
 <script setup>
 /**
- * Bonus de panoplie par palier de pièces (chiffre seul, comme les sorts).
+ * Bonus de panoplie, un palier de pièces par ligne (ou par colonne en Full).
  *
  * @description
- * Un seul palier (ou aucun) : pas de mini-menu. Les paliers sans bonus sont omis.
+ * Plus de mini-menu : chaque palier affiche le badge de pièces puis ses bonus.
+ * `stack` : une ligne par palier (minimal, line, tooltips).
+ * `columns` : une colonne par palier, badge en tête, caractéristiques icon + nom.
  *
  * @example
- * <PanoplyBonusTiers :bonus='{"2":{"strength":1}}' />
+ * <PanoplyBonusTiers :bonus='{"2":{"strength":1},"8":{"intelligence":1}}' />
  */
-import { ref, computed, watch } from "vue";
+import { computed } from "vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
-import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
+import CharacteristicChip from "@/Pages/Atoms/data-display/CharacteristicChip.vue";
 import CharacteristicInlineGroup from "@/Pages/Molecules/data-display/CharacteristicInlineGroup.vue";
 import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
 import { panoplyTierStatMap, visiblePanoplyBonusTiers } from "@/Utils/entity/panoplyBonus";
@@ -22,34 +24,26 @@ const props = defineProps({
     },
     labelMode: {
         type: String,
-        default: "full",
+        default: "icon-only",
         validator: (v) => ["full", "short", "icon-only"].includes(v),
     },
     layout: {
         type: String,
-        default: "grid",
-        validator: (v) => ["grid", "inline"].includes(v),
+        default: "stack",
+        validator: (v) => ["stack", "columns", "grid", "inline"].includes(v),
     },
 });
 
-const activeTierIndex = ref(0);
-
 const tiers = computed(() => visiblePanoplyBonusTiers(props.bonus));
 
-watch(
-    tiers,
-    (list) => {
-        if (activeTierIndex.value >= list.length) {
-            activeTierIndex.value = 0;
-        }
-    },
-    { deep: true },
-);
+const isColumns = computed(() => props.layout === "columns");
 
-const activeTier = computed(() => tiers.value[activeTierIndex.value] ?? null);
-
-const effectItems = computed(() => {
-    const map = panoplyTierStatMap(activeTier.value);
+/**
+ * @param {{ pieceCount?: number, rows?: Array }} tier
+ * @returns {Array}
+ */
+function effectItemsForTier(tier) {
+    const map = panoplyTierStatMap(tier);
     if (Object.keys(map).length === 0) {
         return [];
     }
@@ -60,58 +54,71 @@ const effectItems = computed(() => {
         size: "sm",
     });
     return cell?.type === "chips" ? cell.params?.items || [] : [];
-});
+}
 
-const showTierTabs = computed(() => tiers.value.length > 1);
+/**
+ * @param {number} pieceCount
+ * @returns {string}
+ */
+function pieceLabel(pieceCount) {
+    const n = Number(pieceCount);
+    if (!Number.isFinite(n) || n < 1) {
+        return "";
+    }
+    return n > 1 ? `${n} pièces` : "1 pièce";
+}
 </script>
 
 <template>
-    <span
+    <div
         v-if="tiers.length"
-        class="inline-flex min-w-0 max-w-full flex-col gap-1 align-middle"
+        data-cy="panoply-bonus-tiers"
+        class="min-w-0 max-w-full"
+        :class="
+            isColumns
+                ? 'flex flex-wrap items-start gap-3'
+                : 'flex flex-col gap-1'
+        "
     >
         <div
-            v-if="showTierTabs"
-            role="tablist"
-            class="inline-flex max-w-full flex-wrap items-center gap-0.5"
-            aria-label="Paliers de panoplie"
+            v-for="tier in tiers"
+            :key="tier.pieceCount"
+            data-cy="panoply-bonus-tier"
+            :data-piece-count="tier.pieceCount"
+            class="min-w-0"
+            :class="
+                isColumns
+                    ? 'flex min-w-[7rem] flex-1 flex-col items-center gap-1.5'
+                    : 'flex min-w-0 items-center gap-1.5'
+            "
         >
-            <button
-                v-for="(tier, i) in tiers"
-                :key="tier.pieceCount"
-                type="button"
-                role="tab"
-                class="inline-flex min-h-0 min-w-0 shrink-0 cursor-pointer items-center justify-center rounded border border-transparent bg-transparent p-0 leading-none transition-[opacity,box-shadow] hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 focus-visible:ring-offset-base-100"
-                :class="
-                    activeTierIndex === i
-                        ? 'opacity-100 shadow-sm ring-1 ring-primary/50 ring-offset-1 ring-offset-base-100'
-                        : 'opacity-55'
-                "
-                :aria-selected="activeTierIndex === i"
-                :title="String(tier.pieceCount)"
-                @click.stop="activeTierIndex = i"
+            <Badge
+                color="neutral"
+                variant="outline"
+                :size="isColumns ? 'sm' : 'xs'"
+                :strong="true"
+                :content="String(tier.pieceCount)"
+                :title="pieceLabel(tier.pieceCount)"
+                class="shrink-0"
+            />
+            <div
+                v-if="isColumns"
+                class="flex w-full flex-col items-stretch gap-1"
             >
-                <Badge
-                    color="neutral"
-                    variant="outline"
-                    size="xs"
-                    :strong="true"
-                    :content="String(tier.pieceCount)"
-                    :title="String(tier.pieceCount)"
+                <CharacteristicChip
+                    v-for="(item, idx) in effectItemsForTier(tier)"
+                    :key="`${tier.pieceCount}-${idx}`"
+                    :item="item"
+                    :label-mode="labelMode"
+                    class="w-full justify-center"
                 />
-            </button>
+            </div>
+            <CharacteristicInlineGroup
+                v-else
+                :items="effectItemsForTier(tier)"
+                :label-mode="labelMode"
+                class="min-w-0"
+            />
         </div>
-        <CharacteristicEffectsGrid
-            v-if="layout === 'grid'"
-            :items="effectItems"
-            :label-mode="labelMode"
-            class="min-w-0"
-        />
-        <CharacteristicInlineGroup
-            v-else
-            :items="effectItems"
-            :label-mode="labelMode"
-            class="min-w-0"
-        />
-    </span>
+    </div>
 </template>

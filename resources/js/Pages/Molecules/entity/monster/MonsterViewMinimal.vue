@@ -275,7 +275,7 @@ const handleAction = async (actionKey) => {
                         </div>
                         <p
                             v-if="showDescriptionInCompactSlot && descriptionFull"
-                            class="text-[11px] leading-snug italic text-base-content/45 max-h-0 opacity-0 overflow-hidden transition-all duration-200 ease-out group-hover:max-h-32 group-hover:opacity-100 group-hover:mt-0.5"
+                            class="text-[11px] leading-snug italic text-base-content/45 max-h-0 opacity-0 overflow-hidden transition-all duration-200 ease-out group-hover/entity-minimal:max-h-32 group-hover/entity-minimal:opacity-100 group-hover/entity-minimal:mt-0.5"
                             :title="descriptionFull"
                         >
                             {{ descriptionFull }}
@@ -360,7 +360,7 @@ const handleAction = async (actionKey) => {
                             :class="
                                 displayMode === 'extended'
                                     ? 'text-[11px] leading-snug italic text-base-content/55 mt-0.5'
-                                    : 'text-[11px] leading-snug italic text-base-content/45 max-h-0 overflow-hidden opacity-0 transition-all duration-200 ease-out group-hover:max-h-40 group-hover:opacity-100'
+                                    : 'text-[11px] leading-snug italic text-base-content/45 max-h-0 overflow-hidden opacity-0 transition-all duration-200 ease-out group-hover/entity-minimal:max-h-40 group-hover/entity-minimal:opacity-100'
                             "
                             :title="descriptionFull"
                         >

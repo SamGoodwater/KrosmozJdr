@@ -130,7 +130,7 @@ const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length
 
 <template>
     <div
-        class="group relative rounded-box border border-base-300 bg-glass-2xl p-3 flex flex-col gap-2 transition-colors hover:bg-glass-3xl"
+        class="group/entity-minimal relative rounded-box border border-base-300 bg-glass-2xl p-3 flex flex-col gap-2 transition-colors hover:bg-glass-3xl"
         :class="{ 'bg-primary/10 ring-1 ring-primary/30': isSelected }"
         style="--bg-color: var(--color-base-100)"
         data-row-contextmenu-target
@@ -214,7 +214,7 @@ const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length
                     </div>
                     <p
                         v-if="descriptionFull"
-                        class="wrap-break-word text-xs whitespace-normal text-base-content/80 italic line-clamp-3 transition-[line-clamp] duration-150 group-hover:line-clamp-none"
+                        class="wrap-break-word text-xs whitespace-normal text-base-content/80 italic line-clamp-3 transition-[line-clamp] duration-150 group-hover/entity-minimal:line-clamp-none"
                         :title="descriptionFull"
                     >
                         {{ descriptionFull }}

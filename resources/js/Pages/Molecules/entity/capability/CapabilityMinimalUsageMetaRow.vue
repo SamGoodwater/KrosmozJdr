@@ -281,9 +281,9 @@ const magicAffixMuted = computed(
 
         <div
             v-if="canShowField('element')"
-            class="grid max-w-full grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out group-hover:grid-rows-[1fr]"
+            class="grid max-w-full grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out group-hover/entity-minimal:grid-rows-[1fr]"
         >
-            <div class="min-h-0 overflow-hidden group-hover:overflow-visible">
+            <div class="min-h-0 overflow-hidden group-hover/entity-minimal:overflow-visible">
                 <EntityPropertyDisplay
                     field-key="element"
                     :entity="entity"
@@ -299,9 +299,9 @@ const magicAffixMuted = computed(
 
         <div
             v-if="canShowField('is_magic') && isMagicDefined"
-            class="grid max-w-full grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out group-hover:grid-rows-[1fr]"
+            class="grid max-w-full grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out group-hover/entity-minimal:grid-rows-[1fr]"
         >
-            <div class="min-h-0 overflow-hidden group-hover:overflow-visible">
+            <div class="min-h-0 overflow-hidden group-hover/entity-minimal:overflow-visible">
                 <div
                     class="inline-flex max-w-full flex-wrap items-center"
                     :class="hoverInnerGapClass"

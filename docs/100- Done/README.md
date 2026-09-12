@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Bonus de panoplie lisibles, carte par carte
+
+Les bonus d’un set ne sont plus collés en une seule ligne : **une ligne par nombre de pièces** (badge + bonus), et sur la fiche complète **une colonne par palier** (chiffre en haut, caractéristiques en dessous avec icône et nom). Survoler une carte du catalogue ne déploie plus toutes les autres.
+
 ## Septembre 2026 — Exemples de panoplies pour l’IA
 
 Le Bouftou complet donne **force et intelligence** (comme Dofus), plus le +1 PA : les deux caracs ne sont pas sur les pièces, seulement quand tout le set est porté.

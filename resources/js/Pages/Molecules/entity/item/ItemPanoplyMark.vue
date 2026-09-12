@@ -5,7 +5,7 @@
  * @description
  * - `icon` : vignette seule (minimal compact), tooltip = nom + pièces (vue texte) + bonus.
  * - `named` : vignette + nom (minimal déployé, line), même tooltip.
- * - `full` : nom, liste des pièces, bonus avec paliers (chiffre seul).
+ * - `full` : nom, liste des pièces, bonus en colonnes (palier + icon/nom).
  *
  * @example
  * <ItemPanoplyMark :item="item" density="named" />
@@ -77,7 +77,7 @@ function setItems(panoply) {
                         v-if="panoply.bonus"
                         :bonus="panoply.bonus"
                         label-mode="full"
-                        layout="grid"
+                        layout="columns"
                     />
                 </div>
             </div>
@@ -120,7 +120,7 @@ function setItems(panoply) {
                             v-if="panoply.bonus"
                             :bonus="panoply.bonus"
                             label-mode="icon-only"
-                            layout="inline"
+                            layout="stack"
                         />
                     </div>
                 </template>
