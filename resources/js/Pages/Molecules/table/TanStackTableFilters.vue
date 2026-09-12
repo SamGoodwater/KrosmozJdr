@@ -77,6 +77,18 @@ const extraPickerDropdown = ref(null);
 const bonusPickerSearch = ref("");
 const bonusPickerDropdown = ref(null);
 
+/**
+ * @param {import('vue').Ref} dropdownRef
+ */
+const closeDropdownRef = (dropdownRef) => {
+    const inst = dropdownRef?.value;
+    if (!inst) return;
+    const list = Array.isArray(inst) ? inst : [inst];
+    for (const el of list) {
+        el?.close?.();
+    }
+};
+
 const visibleExtraFilterColumns = () => {
     const extras = extraFilterColumns();
     const picked = new Set(pickedExtraIds.value);
@@ -100,7 +112,7 @@ const pickExtraFilter = (col) => {
         pickedExtraIds.value = [...pickedExtraIds.value, id];
     }
     extraPickerSearch.value = "";
-    extraPickerDropdown.value?.close?.();
+    closeDropdownRef(extraPickerDropdown);
 };
 
 const unpickExtraFilter = (col) => {
@@ -164,7 +176,7 @@ const filterShellClass = (col) => {
     const layout = getFilterLayout(col);
     if (layout === "text") return "flex flex-col gap-1 w-full max-w-xs";
     if (layout === "range") return "flex flex-col gap-1 w-full max-w-xs min-w-40";
-    if (layout === "picked-range") return "flex flex-col gap-1 w-full max-w-xl min-w-56";
+    if (layout === "picked-range") return "flex flex-col gap-1 w-auto min-w-56";
     if (layout === "toggle") return "flex flex-col gap-1 w-auto";
     if (layout === "chips") return "flex flex-col gap-1 min-w-0 max-w-full";
     return "flex flex-col gap-1 w-full sm:w-auto";
@@ -409,7 +421,7 @@ const pickBonusKey = (col, key) => {
     next[key] = { on: "1" };
     updateFilter(id, next);
     bonusPickerSearch.value = "";
-    bonusPickerDropdown.value?.close?.();
+    closeDropdownRef(bonusPickerDropdown);
 };
 
 const unpickBonusKey = (col, key) => {
@@ -1164,7 +1176,7 @@ const clearAllActiveFilters = () => {
                     <div
                         v-for="entry in pickedRangeEntries(values?.[col.filter.id])"
                         :key="entry.key"
-                        class="flex flex-wrap items-center gap-1.5"
+                        class="flex flex-nowrap items-center gap-1.5"
                     >
                         <Icon
                             v-if="resolveFilterCharacteristicMeta(entry.key, { entityType })?.icon"
@@ -1173,29 +1185,31 @@ const clearAllActiveFilters = () => {
                             size="xs"
                             class="shrink-0"
                         />
-                        <span class="text-xs font-medium min-w-16">{{ bonusRowLabel(col, entry.key) }}</span>
-                        <InputCore
-                            type="number"
-                            size="xs"
-                            variant="glass"
-                            :color="uiColor"
-                            class="w-20"
-                            placeholder="Min"
-                            :aria-label="`Minimum ${bonusRowLabel(col, entry.key)}`"
-                            :model-value="bonusBoundModel(col, entry.key, 'min')"
-                            @update:model-value="(v) => updateBonusBound(col, entry.key, 'min', v)"
-                        />
-                        <InputCore
-                            type="number"
-                            size="xs"
-                            variant="glass"
-                            :color="uiColor"
-                            class="w-20"
-                            placeholder="Max"
-                            :aria-label="`Maximum ${bonusRowLabel(col, entry.key)}`"
-                            :model-value="bonusBoundModel(col, entry.key, 'max')"
-                            @update:model-value="(v) => updateBonusBound(col, entry.key, 'max', v)"
-                        />
+                        <span class="text-xs font-medium min-w-10 shrink-0">{{ bonusRowLabel(col, entry.key) }}</span>
+                        <div class="w-16 shrink-0">
+                            <InputCore
+                                type="number"
+                                size="xs"
+                                variant="glass"
+                                :color="uiColor"
+                                placeholder="Min"
+                                :aria-label="`Minimum ${bonusRowLabel(col, entry.key)}`"
+                                :model-value="bonusBoundModel(col, entry.key, 'min')"
+                                @update:model-value="(v) => updateBonusBound(col, entry.key, 'min', v)"
+                            />
+                        </div>
+                        <div class="w-16 shrink-0">
+                            <InputCore
+                                type="number"
+                                size="xs"
+                                variant="glass"
+                                :color="uiColor"
+                                placeholder="Max"
+                                :aria-label="`Maximum ${bonusRowLabel(col, entry.key)}`"
+                                :model-value="bonusBoundModel(col, entry.key, 'max')"
+                                @update:model-value="(v) => updateBonusBound(col, entry.key, 'max', v)"
+                            />
+                        </div>
                         <Btn
                             type="button"
                             size="xs"
