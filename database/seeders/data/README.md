@@ -25,6 +25,25 @@ Pour les notions liées aux éléments Dofus et aux caracs associées, utiliser 
 | Vitalité | `emerald` |
 | Sagesse | `indigo` |
 
+## Équipements (`entities/items/`)
+
+Un fichier JSON par équipement relu à la main, pour pouvoir recréer le socle d’objets jouables sur n’importe quelle base (notamment avant de faire tourner l’IA). Le gros du catalogue reste produit par le scrapping DofusDB : ces fichiers ne portent que les items validés.
+
+- **Seed** : `Database\Seeders\Entity\ItemSeeder`, appelé par `DatabaseSeeder`, `project:seed` et `project:init`.
+- **Base → fichiers** : `php artisan items:seeder-export` (défaut : items `playable` ; `--prune` nettoie les fichiers obsolètes).
+- **Fichiers → base** : `php artisan items:seeder-import` (`--dry-run` pour simuler).
+- **Boutons admin** : `/admin/content/ia-generation`, section « Étalons d’équipement » (super administrateur).
+
+Structure d’un fichier :
+
+- `key` : `dofusdb_id` en priorité, `official_id` pour un objet sans source Dofus. C’est la clé d’upsert.
+- `item` : champs de l’équipement. `effect` et `bonus` sont des **objets JSON éditables** (`{"strength": 3}`), convertis en chaîne à l’écriture en base. Le type est référencé par `item_type_dofus_id` car les identifiants de `item_types` diffèrent d’un environnement à l’autre.
+- `relations` : panoplies par `dofusdb_id`, recette par `dofusdb_id` de ressource + quantité. Les références introuvables sont ignorées (une base sans scrapping n’a pas les ressources Dofus).
+
+`image` n’est ni exporté ni importé : la colonne contient une URL absolue liée à l’hôte et à l’identifiant média de l’environnement. Les visuels restent gérés par la média-library.
+
+Un item importé porte `auto_update = false` s’il a été exporté ainsi : le scrapping ne l’écrasera pas.
+
 ## Autres fichiers
 
 Les autres données (types, mappings scrapping, etc.) restent sous forme de fichiers PHP ou JSON selon le seeder concerné ; voir les seeders dans `database/seeders/`.

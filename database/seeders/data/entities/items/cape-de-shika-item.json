@@ -1,0 +1,63 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8302",
+        "official_id": null
+    },
+    "item": {
+        "name": "Cape de Shika",
+        "level": "8",
+        "description": "Des fleurs des moissons ont été cousues sur cette cape confectionnée à partir de céréales magiques tissées entre elles. Elle est animée d'une magie si puissante, que Shika s'en servait de protection contre la foudre, les soirs d'orage.",
+        "recipe": null,
+        "rarity": 2,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": null,
+        "price_custom": 8000,
+        "effect": {
+            "chance": 3,
+            "initiative": 2
+        },
+        "bonus": {
+            "chance": 3,
+            "initiative": 2
+        },
+        "item_type_dofus_id": 17,
+        "item_type_name": "Cape"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "53"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "7030",
+                "name": "Peau de Krambwork",
+                "quantity": 8
+            },
+            {
+                "dofusdb_id": "749",
+                "name": "Bakélélite",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "2273",
+                "name": "Tissu Pourpre",
+                "quantity": 9
+            },
+            {
+                "dofusdb_id": "1676",
+                "name": "Osier Enchanté",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "14468",
+                "name": "Barbe du Wa Wobot",
+                "quantity": 2
+            }
+        ]
+    }
+}

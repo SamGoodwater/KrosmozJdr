@@ -1,0 +1,68 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8181",
+        "official_id": null
+    },
+    "item": {
+        "name": "Craquelocape Légendaire",
+        "level": "8",
+        "description": "Cette cape épaisse en pierre brute fera de vous une brute épaisse en pierre.",
+        "recipe": null,
+        "rarity": 2,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": null,
+        "price_custom": 8400,
+        "effect": {
+            "agility": 3,
+            "initiative": 2
+        },
+        "bonus": {
+            "agility": 3,
+            "initiative": 2
+        },
+        "item_type_dofus_id": 17,
+        "item_type_name": "Cape"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "52"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "12737",
+                "name": "Galet cramoisi",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "749",
+                "name": "Bakélélite",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "2495",
+                "name": "Œil de Craquelope",
+                "quantity": 9
+            },
+            {
+                "dofusdb_id": "2304",
+                "name": "Fragment de Pierre Polie",
+                "quantity": 11
+            },
+            {
+                "dofusdb_id": "2252",
+                "name": "Dent en Or de Craqueleur",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "8102",
+                "name": "Pierre du Craqueleur Légendaire",
+                "quantity": 3
+            }
+        ]
+    }
+}

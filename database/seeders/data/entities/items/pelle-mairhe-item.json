@@ -1,0 +1,66 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6537",
+        "official_id": null
+    },
+    "item": {
+        "name": "Pelle Mairhe",
+        "level": "8",
+        "description": "Cette pelle est vraiment antipathique. Personne ne sait réellement pourquoi, mais les Pelles Mairhes sont toujours insupportables. Heureusement, qu'elles ont tout de même des bons côtés, même si on les cherche encore à l'heure actuelle.",
+        "recipe": null,
+        "rarity": 2,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": null,
+        "price_custom": 8800,
+        "effect": {
+            "fixed_damage_water": 2,
+            "hit_bonus": 3
+        },
+        "bonus": {
+            "fixed_damage_water": 2,
+            "hit_bonus": 3
+        },
+        "item_type_dofus_id": 8,
+        "item_type_name": "Pelle"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [],
+        "resources": [
+            {
+                "dofusdb_id": "8496",
+                "name": "Racine d'Abraknyde Ancestral",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "749",
+                "name": "Bakélélite",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "14468",
+                "name": "Barbe du Wa Wobot",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "845",
+                "name": "Œuf de Dragoeuf Argile",
+                "quantity": 10
+            },
+            {
+                "dofusdb_id": "14471",
+                "name": "Casque de Wobot",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "14490",
+                "name": "Lunettes de Tiwobot",
+                "quantity": 3
+            }
+        ]
+    }
+}

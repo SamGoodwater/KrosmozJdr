@@ -1,0 +1,59 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "1040",
+        "official_id": null
+    },
+    "item": {
+        "name": "Lames sanglantes d'Ortimus Contrari",
+        "level": "8",
+        "description": "Ortimus Contrari est une légende parmi les assassins. Il exécute toujours ses contrats d'une manière totalement opposée aux méthodes traditionnelles. N'en demandez pas plus, vous pourriez mourir dans l'instant.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": null,
+        "price_custom": 8000,
+        "effect": {
+            "fixed_damage_air": 1
+        },
+        "bonus": {
+            "fixed_damage_air": 1
+        },
+        "item_type_dofus_id": 5,
+        "item_type_name": "Dague"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [],
+        "resources": [
+            {
+                "dofusdb_id": "2543",
+                "name": "Substrat de Fascine",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "2305",
+                "name": "Fragment de Pierre Pointue",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "2599",
+                "name": "Pic de dragodinde",
+                "quantity": 7
+            },
+            {
+                "dofusdb_id": "8740",
+                "name": "Chicot du Flib",
+                "quantity": 11
+            },
+            {
+                "dofusdb_id": "12076",
+                "name": "Duvet de Nelween",
+                "quantity": 2
+            }
+        ]
+    }
+}

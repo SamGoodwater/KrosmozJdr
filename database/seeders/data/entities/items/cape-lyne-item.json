@@ -1,0 +1,71 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8646",
+        "official_id": null
+    },
+    "item": {
+        "name": "Cape Lyne",
+        "level": "8",
+        "description": "Cette douce cape est parfois employée par les Osamodettes coquettes en guise de couvre-chef aux larges bords. Les Osamodas mâles ne s'en servent que comme pèlerine. Grâce au dessin qui orne cet habit, cette classe de personnages a hérité d'une réputation de grande franchise. On ne les voit jamais rire sous cape car le rire est cousu dessus.",
+        "recipe": null,
+        "rarity": 1,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": null,
+        "price_custom": 8000,
+        "effect": {
+            "agility": 2
+        },
+        "bonus": {
+            "agility": 2
+        },
+        "item_type_dofus_id": 17,
+        "item_type_name": "Cape"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "84"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "843",
+                "name": "Coquille de Dragoeuf Charbon",
+                "quantity": 20
+            },
+            {
+                "dofusdb_id": "2495",
+                "name": "Œil de Craquelope",
+                "quantity": 20
+            },
+            {
+                "dofusdb_id": "8757",
+                "name": "Maillot de corps de Barbroussa",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "8760",
+                "name": "Foulard du Sparo",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "8766",
+                "name": "Plume de fesse du Kido",
+                "quantity": 10
+            },
+            {
+                "dofusdb_id": "8767",
+                "name": "Aile du Bitouf des Plaines",
+                "quantity": 10
+            },
+            {
+                "dofusdb_id": "8995",
+                "name": "Étoffe de Gourlo le Terrible",
+                "quantity": 1
+            }
+        ]
+    }
+}

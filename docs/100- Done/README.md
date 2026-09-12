@@ -16,6 +16,14 @@ Ce qu’il faut savoir en tant que MJ : seules les **capes** portent Force, Inte
 
 Les valeurs suivent les grilles de normes du jeu et ne dépassent jamais le plafond du niveau. Les noms, descriptions et illustrations Dofus n’ont pas bougé.
 
+## Septembre 2026 — Sauvegarder et rejouer les objets relus
+
+Les objets validés à la main ne vivent plus uniquement en base : chacun a désormais son fichier dans le dépôt, lisible et modifiable à la main. On peut donc reconstruire le socle d’objets jouables sur une base neuve, ce qui est indispensable pour faire tourner l’IA sans repartir de zéro.
+
+Deux boutons sur la page **IA métier** de l’administration : « Base → fichiers » enregistre l’état actuel des objets jouables dans le dépôt, « Fichiers → base » les remet en base. Réservé au super administrateur, avec confirmation par mot de passe ; l’écriture dans le dépôt n’est possible qu’en développement.
+
+Une réinstallation complète du projet recrée maintenant ces objets automatiquement. Les visuels ne sont pas concernés : ils restent gérés par la médiathèque.
+
 ## Septembre 2026 — Tableaux : TanStack Table 9
 
 Les catalogues (tri, pagination, colonnes visibles) passent en TanStack Table 9. L’usage ne change pas : on trie, on pagine, on masque des colonnes comme avant.

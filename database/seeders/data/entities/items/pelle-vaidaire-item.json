@@ -1,0 +1,64 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6538",
+        "official_id": null
+    },
+    "item": {
+        "name": "Pelle Vaidaire",
+        "level": "8",
+        "description": "Cette pelle permet aux Enutrofs de voir plus loin. Elle est faite pour qu'ils puissent la planter et monter dessus pour scruter l'horizon et se donner des airs intéressants. Idéal pour retrouver son hospice lorsque l'on est perdu entre deux fougères.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": null,
+        "price_custom": 8400,
+        "effect": {
+            "fixed_damage_water": 1
+        },
+        "bonus": {
+            "fixed_damage_water": 1
+        },
+        "item_type_dofus_id": 8,
+        "item_type_name": "Pelle"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [],
+        "resources": [
+            {
+                "dofusdb_id": "2543",
+                "name": "Substrat de Fascine",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "14470",
+                "name": "Poil de Wobot Kiafin",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "13731",
+                "name": "Pierre Médicinale",
+                "quantity": 9
+            },
+            {
+                "dofusdb_id": "18367",
+                "name": "Boule de Boulépique",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "18385",
+                "name": "Cœur du Mantiscore",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "12076",
+                "name": "Duvet de Nelween",
+                "quantity": 3
+            }
+        ]
+    }
+}

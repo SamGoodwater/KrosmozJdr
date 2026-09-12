@@ -17,6 +17,7 @@ use Database\Seeders\CriticalPagesSeeder;
 use Database\Seeders\Entity\BreedSeeder;
 use Database\Seeders\Entity\ConditionSeeder;
 use Database\Seeders\Entity\CreatureTraitSeeder;
+use Database\Seeders\Entity\ItemSeeder;
 use Database\Seeders\Entity\LanguageSeeder;
 use Database\Seeders\Entity\NpcSeeder;
 use Database\Seeders\Entity\SpecializationSeeder;
@@ -373,6 +374,9 @@ class ProjectInitCommand extends Command
             CreatureTraitSeeder::class,
             CreationPagesSeeder::class,
             NpcSeeder::class,
+            // Étalons d'équipement versionnés. Ils portent auto_update = false : le scrapping
+            // (phase 6) ne les écrase pas.
+            ItemSeeder::class,
         ];
         foreach ($seeders as $seeder) {
             $this->line("  → {$seeder}");

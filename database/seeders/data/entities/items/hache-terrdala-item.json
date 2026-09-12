@@ -1,0 +1,68 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "7255",
+        "official_id": null
+    },
+    "item": {
+        "name": "Hache Terrdala",
+        "level": "8",
+        "description": "Cette hache a été dès le début, pensée pour couper des êtres vivants. Attention, une seule erreur de manipulation de votre part, et vous pourriez vous retrouver diminué de moitié.",
+        "recipe": null,
+        "rarity": 2,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": null,
+        "price_custom": 8300,
+        "effect": {
+            "fixed_damage_earth": 2,
+            "hit_bonus": 3
+        },
+        "bonus": {
+            "fixed_damage_earth": 2,
+            "hit_bonus": 3
+        },
+        "item_type_dofus_id": 19,
+        "item_type_name": "Hache"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "36"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "14635",
+                "name": "Pépite",
+                "quantity": 70
+            },
+            {
+                "dofusdb_id": "18371",
+                "name": "Carapace du Mantiscore",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "749",
+                "name": "Bakélélite",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "18367",
+                "name": "Boule de Boulépique",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "18366",
+                "name": "Sable Fin",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "11256",
+                "name": "Bec de Gélikan",
+                "quantity": 3
+            }
+        ]
+    }
+}

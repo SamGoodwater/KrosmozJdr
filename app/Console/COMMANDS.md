@@ -390,6 +390,48 @@ php artisan ia:equipment-grid --json=storage/logs/equipment-grid.json
 
 ---
 
+## `items:seeder-export`
+
+```yaml
+signature: items:seeder-export
+domain: data
+ui: true
+cron: false
+admin: /admin/content/ia-generation
+```
+
+Base → seeder : écrit les équipements dans `database/seeders/data/entities/items/` (un fichier JSON par item, `effect` / `bonus` en objet éditable). Par défaut, seuls les items `playable`. Réservé au développement : la commande écrit dans le dépôt. `image` n’est jamais exporté (URL liée à l’environnement).
+
+```bash
+php artisan items:seeder-export
+php artisan items:seeder-export --state=playable --state=draft --prune
+php artisan items:seeder-export --all --prune
+php artisan items:seeder-export --id=1958 --id=882
+```
+
+`--prune` supprime les fichiers qui ne correspondent plus à la sélection. L’export est déterministe : relancer sans changement en base ne produit aucun diff Git.
+
+---
+
+## `items:seeder-import`
+
+```yaml
+signature: items:seeder-import
+domain: data
+ui: true
+cron: false
+admin: /admin/content/ia-generation
+```
+
+Seeder → base : rejoue les fichiers d’équipements versionnés. Upsert sur `dofusdb_id` (`official_id` à défaut), résolution du type via `item_type_dofus_id`, synchronisation des panoplies et de la recette (références introuvables ignorées). Idempotent. Même code que `ItemSeeder`, donc `project:seed` et `project:init` rejouent ces items.
+
+```bash
+php artisan items:seeder-import
+php artisan items:seeder-import --dry-run
+```
+
+---
+
 ## `rules:compile-downloads`
 
 ```yaml
@@ -406,6 +448,25 @@ Compile le livre de règles Markdown en PDF et ODT dans `storage/app/public/down
 php artisan rules:compile-downloads
 php artisan rules:compile-downloads --pdf
 php artisan rules:compile-downloads --dry-run
+```
+
+---
+
+## `entities:recalculate-prices`
+
+```yaml
+signature: entities:recalculate-prices
+domain: data
+ui: true
+cron: false
+admin: /admin/content
+```
+
+Recalcule le prix automatique (kamas) de tous les équipements ou de tous les consommables : la formule remplace le total affiché (l’ajustement manuel est effacé). Les ressources ne sont pas concernées (prix Dofus). Lancé depuis les cartes de la gestion du contenu, ou en CLI.
+
+```bash
+php artisan entities:recalculate-prices items
+php artisan entities:recalculate-prices consumables
 ```
 
 ---

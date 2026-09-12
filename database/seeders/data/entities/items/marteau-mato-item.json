@@ -1,0 +1,66 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8615",
+        "official_id": null
+    },
+    "item": {
+        "name": "Marteau Mato",
+        "level": "8",
+        "description": "Ce marteau réduit si facilement les crânes en bouillie qu'il a pris une élégante teinte rouge tomate.",
+        "recipe": null,
+        "rarity": 2,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": null,
+        "price_custom": 8300,
+        "effect": {
+            "fixed_damage_fire": 2,
+            "hit_bonus": 3
+        },
+        "bonus": {
+            "fixed_damage_fire": 2,
+            "hit_bonus": 3
+        },
+        "item_type_dofus_id": 7,
+        "item_type_name": "Marteau"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [],
+        "resources": [
+            {
+                "dofusdb_id": "18370",
+                "name": "Queue de Fennex",
+                "quantity": 10
+            },
+            {
+                "dofusdb_id": "749",
+                "name": "Bakélélite",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "18369",
+                "name": "Queue de Scordion Bleu",
+                "quantity": 7
+            },
+            {
+                "dofusdb_id": "18385",
+                "name": "Cœur du Mantiscore",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "21264",
+                "name": "Étoffe de Draegnerys",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "18366",
+                "name": "Sable Fin",
+                "quantity": 5
+            }
+        ]
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6484",
+        "official_id": null
+    },
+    "item": {
+        "name": "Arc du Sram Archer",
+        "level": "8",
+        "description": "Quand les dagues ne suffisent plus, que les dieux se moquent de vous, à vous de rechercher votre propre style de combat. Certains Srams l'ont bien compris, d'autres espèrent que les dieux leur viennent en aide.",
+        "recipe": null,
+        "rarity": 3,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": null,
+        "price_custom": 8900,
+        "effect": {
+            "fixed_damage_air": 2,
+            "hit_bonus": 3,
+            "fixed_damage_neutral": 2
+        },
+        "bonus": {
+            "fixed_damage_air": 2,
+            "hit_bonus": 3,
+            "fixed_damage_neutral": 2
+        },
+        "item_type_dofus_id": 2,
+        "item_type_name": "Arc"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [],
+        "resources": [
+            {
+                "dofusdb_id": "1691",
+                "name": "Faux Visage de Choudini",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "749",
+                "name": "Bakélélite",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "13731",
+                "name": "Pierre Médicinale",
+                "quantity": 13
+            },
+            {
+                "dofusdb_id": "2621",
+                "name": "Barbe du Chouque",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "18366",
+                "name": "Sable Fin",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "13496",
+                "name": "Bandeau de Nakunbra",
+                "quantity": 11
+            }
+        ]
+    }
+}

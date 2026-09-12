@@ -6,6 +6,19 @@ Commandes métier hors recettes CLI quotidiennes. Vocabulaire Artisan : [app/Con
 
 `php artisan ia:equipment-grid` dresse la couverture niveau × slot × voie. `--write` crée les cases vides en `draft` (interdit en production, jamais `playable`). Config : `resources/ia/equipment-grid.json`. Détail : [docs/IA/CATALOGUE.md](../IA/CATALOGUE.md).
 
+## Étalons d’équipement versionnés
+
+Les objets relus à la main vivent en JSON sous `database/seeders/data/entities/items/` (un fichier par item), pour pouvoir reconstruire le socle jouable sur n’importe quelle base.
+
+```bash
+php artisan items:seeder-export            # base → fichiers (playable, dev uniquement)
+php artisan items:seeder-export --all --prune
+php artisan items:seeder-import --dry-run  # fichiers → base
+php artisan items:seeder-import
+```
+
+`Database\Seeders\Entity\ItemSeeder` rejoue ces fichiers dans `project:seed` / `project:init`. Upsert sur `dofusdb_id` (`official_id` à défaut), type résolu par `item_type_dofus_id`, `image` exclu. Boutons super administrateur : `/admin/content/ia-generation`. Format : [database/seeders/data/README.md](../../database/seeders/data/README.md).
+
 ## Import des règles CMS
 
 `php artisan pages:import-rules-toc` importe `private/game/rules/TABLE_DES_MATIERES.md` vers les pages règles. Appelé par `project:init` / `project:seed`. `--compile-downloads` enchaîne la compilation PDF/ODT.

@@ -21,6 +21,17 @@ const props = defineProps({
     updated_at: { type: String, default: null },
     entity_labels: { type: Object, required: true },
     characteristic_options: { type: Object, default: () => ({}) },
+    items_seeder: {
+        type: Object,
+        default: () => ({
+            relative_root: "",
+            file_count: 0,
+            playable_count: 0,
+            can_export: false,
+            can_import: false,
+            allowed: false,
+        }),
+    },
 });
 
 const { setPageTitle } = usePageTitle();
@@ -111,6 +122,34 @@ function resetToFile() {
         }
     );
 }
+
+const seederForm = useForm({});
+
+function exportItemsToFiles() {
+    requirePassword(
+        "Écrire les objets jouables dans le dépôt",
+        `Les objets à l’état jouable remplaceront le contenu de ${props.items_seeder.relative_root}. Les fichiers qui ne correspondent plus seront supprimés.`,
+        "Écrire les fichiers",
+        () => {
+            seederForm.post(route("admin.content.ia-generation.items-seeder.export"), {
+                preserveScroll: true,
+            });
+        }
+    );
+}
+
+function importItemsFromFiles() {
+    requirePassword(
+        "Rejouer les fichiers d’objets en base",
+        "Les objets décrits par les fichiers du dépôt seront créés ou mis à jour en base.",
+        "Rejouer en base",
+        () => {
+            seederForm.post(route("admin.content.ia-generation.items-seeder.import"), {
+                preserveScroll: true,
+            });
+        }
+    );
+}
 </script>
 
 <template>
@@ -194,6 +233,50 @@ function resetToFile() {
                 </Btn>
             </div>
         </form>
+
+        <section class="rounded-box border border-base-300 bg-base-100/50 p-4 space-y-3">
+            <div>
+                <h2 class="text-lg font-semibold text-base-content">Étalons d’équipement</h2>
+                <p class="mt-1 text-sm text-base-content/70 max-w-3xl">
+                    Les objets relus à la main sont versionnés en JSON dans le dépôt, un fichier par
+                    objet. On peut donc recréer ce socle sur n’importe quelle base pour faire tourner
+                    l’IA, et repartir de la base après une session de relecture.
+                </p>
+                <p class="mt-2 text-sm text-base-content/70">
+                    <span class="font-medium">{{ items_seeder.file_count }}</span> fichier(s) dans
+                    <code class="text-xs">{{ items_seeder.relative_root }}</code> ·
+                    <span class="font-medium">{{ items_seeder.playable_count }}</span> objet(s)
+                    jouable(s) en base.
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <Btn
+                    type="button"
+                    variant="outline"
+                    :disabled="seederForm.processing || !items_seeder.allowed || !items_seeder.can_export"
+                    @click="exportItemsToFiles"
+                >
+                    Base → fichiers
+                </Btn>
+                <Btn
+                    type="button"
+                    variant="outline"
+                    :disabled="seederForm.processing || !items_seeder.allowed || !items_seeder.can_import"
+                    @click="importItemsFromFiles"
+                >
+                    Fichiers → base
+                </Btn>
+            </div>
+
+            <p v-if="!items_seeder.allowed" class="text-sm text-base-content/60">
+                Réservé au super administrateur.
+            </p>
+            <p v-else-if="!items_seeder.can_export" class="text-sm text-base-content/60">
+                L’écriture dans le dépôt n’est possible qu’en développement. Le rejeu en base reste
+                disponible.
+            </p>
+        </section>
     </div>
 
     <ConfirmPasswordModal
