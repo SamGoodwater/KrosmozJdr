@@ -158,6 +158,38 @@ class PanoplyTableControllerTest extends TestCase
     }
 
     /**
+     * Test : le format `entities` embarque bonus/effect des pièces pour le total set + équipements.
+     */
+    public function test_entities_format_includes_item_bonuses(): void
+    {
+        $user = User::factory()->create();
+        $panoply = Panoply::factory()->create([
+            'created_by' => $user->id,
+        ]);
+        $item = Item::factory()->create([
+            'name' => 'Ceinture du Piou Vert',
+            'bonus' => json_encode(['tackle' => 1], JSON_THROW_ON_ERROR),
+            'effect' => json_encode(['tackle' => 1], JSON_THROW_ON_ERROR),
+            'created_by' => $user->id,
+        ]);
+        $panoply->items()->attach($item->id);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/panoplies?format=entities&limit=10');
+
+        $response->assertOk();
+
+        $entity = collect($response->json('entities'))->firstWhere('id', $panoply->id);
+        $this->assertIsArray($entity);
+        $this->assertSame($item->id, $entity['items'][0]['id']);
+        $decoded = $entity['items'][0]['bonus'];
+        if (is_string($decoded)) {
+            $decoded = json_decode($decoded, true, 512, JSON_THROW_ON_ERROR);
+        }
+        $this->assertSame(['tackle' => 1], $decoded);
+    }
+
+    /**
      * Test : Le format `entities` respecte les permissions
      */
     public function test_entities_format_respects_permissions(): void

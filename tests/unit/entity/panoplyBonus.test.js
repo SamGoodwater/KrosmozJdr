@@ -5,6 +5,8 @@ import {
     shortBonusKey,
     visiblePanoplyBonusTiers,
     panoplyTierStatMap,
+    combinedPanoplyEquipmentBonus,
+    itemEquipmentBonusStatMap,
 } from "@/Utils/entity/panoplyBonus";
 
 describe("panoplyBonus", () => {
@@ -52,5 +54,28 @@ describe("panoplyBonus", () => {
             pieceCount: 2,
             rows: [{ key: "strength", value: "1" }, { key: "", value: "9" }],
         })).toEqual({ strength: "1" });
+    });
+
+    it("somme les paliers de set et les bonus des pièces", () => {
+        const total = combinedPanoplyEquipmentBonus(
+            { 4: { life_points_max: 1 }, 6: { athletics: 1, range: 1 } },
+            [
+                { bonus: { tackle: 1 } },
+                { bonus: null, effect: { athletics: 1 } },
+            ],
+        );
+        expect(total).toEqual({
+            life_points_max: 1,
+            athletics: 2,
+            range: 1,
+            tackle: 1,
+        });
+    });
+
+    it("n’additionne pas bonus et effect d’une même pièce", () => {
+        expect(itemEquipmentBonusStatMap({
+            bonus: { tackle: 1 },
+            effect: { tackle: 1 },
+        })).toEqual({ tackle: 1 });
     });
 });

@@ -8,7 +8,7 @@
         "description": null,
         "bonus": {
             "6": {
-                "chance": 1,
+                "deception": 1,
                 "range": 1
             }
         },

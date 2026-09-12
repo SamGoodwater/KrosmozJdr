@@ -75,14 +75,29 @@ final class ItemPanoplyPayload
             'bonus' => $panoply->bonus,
             'level' => Panoply::maxLevelFromItems($visibleItems),
             'items' => $visibleItems
-                ->map(static function ($item): array {
-                    return [
-                        'id' => (int) $item->id,
-                        'name' => (string) ($item->name ?? ''),
-                        'image' => $item->image,
-                        'level' => $item->level,
-                    ];
-                })->values()->all(),
+                ->map(static fn ($item): array => self::linkedItemPreview($item))
+                ->values()
+                ->all(),
+        ];
+    }
+
+    /**
+     * Aperçu d’une pièce (vignette + bonus) pour cartes / tooltips de panoplie.
+     *
+     * @return array{id: int, name: string, image: mixed, level: mixed, bonus: mixed, effect: mixed}
+     *
+     * @example
+     * ItemPanoplyPayload::linkedItemPreview($item);
+     */
+    public static function linkedItemPreview(Item $item): array
+    {
+        return [
+            'id' => (int) $item->id,
+            'name' => (string) ($item->name ?? ''),
+            'image' => $item->image,
+            'level' => $item->level,
+            'bonus' => $item->bonus,
+            'effect' => $item->effect,
         ];
     }
 }

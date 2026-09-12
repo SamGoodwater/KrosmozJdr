@@ -132,6 +132,108 @@ export function visiblePanoplyBonusTiers(raw) {
 }
 
 /**
+ * Aplatit un bonus d’objet ou tous les paliers d’un set en une seule map.
+ *
+ * @param {unknown} raw
+ * @returns {Record<string, number>}
+ *
+ * @example
+ * flatBonusStatMap({ 2: { strength: 1 }, 8: { strength: 1 } });
+ * // { strength: 2 }
+ */
+export function flatBonusStatMap(raw) {
+    const payload = decodeBonusPayload(raw);
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+        return {};
+    }
+
+    const out = {};
+    const add = (key, value) => {
+        const k = shortBonusKey(key);
+        if (!k || isBonusValueEmpty(value)) {
+            return;
+        }
+        const n = Number(value);
+        if (!Number.isFinite(n)) {
+            return;
+        }
+        out[k] = (out[k] || 0) + n;
+    };
+
+    if (isPanoplyPieceBonusMap(payload)) {
+        for (const tier of parsePanoplyBonus(payload)) {
+            for (const row of Array.isArray(tier.rows) ? tier.rows : []) {
+                add(row.key, row.value);
+            }
+        }
+        return out;
+    }
+
+    for (const [key, value] of Object.entries(payload)) {
+        if (value !== null && typeof value !== "object") {
+            add(key, value);
+        }
+    }
+
+    return out;
+}
+
+/**
+ * Bonus d’une pièce : `bonus` s’il a des valeurs, sinon `effect` (évite le double compte).
+ *
+ * @param {{ bonus?: unknown, effect?: unknown }|null|undefined} item
+ * @returns {Record<string, number>}
+ */
+export function itemEquipmentBonusStatMap(item) {
+    const fromBonus = flatBonusStatMap(item?.bonus);
+    if (Object.keys(fromBonus).length > 0) {
+        return fromBonus;
+    }
+    return flatBonusStatMap(item?.effect);
+}
+
+/**
+ * @param {...Record<string, number>} maps
+ * @returns {Record<string, number>}
+ */
+export function sumBonusStatMaps(...maps) {
+    const out = {};
+    for (const map of maps) {
+        if (!map || typeof map !== "object") {
+            continue;
+        }
+        for (const [key, value] of Object.entries(map)) {
+            const k = shortBonusKey(key);
+            const n = Number(value);
+            if (!k || !Number.isFinite(n) || n === 0) {
+                continue;
+            }
+            out[k] = (out[k] || 0) + n;
+        }
+    }
+    return out;
+}
+
+/**
+ * Somme des paliers de set + bonus de toutes les pièces (set complet).
+ *
+ * @param {unknown} panoplyBonus
+ * @param {Array<{ bonus?: unknown, effect?: unknown }>} items
+ * @returns {Record<string, number>}
+ *
+ * @example
+ * combinedPanoplyEquipmentBonus({ 6: { athletics: 1 } }, [{ bonus: { tackle: 1 } }]);
+ * // { athletics: 1, tackle: 1 }
+ */
+export function combinedPanoplyEquipmentBonus(panoplyBonus, items) {
+    const maps = [flatBonusStatMap(panoplyBonus)];
+    for (const item of Array.isArray(items) ? items : []) {
+        maps.push(itemEquipmentBonusStatMap(item));
+    }
+    return sumBonusStatMaps(...maps);
+}
+
+/**
  * @param {{ rows?: Array<{ key?: string, value?: unknown }> }} tier
  * @returns {Record<string, string>}
  */

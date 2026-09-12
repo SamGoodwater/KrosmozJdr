@@ -117,8 +117,8 @@ Sets Dofus emblématiques des premiers niveaux, pièces **et** bonus de set relu
 
 | Panoplie | Niveau | Voie / thème | Signature |
 | --- | --- | --- | --- |
-| Piou Vert / Rouge / Bleu / Jaune | 1 | Terre / Feu / Eau / Air | Ceinture +1 tacle ou fuite ; **set complet** = carac de voie + portée |
-| Piou Rose | 1 | Soins | Anneau +1 soin ; **set complet** = soins + PV |
+| Piou Vert / Rouge / Bleu / Jaune | 1 | Terre / Feu / Eau / Air | Ceinture +1 tacle ou fuite ; **set complet** = compétence de voie (Athlétisme / Arcanes / Supercherie / Acrobaties) + portée, **sans** carac primaire |
+| Piou Rose | 1 | Vitalité | Anneau +1 soin ; **set complet** = PV max (pas de compétence, pas de soins au palier) |
 | Piou Violet | 1 | Portée | **Set complet** = +1 PO |
 | Bouftou | 2 | Terre **et** Feu | Marteau +1 dgt terre, bouclier +1 CA, ceinture +1 tacle, coiffe +1 intimidation ; **8p** = force + intelligence + PA (comme Dofus, les deux caracs seulement au set complet) |
 | Tofu | 2 | Air | Baguette +1 dgt air, ceinture +1 fuite, kaskofu +1 acrobaties ; **7p** = agilité + PM |
@@ -158,7 +158,7 @@ Sets Dofus emblématiques des premiers niveaux, pièces **et** bonus de set relu
 | Kwakwa | 5 | Air | Épée +3 dgt air ; **4p** = agilité + PO |
 | Anciens Chafers | 4 | Terre | Marteau +2 dgt terre ; **4p** = force |
 
-À ces niveaux, Force / Int / Chance / Agilité sont encore **plafonnées à 0** sur la cape aux niv. 1–2 (formule) : la voie est portée par le **bonus de set complet**, pas par la pièce. Un set mixte Dofus (Bouftou For+Int) peut porter **les deux** au palier complet seulement, jamais sur les pièces. Les pièces peuvent rester vides. Quelques chapeaux / capes portent +1 compétence (intimidation, acrobaties, discrétion, survie, nature, athlétisme) même si la `formula` objet des compétences est à 0 : impact faible, volontaire. À partir du niv. 3 la cape prend +1, niv. 5 +2, niv. 7 +3. `auto_update = false`. JSON panoplies : `database/seeders/data/entities/panoplies/` (`PanoplySeeder`, après `ItemSeeder`).
+À ces niveaux, Force / Int / Chance / Agilité sont encore **plafonnées à 0** sur la cape aux niv. 1–2 (formule) : la voie est portée par le **bonus de set complet**, pas par la pièce. Les **Pious** élémentaires n’ont **pas** de carac primaire au palier : Athlétisme / Arcanes / Supercherie / Acrobaties + portée ; le Piou Rose (vitalité) n’a que des PV max. Un set mixte Dofus (Bouftou For+Int) peut porter **les deux** au palier complet seulement, jamais sur les pièces. Les pièces peuvent rester vides. Quelques chapeaux / capes portent +1 compétence (intimidation, acrobaties, discrétion, survie, nature, athlétisme) même si la `formula` objet des compétences est à 0 : impact faible, volontaire. À partir du niv. 3 la cape prend +1, niv. 5 +2, niv. 7 +3. `auto_update = false`. JSON panoplies : `database/seeders/data/entities/panoplies/` (`PanoplySeeder`, après `ItemSeeder`).
 
 ### Liste few-shot panoplies (ce que l’IA doit imiter)
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Entity;
 
+use App\Support\Entity\ItemPanoplyPayload;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -37,13 +38,9 @@ class PanoplyResource extends JsonResource
             // Relations
             'createdBy' => $this->whenLoaded('createdBy'),
             'items' => $this->relationLoaded('items') ? $this->items->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'name' => $item->name,
+                return array_merge(ItemPanoplyPayload::linkedItemPreview($item), [
                     'description' => $item->description,
-                    'level' => $item->level,
-                    'image' => $item->image,
-                ];
+                ]);
             })->values()->all() : [],
             'npcs' => $this->whenLoaded('npcs'),
             'scenarios' => $this->whenLoaded('scenarios'),

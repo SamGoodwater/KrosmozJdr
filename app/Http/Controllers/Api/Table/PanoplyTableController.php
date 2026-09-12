@@ -8,6 +8,7 @@ use App\Models\Entity\Item;
 use App\Models\Entity\Panoply;
 use App\Models\Type\ItemType;
 use App\Models\User;
+use App\Support\Entity\ItemPanoplyPayload;
 use App\Support\Entity\ObjectBonusFilterCatalog;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -65,7 +66,15 @@ class PanoplyTableController extends Controller
                 'createdBy',
                 'items' => fn ($q) => $q
                     ->visibleToUser($viewer)
-                    ->select(['items.id', 'items.name', 'items.level', 'items.image', 'items.item_type_id']),
+                    ->select([
+                        'items.id',
+                        'items.name',
+                        'items.level',
+                        'items.image',
+                        'items.item_type_id',
+                        'items.bonus',
+                        'items.effect',
+                    ]),
             ])
             ->withCount([
                 'items' => fn ($q) => $q->visibleToUser($viewer),
@@ -112,12 +121,7 @@ class PanoplyTableController extends Controller
                 return $p->toArray() + [
                     'level' => $p->computedLevel(),
                     'items' => $p->relationLoaded('items')
-                        ? $p->items->map(static fn ($item) => [
-                            'id' => $item->id,
-                            'name' => $item->name,
-                            'level' => $item->level,
-                            'image' => $item->image,
-                        ])->values()->all()
+                        ? $p->items->map(static fn ($item) => ItemPanoplyPayload::linkedItemPreview($item))->values()->all()
                         : [],
                     'items_count' => $p->items_count ?? 0,
                     'npcs_count' => $p->npcs_count ?? 0,

@@ -8,7 +8,6 @@
         "description": null,
         "bonus": {
             "6": {
-                "heal_bonus": 1,
                 "life_points_max": 2
             }
         },

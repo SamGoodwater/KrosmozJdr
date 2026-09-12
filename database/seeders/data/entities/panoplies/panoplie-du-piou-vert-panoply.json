@@ -8,7 +8,7 @@
         "description": null,
         "bonus": {
             "6": {
-                "strength": 1,
+                "athletics": 1,
                 "range": 1
             }
         },

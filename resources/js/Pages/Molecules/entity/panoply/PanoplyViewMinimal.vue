@@ -3,7 +3,7 @@
  * PanoplyViewMinimal — Vue Minimal pour Panoply
  *
  * @description
- * Alignée sur BreedViewMinimal : EntityMinimalCard, état • picto • nom • objets • bonus • relations • description.
+ * Alignée sur BreedViewMinimal : EntityMinimalCard, état • picto • nom • objets • bonus • total set+pièces (déployé) • relations • description.
  *
  * @props {Panoply} panoply - Instance du modèle Panoply
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
@@ -18,7 +18,9 @@ import { useEntityMinimalShell } from "@/Composables/entity/useEntityMinimalShel
 import PanoplyEquipmentTextList from "@/Pages/Molecules/entity/panoply/PanoplyEquipmentTextList.vue";
 import PanoplyBonusTiers from "@/Pages/Molecules/entity/panoply/PanoplyBonusTiers.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
-import { visiblePanoplyBonusTiers } from "@/Utils/entity/panoplyBonus";
+import CharacteristicInlineGroup from "@/Pages/Molecules/data-display/CharacteristicInlineGroup.vue";
+import { buildCharacteristicEffectCell } from "@/Composables/entity/useCharacteristicEffectFormatter";
+import { combinedPanoplyEquipmentBonus, visiblePanoplyBonusTiers } from "@/Utils/entity/panoplyBonus";
 
 const props = defineProps({
     panoply: {
@@ -64,6 +66,22 @@ const linkedItems = computed(() => {
     const raw = entity.value?.items ?? entity.value?._data?.items;
     return Array.isArray(raw) ? raw : [];
 });
+
+const combinedBonusMap = computed(() => combinedPanoplyEquipmentBonus(bonusRaw.value, linkedItems.value));
+const combinedBonusItems = computed(() => {
+    const map = combinedBonusMap.value;
+    if (!map || Object.keys(map).length === 0) {
+        return [];
+    }
+    const cell = buildCharacteristicEffectCell({
+        rawValues: [map],
+        options: {},
+        sourceGroups: ["panoply", "item"],
+        size: "sm",
+    });
+    return cell?.type === "chips" ? cell.params?.items || [] : [];
+});
+const hasCombinedBonus = computed(() => combinedBonusItems.value.length > 0);
 
 const hasLinkedItems = computed(() => linkedItems.value.length > 0);
 
@@ -208,6 +226,20 @@ const handleAction = async (actionKey) => {
                                 <PanoplyBonusTiers
                                     :bonus="bonusRaw"
                                     layout="stack"
+                                    label-mode="icon-only"
+                                    class="mt-0.5"
+                                />
+                            </div>
+                            <div
+                                v-if="hasCombinedBonus"
+                                class="min-w-0"
+                                data-cy="panoply-combined-bonus"
+                            >
+                                <span class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">
+                                    Total
+                                </span>
+                                <CharacteristicInlineGroup
+                                    :items="combinedBonusItems"
                                     label-mode="icon-only"
                                     class="mt-0.5"
                                 />

@@ -1,5 +1,11 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Pious sans carac primaire, total set + pièces
+
+Les six Pious du niveau 1 ne donnent plus Force / Intelligence / Chance / Agilité au set complet. Vert, Rouge, Bleu et Jaune portent la **compétence** de l’élément (Athlétisme, Arcanes, Supercherie, Acrobaties) plus la portée. Le Rose, côté vitalité, n’a **pas** de compétence : seulement des points de vie max (l’anneau garde le +1 soin). Le Violet reste +1 PO.
+
+Sur la petite carte, une fois déployée, on voit sous les paliers du set la **somme** de tout ce que donnent les équipements **et** le bonus de panoplie, chips à la suite, sans le chiffre de pièces devant.
+
 ## Septembre 2026 — Bonus de panoplie lisibles, carte par carte
 
 Les bonus d’un set ne sont plus collés en une seule ligne : **une ligne par nombre de pièces** (badge + bonus), et sur la fiche complète **une colonne par palier** (chiffre en haut, caractéristiques en dessous avec icône et nom). Survoler une carte du catalogue ne déploie plus toutes les autres.
