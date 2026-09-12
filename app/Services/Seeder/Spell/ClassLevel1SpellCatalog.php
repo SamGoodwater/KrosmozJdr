@@ -87,6 +87,41 @@ final class ClassLevel1SpellCatalog
         return self::directory().'/ecaflip-level-1.json';
     }
 
+    public static function roublardPath(): string
+    {
+        return self::directory().'/roublard-level-1.json';
+    }
+
+    public static function zobalPath(): string
+    {
+        return self::directory().'/zobal-level-1.json';
+    }
+
+    public static function steamerPath(): string
+    {
+        return self::directory().'/steamer-level-1.json';
+    }
+
+    public static function eliotropePath(): string
+    {
+        return self::directory().'/eliotrope-level-1.json';
+    }
+
+    public static function huppermagePath(): string
+    {
+        return self::directory().'/huppermage-level-1.json';
+    }
+
+    public static function ouginakPath(): string
+    {
+        return self::directory().'/ouginak-level-1.json';
+    }
+
+    public static function forgelancePath(): string
+    {
+        return self::directory().'/forgelance-level-1.json';
+    }
+
     /**
      * @return list<self>
      */

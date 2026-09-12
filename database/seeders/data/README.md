@@ -73,15 +73,15 @@ Un JSON unique `healing-out-of-combat.json` décrit 11 paliers × 4 types (pain,
 - Upsert sur `dofusdb_id` ou `official_id` `jdr:…`.
 - Buffs : durée jusqu’au prochain repos long (8 h max) ; même type d’effet, pas de cumul.
 
-## Classes de base (`entities/breeds/`)
+## Classes (`entities/breeds/`)
 
-Un JSON par classe originale (`feca.json` … `pandawa.json`, ids Dofus 1–12) : nom, résumé Dofus, voix élémentaires du §2.3.1. Upsert sur `dofusdb_id`, `official_id` ou `name`. `auto_update = false`. L’état n’est posé qu’à la création (`draft`) : une fiche déjà `playable` ou `raw` n’est pas rétrogradée. Description tronquée à 255 caractères (colonne `varchar`).
+Un JSON par classe (`feca.json` … `forgelance.json`, 19 fiches, ids Dofus 1–18 et 20) : nom, résumé Dofus, voix élémentaires du §2.3.1. Foggernaut = Steamer (pas une 20ᵉ classe). Upsert sur `dofusdb_id`, `official_id` ou `name`. `auto_update = false`. L’état n’est posé qu’à la création (`draft`). Description tronquée à 255 caractères.
 
-- **Seed** : `Database\Seeders\Entity\ClassBreedSeeder`, **avant** `SpellSeeder` (`project:seed` / `project:init` / `DatabaseSeeder`), pour que les kits niveau 1 se collent aux emplacements.
+- **Seed** : `Database\Seeders\Entity\ClassBreedSeeder`, **avant** `SpellSeeder`.
 
 ## Sorts de classe niveau 1 (`entities/spells/`)
 
-`iop-level-1.json` / `cra-level-1.json` / `eniripsa-level-1.json` / `sram-level-1.json` / `xelor-level-1.json` / `feca-level-1.json` / `osamodas-level-1.json` / `enutrof-level-1.json` / `sadida-level-1.json` / `sacrieur-level-1.json` / `pandawa-level-1.json` / `ecaflip-level-1.json` : 6 sorts par classe (3 emplacements × 2 variantes). Upsert sur `dofusdb_id` ou `official_id` (`jdr:attaque-naturelle`, `jdr:oeil-de-lynx`). `auto_update = false`, état `playable`. `target_type` optionnel (`direct`, `trap`, `glyph` ; défaut `direct`, ex. Piège Sournois, Glyphe Enflammé). Les autres sorts liés à la classe passent hors grille (`character_level` 0, `slot_index` 1).
+`iop-level-1.json` … `forgelance-level-1.json` : 6 sorts par classe (3 emplacements × 2 variantes), **19 classes**. Upsert sur `dofusdb_id` ou `official_id`. `auto_update = false`, état `playable`. `target_type` optionnel (`direct`, `trap`, `glyph`). Les autres sorts liés à la classe passent hors grille (`character_level` 0, `slot_index` 1).
 
 - **Seed** : `Database\Seeders\Entity\SpellSeeder` (`project:seed` / `project:init` / `DatabaseSeeder`).
 - Budget : attaque simple 3 PA 1d6+mod 2×/tour ; sort fort 4–5 PA ; identité 3 PA.

@@ -1,0 +1,231 @@
+{
+    "_schema_version": "1",
+    "breed": "Steamer",
+    "entries": [
+        {
+            "key": "torpille",
+            "name": "Torpille",
+            "dofusdb_id": "13865",
+            "slot_index": 1,
+            "choice_order": 0,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "attack_characteristic_key": "intel",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour, PO 1–4 adapté.",
+            "description": "Une torpille. Direct, sans attendre la tourelle.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "value_formula_crit": "2d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "longue-vue",
+            "name": "Longue-vue",
+            "dofusdb_id": "13837",
+            "slot_index": 1,
+            "choice_order": 1,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "attack_characteristic_key": "chance",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour, PO 1–4 adapté.",
+            "description": "Tu vises loin. Un jet d’eau, net.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "1d6+Chance",
+                        "value_formula": "1d6+[chance]",
+                        "dice_formula": "1d6+[chance]",
+                        "value_formula_crit": "2d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "sabotage",
+            "name": "Sabotage",
+            "dofusdb_id": "13858",
+            "slot_index": 2,
+            "choice_order": 0,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "5",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Intelligence (Feu). Magique, 5 PA, 1×/tour, PO 1–4.",
+            "description": "Ça explose autour. Ceux qui restent collés paient.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "value_formula_crit": "2d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "aspiration",
+            "name": "Aspiration",
+            "dofusdb_id": "13838",
+            "slot_index": 2,
+            "choice_order": 1,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "5",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Chance (Eau) et attirance de 1 case. Magique, 5 PA, 1×/tour, PO 1–4.",
+            "description": "Tu humes, tu tires. L’ennemi se rapproche en prenant le choc.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "1d6+Chance",
+                        "value_formula": "1d6+[chance]",
+                        "dice_formula": "1d6+[chance]",
+                        "value_formula_crit": "2d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "pull",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "harponneuse",
+            "name": "Harponneuse",
+            "dofusdb_id": "13829",
+            "slot_index": 3,
+            "choice_order": 0,
+            "types": [
+                "Invocation"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 3,
+            "effect": "Invoque une Harponneuse adjacente (créature alliée). Elle agit à ton initiative : 1 attaque Feu 1d4, 1 PM. Au plus 1 invocation à la fois au niveau 1. Disparaît si tu tombes à 0 PV. 3 PA, 1×/tour. Pas besoin d’évolution de tourelle.",
+            "description": "Une tourelle. Fragile, mais elle occupe et elle pique.",
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Invoque une Harponneuse adjacente : 1 attaque Feu 1d4, 1 PM, à ton initiative. Au plus 1 invocation à la fois au niveau 1.",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "gardienne",
+            "name": "Gardienne",
+            "dofusdb_id": "13830",
+            "slot_index": 3,
+            "choice_order": 1,
+            "types": [
+                "Invocation"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 3,
+            "effect": "Invoque une Gardienne adjacente (créature alliée). Elle agit à ton initiative : soigne 1d4, 1 PM. Au plus 1 invocation à la fois au niveau 1. Disparaît si tu tombes à 0 PV. 3 PA, 1×/tour. Pas besoin d’évolution de tourelle.",
+            "description": "Même budget que la Harponneuse, autre voie : elle recoud.",
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Invoque une Gardienne adjacente : soigne 1d4, 1 PM, à ton initiative. Au plus 1 invocation à la fois au niveau 1.",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        }
+    ]
+}

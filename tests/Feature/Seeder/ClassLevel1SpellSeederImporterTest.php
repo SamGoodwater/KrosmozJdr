@@ -770,6 +770,40 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         );
     }
 
+    public function test_imports_added_class_level_1_kits(): void
+    {
+        $this->seed(SubEffectSeeder::class);
+        $this->seedSpellTypes();
+
+        $cases = [
+            ['Roublard', ClassLevel1SpellCatalog::roublardPath(), '13442', 'Pulsar'],
+            ['Zobal', ClassLevel1SpellCatalog::zobalPath(), '13425', 'Brincadeira'],
+            ['Steamer', ClassLevel1SpellCatalog::steamerPath(), '13865', 'Torpille'],
+            ['Eliotrope', ClassLevel1SpellCatalog::eliotropePath(), '14574', 'Portail'],
+            ['Huppermage', ClassLevel1SpellCatalog::huppermagePath(), '13666', 'Lance-flamme'],
+            ['Ouginak', ClassLevel1SpellCatalog::ouginakPath(), '13756', 'Molosse'],
+            ['Forgelance', ClassLevel1SpellCatalog::forgelancePath(), '23754', 'Estoc Brûlant'],
+        ];
+
+        foreach ($cases as [$name, $path, $dofusId, $spellName]) {
+            $breed = Breed::factory()->create([
+                'name' => $name,
+                'state' => Breed::STATE_DRAFT,
+                'read_level' => 0,
+                'write_level' => 3,
+                'created_by' => null,
+            ]);
+            $catalog = ClassLevel1SpellCatalog::load($path);
+            $result = app(ClassLevel1SpellSeederImporter::class)->import($catalog);
+            $this->assertCount(6, $result['created'], $name);
+            $this->assertSame([], $result['skipped'], $name);
+            $spell = Spell::query()->where('dofusdb_id', $dofusId)->first();
+            $this->assertSame($spellName, $spell?->name, $name);
+            $this->assertSame(Spell::STATE_PLAYABLE, $spell?->state, $name);
+            $this->assertSame(6, $breed->fresh()->spells()->count(), $name);
+        }
+    }
+
     private function seedSpellTypes(): void
     {
         foreach (['Offensif', 'Buff', 'Debuff', 'Téléportation', 'Soin', 'Défensif', 'Invocation'] as $name) {

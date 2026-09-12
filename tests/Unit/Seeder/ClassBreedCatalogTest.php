@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 final class ClassBreedCatalogTest extends TestCase
 {
-    public function test_load_all_returns_twelve_base_classes_in_dofus_order(): void
+    public function test_load_all_returns_nineteen_classes_in_dofus_order(): void
     {
         $catalogs = ClassBreedCatalog::loadAllInDirectory();
         $names = array_map(
@@ -18,7 +18,7 @@ final class ClassBreedCatalogTest extends TestCase
         );
 
         $this->assertSame(ClassBreedCatalog::BASE_CLASS_NAMES, $names);
-        $this->assertCount(12, ClassBreedCatalog::PREFERRED_FILES);
+        $this->assertCount(19, ClassBreedCatalog::PREFERRED_FILES);
     }
 
     public function test_each_base_class_has_three_voices_from_rules(): void
@@ -36,6 +36,13 @@ final class ClassBreedCatalogTest extends TestCase
             'Sadida' => ['water' => 'invocation', 'fire' => 'degats', 'earth' => 'entrave'],
             'Sacrieur' => ['earth' => 'tank', 'air' => 'tank', 'water' => 'protection'],
             'Pandawa' => ['earth' => 'tank', 'air' => 'placement', 'fire' => 'degats'],
+            'Roublard' => ['fire' => 'degats', 'water' => 'entrave', 'air' => 'placement'],
+            'Zobal' => ['earth' => 'tank', 'water' => 'protection', 'fire' => 'degats'],
+            'Steamer' => ['water' => 'soin', 'air' => 'placement', 'fire' => 'degats'],
+            'Eliotrope' => ['air' => 'placement', 'fire' => 'degats', 'water' => 'soin'],
+            'Huppermage' => ['fire' => 'degats', 'air' => 'placement', 'earth' => 'amelioration'],
+            'Ouginak' => ['earth' => 'degats', 'fire' => 'tank', 'air' => 'entrave'],
+            'Forgelance' => ['fire' => 'degats', 'air' => 'placement', 'water' => 'protection'],
         ];
 
         foreach (ClassBreedCatalog::loadAllInDirectory() as $catalog) {

@@ -1,0 +1,231 @@
+{
+    "_schema_version": "1",
+    "breed": "Zobal",
+    "entries": [
+        {
+            "key": "brincadeira",
+            "name": "Brincadeira",
+            "dofusdb_id": "13425",
+            "slot_index": 1,
+            "choice_order": 0,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "attack_characteristic_key": "intel",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour, PO 1–4 adapté.",
+            "description": "Un masque de feu, un coup. Pas besoin de changer de visage.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "value_formula_crit": "2d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "parafuso",
+            "name": "Parafuso",
+            "dofusdb_id": "13391",
+            "slot_index": 1,
+            "choice_order": 1,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "attack_characteristic_key": "strong",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour, PO 1.",
+            "description": "Tu visse le coup. Collé, terreux, net.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "value_formula_crit": "2d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "catalepsie",
+            "name": "Catalepsie",
+            "dofusdb_id": "13420",
+            "slot_index": 2,
+            "choice_order": 0,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "5",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Chance (Eau). Magique, 5 PA, 1×/tour, PO 1–4.",
+            "description": "L’eau fige. Ceux qui restent collés prennent le choc.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "1d6+Chance",
+                        "value_formula": "1d6+[chance]",
+                        "dice_formula": "1d6+[chance]",
+                        "value_formula_crit": "2d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "appui",
+            "name": "Appui",
+            "dofusdb_id": "13403",
+            "slot_index": 2,
+            "choice_order": 1,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Force (Terre). Magique, 5 PA, 1×/tour.",
+            "description": "Tu t’ancres. Autour de toi, ça encaisse.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "value_formula_crit": "2d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "plastron",
+            "name": "Plastron",
+            "dofusdb_id": "13397",
+            "slot_index": 3,
+            "choice_order": 0,
+            "types": [
+                "Défensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "max_stack": 1,
+            "resolution_mode": "auto_success",
+            "auto_success_if_willing_target": true,
+            "is_magic": true,
+            "powerful": 3,
+            "duration": "jusqu’à la fin de ton prochain tour",
+            "effect": "1d4 + Sagesse de bouclier. Pas de cumul. 3 PA, 1×/tour.",
+            "description": "Le masque tient. Les coups s’arrêtent dessus avant tes PV.",
+            "sub_effects": [
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "1d4+Sagesse",
+                        "value_formula": "1d4+[sagesse]",
+                        "dice_formula": "1d4+[sagesse]",
+                        "effect_direction": "self",
+                        "duration_formula": "1"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "cavalcade",
+            "name": "Cavalcade",
+            "dofusdb_id": "13415",
+            "slot_index": 3,
+            "choice_order": 1,
+            "types": [
+                "Téléportation"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 3,
+            "effect": "Téléportation 1–4 cases, pas de ligne de vue. Action bonus, 3 PA, 1×/tour.",
+            "description": "Tu charges. Assez pour coller Parafuso dans le même tour.",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "4",
+                        "teleport": true,
+                        "movement_kind": "teleport",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -260,13 +260,36 @@ final class ClassLevel1SpellCatalogTest extends TestCase
         $this->assertSame('auto_success', $entries[4]['resolution_mode']);
     }
 
+    public function test_added_class_catalogs_have_six_spells_in_three_slots(): void
+    {
+        $expected = [
+            [ClassLevel1SpellCatalog::roublardPath(), 'Roublard', ['Pulsar', 'Espingole', 'Explobombe', 'Sismobombe', 'Détonateur', 'Botte']],
+            [ClassLevel1SpellCatalog::zobalPath(), 'Zobal', ['Brincadeira', 'Parafuso', 'Catalepsie', 'Appui', 'Plastron', 'Cavalcade']],
+            [ClassLevel1SpellCatalog::steamerPath(), 'Steamer', ['Torpille', 'Longue-vue', 'Sabotage', 'Aspiration', 'Harponneuse', 'Gardienne']],
+            [ClassLevel1SpellCatalog::eliotropePath(), 'Eliotrope', ['Affront', 'Audace', 'Commotion', 'Rayon de Wakfu', 'Portail', 'Cicatrisation']],
+            [ClassLevel1SpellCatalog::huppermagePath(), 'Huppermage', ['Lance-flamme', 'Stalagmite', 'Météore', 'Onde Sismique', 'Éther', 'Runification']],
+            [ClassLevel1SpellCatalog::ouginakPath(), 'Ouginak', ['Molosse', 'Charogne', 'Os à Moelle', 'Lance-roquet', 'Traque', 'Amarok']],
+            [ClassLevel1SpellCatalog::forgelancePath(), 'Forgelance', ['Estoc Brûlant', 'Lance du Lac', "Volée d'Airain", 'Effondrement', 'Charge Héroïque', 'Phalange']],
+        ];
+
+        foreach ($expected as [$path, $breed, $names]) {
+            $catalog = ClassLevel1SpellCatalog::load($path);
+            $this->assertSame($breed, $catalog->breedName());
+            $entries = $catalog->entries();
+            $this->assertCount(6, $entries, $breed);
+            $this->assertSame($names, array_column($entries, 'name'), $breed);
+            $this->assertSame('3', $entries[0]['pa'], $breed);
+            $this->assertSame('5', $entries[2]['pa'], $breed);
+        }
+    }
+
     public function test_load_all_finds_all_class_kits(): void
     {
         $catalogs = ClassLevel1SpellCatalog::loadAllInDirectory();
         $breeds = array_map(static fn (ClassLevel1SpellCatalog $c): string => $c->breedName(), $catalogs);
         sort($breeds);
         $this->assertSame(
-            ['Crâ', 'Ecaflip', 'Eniripsa', 'Enutrof', 'Féca', 'Iop', 'Osamodas', 'Pandawa', 'Sacrieur', 'Sadida', 'Sram', 'Xélor'],
+            ['Crâ', 'Ecaflip', 'Eliotrope', 'Eniripsa', 'Enutrof', 'Forgelance', 'Féca', 'Huppermage', 'Iop', 'Osamodas', 'Ouginak', 'Pandawa', 'Roublard', 'Sacrieur', 'Sadida', 'Sram', 'Steamer', 'Xélor', 'Zobal'],
             $breeds
         );
     }

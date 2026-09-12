@@ -21,7 +21,7 @@ final class ClassBreedCatalog
     public const DESCRIPTION_MAX = 255;
 
     /**
-     * Ordre d’import des 12 classes originales (ids Dofus 1–12), puis tout autre JSON du dossier.
+     * Ordre d’import des 19 classes (ids Dofus 1–18 puis Forgelance 20), puis tout autre JSON du dossier.
      *
      * @var list<string>
      */
@@ -38,6 +38,13 @@ final class ClassBreedCatalog
         'sadida.json',
         'sacrieur.json',
         'pandawa.json',
+        'roublard.json',
+        'zobal.json',
+        'steamer.json',
+        'eliotrope.json',
+        'huppermage.json',
+        'ouginak.json',
+        'forgelance.json',
     ];
 
     /**
@@ -56,6 +63,13 @@ final class ClassBreedCatalog
         'Sadida',
         'Sacrieur',
         'Pandawa',
+        'Roublard',
+        'Zobal',
+        'Steamer',
+        'Eliotrope',
+        'Huppermage',
+        'Ouginak',
+        'Forgelance',
     ];
 
     /**

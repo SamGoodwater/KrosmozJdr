@@ -18,7 +18,7 @@ use Tests\TestCase;
 
 final class ClassBreedSeederImporterTest extends TestCase
 {
-    public function test_imports_twelve_base_classes_and_is_idempotent(): void
+    public function test_imports_nineteen_classes_and_is_idempotent(): void
     {
         $importer = app(ClassBreedSeederImporter::class);
         $first = $importer->import();
@@ -62,7 +62,7 @@ final class ClassBreedSeederImporterTest extends TestCase
         $second = $importer->import();
         $this->assertSame([], $second['created']);
         $this->assertSame(ClassBreedCatalog::BASE_CLASS_NAMES, $second['updated']);
-        $this->assertSame(12, Breed::query()->whereIn('name', ClassBreedCatalog::BASE_CLASS_NAMES)->count());
+        $this->assertSame(19, Breed::query()->whereIn('name', ClassBreedCatalog::BASE_CLASS_NAMES)->count());
     }
 
     public function test_class_breed_seeder_then_spell_kit_attaches_slots(): void

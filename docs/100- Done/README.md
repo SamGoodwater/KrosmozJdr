@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Sept classes ajoutées, fiches et sorts niveau 1
+
+**Roublard, Zobal, Steamer, Eliotrope, Huppermage, Ouginak, Forgelance** ont une fiche (voix du tableau des rôles) et **6 sorts** de niveau 1, même budget que l’Iop. Pas de combo bombe / masque / tourelle évoluée / portail / rune / rage au niveau 1 : on frappe, on se place, on invoque une tourelle à 1d4. **Foggernaut** n’est pas une 20ᵉ classe : c’est le nom anglais du Steamer.
+
 ## Septembre 2026 — Voix des 12 classes originales
 
 Les **12 classes de base** ont maintenant leurs trois voix (Terre / Air / Feu / Eau) calées sur le tableau des rôles : Féca protection-tank-amélioration, Iop et Crâ et Ecaflip tout dégât, Eniripsa tout soin, Osamodas invocation, etc. Le seeder les rejoue, le scrapping ne les écrase plus. Sacrieur et Pandawa étaient déjà là ; les dix autres (Féca à Sadida) suivent le même modèle.

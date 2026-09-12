@@ -383,7 +383,7 @@ class ProjectInitCommand extends Command
             ItemSeeder::class,
             PanoplySeeder::class,
             ConsumableSeeder::class,
-            // Fiches des 12 classes originales avant les kits de sorts (liaison breed_spell).
+            // Fiches des 19 classes avant les kits de sorts (liaison breed_spell).
             ClassBreedSeeder::class,
             SpellSeeder::class,
         ];
