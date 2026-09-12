@@ -100,8 +100,8 @@ describe("charte des filtres tableau", () => {
         expect(filters.find((f) => f.id === "item_type_id")).toMatchObject({
             type: "multi",
             defaultVisible: true,
-            defaultByCatalog: true,
         });
+        expect(filters.find((f) => f.id === "item_type_id").defaultByCatalog).toBeFalsy();
         expect(filters.find((f) => f.id === "bonus")).toMatchObject({
             type: "picked-range",
             defaultVisible: true,

@@ -453,13 +453,12 @@ export function getEntityStateDisplayLabel(state) {
 }
 
 /**
- * Libellé court pour l'action d'état.
+ * Libellé de l'action d'état (même vocabulaire que l'affichage : Jouable, pas Actif).
  *
  * @param {string|null|undefined} state
  * @returns {string}
  */
 export function getEntityStateActionLabel(state) {
-  if (state === "playable") return "Actif";
   return getEntityStateDisplayLabel(state);
 }
 

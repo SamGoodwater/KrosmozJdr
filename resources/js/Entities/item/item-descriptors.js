@@ -487,7 +487,6 @@ export function getItemFieldDescriptors(ctx = {}) {
           id: "item_type_id",
           type: "multi",
           defaultVisible: true,
-          defaultByCatalog: true,
         },
         defaultVisible: visibleFromSm,
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },

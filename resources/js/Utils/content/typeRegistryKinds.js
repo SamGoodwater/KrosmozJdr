@@ -28,7 +28,7 @@ export const TYPE_REGISTRY_KINDS = [
         shortTitle: "Équipements",
         icon: "fa-shield-halved",
         description:
-            "« En jeu » pré-coche le type dans le catalogue. « Scrap » autorise l’import / la maj DofusDB des entités de ce type. Déplaçable vers ressources ou consommables.",
+            "« En jeu » identifie le type comme utile en jeu (registre admin). « Scrap » autorise l’import / la maj DofusDB des entités de ce type. Déplaçable vers ressources ou consommables.",
         listUrl: `${DOFUSDB_API_PREFIX}/item-types`,
         bulkUrl: `${DOFUSDB_API_PREFIX}/item-types/bulk`,
         deleteUrlBase: `${DOFUSDB_API_PREFIX}/item-types`,
@@ -44,7 +44,7 @@ export const TYPE_REGISTRY_KINDS = [
         shortTitle: "Ressources",
         icon: "fa-cubes",
         description:
-            "« En jeu » pré-coche le type dans le catalogue. « Scrap » autorise l’import / la maj DofusDB. Déplaçable vers équipements ou consommables.",
+            "« En jeu » identifie le type comme utile en jeu (registre admin). « Scrap » autorise l’import / la maj DofusDB. Déplaçable vers équipements ou consommables.",
         listUrl: `${DOFUSDB_API_PREFIX}/resource-types`,
         bulkUrl: `${DOFUSDB_API_PREFIX}/resource-types/bulk`,
         deleteUrlBase: `${DOFUSDB_API_PREFIX}/resource-types`,
@@ -60,7 +60,7 @@ export const TYPE_REGISTRY_KINDS = [
         shortTitle: "Consommables",
         icon: "fa-flask",
         description:
-            "« En jeu » pré-coche le type dans le catalogue. « Scrap » autorise l’import / la maj DofusDB. Déplaçable vers équipements ou ressources.",
+            "« En jeu » identifie le type comme utile en jeu (registre admin). « Scrap » autorise l’import / la maj DofusDB. Déplaçable vers équipements ou ressources.",
         listUrl: `${DOFUSDB_API_PREFIX}/consumable-types`,
         bulkUrl: `${DOFUSDB_API_PREFIX}/consumable-types/bulk`,
         deleteUrlBase: `${DOFUSDB_API_PREFIX}/consumable-types`,
@@ -76,7 +76,7 @@ export const TYPE_REGISTRY_KINDS = [
         shortTitle: "Races",
         icon: "fa-paw",
         description:
-            "« En jeu » pré-coche la race dans le catalogue monstres. « Scrap » l’inclut dans le filtre d’import monstres. Pas de déplacement vers une autre entité.",
+            "« En jeu » identifie la race comme utile en jeu (registre admin). « Scrap » l’inclut dans le filtre d’import monstres. Pas de déplacement vers une autre entité.",
         listUrl: "/api/types/monster-races",
         bulkUrl: "/api/types/monster-races/bulk",
         deleteUrlBase: "/api/types/monster-races",
@@ -92,7 +92,7 @@ export const TYPE_REGISTRY_KINDS = [
         shortTitle: "Sorts",
         icon: "fa-wand-sparkles",
         description:
-            "« En jeu » pré-coche le type dans le catalogue sorts. « Scrap » indique si les sorts de ce type peuvent être mis à jour via DofusDB. Pas de déplacement.",
+            "« En jeu » identifie le type comme utile en jeu (registre admin). « Scrap » indique si les sorts de ce type peuvent être mis à jour via DofusDB. Pas de déplacement.",
         listUrl: "/api/types/spell-types",
         bulkUrl: "/api/types/spell-types/bulk",
         deleteUrlBase: "/api/types/spell-types",

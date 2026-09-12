@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
     ENTITY_STATE_OPTIONS,
+    getEntityStateActionLabel,
     getEntityStateBadgeColor,
     getEntityStateDisplayLabel,
     getEntityStateDotClass,
@@ -19,6 +20,8 @@ describe("entity state options", () => {
         expect(getEntityStateDisplayLabel("auto")).toBe("Auto");
         expect(getEntityStateDotClass("auto")).toBe("bg-secondary");
         expect(getEntityStateBadgeColor("auto")).toBe("secondary");
+        expect(getEntityStateDisplayLabel("playable")).toBe("Jouable");
+        expect(getEntityStateActionLabel("playable")).toBe("Jouable");
     });
 
     it("expose auto dans UsableFormatter", () => {

@@ -391,7 +391,6 @@ export function getResourceFieldDescriptors(ctx = {}) {
           id: "resource_type_id",
           type: "multi",
           defaultVisible: true,
-          defaultByCatalog: true,
         },
         // Responsive: disparaît en dernier (avant il reste sur sm+)
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },

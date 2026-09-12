@@ -38,10 +38,11 @@ describe('resource-descriptors (nouveau système)', () => {
             }
         });
 
-        it('pré-coche les types métier sur le filtre Type', () => {
+        it('n’applique pas de défaut type sur le filtre Type', () => {
             const descriptors = getResourceFieldDescriptors();
             const filterable = descriptors.resource_type.table.filterable;
-            expect(filterable.defaultByCatalog).toBe(true);
+            expect(filterable.defaultByCatalog).toBeFalsy();
+            expect(filterable.defaultValue).toBeUndefined();
         });
 
         it('les options utilisent des constantes (RarityFormatter, rôles lecture/écriture)', () => {

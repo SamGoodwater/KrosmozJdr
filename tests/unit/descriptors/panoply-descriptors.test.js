@@ -104,8 +104,8 @@ describe('panoply-descriptors', () => {
                 id: 'item_type_id',
                 type: 'multi',
                 defaultVisible: true,
-                defaultByCatalog: true,
             });
+            expect(descriptors.item_type.table.filterable.defaultByCatalog).toBeFalsy();
             expect(descriptors.bonus.table.filterable).toMatchObject({
                 id: 'bonus',
                 type: 'picked-range',

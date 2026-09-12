@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Une compétence légère sur (presque) chaque set
+
+Les compétences (+1 Athlétisme, Arcanes, Discrétion…) pèsent peu par rapport à une caractéristique : on s’en sert comme **bonus facile** sur les panoplies relues, y compris plus haut niveau. Si le chapeau ou la cape est vide, ça va sur la pièce ; sinon sur le palier complet du set. Les Pious Rose (vitalité) et Violet (portée) n’en ont toujours pas.
+
 ## Septembre 2026 — Pious sans carac primaire, total set + pièces
 
 Les six Pious du niveau 1 ne donnent plus Force / Intelligence / Chance / Agilité au set complet. Vert, Rouge, Bleu et Jaune portent la **compétence** de l’élément (Athlétisme, Arcanes, Supercherie, Acrobaties) plus la portée. Le Rose, côté vitalité, n’a **pas** de compétence : seulement des points de vie max (l’anneau garde le +1 soin). Le Violet reste +1 PO.

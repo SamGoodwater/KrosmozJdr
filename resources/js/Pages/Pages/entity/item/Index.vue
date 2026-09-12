@@ -26,10 +26,6 @@ import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors }
 import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-config";
 import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
-import {
-    hasItemTypeFilter,
-    resolveGameplayItemTypeIds,
-} from "@/Utils/Entity/gameplayItemTypes";
 
 // Props Inertia (gardées à titre documentaire, même si non utilisées directement ici)
 const props = defineProps({
@@ -63,17 +59,7 @@ const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
 
-const indexTableFilters = computed(() => {
-    const fromQuery = normalizeIndexTableFilters(props.filters);
-    if (hasItemTypeFilter(fromQuery)) {
-        return fromQuery;
-    }
-    const typeIds = resolveGameplayItemTypeIds(props.itemTypes || []);
-    if (typeIds.length === 0) {
-        return fromQuery;
-    }
-    return { ...fromQuery, item_type_id: typeIds };
-});
+const indexTableFilters = computed(() => normalizeIndexTableFilters(props.filters));
 const serverBaseUrl = computed(() => route('api.tables.items'));
 
 

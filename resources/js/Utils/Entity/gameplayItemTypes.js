@@ -2,8 +2,9 @@
  * Types d’équipement utiles en jeu (catalogue objets).
  *
  * @description
- * Le filtre Type pré-coche les lignes `show_in_catalog`. Les listes GAMEPLAY_*
- * restent un repli si le flag n’est pas dans le payload (tests / données anciennes).
+ * Helper `show_in_catalog` / listes GAMEPLAY_* : repli pour
+ * `resolveFilterDefaultValue` si un filtre pose `defaultByCatalog`.
+ * Les catalogues n’appliquent plus ce défaut.
  *
  * @example
  * resolveGameplayItemTypeIds([{ id: 12, name: 'Amulette', show_in_catalog: true }])

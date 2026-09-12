@@ -61,7 +61,6 @@ export function useEntityStateAction(entityType, entity, action = null) {
     const options = computed(() =>
         getEntityStateOptions().map((option) => ({
             ...option,
-            label: option.value === "playable" ? "Actif" : option.label,
             dotClass: getEntityStateDotClass(option.value),
             active: option.value === currentState.value,
         })),

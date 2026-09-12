@@ -46,18 +46,15 @@ describe("normalizeItemTypeLabel", () => {
 });
 
 describe("filtre Type consommable", () => {
-    it("déclare defaultByCatalog", () => {
+    it("n’applique pas de défaut type", () => {
         const filterable = getConsumableFieldDescriptors().consumable_type?.table?.filterable;
-        expect(filterable?.defaultByCatalog).toBe(true);
-    });
-
-    it("résout les défauts via les options API", () => {
-        const filterable = getConsumableFieldDescriptors().consumable_type?.table?.filterable;
-        const ids = resolveFilterDefaultValue(filterable, [
-            { value: "9", label: "Cadeau", dofusdb_type_id: 89, show_in_catalog: false },
-            { value: "10", label: "Potion", dofusdb_type_id: 12, show_in_catalog: true },
-            { value: "11", label: "Pain", dofusdb_type_id: 33, show_in_catalog: true },
-        ]);
-        expect(ids).toEqual(["10", "11"]);
+        expect(filterable?.defaultByCatalog).toBeFalsy();
+        expect(
+            resolveFilterDefaultValue(filterable, [
+                { value: "9", label: "Cadeau", dofusdb_type_id: 89, show_in_catalog: false },
+                { value: "10", label: "Potion", dofusdb_type_id: 12, show_in_catalog: true },
+                { value: "11", label: "Pain", dofusdb_type_id: 33, show_in_catalog: true },
+            ]),
+        ).toBeUndefined();
     });
 });
