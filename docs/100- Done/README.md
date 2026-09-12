@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Carte déployée au-dessus des voisines
+
+Survoler une petite carte (panoplie, équipement…) l’ouvre **par-dessus** celles d’en dessous, plus en dessous.
+
 ## Septembre 2026 — Catalogues sans types précochés, état « Jouable »
 
 Les catalogues (équipements, panoplies, consommables, ressources, monstres, sorts) arrivent avec le filtre **Type** (ou Race) sur **Tous** : plus de liste de types cochée d’avance. Survoler le point d’état d’une fiche (carte minimale ou fiche complète) dit **Jouable**, plus « Actif ».

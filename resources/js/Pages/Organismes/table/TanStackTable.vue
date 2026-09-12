@@ -2540,7 +2540,7 @@ const handleExport = () => {
                                 data-table-row-focus
                                 :data-row-id="String(row.id)"
                                 tabindex="0"
-                                class="relative isolate w-full rounded-box transition-shadow duration-200 hover:shadow-md outline-none"
+                                class="relative z-0 w-full rounded-box transition-shadow duration-200 hover:z-30 hover:shadow-md focus-within:z-30 outline-none [&:has(.entity-minimal-card--expanded)]:z-40"
                                 :class="{ 'ring-2 ring-primary/50': isSelected(row) }"
                                 @keydown="(e) => handleLineRowBlockKeydown(e, row)"
                             >
@@ -2636,7 +2636,7 @@ const handleExport = () => {
                             data-table-row-focus
                             :data-row-id="String(row.id)"
                             tabindex="0"
-                            class="relative isolate flex-[1_1_280px] min-w-[280px] max-w-full rounded-box transition-shadow duration-200 hover:shadow-md outline-none"
+                            class="relative z-0 flex-[1_1_280px] min-w-[280px] max-w-full rounded-box transition-shadow duration-200 hover:z-30 hover:shadow-md focus-within:z-30 outline-none [&:has(.entity-minimal-card--expanded)]:z-40"
                             :class="{ 'ring-2 ring-primary/50': isSelected(row) }"
                             @keydown="(e) => handleLineRowBlockKeydown(e, row)"
                         >
