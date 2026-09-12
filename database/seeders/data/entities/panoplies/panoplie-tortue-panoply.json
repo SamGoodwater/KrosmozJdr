@@ -9,7 +9,8 @@
         "bonus": {
             "3": {
                 "armor_class": 1,
-                "vitality": 1
+                "vitality": 1,
+                "survival": 1
             }
         },
         "state": "playable",

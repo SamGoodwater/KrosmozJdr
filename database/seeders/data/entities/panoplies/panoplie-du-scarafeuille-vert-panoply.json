@@ -9,7 +9,8 @@
         "bonus": {
             "4": {
                 "strength": 1,
-                "armor_class": 1
+                "armor_class": 1,
+                "athletics": 1
             }
         },
         "state": "playable",

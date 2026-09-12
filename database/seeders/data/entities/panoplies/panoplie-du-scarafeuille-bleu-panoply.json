@@ -9,7 +9,8 @@
         "bonus": {
             "4": {
                 "chance": 1,
-                "armor_class": 1
+                "armor_class": 1,
+                "deception": 1
             }
         },
         "state": "playable",

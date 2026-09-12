@@ -15,10 +15,14 @@
         "read_level": 0,
         "write_level": 3,
         "auto_update": false,
-        "price_calculated": 150,
+        "price_calculated": 550,
         "price_custom": null,
-        "effect": null,
-        "bonus": null,
+        "effect": {
+            "animal_handling": 1
+        },
+        "bonus": {
+            "animal_handling": 1
+        },
         "item_type_dofus_id": 16,
         "item_type_name": "Chapeau"
     },

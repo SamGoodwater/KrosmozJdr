@@ -9,7 +9,8 @@
         "bonus": {
             "8": {
                 "agility": 1,
-                "range": 1
+                "range": 1,
+                "acrobatics": 1
             }
         },
         "state": "playable",

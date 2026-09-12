@@ -12,7 +12,8 @@
             },
             "7": {
                 "intelligence": 1,
-                "range": 1
+                "range": 1,
+                "arcana": 1
             }
         },
         "state": "playable",

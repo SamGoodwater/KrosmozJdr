@@ -9,7 +9,8 @@
         "bonus": {
             "8": {
                 "strength": 1,
-                "range": 1
+                "range": 1,
+                "athletics": 1
             }
         },
         "state": "playable",

@@ -9,7 +9,8 @@
         "bonus": {
             "8": {
                 "chance": 1,
-                "range": 1
+                "range": 1,
+                "deception": 1
             }
         },
         "state": "playable",
