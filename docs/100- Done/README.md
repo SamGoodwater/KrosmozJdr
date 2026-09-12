@@ -40,6 +40,12 @@ Deux boutons sur la page **IA métier** de l’administration : « Base → fich
 
 Une réinstallation complète du projet recrée maintenant ces objets automatiquement. Les visuels ne sont pas concernés : ils restent gérés par la médiathèque.
 
+## Septembre 2026 — Panoplies des premiers niveaux
+
+Les sets qu’on croise dès Incarnam / Astrub sont jouables : les **six Pious** (niveau 1, une couleur par élément, plus rose pour les soins et violet pour la portée), le **Bouftou**, le **Tofu** et le **Prespic**. Chaque pièce garde son nom et son illustration Dofus.
+
+Les bonus JDR suivent l’emplacement (une ceinture tacle ou fuit, un marteau tape Terre, un bouclier donne de la CA). Aux tout premiers niveaux, Force / Intelligence / Chance / Agilité ne peuvent pas encore aller sur une cape : c’est le **bonus de set** qui porte la voie (et le +1 PA du Bouftou complet, le +1 PM du Tofu complet).
+
 ## Septembre 2026 — Tableaux : TanStack Table 9
 
 Les catalogues (tri, pagination, colonnes visibles) passent en TanStack Table 9. L’usage ne change pas : on trie, on pagine, on masque des colonnes comme avant.

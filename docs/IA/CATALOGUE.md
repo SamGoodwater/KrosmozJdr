@@ -110,3 +110,18 @@ Les objets relus sont **versionnés** en JSON, un fichier par item, sous `databa
 `Database\Seeders\Entity\ItemSeeder` rejoue les mêmes fichiers, donc `project:seed` et `project:init` reconstruisent le socle sans scrapping. L’upsert se fait sur `dofusdb_id` (`official_id` à défaut) et le type est résolu par `item_type_dofus_id`, ce qui rend les fichiers portables entre environnements. Détail du format : [`database/seeders/data/README.md`](../../database/seeders/data/README.md).
 
 L’export est déterministe (relancer sans changement ne produit aucun diff Git) et exclut `image`, dont la colonne contient une URL liée à l’environnement. Les boutons admin sont réservés au super administrateur ; l’écriture dans le dépôt n’est possible qu’en développement.
+
+### Panoplies bas niveau (playable)
+
+Sets Dofus emblématiques des premiers niveaux, pièces **et** bonus de set relus :
+
+| Panoplie | Niveau | Voie / thème | Signature |
+| --- | --- | --- | --- |
+| Piou Vert / Rouge / Bleu / Jaune | 1 | Terre / Feu / Eau / Air | Ceinture +1 tacle ou fuite ; set 4p = carac de voie, 6p = + portée |
+| Piou Rose | 1 | Soins | Anneau +1 soin ; set 6p = soins + PV |
+| Piou Violet | 1 | Portée | Set 6p = +1 PO |
+| Bouftou | 2 | Terre (mixte) | Marteau +1 dgt terre, bouclier +1 CA, ceinture +1 tacle ; 8p = +1 PA |
+| Tofu | 2 | Air | Baguette +1 dgt air, ceinture +1 fuite ; 7p = agilité + 1 PM |
+| Prespic | 3 | Feu | Cape +1 int, chapeau +1 vit, bouclier +1 CA ; 5p = int + fuite |
+
+À ces niveaux, Force / Int / Chance / Agilité sont encore **plafonnées à 0** sur la cape (formule) : la voie d’un Piou niveau 1 est donc portée par le **bonus de set**, pas par la pièce. `auto_update = false`. JSON panoplies : `database/seeders/data/entities/panoplies/` (`PanoplySeeder`, après `ItemSeeder`).

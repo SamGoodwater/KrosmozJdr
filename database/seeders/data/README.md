@@ -44,6 +44,13 @@ Structure d’un fichier :
 
 Un item importé porte `auto_update = false` s’il a été exporté ainsi : le scrapping ne l’écrasera pas.
 
+## Panoplies (`entities/panoplies/`)
+
+Un fichier JSON par set relu (bonus de palier + liste des `dofusdb_id` des pièces).
+
+- **Seed** : `Database\Seeders\Entity\PanoplySeeder`, **après** `ItemSeeder` (`project:seed` / `project:init`).
+- Les pièces absentes de la base (pas de scrapping, pas d’item JSON) sont simplement omises du `sync`.
+
 ## Autres fichiers
 
 Les autres données (types, mappings scrapping, etc.) restent sous forme de fichiers PHP ou JSON selon le seeder concerné ; voir les seeders dans `database/seeders/`.

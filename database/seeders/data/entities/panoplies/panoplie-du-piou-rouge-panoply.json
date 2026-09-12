@@ -1,0 +1,32 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "60"
+    },
+    "panoply": {
+        "name": "Panoplie du Piou Rouge",
+        "description": null,
+        "bonus": {
+            "4": {
+                "intelligence": 1
+            },
+            "6": {
+                "intelligence": 1,
+                "range": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "8213",
+            "8219",
+            "8225",
+            "8231",
+            "8237",
+            "8243"
+        ]
+    }
+}

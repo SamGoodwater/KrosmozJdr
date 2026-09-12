@@ -60,6 +60,8 @@ final class IaEquipmentGridCommandTest extends TestCase
         $this->assertStringContainsString('[Grille]', (string) $item->name);
         $bonus = json_decode((string) $item->bonus, true, 512, JSON_THROW_ON_ERROR);
         $this->assertSame(2, $bonus['intelligence'] ?? null);
+        $this->assertNotNull($item->price_calculated);
+        $this->assertSame((string) $item->price_calculated, $item->price);
 
         $before = Item::query()->count();
         Artisan::call('ia:equipment-grid', [

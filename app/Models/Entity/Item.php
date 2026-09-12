@@ -9,6 +9,7 @@ use App\Models\EffectUsage;
 use App\Models\ObjectEffect;
 use App\Models\Type\ItemType;
 use App\Models\User;
+use App\Services\Characteristic\Pricing\EntityPriceRecalculator;
 use Database\Factories\ItemFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -56,6 +57,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $scenarios_count
  * @property-read Collection<int, Shop> $shops
  * @property-read int|null $shops_count
+ *
  * @method static \Database\Factories\Entity\ItemFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item newQuery()
@@ -85,15 +87,18 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withoutTrashed()
+ *
  * @property-read Collection<int, EffectUsage> $effectUsages
  * @property-read int|null $effect_usages_count
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
  * @property-read Collection<int, ObjectEffect> $objectEffects
  * @property-read int|null $object_effects_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item wherePriceCalculated($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item wherePriceCustom($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item visibleToUser(?\App\Models\User $user)
+ *
  * @mixin \Eloquent
  */
 class Item extends Model implements HasMedia
@@ -157,6 +162,22 @@ class Item extends Model implements HasMedia
         'write_level' => 'integer',
         'auto_update' => 'boolean',
     ];
+
+    /**
+     * Recalcule `price_calculated` à la création (s’il est encore vide) et dès que bonus, niveau ou rareté changent.
+     * L’ajustement `price_custom` n’est pas touché. Appelé depuis `HasKamasPrice` **avant** la synchro de `price`.
+     */
+    public function syncCalculatedPriceFromFormula(): void
+    {
+        $mustSync = $this->price_calculated === null
+            || ($this->exists && $this->isDirty(['bonus', 'level', 'rarity']));
+
+        if (! $mustSync) {
+            return;
+        }
+
+        $this->price_calculated = app(EntityPriceRecalculator::class)->computeItem($this);
+    }
 
     /**
      * Get the user that created the item.

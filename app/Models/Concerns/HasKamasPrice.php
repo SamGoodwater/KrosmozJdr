@@ -21,6 +21,9 @@ trait HasKamasPrice
     protected static function bootHasKamasPrice(): void
     {
         static::saving(function (self $model): void {
+            if (method_exists($model, 'syncCalculatedPriceFromFormula')) {
+                $model->syncCalculatedPriceFromFormula();
+            }
             $model->price = (string) $model->totalPriceKamas();
         });
     }
