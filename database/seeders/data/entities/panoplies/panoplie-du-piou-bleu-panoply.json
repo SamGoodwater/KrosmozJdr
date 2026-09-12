@@ -7,9 +7,6 @@
         "name": "Panoplie du Piou Bleu",
         "description": null,
         "bonus": {
-            "4": {
-                "chance": 1
-            },
             "6": {
                 "chance": 1,
                 "range": 1

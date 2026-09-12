@@ -1,0 +1,46 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8255",
+        "official_id": null
+    },
+    "item": {
+        "name": "Pelle en Mousse",
+        "level": "2",
+        "description": "Cette arme terriblement puissante contre les mottes de terre, a marqué plus d'un aventurier débutant. Une fois mouillée, elle devient molle et peut être roulée, mais il faut généralement être à deux pour y arriver.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 1000,
+        "price_custom": null,
+        "effect": {
+            "fixed_damage_water": 1
+        },
+        "bonus": {
+            "fixed_damage_water": 1
+        },
+        "item_type_dofus_id": 8,
+        "item_type_name": "Pelle"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "63"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "13727",
+                "name": "Crème à bronzer",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "8682",
+                "name": "Peau de Mob l'Éponge",
+                "quantity": 2
+            }
+        ]
+    }
+}

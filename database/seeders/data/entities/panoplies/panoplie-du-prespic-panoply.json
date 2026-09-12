@@ -7,12 +7,8 @@
         "name": "Panoplie du Prespic",
         "description": null,
         "bonus": {
-            "3": {
-                "intelligence": 1
-            },
             "5": {
-                "intelligence": 1,
-                "dodge": 1
+                "wisdom": 1
             }
         },
         "state": "playable",

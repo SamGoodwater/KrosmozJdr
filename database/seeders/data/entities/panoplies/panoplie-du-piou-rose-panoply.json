@@ -7,9 +7,6 @@
         "name": "Panoplie du Piou Rose",
         "description": null,
         "bonus": {
-            "4": {
-                "heal_bonus": 1
-            },
             "6": {
                 "heal_bonus": 1,
                 "life_points_max": 2

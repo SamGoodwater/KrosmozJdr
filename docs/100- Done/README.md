@@ -1,5 +1,11 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Voie sur le set complet, pas sur chaque pièce
+
+Aux tout premiers niveaux, on ne peut pas coller Force / Intelligence / Chance / Agilité sur une cape sans dépasser le plafond. Ces bonus vont donc sur **toute la panoplie équipée** : +1 force pour le Bouftou (pas d’intelligence en plus), +1 agilité pour le Tofu, +1 vitalité pour le Sanglier, +1 sagesse pour le Prespic, +1 chance pour la Mousse (l’Éponge). Beaucoup de pièces restent vides, et ce n’est pas un problème.
+
+Quelques chapeaux ou capes donnent +1 à une compétence (intimidation, acrobaties, discrétion, survie) : ça pèse moins qu’une caractéristique, donc on s’autorise un écart avec la grille stricte. On ne décline pas ces sets en plusieurs raretés : il n’y a pas assez de marge de bonus.
+
 ## Septembre 2026 — Niveau des panoplies
 
 Une panoplie n’a pas de niveau à elle : on affiche celui de **la pièce la plus élevée**. Sur le catalogue, un curseur min/max filtre comme pour les équipements, et la liste s’ordonne du plus petit niveau au plus grand. Le badge apparaît sur les cartes (repliées et déployées), en liste, sur la fiche, et en lecture seule à l’édition.

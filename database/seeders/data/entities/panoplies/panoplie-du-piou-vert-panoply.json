@@ -7,9 +7,6 @@
         "name": "Panoplie du Piou Vert",
         "description": null,
         "bonus": {
-            "4": {
-                "strength": 1
-            },
             "6": {
                 "strength": 1,
                 "range": 1

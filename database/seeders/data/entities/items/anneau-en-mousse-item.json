@@ -1,13 +1,13 @@
 {
     "_schema_version": "1",
     "key": {
-        "dofusdb_id": "8111",
+        "dofusdb_id": "8254",
         "official_id": null
     },
     "item": {
-        "name": "Pantoufles du Tofu",
+        "name": "Anneau en Mousse",
         "level": "2",
-        "description": "À la fois souples et légères, ces pantoufles restent chaudes l'hiver et fraîches l'été. Malheureusement, elles ne supportent pas les lavages en machine.",
+        "description": "Offert en alliance, cet anneau permet de faire passer deux messages à l'être aimé : \"Je t'aime\" et \"Va faire la vaisselle\". Idéal pour ne pas perdre son temps en répétant tous les soirs la même chose.",
         "recipe": null,
         "rarity": 0,
         "state": "playable",
@@ -19,23 +19,18 @@
         "price_custom": null,
         "effect": [],
         "bonus": [],
-        "item_type_dofus_id": 11,
-        "item_type_name": "Bottes"
+        "item_type_dofus_id": 9,
+        "item_type_name": "Anneau"
     },
     "relations": {
         "panoply_dofusdb_ids": [
-            "50"
+            "63"
         ],
         "resources": [
             {
-                "dofusdb_id": "363",
-                "name": "Peau de Larve Orange",
-                "quantity": 4
-            },
-            {
-                "dofusdb_id": "366",
-                "name": "Bec du Tofu",
-                "quantity": 4
+                "dofusdb_id": "13487",
+                "name": "Serviette de Plage",
+                "quantity": 3
             },
             {
                 "dofusdb_id": "8682",

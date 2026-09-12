@@ -7,9 +7,6 @@
         "name": "Panoplie Larvesque",
         "description": null,
         "bonus": {
-            "3": {
-                "intelligence": 1
-            },
             "5": {
                 "intelligence": 1,
                 "heal_bonus": 1
