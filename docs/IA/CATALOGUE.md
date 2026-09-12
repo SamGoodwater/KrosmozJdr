@@ -123,42 +123,43 @@ Sets Dofus emblématiques des premiers niveaux, pièces **et** bonus de set relu
 | Bouftou | 2 | Terre **et** Feu | Marteau +1 dgt terre, bouclier +1 CA, ceinture +1 tacle, coiffe +1 intimidation ; **8p** = force + intelligence + PA (comme Dofus, les deux caracs seulement au set complet) |
 | Tofu | 2 | Air | Baguette +1 dgt air, ceinture +1 fuite, kaskofu +1 acrobaties ; **7p** = agilité + PM |
 | Prespic | 3 | Sagesse | Anneau +1 soin, bouclier +1 CA, cape +1 discrétion ; **5p** = sagesse |
-| Sanglier | 1–2 | Terre | Ceinture +1 tacle ; **3p** = vitalité |
+| Sanglier | 1–2 | Terre | Ceinture +1 tacle ; **3p** = vitalité + intimidation |
 | Mousse (Éponge) | 2 | Eau | Pelle +1 dgt eau, bouclier +1 CA, ceinture +1 fuite, coiffe +1 survie ; **8p** = chance |
-| Arakne | 1 | Terre | Hache +1 dgt terre, ceinture +1 tacle ; 4p = force |
-| Moskito | 1–2 | Eau | 4p = chance (pas d’arme ni de ceinture) |
-| Champ Champ | 1 | Terre / PV | 2 anneaux ; 4p = vit + PV |
-| Bandit | 1 | Air | Dagues +1 dgt air, ceinture +1 fuite ; 4p = agilité |
-| Jeune Aventurier | 1 | Mixte / starter | Ceinture +1 tacle ; 6p = PV + initiative |
-| Paysan | 1–2 | Terre | Faux +1 dgt terre, ceinture +1 tacle ; **7p** = force + PV |
-| Larvesque | 2–4 | Feu / soins | Baguette +2 dgt feu ; **5p** = int + soins |
-| Bouftou Royal | 2–3 | Terre | Épée +2 dgt terre, ceinture +2 tacle, bouclier +1 CA ; 8p = +1 PA |
-| Abraknyde | 4 | Terre | Cape +1 force, bâton +2 dgt terre ; 7p = force + CA |
-| Kwak Flammes / Glace / Terre / Vent | 4 | Feu / Eau / Terre / Air | Cape +1 carac, épée +2 dgt, ceinture tacle ou fuite ; 7p = carac + PO |
-| Scara Vert / Rouge / Bleu | 4 | Terre / Feu / Eau | Cape +1 carac, ceinture tacle ou fuite ; 4p = carac + CA |
-| Scara Blanc | 4 | Sagesse / initiative | Cape +1 initiative, chapeau +1 sag ; 4p = sag + initiative |
-| Akwadala | 3–4 | Eau | Cape +1 chance, bâton +2 dgt eau, bouclier +1 CA ; 8p = chance + PO |
+| Arakne | 1 | Terre | Hache +1 dgt terre, ceinture +1 tacle, coiffe +1 intimidation ; 4p = force |
+| Moskito | 1–2 | Eau | Galurette +1 persuasion ; 4p = chance (pas d’arme ni de ceinture) |
+| Champ Champ | 1 | Terre / PV | 2 anneaux, coiffe +1 survie ; 4p = vit + PV |
+| Bandit | 1 | Air | Dagues +1 dgt air, ceinture +1 fuite ; 4p = agilité + discrétion |
+| Jeune Aventurier | 1 | Mixte / starter | Ceinture +1 tacle, chapeau +1 perception ; 6p = PV + initiative |
+| Paysan | 1–2 | Terre | Faux +1 dgt terre, ceinture +1 tacle, bob +1 dressage ; **7p** = force + PV |
+| Larvesque | 2–4 | Feu / soins | Baguette +2 dgt feu, cape +1 médecine ; **5p** = int + soins |
+| Bouftou Royal | 2–3 | Terre | Épée +2 dgt terre, ceinture +2 tacle, bouclier +1 CA, cape +1 intimidation ; 8p = +1 PA |
+| Abraknyde | 4 | Terre | Cape +1 force, bâton +2 dgt terre ; 7p = force + CA + nature |
+| Kwak Flammes / Glace / Terre / Vent | 4 | Feu / Eau / Terre / Air | Cape +1 carac, épée +2 dgt, ceinture tacle ou fuite ; **7p** = carac + PO + Arcanes / Persuasion / Athlétisme / Acrobaties |
+| Scara Vert / Rouge / Bleu | 4 | Terre / Feu / Eau | Cape +1 carac, ceinture tacle ou fuite ; **4p** = carac + CA + Athlétisme / Arcanes / Supercherie |
+| Scara Blanc | 4 | Sagesse / initiative | Cape +1 initiative, chapeau +1 sag ; **4p** = sag + initiative + perspicacité |
+| Akwadala | 3–4 | Eau | Cape +1 chance, bâton +2 dgt eau, bouclier +1 CA ; **8p** = chance + PO + persuasion |
 | Champêtre | 1 | Terre / nature | Bâton +1 dgt terre, coiffe +1 nature ; **7p** = force + PV |
 | Homme Ours | 2 | Terre | Bâton +1 dgt terre, coiffe +1 intimidation ; **7p** = force |
 | Intrépide / Boune | 1 | Mixte / starter | Arme +1 dgt, bouclier +1 CA ; set complet = PV |
 | Invisible | 2 | Discrétion | Cape +1 discrétion, bouclier +1 CA ; **3p** = fuite |
-| Blop Coco / Griotte / Indigo / Reinette | 5 | Air / Feu / Eau / Terre | Pas de cape : **4p** = carac de voie ; ceinture tacle ou fuite |
-| Gelax | 6 | Feu | Cape +2 int ; **6p** = intelligence |
-| Craqueleur | 5–6 | Terre / tank | Cape +2 force, épée +3 dgt terre, bouclier +1 CA ; **7p** = force + CA |
-| Mulou | 4–6 | Terre | Cape +2 force, hache +3 dgt terre ; **7p** = force |
-| Koalak | 5–6 | Air | Cape +2 agi, arc +3 dgt air ; **7p** = agilité + PO |
-| Kitsou | 5–6 | Feu | Cape +2 int ; **4p** = intelligence |
-| Wabbit / Cawotte | 5–6 | Eau | **3p** = chance |
-| Tortue | 6 | Tank | Pas de bouclier ; **3p** = CA + vit |
-| Chef Crocodaille | 6–7 | Eau | Cape +2/3 chance, épée +3/4 dgt eau, bouclier +1 CA ; **8p** = chance + PO |
-| Aerdala / Terrdala | 5–8 | Air / Terre | Comme Akwadala : cape + carac, arme + dégâts, bouclier CA ; **8p** = carac + PO |
-| Scarafeuille Noir | 4–5 | Terre / tank | **4p** = force + CA |
-| Scarabosse Doré | 4–5 | Feu | Cape +2 int, baguette +3 dgt feu ; **7p** = intelligence |
-| Boostache | 4 | Feu | Cape +1 int ; **4p** = intelligence |
-| Kwakwa | 5 | Air | Épée +3 dgt air ; **4p** = agilité + PO |
-| Anciens Chafers | 4 | Terre | Marteau +2 dgt terre ; **4p** = force |
+| Blop Coco / Griotte / Indigo / Reinette | 5 | Air / Feu / Eau / Terre | Pas de cape : **4p** = carac de voie + Acrobaties / Arcanes / Supercherie / Athlétisme ; ceinture tacle ou fuite |
+| Gelax | 6 | Feu | Cape +2 int ; **6p** = intelligence + arcanes |
+| Craqueleur | 5–6 | Terre / tank | Cape +2 force, épée +3 dgt terre, bouclier +1 CA ; **7p** = force + CA + intimidation |
+| Mulou | 4–6 | Terre | Cape +2 force, hache +3 dgt terre ; **7p** = force + intimidation |
+| Koalak | 5–6 | Air | Cape +2 agi, arc +3 dgt air ; **7p** = agilité + PO + discrétion |
+| Kitsou | 5–6 | Feu | Cape +2 int ; **4p** = intelligence + arcanes |
+| Wabbit | 5–6 | Eau | **3p** = chance + persuasion |
+| Cawotte | 5–6 | Eau | **3p** = chance + dressage |
+| Tortue | 6 | Tank | Pas de bouclier ; **3p** = CA + vit + survie |
+| Chef Crocodaille | 6–7 | Eau | Cape +2/3 chance, épée +3/4 dgt eau, bouclier +1 CA ; **8p** = chance + PO + supercherie |
+| Aerdala / Terrdala | 5–8 | Air / Terre | Comme Akwadala : cape + carac, arme + dégâts, bouclier CA ; **8p** = carac + PO + Acrobaties / Athlétisme |
+| Scarafeuille Noir | 4–5 | Terre / tank | **4p** = force + CA + intimidation |
+| Scarabosse Doré | 4–5 | Feu | Cape +2 int, baguette +3 dgt feu ; **7p** = intelligence + arcanes |
+| Boostache | 4 | Feu | Cape +1 int ; **4p** = intelligence + arcanes |
+| Kwakwa | 5 | Air | Épée +3 dgt air ; **4p** = agilité + PO + acrobaties |
+| Anciens Chafers | 4 | Terre | Marteau +2 dgt terre ; **4p** = force + intimidation |
 
-À ces niveaux, Force / Int / Chance / Agilité sont encore **plafonnées à 0** sur la cape aux niv. 1–2 (formule) : la voie est portée par le **bonus de set complet**, pas par la pièce. Les **Pious** élémentaires n’ont **pas** de carac primaire au palier : Athlétisme / Arcanes / Supercherie / Acrobaties + portée ; le Piou Rose (vitalité) n’a que des PV max. Un set mixte Dofus (Bouftou For+Int) peut porter **les deux** au palier complet seulement, jamais sur les pièces. Les pièces peuvent rester vides. Quelques chapeaux / capes portent +1 compétence (intimidation, acrobaties, discrétion, survie, nature, athlétisme) même si la `formula` objet des compétences est à 0 : impact faible, volontaire. À partir du niv. 3 la cape prend +1, niv. 5 +2, niv. 7 +3. `auto_update = false`. JSON panoplies : `database/seeders/data/entities/panoplies/` (`PanoplySeeder`, après `ItemSeeder`).
+À ces niveaux, Force / Int / Chance / Agilité sont encore **plafonnées à 0** sur la cape aux niv. 1–2 (formule) : la voie est portée par le **bonus de set complet**, pas par la pièce. Les **Pious** élémentaires n’ont **pas** de carac primaire au palier : Athlétisme / Arcanes / Supercherie / Acrobaties + portée ; le Piou Rose (vitalité) n’a que des PV max. Un set mixte Dofus (Bouftou For+Int) peut porter **les deux** au palier complet seulement, jamais sur les pièces. Les pièces peuvent rester vides. **+1 compétence** (chapeau / cape vides, ou palier complet s’il n’y a pas d’emplacement vide) : impact faible, volontaire, même si la `formula` objet des compétences est à 0. Un set a en général **une** compétence de thème (voie, métier, ou flavour). Le Piou Rose et le Piou Violet n’en ont pas. À partir du niv. 3 la cape prend +1 carac, niv. 5 +2, niv. 7 +3. `auto_update = false`. JSON panoplies : `database/seeders/data/entities/panoplies/` (`PanoplySeeder`, après `ItemSeeder`).
 
 ### Liste few-shot panoplies (ce que l’IA doit imiter)
 
@@ -171,7 +172,7 @@ Quand l’IA relit un objet ou un set Dofus, elle ne s’appuie **que** sur les 
 3. Emplacements : cape = For/Int/Cha/Agi ; arme = dégâts fixes ; ceinture = tacle/fuite ; bouclier = CA ; chapeau = vit/sag ; anneau = soins/PO/invoc ; bottes = PM/initiative.
 4. Niv. 1–2 : pas de carac de voie sur la cape → la mettre sur le **set complet**. Pièces vides OK.
 5. Set mixte Dofus (Bouftou) : For **et** Int uniquement au palier complet.
-6. Compétences : +1 sur un chapeau ou une cape, sans viser l’équilibre parfait.
+6. Compétences : **+1** (une par set). Chapeau vide, sinon cape vide, sinon palier complet. Impact faible volontaire. Piou Rose / Violet : aucune.
 7. Pas de raretés croisées à bas niveau.
 
 **Sets or :** Piou (6), Bouftou, Tofu, Prespic, Mousse, Sanglier, Arakne, Moskito, Champ Champ, Bandit, Jeune Aventurier, Paysan, Champêtre, Homme Ours, Intrépide, Boune, Invisible, Larvesque, Bouftou Royal, Abraknyde, Kwak (4), Kwakwa, Scara (5), Scarabosse Doré, Akwadala, Aerdala, Terrdala, Blop (4), Gelax, Craqueleur, Mulou, Koalak, Kitsou, Wabbit, Cawotte, Tortue, Chef Crocodaille, Boostache, Anciens Chafers.

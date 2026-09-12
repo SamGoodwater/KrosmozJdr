@@ -12,7 +12,8 @@
             },
             "7": {
                 "strength": 1,
-                "armor_class": 1
+                "armor_class": 1,
+                "nature": 1
             }
         },
         "state": "playable",

@@ -12,7 +12,8 @@
             },
             "7": {
                 "chance": 1,
-                "range": 1
+                "range": 1,
+                "persuasion": 1
             }
         },
         "state": "playable",

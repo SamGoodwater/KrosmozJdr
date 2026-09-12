@@ -9,7 +9,8 @@
         "bonus": {
             "4": {
                 "wisdom": 1,
-                "initiative": 1
+                "initiative": 1,
+                "insight": 1
             }
         },
         "state": "playable",

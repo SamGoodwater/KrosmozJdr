@@ -8,7 +8,8 @@
         "description": null,
         "bonus": {
             "4": {
-                "intelligence": 1
+                "intelligence": 1,
+                "arcana": 1
             }
         },
         "state": "playable",

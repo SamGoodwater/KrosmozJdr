@@ -4,6 +4,10 @@
 
 Les catalogues (équipements, panoplies, consommables, ressources, monstres, sorts) arrivent avec le filtre **Type** (ou Race) sur **Tous** : plus de liste de types cochée d’avance. Survoler le point d’état d’une fiche (carte minimale ou fiche complète) dit **Jouable**, plus « Actif ».
 
+## Septembre 2026 — Une compétence légère sur (presque) chaque set
+
+Les compétences (+1 Athlétisme, Arcanes, Discrétion…) pèsent peu par rapport à une caractéristique : on s’en sert comme **bonus facile** sur les panoplies relues, y compris plus haut niveau. Si le chapeau ou la cape est vide, ça va sur la pièce ; sinon sur le palier complet du set. Les Pious Rose (vitalité) et Violet (portée) n’en ont toujours pas.
+
 ## Septembre 2026 — Pious sans carac primaire, total set + pièces
 
 Les six Pious du niveau 1 ne donnent plus Force / Intelligence / Chance / Agilité au set complet. Vert, Rouge, Bleu et Jaune portent la **compétence** de l’élément (Athlétisme, Arcanes, Supercherie, Acrobaties) plus la portée. Le Rose, côté vitalité, n’a **pas** de compétence : seulement des points de vie max (l’anneau garde le +1 soin). Le Violet reste +1 PO.
@@ -28,7 +32,7 @@ Sur les catalogues d’équipements et de panoplies, on choisit **une caractéri
 
 Aux tout premiers niveaux, on ne peut pas coller Force / Intelligence / Chance / Agilité sur une cape sans dépasser le plafond. Ces bonus vont donc sur **toute la panoplie équipée**. Le Bouftou complet reprend Dofus : +1 force **et** +1 intelligence (plus le PA). Beaucoup de pièces restent vides, et ce n’est pas un problème.
 
-Quelques chapeaux ou capes donnent +1 à une compétence (intimidation, acrobaties, discrétion, survie) : ça pèse moins qu’une caractéristique, donc on s’autorise un écart avec la grille stricte. On ne décline pas ces sets en plusieurs raretés : il n’y a pas assez de marge de bonus.
+Quelques chapeaux ou capes (puis, plus tard, presque tous les sets) donnent +1 à une compétence : ça pèse moins qu’une caractéristique, donc on s’autorise un écart avec la grille stricte. On ne décline pas ces sets en plusieurs raretés : il n’y a pas assez de marge de bonus.
 
 ## Septembre 2026 — Niveau des panoplies
 

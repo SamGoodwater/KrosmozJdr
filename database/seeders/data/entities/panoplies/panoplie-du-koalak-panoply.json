@@ -9,7 +9,8 @@
         "bonus": {
             "7": {
                 "agility": 1,
-                "range": 1
+                "range": 1,
+                "stealth": 1
             }
         },
         "state": "playable",
