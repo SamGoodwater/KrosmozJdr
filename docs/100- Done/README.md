@@ -8,6 +8,14 @@ Le pont entre Laravel et les pages Vue passe par Inertia 3 côté navigateur. Na
 
 On ne garde plus l’idée d’importer tout Dofus pour habiller un perso. Une commande (`ia:equipment-grid`) dresse la carte **niveau × emplacement × voie** (Terre, Feu, Eau, Air). Quand un objet Dofus colle à une case, on le note comme représentant **sans toucher à son nom ni à son icône**. Les cases vides peuvent être remplies par des fiches techniques en brouillon, à relire avant de les rendre jouables.
 
+## Septembre 2026 — Premiers équipements jouables, classés par rareté
+
+32 objets de **niveau 8** sont passés en jouable : 4 capes et 4 armes pour chacun des quatre éléments, chaque série étant déclinée de Commun à Très rare. À élément et niveau identiques, on peut donc comparer quatre objets qui donnent de plus en plus de bonus — c’est la rareté qui fait la différence.
+
+Ce qu’il faut savoir en tant que MJ : seules les **capes** portent Force, Intelligence, Chance ou Agilité, et seules les **armes** portent des dégâts élémentaires. Les anneaux, amulettes, chapeaux, ceintures et bottes ont leurs propres bonus (PA, portée, Vitalité, tacle…) et ne sont pas concernés par les éléments. Les objets de ces emplacements repassent donc en brouillon pour l’instant.
+
+Les valeurs suivent les grilles de normes du jeu et ne dépassent jamais le plafond du niveau. Les noms, descriptions et illustrations Dofus n’ont pas bougé.
+
 ## Septembre 2026 — Tableaux : TanStack Table 9
 
 Les catalogues (tri, pagination, colonnes visibles) passent en TanStack Table 9. L’usage ne change pas : on trie, on pagine, on masque des colonnes comme avant.

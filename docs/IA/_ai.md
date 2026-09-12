@@ -17,6 +17,7 @@
 - **L’IA ne réécrit pas l’identité** ni, par défaut, les **caractéristiques** d’une fiche Dofus. Liste éditable : page admin **IA métier** (`/admin/content/ia-generation`), fichier `resources/ia/generation.json` en repli. **PNJ** : création complète. Détail : [CHAMPS.md](./CHAMPS.md).
 - **Monstres / PNJ / sorts de créature** : génération **à la demande**, paquet cohérent.
 - Exemples few-shot : uniquement des fiches `playable` (une vingtaine par type quand l’IA s’en mêle).
+- **Étalons objets** : 32 items niveau 8 `playable` (4 éléments × 4 raretés), capes + armes seulement. L’élément n’existe que sur cape (For/Int/Cha/Agi) et armes (dégâts fixes) — pivot `characteristic_object_item_type`. Valeurs = `norms_grid` écrêtées par `formula`. Bonus JDR à écrire dans **`bonus`** (le front le fait gagner sur `effect`) + `auto_update = false`. Détail : [CATALOGUE](./CATALOGUE.md#kit-détalons-niveau-8-en-base-à-relire).
 
 ## Fichiers
 

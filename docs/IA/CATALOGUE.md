@@ -78,3 +78,24 @@ Les routes caractéristiques existent déjà (`/api/characteristics`, normes, ta
 ## Étalons manuels
 
 Une vingtaine de fiches `playable` **par type** au moment où l’IA touche ce type. Pour les objets, l’algo peut produire le volume ; les étalons servent surtout de few-shot **si** une passe LLM existe (flavour, uniques). Ne pas réécrire tout Dofus à la main avant de commencer.
+
+### Kit d’étalons niveau 8 (en base, à relire)
+
+32 objets `playable` : **4 éléments × 4 raretés**, sur les deux seuls emplacements qui portent un élément.
+
+**Contrainte structurelle** : Force / Intelligence / Chance / Agilité ne sont autorisées que sur la **cape**, les dégâts fixes élémentaires que sur les **armes** (pivot `characteristic_object_item_type`). Anneaux, amulettes, chapeaux, ceintures et bottes n’ont **aucune** caractéristique élémentaire : l’axe « par élément » ne s’applique pas à eux.
+
+Valeurs au niveau 8, dérivées des `norms_grid` (colonne de puissance) puis écrêtées par la `formula` du pivot :
+
+| Rareté | Puissance | Cape (carac de voie) | Arme (dégâts de voie) |
+| --- | --- | --- | --- |
+| 0 Commun | `weak` | 1 | 1 |
+| 1 Peu commun | `neutral` | 2 | 1 + touche 2 |
+| 2 Rare | `strong` | 3 + initiative 2 | 2 + touche 3 |
+| 3 Très rare | `very_strong` | 3 + initiative 2 + sauvegarde 1 + PV max 4 | 2 + touche 3 + dégâts neutres 2 |
+
+Au niveau 8 la `formula` plafonne la carac de voie à 3 et l’initiative à 2, en dessous de ce que réclamerait `very_strong` : `strong` et `très rare` se différencient donc par le **nombre de secondaires**, pas par la valeur principale. Raretés 4 (Légendaire) et 5 (Unique) restent réservées aux Dofus et trophées (règle 5.2.4.4).
+
+Écriture : le JSON à clés courtes va dans **`bonus`** *et* `effect`. Le front fusionne `[bonus, effect]` et **`bonus` gagne** en cas de doublon (`buildCharacteristicEffectCell`) : écrire seulement `effect` laisserait afficher les valeurs DofusDB brutes. `auto_update` passe à `false` pour qu’un rafraîchissement de scrap n’écrase ni les bonus ni la rareté.
+
+Ces valeurs sont posées **directement en base** (relecture MJ en cours), sans seeder : un `project:seed` complet les perdrait.
