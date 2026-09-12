@@ -1,0 +1,51 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "18687",
+        "official_id": null
+    },
+    "item": {
+        "name": "Bouclier Akwadala",
+        "level": "4",
+        "description": "Pour parer les coups de bourre ou les coups tordus, ce bouclier issu du village d'Akwadala devrait faire l'affaire.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 1700,
+        "price_custom": null,
+        "effect": {
+            "armor_class": 1
+        },
+        "bonus": {
+            "armor_class": 1
+        },
+        "item_type_dofus_id": 82,
+        "item_type_name": "Bouclier"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "34"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "12745",
+                "name": "Substrat de Bocage",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "2302",
+                "name": "Langue d'Étoile",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "8749",
+                "name": "Bulbe Kouraçao",
+                "quantity": 5
+            }
+        ]
+    }
+}

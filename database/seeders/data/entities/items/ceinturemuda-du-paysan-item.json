@@ -1,0 +1,46 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8124",
+        "official_id": null
+    },
+    "item": {
+        "name": "Ceinturemuda du Paysan",
+        "level": "2",
+        "description": "Cette ceinture est franchement exceptionnelle, puisqu'un bermuda en fibre de lin y est attaché. C'est la ceinture idéale pour ceux qui aiment se délester de leurs vêtements rapidement, et passer à l'action sur le champ. Attention cependant, pour des raisons d'hygiène, cette ceinture est interdite dans les piscines municipales.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 600,
+        "price_custom": null,
+        "effect": {
+            "tackle": 1
+        },
+        "bonus": {
+            "tackle": 1
+        },
+        "item_type_dofus_id": 10,
+        "item_type_name": "Ceinture"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "47"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "309",
+                "name": "Pétale de Rose Démoniaque",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "8157",
+                "name": "Pétale Magique du Tournesol Affamé",
+                "quantity": 1
+            }
+        ]
+    }
+}

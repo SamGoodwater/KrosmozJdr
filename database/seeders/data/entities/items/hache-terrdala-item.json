@@ -15,7 +15,7 @@
         "read_level": 0,
         "write_level": 3,
         "auto_update": false,
-        "price_calculated": null,
+        "price_calculated": 6600,
         "price_custom": 8300,
         "effect": {
             "fixed_damage_earth": 2,

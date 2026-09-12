@@ -123,5 +123,19 @@ Sets Dofus emblématiques des premiers niveaux, pièces **et** bonus de set relu
 | Bouftou | 2 | Terre (mixte) | Marteau +1 dgt terre, bouclier +1 CA, ceinture +1 tacle ; 8p = +1 PA |
 | Tofu | 2 | Air | Baguette +1 dgt air, ceinture +1 fuite ; 7p = agilité + 1 PM |
 | Prespic | 3 | Feu | Cape +1 int, chapeau +1 vit, bouclier +1 CA ; 5p = int + fuite |
+| Sanglier | 1–2 | Terre | Ceinture +1 tacle ; 3p = vit + initiative |
+| Arakne | 1 | Terre | Hache +1 dgt terre, ceinture +1 tacle ; 4p = force |
+| Moskito | 1–2 | Eau | 4p = chance (pas d’arme ni de ceinture) |
+| Champ Champ | 1 | Terre / PV | 2 anneaux ; 4p = vit + PV |
+| Bandit | 1 | Air | Dagues +1 dgt air, ceinture +1 fuite ; 4p = agilité |
+| Jeune Aventurier | 1 | Mixte / starter | Ceinture +1 tacle ; 6p = PV + initiative |
+| Paysan | 1–2 | Terre | Faux +1 dgt terre, ceinture +1 tacle ; 7p = force + PV |
+| Larvesque | 2–4 | Feu / soins | Baguette +2 dgt feu, chapeau +1 vit ; 5p = int + soins |
+| Bouftou Royal | 2–3 | Terre | Épée +2 dgt terre, ceinture +2 tacle, bouclier +1 CA ; 8p = +1 PA |
+| Abraknyde | 4 | Terre | Cape +1 force, bâton +2 dgt terre ; 7p = force + CA |
+| Kwak Flammes / Glace / Terre / Vent | 4 | Feu / Eau / Terre / Air | Cape +1 carac, épée +2 dgt, ceinture tacle ou fuite ; 7p = carac + PO |
+| Scara Vert / Rouge / Bleu | 4 | Terre / Feu / Eau | Cape +1 carac, ceinture tacle ou fuite ; 4p = carac + CA |
+| Scara Blanc | 4 | Sagesse / initiative | Cape +1 initiative, chapeau +1 sag ; 4p = sag + initiative |
+| Akwadala | 3–4 | Eau | Cape +1 chance, bâton +2 dgt eau, bouclier +1 CA ; 8p = chance + PO |
 
-À ces niveaux, Force / Int / Chance / Agilité sont encore **plafonnées à 0** sur la cape (formule) : la voie d’un Piou niveau 1 est donc portée par le **bonus de set**, pas par la pièce. `auto_update = false`. JSON panoplies : `database/seeders/data/entities/panoplies/` (`PanoplySeeder`, après `ItemSeeder`).
+À ces niveaux, Force / Int / Chance / Agilité sont encore **plafonnées à 0** sur la cape aux niv. 1–2 (formule) : la voie d’un Piou, d’une Arakne ou d’un Bandit est donc portée par le **bonus de set**, pas par la pièce. À partir du niv. 3 la cape prend +1. `auto_update = false`. JSON panoplies : `database/seeders/data/entities/panoplies/` (`PanoplySeeder`, après `ItemSeeder`).

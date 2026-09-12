@@ -1,0 +1,27 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "28"
+    },
+    "panoply": {
+        "name": "Panoplie du Scarafeuille Rouge",
+        "description": null,
+        "bonus": {
+            "4": {
+                "intelligence": 1,
+                "armor_class": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "6937",
+            "6942",
+            "6945",
+            "6950"
+        ]
+    }
+}

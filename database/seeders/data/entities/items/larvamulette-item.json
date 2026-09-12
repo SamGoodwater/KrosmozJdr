@@ -1,0 +1,47 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "7106",
+        "official_id": null
+    },
+    "item": {
+        "name": "Larvamulette",
+        "level": "2",
+        "description": "Avec cette tête de larve autour du cou, vous ressemblez à Ulrik Holgan célèbre dompteur de larves des temps modernes.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 300,
+        "price_custom": null,
+        "effect": [],
+        "bonus": [],
+        "item_type_dofus_id": 1,
+        "item_type_name": "Amulette"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "33"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "643",
+                "name": "Fil de Soie",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "2563",
+                "name": "Peau de Larve Jaune",
+                "quantity": 5
+            },
+            {
+                "dofusdb_id": "364",
+                "name": "Peau de Larve Verte",
+                "quantity": 5
+            }
+        ]
+    }
+}

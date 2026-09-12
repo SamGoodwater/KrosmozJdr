@@ -15,7 +15,7 @@
         "read_level": 0,
         "write_level": 3,
         "auto_update": false,
-        "price_calculated": null,
+        "price_calculated": 4400,
         "price_custom": 8800,
         "effect": {
             "strength": 3,

@@ -1,0 +1,42 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6923",
+        "official_id": null
+    },
+    "item": {
+        "name": "Amulette du Bandit",
+        "level": "1",
+        "description": "Cette amulette a jadis appartenu au grand bandit \"Thisme\", réputé pour sa cruauté sans limite et sa mort idiote. Sa vie fût digne d'un conte d'Eniripsa, il mourût noyé et écrasé dans un pressoir à huile alors qu'il venait tout juste de purger une peine de prison de plus d'une centaine d'années, pour avoir volé une noix de cajou.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 150,
+        "price_custom": null,
+        "effect": [],
+        "bonus": [],
+        "item_type_dofus_id": 1,
+        "item_type_name": "Amulette"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "25"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "2539",
+                "name": "Substrat de Buisson",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "288",
+                "name": "Graine de Tournesol",
+                "quantity": 1
+            }
+        ]
+    }
+}

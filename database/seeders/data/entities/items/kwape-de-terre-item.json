@@ -1,0 +1,56 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6756",
+        "official_id": null
+    },
+    "item": {
+        "name": "Kwape de Terre",
+        "level": "4",
+        "description": "Idéale pour se camoufler en motte de terre géante, cette cape vous permettra d'attaquer par surprise les laboureurs et leur voler leurs richesses. Elle est donc avant tout réservée aux collectionneurs de silex.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 1100,
+        "price_custom": null,
+        "effect": {
+            "strength": 1
+        },
+        "bonus": {
+            "strength": 1
+        },
+        "item_type_dofus_id": 17,
+        "item_type_name": "Cape"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "14"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "746",
+                "name": "Ébonite",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "1141",
+                "name": "Plume du Kwak de Terre",
+                "quantity": 6
+            },
+            {
+                "dofusdb_id": "12016",
+                "name": "Plume du Kwakwa",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "2649",
+                "name": "Ver de Terre",
+                "quantity": 1
+            }
+        ]
+    }
+}

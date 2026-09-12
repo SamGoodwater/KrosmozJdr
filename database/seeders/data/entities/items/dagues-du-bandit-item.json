@@ -1,0 +1,46 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6924",
+        "official_id": null
+    },
+    "item": {
+        "name": "Dagues du Bandit",
+        "level": "1",
+        "description": "Ces dagues aiguisées sont populaires auprès des bandits et impopulaires auprès des jeunes aventuriers pour les mêmes raisons, elles disposent d'un enchantement leur permettant de voler les kamas de ses adversaires. Une forme d'impôt assez originale.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 850,
+        "price_custom": null,
+        "effect": {
+            "fixed_damage_air": 1
+        },
+        "bonus": {
+            "fixed_damage_air": 1
+        },
+        "item_type_dofus_id": 5,
+        "item_type_name": "Dague"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "25"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "2659",
+                "name": "Pétale de Tournesol Sauvage",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "27413",
+                "name": "Eau Ferrugineuse",
+                "quantity": 2
+            }
+        ]
+    }
+}
