@@ -11,6 +11,7 @@
 import { BaseModel } from '../BaseModel';
 import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
 import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
+import { LevelFormatter } from '@/Utils/Formatters/LevelFormatter';
 
 export class Panoply extends BaseModel {
     // ============================================
@@ -31,6 +32,32 @@ export class Panoply extends BaseModel {
 
     get bonus() {
         return this._data.bonus || null;
+    }
+
+    /**
+     * Niveau du set : payload serveur, sinon max des pièces chargées.
+     */
+    get level() {
+        const raw = this._data.level;
+        if (raw !== null && raw !== undefined && raw !== '') {
+            const n = Number(raw);
+            if (Number.isFinite(n)) {
+                return n;
+            }
+        }
+        let max = null;
+        for (const item of this.items) {
+            const v = item?.level;
+            if (v === null || v === undefined || v === '') {
+                continue;
+            }
+            const n = Number(v);
+            if (!Number.isFinite(n)) {
+                continue;
+            }
+            max = max === null ? n : Math.max(max, n);
+        }
+        return max;
     }
 
     // ============================================
@@ -94,7 +121,7 @@ export class Panoply extends BaseModel {
     toCell(fieldKey, options = {}) {
         // D'abord, essayer la méthode de base (gère les formatters automatiquement)
         const baseCell = super.toCell(fieldKey, options);
-        const overrideFields = new Set(['bonus']);
+        const overrideFields = new Set(['bonus', 'level']);
         
         // Si la méthode de base a trouvé quelque chose (formatter ou valeur par défaut valide), l'utiliser
         if (!overrideFields.has(fieldKey) && baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
@@ -111,6 +138,8 @@ export class Panoply extends BaseModel {
                 return this._toDescriptionCell(format, size, options);
             case 'bonus':
                 return this._toBonusCell(format, size, options);
+            case 'level':
+                return this._toLevelCell(format, size, options);
             case 'dofusdb_id':
                 return this._toDofusdbIdCell(format, size, options);
             case 'items_count':
@@ -181,6 +210,26 @@ export class Panoply extends BaseModel {
             size,
             chipsLayout: { maxRows: 3 },
         });
+    }
+
+    /**
+     * Badge niveau dérivé (max des pièces).
+     * @private
+     */
+    _toLevelCell(format, size, options) {
+        const level = this.level;
+        if (level === null || level === undefined) {
+            return {
+                type: 'badge',
+                value: '—',
+                params: {
+                    sortValue: 0,
+                    searchValue: '',
+                },
+            };
+        }
+
+        return LevelFormatter.toCell(level, { ...options, size, format });
     }
 
     /**

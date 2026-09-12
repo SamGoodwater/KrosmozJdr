@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Entity\Breed;
+use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Specialization;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -257,6 +258,7 @@ class PdfService
                 'read_level' => $entity->read_level ?? null,
                 'write_level' => $entity->write_level ?? null,
                 'bonus' => $entity->bonus,
+                'level' => $entity instanceof Panoply ? $entity->computedLevel() : null,
                 'dofusdb_id' => $entity->dofusdb_id,
             ],
             'campaign' => [

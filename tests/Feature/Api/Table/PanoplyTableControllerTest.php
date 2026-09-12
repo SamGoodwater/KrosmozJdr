@@ -329,4 +329,122 @@ class PanoplyTableControllerTest extends TestCase
         $this->assertContains($playable->id, $ids);
         $this->assertNotContains($raw->id, $ids);
     }
+
+    public function test_computed_level_is_max_of_item_levels(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $panoply = Panoply::factory()->create([
+            'created_by' => $user->id,
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $low = Item::factory()->create([
+            'created_by' => $user->id,
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'level' => '20',
+        ]);
+        $mid = Item::factory()->create([
+            'created_by' => $user->id,
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'level' => '50',
+        ]);
+        $high = Item::factory()->create([
+            'created_by' => $user->id,
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'level' => '100',
+        ]);
+        $panoply->items()->attach([$low->id, $mid->id, $high->id]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/panoplies?format=entities&limit=20');
+
+        $response->assertOk();
+        $row = collect($response->json('entities'))->firstWhere('id', $panoply->id);
+        $this->assertNotNull($row);
+        $this->assertSame(100, $row['level']);
+        $bounds = $response->json('meta.filterOptions.level');
+        $this->assertIsArray($bounds);
+        $this->assertArrayHasKey('min', $bounds);
+        $this->assertArrayHasKey('max', $bounds);
+    }
+
+    public function test_level_range_filter_uses_max_not_any_piece(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $mixed = Panoply::factory()->create([
+            'created_by' => $user->id,
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $lowOnly = Panoply::factory()->create([
+            'created_by' => $user->id,
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $piece20 = Item::factory()->create([
+            'created_by' => $user->id,
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'level' => '20',
+        ]);
+        $piece100 = Item::factory()->create([
+            'created_by' => $user->id,
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'level' => '100',
+        ]);
+        $mixed->items()->attach([$piece20->id, $piece100->id]);
+        $lowOnly->items()->attach($piece20->id);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/panoplies?format=entities&limit=20&filters[level][min]=1&filters[level][max]=50');
+
+        $response->assertOk();
+        $ids = collect($response->json('entities'))->pluck('id')->all();
+        $this->assertContains($lowOnly->id, $ids);
+        $this->assertNotContains($mixed->id, $ids);
+    }
+
+    public function test_sorts_by_computed_level_numeric_ascending(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $setNine = Panoply::factory()->create([
+            'created_by' => $user->id,
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $setEighty = Panoply::factory()->create([
+            'created_by' => $user->id,
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $itemNine = Item::factory()->create([
+            'created_by' => $user->id,
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'level' => '9',
+        ]);
+        $itemEighty = Item::factory()->create([
+            'created_by' => $user->id,
+            'state' => Item::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'level' => '80',
+        ]);
+        $setNine->items()->attach($itemNine->id);
+        $setEighty->items()->attach($itemEighty->id);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/panoplies?format=entities&limit=20&sort=level&order=asc');
+
+        $response->assertOk();
+        $ids = collect($response->json('entities'))->pluck('id')->all();
+        $ninePos = array_search($setNine->id, $ids, true);
+        $eightyPos = array_search($setEighty->id, $ids, true);
+        $this->assertNotFalse($ninePos);
+        $this->assertNotFalse($eightyPos);
+        $this->assertLessThan($eightyPos, $ninePos);
+    }
 }

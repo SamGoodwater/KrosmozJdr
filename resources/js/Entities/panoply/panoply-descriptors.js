@@ -163,6 +163,32 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
         },
       },
     },
+    level: {
+      key: "level",
+      label: "Niveau",
+      icon: "fa-solid fa-level-up-alt",
+      helper: "Plus haut niveau des équipements du set",
+      table: {
+        sortable: true,
+        filterable: {
+          id: "level",
+          type: "range",
+          defaultVisible: true,
+          ui: { min: 1, max: 200, step: 1 },
+        },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+    },
     items_count: {
       key: "items_count",
       label: "Nb objets",
@@ -433,6 +459,9 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
         pagination: {
           enabled: true,
           perPage: { default: 25, options: [10, 25, 50, 100] },
+        },
+        sort: {
+          initial: { field: "level", dir: "asc" },
         },
         selection: {
           enabled: true,

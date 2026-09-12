@@ -47,6 +47,7 @@ import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import TanStackTableShortcutsModal from "@/Pages/Molecules/table/TanStackTableShortcutsModal.vue";
 import { matchTableEnterIntent, isTableTypingTarget, shouldIgnoreTableRowIntent } from "@/Composables/table/useTanStackTableKeyboard.js";
 import { resolveFilterDefaultValue } from "@/Utils/table/resolveFilterDefaultValue.js";
+import { tableInitialSortingState } from "@/Utils/table/tableInitialSort.js";
 import {
     isTableRangeActive,
     minFormulaInteger,
@@ -1686,8 +1687,11 @@ watch(
         if (didHydrateSortFromPrefs || !sortableColumns.value.length) return;
         const allowed = new Set(sortableColumns.value.map((c) => c.id));
         const raw = prefs.sorting.value || [];
-        const merged = raw.filter((s) => s && allowed.has(s.id)).map((s) => ({ id: s.id, desc: Boolean(s.desc) }));
+        let merged = raw.filter((s) => s && allowed.has(s.id)).map((s) => ({ id: s.id, desc: Boolean(s.desc) }));
         didHydrateSortFromPrefs = true;
+        if (!merged.length) {
+            merged = tableInitialSortingState(props.config, allowed);
+        }
         if (!merged.length) return;
         sortingState.value = merged;
         nextTick(() => {

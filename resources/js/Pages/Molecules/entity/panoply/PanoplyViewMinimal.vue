@@ -16,6 +16,7 @@ import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard
 import EntityMinimalTitle from "@/Pages/Molecules/entity/shared/EntityMinimalTitle.vue";
 import { useEntityMinimalShell } from "@/Composables/entity/useEntityMinimalShell";
 import PanoplyEquipmentTextList from "@/Pages/Molecules/entity/panoply/PanoplyEquipmentTextList.vue";
+import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 
 const props = defineProps({
     panoply: {
@@ -46,6 +47,15 @@ const cellOpts = () => ({ size: "xs", context: "minimal" });
 const itemsCountCell = computed(() => entity.value?.toCell?.("items_count", cellOpts()) ?? null);
 const bonusCell = computed(() => entity.value?.toCell?.("bonus", cellOpts()) ?? null);
 const relationsCell = computed(() => entity.value?.toCell?.("panoply_summary_relations", cellOpts()) ?? null);
+
+const levelValue = computed(() => {
+    const lv = entity.value?.level ?? entity.value?._data?.level;
+    if (lv === null || lv === undefined || lv === "") {
+        return null;
+    }
+    const n = Number(lv);
+    return Number.isFinite(n) ? n : null;
+});
 
 const linkedItems = computed(() => {
     const raw = entity.value?.items ?? entity.value?._data?.items;
@@ -102,6 +112,7 @@ const handleAction = async (actionKey) => {
                     />
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex items-center gap-1.5">
+                            <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
                             <div class="min-w-0 flex-1">
                                 <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>
@@ -161,6 +172,7 @@ const handleAction = async (actionKey) => {
                     />
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex w-full min-w-0 items-center gap-1.5">
+                            <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
                             <div class="min-w-0">
                                 <EntityMinimalTitle :label="entity?.name ?? '—'" @open="openQuickView" />
                             </div>

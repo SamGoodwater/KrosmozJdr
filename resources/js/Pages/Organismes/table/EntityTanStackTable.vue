@@ -22,6 +22,7 @@ import { resolveEntityViewComponentSync } from "@/Utils/entity/resolveEntityView
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useTableServerParams } from "@/Composables/table/useTableServerParams";
 import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
+import { tableInitialServerSort } from "@/Utils/table/tableInitialSort";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 
 const props = defineProps({
@@ -94,6 +95,7 @@ const isServerEnabled = computed(() => {
 /** Params serveur (source de vérité en mode serverSide). */
 const { serverParams, mergeParams, buildFetchUrl } = useTableServerParams({
     filters: normalizeIndexTableFilters(props.initialFilterValues),
+    ...tableInitialServerSort(props.config),
 });
 
 onMounted(() => {

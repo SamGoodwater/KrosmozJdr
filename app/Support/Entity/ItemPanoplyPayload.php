@@ -58,7 +58,7 @@ final class ItemPanoplyPayload
     }
 
     /**
-     * @return array{id: int, name: string, bonus: mixed, items: list<array<string, mixed>>}
+     * @return array{id: int, name: string, bonus: mixed, level: int|null, items: list<array<string, mixed>>}
      *
      * @example
      * ItemPanoplyPayload::fromPanoply($panoply, $request->user());
@@ -66,13 +66,15 @@ final class ItemPanoplyPayload
     public static function fromPanoply(Panoply $panoply, ?User $user = null): array
     {
         $items = $panoply->relationLoaded('items') ? $panoply->items : collect();
+        $visibleItems = $items
+            ->filter(static fn ($item): bool => $item instanceof Item && Gate::forUser($user)->allows('view', $item));
 
         return [
             'id' => (int) $panoply->id,
             'name' => (string) ($panoply->name ?? ''),
             'bonus' => $panoply->bonus,
-            'items' => $items
-                ->filter(static fn ($item): bool => $item instanceof Item && Gate::forUser($user)->allows('view', $item))
+            'level' => Panoply::maxLevelFromItems($visibleItems),
+            'items' => $visibleItems
                 ->map(static function ($item): array {
                     return [
                         'id' => (int) $item->id,

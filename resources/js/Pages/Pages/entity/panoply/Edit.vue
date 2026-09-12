@@ -19,6 +19,7 @@ import PanoplyBonusEditor from "@/Pages/Organismes/entity/PanoplyBonusEditor.vue
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
+import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
 
 const page = usePage();
@@ -81,6 +82,15 @@ const linkedItems = computed(() => {
     return Array.isArray(raw) ? raw : [];
 });
 
+const levelValue = computed(() => {
+    const lv = panoply.value?.level;
+    if (lv === null || lv === undefined || lv === "") {
+        return null;
+    }
+    const n = Number(lv);
+    return Number.isFinite(n) ? n : null;
+});
+
 setPageTitle(`Modifier la panoplie : ${panoply.value.name || "Nouvelle panoplie"}`);
 </script>
 
@@ -97,11 +107,15 @@ setPageTitle(`Modifier la panoplie : ${panoply.value.name || "Nouvelle panoplie"
 
         <section class="rounded-xl border border-base-300/70 bg-base-100/30 p-3 shadow-sm md:p-4">
             <div class="mb-2.5 border-b border-base-300/50 pb-2">
-                <h2 class="text-base font-semibold tracking-tight text-base-content">
-                    Équipements de la panoplie
-                </h2>
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="text-base font-semibold tracking-tight text-base-content">
+                        Équipements de la panoplie
+                    </h2>
+                    <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
+                </div>
                 <p class="mt-0.5 text-xs leading-snug text-base-content/70 md:text-sm">
                     Recherchez un équipement dans le catalogue, puis retirez-le si besoin.
+                    Le niveau du set est celui de la pièce la plus élevée.
                 </p>
             </div>
             <EntityRelationsManager

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api\Table;
 
 use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
+use App\Models\Entity\Item;
 use App\Models\Entity\Panoply;
 use App\Models\Type\ItemType;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -35,7 +37,7 @@ class PanoplyTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['state', 'items_count', 'item_type_id'] as $k) {
+        foreach (['state', 'items_count', 'item_type_id', 'level'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -44,14 +46,14 @@ class PanoplyTableController extends Controller
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
         $sortsPayload = $request->input('sorts');
-        $sort = (string) $request->get('sort', 'id');
-        $order = (string) $request->get('order', 'desc');
+        $sort = (string) $request->get('sort', 'level');
+        $order = (string) $request->get('order', 'asc');
         if (is_array($sortsPayload) && isset($sortsPayload[0]) && is_array($sortsPayload[0])) {
             $sort = (string) ($sortsPayload[0]['field'] ?? $sortsPayload[0]['column'] ?? $sort);
             $order = strtolower((string) ($sortsPayload[0]['dir'] ?? $sortsPayload[0]['order'] ?? $order));
         }
         if (! in_array($order, ['asc', 'desc'], true)) {
-            $order = 'desc';
+            $order = 'asc';
         }
 
         $viewer = $request->user();
@@ -83,8 +85,7 @@ class PanoplyTableController extends Controller
 
         $this->applyEntityTableIdList($query, $request);
 
-        $allowedSort = ['id', 'name', 'items_count', 'state', 'dofusdb_id', 'created_at', 'updated_at'];
-        $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
+        $this->applyPanoplyTableSort($query, $request, $viewer);
 
         $pageResult = $this->paginateEntityTable($query, $request);
         $rows = $pageResult['rows'];
@@ -108,6 +109,7 @@ class PanoplyTableController extends Controller
                 $createdBy = $p->createdBy;
 
                 return $p->toArray() + [
+                    'level' => $p->computedLevel(),
                     'items' => $p->relationLoaded('items')
                         ? $p->items->map(static fn ($item) => [
                             'id' => $item->id,
@@ -159,6 +161,7 @@ class PanoplyTableController extends Controller
             $createdAtSort = $p->created_at ? $p->created_at->getTimestamp() : 0;
             $updatedAtLabel = $p->updated_at ? $p->updated_at->format('d/m/Y H:i') : '-';
             $updatedAtSort = $p->updated_at ? $p->updated_at->getTimestamp() : 0;
+            $level = $p->computedLevel();
 
             return [
                 'id' => $p->id,
@@ -170,6 +173,13 @@ class PanoplyTableController extends Controller
                             'href' => $showHref,
                             'searchValue' => (string) $p->name,
                             'sortValue' => (string) $p->name,
+                        ],
+                    ],
+                    'level' => [
+                        'type' => 'badge',
+                        'value' => $level !== null ? (string) $level : '-',
+                        'params' => [
+                            'sortValue' => $level ?? 0,
                         ],
                     ],
                     'bonus' => [
@@ -221,6 +231,7 @@ class PanoplyTableController extends Controller
                 ],
                 'rowParams' => [
                     'entity' => $p->toArray() + [
+                        'level' => $level,
                         'items_count' => $p->items_count ?? 0,
                         'npcs_count' => $p->npcs_count ?? 0,
                         'campaigns_count' => $p->campaigns_count ?? 0,
@@ -255,7 +266,7 @@ class PanoplyTableController extends Controller
     }
 
     /**
-     * Filtres panoplie : état, nombre de pièces, types d’objets présents.
+     * Filtres panoplie : état, niveau dérivé (MAX des pièces), nombre de pièces, types d’objets.
      *
      * @param  Builder<Panoply>  $query
      * @param  array<string, mixed>  $filters
@@ -264,6 +275,9 @@ class PanoplyTableController extends Controller
     {
         if ($this->hasFilterValue($filters, 'state')) {
             $this->applyEqualityFilter($query, 'state', $filters['state']);
+        }
+        if ($this->hasFilterValue($filters, 'level')) {
+            $this->applyPanoplyComputedLevelFilter($query, $filters['level'], $viewer);
         }
         if ($this->hasFilterValue($filters, 'items_count')) {
             $this->applyHavingRangeFilter($query, 'items_count', $filters['items_count']);
@@ -279,10 +293,102 @@ class PanoplyTableController extends Controller
     }
 
     /**
+     * Plage (ou égalité) sur le MAX numérique des pièces visibles, pas un whereHas.
+     *
+     * @param  Builder<Panoply>  $query
+     */
+    private function applyPanoplyComputedLevelFilter(Builder $query, mixed $raw, mixed $viewer): void
+    {
+        $bounds = $this->normalizeRangeBounds($raw);
+        if ($bounds === null) {
+            $casted = $this->castFilterList($raw, 'int');
+            if ($casted === []) {
+                return;
+            }
+            [$sql, $bindings] = Panoply::maxVisibleItemLevelSql($viewer instanceof User ? $viewer : null);
+            if (count($casted) === 1) {
+                $query->whereRaw("{$sql} = ?", array_merge($bindings, [$casted[0]]));
+
+                return;
+            }
+            $placeholders = implode(', ', array_fill(0, count($casted), '?'));
+            $query->whereRaw("{$sql} IN ({$placeholders})", array_merge($bindings, $casted));
+
+            return;
+        }
+
+        [$min, $max] = $bounds;
+        $user = $viewer instanceof User ? $viewer : null;
+        if ($min !== null) {
+            [$sql, $bindings] = Panoply::maxVisibleItemLevelSql($user);
+            $query->whereRaw("{$sql} >= ?", array_merge($bindings, [$min]));
+        }
+        if ($max !== null) {
+            [$sql, $bindings] = Panoply::maxVisibleItemLevelSql($user);
+            $query->whereRaw("{$sql} <= ?", array_merge($bindings, [$max]));
+        }
+    }
+
+    /**
+     * Tri panoplie : niveau dérivé via sous-requête, sinon colonnes SQL.
+     *
+     * @param  Builder<Panoply>  $query
+     */
+    private function applyPanoplyTableSort(Builder $query, Request $request, mixed $viewer): void
+    {
+        $user = $viewer instanceof User ? $viewer : null;
+        $allowedSql = ['id', 'name', 'items_count', 'state', 'dofusdb_id', 'created_at', 'updated_at'];
+        $sorts = $request->input('sorts');
+
+        if (is_array($sorts) && $sorts !== []) {
+            $applied = false;
+            foreach ($sorts as $item) {
+                if (! is_array($item)) {
+                    continue;
+                }
+                $field = (string) ($item['field'] ?? $item['column'] ?? '');
+                $dir = strtolower((string) ($item['dir'] ?? $item['order'] ?? 'asc'));
+                if (! in_array($dir, ['asc', 'desc'], true)) {
+                    $dir = 'asc';
+                }
+                if ($field === 'level') {
+                    Panoply::orderByComputedLevel($query, $dir, $user);
+                    $applied = true;
+
+                    continue;
+                }
+                $resolved = $this->resolveEntityTableSortField($field, $allowedSql);
+                if ($resolved === null) {
+                    continue;
+                }
+                $query->orderBy($resolved, $dir);
+                $applied = true;
+            }
+            if ($applied) {
+                return;
+            }
+        }
+
+        $sort = (string) $request->get('sort', 'level');
+        $order = (string) $request->get('order', 'asc');
+        if (! in_array($order, ['asc', 'desc'], true)) {
+            $order = 'asc';
+        }
+        if ($sort === 'level') {
+            Panoply::orderByComputedLevel($query, $order, $user);
+
+            return;
+        }
+
+        $this->applyEntityTableSort($query, $request, $allowedSql, 'level', 'asc');
+    }
+
+    /**
      * @return array{
      *     state: list<array{value: string, label: string}>,
      *     item_type_id: list<array{value: string, label: string, dofusdb_type_id: int|null, show_in_catalog: bool}>,
-     *     items_count: array{min: int, max: int}
+     *     items_count: array{min: int, max: int},
+     *     level: array{min: int, max: int}
      * }
      */
     private function buildPanoplyFilterOptions(mixed $viewer): array
@@ -305,10 +411,15 @@ class PanoplyTableController extends Controller
             ->visibleToUser($viewer)
             ->withCount(['items' => fn ($q) => $q->visibleToUser($viewer)]);
 
+        $levelQuery = Item::query()
+            ->visibleToUser($viewer)
+            ->whereHas('panoplies', fn ($q) => $q->visibleToUser($viewer));
+
         return [
             'state' => EntityState::options(),
             'item_type_id' => $itemTypes,
             'items_count' => $this->withCountColumnBounds($countQuery, 'items_count', 0, 20),
+            'level' => $this->integerColumnBounds($levelQuery, 'level', 1, 200),
         ];
     }
 }

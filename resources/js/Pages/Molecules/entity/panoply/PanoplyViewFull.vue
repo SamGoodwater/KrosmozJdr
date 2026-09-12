@@ -18,6 +18,7 @@ import PanoplyThumb from "@/Pages/Molecules/entity/panoply/PanoplyThumb.vue";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
+import EntityFieldTooltip from "@/Pages/Molecules/entity/shared/EntityFieldTooltip.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
@@ -118,6 +119,11 @@ const linkedItems = computed(() => {
     return Array.isArray(raw) ? raw : [];
 });
 
+const levelDisplay = computed(() => {
+    const v = props.panoply?.level ?? props.panoply?._data?.level;
+    return v !== null && v !== undefined && v !== "" ? String(v) : null;
+});
+
 const userCanEditFields = computed(() => ["read_level", "write_level"].filter(canShowField));
 
 const technicalFields = computed(() =>
@@ -153,6 +159,7 @@ const getCell = (fieldKey) => {
 const getBadgeColor = (fieldKey) => {
     const colorMap = {
         items_count: "warning",
+        level: "warning",
         read_level: "primary",
         write_level: "secondary",
         dofusdb_id: "neutral",
@@ -239,7 +246,26 @@ const handleAction = async (actionKey) => {
             </template>
 
             <template #title>
-                <h2 class="text-2xl font-bold text-primary-100 wrap-break-word">{{ panoply.name }}</h2>
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="text-2xl font-bold text-primary-100 wrap-break-word">{{ panoply.name }}</h2>
+                    <EntityFieldTooltip
+                        v-if="canShowField('level') && levelDisplay"
+                        field-key="level"
+                        entity-type="panoply"
+                        :descriptors="descriptors"
+                        :table-meta="tableMeta"
+                    >
+                        <Badge
+                            :color="getBadgeColor('level')"
+                            :auto-label="levelDisplay"
+                            auto-scheme="level"
+                            auto-tone="mid"
+                            size="sm"
+                        >
+                            Nvx {{ levelDisplay }}
+                        </Badge>
+                    </EntityFieldTooltip>
+                </div>
             </template>
 
             <template #subtitle>

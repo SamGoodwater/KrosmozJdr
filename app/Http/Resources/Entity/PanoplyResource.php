@@ -25,6 +25,7 @@ class PanoplyResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'bonus' => $this->bonus,
+            'level' => $this->computedLevel(),
             'state' => $this->state,
             'read_level' => (int) ($this->read_level ?? 0),
             'write_level' => (int) ($this->write_level ?? 0),

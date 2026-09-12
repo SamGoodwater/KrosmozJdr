@@ -13,6 +13,7 @@ import EntityLineRowActions from "@/Pages/Molecules/entity/shared/EntityLineRowA
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import { emitLineRowClick, emitLineRowDblClick } from "@/Composables/table/useEntityTableRowPointer";
 import { getRowEntity } from "@/Utils/Entity/rowEntity";
+import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -49,6 +50,15 @@ const descriptionFull = computed(
     () => entity.value?.description ?? entity.value?._data?.description ?? ""
 );
 
+const levelValue = computed(() => {
+    const lv = entity.value?.level ?? entity.value?._data?.level;
+    if (lv === null || lv === undefined || lv === "") {
+        return null;
+    }
+    const n = Number(lv);
+    return Number.isFinite(n) ? n : null;
+});
+
 </script>
 
 <template>
@@ -69,6 +79,7 @@ const descriptionFull = computed(
             <div class="flex-1 min-w-0 flex flex-col gap-1.5 pl-1">
                 <div class="flex items-center gap-2">
                     <div class="flex items-center gap-2 min-w-0 flex-1">
+                        <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
                         <div class="min-w-0 flex-1">
                             <span class="font-semibold truncate block">{{ nameCell?.value || "—" }}</span>
                         </div>

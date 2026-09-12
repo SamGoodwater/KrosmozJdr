@@ -63,6 +63,7 @@ describe("charte des filtres tableau", () => {
             ["capability", getCapabilityFieldDescriptors, "level"],
             ["monster", getMonsterFieldDescriptors, "creature_level"],
             ["npc", getNpcFieldDescriptors, "creature_level"],
+            ["panoply", getPanoplyFieldDescriptors, "level"],
         ];
         for (const [name, factory, id] of cases) {
             const filter = collectFilterables(factory()).find((f) => f.id === id);

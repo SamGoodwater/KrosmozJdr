@@ -88,8 +88,13 @@ describe('panoply-descriptors', () => {
     });
 
     describe('Filtres tableau', () => {
-        it('filtre le nombre de pièces et les types d’objets', () => {
+        it('filtre le nombre de pièces, le niveau et les types d’objets', () => {
             const descriptors = getPanoplyFieldDescriptors();
+            expect(descriptors.level.table.filterable).toMatchObject({
+                id: 'level',
+                type: 'range',
+                defaultVisible: true,
+            });
             expect(descriptors.items_count.table.filterable).toMatchObject({
                 id: 'items_count',
                 type: 'range',
@@ -100,6 +105,10 @@ describe('panoply-descriptors', () => {
                 type: 'multi',
                 defaultVisible: true,
                 defaultByCatalog: true,
+            });
+            expect(descriptors._tableConfig.features.sort.initial).toMatchObject({
+                field: 'level',
+                dir: 'asc',
             });
         });
     });

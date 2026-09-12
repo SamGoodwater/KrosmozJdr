@@ -172,4 +172,36 @@ class PanoplyModelTest extends TestCase
         $this->assertNotNull($found);
         $this->assertEquals($panoply->id, $found->id);
     }
+
+    public function test_computed_level_is_max_of_loaded_item_levels(): void
+    {
+        $user = User::factory()->create();
+        $panoply = Panoply::factory()->create([
+            'created_by' => $user->id,
+        ]);
+        $itemLow = Item::factory()->create([
+            'created_by' => $user->id,
+            'level' => '9',
+        ]);
+        $itemHigh = Item::factory()->create([
+            'created_by' => $user->id,
+            'level' => '80',
+        ]);
+        $panoply->items()->sync([$itemLow->id, $itemHigh->id]);
+        $panoply->load('items');
+
+        $this->assertSame(80, $panoply->computedLevel());
+    }
+
+    public function test_computed_level_is_null_without_items(): void
+    {
+        $user = User::factory()->create();
+        $panoply = Panoply::factory()->create([
+            'created_by' => $user->id,
+        ]);
+        $panoply->load('items');
+
+        $this->assertNull($panoply->computedLevel());
+        $this->assertNull(Panoply::maxLevelFromItems([]));
+    }
 }
