@@ -291,7 +291,6 @@ export function getItemFieldDescriptors(ctx = {}) {
       label: "État",
       icon: "fa-solid fa-circle-info",
       helper: "Cycle de contenu : brouillon, jouable, archivé…",
-      visibleIf: () => canUpdateAny,
       table: {
         sortable: true,
         filterable: {
@@ -302,7 +301,6 @@ export function getItemFieldDescriptors(ctx = {}) {
           options: getEntityStateOptions(),
         },
         defaultVisible: visibleFromSm,
-        visibleIf: () => canUpdateAny,
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {

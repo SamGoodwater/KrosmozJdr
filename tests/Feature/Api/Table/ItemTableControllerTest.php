@@ -396,6 +396,22 @@ class ItemTableControllerTest extends TestCase
         );
     }
 
+    public function test_filter_options_include_all_entity_states(): void
+    {
+        $user = User::factory()->create();
+        Item::factory()->create($this->playableAttrs());
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/items?format=entities&limit=1');
+
+        $response->assertOk();
+        $states = collect($response->json('meta.filterOptions.state'))->pluck('value')->all();
+        $this->assertEqualsCanonicalizing(
+            ['raw', 'draft', 'auto', 'playable', 'archived'],
+            $states
+        );
+    }
+
     public function test_entities_format_includes_item_bonus(): void
     {
         $user = User::factory()->create();

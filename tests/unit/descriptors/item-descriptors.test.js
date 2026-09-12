@@ -148,13 +148,17 @@ describe('item-descriptors', () => {
             expect(d.dofus_version.table.defaultVisible).toEqual(hidden);
         });
 
-        it('réserve la colonne État aux éditeurs', () => {
-            const editor = getItemFieldDescriptors({ capabilities: { updateAny: true } });
+        it('expose le filtre état (pastilles, Jouable par défaut) sans le réserver aux éditeurs', () => {
             const player = getItemFieldDescriptors({ capabilities: { updateAny: false } });
-            expect(editor.state.visibleIf?.()).toBe(true);
-            expect(editor.state.table.visibleIf?.()).toBe(true);
-            expect(editor.state.table.defaultVisible).toEqual(fromSm);
-            expect(player.state.visibleIf?.()).toBe(false);
+            expect(player.state.visibleIf).toBeUndefined();
+            expect(player.state.table.visibleIf).toBeUndefined();
+            expect(player.state.table.defaultVisible).toEqual(fromSm);
+            expect(player.state.table.filterable).toMatchObject({
+                id: 'state',
+                type: 'multi',
+                defaultVisible: true,
+                defaultValue: ['playable'],
+            });
         });
 
         it('utilise un langage fiche de jeu dans les tooltips', () => {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Table;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
@@ -145,6 +146,7 @@ class ItemTableController extends Controller
         };
 
         $filterOptions = [
+            'state' => EntityState::options(),
             'item_type_id' => $itemTypes,
             'rarity' => collect(Resource::RARITY)
                 ->map(fn ($label, $value) => ['value' => (string) $value, 'label' => (string) $label])

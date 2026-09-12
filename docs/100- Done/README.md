@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Filtre état sur les équipements
+
+Le catalogue d’équipements a les mêmes pastilles d’état que les autres listes (Brut, Brouillon, Auto, Jouable, Archivé), à droite de « Filtres ». Au chargement, **Jouable** est coché.
+
 ## Septembre 2026 — Carte déployée au-dessus des voisines
 
 Survoler une petite carte (panoplie, équipement…) l’ouvre **par-dessus** celles d’en dessous, plus en dessous.

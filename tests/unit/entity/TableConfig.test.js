@@ -12,6 +12,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { TableColumnConfig } from "@/Utils/Entity/Configs/TableColumnConfig.js";
+import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
 
 describe("TableColumnConfig", () => {
   it("crée une colonne avec les propriétés de base", () => {
@@ -223,5 +224,19 @@ describe("TableConfig", () => {
 
     expect(columnsWith.length).toBe(2);
     expect(columnsWithout.length).toBe(1);
+  });
+
+  it("garde le filtre état des équipements sans updateAny", () => {
+    const ctx = { capabilities: { updateAny: false } };
+    const config = TableConfig.fromDescriptors(getItemFieldDescriptors(ctx), ctx).build(ctx);
+    const stateCol = config.columns.find((c) => c.filter?.id === "state");
+
+    expect(stateCol).toBeDefined();
+    expect(stateCol.filter).toMatchObject({
+      type: "multi",
+      defaultVisible: true,
+      defaultValue: ["playable"],
+    });
+    expect(stateCol.permissions?.visibleIf).toBeUndefined();
   });
 });

@@ -10,7 +10,7 @@
 - Action `view-dofusdb` → store Pinia `dofusDbReference` + `DofusDbReferencePanel` (layout Main)
 - Favoris BDD → `useFavoriteEntityIds` + `api.favorites.*` ; UI `FavoritesModal` / page `/favoris`
 - Infobulle **prix** : `buildKamasPriceTooltip` (full item/consommable + descriptors). Ressource = « Prix proposé par Dofus ». Item/consommable = calculé + formule ; mention si `price_custom` ≠ 0. Bouton actualiser (vue full, `can.update`) → POST `recalculate-price`. Édition : `ItemPriceEditSection` (item et consommable). Masse : dashboard `/admin/content` (`entities:recalculate-prices`).
-- Tableau objets (vue Colonnes) : image + nom + niveau + type + rareté + **bonus** (`items.bonus`, chips) ; description / résumé / prix masqués ; `state` réservé aux éditeurs.
+- Tableau objets (vue Colonnes) : image + nom + niveau + type + rareté + **bonus** (`items.bonus`, chips) ; description / résumé / prix masqués ; filtre **état** = pastilles à droite de « Filtres », défaut `playable` (comme les autres catalogues).
 - Tooltips d’en-tête : `TanStackTableHeader` lit `column.tooltip` (`getEntityFieldTooltip` depuis descriptors).
 - Badges type / rareté / niveau (ressources, équipements, consommables) : `EntityFieldTooltip` (description courte hors tableau `characteristics` ; helper + limites min/max si caractéristique BDD). `FIELD_HELPERS` dans `SharedConstants`.
 - Share Inertia `characteristics` : `limit_min` / `limit_max` (entiers figés du pivot, pas les formules).
