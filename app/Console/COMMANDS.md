@@ -46,7 +46,7 @@ ui: false
 cron: false
 ```
 
-`project:prepare` puis serveur Laravel (8000) + Vite. Option `--queue` : file `queue:listen` en plus. `--no-prepare` : serveurs seuls. `--watch` : watch CSS à la place de Vite. `--clear`, `-y` et `--no` : transmis à prepare.
+`project:prepare` puis serveur Laravel (8000) + Vite. Option `--queue` : `queue:listen` sur `default,rules-downloads`. `--no-prepare` : serveurs seuls. `--watch` : watch CSS à la place de Vite. `--clear`, `-y` et `--no` : transmis à prepare.
 
 ```bash
 php artisan project:dev
@@ -442,7 +442,7 @@ cron: false
 admin: /admin/content
 ```
 
-Compile le livre de règles Markdown en PDF et ODT dans `storage/app/public/downloads/generated/`. Le PDF passe par Chromium en impression headless (DomPDF est trop lent sur le livre complet). Lancé après `project:init` / `project:seed`, via `pages:import-rules-toc --compile-downloads`, ou depuis le bouton de la gestion du contenu (admin+).
+Compile le livre de règles Markdown en PDF et ODT dans `storage/app/public/downloads/generated/`. Le PDF passe par Chromium en impression headless (DomPDF est trop lent sur le livre complet). Lancé après `project:init` / `project:seed`, via `pages:import-rules-toc --compile-downloads`, ou depuis le bouton de la gestion du contenu (admin+ ; file `rules-downloads`, worker ponctuel).
 
 ```bash
 php artisan rules:compile-downloads

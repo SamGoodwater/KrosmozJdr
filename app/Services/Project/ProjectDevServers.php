@@ -33,21 +33,11 @@ class ProjectDevServers
         $command->info('Lancement des serveurs de développement...');
         $this->killServers($command);
 
-        $command->info('Démarrage du serveur Laravel sur le port 8000...');
-        exec('php artisan serve --host=127.0.0.1 --port=8000 > /dev/null 2>&1 &');
-
-        sleep(3);
-
-        $laravelResponse = @file_get_contents('http://127.0.0.1:8000');
-        if ($laravelResponse !== false) {
-            $command->info('Serveur Laravel démarré sur http://127.0.0.1:8000');
-        } else {
-            $command->warn('Serveur Laravel en cours de démarrage...');
-        }
+        $this->startLaravelServe($command);
 
         if ($withQueue) {
             $command->info('Démarrage de queue:listen...');
-            exec('php artisan queue:listen --tries=1 > /dev/null 2>&1 &');
+            exec('php artisan queue:listen --queue=default,'.ProjectConsoleQueueKicker::QUEUE_RULES_DOWNLOADS.' --tries=1 > /dev/null 2>&1 &');
         }
 
         $command->info('Démarrage de Vite sur le port 5173...');
@@ -66,6 +56,55 @@ class ProjectDevServers
         $this->runProcess($command, 'pnpm run dev:css:optimized:watch');
 
         return Command::SUCCESS;
+    }
+
+    private function startLaravelServe(Command $command): void
+    {
+        $command->info('Démarrage du serveur Laravel sur le port 8000...');
+        $this->spawnLaravelServe();
+        if ($this->laravelIsUp()) {
+            $command->info('Serveur Laravel démarré sur http://127.0.0.1:8000');
+
+            return;
+        }
+
+        $command->warn('Le serveur PHP ne répond pas, relance…');
+        $this->killPort(8000);
+        $this->spawnLaravelServe();
+        if ($this->laravelIsUp()) {
+            $command->info('Serveur Laravel démarré sur http://127.0.0.1:8000');
+
+            return;
+        }
+
+        $command->warn('Serveur Laravel en cours de démarrage...');
+    }
+
+    private function spawnLaravelServe(): void
+    {
+        exec('php artisan serve --host=127.0.0.1 --port=8000 > /dev/null 2>&1 &');
+    }
+
+    private function killPort(int $port): void
+    {
+        exec('lsof -t -i:'.$port.' | xargs -r kill -9');
+    }
+
+    /**
+     * Sonde HTTP courte. Un timeout évite de laisser `project:dev` bloqué si le
+     * serveur PHP (mono-thread) reste coincé sur la première requête.
+     */
+    private function laravelIsUp(): bool
+    {
+        sleep(3);
+        $context = stream_context_create([
+            'http' => [
+                'timeout' => 5,
+                'ignore_errors' => true,
+            ],
+        ]);
+
+        return @file_get_contents('http://127.0.0.1:8000', false, $context) !== false;
     }
 
     private function runViteDevWithSelfHeal(Command $command): void

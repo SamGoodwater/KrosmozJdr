@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\Concerns\SharesProjectConsoleJob;
 use App\Http\Controllers\Controller;
 use App\Jobs\RunRulesCompileDownloadsJob;
 use App\Services\Project\ProjectConsoleJobTracker;
+use App\Services\Project\ProjectConsoleQueueKicker;
 use App\Support\Project\ProjectConsoleDomain;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,9 +43,10 @@ class RulesDownloadsController extends Controller
         ]);
 
         RunRulesCompileDownloadsJob::dispatch($user->id, $record->id);
+        app(ProjectConsoleQueueKicker::class)->kick(ProjectConsoleQueueKicker::QUEUE_RULES_DOWNLOADS);
 
         return redirect()
             ->route('admin.content.dashboard.index')
-            ->with('success', 'Compilation du livre de règles planifiée. Un worker doit exécuter la file.');
+            ->with('success', 'Compilation du livre de règles lancée.');
     }
 }

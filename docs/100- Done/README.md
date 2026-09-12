@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Compilation du livre depuis l’admin
+
+Le bouton **Compiler le livre de règles** (Gestion du contenu) avait perdu sa route lors de l’ajout du recalcul des prix. Elle est rétablie, et le bouton lance la génération même si aucun worker n’était déjà en route.
+
 ## Septembre 2026 — Prix automatiques en kamas
 
 Les fiches d’équipement et de consommable portent maintenant un **prix calculé** par le site, que l’on peut encore ajuster à la main.

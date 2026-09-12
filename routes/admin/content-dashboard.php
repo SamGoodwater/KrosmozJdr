@@ -17,6 +17,9 @@ Route::prefix('admin/content')
     ->middleware(['auth', 'content.area'])
     ->group(function () {
         Route::get('/', ContentManagementDashboardController::class)->name('dashboard.index');
+        Route::post('/rules-downloads', [RulesDownloadsController::class, 'store'])
+            ->middleware(['throttle:6,1'])
+            ->name('rules-downloads.run');
         Route::post('/entity-prices', [EntityPricesRecalculateController::class, 'store'])
             ->middleware(['throttle:6,1'])
             ->name('entity-prices.run');

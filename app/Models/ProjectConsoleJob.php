@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Services\Project\ProjectConsoleJobTracker;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -63,6 +64,9 @@ class ProjectConsoleJob extends Model
     public const STATUS_FAILED = 'failed';
 
     public const STATUS_CANCELLED = 'cancelled';
+
+    /** Job `queued` jamais démarré au-delà de ce délai : considéré abandonné (worker inactif). */
+    public const STALE_QUEUED_MINUTES = 15;
 
     protected $table = 'project_console_jobs';
 
@@ -126,10 +130,34 @@ class ProjectConsoleJob extends Model
 
     public static function hasActive(string $domain): bool
     {
+        self::expireStaleQueued($domain);
+
         return self::query()
             ->where('domain', $domain)
             ->whereIn('status', [self::STATUS_QUEUED, self::STATUS_RUNNING])
             ->exists();
+    }
+
+    /**
+     * Annule les jobs encore `queued` qui n’ont jamais démarré (file sans worker).
+     */
+    public static function expireStaleQueued(string $domain): void
+    {
+        $stale = self::query()
+            ->where('domain', $domain)
+            ->where('status', self::STATUS_QUEUED)
+            ->whereNull('started_at')
+            ->where('created_at', '<', now()->subMinutes(self::STALE_QUEUED_MINUTES))
+            ->get();
+
+        if ($stale->isEmpty()) {
+            return;
+        }
+
+        $tracker = app(ProjectConsoleJobTracker::class);
+        foreach ($stale as $job) {
+            $tracker->cancel($job);
+        }
     }
 
     public static function latestForDomain(string $domain): ?self

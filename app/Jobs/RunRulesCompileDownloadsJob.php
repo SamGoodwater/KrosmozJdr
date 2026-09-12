@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Services\Project\ProjectConsoleJobTracker;
+use App\Services\Project\ProjectConsoleQueueKicker;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Compile le livre de règles (PDF + ODT) en file d’attente.
+ * Compile le livre de règles (PDF + ODT) en file d’attente dédiée.
  */
 class RunRulesCompileDownloadsJob implements ShouldQueue
 {
@@ -28,7 +29,9 @@ class RunRulesCompileDownloadsJob implements ShouldQueue
     public function __construct(
         private readonly int $triggeredByUserId,
         private readonly ?string $consoleJobId = null,
-    ) {}
+    ) {
+        $this->onQueue(ProjectConsoleQueueKicker::QUEUE_RULES_DOWNLOADS);
+    }
 
     public function handle(): void
     {
