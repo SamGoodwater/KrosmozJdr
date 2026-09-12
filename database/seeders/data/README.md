@@ -55,6 +55,15 @@ Un JSON unique `healing-out-of-combat.json` décrit 11 paliers × 4 types (pain,
 - Les ressources d’ingrédients passent en `playable` avec `auto_update = false` pour geler le prix JDR.
 - Sans ressource scrapée, le consommable est tout de même créé avec `price_custom` au barème.
 
+## Parchemins de caractéristique (`entities/consumables/`)
+
+`characteristic-respec-scrolls.json` : 4 paliers × 6 caractéristiques (Force, Intelligence, Chance, Agilité, Vitalité, Sagesse). **Respec** : retire N points déjà investis dans la caractéristique du parchemin pour les replacer ailleurs. **Pas de recette** ; `price_custom` = 1 000 / 3 000 / 5 000 / 10 000.
+
+- Même seeder `ConsumableSeeder`, après l’échelle de soins.
+- Upsert sur `dofusdb_id` (Petit / Parchemin / Grand / Puissant). Type Dofus 76 passé en `playable`.
+- Recette vidée à l’import. `auto_update = false`.
+- Un consommable `playable` n’est pas recalculé en masse ni via « Actualiser le prix » (le barème custom resterait à 0).
+
 ## Panoplies (`entities/panoplies/`)
 
 Un fichier JSON par set relu (bonus de palier + liste des `dofusdb_id` des pièces).

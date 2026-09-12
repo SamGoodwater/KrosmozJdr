@@ -12,7 +12,12 @@ export const OUT_OF_COMBAT_HEAL_NOTE = "Hors combat uniquement.";
 
 export const LEARN_SCROLL_NOTE = "Détruit seulement si le sort réussit.";
 
+export const CHARACTERISTIC_RESPEC_NOTE =
+    "Ne descend pas sous le plancher de création (8, ou 6 si c’était la faiblesse choisie). Usage unique.";
+
 const LEARN_SCROLL_TYPE_NAMES = new Set(["parchemin de sortilege"]);
+
+const CHARACTERISTIC_SCROLL_TYPE_NAMES = new Set(["parchemin de caracteristique"]);
 
 const BUFF_CONSUMABLE_TYPE_NAMES = new Set([
     "potion",
@@ -74,6 +79,13 @@ export function consumableRuleNotes(entity) {
     const name = normalizeTypeName(consumableTypeName(entity));
     if (LEARN_SCROLL_TYPE_NAMES.has(name) || name.includes("parchemin de sortilege")) {
         notes.push(LEARN_SCROLL_NOTE);
+        return notes;
+    }
+    if (CHARACTERISTIC_SCROLL_TYPE_NAMES.has(name) || name.includes("parchemin de caracteristique")) {
+        notes.push(CHARACTERISTIC_RESPEC_NOTE);
+        if (isOutOfCombatHeal(entity)) {
+            notes.push(OUT_OF_COMBAT_HEAL_NOTE);
+        }
         return notes;
     }
     if (BUFF_CONSUMABLE_TYPE_NAMES.has(name)) {

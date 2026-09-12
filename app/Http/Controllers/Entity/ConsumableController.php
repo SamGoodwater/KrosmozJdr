@@ -239,6 +239,12 @@ class ConsumableController extends Controller
     public function recalculatePrice(Consumable $consumable, EntityPriceRecalculator $priceRecalculator): RedirectResponse
     {
         $this->authorize('update', $consumable);
+        if ($priceRecalculator->shouldSkipPlayableConsumable($consumable)) {
+            return redirect()->back()->with(
+                'error',
+                'Le prix d’un consommable jouable n’est pas recalculé : le barème JDR resterait écrasé.'
+            );
+        }
         $priceRecalculator->recalculateConsumable($consumable, resetCustom: true);
 
         return redirect()->back()->with('success', 'Prix recalculé.');

@@ -21,7 +21,7 @@ bandeau chips au-dessus du journal ; empty states structurés vs texte libre.
 Notes de règles (oubliables à table) sous la méta et, en Full, aussi sous les
 effets : `spellTypeRuleNotes.js`. Consommables et équipements : `EntityRuleNotes`
 + `consumableRuleNotes.js` / `itemRuleNotes.js` (cumul de buff, parchemin de
-sortilège, monture, soin hors combat).
+sortilège, respec de caractéristique, monture, soin hors combat).
 
 ## Parcours d’ouverture
 

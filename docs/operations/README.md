@@ -8,7 +8,7 @@ Commandes métier hors recettes CLI quotidiennes. Vocabulaire Artisan : [app/Con
 
 ## Recalcul des prix (kamas)
 
-`php artisan entities:recalculate-prices {items|consumables}` réécrit `price_calculated` et vide `price_custom`. Bouton admin sur `/admin/content` (cartes Équipements et Consommables). Les ressources ne sont pas concernées (prix Dofus).
+`php artisan entities:recalculate-prices {items|consumables}` réécrit `price_calculated` et vide `price_custom` (consommables jouables exclus). Bouton admin sur `/admin/content` (cartes Équipements et Consommables). Les ressources ne sont pas concernées (prix Dofus).
 
 ## Étalons d’équipement versionnés
 
@@ -21,7 +21,7 @@ php artisan items:seeder-import --dry-run  # fichiers → base
 php artisan items:seeder-import
 ```
 
-`Database\Seeders\Entity\ItemSeeder` rejoue ces fichiers dans `project:seed` / `project:init`. Upsert sur `dofusdb_id` (`official_id` à défaut), type résolu par `item_type_dofus_id`, `image` exclu. Les ressources des recettes passent en `playable` (`ResourceSeeder`, plancher 1 kama). `ConsumableSeeder` rejoue l’échelle de soins hors combat. Boutons super administrateur : `/admin/content/ia-generation`. Format : [database/seeders/data/README.md](../../database/seeders/data/README.md).
+`Database\Seeders\Entity\ItemSeeder` rejoue ces fichiers dans `project:seed` / `project:init`. Upsert sur `dofusdb_id` (`official_id` à défaut), type résolu par `item_type_dofus_id`, `image` exclu. Les ressources des recettes passent en `playable` (`ResourceSeeder`, plancher 1 kama). `ConsumableSeeder` rejoue l’échelle de soins hors combat et les parchemins de caractéristique (respec). Boutons super administrateur : `/admin/content/ia-generation`. Format : [database/seeders/data/README.md](../../database/seeders/data/README.md).
 
 ## Import des règles CMS
 

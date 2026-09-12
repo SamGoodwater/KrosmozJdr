@@ -149,7 +149,8 @@ setPageTitle(`Modifier le consommable : ${consumable.value.name || 'Sans nom'}`)
             :recalculate-url="route('entities.consumables.recalculatePrice', { consumable: consumable.id })"
             :price-calculated="consumable.priceCalculated"
             :price-custom="consumable.priceCustom"
-            formula-hint="Somme des prix des ressources de la recette."
+            :allow-recalculate="(consumable.state ?? consumable._data?.state) !== 'playable'"
+            formula-hint="Somme des prix des ressources de la recette. Sans recette, le total vient du prix personnalisé (barème JDR)."
         />
 
         <Collapse arrow bg-off="bg-base-100" class="border border-base-300">

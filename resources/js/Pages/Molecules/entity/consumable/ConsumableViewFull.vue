@@ -162,8 +162,13 @@ const rarityBadgeColor = computed(() => {
     return cfg?.color ?? 'neutral';
 });
 
+const isPlayable = computed(() => {
+    const state = props.consumable?.state ?? props.consumable?._data?.state;
+    return state === 'playable';
+});
+
 const canRecalculatePrice = computed(() =>
-    Boolean(props.consumable?.can?.update ?? props.consumable?._data?.can?.update)
+    Boolean(props.consumable?.can?.update ?? props.consumable?._data?.can?.update) && !isPlayable.value
 );
 
 function recalculatePrice() {

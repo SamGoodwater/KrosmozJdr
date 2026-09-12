@@ -84,6 +84,7 @@ class EntityPriceRecalculationTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $consumable = Consumable::factory()->create([
             'created_by' => $admin->id,
+            'state' => Consumable::STATE_DRAFT,
             'price_calculated' => 1,
             'price_custom' => 900,
         ]);
@@ -128,6 +129,7 @@ class EntityPriceRecalculationTest extends TestCase
     public function test_command_recalculates_consumables(): void
     {
         $consumable = Consumable::factory()->create([
+            'state' => Consumable::STATE_DRAFT,
             'price_calculated' => 0,
             'price_custom' => 333,
         ]);
@@ -152,5 +154,43 @@ class EntityPriceRecalculationTest extends TestCase
         $updated = app(EntityPriceRecalculator::class)->recalculateConsumable($consumable, true);
         $this->assertSame(240, $updated->price_calculated);
         $this->assertNull($updated->price_custom);
+    }
+
+    public function test_playable_consumable_keeps_custom_price_on_mass_recalc(): void
+    {
+        $consumable = Consumable::factory()->create([
+            'state' => Consumable::STATE_PLAYABLE,
+            'price_calculated' => 0,
+            'price_custom' => 1000,
+        ]);
+
+        $this->artisan('entities:recalculate-prices', ['type' => 'consumables'])
+            ->assertSuccessful();
+
+        $consumable->refresh();
+        $this->assertSame(1000, $consumable->price_custom);
+        $this->assertSame(0, $consumable->price_calculated);
+        $this->assertSame('1000', $consumable->price);
+    }
+
+    public function test_recalculate_endpoint_refuses_playable_consumable(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $consumable = Consumable::factory()->create([
+            'created_by' => $admin->id,
+            'state' => Consumable::STATE_PLAYABLE,
+            'price_calculated' => 0,
+            'price_custom' => 3000,
+        ]);
+
+        $this->actingAs($admin)
+            ->from(route('entities.consumables.show', $consumable))
+            ->post(route('entities.consumables.recalculatePrice', $consumable))
+            ->assertRedirect()
+            ->assertSessionHas('error');
+
+        $consumable->refresh();
+        $this->assertSame(3000, $consumable->price_custom);
+        $this->assertSame('3000', $consumable->price);
     }
 }

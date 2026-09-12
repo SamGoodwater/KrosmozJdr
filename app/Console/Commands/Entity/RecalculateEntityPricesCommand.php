@@ -19,7 +19,7 @@ final class RecalculateEntityPricesCommand extends Command
     protected $signature = 'entities:recalculate-prices
         {type : items|consumables}';
 
-    protected $description = 'Recalcule les prix kamas (formule) et remplace le total affiché.';
+    protected $description = 'Recalcule les prix kamas (formule) et remplace le total affiché (consommables jouables exclus).';
 
     public function handle(EntityPriceRecalculator $recalculator): int
     {

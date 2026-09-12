@@ -7,6 +7,7 @@
  * @props {number|null} priceCalculated - Part calculée (kamas)
  * @props {number|null} priceCustom - Ajustement signé
  * @props {string} formulaHint - Rappel de la formule
+ * @props {boolean} allowRecalculate - Affiche le bouton Actualiser (désactivé si jouable)
  */
 import { computed, watch } from 'vue';
 import { router, useForm } from '@inertiajs/vue3';
@@ -20,6 +21,7 @@ const props = defineProps({
     priceCalculated: { type: Number, default: null },
     priceCustom: { type: Number, default: null },
     formulaHint: { type: String, default: '' },
+    allowRecalculate: { type: Boolean, default: true },
 });
 
 const notifications = useNotificationStore();
@@ -108,7 +110,14 @@ function recalculate() {
                 </label>
             </div>
             <div class="card-actions justify-end gap-2">
-                <Btn type="button" color="neutral" variant="outline" size="sm" @click="recalculate">
+                <Btn
+                    v-if="allowRecalculate"
+                    type="button"
+                    color="neutral"
+                    variant="outline"
+                    size="sm"
+                    @click="recalculate"
+                >
                     Actualiser le prix
                 </Btn>
                 <EditActionDock

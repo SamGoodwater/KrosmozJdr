@@ -108,6 +108,14 @@ final class EntityPriceRecalculator
     }
 
     /**
+     * Un consommable jouable garde son barème JDR (recette ou `price_custom` sans recette).
+     */
+    public function shouldSkipPlayableConsumable(Consumable $consumable): bool
+    {
+        return $consumable->state === Consumable::STATE_PLAYABLE;
+    }
+
+    /**
      * @return int Nombre d’équipements mis à jour
      */
     public function recalculateAllItems(?callable $onProgress = null): int
@@ -135,8 +143,9 @@ final class EntityPriceRecalculator
     public function recalculateAllConsumables(?callable $onProgress = null): int
     {
         $count = 0;
-        $total = Consumable::query()->count();
-        Consumable::query()->with('resources')->orderBy('id')->chunkById(100, function ($consumables) use (&$count, $total, $onProgress): void {
+        $query = Consumable::query()->where('state', '!=', Consumable::STATE_PLAYABLE);
+        $total = (clone $query)->count();
+        $query->with('resources')->orderBy('id')->chunkById(100, function ($consumables) use (&$count, $total, $onProgress): void {
             foreach ($consumables as $consumable) {
                 $this->recalculateConsumable($consumable, true);
                 $count++;

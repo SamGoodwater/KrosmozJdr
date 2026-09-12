@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Parchemins pour rééquilibrer les caractéristiques
+
+Les parchemins Dofus qui **ajoutaient** de la Force, de la Chance, etc. ne collent pas au JDR (budget de points fermé). Ils **libèrent** maintenant des points déjà mis dans **une** caractéristique pour les replacer ailleurs : petit = 1 point (1 000 kamas), normal = 2 (3 000), grand = 3 (5 000), puissant = 4 (10 000). Six caractéristiques, donc vingt-quatre fiches. Pas de recette : on les achète. Hors combat, usage unique, on ne descend pas sous le plancher de création (8, ou 6 si c’était la faiblesse choisie).
+
 ## Septembre 2026 — Pain, poisson, viande et potions de soin
 
 Une **dizaine de paliers** (onze) pour chaque type : +1, +3, +5, +7, +10, +12, +15, +17, +20, +25 et +30 PV, **hors combat uniquement**. Les prix vont de 20 à 10 000 kamas. Chaque recette prend **10** unités de la ressource du palier, vendue au dixième du prix du consommable. Les noms et images Dofus sont gardés quand la fiche existait (Pain d’Incarnam, Goujon en tranche, Potion de Mini Soin…) ; les plus gros flacons n’avaient pas d’équivalent, on les a créés.

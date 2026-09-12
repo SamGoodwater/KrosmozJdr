@@ -423,7 +423,7 @@ cron: false
 admin: /admin/content/ia-generation
 ```
 
-Seeder → base : rejoue les fichiers d’équipements versionnés. Upsert sur `dofusdb_id` (`official_id` à défaut), résolution du type via `item_type_dofus_id`, synchronisation des panoplies et de la recette (références introuvables ignorées). Les ressources déjà liées aux items `playable` passent en `playable` (plancher 1 kama). `ConsumableSeeder` rejoue l’échelle de soins hors combat (`healing-out-of-combat.json`). Idempotent. Même code que `ItemSeeder`, donc `project:seed` et `project:init` rejouent ces items.
+Seeder → base : rejoue les fichiers d’équipements versionnés. Upsert sur `dofusdb_id` (`official_id` à défaut), résolution du type via `item_type_dofus_id`, synchronisation des panoplies et de la recette (références introuvables ignorées). Les ressources déjà liées aux items `playable` passent en `playable` (plancher 1 kama). `ConsumableSeeder` rejoue l’échelle de soins hors combat (`healing-out-of-combat.json`) et les parchemins de caractéristique (`characteristic-respec-scrolls.json`). Idempotent. Même code que `ItemSeeder`, donc `project:seed` et `project:init` rejouent ces items.
 
 ```bash
 php artisan items:seeder-import
@@ -462,7 +462,7 @@ cron: false
 admin: /admin/content
 ```
 
-Réécrit `price_calculated` (formule) et vide `price_custom` pour tous les équipements ou tous les consommables. Les ressources (prix Dofus) ne sont pas concernées. Lancé aussi depuis les cartes Équipements / Consommables de la gestion du contenu.
+Réécrit `price_calculated` (formule) et vide `price_custom` pour tous les équipements, ou pour les consommables **non jouables**. Les fiches consommable `playable` gardent leur barème JDR. Les ressources (prix Dofus) ne sont pas concernées. Lancé aussi depuis les cartes Équipements / Consommables de la gestion du contenu.
 
 ```bash
 php artisan entities:recalculate-prices items

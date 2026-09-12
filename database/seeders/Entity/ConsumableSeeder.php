@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Database\Seeders\Entity;
 
+use App\Services\Seeder\Consumable\CharacteristicRespecScrollSeederImporter;
 use App\Services\Seeder\Consumable\HealingConsumableSeederImporter;
 use Illuminate\Database\Seeder;
 
 /**
- * Échelle JDR de soins hors combat (pain, poisson, viande, potion).
- * Rejoue `database/seeders/data/entities/consumables/healing-out-of-combat.json`.
+ * Consommables JDR : soins hors combat, puis parchemins de caractéristique (respec).
  */
 class ConsumableSeeder extends Seeder
 {
@@ -18,11 +18,27 @@ class ConsumableSeeder extends Seeder
      */
     public function run(): void
     {
-        $result = app(HealingConsumableSeederImporter::class)->import();
+        $healing = app(HealingConsumableSeederImporter::class)->import();
+        $this->report('soins hors combat', $healing);
 
+        $scrolls = app(CharacteristicRespecScrollSeederImporter::class)->import();
+        $this->report('parchemins de caractéristique', $scrolls);
+    }
+
+    /**
+     * @param  array{
+     *     resources?: int,
+     *     created: list<string>,
+     *     updated: list<string>,
+     *     skipped: list<string>
+     * }  $result
+     */
+    private function report(string $label, array $result): void
+    {
         $this->command?->info(sprintf(
-            '  ConsumableSeeder : %d ressource(s), %d création(s), %d mise(s) à jour, %d avertissement(s).',
-            $result['resources'],
+            '  ConsumableSeeder (%s) : %s%d création(s), %d mise(s) à jour, %d avertissement(s).',
+            $label,
+            isset($result['resources']) ? $result['resources'].' ressource(s), ' : '',
             count($result['created']),
             count($result['updated']),
             count($result['skipped'])

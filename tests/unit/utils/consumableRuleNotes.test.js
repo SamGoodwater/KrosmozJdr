@@ -3,6 +3,7 @@
  */
 import { describe, expect, it } from "vitest";
 import {
+    CHARACTERISTIC_RESPEC_NOTE,
     CONSUMABLE_STACK_NOTE,
     LEARN_SCROLL_NOTE,
     OUT_OF_COMBAT_HEAL_NOTE,
@@ -41,5 +42,17 @@ describe("consumableRuleNotes", () => {
         expect(
             consumableRuleNotes({ consumableType: { name: "Parchemin de sortilege" } }),
         ).toEqual([LEARN_SCROLL_NOTE]);
+    });
+
+    it("parchemin de caractéristique : respec, hors combat, pas de cumul", () => {
+        expect(
+            consumableRuleNotes({
+                consumableType: { name: "Parchemin de caractéristique" },
+                effect: "Retire 1 point de Chance déjà réparti. Hors combat. Usage unique.",
+            }),
+        ).toEqual([CHARACTERISTIC_RESPEC_NOTE, OUT_OF_COMBAT_HEAL_NOTE]);
+        expect(
+            consumableRuleNotes({ consumableType: { name: "Parchemin de caracteristique" } }),
+        ).toEqual([CHARACTERISTIC_RESPEC_NOTE]);
     });
 });
