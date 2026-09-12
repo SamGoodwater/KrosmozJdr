@@ -8,8 +8,7 @@
         "description": null,
         "bonus": {
             "3": {
-                "vitality": 1,
-                "initiative": 1
+                "vitality": 1
             }
         },
         "state": "playable",

@@ -15,13 +15,13 @@
         "read_level": 0,
         "write_level": 3,
         "auto_update": false,
-        "price_calculated": 950,
+        "price_calculated": 850,
         "price_custom": null,
         "effect": {
-            "intelligence": 1
+            "stealth": 1
         },
         "bonus": {
-            "intelligence": 1
+            "stealth": 1
         },
         "item_type_dofus_id": 17,
         "item_type_name": "Cape"

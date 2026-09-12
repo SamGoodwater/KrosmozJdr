@@ -7,9 +7,6 @@
         "name": "Panoplie du Tofu",
         "description": null,
         "bonus": {
-            "4": {
-                "agility": 1
-            },
             "7": {
                 "agility": 1,
                 "movement_points": 1

@@ -7,9 +7,6 @@
         "name": "Panoplie du Piou Rouge",
         "description": null,
         "bonus": {
-            "4": {
-                "intelligence": 1
-            },
             "6": {
                 "intelligence": 1,
                 "range": 1

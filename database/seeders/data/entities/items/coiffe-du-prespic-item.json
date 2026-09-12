@@ -15,14 +15,10 @@
         "read_level": 0,
         "write_level": 3,
         "auto_update": false,
-        "price_calculated": 1050,
+        "price_calculated": 450,
         "price_custom": null,
-        "effect": {
-            "vitality": 1
-        },
-        "bonus": {
-            "vitality": 1
-        },
+        "effect": [],
+        "bonus": [],
         "item_type_dofus_id": 16,
         "item_type_name": "Chapeau"
     },

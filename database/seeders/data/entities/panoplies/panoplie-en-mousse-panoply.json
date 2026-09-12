@@ -1,15 +1,14 @@
 {
     "_schema_version": "1",
     "key": {
-        "dofusdb_id": "47"
+        "dofusdb_id": "63"
     },
     "panoply": {
-        "name": "Panoplie du Paysan",
+        "name": "Panoplie en Mousse",
         "description": null,
         "bonus": {
-            "7": {
-                "strength": 1,
-                "life_points_max": 2
+            "8": {
+                "chance": 1
             }
         },
         "state": "playable",
@@ -18,13 +17,14 @@
     },
     "relations": {
         "item_dofusdb_ids": [
-            "8123",
-            "8124",
-            "8125",
-            "8126",
-            "8127",
-            "8128",
-            "8131"
+            "8254",
+            "8257",
+            "8256",
+            "8259",
+            "8253",
+            "8255",
+            "8258",
+            "18659"
         ]
     }
 }

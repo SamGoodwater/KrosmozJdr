@@ -1,13 +1,13 @@
 {
     "_schema_version": "1",
     "key": {
-        "dofusdb_id": "8114",
+        "dofusdb_id": "8259",
         "official_id": null
     },
     "item": {
-        "name": "Kaskofu",
+        "name": "Coiffe en Mousse",
         "level": "2",
-        "description": "Ce casque de chantier est devenu un objet de mode incontournable pour les aventurières coquettes. Mais où va le monde ?",
+        "description": "Sur la notice de cette coiffe, on peut lire :\"Offrez cette coiffe à votre mari, accrochez-la solidement sur sa tête et traînez-le par les pieds dans votre cuisine. Voilà le sol est propre désormais\". Cela résume un peu la conception moderne du ménage et de la répartition des tâches ménagères au sein des couples épanouïs et qui s'assument.",
         "recipe": null,
         "rarity": 0,
         "state": "playable",
@@ -18,33 +18,28 @@
         "price_calculated": 700,
         "price_custom": null,
         "effect": {
-            "acrobatics": 1
+            "survival": 1
         },
         "bonus": {
-            "acrobatics": 1
+            "survival": 1
         },
         "item_type_dofus_id": 16,
         "item_type_name": "Chapeau"
     },
     "relations": {
         "panoply_dofusdb_ids": [
-            "50"
+            "63"
         ],
         "resources": [
             {
-                "dofusdb_id": "366",
-                "name": "Bec du Tofu",
-                "quantity": 4
+                "dofusdb_id": "13494",
+                "name": "Nageoire de Compétition",
+                "quantity": 3
             },
             {
                 "dofusdb_id": "8682",
                 "name": "Peau de Mob l'Éponge",
-                "quantity": 1
-            },
-            {
-                "dofusdb_id": "1681",
-                "name": "Peau Égrotante",
-                "quantity": 4
+                "quantity": 2
             }
         ]
     }

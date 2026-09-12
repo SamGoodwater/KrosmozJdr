@@ -117,20 +117,21 @@ Sets Dofus emblématiques des premiers niveaux, pièces **et** bonus de set relu
 
 | Panoplie | Niveau | Voie / thème | Signature |
 | --- | --- | --- | --- |
-| Piou Vert / Rouge / Bleu / Jaune | 1 | Terre / Feu / Eau / Air | Ceinture +1 tacle ou fuite ; set 4p = carac de voie, 6p = + portée |
-| Piou Rose | 1 | Soins | Anneau +1 soin ; set 6p = soins + PV |
-| Piou Violet | 1 | Portée | Set 6p = +1 PO |
-| Bouftou | 2 | Terre (mixte) | Marteau +1 dgt terre, bouclier +1 CA, ceinture +1 tacle ; 8p = +1 PA |
-| Tofu | 2 | Air | Baguette +1 dgt air, ceinture +1 fuite ; 7p = agilité + 1 PM |
-| Prespic | 3 | Feu | Cape +1 int, chapeau +1 vit, bouclier +1 CA ; 5p = int + fuite |
-| Sanglier | 1–2 | Terre | Ceinture +1 tacle ; 3p = vit + initiative |
+| Piou Vert / Rouge / Bleu / Jaune | 1 | Terre / Feu / Eau / Air | Ceinture +1 tacle ou fuite ; **set complet** = carac de voie + portée |
+| Piou Rose | 1 | Soins | Anneau +1 soin ; **set complet** = soins + PV |
+| Piou Violet | 1 | Portée | **Set complet** = +1 PO |
+| Bouftou | 2 | Terre | Marteau +1 dgt terre, bouclier +1 CA, ceinture +1 tacle, coiffe +1 intimidation ; **8p** = force + PA |
+| Tofu | 2 | Air | Baguette +1 dgt air, ceinture +1 fuite, kaskofu +1 acrobaties ; **7p** = agilité + PM |
+| Prespic | 3 | Sagesse | Anneau +1 soin, bouclier +1 CA, cape +1 discrétion ; **5p** = sagesse |
+| Sanglier | 1–2 | Terre | Ceinture +1 tacle ; **3p** = vitalité |
+| Mousse (Éponge) | 2 | Eau | Pelle +1 dgt eau, bouclier +1 CA, ceinture +1 fuite, coiffe +1 survie ; **8p** = chance |
 | Arakne | 1 | Terre | Hache +1 dgt terre, ceinture +1 tacle ; 4p = force |
 | Moskito | 1–2 | Eau | 4p = chance (pas d’arme ni de ceinture) |
 | Champ Champ | 1 | Terre / PV | 2 anneaux ; 4p = vit + PV |
 | Bandit | 1 | Air | Dagues +1 dgt air, ceinture +1 fuite ; 4p = agilité |
 | Jeune Aventurier | 1 | Mixte / starter | Ceinture +1 tacle ; 6p = PV + initiative |
-| Paysan | 1–2 | Terre | Faux +1 dgt terre, ceinture +1 tacle ; 7p = force + PV |
-| Larvesque | 2–4 | Feu / soins | Baguette +2 dgt feu, chapeau +1 vit ; 5p = int + soins |
+| Paysan | 1–2 | Terre | Faux +1 dgt terre, ceinture +1 tacle ; **7p** = force + PV |
+| Larvesque | 2–4 | Feu / soins | Baguette +2 dgt feu ; **5p** = int + soins |
 | Bouftou Royal | 2–3 | Terre | Épée +2 dgt terre, ceinture +2 tacle, bouclier +1 CA ; 8p = +1 PA |
 | Abraknyde | 4 | Terre | Cape +1 force, bâton +2 dgt terre ; 7p = force + CA |
 | Kwak Flammes / Glace / Terre / Vent | 4 | Feu / Eau / Terre / Air | Cape +1 carac, épée +2 dgt, ceinture tacle ou fuite ; 7p = carac + PO |
@@ -138,4 +139,4 @@ Sets Dofus emblématiques des premiers niveaux, pièces **et** bonus de set relu
 | Scara Blanc | 4 | Sagesse / initiative | Cape +1 initiative, chapeau +1 sag ; 4p = sag + initiative |
 | Akwadala | 3–4 | Eau | Cape +1 chance, bâton +2 dgt eau, bouclier +1 CA ; 8p = chance + PO |
 
-À ces niveaux, Force / Int / Chance / Agilité sont encore **plafonnées à 0** sur la cape aux niv. 1–2 (formule) : la voie d’un Piou, d’une Arakne ou d’un Bandit est donc portée par le **bonus de set**, pas par la pièce. À partir du niv. 3 la cape prend +1. `auto_update = false`. JSON panoplies : `database/seeders/data/entities/panoplies/` (`PanoplySeeder`, après `ItemSeeder`).
+À ces niveaux, Force / Int / Chance / Agilité sont encore **plafonnées à 0** sur la cape aux niv. 1–2 (formule) : la voie est portée par le **bonus de set complet**, pas par la pièce (une seule carac de voie, jamais For+Int sur le Bouftou). Les pièces peuvent rester vides. Quelques chapeaux / capes portent +1 compétence (intimidation, acrobaties, discrétion, survie) même si la `formula` objet des compétences est à 0 : impact faible, volontaire. À partir du niv. 3 la cape peut prendre +1 carac. `auto_update = false`. JSON panoplies : `database/seeders/data/entities/panoplies/` (`PanoplySeeder`, après `ItemSeeder`).

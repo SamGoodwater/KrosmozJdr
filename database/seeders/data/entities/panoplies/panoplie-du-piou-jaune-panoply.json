@@ -7,9 +7,6 @@
         "name": "Panoplie du Piou Jaune",
         "description": null,
         "bonus": {
-            "4": {
-                "agility": 1
-            },
             "6": {
                 "agility": 1,
                 "range": 1

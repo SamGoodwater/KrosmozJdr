@@ -15,10 +15,14 @@
         "read_level": 0,
         "write_level": 3,
         "auto_update": false,
-        "price_calculated": 300,
+        "price_calculated": 700,
         "price_custom": null,
-        "effect": null,
-        "bonus": null,
+        "effect": {
+            "intimidation": 1
+        },
+        "bonus": {
+            "intimidation": 1
+        },
         "item_type_dofus_id": 16,
         "item_type_name": "Chapeau"
     },
