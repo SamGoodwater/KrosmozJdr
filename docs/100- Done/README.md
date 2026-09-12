@@ -1,8 +1,12 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Fiches Sacrieur et Pandawa
+
+Les classes **Sacrieur** (berserker, Terre et Air tank, Eau protection) et **Pandawa** (bagarreur assoiffé, Terre tank, Air placement, Feu dégât) existent en base, comme les autres. Leurs six sorts de niveau 1 se collent maintenant sur la fiche. Pas d’image tant qu’on n’a pas scrapé : c’est cosmétique.
+
 ## Septembre 2026 — Six sorts de Sadida, Sacrieur, Pandawa et Ecaflip pour le niveau 1
 
-Le **Sadida** plante : Ronce (Terre) ou Larme (Eau), Tremblement ou Vent Empoisonné, Poupée ou Ronce Apaisante. Le **Sacrieur** encaisse : Punition ou Absorption (vol 1d4), Folie Sanguinaire ou Châtiment, Attirance ou Sacrifice. Le **Pandawa** frappe sans attendre d’être Saoul : Poing Enflammé ou Vague à Lame, Pandatak ou Flasque Explosive, Picole ou Chamrak. L’**Ecaflip** tape sans cartes : Topkaj ou Yams, Pelotage ou Kraps, Bond du Félin ou Entrechat. Même budget que l’Iop. Sacrieur et Pandawa n’ont pas encore de fiche classe en base : les sorts sont quand même jouables.
+Le **Sadida** plante : Ronce (Terre) ou Larme (Eau), Tremblement ou Vent Empoisonné, Poupée ou Ronce Apaisante. Le **Sacrieur** encaisse : Punition ou Absorption (vol 1d4), Folie Sanguinaire ou Châtiment, Attirance ou Sacrifice. Le **Pandawa** frappe sans attendre d’être Saoul : Poing Enflammé ou Vague à Lame, Pandatak ou Flasque Explosive, Picole ou Chamrak. L’**Ecaflip** tape sans cartes : Topkaj ou Yams, Pelotage ou Kraps, Bond du Félin ou Entrechat. Même budget que l’Iop.
 
 ## Septembre 2026 — Six sorts de Féca, Osamodas et Enutrof pour le niveau 1
 

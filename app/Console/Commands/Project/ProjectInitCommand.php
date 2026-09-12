@@ -15,6 +15,7 @@ use App\Services\NotificationService;
 use Database\Seeders\CreationPagesSeeder;
 use Database\Seeders\CriticalPagesSeeder;
 use Database\Seeders\Entity\BreedSeeder;
+use Database\Seeders\Entity\ClassBreedSeeder;
 use Database\Seeders\Entity\ConditionSeeder;
 use Database\Seeders\Entity\ConsumableSeeder;
 use Database\Seeders\Entity\CreatureTraitSeeder;
@@ -382,6 +383,8 @@ class ProjectInitCommand extends Command
             ItemSeeder::class,
             PanoplySeeder::class,
             ConsumableSeeder::class,
+            // Fiches Sacrieur / Pandawa avant les kits de sorts (liaison breed_spell).
+            ClassBreedSeeder::class,
             SpellSeeder::class,
         ];
         foreach ($seeders as $seeder) {

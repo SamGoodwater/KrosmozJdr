@@ -6,7 +6,7 @@
 
 - `database/migrations/`
 - `database/seeders/`
-- `database/seeders/data/` — JSON versionnés (items, panoplies, consommables, sorts de classe niveau 1)
+- `database/seeders/data/` — JSON versionnés (items, panoplies, consommables, classes Sacrieur/Pandawa, sorts de classe niveau 1)
 - Favoris user : table `user_favorites` (`user_id`, `entity_type`, `entity_id`)
 - Jobs console admin : table `project_console_jobs` (domaine, %, sortie filtrée)
 - Réglages IA métier : table `ia_generation_settings` (JSON `payload`, surcharge de `resources/ia/generation.json`)

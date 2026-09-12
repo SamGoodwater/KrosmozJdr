@@ -1,0 +1,16 @@
+{
+    "_schema_version": "1",
+    "name": "Sacrieur",
+    "dofusdb_id": "11",
+    "description_fast": "Berserker",
+    "description": "Les Sacrieurs sont des berserkers qui décuplent leurs forces dès qu'ils sont frappés ! N'ayant pas peur de recevoir des coups, ni de s'exposer aux blessures, ils seront souvent en première ligne, prêts à verser le premier sang ! Le Sacrieur est vraiment le compagnon idéal pour vos longues soirées guerrières...",
+    "dofus_version": "3",
+    "state": "draft",
+    "read_level": 0,
+    "write_level": 3,
+    "element_orientations": {
+        "earth": "tank",
+        "air": "tank",
+        "water": "protection"
+    }
+}
