@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Six sorts de Féca, Osamodas et Enutrof pour le niveau 1
+
+Le **Féca** garde : Attaque Naturelle (Feu) ou Rempart (Terre), Glyphe Enflammé ou Escapade, Bouclier Féca (sur soi) ou Armure Aqueuse (sur un allié). L’**Osamodas** frappe puis invoque : Serres du Vautour (Air) ou Griffes du Chtigre (Feu), Déplumage ou Frappe du Craqueleur, Tofu ou Dragoune (1 invocation à 1d4). L’**Enutrof** jette et entrave : Lancer de Pièces (Eau) ou Roulage de Pelle (Feu), Pelle Aurifère (−1 PM) ou Lancer de Pelle (poussée), Maladresse ou Souterrain. Même budget que l’Iop.
+
 ## Septembre 2026 — Six sorts d’Eniripsa, Sram et Xélor pour le niveau 1
 
 L’**Eniripsa** soigne : Mot Vivifiant (Eau) ou Mot d’Amitié (Air) à 1d4+Sagesse, Mot Interdit (soin fort) ou Mot Tapageur (zone), Mot de Frayeur (poussée) ou Mot d’Envol (échange avec un allié). Le **Sram** frappe de près : Sournoiserie (Terre) ou Cruauté (Eau), Piège Sournois ou Invisibilité (le sort fort), Dérobade ou Peur. Le **Xélor** pique et contrôle le temps : Aiguille (Feu) ou Gelure (Eau), Raulebaque (dégâts + retour à la case de début de tour) ou Flou Temporel (−1 PA en zone), Téléportation ou Permutation. Même budget que l’Iop et le Crâ.

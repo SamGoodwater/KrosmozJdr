@@ -399,9 +399,190 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         );
     }
 
+    public function test_imports_feca_level_1_kit_and_parks_extra_spells(): void
+    {
+        $this->seed(SubEffectSeeder::class);
+        $this->seedSpellTypes();
+
+        $feca = Breed::factory()->create([
+            'name' => 'Féca',
+            'state' => Breed::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $extra = Spell::factory()->create([
+            'name' => 'Immunité',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $feca->spells()->attach($extra->id, [
+            'character_level' => 1,
+            'slot_index' => 7,
+            'choice_order' => 0,
+        ]);
+
+        $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::fecaPath());
+        $importer = app(ClassLevel1SpellSeederImporter::class);
+        $first = $importer->import($catalog);
+
+        $this->assertCount(6, $first['created']);
+        $this->assertSame([], $first['skipped']);
+
+        $attaque = Spell::query()->where('dofusdb_id', '32363')->first();
+        $this->assertNotNull($attaque);
+        $this->assertSame('Attaque Naturelle', $attaque->name);
+        $this->assertSame('3', $attaque->pa);
+        $this->assertSame('intel', $attaque->attack_characteristic_key);
+        $this->assertSame(2, $attaque->element);
+
+        $glyphe = Spell::query()->where('dofusdb_id', '32384')->first();
+        $this->assertSame('5', $glyphe?->pa);
+        $this->assertSame('glyph', $glyphe?->target_type);
+        $this->assertSame(Spell::RESOLUTION_SAVING_THROW, $glyphe?->resolution_mode);
+
+        $bouclier = Spell::query()->where('dofusdb_id', '32365')->first();
+        $this->assertSame(Spell::RESOLUTION_AUTO_SUCCESS, $bouclier?->resolution_mode);
+        $this->assertTrue($bouclier?->spellTypes()->where('name', 'Défensif')->exists());
+
+        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
+
+        $feca->refresh();
+        $attaquePivot = $feca->spells()->where('spells.id', $attaque->id)->first()?->pivot;
+        $this->assertSame(1, (int) $attaquePivot?->slot_index);
+        $this->assertSame(0, (int) $attaquePivot?->choice_order);
+
+        $extraPivot = $feca->spells()->where('spells.id', $extra->id)->first()?->pivot;
+        $this->assertSame(
+            ClassLevel1SpellSeederImporter::EXTRA_CHARACTER_LEVEL,
+            (int) $extraPivot?->character_level
+        );
+    }
+
+    public function test_imports_osamodas_level_1_kit_and_parks_extra_spells(): void
+    {
+        $this->seed(SubEffectSeeder::class);
+        $this->seedSpellTypes();
+
+        $osa = Breed::factory()->create([
+            'name' => 'Osamodas',
+            'state' => Breed::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $extra = Spell::factory()->create([
+            'name' => 'Fouet',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $osa->spells()->attach($extra->id, [
+            'character_level' => 1,
+            'slot_index' => 7,
+            'choice_order' => 0,
+        ]);
+
+        $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::osamodasPath());
+        $importer = app(ClassLevel1SpellSeederImporter::class);
+        $first = $importer->import($catalog);
+
+        $this->assertCount(6, $first['created']);
+        $this->assertSame([], $first['skipped']);
+
+        $serres = Spell::query()->where('dofusdb_id', '31133')->first();
+        $this->assertNotNull($serres);
+        $this->assertSame('Serres du Vautour', $serres->name);
+        $this->assertSame('3', $serres->pa);
+        $this->assertSame('agi', $serres->attack_characteristic_key);
+        $this->assertSame(3, $serres->element);
+
+        $tofu = Spell::query()->where('dofusdb_id', '31971')->first();
+        $this->assertSame('3', $tofu?->pa);
+        $this->assertSame(Spell::RESOLUTION_AUTO_SUCCESS, $tofu?->resolution_mode);
+        $this->assertTrue($tofu?->spellTypes()->where('name', 'Invocation')->exists());
+
+        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
+
+        $osa->refresh();
+        $tofuPivot = $osa->spells()->where('spells.id', $tofu->id)->first()?->pivot;
+        $this->assertSame(3, (int) $tofuPivot?->slot_index);
+        $this->assertSame(0, (int) $tofuPivot?->choice_order);
+
+        $extraPivot = $osa->spells()->where('spells.id', $extra->id)->first()?->pivot;
+        $this->assertSame(
+            ClassLevel1SpellSeederImporter::EXTRA_CHARACTER_LEVEL,
+            (int) $extraPivot?->character_level
+        );
+    }
+
+    public function test_imports_enutrof_level_1_kit_and_parks_extra_spells(): void
+    {
+        $this->seed(SubEffectSeeder::class);
+        $this->seedSpellTypes();
+
+        $enu = Breed::factory()->create([
+            'name' => 'Enutrof',
+            'state' => Breed::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $extra = Spell::factory()->create([
+            'name' => 'Coffre Animé',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $enu->spells()->attach($extra->id, [
+            'character_level' => 1,
+            'slot_index' => 7,
+            'choice_order' => 0,
+        ]);
+
+        $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::enutrofPath());
+        $importer = app(ClassLevel1SpellSeederImporter::class);
+        $first = $importer->import($catalog);
+
+        $this->assertCount(6, $first['created']);
+        $this->assertSame([], $first['skipped']);
+
+        $pieces = Spell::query()->where('dofusdb_id', '13338')->first();
+        $this->assertNotNull($pieces);
+        $this->assertSame('Lancer de Pièces', $pieces->name);
+        $this->assertSame('3', $pieces->pa);
+        $this->assertSame('chance', $pieces->attack_characteristic_key);
+        $this->assertSame(4, $pieces->element);
+
+        $pelle = Spell::query()->where('dofusdb_id', '13343')->first();
+        $this->assertSame('5', $pelle?->pa);
+        $this->assertSame(Spell::RESOLUTION_ATTACK_ROLL, $pelle?->resolution_mode);
+
+        $maladresse = Spell::query()->where('dofusdb_id', '13337')->first();
+        $this->assertSame(Spell::RESOLUTION_SAVING_THROW, $maladresse?->resolution_mode);
+        $this->assertSame('sagesse', $maladresse?->save_characteristic_key);
+
+        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
+
+        $enu->refresh();
+        $piecesPivot = $enu->spells()->where('spells.id', $pieces->id)->first()?->pivot;
+        $this->assertSame(1, (int) $piecesPivot?->slot_index);
+        $this->assertSame(0, (int) $piecesPivot?->choice_order);
+
+        $extraPivot = $enu->spells()->where('spells.id', $extra->id)->first()?->pivot;
+        $this->assertSame(
+            ClassLevel1SpellSeederImporter::EXTRA_CHARACTER_LEVEL,
+            (int) $extraPivot?->character_level
+        );
+    }
+
     private function seedSpellTypes(): void
     {
-        foreach (['Offensif', 'Buff', 'Debuff', 'Téléportation', 'Soin'] as $name) {
+        foreach (['Offensif', 'Buff', 'Debuff', 'Téléportation', 'Soin', 'Défensif', 'Invocation'] as $name) {
             SpellType::factory()->create([
                 'name' => $name,
                 'state' => SpellType::STATE_PLAYABLE,

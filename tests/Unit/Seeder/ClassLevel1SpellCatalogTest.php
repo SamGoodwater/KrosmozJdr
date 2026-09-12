@@ -139,11 +139,71 @@ final class ClassLevel1SpellCatalogTest extends TestCase
         $this->assertSame('chance', $entries[1]['attack_characteristic_key']);
     }
 
+    public function test_feca_catalog_has_six_spells_in_three_slots(): void
+    {
+        $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::fecaPath());
+
+        $this->assertSame('Féca', $catalog->breedName());
+        $entries = $catalog->entries();
+        $this->assertCount(6, $entries);
+
+        $names = array_column($entries, 'name');
+        $this->assertSame(
+            ['Attaque Naturelle', 'Rempart', 'Glyphe Enflammé', 'Escapade', 'Bouclier Féca', 'Armure Aqueuse'],
+            $names
+        );
+        $this->assertSame('glyph', $entries[2]['target_type']);
+        $this->assertSame('5', $entries[2]['pa']);
+        $this->assertSame('3', $entries[0]['pa']);
+        $this->assertSame('protéger', $entries[4]['sub_effects'][0]['slug']);
+    }
+
+    public function test_osamodas_catalog_has_six_spells_in_three_slots(): void
+    {
+        $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::osamodasPath());
+
+        $this->assertSame('Osamodas', $catalog->breedName());
+        $entries = $catalog->entries();
+        $this->assertCount(6, $entries);
+
+        $names = array_column($entries, 'name');
+        $this->assertSame(
+            ['Serres du Vautour', 'Griffes du Chtigre', 'Déplumage', 'Frappe du Craqueleur', 'Tofu', 'Dragoune'],
+            $names
+        );
+        $this->assertSame('3', $entries[0]['pa']);
+        $this->assertSame('5', $entries[2]['pa']);
+        $this->assertSame('agi', $entries[0]['attack_characteristic_key']);
+        $this->assertSame(['Invocation'], $entries[4]['types']);
+    }
+
+    public function test_enutrof_catalog_has_six_spells_in_three_slots(): void
+    {
+        $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::enutrofPath());
+
+        $this->assertSame('Enutrof', $catalog->breedName());
+        $entries = $catalog->entries();
+        $this->assertCount(6, $entries);
+
+        $names = array_column($entries, 'name');
+        $this->assertSame(
+            ['Lancer de Pièces', 'Roulage de Pelle', 'Pelle Aurifère', 'Lancer de Pelle', 'Maladresse', 'Souterrain'],
+            $names
+        );
+        $this->assertSame('3', $entries[0]['pa']);
+        $this->assertSame('5', $entries[2]['pa']);
+        $this->assertSame('chance', $entries[0]['attack_characteristic_key']);
+        $this->assertSame('saving_throw', $entries[4]['resolution_mode']);
+    }
+
     public function test_load_all_finds_all_class_kits(): void
     {
         $catalogs = ClassLevel1SpellCatalog::loadAllInDirectory();
         $breeds = array_map(static fn (ClassLevel1SpellCatalog $c): string => $c->breedName(), $catalogs);
         sort($breeds);
-        $this->assertSame(['Crâ', 'Eniripsa', 'Iop', 'Sram', 'Xélor'], $breeds);
+        $this->assertSame(
+            ['Crâ', 'Eniripsa', 'Enutrof', 'Féca', 'Iop', 'Osamodas', 'Sram', 'Xélor'],
+            $breeds
+        );
     }
 }

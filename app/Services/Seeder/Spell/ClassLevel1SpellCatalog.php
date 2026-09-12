@@ -52,6 +52,21 @@ final class ClassLevel1SpellCatalog
         return self::directory().'/xelor-level-1.json';
     }
 
+    public static function fecaPath(): string
+    {
+        return self::directory().'/feca-level-1.json';
+    }
+
+    public static function osamodasPath(): string
+    {
+        return self::directory().'/osamodas-level-1.json';
+    }
+
+    public static function enutrofPath(): string
+    {
+        return self::directory().'/enutrof-level-1.json';
+    }
+
     /**
      * @return list<self>
      */

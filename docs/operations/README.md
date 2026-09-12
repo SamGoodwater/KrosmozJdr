@@ -21,7 +21,7 @@ php artisan items:seeder-import --dry-run  # fichiers → base
 php artisan items:seeder-import
 ```
 
-`Database\Seeders\Entity\ItemSeeder` rejoue ces fichiers dans `project:seed` / `project:init`. Upsert sur `dofusdb_id` (`official_id` à défaut), type résolu par `item_type_dofus_id`, `image` exclu. Les ressources des recettes passent en `playable` (`ResourceSeeder`, plancher 1 kama). `ConsumableSeeder` rejoue l’échelle de soins hors combat, les parchemins de caractéristique (respec) et les utilitaires. `SpellSeeder` rejoue les kits Iop, Crâ, Eniripsa, Sram et Xélor niveau 1. Boutons super administrateur : `/admin/content/ia-generation`. Format : [database/seeders/data/README.md](../../database/seeders/data/README.md).
+`Database\Seeders\Entity\ItemSeeder` rejoue ces fichiers dans `project:seed` / `project:init`. Upsert sur `dofusdb_id` (`official_id` à défaut), type résolu par `item_type_dofus_id`, `image` exclu. Les ressources des recettes passent en `playable` (`ResourceSeeder`, plancher 1 kama). `ConsumableSeeder` rejoue l’échelle de soins hors combat, les parchemins de caractéristique (respec) et les utilitaires. `SpellSeeder` rejoue les kits Iop, Crâ, Eniripsa, Sram, Xélor, Féca, Osamodas et Enutrof niveau 1. Boutons super administrateur : `/admin/content/ia-generation`. Format : [database/seeders/data/README.md](../../database/seeders/data/README.md).
 
 ## Import des règles CMS
 
