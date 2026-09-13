@@ -16,4 +16,11 @@ final class KamasAmountTest extends TestCase
         $this->assertSame(0, KamasAmount::parse(null));
         $this->assertSame(0, KamasAmount::parse('abc'));
     }
+
+    public function test_parse_nullable_keeps_empty_as_null(): void
+    {
+        $this->assertNull(KamasAmount::parseNullable(null));
+        $this->assertNull(KamasAmount::parseNullable(''));
+        $this->assertSame(1200, KamasAmount::parseNullable('1 200 kamas'));
+    }
 }

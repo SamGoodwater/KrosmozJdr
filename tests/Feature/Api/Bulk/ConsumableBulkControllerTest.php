@@ -160,4 +160,27 @@ class ConsumableBulkControllerTest extends TestCase
             ->assertJson(['success' => false])
             ->assertJson(['message' => 'Aucun champ à mettre à jour.']);
     }
+
+    public function test_bulk_price_sets_displayed_total_not_custom_adjustment(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $consumable = Consumable::factory()->create([
+            'created_by' => $admin->id,
+            'price_calculated' => 250,
+            'price_custom' => 0,
+        ]);
+
+        $this->actingAs($admin)
+            ->patchJson('/api/entities/consumables/bulk', [
+                'ids' => [$consumable->id],
+                'price' => '500',
+            ])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $consumable->refresh();
+        $this->assertSame(250, $consumable->price_calculated);
+        $this->assertSame(250, $consumable->price_custom);
+        $this->assertSame('500', $consumable->price);
+    }
 }
