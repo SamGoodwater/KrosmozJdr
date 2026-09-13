@@ -175,4 +175,30 @@ class ItemBulkControllerTest extends TestCase
             ->assertJson(['success' => false])
             ->assertJson(['message' => 'Aucun champ à mettre à jour.']);
     }
+
+    public function test_bulk_price_sets_displayed_total_not_custom_adjustment(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $item = Item::factory()->create([
+            'created_by' => $admin->id,
+            'level' => '8',
+            'rarity' => 1,
+            'bonus' => null,
+            'price_calculated' => 1400,
+            'price_custom' => 0,
+        ]);
+
+        $this->actingAs($admin)
+            ->patchJson('/api/entities/items/bulk', [
+                'ids' => [$item->id],
+                'price' => '2 000 kamas',
+            ])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $item->refresh();
+        $this->assertSame(1400, $item->price_calculated);
+        $this->assertSame(600, $item->price_custom);
+        $this->assertSame('2000', $item->price);
+    }
 }

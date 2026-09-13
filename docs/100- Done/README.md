@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Prix kamas : plus d’écrasement ni de double compte
+
+Un consommable ou un équipement qui n’avait encore que la colonne `price` (sans part calculée / ajustement) ne passe plus à 0 kamas dès qu’on enregistre autre chose. Dans le catalogue, coller un prix en édition multiple pose le **total affiché**, pas un bonus empilé sur la formule.
+
 ## Septembre 2026 — Les 24 sorts de chaque classe
 
 Les **19 classes** ont leurs **24 sorts** (12 emplacements × 2 variantes) : le kit de niveau 1, puis 9 emplacements aux niveaux 3, 4, 5, 7, 8, 10, 11, 13 et 14. Noms Dofus, chiffres JDR (1d6 → 4d6 selon le palier). C’est un **dégrossissage** à relire : pièges, glyphes et invocations restent simples, pas les combos du MMO. Le seeder rejoue le tout.

@@ -11,6 +11,7 @@ use App\Models\Entity\Resource;
 use App\Models\User;
 use App\Services\Characteristic\Pricing\EntityPriceRecalculator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class EntityPriceRecalculationTest extends TestCase
@@ -192,5 +193,31 @@ class EntityPriceRecalculationTest extends TestCase
         $consumable->refresh();
         $this->assertSame(3000, $consumable->price_custom);
         $this->assertSame('3000', $consumable->price);
+    }
+
+    public function test_saving_consumable_keeps_legacy_price_when_parts_are_null(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $consumable = Consumable::factory()->create([
+            'created_by' => $admin->id,
+            'state' => Consumable::STATE_PLAYABLE,
+            'price_calculated' => null,
+            'price_custom' => null,
+        ]);
+
+        DB::table('consumables')->where('id', $consumable->id)->update([
+            'price' => '1500',
+            'price_calculated' => null,
+            'price_custom' => null,
+        ]);
+
+        $consumable->refresh();
+        $consumable->description = 'Relu sans toucher au prix';
+        $consumable->save();
+
+        $consumable->refresh();
+        $this->assertNull($consumable->price_calculated);
+        $this->assertSame(1500, $consumable->price_custom);
+        $this->assertSame('1500', $consumable->price);
     }
 }
