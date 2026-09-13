@@ -13,10 +13,11 @@ use App\Models\Type\SpellType;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Importe les sorts de classe niveau 1 (kit 3×2) en `playable`.
+ * Importe les sorts de classe (kit niveau 1 + progression) en `playable`.
  *
- * Idempotent. Upsert sur `dofusdb_id` ou `official_id`. Les autres sorts de la classe
- * passent hors grille (`character_level` 0).
+ * Idempotent. Upsert sur `dofusdb_id` ou `official_id`. Les catalogues d’une même
+ * classe sont fusionnés avant le sync des emplacements. Les autres sorts de la
+ * classe passent hors grille (`character_level` 0).
  *
  * @example $result = app(ClassLevel1SpellSeederImporter::class)->import();
  */
@@ -49,16 +50,25 @@ final class ClassLevel1SpellSeederImporter
      */
     public function import(?ClassLevel1SpellCatalog $catalog = null): array
     {
-        $catalogs = $catalog instanceof ClassLevel1SpellCatalog
-            ? [$catalog]
-            : ClassLevel1SpellCatalog::loadAllInDirectory();
+        if ($catalog instanceof ClassLevel1SpellCatalog) {
+            return $this->importBreedCatalogs([$catalog]);
+        }
+
+        $grouped = [];
+        foreach (ClassLevel1SpellCatalog::loadAllInDirectory() as $one) {
+            $name = $one->breedName();
+            if ($name === '') {
+                continue;
+            }
+            $grouped[$name][] = $one;
+        }
 
         $created = [];
         $updated = [];
         $skipped = [];
 
-        foreach ($catalogs as $one) {
-            $part = $this->importCatalog($one);
+        foreach ($grouped as $catalogs) {
+            $part = $this->importBreedCatalogs($catalogs);
             $created = array_merge($created, $part['created']);
             $updated = array_merge($updated, $part['updated']);
             $skipped = array_merge($skipped, $part['skipped']);
@@ -72,14 +82,15 @@ final class ClassLevel1SpellSeederImporter
     }
 
     /**
+     * @param  list<ClassLevel1SpellCatalog>  $catalogs
      * @return array{created: list<string>, updated: list<string>, skipped: list<string>}
      */
-    private function importCatalog(ClassLevel1SpellCatalog $catalog): array
+    private function importBreedCatalogs(array $catalogs): array
     {
         $created = [];
         $updated = [];
         $skipped = [];
-        $breedName = $catalog->breedName();
+        $breedName = $catalogs[0]->breedName();
         if ($breedName === '') {
             return [
                 'created' => [],
@@ -91,26 +102,28 @@ final class ClassLevel1SpellSeederImporter
         $kitSpellIds = [];
         $slotMap = [];
 
-        foreach ($catalog->entries() as $entry) {
-            $spell = $this->findSpell($entry);
-            $wasNew = $spell === null;
-            $spell ??= new Spell;
+        foreach ($catalogs as $catalog) {
+            foreach ($catalog->entries() as $entry) {
+                $spell = $this->findSpell($entry);
+                $wasNew = $spell === null;
+                $spell ??= new Spell;
 
-            $spell->fill($this->spellAttributes($entry));
-            $spell->save();
+                $spell->fill($this->spellAttributes($entry));
+                $spell->save();
 
-            $this->syncTypes($spell, $entry['types'], $skipped);
-            $this->syncJdrEffect($spell, $entry, $skipped);
+                $this->syncTypes($spell, $entry['types'], $skipped);
+                $this->syncJdrEffect($spell, $entry, $skipped);
 
-            $kitSpellIds[] = $spell->id;
-            $slotMap[$spell->id] = [
-                'character_level' => 1,
-                'slot_index' => $entry['slot_index'],
-                'choice_order' => $entry['choice_order'],
-            ];
+                $kitSpellIds[] = $spell->id;
+                $slotMap[$spell->id] = [
+                    'character_level' => $entry['character_level'],
+                    'slot_index' => $entry['slot_index'],
+                    'choice_order' => $entry['choice_order'],
+                ];
 
-            $label = $breedName.' / '.$entry['name'];
-            $wasNew ? $created[] = $label : $updated[] = $label;
+                $label = $breedName.' / '.$entry['name'];
+                $wasNew ? $created[] = $label : $updated[] = $label;
+            }
         }
 
         $breed = Breed::query()->where('name', $breedName)->first();
@@ -158,7 +171,7 @@ final class ClassLevel1SpellSeederImporter
             'name' => $entry['name'],
             'description' => $entry['description'],
             'effect' => $entry['effect'],
-            'level' => '1',
+            'level' => (string) $entry['character_level'],
             'pa' => $entry['pa'],
             'po_min' => $entry['po_min'],
             'po_max' => $entry['po_max'],
@@ -261,13 +274,13 @@ final class ClassLevel1SpellSeederImporter
                 'degree' => 1,
             ],
             [
-                'required_creature_level' => 1,
+                'required_creature_level' => $entry['character_level'],
                 'area' => $area,
                 'slug' => $slug.'-d1',
             ]
         );
         $degree->update([
-            'required_creature_level' => 1,
+            'required_creature_level' => $entry['character_level'],
             'area' => $area,
         ]);
         $degree->effectSubEffects()->delete();

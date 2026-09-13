@@ -804,6 +804,83 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         }
     }
 
+    public function test_imports_iop_progression_and_places_colere_at_level_10(): void
+    {
+        $this->seed(SubEffectSeeder::class);
+        $this->seedSpellTypes();
+
+        $iop = Breed::factory()->create([
+            'name' => 'Iop',
+            'state' => Breed::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $extra = Spell::factory()->create([
+            'name' => 'Colère de Iop',
+            'dofusdb_id' => '15661',
+            'state' => Spell::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+        $iop->spells()->attach($extra->id, [
+            'character_level' => 1,
+            'slot_index' => 7,
+            'choice_order' => 0,
+        ]);
+
+        $catalog = ClassLevel1SpellCatalog::load(
+            ClassLevel1SpellCatalog::directory().'/iop-progression.json'
+        );
+        $first = app(ClassLevel1SpellSeederImporter::class)->import($catalog);
+
+        $this->assertCount(17, $first['created']);
+        $this->assertCount(1, $first['updated']);
+        $this->assertSame([], $first['skipped']);
+
+        $colere = Spell::query()->where('dofusdb_id', '15661')->first();
+        $this->assertNotNull($colere);
+        $this->assertSame('Colère de Iop', $colere->name);
+        $this->assertSame(Spell::STATE_PLAYABLE, $colere->state);
+        $this->assertSame('5', $colere->pa);
+        $this->assertSame('10', $colere->level);
+        $this->assertSame(Spell::RESOLUTION_SAVING_THROW, $colere->resolution_mode);
+
+        $iop->refresh();
+        $pivot = $iop->spells()->where('spells.id', $colere->id)->first()?->pivot;
+        $this->assertSame(10, (int) $pivot?->character_level);
+        $this->assertSame(1, (int) $pivot?->slot_index);
+        $this->assertSame(0, (int) $pivot?->choice_order);
+        $this->assertSame(18, $iop->spells()->count());
+    }
+
+    public function test_full_import_keeps_level_1_and_progression_slots_together(): void
+    {
+        $this->seed(SubEffectSeeder::class);
+        $this->seedSpellTypes();
+
+        Breed::factory()->create([
+            'name' => 'Iop',
+            'state' => Breed::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+
+        $result = app(ClassLevel1SpellSeederImporter::class)->import();
+        $this->assertNotEmpty($result['skipped']);
+
+        $iop = Breed::query()->where('name', 'Iop')->first();
+        $this->assertNotNull($iop);
+        $slotted = $iop->spells()
+            ->wherePivot('character_level', '>', 0)
+            ->get();
+        $this->assertCount(24, $slotted);
+        $levels = $slotted->pluck('pivot.character_level')->unique()->sort()->values()->all();
+        $this->assertSame([1, 3, 4, 5, 7, 8, 10, 11, 13, 14], array_map('intval', $levels));
+    }
+
     private function seedSpellTypes(): void
     {
         foreach (['Offensif', 'Buff', 'Debuff', 'Téléportation', 'Soin', 'Défensif', 'Invocation'] as $name) {

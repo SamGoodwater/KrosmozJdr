@@ -79,12 +79,12 @@ Un JSON par classe (`feca.json` … `forgelance.json`, 19 fiches, ids Dofus 1–
 
 - **Seed** : `Database\Seeders\Entity\ClassBreedSeeder`, **avant** `SpellSeeder`.
 
-## Sorts de classe niveau 1 (`entities/spells/`)
+## Sorts de classe (`entities/spells/`)
 
-`iop-level-1.json` … `forgelance-level-1.json` : 6 sorts par classe (3 emplacements × 2 variantes), **19 classes**. Upsert sur `dofusdb_id` ou `official_id`. `auto_update = false`, état `playable`. `target_type` optionnel (`direct`, `trap`, `glyph`). Les autres sorts liés à la classe passent hors grille (`character_level` 0, `slot_index` 1).
+`iop-level-1.json` … `forgelance-level-1.json` : 6 sorts (3 emplacements × 2 variantes) au **niveau 1**. `*-progression.json` : 18 sorts (9 emplacements × 2 variantes) aux niveaux **3, 4, 5, 7, 8, 10, 11, 13, 14**. **19 classes**, 24 sorts chacune. Upsert sur `dofusdb_id` ou `official_id`. `auto_update = false`, état `playable`. `target_type` optionnel (`direct`, `trap`, `glyph`). Les catalogues d’une même classe sont fusionnés avant le sync des emplacements ; les autres sorts liés à la classe passent hors grille (`character_level` 0, `slot_index` 1).
 
 - **Seed** : `Database\Seeders\Entity\SpellSeeder` (`project:seed` / `project:init` / `DatabaseSeeder`).
-- Budget : attaque simple 3 PA 1d6+mod 2×/tour ; sort fort 4–5 PA ; identité 3 PA.
+- Budget : attaque simple 3 PA ; sort fort 4–5 PA ; identité 3 PA. Dés selon le palier (§5.2.3.2 / §5.2.3.6).
 
 ## Panoplies (`entities/panoplies/`)
 

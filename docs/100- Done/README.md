@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Les 24 sorts de chaque classe
+
+Les **19 classes** ont leurs **24 sorts** (12 emplacements × 2 variantes) : le kit de niveau 1, puis 9 emplacements aux niveaux 3, 4, 5, 7, 8, 10, 11, 13 et 14. Noms Dofus, chiffres JDR (1d6 → 4d6 selon le palier). C’est un **dégrossissage** à relire : pièges, glyphes et invocations restent simples, pas les combos du MMO. Le seeder rejoue le tout.
+
 ## Septembre 2026 — Atelier Création : un guide par entité
 
 L’atelier **Pour les MJ → Création** n’aligne plus trois chartes génériques. Chaque type des Bibliothèques a sa page : **philosophie** (à quoi sert la fiche), **marche à suivre** (comment la créer, bons chiffres, pièges), puis le tableau utile. Les capacités, panoplies, ressources, états et traits n’ont pas de grille dédiée. Les anciennes adresses `contribution-creatures` redirigent. Contribution publique reste **Nous rejoindre**.

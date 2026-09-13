@@ -286,11 +286,39 @@ final class ClassLevel1SpellCatalogTest extends TestCase
     public function test_load_all_finds_all_class_kits(): void
     {
         $catalogs = ClassLevel1SpellCatalog::loadAllInDirectory();
-        $breeds = array_map(static fn (ClassLevel1SpellCatalog $c): string => $c->breedName(), $catalogs);
+        $this->assertCount(38, $catalogs);
+
+        $breeds = array_values(array_unique(array_map(
+            static fn (ClassLevel1SpellCatalog $c): string => $c->breedName(),
+            $catalogs
+        )));
         sort($breeds);
         $this->assertSame(
             ['Crâ', 'Ecaflip', 'Eliotrope', 'Eniripsa', 'Enutrof', 'Forgelance', 'Féca', 'Huppermage', 'Iop', 'Osamodas', 'Ouginak', 'Pandawa', 'Roublard', 'Sacrieur', 'Sadida', 'Sram', 'Steamer', 'Xélor', 'Zobal'],
             $breeds
         );
+    }
+
+    public function test_progression_catalogs_have_eighteen_spells_on_nine_levels(): void
+    {
+        $levels = [3, 4, 5, 7, 8, 10, 11, 13, 14];
+        $files = glob(ClassLevel1SpellCatalog::directory().'/*-progression.json') ?: [];
+        $this->assertCount(19, $files);
+
+        foreach ($files as $file) {
+            $catalog = ClassLevel1SpellCatalog::load($file);
+            $entries = $catalog->entries();
+            $this->assertCount(18, $entries, $catalog->breedName());
+            $got = [];
+            foreach ($entries as $entry) {
+                $got[] = [$entry['character_level'], $entry['choice_order']];
+            }
+            $expected = [];
+            foreach ($levels as $level) {
+                $expected[] = [$level, 0];
+                $expected[] = [$level, 1];
+            }
+            $this->assertSame($expected, $got, $catalog->breedName());
+        }
     }
 }

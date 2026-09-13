@@ -9,7 +9,7 @@ use JsonException;
 use RuntimeException;
 
 /**
- * Catalogue des sorts de classe niveau 1 (3 emplacements × 2 variantes).
+ * Catalogue des sorts de classe (kit niveau 1 + progression 3–14).
  *
  * @example $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::iopPath());
  */
@@ -132,7 +132,10 @@ final class ClassLevel1SpellCatalog
             return [];
         }
 
-        $files = File::glob($dir.'/*-level-1.json') ?: [];
+        $files = array_merge(
+            File::glob($dir.'/*-level-1.json') ?: [],
+            File::glob($dir.'/*-progression.json') ?: [],
+        );
         sort($files);
 
         $catalogs = [];
@@ -150,7 +153,7 @@ final class ClassLevel1SpellCatalog
     {
         $file = $path ?? self::iopPath();
         if (! File::isFile($file)) {
-            throw new RuntimeException('Catalogue de sorts de classe niveau 1 introuvable : '.$file);
+            throw new RuntimeException('Catalogue de sorts de classe introuvable : '.$file);
         }
 
         /** @var array<string, mixed> $payload */
@@ -170,6 +173,7 @@ final class ClassLevel1SpellCatalog
      *     name: string,
      *     dofusdb_id: string|null,
      *     official_id: string|null,
+     *     character_level: int,
      *     slot_index: int,
      *     choice_order: int,
      *     types: list<string>,
@@ -243,6 +247,7 @@ final class ClassLevel1SpellCatalog
                 'name' => $name,
                 'dofusdb_id' => $this->nullableString($row['dofusdb_id'] ?? null),
                 'official_id' => $this->nullableString($row['official_id'] ?? null),
+                'character_level' => max(1, (int) ($row['character_level'] ?? 1)),
                 'slot_index' => max(1, (int) ($row['slot_index'] ?? 1)),
                 'choice_order' => max(0, (int) ($row['choice_order'] ?? 0)),
                 'types' => $types,
