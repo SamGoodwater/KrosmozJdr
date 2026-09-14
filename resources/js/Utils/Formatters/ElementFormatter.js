@@ -32,7 +32,7 @@ export class ElementFormatter extends BaseFormatter {
     }
 
     const mask = normalizeElementStorageValue(value);
-    return getElementLabel(mask) ?? `Élément ${mask}`;
+    return getElementLabel(value) ?? `Élément ${mask}`;
   }
 
   /**
@@ -46,7 +46,7 @@ export class ElementFormatter extends BaseFormatter {
     }
 
     const mask = normalizeElementStorageValue(value);
-    const label = getElementLabel(mask);
+    const label = getElementLabel(value);
 
     if (!label) {
       return this.buildTextCell(`Élément ${mask}`, {

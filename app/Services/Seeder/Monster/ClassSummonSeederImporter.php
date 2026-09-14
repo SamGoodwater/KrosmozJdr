@@ -13,6 +13,7 @@ use App\Models\SubEffect;
 use App\Models\Type\MonsterRace;
 use App\Models\Type\SpellType;
 use App\Models\User;
+use App\Support\ElementBitmask;
 
 /**
  * Importe les invocations de classe en monstres `playable` + 1 sort-créature.
@@ -23,19 +24,6 @@ use App\Models\User;
  */
 final class ClassSummonSeederImporter
 {
-    /**
-     * Encodage 0–4 (Neutre, Terre, Feu, Air, Eau) lu correctement par l’UI actuelle.
-     *
-     * @var array<string, int>
-     */
-    private const ELEMENT_STORAGE = [
-        'neutral' => 0,
-        'earth' => 1,
-        'fire' => 2,
-        'air' => 3,
-        'water' => 4,
-    ];
-
     /**
      * @return array{
      *     created: list<string>,
@@ -93,9 +81,7 @@ final class ClassSummonSeederImporter
         $spell = Spell::query()->where('official_id', $entry['action_official_id'])->first() ?? new Spell;
 
         $elementSlug = $action['element'];
-        $element = is_string($elementSlug) && isset(self::ELEMENT_STORAGE[$elementSlug])
-            ? self::ELEMENT_STORAGE[$elementSlug]
-            : null;
+        $element = is_string($elementSlug) ? ElementBitmask::fromSlug($elementSlug) : null;
 
         $isHeal = $action['kind'] === 'soigner';
         $typeName = $isHeal ? 'Soin' : 'Offensif';

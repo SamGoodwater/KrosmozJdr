@@ -7,7 +7,7 @@ namespace App\Support;
 /**
  * Constantes partagées pour les éléments (Spell, Capability).
  *
- * Stockage : masque 7 bits (voir {@see ElementBitmask}).
+ * Stockage : masque 7 bits (voir {@see ElementBitmask}). Ne plus traiter 0–29 comme combinaisons legacy.
  */
 final class ElementConstants
 {
@@ -18,7 +18,7 @@ final class ElementConstants
     public const PRIMARIES = [0, 1, 2, 3, 4, 5, 6];
 
     /**
-     * Mapping legacy capability element (string) → valeur int (masque ou ancien code ≤29 normalisé à la volée).
+     * Mapping legacy capability element (string) → indice primaire, puis masque via {@see ElementBitmask::fromSlug()}.
      *
      * @deprecated Étendre au besoin pour sagesse/vitalité textuelles
      */

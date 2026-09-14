@@ -24,11 +24,10 @@ use App\Models\Type\SpellType;
 use App\Models\User;
 use App\Services\Characteristic\Pricing\EntityPriceRecalculator;
 use App\Services\Condition\ConditionCanonicalMapper;
+use App\Services\Effect\SpellElementInferenceService;
 use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
-use App\Support\DofusDbElementId;
 use App\Support\DofusHyperlinkText;
-use App\Support\ElementBitmask;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -669,7 +668,7 @@ final class IntegrationService
             /**
              * Pas de mapping depuis spell_global.elementId : côté Dofus ce champ sert au jet d’attaque
              * (intel / chance / force / agi), pas à l’élément des dégâts — voir SpellResolutionInferenceService.
-             * L’élément affiché est déduit uniquement des sous-effets (inferSpellElementMaskFromEffectsPayload).
+             * L’élément affiché est déduit des sous-effets ({@see SpellElementInferenceService}).
              * is_magic / resolution_* sont écrasés par l’inférence d’effets (DofusDB n’expose pas isMagic).
              */
             'element' => null,
@@ -706,7 +705,7 @@ final class IntegrationService
             $spellEffectsPayload = $convertedData['spell_effects'] ?? null;
             if (is_array($spellEffectsPayload)) {
                 $this->integrateSpellEffectsForSpell($spell, $spellEffectsPayload);
-                $inferredElementMask = $this->inferSpellElementMaskFromEffectsPayload($spellEffectsPayload);
+                $inferredElementMask = $this->spellElementInference()->maskFromConversionPayload($spellEffectsPayload);
                 $spell->element = $inferredElementMask;
                 $spell->save();
                 $inferredTypeIds = $this->inferSpellTypeIdsFromEffectsPayload($spellEffectsPayload);
@@ -1375,55 +1374,9 @@ final class IntegrationService
         return $this->conditionCanonicalMapper ??= app(ConditionCanonicalMapper::class);
     }
 
-    /**
-     * Masque élémentaire du sort : uniquement params.dofus_element_id sur chaque sous-effet
-     * (conversion : spell-level effectElement DofusDB, 0–4). Pas d’inférence depuis characteristic.
-     *
-     * @param  array{
-     *   effects?: list<array{sub_effects?: list<array{params?: array<string, mixed>}>}>
-     * }  $payload
-     */
-    private function inferSpellElementMaskFromEffectsPayload(array $payload): ?int
+    private function spellElementInference(): SpellElementInferenceService
     {
-        $effects = $payload['effects'] ?? [];
-        if (! is_array($effects) || $effects === []) {
-            return null;
-        }
-
-        $primaries = [];
-        foreach ($effects as $effect) {
-            if (! is_array($effect)) {
-                continue;
-            }
-            $subEffects = $effect['sub_effects'] ?? [];
-            if (! is_array($subEffects)) {
-                continue;
-            }
-            foreach ($subEffects as $subEffect) {
-                if (! is_array($subEffect)) {
-                    continue;
-                }
-                $params = is_array($subEffect['params'] ?? null) ? $subEffect['params'] : [];
-                $dofusEl = $params['dofus_element_id'] ?? null;
-                if (! is_numeric($dofusEl)) {
-                    continue;
-                }
-                $el = (int) $dofusEl;
-                if ($el < 0 || $el > 4) {
-                    continue;
-                }
-                $p = DofusDbElementId::toKrosmozElementPrimaryIndex($el);
-                if ($p !== null && $p >= 0 && $p <= 4) {
-                    $primaries[$p] = true;
-                }
-            }
-        }
-
-        if ($primaries === []) {
-            return null;
-        }
-
-        return ElementBitmask::fromPrimaries(array_map('intval', array_keys($primaries)));
+        return app(SpellElementInferenceService::class);
     }
 
     /**

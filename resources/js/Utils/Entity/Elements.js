@@ -2,6 +2,7 @@
  * Référentiel éléments (Spell, Capability) — masque 7 bits, aligné avec App\Support\ElementBitmask.
  *
  * Primaires : 0 Neutre, 1 Terre, 2 Feu, 3 Air, 4 Eau, 5 Sagesse, 6 Vitalité.
+ * Stockage : masque (Air = 8, Eau = 16), pas l’ancien code combinaisons 0–29.
  * Icônes : storage/app/public/images/icons/caracteristics/ (URL absolue `/storage/...`).
  */
 
@@ -131,7 +132,7 @@ export function legacyCodeToMask(legacyCode) {
 }
 
 /**
- * Valeur BDD / API → masque (migre 0–29 si besoin).
+ * Valeur BDD / API → masque 7 bits (Air = 8). Plus de conversion 0–29.
  *
  * @param {unknown} raw
  * @returns {number}
@@ -140,9 +141,6 @@ export function normalizeElementStorageValue(raw) {
   const n = typeof raw === 'string' ? parseInt(raw, 10) : Number(raw);
   if (!Number.isFinite(n)) {
     return 0;
-  }
-  if (n >= 0 && n <= 29) {
-    return legacyCodeToMask(n);
   }
   return n & ELEMENT_MASK_MAX;
 }

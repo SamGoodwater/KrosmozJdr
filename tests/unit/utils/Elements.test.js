@@ -23,27 +23,27 @@ describe("getElementGlassSurfaceStyle", () => {
         expect(getElementGlassSurfaceStyle(undefined)).toEqual({});
     });
 
-    it("traite 0 comme Neutre (ancien code)", () => {
-        expect(getElementGlassSurfaceStyle(0)).toEqual({
-            "--element-border-color": ELEMENT_PRIMARY_CSS_VARS[0],
-        });
+    it("reste vide pour le masque 0", () => {
+        expect(getElementGlassSurfaceStyle(0)).toEqual({});
     });
 
-    it("pose une bordure pour un primaire (Terre, Feu, Eau…)", () => {
-        expect(getElementGlassSurfaceStyle(4)).toEqual({
+    it("pose une bordure pour un primaire (Terre, Feu, Air, Eau…)", () => {
+        expect(getElementGlassSurfaceStyle(primariesToMask([4]))).toEqual({
             "--element-border-color": ELEMENT_PRIMARY_CSS_VARS[4],
         });
-        // 1 / 2 / 4 en BDD restent des codes legacy (pas le masque 1<<n, collision 0–29).
         expect(getElementGlassSurfaceStyle(1)).toEqual({
-            "--element-border-color": ELEMENT_PRIMARY_CSS_VARS[1],
+            "--element-border-color": ELEMENT_PRIMARY_CSS_VARS[0],
         });
-        expect(getElementGlassSurfaceStyle(2)).toEqual({
+        expect(getElementGlassSurfaceStyle(4)).toEqual({
             "--element-border-color": ELEMENT_PRIMARY_CSS_VARS[2],
+        });
+        expect(getElementGlassSurfaceStyle(8)).toEqual({
+            "--element-border-color": ELEMENT_PRIMARY_CSS_VARS[3],
         });
     });
 
     it("n’écrit pas --bg-color (le glass reste le thème)", () => {
-        expect(getElementGlassSurfaceStyle(4)["--bg-color"]).toBeUndefined();
+        expect(getElementGlassSurfaceStyle(primariesToMask([4]))["--bg-color"]).toBeUndefined();
         expect(getElementGlassSurfaceStyle(primariesToMask([1, 2]))["--bg-color"]).toBeUndefined();
     });
 

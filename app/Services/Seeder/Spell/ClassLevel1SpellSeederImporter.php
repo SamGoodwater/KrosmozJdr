@@ -11,6 +11,7 @@ use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
 use App\Models\SubEffect;
 use App\Models\Type\SpellType;
+use App\Support\ElementBitmask;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -28,19 +29,6 @@ final class ClassLevel1SpellSeederImporter
     public const EXTRA_CHARACTER_LEVEL = 0;
 
     public const EXTRA_SLOT_INDEX = 1;
-
-    /**
-     * Encodage 0–4 (Neutre, Terre, Feu, Air, Eau) lu correctement par l’UI actuelle.
-     *
-     * @var array<string, int>
-     */
-    private const ELEMENT_STORAGE = [
-        'neutral' => 0,
-        'earth' => 1,
-        'fire' => 2,
-        'air' => 3,
-        'water' => 4,
-    ];
 
     /**
      * @return array{
@@ -165,9 +153,7 @@ final class ClassLevel1SpellSeederImporter
     private function spellAttributes(array $entry): array
     {
         $elementSlug = $entry['element'];
-        $element = is_string($elementSlug) && isset(self::ELEMENT_STORAGE[$elementSlug])
-            ? self::ELEMENT_STORAGE[$elementSlug]
-            : null;
+        $element = is_string($elementSlug) ? ElementBitmask::fromSlug($elementSlug) : null;
 
         $attributes = [
             'name' => $entry['name'],

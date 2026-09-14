@@ -333,6 +333,24 @@ Qualité effets : `scrapping:effects:quality-gate`, `scrapping:effects:pipeline`
 
 ---
 
+## `spells:sync-elements`
+
+```yaml
+signature: spells:sync-elements
+domain: data
+ui: false
+cron: false
+```
+
+Recalcule `spells.element` (masque 7 bits) à partir des sous-effets : `dofus_element_id`, `params.element`, slug `characteristic` (ex. `air`). `--dry-run` pour compter sans écrire.
+
+```bash
+php artisan spells:sync-elements --dry-run
+php artisan spells:sync-elements
+```
+
+---
+
 ## `game-terms:rewrite-dissipable`
 
 ```yaml

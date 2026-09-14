@@ -12,6 +12,7 @@
 - `app/Support/KrosmozGameTerms.php` — désenvoûtable → dissipable (`pickLang`, descriptions d’effets ; `game-terms:rewrite-dissipable`)
 - `app/Services/Condition/ConditionCanonicalMapper.php` — jeton Dofus → état JDR `playable`
 - `php artisan conditions:remap-canonical` — recolle `condition_spell` + `params.condition_id`
+- `php artisan spells:sync-elements` — aligne `spells.element` sur les éléments des sous-effets (`dofus_element_id`, `params.element`, slug `characteristic`)
 - Affichage sorts : `SpellEffectDefinitionsSerializer` ne lie que les états hors `raw`
 - `Spell::visibleToUser` / `EntityDisplayVisibilityService::constrainQueryToViewer` (listes)
 - `GET /api/effects/definitions` — recherche defs pour liaison sort (payload edit allégé)

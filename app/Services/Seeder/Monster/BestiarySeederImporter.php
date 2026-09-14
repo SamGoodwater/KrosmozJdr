@@ -29,19 +29,6 @@ use App\Support\ElementBitmask;
 final class BestiarySeederImporter
 {
     /**
-     * Encodage 0–4 (Neutre, Terre, Feu, Air, Eau) — aligné sur `ClassSummonSeederImporter` en main.
-     *
-     * @var array<string, int>
-     */
-    private const ELEMENT_STORAGE = [
-        'neutral' => 0,
-        'earth' => 1,
-        'fire' => 2,
-        'air' => 3,
-        'water' => 4,
-    ];
-
-    /**
      * @return array{
      *     created: list<string>,
      *     updated: list<string>,
@@ -104,7 +91,7 @@ final class BestiarySeederImporter
         $spell = Spell::query()->where('official_id', $spellRow['official_id'])->first() ?? new Spell;
 
         $elementSlug = $spellRow['element'];
-        $element = is_string($elementSlug) ? $this->elementValue($elementSlug) : null;
+        $element = is_string($elementSlug) ? ElementBitmask::fromSlug($elementSlug) : null;
 
         $effectText = $this->effectText($spellRow);
         $isHeal = $spellRow['kind'] === 'soigner';
@@ -332,18 +319,6 @@ final class BestiarySeederImporter
     private function findMonster(string $officialId): ?Monster
     {
         return Monster::query()->where('official_id', $officialId)->with('creature')->first();
-    }
-
-    /**
-     * Masque 7 bits si `ElementBitmask::fromSlug` existe (chantier éléments), sinon 0–4 historique.
-     */
-    private function elementValue(string $slug): ?int
-    {
-        if (method_exists(ElementBitmask::class, 'fromSlug')) {
-            return ElementBitmask::fromSlug($slug);
-        }
-
-        return self::ELEMENT_STORAGE[$slug] ?? null;
     }
 
     /**

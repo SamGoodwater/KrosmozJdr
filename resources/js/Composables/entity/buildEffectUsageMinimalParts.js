@@ -18,7 +18,7 @@ import {
     getCharacteristicColorStyle,
     SPELL_EFFECT_CHIP_SOURCE_GROUPS,
 } from '@/Composables/entity/useCharacteristicDisplay';
-import { getElementLabel, getElementIcon, getElementColor } from '@/Utils/Entity/Elements';
+import { getElementLabel, getElementIcon, getElementColor, ELEMENT_PRIMARY_LABELS } from '@/Utils/Entity/Elements';
 
 const ELEMENT_SLUGS = new Set(['neutral', 'earth', 'fire', 'air', 'water']);
 
@@ -85,7 +85,7 @@ export function buildEffectUsageMinimalParts(item) {
         const hex = getElementColor(elNum);
         elementBlock = {
             icon: getElementIcon(elNum),
-            label: getElementLabel(elNum),
+            label: ELEMENT_PRIMARY_LABELS[elNum] ?? getElementLabel(elNum),
             style: hex ? getCharacteristicColorStyle(hex) : undefined,
         };
     } else if (charKeyNorm && ELEMENT_SLUGS.has(charKeyNorm)) {
@@ -93,7 +93,7 @@ export function buildEffectUsageMinimalParts(item) {
         const hex = getElementColor(id);
         elementBlock = {
             icon: getElementIcon(id),
-            label: getElementLabel(id),
+            label: ELEMENT_PRIMARY_LABELS[id] ?? getElementLabel(id),
             style: hex ? getCharacteristicColorStyle(hex) : undefined,
         };
     }

@@ -11,6 +11,7 @@ use App\Models\Type\SpellType;
 use App\Services\Seeder\Monster\ClassSummonSeederImporter;
 use App\Services\Seeder\Spell\ClassLevel1SpellCatalog;
 use App\Services\Seeder\Spell\ClassLevel1SpellSeederImporter;
+use App\Support\ElementBitmask;
 use Database\Seeders\SubEffectSeeder;
 use Tests\TestCase;
 
@@ -59,7 +60,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame(Spell::RESOLUTION_ATTACK_ROLL, $pression->resolution_mode);
         $this->assertSame('strong', $pression->attack_characteristic_key);
         $this->assertFalse($pression->is_magic);
-        $this->assertSame(1, $pression->element);
+        $this->assertSame(ElementBitmask::fromSlug('earth'), $pression->element);
         $this->assertSame(Spell::CATEGORY_CLASS, $pression->category);
 
         $attaque = Spell::query()->where('official_id', 'jdr:attaque-naturelle')->first();
@@ -162,12 +163,12 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertTrue($cinglante->po_editable);
         $this->assertSame(Spell::RESOLUTION_ATTACK_ROLL, $cinglante->resolution_mode);
         $this->assertSame('agi', $cinglante->attack_characteristic_key);
-        $this->assertSame(3, $cinglante->element);
+        $this->assertSame(ElementBitmask::fromSlug('air'), $cinglante->element);
         $this->assertSame(Spell::CATEGORY_CLASS, $cinglante->category);
 
         $glacee = Spell::query()->where('dofusdb_id', '32435')->first();
         $this->assertSame('chance', $glacee?->attack_characteristic_key);
-        $this->assertSame(4, $glacee?->element);
+        $this->assertSame(ElementBitmask::fromSlug('water'), $glacee?->element);
 
         $explosive = Spell::query()->where('dofusdb_id', '32445')->first();
         $this->assertSame('5', $explosive?->pa);
@@ -250,7 +251,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame('2', $vivifiant->cast_per_turn);
         $this->assertSame(Spell::RESOLUTION_AUTO_SUCCESS, $vivifiant->resolution_mode);
         $this->assertTrue($vivifiant->auto_success_if_willing_target);
-        $this->assertSame(4, $vivifiant->element);
+        $this->assertSame(ElementBitmask::fromSlug('water'), $vivifiant->element);
         $this->assertTrue($vivifiant->spellTypes()->where('name', 'Soin')->exists());
 
         $interdit = Spell::query()->where('dofusdb_id', '25873')->first();
@@ -317,7 +318,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame('Sournoiserie', $sournoiserie->name);
         $this->assertSame('3', $sournoiserie->pa);
         $this->assertSame('strong', $sournoiserie->attack_characteristic_key);
-        $this->assertSame(1, $sournoiserie->element);
+        $this->assertSame(ElementBitmask::fromSlug('earth'), $sournoiserie->element);
 
         $piege = Spell::query()->where('dofusdb_id', '12929')->first();
         $this->assertSame('5', $piege?->pa);
@@ -380,7 +381,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame('Aiguille', $aiguille->name);
         $this->assertSame('3', $aiguille->pa);
         $this->assertSame('intel', $aiguille->attack_characteristic_key);
-        $this->assertSame(2, $aiguille->element);
+        $this->assertSame(ElementBitmask::fromSlug('fire'), $aiguille->element);
         $this->assertTrue($aiguille->po_editable);
 
         $raule = Spell::query()->where('dofusdb_id', '31500')->first();
@@ -443,7 +444,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame('Attaque Naturelle', $attaque->name);
         $this->assertSame('3', $attaque->pa);
         $this->assertSame('intel', $attaque->attack_characteristic_key);
-        $this->assertSame(2, $attaque->element);
+        $this->assertSame(ElementBitmask::fromSlug('fire'), $attaque->element);
 
         $glyphe = Spell::query()->where('dofusdb_id', '32384')->first();
         $this->assertSame('5', $glyphe?->pa);
@@ -506,7 +507,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame('Serres du Vautour', $serres->name);
         $this->assertSame('3', $serres->pa);
         $this->assertSame('agi', $serres->attack_characteristic_key);
-        $this->assertSame(3, $serres->element);
+        $this->assertSame(ElementBitmask::fromSlug('air'), $serres->element);
 
         $tofu = Spell::query()->where('dofusdb_id', '31971')->first();
         $this->assertSame('3', $tofu?->pa);
@@ -571,7 +572,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame('Lancer de Pièces', $pieces->name);
         $this->assertSame('3', $pieces->pa);
         $this->assertSame('chance', $pieces->attack_characteristic_key);
-        $this->assertSame(4, $pieces->element);
+        $this->assertSame(ElementBitmask::fromSlug('water'), $pieces->element);
 
         $pelle = Spell::query()->where('dofusdb_id', '13343')->first();
         $this->assertSame('5', $pelle?->pa);

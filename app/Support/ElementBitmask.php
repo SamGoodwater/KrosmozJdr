@@ -8,7 +8,7 @@ namespace App\Support;
  * Encodage élément sort / capability : masque 7 bits (bit i = primaire i actif).
  *
  * Primaires : 0 Neutre, 1 Terre, 2 Feu, 3 Air, 4 Eau, 5 Sagesse, 6 Vitalité.
- * Ancien schéma 0–29 (combinaisons sans Sagesse/Vitalité) est migré vers ce masque.
+ * Stockage : masque 7 bits (Air = 8, Eau = 16). Ne plus interpréter 0–29 comme l’ancien code combinaisons.
  *
  * @see resources/js/Utils/Entity/Elements.js
  */
@@ -25,6 +25,31 @@ final class ElementBitmask
         4 => 'Eau',
         5 => 'Sagesse',
         6 => 'Vitalité',
+    ];
+
+    /** @var array<string, int> */
+    public const SLUG_TO_PRIMARY = [
+        'neutral' => 0,
+        'earth' => 1,
+        'terre' => 1,
+        'fire' => 2,
+        'feu' => 2,
+        'air' => 3,
+        'water' => 4,
+        'eau' => 4,
+        'wisdom' => 5,
+        'sagesse' => 5,
+        'element_wisdom' => 5,
+        'vitality' => 6,
+        'vitalite' => 6,
+        'element_vitality' => 6,
+        'fixed_damage_neutral_spell' => 0,
+        'fixed_damage_earth_spell' => 1,
+        'fixed_damage_fire_spell' => 2,
+        'fixed_damage_air_spell' => 3,
+        'fixed_damage_water_spell' => 4,
+        'fixed_damage_sagesse_spell' => 5,
+        'fixed_damage_vitalite_spell' => 6,
     ];
 
     /**
@@ -104,14 +129,35 @@ final class ElementBitmask
     }
 
     /**
-     * Normalise une valeur stockée : 0–29 → masque migré ; sinon tronque à 7 bits.
+     * Indice primaire (0–6) depuis un slug d’élément ou une clé de dégâts fixes.
+     */
+    public static function primaryFromSlug(string $slug): ?int
+    {
+        $key = strtolower(trim($slug));
+        if ($key === '' || ! array_key_exists($key, self::SLUG_TO_PRIMARY)) {
+            return null;
+        }
+
+        return self::SLUG_TO_PRIMARY[$key];
+    }
+
+    /**
+     * Masque 7 bits depuis un slug (`air` → 8).
+     *
+     * @example ElementBitmask::fromSlug('air'); // 8
+     */
+    public static function fromSlug(string $slug): ?int
+    {
+        $primary = self::primaryFromSlug($slug);
+
+        return $primary === null ? null : self::fromPrimaries([$primary]);
+    }
+
+    /**
+     * Normalise une valeur stockée : masque 7 bits (plus de conversion 0–29).
      */
     public static function normalize(int $value): int
     {
-        if ($value >= 0 && $value <= 29) {
-            return self::legacyCodeToMask($value);
-        }
-
         return $value & self::MAX_MASK;
     }
 

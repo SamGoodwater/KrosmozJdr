@@ -530,8 +530,7 @@ class IntegrationServiceTest extends TestCase
         $spell = Spell::find($result->getPrimaryId());
         $this->assertNotNull($spell);
 
-        // Masque élémentaire : uniquement dofus_element_id (effectElement API) — pas depuis les clés carac.
-        $this->assertNull($spell->element);
+        $this->assertSame(1 << 5, (int) $spell->element);
 
         $attachedTypeIds = $spell->spellTypes()->pluck('spell_types.id')->all();
         $this->assertContains($typeDegats->id, $attachedTypeIds);

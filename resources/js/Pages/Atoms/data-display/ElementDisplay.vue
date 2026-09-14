@@ -6,15 +6,15 @@
  * Affiche un élément (Spell, Capability) avec badge dégradé et icône.
  * Utilise les icônes de storage/app/public/images/icons/caracteristics/.
  *
- * @props {Number} element - Masque 7 bits (1–127) ou ancien code 0–29 (normalisé côté util).
+ * @props {Number} element - Masque 7 bits (1–127).
  * @props {String} size - Taille du badge (xs, sm, md, lg, xl)
  * @props {Boolean} showIcon - Afficher l'icône (défaut: true)
  * @props {Boolean} showLabel - Afficher le libellé (défaut: true)
  * @props {String} variant - Style (badge, chip, inline)
  *
  * @example
- * <ElementDisplay :element="2" />
- * <ElementDisplay :element="9" size="sm" />
+ * <ElementDisplay :element="8" />
+ * <ElementDisplay :element="20" size="sm" />
  */
 import { computed } from 'vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
@@ -61,7 +61,7 @@ const maskValue = computed(() => {
   return m === 0 ? null : m;
 });
 
-const label = computed(() => (maskValue.value === null ? '' : getElementLabel(maskValue.value) ?? ''));
+const label = computed(() => (isUnset.value ? '' : getElementLabel(props.element) ?? ''));
 
 const iconSource = computed(() => {
   if (maskValue.value === null) return getElementIconForValue(1);
