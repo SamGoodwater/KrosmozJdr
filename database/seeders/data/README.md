@@ -99,6 +99,12 @@ Un JSON unique `class-summons.json` : 19 fiches monstres `playable` (kit 1 Osa /
 
 - **Seed** : `Database\Seeders\Entity\MonsterSeeder`, **après** `SubEffectSeeder` / `CapabilitySeeder`, **avant** `SpellSeeder`.
 
+## Bestiaire Incarnam (`entities/monsters/`)
+
+Un JSON unique `incarnam.json` : 14 fiches `playable` (Piou Vert, Tofu Chimérique, Boufton Pâlichon, Bouftou Nuageux, Larves bleue/orange/verte, Arakne, Champ Champ, Aminite, Moskito, Pissenlit Miroitant, Rose Vaporeuse, Tournesol Nébuleux). Coquille `Monster` + `Creature` (PV 18–45, PA/PM Dofus, 1 à 2 sorts-créature aux coûts Dofus). Hostilité 3 (Hostile) ou 4 (Agressif). Traits existants (`Petite taille`, `Vif / Vive`, `Agile`). Pas de boss / PA légendaires. Upsert sur `official_id` `jdr:bestiary:{clé}`. `auto_update = false`. Pas de `dofusdb_id` (les dumps scrap restent distincts).
+
+- **Seed** : même `MonsterSeeder` / `BestiarySeederImporter`, après les invocations.
+
 ## Panoplies (`entities/panoplies/`)
 
 Un fichier JSON par set relu (bonus de palier + liste des `dofusdb_id` des pièces).

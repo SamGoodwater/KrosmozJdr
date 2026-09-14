@@ -6,7 +6,7 @@
 
 - `database/migrations/`
 - `database/seeders/`
-- `database/seeders/data/` — JSON versionnés (items, panoplies, consommables, 19 classes, 19 passifs, 24 sorts de classe, 19 invocations)
+- `database/seeders/data/` — JSON versionnés (items, panoplies, consommables, 19 classes, 19 passifs, 24 sorts de classe, 19 invocations, 14 monstres Incarnam)
 - Favoris user : table `user_favorites` (`user_id`, `entity_type`, `entity_id`)
 - Jobs console admin : table `project_console_jobs` (domaine, %, sortie filtrée)
 - Réglages IA métier : table `ia_generation_settings` (JSON `payload`, surcharge de `resources/ia/generation.json`)

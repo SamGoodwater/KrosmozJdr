@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Bestiaire d’Incarnam
+
+Les **monstres des champs d’Incarnam** ont une fiche jouable : Piou, Tofu Chimérique, Bouftons, Larves, Arakne, Champ Champ, Moskito, plantes. On a gardé les **PA et les noms de sorts Dofus**, en n’en laissant **qu’un ou deux** par créature. Les petits (tofu, piou, moustique) font **une action** ; les plus complets (larve orange, champignon) en font **deux**. Hostiles, parfois agressifs. Traits déjà au catalogue (petite taille, vif, agile). **Pas de boss** dans cette vague.
+
 ## Septembre 2026 — Élément des sorts = celui des effets
 
 L’élément affiché sur une fiche de sort (Air, Feu…) est celui de ses **effets**. Bec du Tofu est **Air**, comme son attaque. Une commande recale les sorts déjà en base.
