@@ -122,8 +122,12 @@ const isBoss = computed(() =>
     Boolean(props.monster?.isBoss ?? props.monster?._data?.is_boss),
 );
 
+const legendaryPa = computed(
+    () => props.monster?.bossPa ?? props.monster?._data?.boss_pa ?? null,
+);
+
 const metaFields = computed(() =>
-    ["creature_hostility", "boss_pa"].filter(canShowField).filter((k) => !headlineFields.value.includes(k)),
+    ["creature_hostility"].filter(canShowField).filter((k) => !headlineFields.value.includes(k)),
 );
 
 const displayMetaFields = computed(() => [...headlineFields.value, ...metaFields.value]);
@@ -371,6 +375,7 @@ const handleAction = async (actionKey) => {
                     <MonsterBossMark
                         v-if="isBoss && canShowField('is_boss')"
                         :tooltip="getFieldTooltip('is_boss')"
+                        :legendary-pa="legendaryPa"
                         size-class="h-10 w-10"
                         class="mt-1 shrink-0"
                     />

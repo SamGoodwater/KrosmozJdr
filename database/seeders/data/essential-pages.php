@@ -159,7 +159,7 @@ return [
         'icon' => null,
         'menu_order' => 40,
         'intro_title' => 'En bref',
-        'intro_html' => '<p>Initiative, budget [[kref:characteristic:action_points_creature|PA]]/[[kref:characteristic:movement_points_creature|PM]], [[kref:characteristic:tackle_creature|tacle]], 1 réaction / round. Un d20 pour toucher <em>et</em> pour le retrait.</p>'
+        'intro_html' => '<p>Initiative, budget [[kref:characteristic:action_points_creature|PA]]/[[kref:characteristic:movement_points_creature|PM]], [[kref:characteristic:tackle_creature|tacle]], 1 réaction / round. Un d20 pour toucher <em>et</em> pour le retrait. Un <strong>boss</strong> a des <strong>PA légendaires</strong> (hors PA de tour), utilisables entre deux tours.</p>'
             .'<p>→ [[kref:page:regles-3-2-combat|Combat complet]]</p>',
         'sections' => [
             [
@@ -186,7 +186,7 @@ return [
                     .'<tr><td>Case</td><td>1 [[kref:characteristic:movement_points_creature|PM]]</td></tr>'
                     .'<tr><td>Esquiver (action, pas l’esquive [[kref:characteristic:action_points_creature|PA]]/[[kref:characteristic:movement_points_creature|PM]])</td><td>3 [[kref:characteristic:action_points_creature|PA]] + 2 [[kref:characteristic:movement_points_creature|PM]]</td></tr>'
                     .'</tbody></table>'
-                    .'<p><strong>Fin</strong> : effets de fin de tour, tour suivant.</p>',
+                    .'<p><strong>Fin</strong> : effets de fin de tour, tour suivant. Un <strong>boss</strong> recharge alors ses <strong>PA légendaires</strong> (pas au début du round, pas comme tes [[kref:characteristic:action_points_creature|PA]] de tour).</p>',
             ],
             [
                 'slug' => 'resoudre',
@@ -206,6 +206,18 @@ return [
                 'html' => '<p>Pas d’attaque d’opportunité D&amp;D. [[kref:characteristic:tackle_creature|Tacle]] auto au corps-à-corps (pas en diagonale). Fuite : jet Fuite vs [[kref:characteristic:tackle_creature|Tacle]] ; échec = tu restes collé, retente au tour suivant.</p>'
                     .'<p>Réaction de sort / capacité : 1×/round, hors de ton tour, si la fiche le permet.</p>'
                     .'<p>→ [[kref:page:regles-3-2-combat|3.2.3]]</p>',
+            ],
+            [
+                'slug' => 'boss-pa-legendaires',
+                'title' => 'Boss — PA légendaires',
+                'html' => '<p>Un monstre <strong>boss</strong> a un pool de <strong>PA légendaires</strong> (chiffre après le tag Boss), distinct des [[kref:characteristic:action_points_creature|PA]] de son tour.</p>'
+                    .'<ul>'
+                    .'<li>Utilisables <strong>entre</strong> deux tours d’autres créatures, pour des sorts ou des capacités — <strong>en plus</strong> de son tour.</li>'
+                    .'<li>Il en dépense autant qu’il veut, dans la limite du restant.</li>'
+                    .'<li>Le pool se recharge à la <strong>fin du tour du boss</strong>.</li>'
+                    .'<li>Ce n’est <strong>pas</strong> une réaction (pas la limite 1×/round, pas 2–3 [[kref:characteristic:action_points_creature|PA]] de tour).</li>'
+                    .'</ul>'
+                    .'<p>→ [[kref:page:regles-3-2-combat|3.2.2]]</p>',
             ],
             [
                 'slug' => 'sante-etats',

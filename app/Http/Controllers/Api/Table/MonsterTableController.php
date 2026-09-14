@@ -465,7 +465,15 @@ class MonsterTableController extends Controller
             $updatedAtSort = $m->updated_at ? $m->updated_at->getTimestamp() : 0;
 
             $sizeLabel = Monster::SIZE[$m->size] ?? (string) $m->size;
-            $bossLabel = ((int) ($m->is_boss ?? 0)) === 1 ? 'Boss' : 'Non';
+            $isBoss = ((int) ($m->is_boss ?? 0)) === 1;
+            $paNumber = is_numeric($m->boss_pa) ? (int) $m->boss_pa : 0;
+            $bossLabel = 'Non';
+            if ($isBoss) {
+                $bossLabel = $paNumber > 0 ? 'Boss +'.$paNumber : 'Boss';
+            }
+            $bossTooltip = $isBoss
+                ? 'Boss : PA légendaires utilisables entre deux tours d\'autres créatures, autant que le pool restant, en plus du tour. Le pool se recharge à la fin du tour du boss.'
+                : '';
 
             return [
                 'id' => $m->id,
@@ -499,9 +507,10 @@ class MonsterTableController extends Controller
                         'type' => 'badge',
                         'value' => $bossLabel,
                         'params' => [
-                            'color' => ((int) ($m->is_boss ?? 0)) === 1 ? 'error' : 'base',
+                            'color' => $isBoss ? 'error' : 'base',
                             'filterValue' => (string) ((int) ($m->is_boss ?? 0)),
-                            'sortValue' => (int) ($m->is_boss ?? 0),
+                            'sortValue' => $isBoss ? $paNumber + 1 : 0,
+                            'tooltip' => $bossTooltip,
                         ],
                     ],
                     'dofusdb_id' => [

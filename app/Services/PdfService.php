@@ -251,6 +251,7 @@ class PdfService
                 'life' => $entity->creature?->life ?? null,
                 'size' => $entity->size,
                 'is_boss' => $entity->is_boss ?? false,
+                'boss_pa' => $entity->boss_pa ?? null,
                 'monster_race' => $entity->monsterRace?->name ?? null,
                 'dofusdb_id' => $entity->dofusdb_id,
             ],

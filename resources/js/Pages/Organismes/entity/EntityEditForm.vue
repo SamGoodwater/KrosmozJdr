@@ -454,7 +454,7 @@ const defaultFieldsConfig = computed(() => {
             level: { type: 'number', label: 'Niveau', required: false, showInCompact: true },
             life: { type: 'number', label: 'Vie', required: false, showInCompact: true },
             size: { type: 'number', label: 'Taille', required: false, showInCompact: false },
-            is_boss: { type: 'checkbox', label: 'Boss', required: false, showInCompact: true }
+            is_boss: { type: 'checkbox', label: 'Boss', required: false, showInCompact: true },
         },
         npc: {
             name: { type: 'text', label: 'Nom', required: true, showInCompact: true },
@@ -672,7 +672,15 @@ function isFieldVisible(fieldKey, fieldConfig) {
     const rule = fieldConfig?.visibleWhen;
     if (!rule) return true;
     const v = form[rule.field];
-    if (Object.prototype.hasOwnProperty.call(rule, 'value')) return v === rule.value;
+    if (Object.prototype.hasOwnProperty.call(rule, 'value')) {
+        if (rule.value === true) {
+            return v === true || v === 1 || v === '1';
+        }
+        if (rule.value === false) {
+            return v === false || v === 0 || v === '0' || v === '' || v == null;
+        }
+        return v === rule.value;
+    }
     if (Array.isArray(rule.in)) return rule.in.includes(v);
     return true;
 }

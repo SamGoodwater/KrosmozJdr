@@ -178,4 +178,28 @@ class MonsterBulkControllerTest extends TestCase
             ->assertJson(['success' => false])
             ->assertJson(['message' => 'Aucun champ à mettre à jour.']);
     }
+
+    /**
+     * Les PA légendaires (`boss_pa`) s’acceptent en entier ≥ 0.
+     */
+    public function test_admin_can_bulk_update_boss_pa(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $monster = Monster::factory()->create([
+            'is_boss' => 1,
+            'boss_pa' => '',
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->patchJson('/api/entities/monsters/bulk', [
+                'ids' => [$monster->id],
+                'boss_pa' => 4,
+            ]);
+
+        $response->assertOk()->assertJson(['success' => true]);
+        $this->assertDatabaseHas('monsters', [
+            'id' => $monster->id,
+            'boss_pa' => '4',
+        ]);
+    }
 }

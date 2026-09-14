@@ -31,7 +31,7 @@ class MonsterBulkController extends Controller
             // Champs bulk (les clés absentes ne sont pas modifiées)
             'size' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
             'is_boss' => ['sometimes', 'boolean'],
-            'boss_pa' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'boss_pa' => ['sometimes', 'nullable', 'integer', 'min:0'],
             'auto_update' => ['sometimes', 'boolean'],
             'monster_race_id' => ['sometimes', 'nullable', 'integer', 'exists:monster_races,id'],
             'dofus_version' => ['sometimes', 'nullable', 'string', 'max:255'],
@@ -57,7 +57,9 @@ class MonsterBulkController extends Controller
             'dofusdb_id',
         ] as $k) {
             if (array_key_exists($k, $validated)) {
-                $patch[$k] = $validated[$k];
+                $patch[$k] = $k === 'boss_pa'
+                    ? ($validated[$k] === null ? '' : (string) $validated[$k])
+                    : $validated[$k];
             }
         }
 

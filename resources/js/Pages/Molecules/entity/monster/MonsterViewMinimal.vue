@@ -185,7 +185,7 @@ const sizeCell = computed(() => getSummaryCell("size"));
 /** Les chips (taille) ont `value` vide : ne pas tester seulement `cell.value`. */
 const showSizeCell = computed(() => cellHasRenderableContent(sizeCell.value));
 const hostilityCell = computed(() => getSummaryCell("creature_hostility"));
-const bossPaCell = computed(() => getSummaryCell("boss_pa"));
+const legendaryPa = computed(() => entity.value?.bossPa ?? entity.value?._data?.boss_pa ?? null);
 
 const linkedLanguages = computed(() => {
     const raw = entity.value?._data?.languages ?? entity.value?.languages;
@@ -232,6 +232,7 @@ const handleAction = async (actionKey) => {
                             <MonsterBossMark
                                 v-if="isBoss && canShowField('is_boss')"
                                 :tooltip="bossFieldTooltip"
+                                :legendary-pa="legendaryPa"
                                 size-class="h-5 w-5"
                                 class="shrink-0"
                             />
@@ -254,11 +255,6 @@ const handleAction = async (actionKey) => {
                                 v-if="canShowField('creature_hostility') && hostilityCell?.value !== '—'"
                                 :cell="hostilityCell"
                                 class="inline-flex text-[11px] text-base-content/85"
-                            />
-                            <CellRenderer
-                                v-if="isBoss && canShowField('boss_pa') && bossPaCell?.value !== '—'"
-                                :cell="bossPaCell"
-                                class="inline-flex text-[11px]"
                             />
                         </div>
                         <div
@@ -314,6 +310,7 @@ const handleAction = async (actionKey) => {
                             <MonsterBossMark
                                 v-if="isBoss && canShowField('is_boss')"
                                 :tooltip="bossFieldTooltip"
+                                :legendary-pa="legendaryPa"
                                 size-class="h-5 w-5"
                                 class="shrink-0"
                             />
@@ -348,11 +345,6 @@ const handleAction = async (actionKey) => {
                                 v-if="canShowField('creature_hostility') && hostilityCell?.value !== '—'"
                                 :cell="hostilityCell"
                                 class="inline-flex text-[11px] text-base-content/85"
-                            />
-                            <CellRenderer
-                                v-if="isBoss && canShowField('boss_pa') && bossPaCell?.value !== '—'"
-                                :cell="bossPaCell"
-                                class="inline-flex text-[11px]"
                             />
                         </div>
                         <p

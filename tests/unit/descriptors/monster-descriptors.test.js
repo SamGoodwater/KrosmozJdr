@@ -45,6 +45,15 @@ describe('monster-descriptors', () => {
                 }
             });
         });
+
+        it('les PA légendaires sont un champ d’édition conditionné au boss', () => {
+            const descriptors = getMonsterFieldDescriptors();
+            expect(descriptors.boss_pa.general.label).toBe('PA légendaires');
+            expect(descriptors.boss_pa.edition.form.visibleWhen).toEqual({
+                field: 'is_boss',
+                value: true,
+            });
+        });
     });
 
     describe('visibleIf / editableIf', () => {

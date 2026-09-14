@@ -66,9 +66,11 @@ const fieldsConfig = {
     },
     boss_pa: {
         type: 'number',
-        label: 'PA Boss',
+        label: 'PA légendaires',
         required: false,
-        showInCompact: false
+        showInCompact: false,
+        visibleWhen: { field: 'is_boss', value: true },
+        tooltip: "Pool hors tour, utilisable entre deux tours d'autres créatures. Se recharge à la fin du tour du boss."
     }
 };
 

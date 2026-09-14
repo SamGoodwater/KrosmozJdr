@@ -460,4 +460,26 @@ class MonsterTableControllerTest extends TestCase
         $this->assertContains($playableTrait->id, $traitIds);
         $this->assertNotContains($draftTrait->id, $traitIds);
     }
+
+    /**
+     * La cellule Boss fusionne le nombre de PA légendaires.
+     */
+    public function test_boss_cell_includes_legendary_pa(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $monster = Monster::factory()->create([
+            'is_boss' => 1,
+            'boss_pa' => '3',
+        ]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/monsters?limit=50');
+
+        $response->assertOk();
+        $row = collect($response->json('rows'))->firstWhere('id', $monster->id);
+        $this->assertNotNull($row);
+        $this->assertSame('Boss +3', $row['cells']['is_boss']['value']);
+        $this->assertSame(4, $row['cells']['is_boss']['params']['sortValue']);
+        $this->assertStringContainsString('PA légendaires', $row['cells']['is_boss']['params']['tooltip']);
+    }
 }

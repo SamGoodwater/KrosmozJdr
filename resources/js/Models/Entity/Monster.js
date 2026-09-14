@@ -702,16 +702,16 @@ export class Monster extends BaseModel {
         let label = '';
         if (isBoss) {
             if (paNumber !== null && !Number.isNaN(paNumber) && paNumber > 0) {
-                label = `Boss +${paNumber} PA`;
+                label = `Boss +${paNumber}`;
             } else if (rawPa && String(rawPa) !== '0') {
-                label = `Boss +${rawPa} PA`;
+                label = `Boss +${rawPa}`;
             } else {
                 label = 'Boss';
             }
         }
 
         const tooltip =
-            "Les boss ont des PA supplémentaires qu'ils peuvent utiliser entre leurs tours à n'importe quel moment.";
+            "Boss : PA légendaires utilisables entre deux tours d'autres créatures, autant que le pool restant, en plus du tour. Le pool se recharge à la fin du tour du boss.";
 
         return {
             type: 'badge',

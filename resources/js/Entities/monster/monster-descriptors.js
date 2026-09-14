@@ -542,7 +542,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       general: {
         label: 'Boss',
         icon: 'fa-solid fa-crown',
-        tooltip: "Les boss ont des PA supplémentaires qu'ils peuvent utiliser entre leurs tours à n'importe quel moment.",
+        tooltip: "Boss : PA légendaires utilisables entre deux tours d'autres créatures, autant que le pool restant, en plus du tour. Le pool se recharge à la fin du tour du boss.",
       },
       table: {
         sortable: true,
@@ -563,7 +563,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
         },
       },
       display: {
-        tooltip: "Les boss ont des PA supplémentaires qu'ils peuvent utiliser entre leurs tours à n'importe quel moment.",
+        tooltip: "Boss : PA légendaires utilisables entre deux tours d'autres créatures, autant que le pool restant, en plus du tour. Le pool se recharge à la fin du tour du boss.",
       },
       edition: {
         form: {
@@ -682,9 +682,9 @@ export function getMonsterFieldDescriptors(ctx = {}) {
     boss_pa: {
       key: 'boss_pa',
       general: {
-        label: 'PA Boss',
+        label: 'PA légendaires',
         icon: 'fa-solid fa-bolt',
-        tooltip: 'Points d’action du boss',
+        tooltip: "Points d'action légendaires du boss (hors PA de tour). Utilisables entre deux tours d'autres créatures ; le pool se recharge à la fin du tour du boss.",
       },
       table: {
         // Colonne masquée : l'info est fusionnée dans la colonne Boss
@@ -701,14 +701,15 @@ export function getMonsterFieldDescriptors(ctx = {}) {
         },
       },
       display: {
-        tooltip: 'Points d’action du boss',
+        tooltip: "Points d'action légendaires du boss (hors PA de tour). Utilisables entre deux tours d'autres créatures ; le pool se recharge à la fin du tour du boss.",
       },
       edition: {
         form: {
-          type: 'text',
+          type: 'number',
           group: 'Caractéristiques',
-          placeholder: 'Ex: 6',
+          placeholder: 'Ex: 3',
           required: false,
+          visibleWhen: { field: 'is_boss', value: true },
         },
         bulk: { enabled: true, nullable: true },
       },

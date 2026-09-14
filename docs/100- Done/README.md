@@ -1,5 +1,13 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Élément des sorts = celui des effets
+
+L’élément affiché sur une fiche de sort (Air, Feu…) est celui de ses **effets**. Bec du Tofu est **Air**, comme son attaque. Une commande recale les sorts déjà en base.
+
+## Septembre 2026 — PA légendaires des boss
+
+Un monstre **boss** a un pool de **PA légendaires**, distinct de ses PA de tour. Il les dépense **entre** les tours des autres (sorts ou capacités, autant que le restant), **en plus** de son tour. Le pool se recharge à la **fin du tour du boss** — ce n’est pas une réaction. C’est dans L’Essentiel (Combat) et dans le livre. Sur les fiches, le nombre est collé juste après le tag Boss ; on le règle dans l’édition une fois la case Boss cochée.
+
 ## Septembre 2026 — Menu Classes : une page par classe
 
 Dans **Bibliothèques**, **Classes** se déplie à nouveau : le tableau reste la page parente, et chaque classe a sa propre entrée une fois le menu ouvert. Les classes encore en brouillon n’apparaissent que pour les MJ et au-dessus ; un visiteur ne voit que celles déjà jouables. Même logique pour **Spécialisations**.

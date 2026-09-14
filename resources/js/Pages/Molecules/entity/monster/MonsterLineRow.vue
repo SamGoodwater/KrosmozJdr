@@ -139,9 +139,8 @@ const sizeCell = computed(() => cellForKey("size"));
 const showSizeCell = computed(() => cellHasRenderableContent(sizeCell.value));
 const hostilityCell = computed(() => cellForKey("creature_hostility"));
 const showHostilityCell = computed(() => cellHasRenderableContent(hostilityCell.value));
-const bossPaCell = computed(() => cellForKey("boss_pa"));
-const showBossPaCell = computed(
-    () => isBossMonster.value && cellHasRenderableContent(bossPaCell.value),
+const legendaryPa = computed(
+    () => entity.value?.bossPa ?? entity.value?._data?.boss_pa ?? entity.value?.boss_pa ?? null,
 );
 
 const descriptionFull = computed(
@@ -219,6 +218,7 @@ const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length
                         <MonsterBossMark
                             v-if="isBossMonster"
                             :tooltip="bossTooltip"
+                            :legendary-pa="legendaryPa"
                             size-class="h-6 w-6"
                             class="shrink-0"
                         />
@@ -241,11 +241,6 @@ const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length
                             v-if="showHostilityCell"
                             :cell="hostilityCell"
                             class="inline-flex text-xs font-medium text-base-content/85"
-                        />
-                        <CellRenderer
-                            v-if="showBossPaCell"
-                            :cell="bossPaCell"
-                            class="inline-flex text-xs font-medium text-warning"
                         />
                     </div>
                     <div

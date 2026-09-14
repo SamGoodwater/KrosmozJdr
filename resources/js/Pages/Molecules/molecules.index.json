@@ -1781,12 +1781,17 @@
       {
         "name": "tooltip",
         "type": "string",
-        "desc": "- Texte du survol (règle boss + PA bonus)"
+        "desc": "Texte du survol (règle des PA légendaires)"
       },
       {
         "name": "sizeClass",
         "type": "string",
-        "desc": "- Classes Tailwind pour la taille du pictogramme"
+        "desc": "Classes Tailwind pour la taille du pictogramme"
+      },
+      {
+        "name": "legendaryPa",
+        "type": "number|string|null",
+        "desc": "Pool de PA légendaires collé après l’icône (masqué si vide ou 0)"
       }
     ],
     "slots": [],

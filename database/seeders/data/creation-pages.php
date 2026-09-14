@@ -220,7 +220,7 @@ return [
                         .'<li><strong>Sbire</strong> — meurt vite, menace si nombreux ; ligne faible ; peu de sorts.</li>'
                         .'<li><strong>Standard</strong> — un pour un PJ à peu près ; ligne neutre.</li>'
                         .'<li><strong>Élite</strong> — deux ou trois PJ ; ligne fort ; 1 capacité signature.</li>'
-                        .'<li><strong>Boss</strong> — table entière ; ligne très fort ; phases (100–50 %, 50–25 %, 25–0 %), éventuellement sbires ou terrain — voir '.$kPnjMonstres.'.</li>'
+                        .'<li><strong>Boss</strong> — table entière ; ligne très fort ; phases (100–50 %, 50–25 %, 25–0 %), éventuellement sbires ou terrain — voir '.$kPnjMonstres.'. Coche <strong>boss</strong> et inscris les <strong>PA légendaires</strong> (pool hors tour, recharge en fin de tour du boss).</li>'
                         .'</ul>'
                         .'<p><strong>À éviter :</strong> un « loup niveau 3 » avec les '.$pv.' d’un boss 10 ; copier un PJ (24 sorts, panoplie) ; tout en Neutre sans identité élémentaire.</p>',
                 ],
