@@ -210,18 +210,15 @@
             "is_magic": true,
             "powerful": 3,
             "duration": "jusqu’à la fin de ton prochain tour",
-            "effect": "+1d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Tu traces une rune. Le prochain élan frappe plus fort. Pas de combo de runes au niveau 1.",
+            "effect": "Tu t’imprègnes d’un élément (Feu, Terre, Air ou Eau). Jusqu’à la fin de ton prochain tour, tes sorts de classe de cet élément ont +1 PO. Contraste reste +1 dégât, pas un dé. 3 PA, 1×/tour.",
+            "description": "Tu traces l’élément. Assez pour coller Lance-flamme avec Contraste, sans payer un 1d4 en plus.",
             "sub_effects": [
                 {
-                    "slug": "booster",
+                    "slug": "autre",
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "1d4",
-                        "value_formula": "1d4",
-                        "dice_formula": "1d4",
+                        "value": "Imprégnation : +1 PO sur les sorts de classe de l’élément choisi jusqu’à la fin de ton prochain tour. Pas de bonus de dégâts.",
                         "effect_direction": "self",
                         "duration_formula": "1"
                     }

@@ -251,18 +251,15 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "+2d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Ligne de Front : tu te prépares. Le prochain élan frappe plus fort.",
+            "effect": "Phalange jusqu’à la fin de ton prochain tour : un allié adjacent bénéficie d’un abri partiel. 3 PA, 1×/tour.",
+            "description": "Ligne de Front : tu couvres, tu ne gagnes pas un 2d4.",
             "sub_effects": [
                 {
-                    "slug": "booster",
+                    "slug": "autre",
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "2d4",
-                        "value_formula": "2d4",
-                        "dice_formula": "2d4",
+                        "value": "Un allié adjacent a un abri partiel jusqu’à la fin de ton prochain tour.",
                         "effect_direction": "self",
                         "duration_formula": "1"
                     }
@@ -292,8 +289,8 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "2d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Rempart de Lances : une couche de Wakfu avant les PV.",
+            "effect": "Phalange jusqu’à la fin de ton prochain tour : les allié·e·s adjacents bénéficient d’un abri partiel. 2d4+Sagesse de bouclier sur toi. 3 PA, 1×/tour.",
+            "description": "Rempart de Lances : abri pour le rang, bouclier pour toi.",
             "sub_effects": [
                 {
                     "slug": "protéger",

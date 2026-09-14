@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Passifs des 19 classes
+
+Chaque classe a son **passif** dès le niveau 1 (gratuit) et un **moteur** parmi cinq : zones, invocations, état perso, marques, tempo. Le moteur reste simple au 1 et s’ouvre au 7. Fureur et Contraste donnent +1, pas un dé empilé sur un sort d’identité. Les sorts qui simulaient le moteur avec un +Xd4 (masques, portails, rage, coffre, balise, runes, roulette…) ont été recadrés. Les fiches monstres d’invocation viennent après.
+
 ## Septembre 2026 — Les 24 sorts de chaque classe
 
 Les **19 classes** ont leurs **24 sorts** (12 emplacements × 2 variantes) : le kit de niveau 1, puis 9 emplacements aux niveaux 3, 4, 5, 7, 8, 10, 11, 13 et 14. Noms Dofus, chiffres JDR (1d6 → 4d6 selon le palier). C’est un **dégrossissage** à relire : pièges, glyphes et invocations restent simples, pas les combos du MMO. Le seeder rejoue le tout.

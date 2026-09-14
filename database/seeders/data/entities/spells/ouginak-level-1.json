@@ -199,31 +199,23 @@
             ],
             "element": null,
             "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
             "cast_per_turn": "1",
-            "max_stack": 1,
             "resolution_mode": "auto_success",
-            "auto_success_if_willing_target": true,
             "is_magic": true,
             "powerful": 3,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "effect": "+1d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour. Tu es en Rage (cosmétique au niveau 1).",
-            "description": "Tu grognes. Le prochain élan frappe plus fort.",
+            "effect": "Tu désignes une créature à PO 1–4 comme ta Proie (même si tu ne l’as pas encore blessée). Remplace la Proie actuelle. 3 PA, 1×/tour. Pas de Rage au niveau 1.",
+            "description": "Tu grognes : celle-là, c’est la tienne. Le passif Proie fait le reste.",
             "sub_effects": [
                 {
-                    "slug": "booster",
+                    "slug": "autre",
                     "area": "point",
-                    "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "1d4",
-                        "value_formula": "1d4",
-                        "dice_formula": "1d4",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
+                        "value": "Désigne la cible comme ta Proie (1 à la fois).",
+                        "effect_direction": "action"
                     }
                 }
             ]

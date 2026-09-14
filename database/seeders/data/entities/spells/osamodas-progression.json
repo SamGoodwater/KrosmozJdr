@@ -253,14 +253,14 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 1 invocation à la fois. 3 PA, 1×/tour.",
-            "description": "Bouftou : une invocation. Fragile, mais elle occupe.",
+            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 2 invocations à la fois (Troupeau). 3 PA, 1×/tour.",
+            "description": "Bouftou : la 2e bête du Troupeau.",
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une créature alliée adjacente : 1 attaque 1d6, 1 PM, à ton initiative. Au plus 1 invocation à la fois.",
+                        "value": "Invoque une créature alliée adjacente : 1 attaque 1d6, 1 PM, à ton initiative. Au plus 2 invocations à la fois.",
                         "effect_direction": "action"
                     }
                 }
@@ -286,14 +286,14 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 1 invocation à la fois. 3 PA, 1×/tour.",
-            "description": "Dragonnet : une invocation. Fragile, mais elle occupe.",
+            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 2 invocations à la fois (Troupeau). 3 PA, 1×/tour.",
+            "description": "Dragonnet : l’autre 2e bête du Troupeau.",
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une créature alliée adjacente : 1 attaque 1d6, 1 PM, à ton initiative. Au plus 1 invocation à la fois.",
+                        "value": "Invoque une créature alliée adjacente : 1 attaque 1d6, 1 PM, à ton initiative. Au plus 2 invocations à la fois.",
                         "effect_direction": "action"
                     }
                 }

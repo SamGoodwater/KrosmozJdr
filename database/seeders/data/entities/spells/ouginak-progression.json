@@ -21,20 +21,15 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 3,
-            "effect": "+1d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Rage Bestiale : tu te prépares. Le prochain élan frappe plus fort.",
+            "effect": "Tu entres en Rage jusqu’à la fin du combat (1 fois / combat) : +1d4 vs ta Proie, −1 CA. Sans Proie, désigne la première créature que tu blesses ensuite. 3 PA.",
+            "description": "Rage Bestiale : tu lâches les chiens contre la Proie. Pas un buff générique.",
             "sub_effects": [
                 {
-                    "slug": "booster",
+                    "slug": "autre",
                     "area": "point",
-                    "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "1d4",
-                        "value_formula": "1d4",
-                        "dice_formula": "1d4",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
+                        "value": "Rage (1/combat) : +1d4 vs la Proie, −1 CA.",
+                        "effect_direction": "self"
                     }
                 }
             ],

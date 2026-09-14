@@ -291,20 +291,15 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "+2d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Ivresse : tu te prépares. Le prochain élan frappe plus fort.",
+            "effect": "Tu entres en Saoul jusqu’à la fin du combat (1 fois / combat) : +1d4 dégâts, −1 CA. Le Portage n’exige pas d’être Saoul. 3 PA.",
+            "description": "Ivresse : le vrai état Saoul. Pas un +2d4 générique.",
             "sub_effects": [
                 {
-                    "slug": "booster",
+                    "slug": "autre",
                     "area": "point",
-                    "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "2d4",
-                        "value_formula": "2d4",
-                        "dice_formula": "2d4",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
+                        "value": "Saoul (1/combat) : +1d4 dégâts, −1 CA.",
+                        "effect_direction": "self"
                     }
                 }
             ],

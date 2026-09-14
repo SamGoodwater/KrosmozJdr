@@ -239,39 +239,32 @@
             "choice_order": 0,
             "character_level": 7,
             "types": [
-                "Buff"
+                "Téléportation"
             ],
             "element": null,
             "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
+            "po_min": "1",
+            "po_max": "4",
             "po_editable": false,
             "sight_line": false,
             "cast_per_turn": "1",
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "+2d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Portalisme : tu te prépares. Le prochain élan frappe plus fort.",
+            "effect": "Pose 2 portails (cases visibles, PO 1–4). Entrer dans l’un (1 PM) te fait sortir par l’autre. Au plus 2 portails. 3 PA, 1×/tour.",
+            "description": "Portalisme : tu ouvres deux failles. Ce n’est plus un buff de dégâts.",
             "sub_effects": [
                 {
-                    "slug": "booster",
+                    "slug": "autre",
                     "area": "point",
-                    "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "2d4",
-                        "value_formula": "2d4",
-                        "dice_formula": "2d4",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
+                        "value": "Pose 2 portails liés. Entrer dans l’un (1 PM) sort par l’autre. Au plus 2.",
+                        "effect_direction": "action"
                     }
                 }
             ],
             "official_id": "jdr:eliotrope-portalisme",
-            "auto_success_if_willing_target": true,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "target_type": "glyph"
         },
         {
             "key": "eliotrope-distribution",

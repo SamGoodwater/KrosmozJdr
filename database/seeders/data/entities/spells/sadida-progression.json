@@ -254,14 +254,14 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 1 invocation à la fois. 3 PA, 1×/tour.",
-            "description": "La Bloqueuse : une invocation. Fragile, mais elle occupe.",
+            "effect": "Invoque une poupée alliée adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 2 poupées (Jardin). Terrain difficile autour. 3 PA, 1×/tour.",
+            "description": "La Bloqueuse : 2e poupée du Jardin.",
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une créature alliée adjacente : 1 attaque 1d6, 1 PM, à ton initiative. Au plus 1 invocation à la fois.",
+                        "value": "Invoque une poupée alliée : 1 attaque 1d6, 1 PM. Au plus 2 poupées. Terrain difficile autour.",
                         "effect_direction": "action"
                     }
                 }
@@ -287,14 +287,14 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 1 invocation à la fois. 3 PA, 1×/tour.",
-            "description": "La Gonflable : une invocation. Fragile, mais elle occupe.",
+            "effect": "Invoque une poupée alliée adjacente. Elle agit à ton initiative : soigne 1d4, 1 PM. Au plus 2 poupées (Jardin). Terrain difficile autour. 3 PA, 1×/tour.",
+            "description": "La Gonflable : l’autre 2e poupée, qui soigne.",
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une créature alliée adjacente : 1 attaque 1d6, 1 PM, à ton initiative. Au plus 1 invocation à la fois.",
+                        "value": "Invoque une poupée alliée : soigne 1d4, 1 PM. Au plus 2 poupées. Terrain difficile autour.",
                         "effect_direction": "action"
                     }
                 }

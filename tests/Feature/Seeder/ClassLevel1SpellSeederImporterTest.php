@@ -79,6 +79,11 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertFalse($bond->sight_line);
         $this->assertSame('3', $bond->pa);
 
+        $concentration = Spell::query()->where('dofusdb_id', '30767')->first();
+        $this->assertNotNull($concentration);
+        $this->assertStringContainsString('+2 aux jets d’attaque', (string) $concentration->effect);
+        $this->assertStringNotContainsString('1d4', (string) $concentration->effect);
+
         $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
         $this->assertGreaterThan(0, $pression->effects()->count());
         $this->assertTrue($pression->spellTypes()->where('name', 'Offensif')->exists());
@@ -802,6 +807,12 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
             $this->assertSame(Spell::STATE_PLAYABLE, $spell?->state, $name);
             $this->assertSame(6, $breed->fresh()->spells()->count(), $name);
         }
+
+        $runification = Spell::query()->where('dofusdb_id', '13670')->first();
+        $this->assertNotNull($runification);
+        $this->assertSame('Runification', $runification->name);
+        $this->assertStringContainsString('Contraste reste +1', (string) $runification->effect);
+        $this->assertStringNotContainsString('1d4 aux dégâts', (string) $runification->effect);
     }
 
     public function test_imports_iop_progression_and_places_colere_at_level_10(): void

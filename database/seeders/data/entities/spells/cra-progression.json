@@ -255,33 +255,32 @@
             "choice_order": 0,
             "character_level": 7,
             "types": [
-                "Téléportation"
+                "Buff"
             ],
             "element": null,
             "pa": "3",
             "po_min": "1",
             "po_max": "5",
             "po_editable": false,
-            "sight_line": false,
+            "sight_line": true,
             "cast_per_turn": "1",
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "Téléportation 1–5 cases, pas de ligne de vue. 3 PA, 1×/tour.",
-            "description": "Balise Tactique : tu disparais et tu réapparais.",
+            "effect": "Pose une balise (zone visible, 1 case, PO 1–5). Tes sorts de classe lancés à travers cette case ont +1 PO (en plus du passif Œil). Au plus 1 balise. 3 PA, 1×/tour.",
+            "description": "Balise Tactique : une case qui allonge le tir, pas un téléport.",
             "sub_effects": [
                 {
-                    "slug": "déplacer",
+                    "slug": "autre",
                     "area": "point",
                     "params": {
-                        "cells_formula": "5",
-                        "movement_kind": "teleport",
-                        "effect_direction": "action",
-                        "teleport": true
+                        "value": "Zone 1 case : +1 PO sur tes sorts de classe qui passent par la balise. Au plus 1 balise.",
+                        "effect_direction": "action"
                     }
                 }
             ],
-            "dofusdb_id": "32476"
+            "dofusdb_id": "32476",
+            "target_type": "glyph"
         },
         {
             "key": "cra-tir-de-barrage",

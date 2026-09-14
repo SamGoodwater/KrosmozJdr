@@ -166,8 +166,8 @@
             "is_magic": true,
             "powerful": 3,
             "duration": "jusqu’à la fin de ton prochain tour",
-            "effect": "+1d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour. Tu es Saoul (portage possible).",
-            "description": "Une gorgée. Tu titubes, tu frappes plus fort. Assez pour coller Poing Enflammé.",
+            "effect": "Tu entres en Saoul jusqu’à la fin de ton prochain tour : +1d4 aux dégâts, −1 CA. Optionnel (le Portage n’a pas besoin d’être Saoul). Pas de cumul. 3 PA, 1×/tour.",
+            "description": "Une gorgée. Tu titubes, tu frappes plus fort. Tu n’es pas obligé de boire pour porter.",
             "sub_effects": [
                 {
                     "slug": "booster",

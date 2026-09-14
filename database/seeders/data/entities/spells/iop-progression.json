@@ -292,18 +292,15 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "+2d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Détermination : tu te prépares. Le prochain élan frappe plus fort.",
+            "effect": "Avantage à tes jets d’attaque de mêlée de classe jusqu’à la fin de ton prochain tour. Pas de bonus de dégâts (la Fureur s’en charge). 3 PA, 1×/tour.",
+            "description": "Détermination : tu vises juste. Ce n’est pas un second dé de Fureur.",
             "sub_effects": [
                 {
-                    "slug": "booster",
+                    "slug": "autre",
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "2d4",
-                        "value_formula": "2d4",
-                        "dice_formula": "2d4",
+                        "value": "Avantage aux attaques de mêlée de classe jusqu’à la fin de ton prochain tour.",
                         "effect_direction": "self",
                         "duration_formula": "1"
                     }

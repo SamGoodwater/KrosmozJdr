@@ -15,6 +15,7 @@ use App\Services\NotificationService;
 use Database\Seeders\CreationPagesSeeder;
 use Database\Seeders\CriticalPagesSeeder;
 use Database\Seeders\Entity\BreedSeeder;
+use Database\Seeders\Entity\CapabilitySeeder;
 use Database\Seeders\Entity\ClassBreedSeeder;
 use Database\Seeders\Entity\ConditionSeeder;
 use Database\Seeders\Entity\ConsumableSeeder;
@@ -383,8 +384,9 @@ class ProjectInitCommand extends Command
             ItemSeeder::class,
             PanoplySeeder::class,
             ConsumableSeeder::class,
-            // Fiches des 19 classes avant les 24 sorts de classe (liaison breed_spell).
+            // Fiches des 19 classes, passifs, puis 24 sorts de classe (liaison breed_spell).
             ClassBreedSeeder::class,
+            CapabilitySeeder::class,
             SpellSeeder::class,
         ];
         foreach ($seeders as $seeder) {

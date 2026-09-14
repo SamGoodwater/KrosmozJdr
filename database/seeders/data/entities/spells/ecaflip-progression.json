@@ -62,18 +62,15 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 3,
-            "effect": "+1d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Roulette : tu te prépares. Le prochain élan frappe plus fort.",
+            "effect": "Pile ou Face : jusqu’à la fin de ton prochain tour, tes sorts de classe font +1d4 ou −1d4 (1d2, 1 = +, 2 = −). Optionnel : tu peux jouer sans cartes. 3 PA, 1×/tour.",
+            "description": "Roulette : le premier sort « carte ». La Chance (relance) reste le passif.",
             "sub_effects": [
                 {
-                    "slug": "booster",
+                    "slug": "autre",
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "1d4",
-                        "value_formula": "1d4",
-                        "dice_formula": "1d4",
+                        "value": "Pile ou Face : +1d4 ou −1d4 aux dégâts de tes sorts de classe jusqu’à la fin de ton prochain tour.",
                         "effect_direction": "self",
                         "duration_formula": "1"
                     }

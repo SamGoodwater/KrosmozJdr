@@ -207,18 +207,17 @@
             "is_magic": true,
             "powerful": 3,
             "duration": "jusqu’à la fin de ton prochain tour",
-            "effect": "+1d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Tu serres les dents, tu vises juste. Le prochain élan frappe plus fort.",
+            "effect": "+2 aux jets d’attaque jusqu’à la fin de ton prochain tour. Pas de bonus de dégâts (la Fureur s’en charge). Pas de cumul. 3 PA, 1×/tour.",
+            "description": "Tu serres les dents, tu vises juste. Ce n’est pas un dé de plus : tu touches mieux.",
             "sub_effects": [
                 {
                     "slug": "booster",
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "1d4",
-                        "value_formula": "1d4",
-                        "dice_formula": "1d4",
+                        "characteristic": "touche",
+                        "value": "2",
+                        "value_formula": "2",
                         "effect_direction": "self",
                         "duration_formula": "1"
                     }

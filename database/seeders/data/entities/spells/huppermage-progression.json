@@ -14,27 +14,22 @@
             "element": null,
             "pa": "3",
             "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
             "cast_per_turn": "1",
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 3,
-            "effect": "+1d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Élémentaire : tu te prépares. Le prochain élan frappe plus fort.",
+            "effect": "Tu poses 1 rune (marque) sur une créature à PO 0–4. Un sort de classe d’un autre élément la consomme : +1d4. Au plus 1 rune. 3 PA, 1×/tour.",
+            "description": "Élémentaire : la première vraie rune. Contraste reste +1 sans la consommer.",
             "sub_effects": [
                 {
-                    "slug": "booster",
+                    "slug": "autre",
                     "area": "point",
-                    "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "1d4",
-                        "value_formula": "1d4",
-                        "dice_formula": "1d4",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
+                        "value": "Pose 1 rune sur la cible. Un sort d’un autre élément la consomme pour +1d4.",
+                        "effect_direction": "action"
                     }
                 }
             ],
@@ -285,27 +280,22 @@
             "element": null,
             "pa": "3",
             "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
             "cast_per_turn": "1",
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "+2d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Rune de Terre : tu te prépares. Le prochain élan frappe plus fort.",
+            "effect": "Tu poses 1 rune de Terre sur une créature à PO 0–4. Un sort de classe d’un autre élément la consomme : +1d4. Au plus 1 rune (2 dès le niveau 11). 3 PA, 1×/tour.",
+            "description": "Rune de Terre : une marque à consommer, pas un +2d4.",
             "sub_effects": [
                 {
-                    "slug": "booster",
+                    "slug": "autre",
                     "area": "point",
-                    "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "2d4",
-                        "value_formula": "2d4",
-                        "dice_formula": "2d4",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
+                        "value": "Pose 1 rune (Terre) sur la cible. Un sort d’un autre élément la consomme pour +1d4.",
+                        "effect_direction": "action"
                     }
                 }
             ],

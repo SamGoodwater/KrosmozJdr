@@ -251,14 +251,14 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 1 invocation à la fois. 3 PA, 1×/tour.",
-            "description": "Tactirrelle : une invocation. Fragile, mais elle occupe.",
+            "effect": "Invoque une 2e tourelle adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 2 tourelles (passif Tourelle). 3 PA, 1×/tour.",
+            "description": "Tactirrelle : la 2e machine, pas un buff.",
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une créature alliée adjacente : 1 attaque 1d6, 1 PM, à ton initiative. Au plus 1 invocation à la fois.",
+                        "value": "2e tourelle : 1 attaque 1d6, 1 PM. Au plus 2 tourelles.",
                         "effect_direction": "action"
                     }
                 }
@@ -284,14 +284,14 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 1 invocation à la fois. 3 PA, 1×/tour.",
-            "description": "Soigneuse : une invocation. Fragile, mais elle occupe.",
+            "effect": "Invoque une 2e tourelle adjacente. Elle agit à ton initiative : soigne 1d4, 1 PM. Au plus 2 tourelles (passif Tourelle). 3 PA, 1×/tour.",
+            "description": "Soigneuse : l’autre 2e tourelle, qui soigne.",
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une créature alliée adjacente : 1 attaque 1d6, 1 PM, à ton initiative. Au plus 1 invocation à la fois.",
+                        "value": "2e tourelle : soigne 1d4, 1 PM. Au plus 2 tourelles.",
                         "effect_direction": "action"
                     }
                 }

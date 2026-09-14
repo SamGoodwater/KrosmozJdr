@@ -21,20 +21,15 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 3,
-            "effect": "+1d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Masque du Psychopathe : tu te prépares. Le prochain élan frappe plus fort.",
+            "effect": "Tu chausses le masque Psychopathe : +1 dégât (remplace ton masque actuel). 1 masque à la fois. 3 PA, 1×/tour.",
+            "description": "Masque du Psychopathe : tu changes de visage, tu frappes plus fort. Pas un +1d4 générique.",
             "sub_effects": [
                 {
-                    "slug": "booster",
+                    "slug": "autre",
                     "area": "point",
-                    "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "1d4",
-                        "value_formula": "1d4",
-                        "dice_formula": "1d4",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
+                        "value": "Passe en masque Psychopathe (+1 dégât). Remplace le masque actuel.",
+                        "effect_direction": "self"
                     }
                 }
             ],
@@ -62,18 +57,15 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 3,
-            "effect": "1d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Masque du Classy : une couche de Wakfu avant les PV.",
+            "effect": "Tu chausses le masque Classique : +1 aux jets pour protéger un allié adjacent (remplace ton masque actuel). 1 masque à la fois. 3 PA, 1×/tour.",
+            "description": "Masque du Classy : tu changes de visage pour couvrir les autres.",
             "sub_effects": [
                 {
-                    "slug": "protéger",
+                    "slug": "autre",
                     "area": "point",
-                    "duration_formula": "1",
                     "params": {
-                        "value": "1d4+Sagesse",
-                        "value_formula": "1d4+[sagesse]",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
+                        "value": "Passe en masque Classique (+1 aux jets pour protéger un allié adjacent). Remplace le masque actuel.",
+                        "effect_direction": "self"
                     }
                 }
             ],
@@ -257,20 +249,15 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "+2d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Masque du Renégat : tu te prépares. Le prochain élan frappe plus fort.",
+            "effect": "Tu chausses le masque Renégat (placement) : 1 fois par tour, tu peux reculer de 1 case après avoir lancé un sort de classe. Remplace ton masque actuel. 3 PA, 1×/tour.",
+            "description": "Masque du Renégat : le troisième visage. Tu te places, tu ne gagnes pas un 2d4.",
             "sub_effects": [
                 {
-                    "slug": "booster",
+                    "slug": "autre",
                     "area": "point",
-                    "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "2d4",
-                        "value_formula": "2d4",
-                        "dice_formula": "2d4",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
+                        "value": "Passe en masque Renégat (1 case de recul après un sort de classe, 1/tour). Remplace le masque actuel.",
+                        "effect_direction": "self"
                     }
                 }
             ],

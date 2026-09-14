@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Database\Seeders\Entity\CapabilitySeeder;
 use Database\Seeders\Entity\ClassBreedSeeder;
 use Database\Seeders\Entity\ConditionSeeder;
 use Database\Seeders\Entity\ConsumableSeeder;
@@ -38,6 +39,7 @@ class DatabaseSeeder extends Seeder
             ResourceSeeder::class,
             ConsumableSeeder::class,
             ClassBreedSeeder::class,
+            CapabilitySeeder::class,
             SpellSeeder::class,
             PanoplySeeder::class,
             CharacteristicSeeder::class,

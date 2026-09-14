@@ -9,31 +9,32 @@
             "choice_order": 0,
             "character_level": 3,
             "types": [
-                "Invocation"
+                "Buff"
             ],
             "element": null,
             "pa": "3",
             "po_min": "1",
-            "po_max": "1",
+            "po_max": "4",
             "po_editable": false,
-            "sight_line": false,
+            "sight_line": true,
             "cast_per_turn": "1",
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 3,
-            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 1d4, 1 PM. Au plus 1 invocation à la fois. 3 PA, 1×/tour.",
-            "description": "Coffre Animé : une invocation. Fragile, mais elle occupe.",
+            "effect": "Pose un Coffre (zone visible, 1 case, PO 1–4). Un allié adjacent peut y piocher 1d4 PV, 1 fois / combat. Pas une invocation. 3 PA, 1×/tour.",
+            "description": "Coffre Animé : une caisse sur le sol, pas une bête.",
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une créature alliée adjacente : 1 attaque 1d4, 1 PM, à ton initiative. Au plus 1 invocation à la fois.",
+                        "value": "Zone 1 case : un allié adjacent pioche 1d4 PV, 1 fois / combat.",
                         "effect_direction": "action"
                     }
                 }
             ],
-            "dofusdb_id": "13347"
+            "dofusdb_id": "13347",
+            "target_type": "glyph"
         },
         {
             "key": "enutrof-acceleration",

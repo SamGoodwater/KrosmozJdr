@@ -77,7 +77,13 @@ Un JSON unique `healing-out-of-combat.json` décrit 11 paliers × 4 types (pain,
 
 Un JSON par classe (`feca.json` … `forgelance.json`, 19 fiches, ids Dofus 1–18 et 20) : nom, résumé Dofus, voix élémentaires du §2.3.1. Foggernaut = Steamer (pas une 20ᵉ classe). Upsert sur `dofusdb_id`, `official_id` ou `name`. `auto_update = false`. L’état n’est posé qu’à la création (`draft`). Description tronquée à 255 caractères.
 
-- **Seed** : `Database\Seeders\Entity\ClassBreedSeeder`, **avant** `SpellSeeder`.
+- **Seed** : `Database\Seeders\Entity\ClassBreedSeeder`, **avant** `CapabilitySeeder` puis `SpellSeeder`.
+
+## Passifs de classe (`entities/capabilities/`)
+
+Un JSON unique `class-passives.json` : 19 capacités passives (une par classe), `playable`, `is_passive`, PA 0. Upsert sur le nom parmi les passifs du catalogue. Liaison `breed_capability` sans détacher les autres capacités d’une classe.
+
+- **Seed** : `Database\Seeders\Entity\CapabilitySeeder` (`project:seed` / `project:init` / `DatabaseSeeder`), après `ClassBreedSeeder`.
 
 ## Sorts de classe (`entities/spells/`)
 
