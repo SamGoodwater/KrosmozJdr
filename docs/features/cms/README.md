@@ -58,7 +58,7 @@ flowchart TD
   Show --> Renderer --> Gate --> SecRender --> Tpl
 ```
 
-Édition : `usePageForm`/`useSectionForm` (composables `resources/js/Composables/pages|sections/`), modales `CreatePageModal`/`EditPageModal`/`CreateSectionModal`. Si `settings.linked_entity` est présent, `PageController::show` renvoie `Pages/page/LinkedEntityShow.vue` (page CMS + fiche breed/spécialisation). Les sorts, capacités et autres liaisons de cette fiche sont filtrés avec `visibleToUser` (même règle que la page Show de l’entité) : un brouillon ne fuit pas via le menu Bibliothèques. `pages:sync-bibliotheque-entities` ne crée (ou ne laisse `in_menu`) une sous-page que pour les classes et spécialisations **jouables**.
+Édition : `usePageForm`/`useSectionForm` (composables `resources/js/Composables/pages|sections/`), modales `CreatePageModal`/`EditPageModal`/`CreateSectionModal`. Si `settings.linked_entity` est présent, `PageController::show` renvoie `Pages/page/LinkedEntityShow.vue` (page CMS + fiche breed/spécialisation). Les sorts, capacités et autres liaisons de cette fiche sont filtrés avec `visibleToUser` (même règle que la page Show de l’entité) : un brouillon ne fuit pas via une fiche jouable. `pages:sync-bibliotheque-entities` crée une sous-page menu (`in_menu`) pour chaque classe / spécialisation **hors archive**. Jouable : `read_level` de la fiche. Brouillon / brut / auto : `read_level` MJ+ (le menu invité ne les liste pas). Les parents `bibliotheque-breed` et `bibliotheque-specialization` ont `settings.menu_collapsible`.
 
 ## Références kref
 
@@ -83,7 +83,7 @@ Le tableau `equipment_bonus_table` est alimenté par `GET /api/characteristics/e
 
 **Règles → Ressources et équilibrage** contient aussi **Ressources** (`ressources-de-jeu`, enfant de `regles-5-ressources-et-equilibrage`, `database/seeders/data/ressources-page.php`) : livre PDF/ODT, fiches de personnage, logo. Catalogue `config/game_downloads.php`, template `download_catalog`, API `GET /api/game-downloads`, téléchargement `GET /telechargements/{key}`. Compilation : `php artisan rules:compile-downloads` (bouton admin sur `/admin/content`). Si le chapitre 5 n’est pas encore importé, le seeder laisse la page à la racine du groupe Règles.
 
-**Bibliothèques** contient aussi une page documentaire sans entité associée : **Les métiers** (`les-metiers`, `database/seeders/data/jobs-page.php`). Elle décrit les 16 métiers, illustrés par `storage/app/public/images/jobs/*.webp`, et se termine par une section `forgemagie_rune_table` alimentée par `GET /api/characteristics/forgemagie-rune-table` (lecture publique). Le catalogue **PNJ** (`bibliotheque-npc`) est une entrée d’entité comme les monstres (`config/nav_menu.php`). Reseed : `php artisan db:seed --class=PageSeeder`.
+**Bibliothèques** : **Classes** et **Spécialisations** sont des pages parentes dépliables (`settings.menu_collapsible`) ; `pages:sync-bibliotheque-entities` pose une sous-page par fiche hors archive. Le groupe contient aussi une page documentaire sans entité associée : **Les métiers** (`les-metiers`, `database/seeders/data/jobs-page.php`). Elle décrit les 16 métiers, illustrés par `storage/app/public/images/jobs/*.webp`, et se termine par une section `forgemagie_rune_table` alimentée par `GET /api/characteristics/forgemagie-rune-table` (lecture publique). Le catalogue **PNJ** (`bibliotheque-npc`) est une entrée d’entité comme les monstres (`config/nav_menu.php`). Reseed : `php artisan db:seed --class=PageSeeder`.
 
 ## Routes (extrait)
 

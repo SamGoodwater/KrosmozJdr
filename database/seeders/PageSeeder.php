@@ -330,7 +330,7 @@ HTML;
                 ? $item['menu_item_css_classes']
                 : ($entityKey !== '' ? 'color-'.$entityKey.'-500 box-shadow-glass' : null);
 
-            $page = $this->createOrRestorePage([
+            $pageAttrs = [
                 'title' => $title,
                 'slug' => $slug,
                 'in_menu' => true,
@@ -344,7 +344,14 @@ HTML;
                 'menu_item_css_classes' => $menuItemCssClasses,
                 'icon' => null,
                 'created_by' => $creatorId,
-            ]);
+            ];
+            if (in_array($entityKey, ['breed', 'specialization'], true)) {
+                $existing = Page::withTrashed()->where('slug', $slug)->first();
+                $existingSettings = is_array($existing?->settings) ? $existing->settings : [];
+                $pageAttrs['settings'] = array_merge($existingSettings, ['menu_collapsible' => true]);
+            }
+
+            $page = $this->createOrRestorePage($pageAttrs);
 
             $this->ensureTextSection(
                 $page,

@@ -11,9 +11,9 @@ use Illuminate\Support\Str;
 /**
  * Synchronise les sous-pages CMS « Bibliothèques » pour chaque classe et spécialisation.
  *
- * Chaque entité **jouable** reçoit une page enfant (menu déroulant) pointant vers la fiche
- * via {@code settings.linked_entity}. Les brouillons, bruts, auto et archives n’entrent pas
- * dans le menu public.
+ * Chaque fiche hors archive reçoit une page enfant (menu déroulant) via
+ * {@code settings.linked_entity}. Jouable : visible selon {@code read_level} de la fiche.
+ * Brouillon / brut / auto : {@code read_level} MJ+ (le menu public des invités reste vide).
  */
 class BibliothequeEntityPageService
 {
@@ -51,12 +51,14 @@ class BibliothequeEntityPageService
             return ['synced' => 0, 'removed' => 0];
         }
 
+        $this->markParentMenuCollapsible($parent);
+
         $synced = 0;
         $activeSlugs = [];
         $order = 0;
 
         $modelClass::query()
-            ->where('state', $modelClass::STATE_PLAYABLE)
+            ->where('state', '!=', $modelClass::STATE_ARCHIVED)
             ->orderBy('name')
             ->each(function ($entity) use ($parent, $entityType, $creatorId, &$synced, &$activeSlugs, &$order): void {
                 $slug = $this->buildChildSlug($entityType, (string) $entity->name);
@@ -66,7 +68,7 @@ class BibliothequeEntityPageService
                     'title' => (string) $entity->name,
                     'in_menu' => true,
                     'state' => Page::STATE_PLAYABLE,
-                    'read_level' => (int) ($entity->read_level ?? User::ROLE_GUEST),
+                    'read_level' => $this->menuReadLevel($entity),
                     'write_level' => (int) ($entity->write_level ?? User::ROLE_ADMIN),
                     'parent_id' => $parent->id,
                     'menu_order' => $order++,
@@ -94,12 +96,51 @@ class BibliothequeEntityPageService
                 $synced++;
             });
 
-        $removed = Page::query()
-            ->where('parent_id', $parent->id)
-            ->whereNotIn('slug', $activeSlugs)
-            ->update(['in_menu' => false]);
+        $stale = Page::query()->where('parent_id', $parent->id);
+        if ($activeSlugs === []) {
+            $removed = $stale->update(['in_menu' => false]);
+        } else {
+            $removed = $stale->whereNotIn('slug', $activeSlugs)->update(['in_menu' => false]);
+        }
 
         return ['synced' => $synced, 'removed' => $removed];
+    }
+
+    /**
+     * Le parent Classes / Spécialisations se déplie dans le menu Aside.
+     */
+    private function markParentMenuCollapsible(Page $parent): void
+    {
+        $settings = is_array($parent->settings) ? $parent->settings : [];
+        if (($settings['menu_collapsible'] ?? null) === true) {
+            return;
+        }
+
+        $settings['menu_collapsible'] = true;
+        $parent->settings = $settings;
+        $parent->save();
+    }
+
+    /**
+     * Niveau de lecture de la sous-page menu, aligné sur qui peut voir la fiche.
+     *
+     * @param  Breed|Specialization  $entity
+     *
+     * @example
+     * $this->menuReadLevel($playableBreed); // 0 si read_level invité
+     * $this->menuReadLevel($draftBreed);    // au moins ROLE_GAME_MASTER
+     */
+    private function menuReadLevel(object $entity): int
+    {
+        $state = (string) $entity->state;
+        if ($state === $entity::STATE_PLAYABLE) {
+            return (int) ($entity->read_level ?? User::ROLE_GUEST);
+        }
+
+        return max(
+            (int) ($entity->write_level ?? User::ROLE_GAME_MASTER),
+            User::ROLE_GAME_MASTER,
+        );
     }
 
     public function buildChildSlug(string $entityType, string $name): string

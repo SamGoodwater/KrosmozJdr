@@ -12,7 +12,7 @@ class SyncBibliothequeEntityPagesCommand extends Command
 {
     protected $signature = 'pages:sync-bibliotheque-entities';
 
-    protected $description = 'Crée ou met à jour les sous-pages menu des classes et spécialisations jouables';
+    protected $description = 'Crée ou met à jour les sous-pages menu des classes et spécialisations (hors archive)';
 
     public function handle(BibliothequeEntityPageService $service): int
     {

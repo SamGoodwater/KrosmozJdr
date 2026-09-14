@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Menu Classes : une page par classe
+
+Dans **Bibliothèques**, **Classes** se déplie à nouveau : le tableau reste la page parente, et chaque classe a sa propre entrée une fois le menu ouvert. Les classes encore en brouillon n’apparaissent que pour les MJ et au-dessus ; un visiteur ne voit que celles déjà jouables. Même logique pour **Spécialisations**.
+
 ## Septembre 2026 — Invocations de classe
 
 Les sorts d’invocation ont maintenant une **fiche monstre** : Tofu, Dragoune, Poupée, Harponneuse, Gardienne, puis les paliers 7–14 (Bouftou, Bloqueuse, Tactirrelle, Double, Synchro, Malle…). Fragile (peu de PV, 1 PM), une attaque ou un soin. Le sort de classe pointe vers la fiche. Le Coffre de l’Enutrof reste une zone, pas une créature. C’est aussi le modèle à copier plus tard pour les monstres générés par l’IA.
