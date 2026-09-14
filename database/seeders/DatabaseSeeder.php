@@ -10,6 +10,7 @@ use Database\Seeders\Entity\ConsumableSeeder;
 use Database\Seeders\Entity\CreatureTraitSeeder;
 use Database\Seeders\Entity\ItemSeeder;
 use Database\Seeders\Entity\LanguageSeeder;
+use Database\Seeders\Entity\MonsterSeeder;
 use Database\Seeders\Entity\NpcSeeder;
 use Database\Seeders\Entity\PanoplySeeder;
 use Database\Seeders\Entity\ResourceSeeder;
@@ -38,8 +39,10 @@ class DatabaseSeeder extends Seeder
             ItemSeeder::class,
             ResourceSeeder::class,
             ConsumableSeeder::class,
+            SubEffectSeeder::class,
             ClassBreedSeeder::class,
             CapabilitySeeder::class,
+            MonsterSeeder::class,
             SpellSeeder::class,
             PanoplySeeder::class,
             CharacteristicSeeder::class,
@@ -47,7 +50,6 @@ class DatabaseSeeder extends Seeder
             ObjectCharacteristicSeeder::class,
             DofusdbCharacteristicIdSeeder::class,
             SpellCharacteristicSeeder::class,
-            SubEffectSeeder::class,
             ScrappingEntityMappingSeeder::class,
             ScrappingEntityMappingCharacteristicSeeder::class,
             CreationPagesSeeder::class,

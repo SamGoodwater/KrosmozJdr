@@ -1,0 +1,365 @@
+{
+    "_schema_version": "1",
+    "entries": [
+        {
+            "key": "tofu",
+            "name": "Tofu",
+            "breed": "Osamodas",
+            "character_level": 1,
+            "size": 1,
+            "monster_race": "Tofu",
+            "primary": "agi",
+            "description": "Un tofu jaillit. Fragile, mais il occupe et il pique.",
+            "other_info": "Invocation de classe (Troupeau). Agit à l’initiative du lanceur. Disparaît si le lanceur tombe à 0 PV. Au plus 1 invocation à la fois au niveau 1.",
+            "action": {
+                "name": "Bec",
+                "kind": "frapper",
+                "element": "air",
+                "value": "1d4",
+                "attack_characteristic_key": "agi",
+                "resolution_mode": "attack_roll",
+                "is_magic": false
+            }
+        },
+        {
+            "key": "dragoune",
+            "name": "Dragoune",
+            "breed": "Osamodas",
+            "character_level": 1,
+            "size": 1,
+            "primary": "intel",
+            "description": "Un dragonnet de poche. Même budget que le Tofu, autre élément.",
+            "other_info": "Invocation de classe (Troupeau). Agit à l’initiative du lanceur. Disparaît si le lanceur tombe à 0 PV. Au plus 1 invocation à la fois au niveau 1.",
+            "action": {
+                "name": "Souffle",
+                "kind": "frapper",
+                "element": "fire",
+                "value": "1d4",
+                "attack_characteristic_key": "intel",
+                "resolution_mode": "attack_roll",
+                "is_magic": true
+            }
+        },
+        {
+            "key": "poupee-sadida",
+            "name": "Poupée Sadida",
+            "breed": "Sadida",
+            "character_level": 1,
+            "size": 1,
+            "primary": "chance",
+            "description": "Une poupée de sève. Fragile, elle occupe et elle pique.",
+            "other_info": "Invocation de classe (Jardin). Agit à l’initiative du lanceur. Cases adjacentes = terrain difficile pour les ennemis. Disparaît si le lanceur tombe à 0 PV. Au plus 1 poupée au niveau 1.",
+            "action": {
+                "name": "Pique",
+                "kind": "frapper",
+                "element": "water",
+                "value": "1d4",
+                "attack_characteristic_key": "chance",
+                "resolution_mode": "attack_roll",
+                "is_magic": true
+            }
+        },
+        {
+            "key": "harponneuse",
+            "name": "Harponneuse",
+            "breed": "Steamer",
+            "character_level": 1,
+            "size": 1,
+            "primary": "intel",
+            "description": "Une tourelle. Fragile, mais elle occupe et elle pique.",
+            "other_info": "Invocation de classe (Tourelle). Agit à l’initiative du lanceur. 1 PM si le lanceur la déplace. Disparaît si le lanceur tombe à 0 PV. Au plus 1 tourelle au niveau 1.",
+            "action": {
+                "name": "Harpon",
+                "kind": "frapper",
+                "element": "fire",
+                "value": "1d4",
+                "attack_characteristic_key": "intel",
+                "resolution_mode": "attack_roll",
+                "is_magic": false
+            }
+        },
+        {
+            "key": "gardienne",
+            "name": "Gardienne",
+            "breed": "Steamer",
+            "character_level": 1,
+            "size": 1,
+            "primary": "chance",
+            "description": "Même budget que la Harponneuse, autre voie : elle recoud.",
+            "other_info": "Invocation de classe (Tourelle). Agit à l’initiative du lanceur. Disparaît si le lanceur tombe à 0 PV. Au plus 1 tourelle au niveau 1.",
+            "action": {
+                "name": "Réparation",
+                "kind": "soigner",
+                "element": "water",
+                "value": "1d4",
+                "resolution_mode": "auto_success",
+                "is_magic": true
+            }
+        },
+        {
+            "key": "sram-double",
+            "name": "Double",
+            "breed": "Sram",
+            "character_level": 3,
+            "size": 2,
+            "primary": "strong",
+            "description": "Double : une invocation. Fragile, mais elle occupe.",
+            "other_info": "Invocation de classe. Agit à l’initiative du lanceur. Au plus 1 invocation à la fois.",
+            "action": {
+                "name": "Estoc",
+                "kind": "frapper",
+                "element": "earth",
+                "value": "1d4",
+                "attack_characteristic_key": "strong",
+                "resolution_mode": "attack_roll",
+                "is_magic": false
+            }
+        },
+        {
+            "key": "osamodas-bouftou",
+            "name": "Bouftou",
+            "breed": "Osamodas",
+            "character_level": 7,
+            "size": 2,
+            "monster_race": "Bouftou",
+            "primary": "strong",
+            "description": "Bouftou : la 2e bête du Troupeau.",
+            "other_info": "Invocation de classe (Troupeau). Agit à l’initiative du lanceur. Au plus 2 invocations à la fois dès le niveau 7.",
+            "action": {
+                "name": "Charge",
+                "kind": "frapper",
+                "element": "earth",
+                "value": "1d6",
+                "attack_characteristic_key": "strong",
+                "resolution_mode": "attack_roll",
+                "is_magic": false
+            }
+        },
+        {
+            "key": "osamodas-dragonnet",
+            "name": "Dragonnet",
+            "breed": "Osamodas",
+            "character_level": 7,
+            "size": 2,
+            "primary": "intel",
+            "description": "Dragonnet : l’autre 2e bête du Troupeau.",
+            "other_info": "Invocation de classe (Troupeau). Agit à l’initiative du lanceur. Au plus 2 invocations à la fois dès le niveau 7.",
+            "action": {
+                "name": "Souffle",
+                "kind": "frapper",
+                "element": "fire",
+                "value": "1d6",
+                "attack_characteristic_key": "intel",
+                "resolution_mode": "attack_roll",
+                "is_magic": true
+            }
+        },
+        {
+            "key": "sadida-la-bloqueuse",
+            "name": "La Bloqueuse",
+            "breed": "Sadida",
+            "character_level": 7,
+            "size": 1,
+            "primary": "strong",
+            "description": "La Bloqueuse : 2e poupée du Jardin.",
+            "other_info": "Invocation de classe (Jardin). Agit à l’initiative du lanceur. Terrain difficile autour. Au plus 2 poupées dès le niveau 7.",
+            "action": {
+                "name": "Racines",
+                "kind": "frapper",
+                "element": "earth",
+                "value": "1d6",
+                "attack_characteristic_key": "strong",
+                "resolution_mode": "attack_roll",
+                "is_magic": true
+            }
+        },
+        {
+            "key": "sadida-la-gonflable",
+            "name": "La Gonflable",
+            "breed": "Sadida",
+            "character_level": 7,
+            "size": 1,
+            "primary": "chance",
+            "description": "La Gonflable : l’autre 2e poupée, qui soigne.",
+            "other_info": "Invocation de classe (Jardin). Agit à l’initiative du lanceur. Terrain difficile autour. Au plus 2 poupées dès le niveau 7.",
+            "action": {
+                "name": "Sève",
+                "kind": "soigner",
+                "element": "water",
+                "value": "1d4",
+                "resolution_mode": "auto_success",
+                "is_magic": true
+            }
+        },
+        {
+            "key": "steamer-tourelle-tactique",
+            "name": "Tactirrelle",
+            "breed": "Steamer",
+            "character_level": 7,
+            "size": 1,
+            "primary": "intel",
+            "description": "Tactirrelle : la 2e machine, pas un buff.",
+            "other_info": "Invocation de classe (Tourelle). Agit à l’initiative du lanceur. Au plus 2 tourelles dès le niveau 7.",
+            "action": {
+                "name": "Salve",
+                "kind": "frapper",
+                "element": "fire",
+                "value": "1d6",
+                "attack_characteristic_key": "intel",
+                "resolution_mode": "attack_roll",
+                "is_magic": false
+            }
+        },
+        {
+            "key": "steamer-tourelle-tactique-soin",
+            "name": "Soigneuse",
+            "breed": "Steamer",
+            "character_level": 7,
+            "size": 1,
+            "primary": "chance",
+            "description": "Soigneuse : l’autre 2e tourelle, qui soigne.",
+            "other_info": "Invocation de classe (Tourelle). Agit à l’initiative du lanceur. Au plus 2 tourelles dès le niveau 7.",
+            "action": {
+                "name": "Visée soignante",
+                "kind": "soigner",
+                "element": "water",
+                "value": "1d4",
+                "resolution_mode": "auto_success",
+                "is_magic": true
+            }
+        },
+        {
+            "key": "ouginak-repaire",
+            "name": "Repaire",
+            "breed": "Ouginak",
+            "character_level": 7,
+            "size": 2,
+            "primary": "strong",
+            "description": "Repaire : une invocation. Fragile, mais elle occupe.",
+            "other_info": "Invocation de classe. Agit à l’initiative du lanceur. Au plus 1 invocation à la fois.",
+            "action": {
+                "name": "Morsure",
+                "kind": "frapper",
+                "element": "earth",
+                "value": "1d6",
+                "attack_characteristic_key": "strong",
+                "resolution_mode": "attack_roll",
+                "is_magic": false
+            }
+        },
+        {
+            "key": "ecaflip-griffe-joueuse",
+            "name": "Griffe Joueuse",
+            "breed": "Ecaflip",
+            "character_level": 7,
+            "size": 1,
+            "primary": "chance",
+            "description": "Griffe Joueuse : une invocation. Fragile, mais elle occupe.",
+            "other_info": "Invocation de classe. Agit à l’initiative du lanceur. Au plus 1 invocation à la fois.",
+            "action": {
+                "name": "Griffure",
+                "kind": "frapper",
+                "element": "water",
+                "value": "1d6",
+                "attack_characteristic_key": "chance",
+                "resolution_mode": "attack_roll",
+                "is_magic": false
+            }
+        },
+        {
+            "key": "sadida-arbre",
+            "name": "Arbre",
+            "breed": "Sadida",
+            "character_level": 10,
+            "size": 2,
+            "primary": "strong",
+            "description": "Arbre : une invocation. Fragile, mais elle occupe.",
+            "other_info": "Invocation de classe (Jardin). Agit à l’initiative du lanceur. Au plus 2 poupées / arbres selon le passif.",
+            "action": {
+                "name": "Branchage",
+                "kind": "frapper",
+                "element": "earth",
+                "value": "1d6",
+                "attack_characteristic_key": "strong",
+                "resolution_mode": "attack_roll",
+                "is_magic": true
+            }
+        },
+        {
+            "key": "xelor-synchro",
+            "name": "Synchro",
+            "breed": "Xélor",
+            "character_level": 11,
+            "size": 2,
+            "primary": "intel",
+            "description": "Synchro : une invocation. Fragile, mais elle occupe.",
+            "other_info": "Invocation de classe. Agit à l’initiative du lanceur. Au plus 1 invocation à la fois.",
+            "action": {
+                "name": "Tic",
+                "kind": "frapper",
+                "element": "fire",
+                "value": "2d4",
+                "attack_characteristic_key": "intel",
+                "resolution_mode": "attack_roll",
+                "is_magic": true
+            }
+        },
+        {
+            "key": "enutrof-malle-animee",
+            "name": "Malle Animée",
+            "breed": "Enutrof",
+            "character_level": 11,
+            "size": 2,
+            "primary": "chance",
+            "description": "Malle Animée : une invocation. Fragile, mais elle occupe. Le Coffre du passif Pelle reste une zone, pas cette fiche.",
+            "other_info": "Invocation de classe (pas le Coffre-zone du passif). Agit à l’initiative du lanceur. Au plus 1 invocation à la fois.",
+            "action": {
+                "name": "Claquement",
+                "kind": "frapper",
+                "element": "water",
+                "value": "2d4",
+                "attack_characteristic_key": "chance",
+                "resolution_mode": "attack_roll",
+                "is_magic": true
+            }
+        },
+        {
+            "key": "sadida-la-sacrifiee",
+            "name": "La Sacrifiée",
+            "breed": "Sadida",
+            "character_level": 11,
+            "size": 1,
+            "primary": "intel",
+            "description": "La Sacrifiée : une invocation. Fragile, mais elle occupe.",
+            "other_info": "Invocation de classe (Jardin). Agit à l’initiative du lanceur. Au plus 2 poupées dès le niveau 7.",
+            "action": {
+                "name": "Éclat",
+                "kind": "frapper",
+                "element": "fire",
+                "value": "2d4",
+                "attack_characteristic_key": "intel",
+                "resolution_mode": "attack_roll",
+                "is_magic": true
+            }
+        },
+        {
+            "key": "osamodas-sulfenix",
+            "name": "Sulfénix",
+            "breed": "Osamodas",
+            "character_level": 14,
+            "size": 2,
+            "primary": "intel",
+            "description": "Sulfénix : une invocation. Fragile, mais elle occupe.",
+            "other_info": "Invocation de classe (Troupeau). Agit à l’initiative du lanceur. Au plus 2 invocations à la fois dès le niveau 7.",
+            "action": {
+                "name": "Envolée",
+                "kind": "frapper",
+                "element": "fire",
+                "value": "2d4",
+                "attack_characteristic_key": "intel",
+                "resolution_mode": "attack_roll",
+                "is_magic": true
+            }
+        }
+    ]
+}

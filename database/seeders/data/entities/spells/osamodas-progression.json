@@ -257,10 +257,10 @@
             "description": "Bouftou : la 2e bête du Troupeau.",
             "sub_effects": [
                 {
-                    "slug": "autre",
+                    "slug": "invoquer",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une créature alliée adjacente : 1 attaque 1d6, 1 PM, à ton initiative. Au plus 2 invocations à la fois.",
+                        "monster_official_id": "jdr:summon:osamodas-bouftou",
                         "effect_direction": "action"
                     }
                 }
@@ -290,10 +290,10 @@
             "description": "Dragonnet : l’autre 2e bête du Troupeau.",
             "sub_effects": [
                 {
-                    "slug": "autre",
+                    "slug": "invoquer",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une créature alliée adjacente : 1 attaque 1d6, 1 PM, à ton initiative. Au plus 2 invocations à la fois.",
+                        "monster_official_id": "jdr:summon:osamodas-dragonnet",
                         "effect_direction": "action"
                     }
                 }
@@ -683,10 +683,10 @@
             "description": "Sulfénix : une invocation. Fragile, mais elle occupe.",
             "sub_effects": [
                 {
-                    "slug": "autre",
+                    "slug": "invoquer",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une créature alliée adjacente : 1 attaque 2d4, 1 PM, à ton initiative. Au plus 1 invocation à la fois.",
+                        "monster_official_id": "jdr:summon:osamodas-sulfenix",
                         "effect_direction": "action"
                     }
                 }

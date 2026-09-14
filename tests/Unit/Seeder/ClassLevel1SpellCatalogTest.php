@@ -175,6 +175,8 @@ final class ClassLevel1SpellCatalogTest extends TestCase
         $this->assertSame('5', $entries[2]['pa']);
         $this->assertSame('agi', $entries[0]['attack_characteristic_key']);
         $this->assertSame(['Invocation'], $entries[4]['types']);
+        $this->assertSame('invoquer', $entries[4]['sub_effects'][0]['slug']);
+        $this->assertSame('jdr:summon:tofu', $entries[4]['sub_effects'][0]['params']['monster_official_id']);
     }
 
     public function test_enutrof_catalog_has_six_spells_in_three_slots(): void

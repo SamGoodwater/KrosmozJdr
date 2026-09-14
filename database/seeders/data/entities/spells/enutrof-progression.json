@@ -480,10 +480,10 @@
             "description": "Malle Animée : une invocation. Fragile, mais elle occupe.",
             "sub_effects": [
                 {
-                    "slug": "autre",
+                    "slug": "invoquer",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une créature alliée adjacente : 1 attaque 2d4, 1 PM, à ton initiative. Au plus 1 invocation à la fois.",
+                        "monster_official_id": "jdr:summon:enutrof-malle-animee",
                         "effect_direction": "action"
                     }
                 }

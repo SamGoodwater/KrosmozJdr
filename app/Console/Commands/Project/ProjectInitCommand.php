@@ -22,6 +22,7 @@ use Database\Seeders\Entity\ConsumableSeeder;
 use Database\Seeders\Entity\CreatureTraitSeeder;
 use Database\Seeders\Entity\ItemSeeder;
 use Database\Seeders\Entity\LanguageSeeder;
+use Database\Seeders\Entity\MonsterSeeder;
 use Database\Seeders\Entity\NpcSeeder;
 use Database\Seeders\Entity\PanoplySeeder;
 use Database\Seeders\Entity\SpecializationSeeder;
@@ -384,9 +385,10 @@ class ProjectInitCommand extends Command
             ItemSeeder::class,
             PanoplySeeder::class,
             ConsumableSeeder::class,
-            // Fiches des 19 classes, passifs, puis 24 sorts de classe (liaison breed_spell).
+            // Fiches des 19 classes, passifs, invocations, puis 24 sorts de classe (liaison breed_spell).
             ClassBreedSeeder::class,
             CapabilitySeeder::class,
+            MonsterSeeder::class,
             SpellSeeder::class,
         ];
         foreach ($seeders as $seeder) {

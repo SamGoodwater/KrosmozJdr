@@ -186,10 +186,10 @@
             "description": "Une tourelle. Fragile, mais elle occupe et elle pique.",
             "sub_effects": [
                 {
-                    "slug": "autre",
+                    "slug": "invoquer",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une Harponneuse adjacente : 1 attaque Feu 1d4, 1 PM, à ton initiative. Au plus 1 invocation à la fois au niveau 1.",
+                        "monster_official_id": "jdr:summon:harponneuse",
                         "effect_direction": "action"
                     }
                 }
@@ -218,10 +218,10 @@
             "description": "Même budget que la Harponneuse, autre voie : elle recoud.",
             "sub_effects": [
                 {
-                    "slug": "autre",
+                    "slug": "invoquer",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une Gardienne adjacente : soigne 1d4, 1 PM, à ton initiative. Au plus 1 invocation à la fois au niveau 1.",
+                        "monster_official_id": "jdr:summon:gardienne",
                         "effect_direction": "action"
                     }
                 }

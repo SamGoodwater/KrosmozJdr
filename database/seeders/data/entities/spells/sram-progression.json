@@ -25,10 +25,10 @@
             "description": "Double : une invocation. Fragile, mais elle occupe.",
             "sub_effects": [
                 {
-                    "slug": "autre",
+                    "slug": "invoquer",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une créature alliée adjacente : 1 attaque 1d4, 1 PM, à ton initiative. Au plus 1 invocation à la fois.",
+                        "monster_official_id": "jdr:summon:sram-double",
                         "effect_direction": "action"
                     }
                 }

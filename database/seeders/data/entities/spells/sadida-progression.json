@@ -258,10 +258,10 @@
             "description": "La Bloqueuse : 2e poupée du Jardin.",
             "sub_effects": [
                 {
-                    "slug": "autre",
+                    "slug": "invoquer",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une poupée alliée : 1 attaque 1d6, 1 PM. Au plus 2 poupées. Terrain difficile autour.",
+                        "monster_official_id": "jdr:summon:sadida-la-bloqueuse",
                         "effect_direction": "action"
                     }
                 }
@@ -291,10 +291,10 @@
             "description": "La Gonflable : l’autre 2e poupée, qui soigne.",
             "sub_effects": [
                 {
-                    "slug": "autre",
+                    "slug": "invoquer",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une poupée alliée : soigne 1d4, 1 PM. Au plus 2 poupées. Terrain difficile autour.",
+                        "monster_official_id": "jdr:summon:sadida-la-gonflable",
                         "effect_direction": "action"
                     }
                 }
@@ -400,10 +400,10 @@
             "description": "Arbre : une invocation. Fragile, mais elle occupe.",
             "sub_effects": [
                 {
-                    "slug": "autre",
+                    "slug": "invoquer",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une créature alliée adjacente : 1 attaque 1d6, 1 PM, à ton initiative. Au plus 1 invocation à la fois.",
+                        "monster_official_id": "jdr:summon:sadida-arbre",
                         "effect_direction": "action"
                     }
                 }
@@ -473,10 +473,10 @@
             "description": "La Sacrifiée : une invocation. Fragile, mais elle occupe.",
             "sub_effects": [
                 {
-                    "slug": "autre",
+                    "slug": "invoquer",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une créature alliée adjacente : 1 attaque 2d4, 1 PM, à ton initiative. Au plus 1 invocation à la fois.",
+                        "monster_official_id": "jdr:summon:sadida-la-sacrifiee",
                         "effect_direction": "action"
                     }
                 }

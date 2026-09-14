@@ -177,10 +177,10 @@
             "description": "Une poupée de sève. Fragile, elle occupe et elle pique.",
             "sub_effects": [
                 {
-                    "slug": "autre",
+                    "slug": "invoquer",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une Poupée adjacente : 1 attaque Eau 1d4, 1 PM, à ton initiative. Au plus 1 invocation à la fois au niveau 1.",
+                        "monster_official_id": "jdr:summon:poupee-sadida",
                         "effect_direction": "action"
                     }
                 }

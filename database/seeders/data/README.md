@@ -77,7 +77,7 @@ Un JSON unique `healing-out-of-combat.json` décrit 11 paliers × 4 types (pain,
 
 Un JSON par classe (`feca.json` … `forgelance.json`, 19 fiches, ids Dofus 1–18 et 20) : nom, résumé Dofus, voix élémentaires du §2.3.1. Foggernaut = Steamer (pas une 20ᵉ classe). Upsert sur `dofusdb_id`, `official_id` ou `name`. `auto_update = false`. L’état n’est posé qu’à la création (`draft`). Description tronquée à 255 caractères.
 
-- **Seed** : `Database\Seeders\Entity\ClassBreedSeeder`, **avant** `CapabilitySeeder` puis `SpellSeeder`.
+- **Seed** : `Database\Seeders\Entity\ClassBreedSeeder`, **avant** `CapabilitySeeder` puis `MonsterSeeder` puis `SpellSeeder`.
 
 ## Passifs de classe (`entities/capabilities/`)
 
@@ -89,8 +89,15 @@ Un JSON unique `class-passives.json` : 19 capacités passives (une par classe), 
 
 `iop-level-1.json` … `forgelance-level-1.json` : 6 sorts (3 emplacements × 2 variantes) au **niveau 1**. `*-progression.json` : 18 sorts (9 emplacements × 2 variantes) aux niveaux **3, 4, 5, 7, 8, 10, 11, 13, 14**. **19 classes**, 24 sorts chacune. Upsert sur `dofusdb_id` ou `official_id`. `auto_update = false`, état `playable`. `target_type` optionnel (`direct`, `trap`, `glyph`). Les catalogues d’une même classe sont fusionnés avant le sync des emplacements ; les autres sorts liés à la classe passent hors grille (`character_level` 0, `slot_index` 1).
 
-- **Seed** : `Database\Seeders\Entity\SpellSeeder` (`project:seed` / `project:init` / `DatabaseSeeder`).
+- **Seed** : `Database\Seeders\Entity\SpellSeeder` (`project:seed` / `project:init` / `DatabaseSeeder`), **après** `MonsterSeeder`.
 - Budget : attaque simple 3 PA ; sort fort 4–5 PA ; identité 3 PA. Dés selon le palier (§5.2.3.2 / §5.2.3.6).
+- Invocations : sous-effet `invoquer` + `monster_official_id` `jdr:summon:…` (résolu en `monster_id` + pivot `spell_invocation`).
+
+## Invocations de classe (`entities/monsters/`)
+
+Un JSON unique `class-summons.json` : 19 fiches monstres `playable` (kit 1 Osa / Sadida / Steamer, puis Double, Bouftou, poupées 7, tourelles 7, Repaire, Griffe Joueuse, Arbre, Synchro, Malle Animée, Sacrifiée, Sulfénix). Chaque fiche = Creature (8/12/16 PV selon palier, 1 PM, 3 PA, CA 10–12) + 1 sort-créature (frapper 1d4/1d6/2d4 ou soigner 1d4). Upsert sur `official_id` `jdr:summon:{clé}`. `auto_update = false`. Le Coffre Enutrof n’est **pas** une invocation.
+
+- **Seed** : `Database\Seeders\Entity\MonsterSeeder`, **après** `SubEffectSeeder` / `CapabilitySeeder`, **avant** `SpellSeeder`.
 
 ## Panoplies (`entities/panoplies/`)
 

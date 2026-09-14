@@ -15,7 +15,7 @@
             "engine": "invocation",
             "is_magic": true,
             "description": "Une bête à tes côtés, dès le premier combat. La permanente n’arrive qu’avec l’expérience.",
-            "effect": "<p><strong>Niveau 1.</strong> Tu maintiens 1 invocation. Elle agit à ton initiative. Voie : Feu frappe, Eau soigne, Air place (1 PM).</p><p><strong>Montée.</strong> Niveau 7 : +1 invocation liée (la permanente). Niveau 11 : la liée a 1d6 PV au lieu de 1d4.</p><p><strong>Moteur.</strong> Créature alliée. Pas de fusion ni de sacrifice d’invocation avant 11. Les fiches monstres d’invocation restent à écrire.</p>"
+            "effect": "<p><strong>Niveau 1.</strong> Tu maintiens 1 invocation. Elle agit à ton initiative. Voie : Feu frappe, Eau soigne, Air place (1 PM).</p><p><strong>Montée.</strong> Niveau 7 : +1 invocation liée (la permanente). Niveau 11 : la liée a 1d6 PV au lieu de 1d4.</p><p><strong>Moteur.</strong> Créature alliée. Pas de fusion ni de sacrifice d’invocation avant 11. Fiches : Tofu, Dragoune, Bouftou, Dragonnet, Sulfénix.</p>"
         },
         {
             "breed": "Enutrof",

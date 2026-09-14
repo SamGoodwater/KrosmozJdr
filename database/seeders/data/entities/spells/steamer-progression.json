@@ -255,10 +255,10 @@
             "description": "Tactirrelle : la 2e machine, pas un buff.",
             "sub_effects": [
                 {
-                    "slug": "autre",
+                    "slug": "invoquer",
                     "area": "point",
                     "params": {
-                        "value": "2e tourelle : 1 attaque 1d6, 1 PM. Au plus 2 tourelles.",
+                        "monster_official_id": "jdr:summon:steamer-tourelle-tactique",
                         "effect_direction": "action"
                     }
                 }
@@ -288,10 +288,10 @@
             "description": "Soigneuse : l’autre 2e tourelle, qui soigne.",
             "sub_effects": [
                 {
-                    "slug": "autre",
+                    "slug": "invoquer",
                     "area": "point",
                     "params": {
-                        "value": "2e tourelle : soigne 1d4, 1 PM. Au plus 2 tourelles.",
+                        "monster_official_id": "jdr:summon:steamer-tourelle-tactique-soin",
                         "effect_direction": "action"
                     }
                 }

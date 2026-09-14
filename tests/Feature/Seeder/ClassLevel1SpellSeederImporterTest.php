@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Tests\Feature\Seeder;
 
 use App\Models\Entity\Breed;
+use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
 use App\Models\Type\SpellType;
+use App\Services\Seeder\Monster\ClassSummonSeederImporter;
 use App\Services\Seeder\Spell\ClassLevel1SpellCatalog;
 use App\Services\Seeder\Spell\ClassLevel1SpellSeederImporter;
 use Database\Seeders\SubEffectSeeder;
@@ -470,6 +472,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
     {
         $this->seed(SubEffectSeeder::class);
         $this->seedSpellTypes();
+        $this->seedClassSummons();
 
         $osa = Breed::factory()->create([
             'name' => 'Osamodas',
@@ -509,8 +512,15 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame('3', $tofu?->pa);
         $this->assertSame(Spell::RESOLUTION_AUTO_SUCCESS, $tofu?->resolution_mode);
         $this->assertTrue($tofu?->spellTypes()->where('name', 'Invocation')->exists());
+        $summon = Monster::query()->where('official_id', 'jdr:summon:tofu')->first();
+        $this->assertNotNull($summon);
+        $this->assertTrue($tofu->monsters()->where('monsters.id', $summon->id)->exists());
+        $tofu->load(['effects.degrees.effectSubEffects.subEffect']);
+        $sub = $tofu->effects->first()?->degrees->first()?->effectSubEffects->first();
+        $this->assertSame('invoquer', $sub?->subEffect?->slug);
+        $this->assertSame($summon->id, (int) ($sub?->params['monster_id'] ?? 0));
 
-        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
+        $this->assertSame(6, Spell::query()->where('category', Spell::CATEGORY_CLASS)->where('state', Spell::STATE_PLAYABLE)->count());
 
         $osa->refresh();
         $tofuPivot = $osa->spells()->where('spells.id', $tofu->id)->first()?->pivot;
@@ -589,6 +599,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
     {
         $this->seed(SubEffectSeeder::class);
         $this->seedSpellTypes();
+        $this->seedClassSummons();
 
         $sadida = Breed::factory()->create([
             'name' => 'Sadida',
@@ -779,6 +790,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
     {
         $this->seed(SubEffectSeeder::class);
         $this->seedSpellTypes();
+        $this->seedClassSummons();
 
         $cases = [
             ['Roublard', ClassLevel1SpellCatalog::roublardPath(), '13442', 'Pulsar'],
@@ -904,5 +916,10 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
                 'show_in_catalog' => true,
             ]);
         }
+    }
+
+    private function seedClassSummons(): void
+    {
+        app(ClassSummonSeederImporter::class)->import();
     }
 }

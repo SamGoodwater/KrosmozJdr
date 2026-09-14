@@ -7,6 +7,7 @@ namespace App\Services\Seeder\Spell;
 use App\Models\Effect;
 use App\Models\EffectDegree;
 use App\Models\Entity\Breed;
+use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
 use App\Models\SubEffect;
 use App\Models\Type\SpellType;
@@ -113,6 +114,7 @@ final class ClassLevel1SpellSeederImporter
 
                 $this->syncTypes($spell, $entry['types'], $skipped);
                 $this->syncJdrEffect($spell, $entry, $skipped);
+                $this->syncInvocations($spell, $entry, $skipped);
 
                 $kitSpellIds[] = $spell->id;
                 $slotMap[$spell->id] = [
@@ -293,6 +295,9 @@ final class ClassLevel1SpellSeederImporter
                 continue;
             }
             $params = is_array($sub['params'] ?? null) ? $sub['params'] : [];
+            if ($sub['slug'] === 'invoquer') {
+                $params = $this->resolveSummonParams($params, $entry['name'], $skipped);
+            }
             $durationFormula = $sub['duration_formula']
                 ?? (isset($params['duration_formula']) ? trim((string) $params['duration_formula']) : null);
             $durationFormula = is_string($durationFormula) && $durationFormula !== '' ? $durationFormula : null;
@@ -308,6 +313,60 @@ final class ClassLevel1SpellSeederImporter
         }
 
         $spell->effects()->sync([$effect->id]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $entry
+     * @param  list<string>  $skipped
+     */
+    private function syncInvocations(Spell $spell, array $entry, array &$skipped): void
+    {
+        $ids = [];
+        foreach ($entry['sub_effects'] as $sub) {
+            if (($sub['slug'] ?? '') !== 'invoquer') {
+                continue;
+            }
+            $params = is_array($sub['params'] ?? null) ? $sub['params'] : [];
+            $officialId = trim((string) ($params['monster_official_id'] ?? ''));
+            if ($officialId === '') {
+                continue;
+            }
+            $monsterId = Monster::query()->where('official_id', $officialId)->value('id');
+            if ($monsterId === null) {
+                $skipped[] = $entry['name'].' : invocation « '.$officialId.' » introuvable';
+
+                continue;
+            }
+            $ids[] = (int) $monsterId;
+        }
+
+        $spell->monsters()->sync(array_values(array_unique($ids)));
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @param  list<string>  $skipped
+     * @return array<string, mixed>
+     */
+    private function resolveSummonParams(array $params, string $spellName, array &$skipped): array
+    {
+        $officialId = trim((string) ($params['monster_official_id'] ?? ''));
+        if ($officialId === '') {
+            $skipped[] = $spellName.' : invoquer sans monster_official_id';
+
+            return $params;
+        }
+
+        $monsterId = Monster::query()->where('official_id', $officialId)->value('id');
+        if ($monsterId === null) {
+            unset($params['monster_id']);
+
+            return $params;
+        }
+
+        $params['monster_id'] = (int) $monsterId;
+
+        return $params;
     }
 
     /**

@@ -13,6 +13,8 @@ Un monstre JDR n’est pas une créature Dofus + 8 sorts importés. C’est **un
 
 Les sorts doivent coller aux caracs déjà présentes (Terre ↔ Force, peu de sorts, budget PA). Deux appels séparés recréent l’aberration « sorts Terre / Force 0 ». Pour laisser l’IA retoucher une carac, l’ajouter dans les exceptions de l’admin IA (`writable_characteristics`).
 
+**Socle few-shot déjà en base** : 19 invocations de classe `playable` (`jdr:summon:…`, Tofu, Poupée, Harponneuse…). Chaque fiche = 1 créature fragile (8/12/16 PV, 1 PM) + **1** sort-créature (1d4 / 1d6 / 2d4 ou soin 1d4). C’est le modèle à imiter ; le LLM ne les génère pas et ne les passe pas en `playable`.
+
 ### Données
 
 - Monstre = coquille `Monster` + stats sur `Creature`.

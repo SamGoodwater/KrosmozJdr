@@ -1,8 +1,12 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Invocations de classe
+
+Les sorts d’invocation ont maintenant une **fiche monstre** : Tofu, Dragoune, Poupée, Harponneuse, Gardienne, puis les paliers 7–14 (Bouftou, Bloqueuse, Tactirrelle, Double, Synchro, Malle…). Fragile (peu de PV, 1 PM), une attaque ou un soin. Le sort de classe pointe vers la fiche. Le Coffre de l’Enutrof reste une zone, pas une créature. C’est aussi le modèle à copier plus tard pour les monstres générés par l’IA.
+
 ## Septembre 2026 — Passifs des 19 classes
 
-Chaque classe a son **passif** dès le niveau 1 (gratuit) et un **moteur** parmi cinq : zones, invocations, état perso, marques, tempo. Le moteur reste simple au 1 et s’ouvre au 7. Fureur et Contraste donnent +1, pas un dé empilé sur un sort d’identité. Les sorts qui simulaient le moteur avec un +Xd4 (masques, portails, rage, coffre, balise, runes, roulette…) ont été recadrés. Les fiches monstres d’invocation viennent après.
+Chaque classe a son **passif** dès le niveau 1 (gratuit) et un **moteur** parmi cinq : zones, invocations, état perso, marques, tempo. Le moteur reste simple au 1 et s’ouvre au 7. Fureur et Contraste donnent +1, pas un dé empilé sur un sort d’identité. Les sorts qui simulaient le moteur avec un +Xd4 (masques, portails, rage, coffre, balise, runes, roulette…) ont été recadrés.
 
 ## Septembre 2026 — Les 24 sorts de chaque classe
 

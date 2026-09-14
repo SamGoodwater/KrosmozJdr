@@ -167,10 +167,10 @@
             "description": "Un tofu jaillit. Fragile, mais il occupe et il pique.",
             "sub_effects": [
                 {
-                    "slug": "autre",
+                    "slug": "invoquer",
                     "area": "point",
                     "params": {
-                        "value": "Invoque un Tofu adjacent : 1 attaque Air 1d4, 1 PM, à ton initiative. Au plus 1 invocation à la fois au niveau 1.",
+                        "monster_official_id": "jdr:summon:tofu",
                         "effect_direction": "action"
                     }
                 }
@@ -197,10 +197,10 @@
             "description": "Un dragonnet de poche. Même budget que le Tofu, autre élément.",
             "sub_effects": [
                 {
-                    "slug": "autre",
+                    "slug": "invoquer",
                     "area": "point",
                     "params": {
-                        "value": "Invoque une Dragoune adjacente : 1 attaque Feu 1d4, 1 PM, à ton initiative. Au plus 1 invocation à la fois au niveau 1.",
+                        "monster_official_id": "jdr:summon:dragoune",
                         "effect_direction": "action"
                     }
                 }
