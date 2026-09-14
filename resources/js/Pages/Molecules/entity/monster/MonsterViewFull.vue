@@ -224,7 +224,12 @@ const linkedLanguages = computed(() => {
 const hasLinkedLanguages = computed(() => linkedLanguages.value.length > 0);
 
 const linkedCreatureTraits = computed(() => {
-    const raw = props.monster?._data?.creature?.creatureTraits ?? props.monster?.creature?.creatureTraits ?? [];
+    const c = creatureData.value;
+    const raw =
+        c?.creatureTraits ??
+        c?.creature_traits ??
+        props.monster?.creatureTraits ??
+        [];
     return Array.isArray(raw) ? raw : [];
 });
 

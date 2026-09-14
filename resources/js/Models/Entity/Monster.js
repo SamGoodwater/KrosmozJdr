@@ -87,7 +87,18 @@ export class Monster extends BaseModel {
     }
 
     get creatureTraits() {
-        return this.creature?.creatureTraits || [];
+        const c = this.creature;
+        if (!c) {
+            return [];
+        }
+        if (Array.isArray(c.creatureTraits)) {
+            return c.creatureTraits;
+        }
+        if (Array.isArray(c.creature_traits)) {
+            return c.creature_traits;
+        }
+
+        return [];
     }
 
     get monsterRace() {

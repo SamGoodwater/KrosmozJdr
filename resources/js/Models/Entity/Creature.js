@@ -132,7 +132,7 @@ export class Creature extends BaseModel {
     }
 
     get creatureTraits() {
-        return this._data.creatureTraits || [];
+        return this._data.creatureTraits || this._data.creature_traits || [];
     }
 
     get capabilities() {
