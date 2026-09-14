@@ -251,10 +251,10 @@ export function resolveEntityElementValue(entity) {
 }
 
 /**
- * Style Minimal / Line : bordure colorée par l’élément (le glass reste le fond du thème).
+ * Style Minimal / Line : halo coloré par l’élément (le glass reste le fond du thème).
  *
  * Un primaire → `--element-border-color`. Plusieurs → `--element-border-image` (dégradé).
- * Sans valeur d’élément, objet vide.
+ * Sans valeur d’élément, objet vide. Classe `entity-element-ring` : lueur in/out + filet 20 %.
  *
  * @param {unknown} raw
  * @returns {Record<string, string>}
@@ -287,7 +287,7 @@ export function getElementGlassSurfaceStyle(raw) {
 }
 
 /**
- * Classe CSS de l’anneau d’élément (bordure / dégradé) si le style en expose une.
+ * Classe CSS du halo d’élément (lueur + filet / dégradé) si le style en expose une.
  *
  * @param {Record<string, string>|null|undefined} style
  * @returns {string}

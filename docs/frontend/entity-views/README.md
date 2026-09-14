@@ -34,7 +34,7 @@ minimal compact → survol : overlay déployé → double-clic / quick-view : mo
 - En carte minimale **déployée**, la description des consommables, ressources et équipements n’est plus coupée.
 - Le menu d’options de la carte minimale n’a plus de fond : les icônes restent nues à droite du titre.
 - **Tous** les `*ViewMinimal` (hors `language`) passent par `EntityMinimalCard` : double-clic → modal, whitelist d’actions commune, pin flottant.
-- Sorts et capacités (Minimal / Line) : le glass reste celui du thème ; l’élément se lit en bordure (`getElementGlassSurfaceStyle`, `--element-border-color` / dégradé si plusieurs primaires). Sans élément, bordure thème.
+- Sorts et capacités (Minimal / Line) : le glass reste celui du thème ; l’élément se lit en halo (`getElementGlassSurfaceStyle`, lueur in/out + filet 20 % via `entity-element-ring`, `--element-border-color` / dégradé si plusieurs primaires). Sans élément, bordure thème.
 - Shell commun : `useEntityMinimalShell` + `EntityMinimalTitle`.
 - PNJ : mêmes densités de caractéristiques que les monstres (créature liée). Carte minimale déployée : description, langues, traits, compétences, sorts et équipements. Catalogue Index en pagination serveur.
 - La **page** n’est pas l’entrée principale : **Agrandir** depuis la modal, ou Ctrl+clic.

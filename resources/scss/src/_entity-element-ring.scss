@@ -1,18 +1,37 @@
 /**
- * Anneau d’élément (sorts / capacités) : bordure 2px, dégradé si plusieurs primaires.
- * Les variables `--element-border-color` et `--element-border-image` viennent de
+ * Halo d’élément (sorts / capacités).
+ *
+ * Lueur intérieure large (la carte paraît éclairée par la couleur), lueur
+ * extérieure légère, filet 1px à 20 % d’opacité. Dégradé si plusieurs primaires.
+ *
+ * Variables `--element-border-color` / `--element-border-image` :
  * `getElementGlassSurfaceStyle` (Elements.js).
+ * `--element-shadow-out` / `--element-shadow-in` : `EntityMinimalCard` les
+ * fusionne avec l’ombre glass (le box-shadow scoped écraserait sinon le halo).
  */
 .entity-element-ring {
   position: relative;
+  --element-ring-color: var(--element-border-color, transparent);
+  --element-shadow-out:
+    0 0 10px color-mix(in srgb, var(--element-ring-color) 24%, transparent),
+    0 2px 8px color-mix(in srgb, var(--element-ring-color) 12%, transparent);
+  --element-shadow-in:
+    inset 0 0 72px color-mix(in srgb, var(--element-ring-color) 32%, transparent),
+    inset 0 0 28px color-mix(in srgb, var(--element-ring-color) 16%, transparent);
+
+  /* Masque la bordure thème (base-300) trop marquée ; le filet coloré est en ::after. */
+  &.border {
+    border-color: transparent;
+  }
 
   &::after {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    padding: 2px;
+    padding: 1px;
     background: var(--element-border-image, var(--element-border-color, transparent));
+    opacity: 0.2;
     pointer-events: none;
     -webkit-mask:
       linear-gradient(#fff 0 0) content-box,
@@ -21,4 +40,9 @@
     mask-composite: exclude;
     z-index: 1;
   }
+}
+
+/* Line / hors carte minimale : halo propre (la carte fusionne les vars dans son ombre glass). */
+.entity-element-ring:not(.entity-minimal-card__compact):not(.entity-minimal-card__expanded) {
+  box-shadow: var(--element-shadow-out), var(--element-shadow-in);
 }

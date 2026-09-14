@@ -15,7 +15,7 @@
  * @slot expanded - Contenu affiché au hover (ou toujours si display-mode="extended")
  *
  * @props displayMode - 'hover' : expansion au survol | 'extended' : toujours étendu | 'compact' : jamais étendu
- * @props surfaceStyle - style de surface (bordure élément `--element-border-color` / `--element-border-image`)
+ * @props surfaceStyle - style de surface (halo élément `--element-border-color` / `--element-border-image`)
  */
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { provideEntityMinimalCardOverlayHold } from "@/Composables/overlay/entityMinimalCardOverlayHold";
@@ -36,7 +36,7 @@ const props = defineProps({
         default: "",
     },
     /**
-     * Style de surface (ex. bordure élément via `--element-border-color`).
+     * Style de surface (ex. halo d’élément via `--element-border-color`).
      * Appliqué au compact et à l’overlay étendu.
      */
     surfaceStyle: {
@@ -224,14 +224,20 @@ onUnmounted(() => {
     backdrop-filter: blur(34px) saturate(1.12);
     -webkit-backdrop-filter: blur(34px) saturate(1.12);
     box-shadow:
+        var(--element-shadow-out, 0 0 #0000),
         0 14px 34px rgb(0 0 0 / 0.34),
         0 0 0 1px color-mix(in srgb, var(--color-base-content, #ffffff) 8%, transparent) inset,
-        0 1px 0 color-mix(in srgb, var(--color-base-content, #ffffff) 10%, transparent) inset;
+        0 1px 0 color-mix(in srgb, var(--color-base-content, #ffffff) 10%, transparent) inset,
+        var(--element-shadow-in, 0 0 #0000);
 }
 
 /* Quand étendu au survol : la carte passe au-dessus des voisines */
 .entity-minimal-card--expanded {
     z-index: 100;
+}
+
+.entity-minimal-card__expanded.entity-element-ring {
+    border-color: transparent;
 }
 
 .entity-minimal-card__expanded {
@@ -245,10 +251,12 @@ onUnmounted(() => {
     backdrop-filter: blur(38px) saturate(1.15);
     -webkit-backdrop-filter: blur(38px) saturate(1.15);
     box-shadow:
+        var(--element-shadow-out, 0 0 #0000),
         0 28px 80px rgb(0 0 0 / 0.58),
         0 10px 28px rgb(0 0 0 / 0.34),
         0 0 0 1px color-mix(in srgb, var(--color-base-content, #ffffff) 12%, transparent) inset,
-        0 1px 0 color-mix(in srgb, var(--color-base-content, #ffffff) 16%, transparent) inset;
+        0 1px 0 color-mix(in srgb, var(--color-base-content, #ffffff) 16%, transparent) inset,
+        var(--element-shadow-in, 0 0 #0000);
 }
 
 /* Survol en grille : même largeur que le compact, sans décaler le flux */

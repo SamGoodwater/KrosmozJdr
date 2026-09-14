@@ -1,16 +1,30 @@
 .entity-element-ring {
   position: relative;
+  --element-ring-color: var(--element-border-color, transparent);
+  --element-shadow-out:
+    0 0 10px color-mix(in srgb, var(--element-ring-color) 24%, transparent),
+    0 2px 8px color-mix(in srgb, var(--element-ring-color) 12%, transparent);
+  --element-shadow-in:
+    inset 0 0 72px color-mix(in srgb, var(--element-ring-color) 32%, transparent),
+    inset 0 0 28px color-mix(in srgb, var(--element-ring-color) 16%, transparent);
+}
+.entity-element-ring.border {
+  border-color: transparent;
 }
 .entity-element-ring::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  padding: 2px;
+  padding: 1px;
   background: var(--element-border-image, var(--element-border-color, transparent));
+  opacity: 0.2;
   pointer-events: none;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   z-index: 1;
+}
+.entity-element-ring:not(.entity-minimal-card__compact):not(.entity-minimal-card__expanded) {
+  box-shadow: var(--element-shadow-out), var(--element-shadow-in);
 }
