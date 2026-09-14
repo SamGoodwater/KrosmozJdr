@@ -36,6 +36,10 @@ class MonsterRaceSeeder extends Seeder
             ['name' => 'Larve'],
             ['name' => 'Moskito'],
             ['name' => 'Végétal'],
+            ['name' => 'Gelée'],
+            ['name' => 'Pichon'],
+            ['name' => 'Chafer'],
+            ['name' => 'Crabe'],
         ];
 
         $createdRaces = [];

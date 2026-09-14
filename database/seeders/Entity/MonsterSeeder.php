@@ -9,7 +9,7 @@ use App\Services\Seeder\Monster\ClassSummonSeederImporter;
 use Illuminate\Database\Seeder;
 
 /**
- * Invocations de classe + bestiaire Incarnam (`playable`).
+ * Invocations de classe + bestiaire JDR (`playable`).
  *
  * À jouer **avant** `SpellSeeder` pour que `invoquer` résolve `monster_id`.
  */
@@ -24,7 +24,7 @@ class MonsterSeeder extends Seeder
         $this->report('invocations', $summons);
 
         $bestiary = app(BestiarySeederImporter::class)->import();
-        $this->report('bestiaire Incarnam', $bestiary);
+        $this->report('bestiaire', $bestiary);
     }
 
     /**

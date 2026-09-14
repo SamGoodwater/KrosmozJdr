@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Bestiaire d’Astrub et d’Amakna
+
+La faune des **champs d’Astrub**, de **Tainela**, de la **plage** et du **cimetière** a une fiche jouable : Pious de couleur, Tofu, Boufton Blanc, Bouftou, gelées, Crabe, Pichon, Chafer, Sanglier, Cochon de Lait, Pissenlit Diabolique. Même recette qu’Incarnam : **PA et noms de sorts Dofus**, un ou deux par créature. Les petits (piou, tofu) font **une action** ; gelées, crabe et pichon en font **deux**. Hostiles, le Chafer est agressif. **Pas de boss**. Distinct des invocations (Tofu, Bouftou) et des cousins d’Incarnam (Tofu Chimérique, Boufton Pâlichon).
+
 ## Septembre 2026 — Bestiaire d’Incarnam
 
 Les **monstres des champs d’Incarnam** ont une fiche jouable : Piou, Tofu Chimérique, Bouftons, Larves, Arakne, Champ Champ, Moskito, plantes. On a gardé les **PA et les noms de sorts Dofus**, en n’en laissant **qu’un ou deux** par créature. Les petits (tofu, piou, moustique) font **une action** ; les plus complets (larve orange, champignon) en font **deux**. Hostiles, parfois agressifs. Traits déjà au catalogue (petite taille, vif, agile). **Pas de boss** dans cette vague.

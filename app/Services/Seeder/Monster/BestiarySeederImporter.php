@@ -19,7 +19,7 @@ use App\Models\User;
 use App\Support\ElementBitmask;
 
 /**
- * Importe le bestiaire Incarnam en monstres `playable` + 1 à 3 sorts-créature.
+ * Importe le bestiaire JDR (JSON `entities/monsters/*.json`, hors invocations).
  *
  * Idempotent. Upsert sur `official_id` `jdr:bestiary:…`. `auto_update = false`.
  * Ne pose pas `dofusdb_id` (les fiches scrap Dofus restent distinctes).
@@ -35,9 +35,29 @@ final class BestiarySeederImporter
      *     skipped: list<string>
      * }
      */
-    public function import(?IncarnamBestiaryCatalog $catalog = null): array
+    public function import(?BestiaryCatalog $catalog = null): array
     {
-        $catalog ??= IncarnamBestiaryCatalog::load();
+        if ($catalog !== null) {
+            return $this->importCatalog($catalog);
+        }
+
+        $parts = [];
+        foreach (BestiaryCatalog::loadAll() as $one) {
+            $parts[] = $this->importCatalog($one);
+        }
+
+        return $this->mergeResults($parts);
+    }
+
+    /**
+     * @return array{
+     *     created: list<string>,
+     *     updated: list<string>,
+     *     skipped: list<string>
+     * }
+     */
+    private function importCatalog(BestiaryCatalog $catalog): array
+    {
         $created = [];
         $updated = [];
         $skipped = [];
@@ -72,6 +92,28 @@ final class BestiarySeederImporter
             $this->syncCapabilities($creature, $entry['capabilities'], $entry['name'], $skipped);
 
             $wasNew ? $created[] = $entry['name'] : $updated[] = $entry['name'];
+        }
+
+        return [
+            'created' => $created,
+            'updated' => $updated,
+            'skipped' => $skipped,
+        ];
+    }
+
+    /**
+     * @param  list<array{created: list<string>, updated: list<string>, skipped: list<string>}>  $parts
+     * @return array{created: list<string>, updated: list<string>, skipped: list<string>}
+     */
+    private function mergeResults(array $parts): array
+    {
+        $created = [];
+        $updated = [];
+        $skipped = [];
+        foreach ($parts as $part) {
+            array_push($created, ...$part['created']);
+            array_push($updated, ...$part['updated']);
+            array_push($skipped, ...$part['skipped']);
         }
 
         return [

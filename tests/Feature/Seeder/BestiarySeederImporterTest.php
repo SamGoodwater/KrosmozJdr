@@ -27,7 +27,7 @@ final class BestiarySeederImporterTest extends TestCase
         $this->seedSpellTypes();
 
         $importer = app(BestiarySeederImporter::class);
-        $first = $importer->import();
+        $first = $importer->import(IncarnamBestiaryCatalog::load());
 
         $this->assertCount(14, $first['created']);
         $this->assertSame([], $first['updated']);
@@ -86,7 +86,7 @@ final class BestiarySeederImporterTest extends TestCase
         $boufton = Monster::query()->where('official_id', 'jdr:bestiary:boufton-palichon')->first();
         $this->assertSame(2, $boufton?->creature?->spells()->count());
 
-        $second = $importer->import();
+        $second = $importer->import(IncarnamBestiaryCatalog::load());
         $this->assertSame([], $second['created']);
         $this->assertCount(14, $second['updated']);
         $this->assertSame(
@@ -95,6 +95,55 @@ final class BestiarySeederImporterTest extends TestCase
         );
         $this->assertSame('22', $tofu->creature?->fresh()->life);
         $this->assertCount(14, IncarnamBestiaryCatalog::load()->entries());
+    }
+
+    public function test_imports_all_bestiary_catalogs_and_is_idempotent(): void
+    {
+        $this->seed(SubEffectSeeder::class);
+        $this->seed(ConditionSeeder::class);
+        $this->seed(CreatureTraitSeeder::class);
+        $this->seed(MonsterRaceSeeder::class);
+        $this->seedSpellTypes();
+
+        $importer = app(BestiarySeederImporter::class);
+        $first = $importer->import();
+
+        $this->assertCount(28, $first['created']);
+        $this->assertSame([], $first['updated']);
+        $this->assertSame([], $first['skipped']);
+
+        $tofu = Monster::query()->where('official_id', 'jdr:bestiary:tofu')->with('creature.spells')->first();
+        $this->assertNotNull($tofu);
+        $this->assertSame('playable', $tofu->state);
+        $this->assertNull($tofu->dofusdb_id);
+        $this->assertSame('Tofu', $tofu->creature?->name);
+        $this->assertSame('4', $tofu->creature?->pa);
+        $this->assertSame('Astrub', $tofu->creature?->location);
+        $this->assertSame(1, $tofu->creature?->spells()->count());
+        $this->assertSame('Béco-béco', $tofu->creature?->spells()->first()?->name);
+
+        $bouftou = Monster::query()->where('official_id', 'jdr:bestiary:bouftou')->first();
+        $this->assertSame(2, $bouftou?->creature?->spells()->count());
+
+        $gelee = Monster::query()->where('official_id', 'jdr:bestiary:gelee-bleuet')->first();
+        $this->assertSame('9', $gelee?->creature?->pa);
+        $this->assertSame('Tainela', $gelee?->creature?->location);
+
+        $chafer = Monster::query()->where('official_id', 'jdr:bestiary:chafer')->first();
+        $this->assertSame(4, $chafer?->creature?->hostility);
+        $this->assertSame('Cimetière d’Astrub', $chafer?->creature?->location);
+
+        $this->assertNotNull(
+            Monster::query()->where('official_id', 'jdr:bestiary:tofu-chimerique')->first()
+        );
+
+        $second = $importer->import();
+        $this->assertSame([], $second['created']);
+        $this->assertCount(28, $second['updated']);
+        $this->assertSame(
+            28,
+            Monster::query()->where('official_id', 'like', 'jdr:bestiary:%')->count()
+        );
     }
 
     private function seedSpellTypes(): void
