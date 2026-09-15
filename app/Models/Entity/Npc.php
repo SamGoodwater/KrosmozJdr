@@ -14,6 +14,8 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int|null $creature_id
+ * @property string|null $official_id
+ * @property bool $auto_update
  * @property string|null $story
  * @property string|null $historical
  * @property string|null $age
@@ -99,6 +101,8 @@ class Npc extends Model
      */
     protected $fillable = [
         'creature_id',
+        'official_id',
+        'auto_update',
         'story',
         'historical',
         'age',
@@ -118,6 +122,7 @@ class Npc extends Model
      */
     protected $casts = [
         'size' => 'integer',
+        'auto_update' => 'boolean',
         'read_level' => 'integer',
         'write_level' => 'integer',
     ];

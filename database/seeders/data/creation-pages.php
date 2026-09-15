@@ -38,6 +38,8 @@ $pa = '[[kref:characteristic:action_points_creature|PA]]';
 $pm = '[[kref:characteristic:movement_points_creature|PM]]';
 $pv = '[[kref:characteristic:life_points_creature|PV]]';
 $ca = '[[kref:characteristic:armor_class_creature|CA]]';
+$intel = '[[kref:characteristic:intelligence_creature|Intelligence]]';
+$chance = '[[kref:characteristic:chance_creature|Chance]]';
 
 return [
     'hub_intro' => '<h2>Atelier de création</h2>'
@@ -242,20 +244,23 @@ return [
                     'slug' => 'creation-pnj-intro',
                     'title' => 'Philosophie',
                     'html' => '<h2>PNJ</h2>'
-                        .'<p>Le PNJ sert d’abord le <strong>récit</strong> (marchand, allié, rival). Les stats de combat sont les mêmes briques qu’un [[kref:page:creation-monstres|monstre]], mais tu ne calibres un combattant que s’il peut vraiment se battre. '.$kPnjMonstres.'.</p>',
+                        .'<p>Le PNJ sert d’abord le <strong>récit</strong> : nom, fonction, un trait, un besoin. Les chiffres viennent après. Les stats de combat sont les mêmes briques qu’un [[kref:page:creation-monstres|monstre]], mais tu ne calibres un combattant que s’il peut vraiment se battre. '.$kPnjMonstres.'.</p>'
+                        .'<p>Rôle obligatoire : social, marchand, garde, allié ou ennemi (autre = filet). Classe <strong>et</strong> spécialisation : une spe <em>jouable</em> seulement (Artiste, Dévot, Érudit, Explorateur, Milicien, Voleur). Les 19 classes restent en brouillon : le MJ les voit à l’édition ; un visiteur ne voit pas la classe sur la fiche publique. Niveau ≈ la scène, pas un unique 20 hors quête.</p>',
                 ],
                 [
                     'slug' => 'creation-pnj-methode',
                     'title' => 'Comment le créer',
                     'html' => '<h3>Marche à suivre</h3>'
                         .'<ol>'
-                        .'<li>Choisis un archétype : social (Chance, Persuasion, Perspicacité), marchand (Intelligence, négoce), ennemi (combat), allié (rôle de groupe).</li>'
-                        .'<li>Social / marchand : caracs de combat minimales ou ligne très faible ; 2–3 compétences maîtrisées suffisent.</li>'
-                        .'<li>Ennemi / allié combattant : même méthode que les monstres, souvent une ligne en dessous d’un monstre du même niveau (ce n’est pas le boss du donjon).</li>'
-                        .'<li>Nom, fonction, un trait de caractère, un besoin. Les chiffres viennent après.</li>'
+                        .'<li><strong>Identité</strong> : nom, fonction, un trait, un besoin.</li>'
+                        .'<li><strong>Rôle</strong> : social ('.$chance.', Persuasion, Perspicacité), marchand ('.$intel.', négoce), garde / allié / ennemi (combat).</li>'
+                        .'<li><strong>Classe et spe</strong> : rattache une [[kref:page:creation-classes|classe]] et une [[kref:page:creation-specialisations|spécialisation]] jouable. Pas Négociant / Sylvain / Marin / Courtisan tant qu’ils sont brouillon.</li>'
+                        .'<li><strong>Gabarit</strong> (niv. 1–5 : 20–50 '.$pv.', 1d6+mod à 2d6+mod). Social / marchand = bas de bande, combat minimal. Garde / allié combattant / ennemi = mêmes briques qu’un monstre, souvent une ligne en dessous — pas un boss.</li>'
+                        .'<li><strong>Kit</strong> : objets [[kref:page:bibliotheque-item|jouables]], 1 par emplacement (2 anneaux), niveau ≤ celui du PNJ, voie cohérente avec la classe. Une [[kref:page:creation-panoplies|panoplie]] liée pose le thème, elle ne remplit pas les slots. Catalogue : [[kref:page:creation-equipements|Équipements]].</li>'
+                        .'<li><strong>Sorts</strong> : 1–3 sorts de <em>classe</em> jouables, niveau perso ≤ niveau du PNJ. Un social peut n’en avoir qu’un, ou zéro. Pas de sorts-créature de bestiaire.</li>'
                         .'</ol>'
-                        .'<p>Pas de page Bibliothèques dédiée : on rattache souvent le PNJ à une [[kref:page:creation-classes|classe]] ou une [[kref:page:creation-specialisations|spécialisation]].</p>'
-                        .'<p><strong>À éviter :</strong> stater un aubergiste comme un Iop 12 ; un « PNJ unique » avec panoplie légendaire hors quête.</p>',
+                        .'<p>Étalons : Ganymède, Dathura, Tabach, le Milicien d’Incarnam, Fouduglen (fiches jouables d’Incarnam).</p>'
+                        .'<p><strong>À éviter :</strong> stater un aubergiste comme un Iop 12 ; panoplie légendaire / unique hors quête ; spe encore brouillon ; inventer un objet hors catalogue.</p>',
                 ],
                 [
                     'slug' => 'creation-pnj-catalog',

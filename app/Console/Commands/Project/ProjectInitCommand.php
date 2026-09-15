@@ -379,7 +379,6 @@ class ProjectInitCommand extends Command
             ConditionSeeder::class,
             CreatureTraitSeeder::class,
             CreationPagesSeeder::class,
-            NpcSeeder::class,
             // Étalons d'équipement versionnés. Ils portent auto_update = false : le scrapping
             // (phase 6) ne les écrase pas.
             ItemSeeder::class,
@@ -413,6 +412,14 @@ class ProjectInitCommand extends Command
             }
         } else {
             $this->warn('  Spécialisations legacy ignorées (--skip-specializations).');
+        }
+
+        $this->line('  → '.NpcSeeder::class.' (PNJ Incarnam, après items / classes / sorts / spe)');
+        $code = Artisan::call('db:seed', ['--class' => NpcSeeder::class, '--force' => true]);
+        $this->output->write(Artisan::output());
+        if ($code !== 0) {
+            $this->warn('  Avertissement : échec partiel de '.NpcSeeder::class);
+            $hasWarnings = true;
         }
 
         // MonsterRaceSeeder est inclus dans TypeSeeder (scrapping:setup)

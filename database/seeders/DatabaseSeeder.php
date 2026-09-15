@@ -35,7 +35,6 @@ class DatabaseSeeder extends Seeder
             LanguageSeeder::class,
             ConditionSeeder::class,
             CreatureTraitSeeder::class,
-            NpcSeeder::class,
             ItemSeeder::class,
             ResourceSeeder::class,
             ConsumableSeeder::class,
@@ -54,6 +53,9 @@ class DatabaseSeeder extends Seeder
             ScrappingEntityMappingCharacteristicSeeder::class,
             CreationPagesSeeder::class,
             BibliothequeEntityPagesSeeder::class,
+            // Après items / sorts. Les spécialisations jouables viennent de `project:seed`
+            // (SpecializationSeeder) ; sans elles les spe des PNJ sont simplement omises.
+            NpcSeeder::class,
         ]);
     }
 }

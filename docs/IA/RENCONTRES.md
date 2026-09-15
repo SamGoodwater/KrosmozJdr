@@ -49,9 +49,11 @@ Réécriture JDR d’un sort Dofus `raw` :
 
 Le modèle est en place : coquille `Npc` + corps `Creature` + `breed_id` / `specialization_id`, langues, panoplies, boutique. Le **kit de jeu** (sorts connus, stuff porté 1/slot sauf 2 anneaux, sync d’état coquille → créature) est du **code applicatif** (`NpcController`, `NpcEquipmentSlotValidator`) — pas de génération LLM.
 
-Contrairement aux objets / sorts / monstres Dofus, **il n’y a rien à figer** : l’IA crée nom, histoire, rôle, stats et kit. Option : partir d’une **page de site** (encyclopédie, wiki, DofusDB) — Laravel en extrait nom / portrait / lore, le modèle complète la fiche JDR. Pas de scrap de masse, pas de `dofusdb_id` sur `Npc` aujourd’hui.
+Contrairement aux objets / sorts / monstres Dofus, **il n’y a rien à figer** : l’IA crée nom, histoire, rôle, stats et kit. Option : partir d’une **page de site** (encyclopédie, wiki, DofusDB) — Laravel en extrait nom / portrait / lore, le modèle complète la fiche JDR. Pas de scrap de masse. `Npc.official_id` sert au seeder (`jdr:npc:incarnam:…`), pas à DofusDB.
 
 La génération IA s’appuie sur ce schéma déjà persisté, elle ne le définit plus. Toujours hors scope d’implémentation ici. Détail des champs : [CHAMPS.md](./CHAMPS.md).
+
+**Socle few-shot** : 5 PNJ `playable` d’Incarnam (`jdr:npc:incarnam:ganymede` … `fouduglen`) — classe + spe jouable + kit. Pré-filtre : `NpcKitCatalog` / `php artisan ia:npc-kit-catalog` (objets, sorts, gabarit 5.1.2). Ids few-shot résolus au runtime, pas dans `generation.json`.
 
 Paquet :
 

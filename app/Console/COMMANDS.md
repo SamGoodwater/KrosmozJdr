@@ -408,6 +408,24 @@ php artisan ia:equipment-grid --json=storage/logs/equipment-grid.json
 
 ---
 
+## `ia:npc-kit-catalog`
+
+```yaml
+signature: ia:npc-kit-catalog
+domain: data
+ui: false
+cron: false
+```
+
+Pré-filtre compact `playable` pour un futur assembleur PNJ (équipement par slot/voie/niveau, sorts de classe, gabarit 5.1.2). Sans LLM. Few-shot : `official_id` `jdr:npc:incarnam:%`.
+
+```bash
+php artisan ia:npc-kit-catalog --level=4 --voie=terre --breed=Iop --role=guard
+php artisan ia:npc-kit-catalog --json=storage/logs/npc-kit-catalog.json
+```
+
+---
+
 ## `items:seeder-export`
 
 ```yaml

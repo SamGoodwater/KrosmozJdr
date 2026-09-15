@@ -41,7 +41,7 @@ L’IA **ne réécrit pas** le nom, la description ni les caracs d’un item Dof
 
 ## Pré-filtre pour le LLM (pas d’API agent)
 
-Le modèle **ne reçoit pas** tout le catalogue. Laravel envoie une liste courte, par exemple pour un Iop Terre niveau 8 : `playable`, niveau 6–8, types portables, bonus dans { Force, Vitalité, dégâts Terre, éventuellement PA }.
+Le modèle **ne reçoit pas** tout le catalogue. Laravel envoie une liste courte via `App\Services\GenerativeAi\NpcKitCatalog` (commande `php artisan ia:npc-kit-catalog`). Exemple : Iop Terre niveau 8 → `playable`, niveau 6–8, types portables, bonus Force / Vitalité / dégâts Terre.
 
 Forme compacte (1–3 k tokens, 20–40 lignes) :
 
@@ -61,7 +61,9 @@ Consigne : *tu ne crées pas d’objet ; tu renvoies des `id` ; un item par slot
 
 Le validateur revérifie ids, niveau, slots, voie. Id inventé → retry.
 
-Même idée pour les **sorts de classe** d’un PNJ : liste `playable` préfiltrée (classe, élément, niveau ≤ N).
+Même idée pour les **sorts de classe** d’un PNJ : `NpcKitCatalog::spells($breedId, $level)` (classe, `character_level` ≤ N, `playable`).
+
+Gabarit 5.1.2 : `NpcStatGabarit` (PV / CA / dés selon palier et rôle). Few-shot PNJ : `NpcKitCatalog::exampleIds()` résout les `official_id` `jdr:npc:incarnam:%` playable (pas d’ids numériques dans `generation.json`).
 
 ## API catalogue (quand on la fera)
 

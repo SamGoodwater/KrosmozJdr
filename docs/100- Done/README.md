@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Cinq PNJ d’Incarnam
+
+Les coquilles vides (garde d’Astrub, marchande de Bonta, aubergiste) laissent la place à **cinq fiches jouables** : Ganymède (Xélor érudit), Dathura (Eniripsa dévote), Tabach (Enutrof boulanger), un milicien Iop, Fouduglen le voleur. Classe + spécialisation + quelques objets et sorts. L’atelier **Création → PNJ** pose le cadre (identité, rôle, gabarit, kit 1/slot). Un pré-filtre liste les équipements et sorts jouables à envoyer plus tard à l’IA, sans l’appeler.
+
 ## Septembre 2026 — Bestiaire d’Astrub et d’Amakna
 
 La faune des **champs d’Astrub**, de **Tainela**, de la **plage** et du **cimetière** a une fiche jouable : Pious de couleur, Tofu, Boufton Blanc, Bouftou, gelées, Crabe, Pichon, Chafer, Sanglier, Cochon de Lait, Pissenlit Diabolique. Même recette qu’Incarnam : **PA et noms de sorts Dofus**, un ou deux par créature. Les petits (piou, tofu) font **une action** ; gelées, crabe et pichon en font **deux**. Hostiles, le Chafer est agressif. **Pas de boss**. Distinct des invocations (Tofu, Bouftou) et des cousins d’Incarnam (Tofu Chimérique, Boufton Pâlichon).
