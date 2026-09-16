@@ -73,6 +73,14 @@ final class EssentialPagesCanonTest extends TestCase
         $this->assertStringContainsString('−5 / +5', $start);
     }
 
+    public function test_equipment_canon_is_plus_four_per_item(): void
+    {
+        $html = $this->flattenHtml($this->pages['economie-progression']);
+
+        $this->assertStringContainsString('+4 par objet', $html);
+        $this->assertStringNotContainsString('+8 par objet', $html);
+    }
+
     /**
      * @param  array<string, mixed>  $page
      */

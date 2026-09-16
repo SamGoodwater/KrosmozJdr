@@ -22,9 +22,9 @@
         "*": {
             "dofusdb_characteristic_id": 11,
             "db_column": null,
-            "min": "-6",
-            "max": "6",
-            "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"2\",\"7\":\"3\",\"9\":\"3\",\"11\":\"4\",\"13\":\"4\",\"15\":\"5\",\"17\":\"5\",\"20\":\"6\",\"characteristic\":\"level\"}",
+            "min": "-4",
+            "max": "4",
+            "formula": "{\"1\":\"0\",\"3\":\"1\",\"5\":\"1\",\"7\":\"2\",\"9\":\"2\",\"11\":\"3\",\"13\":\"3\",\"15\":\"4\",\"17\":\"4\",\"20\":\"4\",\"characteristic\":\"level\"}",
             "formula_display": null,
             "default_value": "0",
             "conversion_formula": "([d] / max(abs([d]), 1)) * (round(0.0408 * pow(abs([d]), 0.9412)))",
@@ -42,8 +42,8 @@
                 "4": 1,
                 "8": 2,
                 "12": 4,
-                "16": 6,
-                "20": 6
+                "16": 4,
+                "20": 4
             },
             "conversion_sample_rows": [
                 {
@@ -147,8 +147,8 @@
                     4,
                     4,
                     4,
-                    5,
-                    5
+                    4,
+                    4
                 ],
                 "strong": [
                     1,
@@ -165,12 +165,12 @@
                     4,
                     4,
                     4,
-                    5,
-                    5,
-                    5,
-                    6,
-                    6,
-                    6
+                    4,
+                    4,
+                    4,
+                    4,
+                    4,
+                    4
                 ],
                 "very_strong": [
                     1,
@@ -183,20 +183,20 @@
                     4,
                     4,
                     4,
-                    5,
-                    5,
-                    5,
-                    6,
-                    6,
-                    6,
-                    6,
-                    6,
-                    6,
-                    6
+                    4,
+                    4,
+                    4,
+                    4,
+                    4,
+                    4,
+                    4,
+                    4,
+                    4,
+                    4
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Bonus vitalité d'équipement. Règle 5.2.4. Les malus Dofus sont conservés symétriquement jusqu’à -6.",
+            "norms_description": "Bonus vitalité d'équipement. Règle 2.6.1 / 2.2.3 : +4 par objet, forgemagie +2. Les malus Dofus sont conservés symétriquement jusqu’à -4.",
             "norms_help_section_id": null,
             "forgemagie_max": 2,
             "base_price_per_unit": 600,

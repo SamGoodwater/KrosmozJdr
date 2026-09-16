@@ -100,8 +100,8 @@ class DofusConversionServiceTest extends TestCase
     {
         $this->assertSame(3, $this->service->convertObjectAttribute('strength_object', 100, 'item'));
         $this->assertSame(-3, $this->service->convertObjectAttribute('strength_object', -100, 'item'));
-        $this->assertSame(6, $this->service->convertObjectAttribute('strength_object', 600, 'item'));
-        $this->assertSame(-6, $this->service->convertObjectAttribute('strength_object', -600, 'item'));
+        $this->assertSame(4, $this->service->convertObjectAttribute('strength_object', 600, 'item'));
+        $this->assertSame(-4, $this->service->convertObjectAttribute('strength_object', -600, 'item'));
     }
 
     public function test_convert_object_ap_and_mp_use_equipment_only_limits(): void

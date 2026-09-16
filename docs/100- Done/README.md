@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Leftover règles : équipement +4, index, annexe
+
+Les seeders d’objets (Vitalité, Force, Intelligence, Chance, Agilité, Sagesse) plafonnent à **+4** par pièce, forgemagie **+2**, comme le livre. L’index n’est plus un dump de titres. Le changelog (ex-1.3) est une **annexe 6.1**. Aptitudes : listes en 2.4, activation en 3.4, sans recopier les mêmes tableaux.
+
 ## Septembre 2026 — Fiches Création (conversion)
 
 L’atelier **Pour les MJ → Création** détaille maintenant sorts, monstres, équipements, consommables, capacités, traits et ressources : philosophie, points à respecter, limites (chiffres et propriétés de fiche), conseils, exemples jouables. C’est le même texte que l’IA de conversion recevra plus tard (`ia:creation-guides`), sans l’appeler encore. Boutiques, langues, campagnes et scénarios attendront.

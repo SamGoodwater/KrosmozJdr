@@ -40,7 +40,7 @@ Une clé **`_comment_limits`** (préfixe `_`, ignorée au seed) rappelle cette c
 | Zone | Règles | Seeder (objet) | Remarque |
 |------|--------|----------------|----------|
 | **PA** | +5 équip., +1 forgem. (2.2.2) | `action_points_object` `max` 5, `forgemagie_max` 1 | Total maximal +6. |
-| **Caracs principales** (chapeau / cape) | ±6 équip., ±2 forgem. (2.6.1) | `*_object` : `min` -6, `max` 6, `forgemagie_max` 2 ; conversion signée | Les malus suivent la même amplitude. |
+| **Caracs principales** (chapeau / cape) | ±4 équip., ±2 forgem. (2.6.1) | `*_object` : `min` -4, `max` 4, `forgemagie_max` 2 ; conversion signée | Les malus suivent la même amplitude. Total maximal ±6 avec forgemagie. |
 | **Compétences (actives)** | +5 équip., +3 forgem. (2.2.2) | `acrobatics_object`, etc. : `max` 5, `forgemagie_max` 3 | Ancien `max` 8 = total 5+3. |
 | **Compétences passives** | bonus équip. / forgem. distincts | `*_passive_object` : `max` 3, `forgemagie_max` 2 | Inchangé (déjà séparé). |
 | **Tacle / Fuite** | +10 équip., +2 forgem. (2.2.2) | `tackle_object`, `dodge_object` : `max` 10, `forgemagie_max` 2 ; formule étendue jusqu’à 20 | Ancien `max` 8 cumulait mal la règle globale. |

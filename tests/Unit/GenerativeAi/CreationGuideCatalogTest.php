@@ -51,5 +51,7 @@ final class CreationGuideCatalogTest extends TestCase
         $this->assertStringContainsString('Petite taille', $bundle['trait']);
         $this->assertStringContainsString('Blé', $bundle['resource']);
         $this->assertStringContainsString('Cape du Piou Vert', $bundle['item']);
+        $this->assertStringContainsString('+4 max', $bundle['item']);
+        $this->assertStringNotContainsString('+5 max', $bundle['item']);
     }
 }

@@ -114,7 +114,7 @@ Les sections ci-dessous gardent l’historique de l’audit (certaines « incoh�
 
 ## 5. Liens entre les différentes parties
 
-- Index alphabétique (INDEX.md) et table des matières (TABLE_DES_MATIERES.md) : à garder à jour après toute modification de structure ou de titres.
+- Index de jeu (`INDEX.md`) : termes de table, pas un dump de titres. Changelog : **annexe 6.1**.
 - **TABLE_DES_MATIERES.md** : format redondant (ex. « - **1.1.1** 1.1.1. Concept général »). Préférer : « - **1.1.1** Concept général » pour alléger.
 
 ---

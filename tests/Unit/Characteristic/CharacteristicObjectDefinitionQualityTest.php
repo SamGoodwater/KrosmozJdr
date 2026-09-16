@@ -76,6 +76,39 @@ class CharacteristicObjectDefinitionQualityTest extends TestCase
         }
     }
 
+    public function test_main_stat_object_caps_match_book_plus_four(): void
+    {
+        $keys = [
+            'vitality_object',
+            'strength_object',
+            'intelligence_object',
+            'chance_object',
+            'agility_object',
+            'wisdom_object',
+        ];
+
+        foreach ($this->definitions() as $path => $definition) {
+            $key = $definition['characteristic']['key'] ?? '';
+            if (! in_array($key, $keys, true)) {
+                continue;
+            }
+
+            $row = $definition['entities']['*'] ?? [];
+            $this->assertSame('-4', (string) ($row['min'] ?? ''), $path);
+            $this->assertSame('4', (string) ($row['max'] ?? ''), $path);
+            $this->assertSame(2, (int) ($row['forgemagie_max'] ?? 0), $path);
+
+            $formula = json_decode((string) ($row['formula'] ?? ''), true);
+            $this->assertIsArray($formula, $path);
+            foreach ($formula as $threshold => $value) {
+                if ($threshold === 'characteristic') {
+                    continue;
+                }
+                $this->assertLessThanOrEqual(4, (int) $value, $path.' @'.$threshold);
+            }
+        }
+    }
+
     public function test_object_zero_stays_zero_when_formula_present(): void
     {
         foreach ($this->definitions() as $path => $definition) {

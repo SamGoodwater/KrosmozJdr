@@ -39,19 +39,6 @@ Cette table des matières présente la structure complète du livre de règles K
 
 
 
-### 1.3 Changelog et historique
-
-
-- **1.3.1** Chronologie des versions
-
-- **1.3.2** Changements majeurs
-
-- **1.3.3** Décisions de design
-
-- **1.3.4** Archives et ressources
-
-
-
 
 
 ## 2. Créer un personnage
@@ -313,6 +300,24 @@ Cette table des matières présente la structure complète du livre de règles K
 - **5.3.4** Rencontres aléatoires
 
 - **5.3.5** Prix et économie
+
+
+
+
+
+## 6. Annexes
+
+
+### 6.1 Changelog et historique
+
+
+- **6.1.1** Chronologie des versions
+
+- **6.1.2** Changements majeurs
+
+- **6.1.3** Décisions de design
+
+- **6.1.4** Archives et ressources
 
 
 

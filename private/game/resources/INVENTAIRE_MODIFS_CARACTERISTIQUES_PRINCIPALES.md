@@ -11,7 +11,7 @@ Document de référence listant toutes les modifications à appliquer suite à l
 | **Score max base** | 31 | **24** |
 | **Progression** | +1 aux niv. 2, 4, 6, 9, 12, 15, 18, 20 (8 points) | +1 aux niv. **3, 6, 9, 12, 15, 18** (6 points) |
 | **Budget total** | 10 initiaux + 8 progression = 18 | **10 initiaux + 6 progression = 16** |
-| **Équipement max par carac** | +4 (règles 2.6.1) / +8 (PDF) | **+6** |
+| **Équipement max par carac** | +4 (règles 2.6.1) | **+4** (forgemagie +2) |
 | **Forgemagie max par carac** | +2 | **+2** |
 | **Modificateur max** | floor(Niveau/2)+1 (jusqu'à 11 à niv. 20) | **min(floor(Niveau/2)+1, 7)** — progression limitée puis plafond 7 |
 

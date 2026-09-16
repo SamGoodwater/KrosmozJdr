@@ -16,7 +16,7 @@ Ce document vérifie la cohérence entre :
 | **BDD ↔ Fiche personnage** | ✓ Cohérent | Voir [COHERENCE_FICHE_PERSO_VS_PROJET.md](COHERENCE_FICHE_PERSO_VS_PROJET.md) |
 | **BDD ↔ Fiches ressources (PDF)** | ✓ Cohérent | Formules objet/creature alignées sur PDF Équipements et Caractéristiques |
 
-**Point à trancher** : Bonus Vitalité/Force/etc. par objet — règles 2.6.1 disent +4 max, seeder/PDF Équipements indiquent jusqu’à +8 (voir section 4).
+**Point tranché (sept. 2026)** : Bonus Vitalité/Force/etc. par objet — **+4** max (forgemagie +2). Seeders `*_object` et table CMS/PDF alignés. Plus de +8.
 
 ---
 
@@ -53,8 +53,8 @@ Ce document vérifie la cohérence entre :
 
 | Règle | BDD (characteristic_object) | Statut |
 |-------|----------------------------|--------|
-| Chapeaux : Vit/Sag +4 max | vitality_object, wisdom_object max 8 | Voir section 4 |
-| Capes : For/Int/Cha/Agi +4 max | idem max 8 | Voir section 4 |
+| Chapeaux : Vit/Sag +4 max | vitality_object, wisdom_object max 4 | ✓ +4 / forgemagie +2 |
+| Capes : For/Int/Cha/Agi +4 max | idem max 4 | ✓ +4 / forgemagie +2 |
 | PA amulettes +6 max | action_points_object max 6 | ✓ |
 | PM bottes +3 max | movement_points_object max 3 | ✓ |
 | PO anneaux +6 max | range_object max 6 | ✓ |
@@ -92,17 +92,16 @@ Alignée avec le projet. Voir [COHERENCE_FICHE_PERSO_VS_PROJET.md](COHERENCE_FIC
 
 ---
 
-## 4. Point à trancher : bonus Vitalité/Force/etc. par objet
+## 4. Canon : bonus Vitalité/Force/etc. par objet = +4
 
 | Source | Valeur |
 |--------|--------|
-| **Règles 2.6.1** | Chapeaux (Vit, Sag) et Capes (For, Int, Cha, Agi) : **+4 maximum** par objet |
-| **PDF Équipements et forgemagie** | Table niveau 19-20 : bonus **8** par palier, forgemagie +2 |
-| **Seeder characteristic_object** | max 8, formules paliers jusqu’à 8 |
+| **Règles 2.6.1 / 2.2.3** | **+4** maximum par objet, forgemagie +2 (total +6) |
+| **Seeder `*_object`** | `max` 4, `forgemagie_max` 2, formules paliers jusqu’à 4 |
+| **Grille IA `equipment-grid.json`** | paliers 1–5:+1 · 6–10:+2 · 11–15:+3 · 16–20:+4 |
+| **Fiches playable** | bonus de carac principale ≤ 4 |
 
-**Options** :
-1. **Garder max 8** dans le seeder pour la conversion Dofus et documenter que la règle 2.6.1 (+4) est une limite de **création manuelle** ou de **validation** à appliquer côté UI.
-2. **Aligner sur 2.6.1** : passer max à 4 pour ces caractéristiques et adapter les formules.
+L’ancien PDF « Équipements et forgemagie » (paliers jusqu’à 8) n’est plus le référent. La table CMS d’équipement suit les seeders.
 
 ---
 
@@ -111,17 +110,16 @@ Alignée avec le projet. Voir [COHERENCE_FICHE_PERSO_VS_PROJET.md](COHERENCE_FIC
 | Fichier | Rôle |
 |---------|------|
 | `COHERENCE_FICHE_PERSO_VS_PROJET.md` | Fiche personnage ↔ BDD |
-| `COHERENCE_SEEDER_REGLES.md` | Règles ↔ seeders (dans 420-Règles) |
-| `PROPOSITIONS_FORMULES_ET_PROPRIETES.md` | Propositions de formules (objet, creature) |
+| `COHERENCE_SEEDER_REGLES.md` | Règles ↔ seeders (`private/game/rules/`) |
+| `PROPOSITIONS_FORMULES_ET_PROPRIETES.md` | Propositions historiques de formules |
 
 ---
 
-## 6. Actions recommandées
+## 6. Actions
 
-- [ ] Décider : max 4 ou 8 pour Vitalité/Force/etc. par objet (section 4)
-- [ ] Documenter la décision dans COHERENCE_SEEDER_REGLES
-- [ ] Vérifier que la validation côté app respecte les plafonds des règles 2.6.1
+- [x] Canon **+4** / forgemagie +2 (livre 2.6.1, seeders, grille)
+- [x] Documenté dans `COHERENCE_SEEDER_REGLES.md`
 
 ---
 
-*Document généré à partir des règles 2.2.1, 2.2.2, 2.6.1, COHERENCE_SEEDER_REGLES, fiches PDF et seeders.*
+*Document généré à partir des règles 2.2.1, 2.2.2, 2.6.1, COHERENCE_SEEDER_REGLES, fiches PDF et seeders. Mis à jour sept. 2026.*

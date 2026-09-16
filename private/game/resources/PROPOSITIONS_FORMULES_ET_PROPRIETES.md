@@ -37,7 +37,7 @@ Remplacer les formules linéaires par des **formules-table** (syntaxe JSON suppo
 
 | Source | Vitalité / Force / etc. (chapeaux, capes) |
 |--------|-------------------------------------------|
-| **Règles 2.2.1** | +6 maximum (équipement) + 2 (forgemagie) = +8 total |
+| **Règles 2.2.3 / 2.6.1** | +4 maximum (équipement) + 2 (forgemagie) = +6 total |
 | **Règles 2.6.1** | +6 maximum par slot (forgemagie +2) |
 | **Seeder actuel** | max 8 (6 équip. + 2 forgemagie), formula paliers niveau |
 
@@ -170,7 +170,7 @@ PDF Caractéristiques : 0 %, 50 %, 100 % ; équipement peut donner 50 % ou 100 %
 |----------|--------|------------|
 | **Haute** | Remplacer formules linéaires `[level]*(X/20)` par tables niveau→bonus (PDF Équipements) | `characteristic_object` |
 | **Haute** | Clarifier dés de vie : formule floor(level/2), max 10, et sens du `8` (type de dé) | `characteristic_creature`, doc règles |
-| **Moyenne** | Documenter écart règles 2.6.1 (+4) vs PDF (+8) pour Vitalité/Force/etc. | COHERENCE_SEEDER_REGLES.md |
+| **Moyenne** | Canon **+4** par objet (2.6.1), seeders alignés | COHERENCE_SEEDER_REGLES.md |
 | **Moyenne** | Vérifier tous les prix base/rune vs PDF | `characteristic_object` |
 | **Basse** | Ajouter validation plafond modificateur floor(Niveau/2)+1 | Logique création perso / monstres |
 
