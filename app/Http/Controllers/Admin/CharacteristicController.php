@@ -1124,7 +1124,8 @@ class CharacteristicController extends Controller
         $characteristic = Characteristic::findOrFail($validated['characteristic_id']);
         $this->authorize('update', $characteristic);
 
-        $characteristic->clearMediaCollection('icons');
+        // Collection `icons` en singleFile : un attach réussi remplace l’ancien.
+        // Ne pas clear avant validation, sinon un upload rejeté efface l’icône.
         $media = $entityImageMediaService->attachFromRequest(
             $characteristic,
             $request,

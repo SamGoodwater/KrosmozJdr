@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Chaque classe a ses **symboles** (couleur et N&B), ses **têtes** mâle / femelle et ses **personnages** full. La fiche complète montre le personnage (on peut passer de M à F), les petites cartes montrent la tête (mâle condensé, femelle déployé), et le menu utilise le symbole N&B qui passe en couleur au survol."
+    "description": "Remplacer l’illustration d’une ressource, l’icône d’une caractéristique ou un avatar n’efface plus l’ancien fichier **avant** de vérifier le nouveau. Un SVG (ou un envoi vide) est rejeté, et l’image d’origine reste. Les pièces jointes de section n’acceptent plus les SVG (contenu exécutable)."
   },
   {
     "path": "backend/_ai.md",

@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Upload : garder l’image si le fichier est refusé
+
+Remplacer l’illustration d’une ressource, l’icône d’une caractéristique ou un avatar n’efface plus l’ancien fichier **avant** de vérifier le nouveau. Un SVG (ou un envoi vide) est rejeté, et l’image d’origine reste. Les pièces jointes de section n’acceptent plus les SVG (contenu exécutable).
+
 ## Septembre 2026 — Leftover règles : équipement +4, index, annexe
 
 Les seeders d’objets (Vitalité, Force, Intelligence, Chance, Agilité, Sagesse) plafonnent à **+4** par pièce, forgemagie **+2**, comme le livre. L’index n’est plus un dump de titres. Le changelog (ex-1.3) est une **annexe 6.1**. Aptitudes : listes en 2.4, activation en 3.4, sans recopier les mêmes tableaux.
