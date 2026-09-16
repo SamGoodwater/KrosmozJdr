@@ -1,8 +1,12 @@
 # Ce qui a été fait
 
-## Septembre 2026 — Leftover règles : équipement +4, index, annexe
+## Septembre 2026 — Bonus d’objet et lecture du livre
 
-Les seeders d’objets (Vitalité, Force, Intelligence, Chance, Agilité, Sagesse) plafonnent à **+4** par pièce, forgemagie **+2**, comme le livre. L’index n’est plus un dump de titres. Le changelog (ex-1.3) est une **annexe 6.1**. Aptitudes : listes en 2.4, activation en 3.4, sans recopier les mêmes tableaux.
+Une pièce d’équipement ne pousse plus une caractéristique principale au-delà de **+4** (un peu moins en forgemagie) : c’est la même règle que le livre. L’index du tome sert à retrouver une règle, plus à aligner tous les titres. L’historique des versions passe en annexe. Aptitudes : on les choisit à la création, on les active en jeu, sans deux copies des mêmes listes.
+
+## Septembre 2026 — Livre et L’Essentiel d’accord
+
+Le livre et L’Essentiel racontent maintenant la même partie : création, combat, sorts, métiers, progression. Les chiffres qui partaient dans deux sens (PV, critique, plafond de perso, équipements, compétences) n’ont plus qu’une version ; les chapitres qui recopiaient une table se contentent d’un renvoi. L’Essentiel a des puces MJ et joueur, assez pour une séance sans relire le tome. « PO » veut dire Portée.
 
 ## Septembre 2026 — Fiches Création (conversion)
 
