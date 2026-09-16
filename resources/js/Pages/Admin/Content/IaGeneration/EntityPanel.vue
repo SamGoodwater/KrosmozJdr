@@ -6,6 +6,7 @@ import { computed, ref } from "vue";
 import CheckboxField from "@/Pages/Molecules/data-input/CheckboxField.vue";
 import TextareaField from "@/Pages/Molecules/data-input/TextareaField.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
+import ExamplePicker from "@/Pages/Admin/Content/IaGeneration/ExamplePicker.vue";
 
 const props = defineProps({
     entity: { type: String, required: true },
@@ -62,9 +63,9 @@ const frozenCharacteristicsText = computed({
     set: (text) => patch({ frozen_characteristics: textToList(text) }),
 });
 
-const exampleIdsText = computed({
-    get: () => (props.modelValue.example_ids || []).join(", "),
-    set: (text) => patch({ example_ids: textToIds(text) }),
+const exampleIds = computed({
+    get: () => (Array.isArray(props.modelValue.example_ids) ? props.modelValue.example_ids : []),
+    set: (ids) => patch({ example_ids: Array.isArray(ids) ? ids : [] }),
 });
 
 const taskPromptText = computed({
@@ -97,24 +98,6 @@ function textToList(text) {
         .split(/[\n,]+/)
         .map((item) => item.trim())
         .filter(Boolean);
-}
-
-function textToIds(text) {
-    const ids = [];
-    for (const chunk of String(text || "").split(/[\s,;]+/)) {
-        if (!chunk) {
-            continue;
-        }
-        const n = Number.parseInt(chunk, 10);
-        if (String(n) === chunk && Number.isInteger(n) && n > 0 && !ids.includes(n)) {
-            ids.push(n);
-            continue;
-        }
-        if (!ids.includes(chunk)) {
-            ids.push(chunk);
-        }
-    }
-    return ids;
 }
 
 function isWritableCharacteristic(key) {
@@ -186,7 +169,7 @@ function toggleWritableCharacteristic(key, checked) {
             </div>
             <TextareaField
                 v-model="writableCharacteristicsText"
-                label="Clés d’exception (texte)"
+                label="Caracs que l’IA peut modifier"
                 helper="Complète les cases : une clé characteristics.key par ligne."
                 rows="3"
                 default-label-position="top"
@@ -201,12 +184,7 @@ function toggleWritableCharacteristic(key, checked) {
             default-label-position="top"
         />
 
-        <InputField
-            v-model="exampleIdsText"
-            label="Fiches exemples (playable)"
-            helper="official_id, nom, ou id local, séparés par des virgules. Uniquement des fiches jouables."
-            default-label-position="top"
-        />
+        <ExamplePicker v-model="exampleIds" :entity="entity" />
 
         <TextareaField
             v-model="taskPromptText"

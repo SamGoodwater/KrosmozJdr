@@ -54,7 +54,11 @@ class NpcTableControllerTest extends TestCase
     public function test_format_entities_returns_raw_data(): void
     {
         $user = User::factory()->create();
-        $npc = Npc::factory()->create($this->playableAttrs(['age' => '25', 'size' => 2]));
+        $npc = Npc::factory()->create($this->playableAttrs([
+            'age' => '25',
+            'size' => 2,
+            'official_id' => 'jdr:npc:test:ganymede',
+        ]));
 
         $response = $this->actingAs($user)
             ->getJson('/api/tables/npcs?format=entities&limit=10');
@@ -70,6 +74,7 @@ class NpcTableControllerTest extends TestCase
                 'entities' => [
                     '*' => [
                         'id',
+                        'official_id',
                         'age',
                         'size',
                     ],
@@ -81,6 +86,33 @@ class NpcTableControllerTest extends TestCase
         $this->assertArrayHasKey('entities', $data);
         $this->assertArrayNotHasKey('rows', $data);
         $this->assertCount(1, $data['entities']);
+        $this->assertSame('jdr:npc:test:ganymede', $data['entities'][0]['official_id']);
+        $this->assertSame($npc->id, $data['entities'][0]['id']);
+    }
+
+    /**
+     * Filtre utilisé par le sélecteur d’étalons IA (`filters[state]=playable`).
+     */
+    public function test_format_entities_state_playable_excludes_drafts(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        Npc::factory()->create($this->playableAttrs([
+            'official_id' => 'jdr:npc:test:playable',
+        ]));
+        Npc::factory()->create([
+            'official_id' => 'jdr:npc:test:draft',
+            'state' => Npc::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->getJson('/api/tables/npcs?format=entities&limit=50&filters[state]=playable');
+
+        $response->assertOk();
+        $officialIds = array_column($response->json('entities'), 'official_id');
+        $this->assertContains('jdr:npc:test:playable', $officialIds);
+        $this->assertNotContains('jdr:npc:test:draft', $officialIds);
     }
 
     /**

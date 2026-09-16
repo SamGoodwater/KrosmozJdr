@@ -103,6 +103,38 @@ class ItemTableControllerTest extends TestCase
     }
 
     /**
+     * Filtre utilisé par le sélecteur d’étalons IA (`filters[state]=playable`).
+     */
+    public function test_format_entities_state_playable_excludes_drafts(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        Item::factory()->create($this->playableAttrs([
+            'name' => 'Étalon jouable',
+            'official_id' => 'jdr:item:etalon-playable',
+        ]));
+        Item::factory()->create([
+            'name' => 'Brouillon IA',
+            'official_id' => 'jdr:item:etalon-draft',
+            'state' => Item::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->getJson('/api/tables/items?format=entities&limit=50&filters[state]=playable');
+
+        $response->assertOk();
+        $entities = $response->json('entities');
+        $this->assertIsArray($entities);
+        $names = array_column($entities, 'name');
+        $this->assertContains('Étalon jouable', $names);
+        $this->assertNotContains('Brouillon IA', $names);
+        $officialIds = array_column($entities, 'official_id');
+        $this->assertContains('jdr:item:etalon-playable', $officialIds);
+        $this->assertNotContains('jdr:item:etalon-draft', $officialIds);
+    }
+
+    /**
      * Test : Le format par défaut (`cells`) retourne les cellules formatées
      */
     public function test_format_cells_returns_formatted_cells(): void

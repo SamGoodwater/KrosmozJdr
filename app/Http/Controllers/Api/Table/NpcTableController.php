@@ -285,6 +285,7 @@ class NpcTableController extends Controller
 
                 return [
                     'id' => $n->id,
+                    'official_id' => $n->official_id,
                     'creature_id' => $n->creature_id,
                     'story' => $n->story,
                     'historical' => $n->historical,
