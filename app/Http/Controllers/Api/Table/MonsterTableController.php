@@ -521,6 +521,15 @@ class MonsterTableController extends Controller
                             'searchValue' => (string) ($m->dofusdb_id ?? ''),
                         ],
                     ],
+                    'creature_image' => [
+                        'type' => 'image',
+                        'value' => $m->creature?->image ?: '',
+                        'params' => [
+                            'sortValue' => $m->creature?->image ? 1 : 0,
+                            'searchValue' => '',
+                            'alt' => $creatureName,
+                        ],
+                    ],
                     'created_at' => [
                         'type' => 'text',
                         'value' => $createdAtLabel,
@@ -553,6 +562,7 @@ class MonsterTableController extends Controller
                         'creature' => $m->creature ? [
                             'id' => $m->creature->id,
                             'name' => $m->creature->name,
+                            'image' => $m->creature->image,
                             'creatureTraits' => $m->creature->relationLoaded('creatureTraits')
                                 ? $m->creature->creatureTraits->map(fn ($t) => [
                                     'id' => $t->id,

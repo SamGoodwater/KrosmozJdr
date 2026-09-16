@@ -4,6 +4,7 @@
         {
             "key": "piou-vert",
             "name": "Piou Vert",
+            "image": "https://api.dofusdb.fr/img/monsters/274.png",
             "level": 2,
             "size": 1,
             "monster_race": "Piou",
@@ -11,7 +12,10 @@
             "location": "Incarnam",
             "description": "Un oiseau de basse-cour, plus bruyant que dangereux. Il picore et s’enfuit.",
             "other_info": "Faune des champs (famille Piou). 3 PA Dofus : une action par tour. Mort à 0 PV.",
-            "traits": ["Petite taille", "Vif / Vive"],
+            "traits": [
+                "Petite taille",
+                "Vif / Vive"
+            ],
             "stats": {
                 "life": "20",
                 "pa": "3",
@@ -38,6 +42,7 @@
         {
             "key": "tofu-chimerique",
             "name": "Tofu Chimérique",
+            "image": "https://api.dofusdb.fr/img/monsters/540.png",
             "level": 2,
             "size": 1,
             "monster_race": "Tofu",
@@ -45,7 +50,10 @@
             "location": "Incarnam",
             "description": "Le tofu des champs d’Incarnam. Jaune, nerveux, il fonce le bec en avant.",
             "other_info": "Faune d’Incarnam (famille Tofu). 4 PA Dofus, Béco à 3 PA : une action par tour. Mort à 0 PV. Distinct du Tofu invoqué par un Osamodas.",
-            "traits": ["Petite taille", "Vif / Vive"],
+            "traits": [
+                "Petite taille",
+                "Vif / Vive"
+            ],
             "stats": {
                 "life": "22",
                 "pa": "4",
@@ -71,6 +79,7 @@
         {
             "key": "boufton-palichon",
             "name": "Boufton Pâlichon",
+            "image": "https://api.dofusdb.fr/img/monsters/542.png",
             "level": 3,
             "size": 1,
             "monster_race": "Bouftou",
@@ -78,7 +87,9 @@
             "location": "Incarnam",
             "description": "Un veau de Bouftou. Il mordille ou crache, rarement les deux dans le même souffle.",
             "other_info": "Faune d’Incarnam (famille Bouftou). 4 PA Dofus, sorts à 3 PA : une attaque par tour, deux options. Mort à 0 PV.",
-            "traits": ["Petite taille"],
+            "traits": [
+                "Petite taille"
+            ],
             "stats": {
                 "life": "30",
                 "pa": "4",
@@ -116,6 +127,7 @@
         {
             "key": "bouftou-nuageux",
             "name": "Bouftou Nuageux",
+            "image": "https://api.dofusdb.fr/img/monsters/541.png",
             "level": 5,
             "size": 2,
             "monster_race": "Bouftou",
@@ -148,6 +160,7 @@
         {
             "key": "larve-bleue",
             "name": "Larve Bleue",
+            "image": "https://api.dofusdb.fr/img/monsters/1.png",
             "level": 2,
             "size": 1,
             "monster_race": "Larve",
@@ -155,7 +168,9 @@
             "location": "Incarnam",
             "description": "Une larve d’eau, lente, qui crache un postillon gênant.",
             "other_info": "Famille Larve. 3 PA Dofus : une action par tour. Mort à 0 PV.",
-            "traits": ["Petite taille"],
+            "traits": [
+                "Petite taille"
+            ],
             "stats": {
                 "life": "20",
                 "pa": "3",
@@ -183,6 +198,7 @@
         {
             "key": "larve-orange",
             "name": "Larve Orange",
+            "image": "https://api.dofusdb.fr/img/monsters/12.png",
             "level": 5,
             "size": 1,
             "monster_race": "Larve",
@@ -190,7 +206,9 @@
             "location": "Incarnam",
             "description": "Une larve de feu. Elle colle puis se recroqueville derrière un mucus.",
             "other_info": "Famille Larve. 5 PA Dofus : Bave (3) et Dissuasion (2) dans le même tour. Mort à 0 PV.",
-            "traits": ["Petite taille"],
+            "traits": [
+                "Petite taille"
+            ],
             "stats": {
                 "life": "32",
                 "pa": "5",
@@ -227,6 +245,7 @@
         {
             "key": "larve-verte",
             "name": "Larve Verte",
+            "image": "https://api.dofusdb.fr/img/monsters/2.png",
             "level": 6,
             "size": 1,
             "monster_race": "Larve",
@@ -234,7 +253,9 @@
             "location": "Incarnam",
             "description": "Une larve de terre, un peu plus costaude. Postillon, puis corps spongieux.",
             "other_info": "Famille Larve. 5 PA Dofus : Postillon (3) et Corps Spongieux (2) dans le même tour. Mort à 0 PV.",
-            "traits": ["Petite taille"],
+            "traits": [
+                "Petite taille"
+            ],
             "stats": {
                 "life": "36",
                 "pa": "5",
@@ -271,6 +292,7 @@
         {
             "key": "arakne",
             "name": "Arakne",
+            "image": "https://api.dofusdb.fr/img/monsters/15.png",
             "level": 2,
             "size": 1,
             "monster_race": "Arakne",
@@ -278,7 +300,9 @@
             "location": "Incarnam",
             "description": "Une araignée des sous-bois. Une seule frappe, mais le venin reste.",
             "other_info": "Famille Arakne. 5 PA Dofus, Frapperie à 5 PA : une action par tour. Mort à 0 PV.",
-            "traits": ["Petite taille"],
+            "traits": [
+                "Petite taille"
+            ],
             "stats": {
                 "life": "24",
                 "pa": "5",
@@ -306,6 +330,7 @@
         {
             "key": "champ-champ",
             "name": "Champ Champ",
+            "image": "https://api.dofusdb.fr/img/monsters/21.png",
             "level": 3,
             "size": 2,
             "monster_race": "Champ Champ",
@@ -351,6 +376,7 @@
         {
             "key": "aminite",
             "name": "Aminite",
+            "image": "https://api.dofusdb.fr/img/monsters/1310.png",
             "level": 5,
             "size": 2,
             "monster_race": "Champ Champ",
@@ -394,6 +420,7 @@
         {
             "key": "moskito",
             "name": "Moskito",
+            "image": "https://api.dofusdb.fr/img/monsters/22.png",
             "level": 1,
             "size": 1,
             "monster_race": "Moskito",
@@ -401,7 +428,11 @@
             "location": "Incarnam",
             "description": "Un insecte piqueur, trop vite pour le tacle. Il boit un peu de sang à chaque piqûre.",
             "other_info": "Faune d’Incarnam. 5 PA Dofus, Piqûre à 3 PA : une action par tour. Mort à 0 PV.",
-            "traits": ["Petite taille", "Vif / Vive", "Agile"],
+            "traits": [
+                "Petite taille",
+                "Vif / Vive",
+                "Agile"
+            ],
             "stats": {
                 "life": "18",
                 "pa": "5",
@@ -428,6 +459,7 @@
         {
             "key": "pissenlit-miroitant",
             "name": "Pissenlit Miroitant",
+            "image": "https://api.dofusdb.fr/img/monsters/547.png",
             "level": 2,
             "size": 1,
             "monster_race": "Végétal",
@@ -435,7 +467,9 @@
             "location": "Incarnam",
             "description": "Une mauvaise herbe des champs d’Incarnam. Elle fouette de loin.",
             "other_info": "Faune d’Incarnam (champs). 6 PA Dofus, Herbe Sauvage à 3 PA. Mort à 0 PV.",
-            "traits": ["Petite taille"],
+            "traits": [
+                "Petite taille"
+            ],
             "stats": {
                 "life": "28",
                 "pa": "6",
@@ -462,6 +496,7 @@
         {
             "key": "rose-vaporeuse",
             "name": "Rose Vaporeuse",
+            "image": "https://api.dofusdb.fr/img/monsters/548.png",
             "level": 4,
             "size": 1,
             "monster_race": "Végétal",
@@ -469,7 +504,9 @@
             "location": "Incarnam",
             "description": "Une rose démoniaque d’Incarnam. Épines ou poison, pas les deux.",
             "other_info": "Faune d’Incarnam (champs). 4 PA Dofus : Empoisonnement (3) ou Effleurement (4). Mort à 0 PV.",
-            "traits": ["Petite taille"],
+            "traits": [
+                "Petite taille"
+            ],
             "stats": {
                 "life": "26",
                 "pa": "4",
@@ -507,6 +544,7 @@
         {
             "key": "tournesol-nebuleux",
             "name": "Tournesol Nébuleux",
+            "image": "https://api.dofusdb.fr/img/monsters/549.png",
             "level": 5,
             "size": 2,
             "monster_race": "Végétal",

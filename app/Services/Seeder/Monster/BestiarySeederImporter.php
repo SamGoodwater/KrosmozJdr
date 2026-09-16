@@ -76,7 +76,7 @@ final class BestiarySeederImporter
             $monster ??= new Monster;
             $creature = $monster->creature ?? new Creature;
 
-            $attributes = $this->creatureAttributes($entry);
+            $attributes = $this->creatureAttributes($entry, $creature);
             if ($creature->exists && $creature->created_by !== null) {
                 unset($attributes['created_by']);
             }
@@ -367,7 +367,7 @@ final class BestiarySeederImporter
      * @param  array<string, mixed>  $entry
      * @return array<string, mixed>
      */
-    private function creatureAttributes(array $entry): array
+    private function creatureAttributes(array $entry, Creature $creature): array
     {
         $ca = (string) ($entry['stats']['ca'] ?? '10');
 
@@ -412,7 +412,30 @@ final class BestiarySeederImporter
             'read_level' => User::ROLE_GUEST,
             'write_level' => User::ROLE_GAME_MASTER,
             'created_by' => $this->createdById(),
+            ...$this->imageAttribute($creature, $entry['image'] ?? null),
         ]);
+    }
+
+    /**
+     * Pose l'URL DofusDB si la créature n'a pas encore d'image locale.
+     *
+     * @return array{image?: string}
+     */
+    private function imageAttribute(Creature $creature, mixed $image): array
+    {
+        if (! is_string($image)) {
+            return [];
+        }
+        $url = trim($image);
+        if ($url === '' || (! str_starts_with($url, 'http://') && ! str_starts_with($url, 'https://'))) {
+            return [];
+        }
+        $current = is_string($creature->image) ? trim($creature->image) : '';
+        if ($current !== '' && ! str_contains($current, 'api.dofusdb.fr')) {
+            return [];
+        }
+
+        return ['image' => $url];
     }
 
     /**

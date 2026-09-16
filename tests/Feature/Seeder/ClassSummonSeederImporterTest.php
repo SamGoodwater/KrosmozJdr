@@ -39,6 +39,7 @@ final class ClassSummonSeederImporterTest extends TestCase
         $this->assertSame('1', $creature->pm);
         $this->assertSame('3', $creature->pa);
         $this->assertSame(0, $creature->hostility);
+        $this->assertSame('https://api.dofusdb.fr/img/monsters/9.png', $creature->image);
         $this->assertSame(Creature::STATE_PLAYABLE, $creature->state);
         $this->assertSame(1, $creature->spells()->count());
 

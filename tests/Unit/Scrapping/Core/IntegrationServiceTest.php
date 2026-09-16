@@ -142,6 +142,32 @@ class IntegrationServiceTest extends TestCase
         $this->assertSame($race->id, $monster->monster_race_id);
     }
 
+    public function test_integrate_monster_stores_dofusdb_image_url_when_download_disabled(): void
+    {
+        $this->createSystemUser();
+        MonsterRace::factory()->create(['dofusdb_race_id' => 11]);
+        $url = 'https://api.dofusdb.fr/img/monsters/1.png';
+
+        $result = $this->service->integrate('monster', [
+            'creatures' => [
+                'name' => 'Larve Bleue Image',
+                'level' => '1',
+                'life' => '10',
+                'image' => $url,
+            ],
+            'monsters' => [
+                'dofusdb_id' => '31',
+                'size' => 'medium',
+                'monster_race_id' => 11,
+            ],
+        ], ['download_images' => false]);
+
+        $this->assertTrue($result->isSuccess());
+        $creature = Creature::find($result->getCreatureId());
+        $this->assertNotNull($creature);
+        $this->assertSame($url, $creature->image);
+    }
+
     public function test_integrate_monster_creates_missing_dofus_race(): void
     {
         $this->createSystemUser();

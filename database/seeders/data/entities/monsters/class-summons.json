@@ -4,6 +4,7 @@
         {
             "key": "tofu",
             "name": "Tofu",
+            "image": "https://api.dofusdb.fr/img/monsters/9.png",
             "breed": "Osamodas",
             "character_level": 1,
             "size": 1,
@@ -24,6 +25,7 @@
         {
             "key": "dragoune",
             "name": "Dragoune",
+            "image": "https://api.dofusdb.fr/img/monsters/2527.png",
             "breed": "Osamodas",
             "character_level": 1,
             "size": 1,
@@ -43,6 +45,7 @@
         {
             "key": "poupee-sadida",
             "name": "Poupée Sadida",
+            "image": "https://api.dofusdb.fr/img/monsters/61.png",
             "breed": "Sadida",
             "character_level": 1,
             "size": 1,
@@ -62,6 +65,7 @@
         {
             "key": "harponneuse",
             "name": "Harponneuse",
+            "image": "https://api.dofusdb.fr/img/monsters/1924.png",
             "breed": "Steamer",
             "character_level": 1,
             "size": 1,
@@ -81,6 +85,7 @@
         {
             "key": "gardienne",
             "name": "Gardienne",
+            "image": "https://api.dofusdb.fr/img/monsters/1923.png",
             "breed": "Steamer",
             "character_level": 1,
             "size": 1,
@@ -99,6 +104,7 @@
         {
             "key": "sram-double",
             "name": "Double",
+            "image": "https://api.dofusdb.fr/img/monsters/88.png",
             "breed": "Sram",
             "character_level": 3,
             "size": 2,
@@ -118,6 +124,7 @@
         {
             "key": "osamodas-bouftou",
             "name": "Bouftou",
+            "image": "https://api.dofusdb.fr/img/monsters/3.png",
             "breed": "Osamodas",
             "character_level": 7,
             "size": 2,
@@ -138,6 +145,7 @@
         {
             "key": "osamodas-dragonnet",
             "name": "Dragonnet",
+            "image": "https://api.dofusdb.fr/img/monsters/2528.png",
             "breed": "Osamodas",
             "character_level": 7,
             "size": 2,
@@ -157,6 +165,7 @@
         {
             "key": "sadida-la-bloqueuse",
             "name": "La Bloqueuse",
+            "image": "https://api.dofusdb.fr/img/monsters/62.png",
             "breed": "Sadida",
             "character_level": 7,
             "size": 1,
@@ -176,6 +185,7 @@
         {
             "key": "sadida-la-gonflable",
             "name": "La Gonflable",
+            "image": "https://api.dofusdb.fr/img/monsters/64.png",
             "breed": "Sadida",
             "character_level": 7,
             "size": 1,
@@ -194,6 +204,7 @@
         {
             "key": "steamer-tourelle-tactique",
             "name": "Tactirrelle",
+            "image": "https://api.dofusdb.fr/img/monsters/1925.png",
             "breed": "Steamer",
             "character_level": 7,
             "size": 1,
@@ -213,6 +224,7 @@
         {
             "key": "steamer-tourelle-tactique-soin",
             "name": "Soigneuse",
+            "image": "https://api.dofusdb.fr/img/monsters/1923.png",
             "breed": "Steamer",
             "character_level": 7,
             "size": 1,
@@ -231,6 +243,7 @@
         {
             "key": "ouginak-repaire",
             "name": "Repaire",
+            "image": "https://api.dofusdb.fr/img/monsters/1557.png",
             "breed": "Ouginak",
             "character_level": 7,
             "size": 2,
@@ -250,6 +263,7 @@
         {
             "key": "ecaflip-griffe-joueuse",
             "name": "Griffe Joueuse",
+            "image": "https://api.dofusdb.fr/img/monsters/90.png",
             "breed": "Ecaflip",
             "character_level": 7,
             "size": 1,
@@ -269,6 +283,7 @@
         {
             "key": "sadida-arbre",
             "name": "Arbre",
+            "image": "https://api.dofusdb.fr/img/monsters/171.png",
             "breed": "Sadida",
             "character_level": 10,
             "size": 2,
@@ -288,6 +303,7 @@
         {
             "key": "xelor-synchro",
             "name": "Synchro",
+            "image": "https://api.dofusdb.fr/img/monsters/1249.png",
             "breed": "Xélor",
             "character_level": 11,
             "size": 2,
@@ -307,6 +323,7 @@
         {
             "key": "enutrof-malle-animee",
             "name": "Malle Animée",
+            "image": "https://api.dofusdb.fr/img/monsters/1683.png",
             "breed": "Enutrof",
             "character_level": 11,
             "size": 2,
@@ -326,6 +343,7 @@
         {
             "key": "sadida-la-sacrifiee",
             "name": "La Sacrifiée",
+            "image": "https://api.dofusdb.fr/img/monsters/63.png",
             "breed": "Sadida",
             "character_level": 11,
             "size": 1,
@@ -345,6 +363,7 @@
         {
             "key": "osamodas-sulfenix",
             "name": "Sulfénix",
+            "image": "https://api.dofusdb.fr/img/monsters/2532.png",
             "breed": "Osamodas",
             "character_level": 14,
             "size": 2,

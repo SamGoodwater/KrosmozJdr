@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Images des monstres
+
+Les fiches du **bestiaire** et des **invocations de classe** ont maintenant le portrait Dofus (URL `api.dofusdb.fr`, indexée par le `gfxId`, pas l’id de la fiche). Un scrap de monstre DofusDB pose aussi cette URL si le fichier n’arrive pas à se télécharger. Le catalogue et la vue ligne lisent `creature.image`.
+
 ## Septembre 2026 — Ateliers sur la vue d’ensemble
 
 Sur **Gestion du contenu** (`/admin/content`), trois cartes **Récupérer / Mettre à jour / Compléter** ouvrent l’atelier DofusDB (avec `?mode=`), plus une carte **Génération IA** vers `/admin/content/ia-generation`. Les camemberts restent en dessous.

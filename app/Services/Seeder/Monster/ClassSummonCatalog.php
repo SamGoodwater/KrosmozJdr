@@ -58,6 +58,7 @@ final class ClassSummonCatalog
      *     primary: string,
      *     description: string,
      *     other_info: string,
+     *     image: string|null,
      *     action: array{
      *         name: string,
      *         kind: string,
@@ -111,6 +112,7 @@ final class ClassSummonCatalog
                 'primary' => $primary,
                 'description' => (string) ($row['description'] ?? ''),
                 'other_info' => (string) ($row['other_info'] ?? ''),
+                'image' => $this->nullableString($row['image'] ?? null),
                 'action' => [
                     'name' => $actionName,
                     'kind' => $kind,

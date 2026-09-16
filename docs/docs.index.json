@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Sur **Gestion du contenu** (`/admin/content`), trois cartes **Récupérer / Mettre à jour / Compléter** ouvrent l’atelier DofusDB (avec `?mode=`), plus une carte **Génération IA** vers `/admin/content/ia-generation`. Les camemberts restent en dessous."
+    "description": "Les fiches du bestiaire et des invocations de classe ont un portrait Dofus (`gfxId`). Un scrap de monstre pose aussi l’URL si le fichier n’est pas téléchargé. Sur Gestion du contenu, trois cartes Récupérer / Mettre à jour / Compléter ouvrent l’atelier DofusDB."
   },
   {
     "path": "backend/_ai.md",

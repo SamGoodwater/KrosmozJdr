@@ -96,7 +96,7 @@ final class FormatterApplicator
                 return $this->clampToCharacteristic($v, (string) ($a['characteristicId'] ?? ''), (string) ($c['entityType'] ?? 'monster'));
             },
             'mapSizeToKrosmoz' => fn (mixed $v, array $a): string => $this->mapSize((string) $v, (string) ($a['default'] ?? 'medium')),
-            'storeScrappedImage' => fn (mixed $v): ?string => $v === null ? null : (string) $v,
+            'storeScrappedImage' => fn (mixed $v, array $a, array $r): ?string => $this->storeScrappedImage($v, $a, $r),
             'truncate' => fn (mixed $v, array $a): string => $this->truncate($v, (int) ($a['max'] ?? 255)),
             'toJson' => fn (mixed $v): ?string => $this->toJson($v),
             'extractItemIds' => fn (mixed $v): array => $this->extractItemIds($v),
@@ -411,6 +411,59 @@ final class FormatterApplicator
         $valid = ['tiny', 'small', 'medium', 'large', 'huge'];
 
         return in_array($value, $valid, true) ? $value : $default;
+    }
+
+    /**
+     * Résout l'URL d'image DofusDB. Les monstres n'exposent pas toujours `img` :
+     * le PNG est indexé par `gfxId` (`/img/monsters/{gfxId}.png`), pas par l'id de fiche.
+     *
+     * @param  array<string, mixed>  $args
+     * @param  array<string, mixed>  $raw
+     *
+     * @example $url = $applicator->apply('storeScrappedImage', null, ['entityFolder' => 'monsters', 'idPath' => 'id'], ['gfxId' => 3], []);
+     */
+    private function storeScrappedImage(mixed $value, array $args, array $raw): ?string
+    {
+        if (is_string($value)) {
+            $trimmed = trim($value);
+            if ($trimmed !== '' && (str_starts_with($trimmed, 'http://') || str_starts_with($trimmed, 'https://'))) {
+                return $trimmed;
+            }
+            if ($trimmed !== '' && str_starts_with($trimmed, '/')) {
+                $base = rtrim((string) config('scrapping.data_collect.dofusdb_base_url', 'https://api.dofusdb.fr'), '/');
+
+                return $base.$trimmed;
+            }
+        }
+
+        $folder = (string) ($args['entityFolder'] ?? 'items');
+        $id = null;
+        if ($folder === 'monsters') {
+            $gfx = $raw['gfxId'] ?? $raw['gfx_id'] ?? null;
+            if (is_numeric($gfx) && (int) $gfx > 0) {
+                $id = (string) (int) $gfx;
+            }
+        }
+        if ($id === null) {
+            $idPath = (string) ($args['idPath'] ?? 'id');
+            $fromRaw = $this->getByPath($raw, $idPath);
+            if (is_numeric($fromRaw) && (int) $fromRaw > 0) {
+                $id = (string) (int) $fromRaw;
+            }
+        }
+        if ($id === null) {
+            return null;
+        }
+
+        $base = rtrim((string) config('scrapping.data_collect.dofusdb_base_url', 'https://api.dofusdb.fr'), '/');
+        $idEnc = rawurlencode($id);
+
+        return match ($folder) {
+            'monsters' => "{$base}/img/monsters/{$idEnc}.png",
+            'spells' => "{$base}/img/spells/sort_{$idEnc}.png",
+            'breeds', 'classes' => "{$base}/img/breeds/{$idEnc}.png",
+            default => "{$base}/img/items/{$idEnc}.png",
+        };
     }
 
     /**

@@ -46,6 +46,8 @@ final class ScrappingEntityFixtures
                 ],
             ]],
             'size' => 'medium',
+            'gfxId' => 3,
+            'img' => 'https://api.dofusdb.fr/img/monsters/3.png',
         ];
     }
 

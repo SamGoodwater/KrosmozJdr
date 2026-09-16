@@ -1407,6 +1407,7 @@ class ScrappingRunCommand extends Command
 
     /**
      * Déduit l'URL d'image DofusDB selon le dossier entité.
+     * Les PNG monstres sont indexés par `gfxId` ; l'id de fiche n'est qu'un repli.
      */
     private function guessDofusdbImageUrl(string $baseUrl, string $folder, string $dofusdbId): ?string
     {
