@@ -82,7 +82,7 @@ const estimateLabel = computed(() => {
 
 const remainingUsageLabel = computed(() => {
     const usage = props.aiUsage;
-    if (!usage || typeof usage !== "object") return "";
+    if (!usage || typeof usage !== "object") return "Solde : chargement…";
     if (typeof usage.remaining_credits_usd === "number") {
         const credit = Number(usage.remaining_credits_usd).toLocaleString("fr-FR", {
             minimumFractionDigits: 2,

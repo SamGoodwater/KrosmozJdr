@@ -8,15 +8,19 @@ use App\Models\AiGenerationRun;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Solde / usage Anthropic (API fournisseur). Échec silencieux si pas de clé.
  *
- * @example $snap = app(AnthropicUsageService::class)->snapshot();
+ * @example $snap = app(AnthropicUsageService::class)->snapshot(false);
  */
 final class AnthropicUsageService
 {
     /**
+     * Tokens locaux du mois, et optionnellement l’usage org Anthropic.
+     *
+     * @param  bool  $includeRemote  false = pas d’HTTP fournisseur (réponse locale, modal Sources).
      * @return array{
      *     available: bool,
      *     reason: string|null,
@@ -33,7 +37,7 @@ final class AnthropicUsageService
      *     model: string
      * }
      */
-    public function snapshot(): array
+    public function snapshot(bool $includeRemote = true): array
     {
         $client = app(GenerativeAiClient::class);
         $local = $this->localMonth();
@@ -53,16 +57,17 @@ final class AnthropicUsageService
             'model' => $client->model(),
         ];
 
-        $remote = $client->hasApiKey()
-            ? Cache::remember('ia.anthropic.usage.remote.v1', 120, fn (): array => $this->fetchRemote($client))
-            : [
-                'available' => false,
-                'reason' => 'no_key',
-                'input_tokens' => null,
-                'output_tokens' => null,
-                'cost_usd' => null,
-                'remaining_credits_usd' => null,
-            ];
+        $remote = [
+            'available' => false,
+            'reason' => $client->hasApiKey() ? null : 'no_key',
+            'input_tokens' => null,
+            'output_tokens' => null,
+            'cost_usd' => null,
+            'remaining_credits_usd' => null,
+        ];
+        if ($includeRemote && $client->hasApiKey()) {
+            $remote = Cache::remember('ia.anthropic.usage.remote.v1', 120, fn (): array => $this->fetchRemote($client));
+        }
 
         $merged = [
             ...$base,
@@ -85,6 +90,15 @@ final class AnthropicUsageService
      */
     public function localMonth(): array
     {
+        $empty = [
+            'input_tokens' => 0,
+            'output_tokens' => 0,
+            'runs' => 0,
+        ];
+        if (! Schema::hasTable((new AiGenerationRun)->getTable())) {
+            return $empty;
+        }
+
         $row = AiGenerationRun::query()
             ->where('status', AiGenerationRun::STATUS_SUCCESS)
             ->where('created_at', '>=', now()->startOfMonth())
@@ -129,7 +143,7 @@ final class AnthropicUsageService
                 'anthropic-version' => (string) config('services.anthropic.version', '2023-06-01'),
                 'content-type' => 'application/json',
             ])
-                ->timeout(15)
+                ->timeout(3)
                 ->acceptJson()
                 ->get($base.'/v1/organizations/usage', [
                     'starting_at' => $startingAt,

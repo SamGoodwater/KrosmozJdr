@@ -7,6 +7,7 @@ namespace Tests\Unit\GenerativeAi;
 use App\Models\AiGenerationRun;
 use App\Services\GenerativeAi\AnthropicUsageService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 final class AnthropicUsageServiceTest extends TestCase
@@ -44,5 +45,20 @@ final class AnthropicUsageServiceTest extends TestCase
         $this->assertNull($snap['remaining_credits_usd']);
         $this->assertStringContainsString('Cette app (mois)', $snap['message']);
         $this->assertStringContainsString('120', $snap['message']);
+    }
+
+    public function test_snapshot_without_remote_skips_provider_http(): void
+    {
+        config(['services.anthropic.api_key' => 'sk-test']);
+        Http::fake(['*' => Http::response(['error' => 'should not be called'], 500)]);
+
+        $snap = app(AnthropicUsageService::class)->snapshot(false);
+
+        Http::assertNothingSent();
+        $this->assertFalse($snap['available']);
+        $this->assertTrue($snap['has_api_key']);
+        $this->assertSame(0, $snap['local_input_tokens']);
+        $this->assertStringContainsString('Cette app (mois)', $snap['message']);
+        $this->assertStringNotContainsString('Usage Anthropic indisponible', $snap['message']);
     }
 }

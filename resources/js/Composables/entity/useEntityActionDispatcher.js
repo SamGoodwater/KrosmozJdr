@@ -260,7 +260,17 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
                     };
                 }
             } catch {
-                // Estimé optionnel.
+                if (refreshConfirm.value.open) {
+                    refreshConfirm.value = {
+                        ...refreshConfirm.value,
+                        aiUsage: {
+                            local_input_tokens: 0,
+                            local_output_tokens: 0,
+                            local_runs: 0,
+                            remaining_credits_usd: null,
+                        },
+                    };
+                }
             }
         }
 
