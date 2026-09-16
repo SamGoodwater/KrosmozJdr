@@ -12,7 +12,11 @@
 import { computed, ref } from "vue";
 import { router } from "@inertiajs/vue3";
 import axios from "axios";
-import { isScrappableEntityType, normalizeActionEntityType } from "@/Entities/entity-actions-config";
+import {
+    isAiConvertibleEntityType,
+    isScrappableEntityType,
+    normalizeActionEntityType,
+} from "@/Entities/entity-actions-config";
 import {
     getEntityRouteConfig,
     getEntitySingularRouteKey,
@@ -20,6 +24,8 @@ import {
 } from "@/Composables/entity/entityRouteRegistry";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useEntityDofusdbRefresh } from "@/Composables/entity/useEntityDofusdbRefresh";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 
 function getEntityId(entity) {
     return entity?.id ?? entity?._data?.id ?? null;
@@ -32,6 +38,8 @@ function getEntityLabel(entity) {
 export function useEntityActionDispatcher(entityType, handlers = {}) {
     const { copyToClipboard } = useCopyToClipboard();
     const { previewRefresh, applyRefresh } = useEntityDofusdbRefresh();
+    const { isAdmin, canUpdateAny } = usePermissions();
+    const notificationStore = useNotificationStore();
 
     const normalizedType = computed(() => normalizeActionEntityType(entityType?.value ?? entityType));
     const routeParamKey = computed(() => getEntitySingularRouteKey(normalizedType.value));
@@ -146,6 +154,15 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         entity: null,
         entityLabel: "cette fiche",
         meta: {},
+        showDofusdb: false,
+        showAi: false,
+        aiBrief: "",
+        aiSubmitting: false,
+        aiError: "",
+        aiSuccess: "",
+        aiEstimate: null,
+        aiAction: "",
+        aiActionLabel: "Conversion IA",
     });
 
     function resetRefreshConfirm() {
@@ -159,7 +176,38 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
             entity: null,
             entityLabel: "cette fiche",
             meta: {},
+            showDofusdb: false,
+            showAi: false,
+            aiBrief: "",
+            aiSubmitting: false,
+            aiError: "",
+            aiSuccess: "",
+            aiEstimate: null,
+            aiAction: "",
+            aiActionLabel: "Conversion IA",
         };
+    }
+
+    function actionForType(plural) {
+        const map = {
+            monsters: "encounter",
+            spells: "spell",
+            npcs: "npc",
+            items: "item",
+            consumables: "consumable",
+        };
+        return map[plural] || "";
+    }
+
+    function actionLabel(action) {
+        const map = {
+            encounter: "Rencontre (monstre + sorts)",
+            spell: "Sort (effets)",
+            npc: "PNJ (fiche complète)",
+            item: "Équipement",
+            consumable: "Consommable",
+        };
+        return map[action] || "Conversion IA";
     }
 
     function isPlayableEntity(entity) {
@@ -170,11 +218,14 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
     async function openRefreshPanel(entity, meta = {}) {
         const entityId = getEntityId(entity);
         const plural = normalizedType.value;
-        if (!entityId || !isScrappableEntityType(plural)) return false;
+        const showDofusdb = Boolean(entityId && isScrappableEntityType(plural) && canUpdateAny(plural));
+        const aiAction = actionForType(plural);
+        const showAi = Boolean(entityId && isAdmin.value && isAiConvertibleEntityType(plural) && aiAction);
+        if (!entityId || (!showDofusdb && !showAi)) return false;
 
         refreshConfirm.value = {
             open: true,
-            loading: true,
+            loading: showDofusdb,
             applying: false,
             preview: null,
             error: "",
@@ -182,7 +233,33 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
             entity,
             entityLabel: getEntityLabel(entity),
             meta,
+            showDofusdb,
+            showAi,
+            aiBrief: "",
+            aiSubmitting: false,
+            aiError: "",
+            aiSuccess: "",
+            aiEstimate: null,
+            aiAction,
+            aiActionLabel: actionLabel(aiAction),
         };
+
+        if (showAi) {
+            try {
+                const { data } = await axios.get("/api/ia/status", { headers: { Accept: "application/json" } });
+                const estimates = Array.isArray(data?.estimates) ? data.estimates : [];
+                const estimate = estimates.find((row) => row.action === aiAction) || null;
+                if (refreshConfirm.value.open) {
+                    refreshConfirm.value = { ...refreshConfirm.value, aiEstimate: estimate };
+                }
+            } catch {
+                // Estimé optionnel.
+            }
+        }
+
+        if (!showDofusdb) {
+            return true;
+        }
 
         const preview = await previewRefresh(plural, entityId);
         if (!refreshConfirm.value.open) return false;
@@ -209,6 +286,43 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
             error: preview.success === false ? String(preview.message || "") : "",
         };
         return true;
+    }
+
+    async function submitAiConvert() {
+        const pending = refreshConfirm.value;
+        const entity = pending.entity;
+        const entityId = getEntityId(entity);
+        const plural = normalizedType.value;
+        const action = pending.aiAction || actionForType(plural);
+        if (!entityId || !plural || pending.aiSubmitting || !action) return false;
+
+        refreshConfirm.value = { ...pending, aiSubmitting: true, aiError: "", aiSuccess: "" };
+        try {
+            const { data } = await axios.post(
+                `/api/entities/${encodeURIComponent(plural)}/${entityId}/ia-convert`,
+                { action, brief: pending.aiBrief || null, force: Boolean(pending.playable) },
+                { headers: { Accept: "application/json" } },
+            );
+            if (data?.success === false) {
+                refreshConfirm.value = {
+                    ...refreshConfirm.value,
+                    aiSubmitting: false,
+                    aiError: data.message || "La conversion IA a échoué.",
+                };
+                return false;
+            }
+            notificationStore.success(data?.message || "Conversion IA enregistrée en auto.");
+            handlers.onRefresh?.(entity, pending.meta);
+            resetRefreshConfirm();
+            return true;
+        } catch (error) {
+            const message =
+                error?.response?.data?.message
+                || Object.values(error?.response?.data?.errors || {})?.flat()?.[0]
+                || "Impossible de lancer la conversion IA.";
+            refreshConfirm.value = { ...refreshConfirm.value, aiSubmitting: false, aiError: String(message) };
+            return false;
+        }
     }
 
     async function confirmPendingRefresh(options = {}) {
@@ -303,5 +417,6 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         refreshConfirm,
         confirmPendingRefresh,
         cancelPendingRefresh,
+        submitAiConvert,
     };
 }

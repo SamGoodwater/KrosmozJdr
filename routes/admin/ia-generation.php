@@ -15,7 +15,7 @@ Route::prefix('admin/content/ia-generation')
     ->middleware(['auth', 'role:admin', 'content.area'])
     ->group(function () {
         Route::get('/', [IaGenerationConfigController::class, 'edit'])->name('edit');
-        Route::middleware(['password.confirm'])->group(function () {
+        Route::middleware(['password.confirm', 'throttle:12,1'])->group(function () {
             Route::put('/', [IaGenerationConfigController::class, 'update'])->name('update');
             Route::delete('/', [IaGenerationConfigController::class, 'destroy'])->name('destroy');
             Route::post('items-seeder/export', [ItemSeederFilesController::class, 'export'])

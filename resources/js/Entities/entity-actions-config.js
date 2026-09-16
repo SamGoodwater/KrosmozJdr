@@ -42,6 +42,15 @@ export const SCRAPPABLE_ENTITY_TYPES = Object.freeze([
   "spells",
 ]);
 
+/** Types branchés sur une spécialisation de conversion IA. */
+export const AI_CONVERTIBLE_ENTITY_TYPES = Object.freeze([
+  "monsters",
+  "spells",
+  "npcs",
+  "items",
+  "consumables",
+]);
+
 /**
  * Ordre d’actions par surface (du plus pertinent au moins).
  * Minimal déployé : état → pin → modal → DofusDB → favoris → lien → édition page.
@@ -52,6 +61,7 @@ export const ENTITY_ACTION_CONTEXT_PRESETS = Object.freeze({
     "pin",
     "quick-view",
     "view-dofusdb",
+    "refresh",
     "favorite",
     "copy-link",
     "edit",
@@ -81,6 +91,7 @@ export const ENTITY_ACTION_CONTEXT_PRESETS = Object.freeze({
     "quick-view",
     "edit",
     "view-dofusdb",
+    "refresh",
     "favorite",
     "copy-link",
   ],
@@ -121,6 +132,10 @@ export function normalizeActionEntityType(entityType = "") {
 
 export function isScrappableEntityType(entityType) {
   return SCRAPPABLE_ENTITY_TYPES.includes(normalizeActionEntityType(entityType));
+}
+
+export function isAiConvertibleEntityType(entityType) {
+  return AI_CONVERTIBLE_ENTITY_TYPES.includes(normalizeActionEntityType(entityType));
 }
 
 /**
@@ -277,15 +292,22 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
   },
   refresh: {
     key: "refresh",
-    label: "Rafraîchir",
-    tooltip: "Rafraîchir les données depuis DofusDB (aperçu puis confirmation)",
+    label: "Sources",
+    tooltip: "Mettre à jour depuis DofusDB ou convertir avec l’IA",
     icon: "fa-solid fa-arrow-rotate-right",
-    permission: "canUpdate",
+    permission: null,
     requiresEntity: true,
     group: "tools",
     visibleIf: (context) => {
-      if (!isScrappableEntityType(context?.entityType)) return false;
-      return Boolean(context?.inModal || context?.inPage);
+      if (context?.inLine || context?.viewMode === "line") return false;
+      return Boolean(
+        context?.inModal ||
+          context?.inPage ||
+          context?.inMinimal ||
+          context?.viewMode === "minimal" ||
+          context?.preset === "tableDropdown" ||
+          (!context?.inModal && !context?.inPage && !context?.inMinimal && !context?.inLine)
+      );
     },
   },
   minimize: {
@@ -325,89 +347,52 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
     // Actions spécifiques aux ressources (si nécessaire)
   },
 
-  /** Monstres : Rafraîchir utilise le pipeline scrapping V2 (conversion BDD, validation, intégration). */
+  /** Monstres : modal unique DofusDB | conversion IA. */
   monsters: {
     refresh: {
-      key: "refresh",
-      label: "Rafraîchir",
-      tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
-      icon: "fa-solid fa-arrow-rotate-right",
-      permission: "canUpdate",
-      requiresEntity: true,
-      group: "tools",
-      visibleIf: ENTITY_ACTIONS_COMMON.refresh.visibleIf,
+      ...ENTITY_ACTIONS_COMMON.refresh,
     },
   },
 
-  /** Sorts : Rafraîchir utilise le pipeline V2. */
+  /** Sorts : modal unique DofusDB | conversion IA. */
   spells: {
     refresh: {
-      key: "refresh",
-      label: "Rafraîchir",
-      tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
-      icon: "fa-solid fa-arrow-rotate-right",
-      permission: "canUpdate",
-      requiresEntity: true,
-      group: "tools",
-      visibleIf: ENTITY_ACTIONS_COMMON.refresh.visibleIf,
+      ...ENTITY_ACTIONS_COMMON.refresh,
     },
   },
 
-  /** Breeds (affichées « Classes ») : Rafraîchir utilise le pipeline V2. */
+  /** Breeds (affichées « Classes ») : DofusDB uniquement. */
   breeds: {
     refresh: {
-      key: "refresh",
-      label: "Rafraîchir",
-      tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
-      icon: "fa-solid fa-arrow-rotate-right",
-      permission: "canUpdate",
-      requiresEntity: true,
-      group: "tools",
-      visibleIf: ENTITY_ACTIONS_COMMON.refresh.visibleIf,
+      ...ENTITY_ACTIONS_COMMON.refresh,
     },
   },
 
-  /** Panoplies : Rafraîchir utilise le pipeline V2. */
+  /** Panoplies : DofusDB uniquement. */
   panoplies: {
     refresh: {
-      key: "refresh",
-      label: "Rafraîchir",
-      tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
-      icon: "fa-solid fa-arrow-rotate-right",
-      permission: "canUpdate",
-      requiresEntity: true,
-      group: "tools",
-      visibleIf: ENTITY_ACTIONS_COMMON.refresh.visibleIf,
+      ...ENTITY_ACTIONS_COMMON.refresh,
     },
   },
 
-  /** Items : Rafraîchir utilise le pipeline V2. */
+  /** Items : modal unique DofusDB | conversion IA. */
   items: {
     refresh: {
-      key: "refresh",
-      label: "Rafraîchir",
-      tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
-      icon: "fa-solid fa-arrow-rotate-right",
-      permission: "canUpdate",
-      requiresEntity: true,
-      group: "tools",
-      visibleIf: ENTITY_ACTIONS_COMMON.refresh.visibleIf,
+      ...ENTITY_ACTIONS_COMMON.refresh,
     },
   },
 
-  /** Ressources : Rafraîchir utilise le pipeline V2. */
+  /** Ressources : DofusDB uniquement. */
   resources: {
     refresh: {
       ...ENTITY_ACTIONS_COMMON.refresh,
-      tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
     },
   },
 
-  /** Consommables : Rafraîchir utilise le pipeline V2. */
+  /** Consommables : modal unique DofusDB | conversion IA. */
   consumables: {
     refresh: {
       ...ENTITY_ACTIONS_COMMON.refresh,
-      tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
     },
   },
 });

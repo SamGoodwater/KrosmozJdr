@@ -67,6 +67,11 @@ const exampleIdsText = computed({
     set: (text) => patch({ example_ids: textToIds(text) }),
 });
 
+const taskPromptText = computed({
+    get: () => props.modelValue.task_prompt || "",
+    set: (text) => patch({ task_prompt: text }),
+});
+
 const filteredCharacteristics = computed(() => {
     const q = filter.value.trim().toLowerCase();
     const options = props.characteristicOptions || [];
@@ -200,6 +205,14 @@ function toggleWritableCharacteristic(key, checked) {
             v-model="exampleIdsText"
             label="Fiches exemples (playable)"
             helper="official_id, nom, ou id local, séparés par des virgules. Uniquement des fiches jouables."
+            default-label-position="top"
+        />
+
+        <TextareaField
+            v-model="taskPromptText"
+            label="Prompt de tâche"
+            helper="Vide = fiche Création du type (ou texte par défaut). Injecté dans l’assembleur."
+            rows="6"
             default-label-position="top"
         />
     </section>

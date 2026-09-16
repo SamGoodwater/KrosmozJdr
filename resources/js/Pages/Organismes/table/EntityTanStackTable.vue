@@ -24,6 +24,8 @@ import { useTableServerParams } from "@/Composables/table/useTableServerParams";
 import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
 import { tableInitialServerSort } from "@/Utils/table/tableInitialSort";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
+import EntityDofusdbRefreshPanel from "@/Pages/Molecules/entity/EntityDofusdbRefreshPanel.vue";
+import { useEntityActionDispatcher } from "@/Composables/entity/useEntityActionDispatcher";
 
 const props = defineProps({
     entityType: { type: String, required: true },
@@ -315,15 +317,25 @@ const handleRowClick = (row) => {
     emit("row-click", row);
 };
 
-const handleAction = (actionKey, entity, row) => {
-    emit("action", actionKey, entity, row);
-};
-
 const handleRefresh = async () => {
     if (isServerEnabled.value) {
         await fetchServer();
     }
     emit("refresh");
+};
+
+const { dispatchEntityAction, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh, submitAiConvert } =
+    useEntityActionDispatcher(
+        computed(() => props.entityType),
+        { onRefresh: () => handleRefresh() },
+    );
+
+const handleAction = (actionKey, entity, row) => {
+    if (actionKey === "refresh") {
+        dispatchEntityAction("refresh", entity);
+        return;
+    }
+    emit("action", actionKey, entity, row);
 };
 
 const handleDownloadSelectionPdf = async () => {
@@ -373,6 +385,27 @@ const handleDownloadSelectionPdf = async () => {
             @row-dblclick="(row) => emit('row-dblclick', row)"
             @refresh="handleRefresh"
             @action="handleAction"
+        />
+        <EntityDofusdbRefreshPanel
+            :open="refreshConfirm.open"
+            :loading="refreshConfirm.loading"
+            :applying="refreshConfirm.applying"
+            :preview="refreshConfirm.preview"
+            :error="refreshConfirm.error"
+            :playable="refreshConfirm.playable"
+            :entity-label="refreshConfirm.entityLabel"
+            :show-dofusdb="refreshConfirm.showDofusdb"
+            :show-ai="refreshConfirm.showAi"
+            :ai-brief="refreshConfirm.aiBrief"
+            :ai-submitting="refreshConfirm.aiSubmitting"
+            :ai-error="refreshConfirm.aiError"
+            :ai-success="refreshConfirm.aiSuccess"
+            :ai-estimate="refreshConfirm.aiEstimate"
+            :ai-action-label="refreshConfirm.aiActionLabel"
+            @confirm="confirmPendingRefresh"
+            @close="cancelPendingRefresh"
+            @update:ai-brief="(v) => (refreshConfirm.aiBrief = v)"
+            @convert="submitAiConvert"
         />
     </div>
 </template>

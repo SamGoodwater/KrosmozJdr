@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\CreatureTraitBulkController;
 use App\Http\Controllers\Api\EntityDeletionController;
 use App\Http\Controllers\Api\EntityDofusdbRefreshController;
 use App\Http\Controllers\Api\EntityStateController;
+use App\Http\Controllers\Api\GenerativeAi\IaConvertController;
 use App\Http\Controllers\Api\ItemBulkController;
 use App\Http\Controllers\Api\MonsterBulkController;
 use App\Http\Controllers\Api\NpcBulkController;
@@ -43,6 +44,11 @@ Route::middleware(['web', 'auth'])->prefix('entities')->group(function () {
         ->where('entityType', '[a-z-]+')
         ->whereNumber('id')
         ->name('api.entities.dofusdb-refresh');
+    Route::post('/{entityType}/{id}/ia-convert', IaConvertController::class)
+        ->middleware(['role:admin', 'throttle:12,1'])
+        ->where('entityType', '[a-z-]+')
+        ->whereNumber('id')
+        ->name('api.entities.ia-convert');
     Route::get('/{entityType}/{id}/delete-impact', [EntityDeletionController::class, 'impact'])
         ->where('entityType', '[a-z-]+')
         ->whereNumber('id')

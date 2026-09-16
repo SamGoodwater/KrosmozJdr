@@ -756,8 +756,15 @@
     "file": "entity/EntityEditFormFieldBody.vue"
   },
   {
+    "name": "EntitySourceModal",
+    "description": "Modal unique sources de fiche : aperçu DofusDB et conversion IA (admin).",
+    "props": [],
+    "slots": [],
+    "file": "entity/EntitySourceModal.vue"
+  },
+  {
     "name": "EntityDofusdbRefreshPanel",
-    "description": "Panneau de confirmation d’une maj DofusDB unitaire (aperçu puis apply).",
+    "description": "Compat : ouvre EntitySourceModal (DofusDB | conversion IA).",
     "props": [],
     "slots": [],
     "file": "entity/EntityDofusdbRefreshPanel.vue"

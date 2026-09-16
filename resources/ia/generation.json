@@ -1,6 +1,7 @@
 {
     "_doc": "Config IA métier. Clés _* ignorées. Caractéristiques = characteristics.key. * = tout figer. writable_* gagne sur frozen_*. Détail : docs/IA/CHAMPS.md",
     "version": 1,
+    "supervisor_prompt": "Tu convertis des fiches Dofus en contenu jouable pour le JDR Krosmoz.\nTu proposes, tu ne publies jamais (jamais playable).\nSortie JSON uniquement, clés autorisées par le schéma, rien d’autre.\nTu n’inventes pas d’identifiants hors listes fournies.\nSur une fiche sourcée Dofus, tu ne réécris pas l’identité (nom, description, type, image).",
     "generation": {
         "max_retries": 2,
         "few_shot_count": 8,
@@ -13,7 +14,17 @@
             "writable_fields": [],
             "frozen_characteristics": "*",
             "writable_characteristics": [],
-            "example_ids": [],
+            "example_ids": [
+                "Cape du Piou Vert",
+                "Cape du Piou Rouge",
+                "Cape du Piou Bleu",
+                "Cape du Piou Jaune",
+                "Cape du Piou Rose",
+                "Cape du Piou Violet",
+                "Anneau du Piou Vert",
+                "Anneau du Tofu"
+            ],
+            "task_prompt": "",
             "few_shot_panoplies": [
                 "Panoplie du Piou Vert",
                 "Panoplie du Piou Rouge",
@@ -79,7 +90,17 @@
             ],
             "frozen_characteristics": "*",
             "writable_characteristics": [],
-            "example_ids": []
+            "example_ids": [
+                "Pression",
+                "Attaque Naturelle",
+                "Intimidation",
+                "Fendoir",
+                "Bond",
+                "Concentration",
+                "Puissance",
+                "Épée Divine"
+            ],
+            "task_prompt": ""
         },
         "monster": {
             "has_dofus_source": true,
@@ -87,7 +108,17 @@
             "writable_fields": [],
             "frozen_characteristics": "*",
             "writable_characteristics": [],
-            "example_ids": []
+            "example_ids": [
+                "jdr:bestiary:piou-vert",
+                "jdr:bestiary:tofu-chimerique",
+                "jdr:bestiary:boufton-palichon",
+                "jdr:bestiary:arakne",
+                "jdr:summon:tofu",
+                "jdr:summon:poupee-sadida",
+                "jdr:bestiary:bouftou",
+                "jdr:bestiary:gelee-bleuet"
+            ],
+            "task_prompt": ""
         },
         "npc": {
             "has_dofus_source": false,
@@ -95,7 +126,27 @@
             "writable_fields": [],
             "frozen_characteristics": [],
             "writable_characteristics": [],
-            "example_ids": []
+            "example_ids": [
+                "jdr:npc:incarnam:ganymede",
+                "jdr:npc:incarnam:dathura",
+                "jdr:npc:incarnam:tabach",
+                "jdr:npc:incarnam:milicien",
+                "jdr:npc:incarnam:fouduglen"
+            ],
+            "task_prompt": ""
+        },
+        "consumable": {
+            "has_dofus_source": true,
+            "frozen_fields": "*",
+            "writable_fields": [],
+            "frozen_characteristics": "*",
+            "writable_characteristics": [],
+            "example_ids": [
+                "Pain d'Incarnam",
+                "jdr:heal:potion:5",
+                "jdr:antidote"
+            ],
+            "task_prompt": ""
         }
     }
 }

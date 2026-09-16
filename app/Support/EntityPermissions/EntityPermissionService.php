@@ -72,6 +72,7 @@ class EntityPermissionService
                     // "update"
                     'updateAny' => $user->can('updateAny', $modelClass),
                     'publish' => $user->can('publish', $modelClass),
+                    'generate' => $user->can('generate', $modelClass),
                     // "delete"
                     'deleteAny' => $user->can('deleteAny', $modelClass),
                     // "admin/maintenance"
@@ -134,6 +135,7 @@ class EntityPermissionService
                         'createAny' => false,
                         'updateAny' => false,
                         'publish' => false,
+                        'generate' => false,
                         'deleteAny' => false,
                         'manageAny' => false,
                     ];

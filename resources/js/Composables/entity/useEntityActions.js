@@ -19,6 +19,7 @@ import {
   ACTION_GROUPS_ORDER,
   ENTITY_ACTION_CONTEXT_PRESETS,
   getActionsForEntityType,
+  isAiConvertibleEntityType,
   isScrappableEntityType,
   normalizeActionEntityType,
 } from "@/Entities/entity-actions-config";
@@ -154,8 +155,12 @@ export function useEntityActions(entityType, entity = null, options = {}) {
           return false;
         }
 
-        if (action.key === "refresh" && !isScrappableEntityType(normalizedEntityType.value)) {
-          return false;
+        if (action.key === "refresh") {
+          const scrappable = isScrappableEntityType(normalizedEntityType.value) && checkPermission("canUpdate");
+          const aiOk = Boolean(isAdmin.value) && isAiConvertibleEntityType(normalizedEntityType.value);
+          if (!scrappable && !aiOk) {
+            return false;
+          }
         }
 
         // Vérifier les permissions

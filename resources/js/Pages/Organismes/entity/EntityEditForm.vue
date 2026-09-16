@@ -199,7 +199,7 @@ const entitiesPluralSegment = computed(() => {
     return `${et}s`;
 });
 
-const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPendingDelete, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh } =
+const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPendingDelete, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh, submitAiConvert } =
     useEntityActionDispatcher(entitiesPluralSegment, {
         onRefresh: () => router.reload(),
     });
@@ -1333,8 +1333,18 @@ async function handleEditPageAction(actionKey) {
         :error="refreshConfirm.error"
         :playable="refreshConfirm.playable"
         :entity-label="refreshConfirm.entityLabel"
+        :show-dofusdb="refreshConfirm.showDofusdb"
+        :show-ai="refreshConfirm.showAi"
+        :ai-brief="refreshConfirm.aiBrief"
+        :ai-submitting="refreshConfirm.aiSubmitting"
+        :ai-error="refreshConfirm.aiError"
+        :ai-success="refreshConfirm.aiSuccess"
+        :ai-estimate="refreshConfirm.aiEstimate"
+        :ai-action-label="refreshConfirm.aiActionLabel"
         @confirm="confirmPendingRefresh"
         @close="cancelPendingRefresh"
+        @update:ai-brief="(v) => (refreshConfirm.aiBrief = v)"
+        @convert="submitAiConvert"
     />
 </template>
 
