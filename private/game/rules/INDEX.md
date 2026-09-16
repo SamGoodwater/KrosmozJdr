@@ -3826,13 +3826,8 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 
 
 
-**Points d'Opportunité** : 
+**Portée (PO)** : 
 4.2.2, 5.1.2
-
-
-
-**Points d'Opportunité (PO)** : 
-4.2.2
 
 
 

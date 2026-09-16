@@ -76,7 +76,7 @@ Les zones et durées restent des notations textuelles structurées : elles ne do
 
 - **Modificateur** : `floor((score−10)/2)` — identique règles (2.2.1.2) et seeders (`formula_display` modifier_*_creature).
 - **Plafond modificateur de base** : `⌊Niveau/2⌋ + 1` (règles 2.2.1) — présent uniquement dans les règles (tableau par niveau) ; pas de formule équivalente dans les seeders (normal, c’est une règle de création/perso).
-- **PV** : Vitalité×10 + dés de vie — cohérent entre 2.2.2 et `life_points_creature`.
+- **PV** : Vitalité×10 n’est **plus** la formule jouable. Canon fiche : `hit_dice + mod. Vita × niveau + (niveau−1)×round(hit_dice/2) + équipement` (`life_points_creature`). Les textes 2.2.2 / 3.2.4 / Essentiel sont alignés. `hit_dice-creature-definition.json` (helper) peut encore citer l’ancienne phrase — hors livre.
 
 ---
 

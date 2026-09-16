@@ -27,8 +27,8 @@ return [
         'icon' => null,
         'menu_order' => 10,
         'intro_title' => 'À quoi ça sert',
-        'intro_html' => '<p>Tu as lu les règles une fois. Ici tu retrouves les chiffres et les pièges à table, sans rouvrir tout le livre. Chaque page pointe vers le chapitre complet.</p>'
-            .'<p>d20 · [[kref:characteristic:action_points_creature|PA]] · [[kref:characteristic:movement_points_creature|PM]] · [[kref:characteristic:range_creature|PO]] · round 6 s. Livre : [[kref:page:regles-1-introduction|Règles]].</p>',
+        'intro_html' => '<p>Assez pour <strong>jouer une séance</strong> et pour <strong>MJ une campagne</strong> sans relire le tome. Un seul jeu de chiffres — le livre détaille. Livre : [[kref:page:regles-1-introduction|Règles]].</p>'
+            .'<p>d20 · [[kref:characteristic:action_points_creature|PA]] · [[kref:characteristic:movement_points_creature|PM]] · [[kref:characteristic:range_creature|PO]] (portée) · round 6 s. Monde : le <strong>Krosmoz</strong>, les <strong>Douze</strong>, les <strong>kamas</strong>.</p>',
         'sections' => [
             [
                 'slug' => 'plan',
@@ -39,15 +39,29 @@ return [
                     .'<li>[[kref:page:essentiels-combat|Combat]] — tour, tacle, réaction</li>'
                     .'<li>[[kref:page:essentiels-sante-etats|Santé, états, repos]] — PV, 0 PV, repos</li>'
                     .'<li>[[kref:page:essentiels-sorts-aptitudes|Sorts, aptitudes, capacités]] — lancer + rappels de fiche</li>'
-                    .'<li>[[kref:page:essentiels-economie-progression|Équipement et progression]] — loot, conso, monture</li>'
+                    .'<li>[[kref:page:essentiels-economie-progression|Équipement et progression]] — loot, XP, kamas</li>'
                     .'<li>[[kref:page:caracteristiques|Caractéristiques]] — bornes et formules</li>'
                     .'</ol>'
+                    .'<p>Puces MJ : [[kref:pageSection:essentiels-bien-demarrer@essentiels-bien-demarrer-mj|Bien démarrer — MJ]].</p>'
                     .'<p>Tables de jeu : [[kref:page:bibliotheque-breed|Bibliothèques]].</p>',
+            ],
+            [
+                'slug' => 'mj',
+                'title' => 'Puces MJ',
+                'html' => '<ul>'
+                    .'<li><strong>DD</strong> : 15, −5 / +5, pas de jet si trivial — [[kref:page:regles-1-2-concepts-de-base|1.2.1]]</li>'
+                    .'<li><strong>PNJ / monstre</strong> : gabarit + fiches Garde / Bouftou — [[kref:page:regles-5-1-ressources-mj|5.1.2]]</li>'
+                    .'<li><strong>Budget rencontre / XP</strong> : [[kref:page:regles-5-1-ressources-mj|5.1.3]] · [[kref:page:regles-5-2-principes-dequilibrage|5.2.5]] (ex. 2 combats + quête ≈ 450 XP niv. 1)</li>'
+                    .'<li><strong>Trésor / kamas</strong> : [[kref:page:regles-5-1-ressources-mj|5.1.4]] · [[kref:page:regles-5-3-tables-de-reference|5.3.2 / 5.3.5]]</li>'
+                    .'<li><strong>Agressivité</strong> : 6 niveaux — [[kref:page:regles-3-2-combat|3.2.1]] · [[kref:page:regles-4-2-les-creatures|4.2.4]]</li>'
+                    .'<li><strong>Météo / langues</strong> : [[kref:page:regles-5-3-tables-de-reference|5.3.3]] · [[kref:page:regles-4-1-lunivers|4.1.4–4.1.5]]</li>'
+                    .'</ul>',
             ],
             [
                 'slug' => 'jets',
                 'title' => 'Jets',
-                'html' => '<p><strong>1d20 + mod. + [[kref:characteristic:mastery_bonus_creature|maîtrise]]</strong> (si maîtrisée). DD courant <strong>15</strong> (5 trivial → 30 quasi impossible). 1 = échec auto, 20 = réussite auto. Opposé : le plus haut gagne. Avantage / désavantage : relance le d20.</p>'
+                'html' => '<p><strong>1d20 + mod. + [[kref:characteristic:mastery_bonus_creature|maîtrise]]</strong> (si maîtrisée ; expertise = ×2 <strong>à la place</strong>). DD courant <strong>15</strong> (5 trivial → 30 quasi impossible). 1 = échec auto, 20 = réussite auto. Opposé : le plus haut gagne. Avantage / désavantage : relance le d20.</p>'
+                    .'<p>MJ : base 15, <strong>−5 / +5</strong> selon le contexte ; <strong>pas de jet</strong> si trivial ou impossible. Ajuste au niveau (15 est dur au niv. 1).</p>'
                     .'<p>Maîtrise = <strong>1 + ⌊niveau/4⌋</strong> (+1 → +6). Expertise = double, max 3 (niv. 9 / 15 / 20).</p>'
                     .'<p>→ [[kref:page:regles-1-2-concepts-de-base|Concepts]] · [[kref:page:regles-3-5-competences|Compétences]]</p>',
             ],
@@ -62,7 +76,8 @@ return [
                     .'<tr><td>[[kref:characteristic:range_creature|PO]]</td><td>0</td><td>6</td><td>Portée + PO</td><td>—</td></tr>'
                     .'<tr><td>[[kref:characteristic:wakfu_reserve_creature|Wakfu]]</td><td>[[kref:characteristic:mastery_bonus_creature|Maîtrise]]+</td><td>—</td><td>Non consommé</td><td>1 pt = 1× tes [[kref:characteristic:action_points_creature|PA]] max</td></tr>'
                     .'</tbody></table>'
-                    .'<p>Initiative : 1d20 + [[kref:characteristic:intelligence_creature|Intelligence]]. [[kref:characteristic:armor_class_creature|CA]] = 10 + [[kref:characteristic:vitality_creature|Vitalité]] + équipement.</p>',
+                    .'<p>Initiative : 1d20 + [[kref:characteristic:intelligence_creature|Intelligence]]. [[kref:characteristic:armor_class_creature|CA]] = 10 + <strong>mod.</strong> [[kref:characteristic:vitality_creature|Vitalité]] + bouclier / équipement.</p>'
+                    .'<p>Combat <strong>significatif</strong> (enjeu réel) : PA chaque tour, Wakfu intact. Sinon le MJ coupe la régénération — 1 pt Wakfu = 1× PA max.</p>',
             ],
             [
                 'slug' => 'boucle',
@@ -84,9 +99,9 @@ return [
                 'slug' => 'etapes',
                 'title' => 'Les cinq étapes',
                 'html' => '<ol>'
-                    .'<li><strong>Classe</strong> — 3 sorts parmi 6, dé de vie → [[kref:page:bibliotheque-breed|Classes]]</li>'
-                    .'<li><strong>Spé</strong> — maîtrises, aptitudes, capacités → [[kref:page:bibliotheque-specialization|Spés]]</li>'
-                    .'<li><strong>Caracs</strong> — 6×8, <strong>10 pts</strong> (option : 1 score à 6 → +2 pts)</li>'
+                    .'<li><strong>Classe</strong> — <strong>19 classes</strong>, 4 voies, 3 sorts parmi 6, dé de vie → [[kref:page:bibliotheque-breed|Classes]]</li>'
+                    .'<li><strong>Spé</strong> — <strong>6 jouables</strong> (11 prévues) ; paliers 3, 6, 9, 12, 15, 18, 20 → [[kref:page:bibliotheque-specialization|Spés]]</li>'
+                    .'<li><strong>Caracs</strong> — 6×8, <strong>10 pts</strong> (option : 1 score à 6 → +2 pts). Plafond niv. 1 : score <strong>13</strong> (mod +1)</li>'
                     .'<li><strong>Perso</strong> — alignement, historique, quête</li>'
                     .'<li><strong>Matos</strong> — équipement de classe + kamas (indicatifs)</li>'
                     .'</ol>',
@@ -95,14 +110,16 @@ return [
                 'slug' => 'caracs',
                 'title' => 'Caractéristiques',
                 'html' => '<p>Mod. = ⌊(score − 10) / 2⌋. Six stats : [[kref:characteristic:vitality_creature|Vita]], [[kref:characteristic:strength_creature|For]], [[kref:characteristic:agility_creature|Agi]], [[kref:characteristic:intelligence_creature|Int]], [[kref:characteristic:wisdom_creature|Sag]], [[kref:characteristic:chance_creature|Cha]].</p>'
-                    .'<p>Niv. 1 : [[kref:characteristic:action_points_creature|PA]] 6, [[kref:characteristic:movement_points_creature|PM]] 3, [[kref:characteristic:range_creature|PO]] 0. +1 carac. aux <strong>niveaux pairs</strong> (10 pts jusqu’au 20). Plafond du mod. de base : <strong>min(⌊niv./2⌋+1, 7)</strong>.</p>'
+                    .'<p>Niv. 1 : [[kref:characteristic:action_points_creature|PA]] 6, [[kref:characteristic:movement_points_creature|PM]] 3, [[kref:characteristic:range_creature|PO]] 0. +1 carac. aux <strong>niveaux pairs</strong> (10 pts jusqu’au 20). Plafond du mod. de base : <strong>min(⌊niv./2⌋+1, 7)</strong> (niv. 1 = +1).</p>'
+                    .'<p>Table unique (sorts / carac / spé / maîtrise) : [[kref:page:regles-2-3-choisir-sa-classe|2.3.2]]. PV max = max du dé de classe + (mod. Vitalité × niveau) + ((niveau − 1) × round(dé/2)) + équipement.</p>'
                     .'<p>→ [[kref:page:caracteristiques|Tableau]] · [[kref:page:regles-2-2-les-caracteristiques|Règles caracs]]</p>',
             ],
             [
                 'slug' => 'classe-spe',
                 'title' => 'Classe et spé',
                 'html' => '<p><strong>Classe</strong> : identité, sorts auto, passifs — [[kref:page:regles-2-3-choisir-sa-classe|Choisir sa classe]].</p>'
-                    .'<p><strong>Spé</strong> : rôle, maîtrises, aptitudes / capacités (niv. 3, 6, 9… : l’un ou l’autre) — [[kref:page:regles-2-4-choisir-sa-specialisation|Choisir sa spé]].</p>',
+                    .'<p><strong>Spé</strong> : 6 jouables / 11 prévues ; aptitude ou capacité aux paliers 3, 6, 9, 12, 15, 18, 20 — [[kref:page:regles-2-4-choisir-sa-specialisation|Choisir sa spé]].</p>'
+                    .'<p><strong>Compétences</strong> : Athlétisme, Acrobaties, Discrétion, Escamotage, Arcanes, Histoire, Investigation, Nature, Religion, Connaissance des créatures, Dressage, Médecine, Perception, Perspicacité, Survie, Herbaliste, Persuasion, Représentation, Supercherie, Intimidation (For ou Cha). → [[kref:page:regles-3-5-competences|3.5.1]]</p>',
             ],
             [
                 'slug' => 'equipement',
@@ -129,6 +146,8 @@ return [
                     .'<li><strong>Marcher</strong> — 45 / 36 / 27 km/j (rapide / normal / lent)</li>'
                     .'<li><strong>Fouiller, crocheter, parler</strong> — le MJ fixe compétence + DD</li>'
                     .'<li><strong>Sorts / aptitudes</strong> — ça puise dans la [[kref:characteristic:wakfu_reserve_creature|réserve de Wakfu]]</li>'
+                    .'<li><strong>Métiers</strong> — récolte / artisanat / forgemagie, max 6 métiers — [[kref:page:regles-4-3-les-metiers|4.3]]</li>'
+                    .'<li><strong>Piège de donjon</strong> — Perception pour voir, save pour encaisser (ex. niv. 3 : DD 13, 2d6) — [[kref:page:regles-3-1-partir-a-laventure|3.1.3]]</li>'
                     .'</ul>',
             ],
             [
@@ -186,7 +205,9 @@ return [
                     .'<tr><td>Case</td><td>1 [[kref:characteristic:movement_points_creature|PM]]</td></tr>'
                     .'<tr><td>Esquiver (action, pas l’esquive [[kref:characteristic:action_points_creature|PA]]/[[kref:characteristic:movement_points_creature|PM]])</td><td>3 [[kref:characteristic:action_points_creature|PA]] + 2 [[kref:characteristic:movement_points_creature|PM]]</td></tr>'
                     .'</tbody></table>'
-                    .'<p><strong>Fin</strong> : effets de fin de tour, tour suivant. Un <strong>boss</strong> recharge alors ses <strong>PA légendaires</strong> (pas au début du round, pas comme tes [[kref:characteristic:action_points_creature|PA]] de tour).</p>',
+                    .'<p><strong>Fin</strong> : effets de fin de tour, tour suivant. Un <strong>boss</strong> recharge alors ses <strong>PA légendaires</strong> (pas au début du round, pas comme tes [[kref:characteristic:action_points_creature|PA]] de tour).</p>'
+                    .'<p>Grille : 1 [[kref:characteristic:movement_points_creature|PM]] = 1 case = 1,5 m, diagonale OK. Tacle : adjacent <strong>orthogonal</strong> seulement. Mains nues : 1d4 + ⌊niv./4⌋, 2 PA.</p>'
+                    .'<p>Critique d’attaque : 20 = auto, <strong>dés doublés</strong> sauf fiche.</p>',
             ],
             [
                 'slug' => 'resoudre',
@@ -203,9 +224,9 @@ return [
             [
                 'slug' => 'reactions',
                 'title' => 'Tacle, fuite, réaction',
-                'html' => '<p>Pas d’attaque d’opportunité D&amp;D. [[kref:characteristic:tackle_creature|Tacle]] auto au corps-à-corps (pas en diagonale). Fuite : jet Fuite vs [[kref:characteristic:tackle_creature|Tacle]] ; échec = tu restes collé, retente au tour suivant.</p>'
+                'html' => '<p>Pas d’attaque d’opportunité D&amp;D. [[kref:characteristic:tackle_creature|Tacle]] auto au corps-à-corps (pas en diagonale). Fuite : jet Fuite vs [[kref:characteristic:tackle_creature|Tacle]] (coût 1 PM) ; échec = tu restes collé, retente au tour suivant.</p>'
                     .'<p>Réaction de sort / capacité : 1×/round, hors de ton tour, si la fiche le permet.</p>'
-                    .'<p>→ [[kref:page:regles-3-2-combat|3.2.3]]</p>',
+                    .'<p><strong>Fin de combat</strong> : fuite hors tacle, reddition, poursuite — le MJ coupe quand l’enjeu tombe. → [[kref:page:regles-3-2-combat|3.2.3]]</p>',
             ],
             [
                 'slug' => 'boss-pa-legendaires',
@@ -239,7 +260,7 @@ return [
                 'slug' => 'pv',
                 'title' => 'Absorption',
                 'html' => '<p>Ordre : <strong>boucliers</strong> (cumulables, pas à 0 PV, dissipables) → <strong>[[kref:characteristic:life_points_creature|PV]] temp</strong> (pas de cumul, pas de dissipation, ne réveillent pas) → <strong>[[kref:characteristic:life_points_creature|PV]]</strong>.</p>'
-                    .'<p>Vol de vie : pas sur les boucliers. Max [[kref:characteristic:life_points_creature|PV]] : classe + niveau + [[kref:characteristic:vitality_creature|Vitalité]] + équipement.</p>',
+                    .'<p>Vol de vie : pas sur les boucliers. Max [[kref:characteristic:life_points_creature|PV]] : <strong>max du dé de classe + (mod. Vitalité × niveau) + ((niveau − 1) × round(dé/2)) + équipement</strong>.</p>',
             ],
             [
                 'slug' => 'zero-pv',
@@ -255,7 +276,7 @@ return [
             [
                 'slug' => 'repos',
                 'title' => 'Repos',
-                'html' => '<p><strong>Court</strong> : 1 h, dés de vie, <strong>un seul entre deux longs</strong>. <strong>Long</strong> : 8 h, 1×/jour, [[kref:characteristic:life_points_creature|PV]] + [[kref:characteristic:wakfu_reserve_creature|Wakfu]] au complet (récupère la moitié des dés de vie, arrondi inf.).</p>'
+                'html' => '<p><strong>Court</strong> : 1 h, dés de vie, <strong>un seul entre deux longs</strong> ; Wakfu : 1 pt si une capacité le permet. <strong>Long</strong> : 8 h, 1×/jour, [[kref:characteristic:life_points_creature|PV]] + [[kref:characteristic:wakfu_reserve_creature|Wakfu]] au complet (récupère la moitié des dés de vie, arrondi inf.).</p>'
                     .'<p>→ [[kref:page:regles-3-1-partir-a-laventure|Gestion du temps]]</p>',
             ],
         ],
@@ -284,14 +305,13 @@ return [
             [
                 'slug' => 'lancement',
                 'title' => 'Lancer',
-                'html' => '<p><strong>Touche</strong> : 1d20 + mod (carac du sort) vs [[kref:characteristic:armor_class_creature|CA]] (dégâts) et <strong>le même total</strong> vs esquive [[kref:characteristic:action_points_creature|PA]]/[[kref:characteristic:movement_points_creature|PM]] (retraits). <strong>Sauvegarde</strong> : 1d20 + save (carac du sort, souvent [[kref:characteristic:wisdom_creature|Sagesse]]) vs DD <strong>8 + mod du lanceur + [[kref:characteristic:mastery_bonus_creature|maîtrise]]</strong>. Si l’esquive ≥ DD, le retrait est esquivé même si la save est ratée. Pas de moitié de dégâts par défaut.</p>'
-                    .'<p>Cible consentante : réussite auto si la fiche le dit.</p>'
+                'html' => '<p>Touche, sauvegarde, retraits : même tableau que [[kref:pageSection:essentiels-combat@essentiels-combat-resoudre|Combat — Résoudre]]. Pas de moitié par défaut. Cible consentante : réussite auto si la fiche le dit.</p>'
                     .'<p>→ [[kref:page:regles-3-3-sorts|3.3.2]]</p>',
             ],
             [
                 'slug' => 'wakfu',
                 'title' => 'Wakfu',
-                'html' => '<p>Hors combat (ou combat sans enjeu) : 1 pt de réserve = une fois tes [[kref:characteristic:action_points_creature|PA]] max. Combat sérieux : les [[kref:characteristic:action_points_creature|PA]] reviennent chaque tour, réserve intacte. Soin « gratuit en PA » : seulement tant que le combat a un enjeu. Récup : repos long.</p>',
+                'html' => '<p>Hors combat (ou combat sans enjeu) : 1 pt de réserve = une fois tes [[kref:characteristic:action_points_creature|PA]] max. Combat sérieux : les [[kref:characteristic:action_points_creature|PA]] reviennent chaque tour, réserve intacte. Soin « gratuit en PA » : seulement tant que le combat a un enjeu. Récup : repos long (plein) ; repos court : 1 pt si une capacité le permet.</p>',
             ],
             [
                 'slug' => 'rappels',
@@ -315,7 +335,9 @@ return [
             [
                 'slug' => 'loot',
                 'title' => 'Loot',
-                'html' => '<p>Bonus attendus : niv. 1–5 (+1–2) · 6–10 (+2–3) · 11–15 (+3–4) · 16–20 (+4–5).</p>'
+                'html' => '<p>Bonus attendus : niv. 1–5 (+1–2) · 6–10 (+2–3) · 11–15 (+3–4) · 16–20 (+4–5). Carac principale : <strong>+4 par objet</strong> (+2 forgemagie).</p>'
+                    .'<p><strong>XP</strong> : palier 1–5 ≈ 0–1000. Session type niv. 1 : 2 combats + 1 quête ≈ 450 XP. → [[kref:page:regles-5-2-principes-dequilibrage|5.2.5]]</p>'
+                    .'<p>Kamas / rareté : [[kref:page:regles-4-1-lunivers|4.1.3]] · [[kref:page:regles-5-3-tables-de-reference|5.3.2]]</p>'
                     .'<p>→ [[kref:page:regles-5-2-principes-dequilibrage|Équilibrage]]</p>',
             ],
             [
