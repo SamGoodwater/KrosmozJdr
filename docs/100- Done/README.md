@@ -1,12 +1,12 @@
 # Ce qui a été fait
 
-## Septembre 2026 — Pipeline de conversion IA
+## Septembre 2026 — L’IA propose une rencontre
 
-On peut lancer une **conversion IA** depuis la fiche (même icône **Sources** que DofusDB) ou en console (`ia:convert-encounter`). Ça écrit une proposition en **auto**, jamais jouable. Premier cas : une **rencontre** (monstre + deux ou trois sorts). Les admins voient le solde Anthropic et un estimé de coût sur la page **IA métier**. Les MJ n’ont pas le bouton, pour limiter la facture.
+Sur une fiche, l’icône **Sources** (la même que DofusDB) ouvre aussi une **conversion IA**. Premier cas : un **monstre** avec **deux ou trois sorts**, en proposition **Auto** — à relire, jamais jouable tout seuls. Les admins voient le solde et un estimé de coût sur **IA métier**. Les MJ n’ont pas le bouton, pour limiter la facture.
 
-## Septembre 2026 — Leftover règles : équipement +4, index, annexe
+## Septembre 2026 — Bonus d’objet et lecture du livre
 
-Les seeders d’objets (Vitalité, Force, Intelligence, Chance, Agilité, Sagesse) plafonnent à **+4** par pièce, forgemagie **+2**, comme le livre. L’index n’est plus un dump de titres. Le changelog (ex-1.3) est une **annexe 6.1**. Aptitudes : listes en 2.4, activation en 3.4, sans recopier les mêmes tableaux.
+Un objet ne dépasse plus **+4** par pièce (**+2** en forgemagie), comme le livre. L’index du tome se lit comme un vrai sommaire. L’historique des versions est une **annexe**. Les aptitudes : une liste d’un côté, comment les activer de l’autre, sans recopier les mêmes tableaux.
 
 ## Septembre 2026 — Fiches Création (conversion)
 
