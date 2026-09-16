@@ -35,7 +35,7 @@ const emit = defineEmits(["close", "confirm", "update:aiBrief", "convert"]);
 const { isAdmin } = usePermissions();
 const mode = ref("full");
 const force = ref(false);
-const pane = ref("dofusdb");
+const pane = ref(!props.showDofusdb && props.showAi ? "ia" : "dofusdb");
 
 watch(
     () => props.open,
@@ -45,7 +45,8 @@ watch(
             force.value = false;
             pane.value = props.showDofusdb ? "dofusdb" : "ia";
         }
-    }
+    },
+    { immediate: true }
 );
 
 watch(

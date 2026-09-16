@@ -10,7 +10,7 @@ Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interact
 
 - `app/Console/COMMANDS.md` — vocabulaire CLI unique
 - `php artisan ia:equipment-grid` — grille d’équipements JDR (rapport ; `--write` = trous `draft`)
-- `php artisan ia:convert-encounter` — conversion IA d’une rencontre (monstre + 2–3 sorts) → `auto` (clé Anthropic, Http fake en tests)
+- `php artisan ia:convert {spell|encounter|npc|item|consumable}` — conversion IA → `auto` (clé Anthropic, Http fake en tests). Alias rencontre : `ia:convert-encounter`.
 - `php artisan ia:npc-kit-catalog` — pré-filtre compact PNJ (équipement, sorts, gabarit 5.1.2)
 - `php artisan ia:creation-guides` — fiches de bonne pratique Création (prompt conversion), sans LLM
 - `php artisan breeds:sync-images` — aligne les visuels des classes sur `storage/app/public/images/breeds/{slug}/`

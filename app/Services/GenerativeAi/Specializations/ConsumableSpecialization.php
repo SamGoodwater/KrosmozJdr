@@ -30,9 +30,9 @@ final class ConsumableSpecialization implements Specialization
         return 'consumable';
     }
 
-    public function jsonSchema(EntityGenerationProfile $profile): array
+    public function jsonSchema(EntityGenerationProfile $profile, ?ConversionRequest $request = null): array
     {
-        $fields = $this->effectiveWritable($profile);
+        $fields = $this->effectiveWritable($profile, $request);
         $properties = [];
         foreach ($fields as $field) {
             $properties[$field] = ['type' => 'string'];
@@ -46,9 +46,23 @@ final class ConsumableSpecialization implements Specialization
         ];
     }
 
+    public function extraContext(ConversionRequest $request, EntityGenerationProfile $profile): array
+    {
+        return [];
+    }
+
+    public function preflight(ConversionRequest $request, EntityGenerationProfile $profile): array
+    {
+        if ($this->effectiveWritable($profile, $request) === []) {
+            return ['Aucun champ writable pour les consommables figés.'];
+        }
+
+        return [];
+    }
+
     public function validate(array $payload, ConversionRequest $request, EntityGenerationProfile $profile): array
     {
-        $fields = $this->effectiveWritable($profile);
+        $fields = $this->effectiveWritable($profile, $request);
         if ($fields === []) {
             return ['Aucun champ writable pour les consommables figés.'];
         }
@@ -69,7 +83,7 @@ final class ConsumableSpecialization implements Specialization
         }
         $row = Consumable::query()->findOrFail($request->entityId);
         EntityStateGate::assertAutomatedWriterMaySet(EntityState::Auto->value);
-        app(AllowlistWriter::class)->apply($row, $this->effectiveWritable($profile), $payload);
+        app(AllowlistWriter::class)->apply($row, $this->effectiveWritable($profile, $request), $payload);
 
         return ['entity_id' => (int) $row->id, 'related_ids' => []];
     }
@@ -98,12 +112,13 @@ final class ConsumableSpecialization implements Specialization
     /**
      * @return list<string>
      */
-    private function effectiveWritable(EntityGenerationProfile $profile): array
+    private function effectiveWritable(EntityGenerationProfile $profile, ?ConversionRequest $request = null): array
     {
         if ($profile->writableFields !== []) {
             return $profile->writableFields;
         }
-        if (! $profile->hasDofusSource) {
+        $row = $request?->entityId !== null ? Consumable::query()->find($request->entityId) : null;
+        if (! $profile->isDofusSourcedRow($row)) {
             return ['name', 'description', 'effect'];
         }
 

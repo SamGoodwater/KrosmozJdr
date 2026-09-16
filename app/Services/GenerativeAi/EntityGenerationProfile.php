@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\GenerativeAi;
 
+use Illuminate\Database\Eloquent\Model;
+
 /**
  * Profil de génération pour un type d'entité (champs / caracs figés, étalons).
  *
@@ -42,6 +44,27 @@ final readonly class EntityGenerationProfile
     public function isCharacteristicFrozen(string $characteristicKey): bool
     {
         return $this->isFrozen($characteristicKey, $this->frozenCharacteristics, $this->writableCharacteristics);
+    }
+
+    /**
+     * Source Dofus au niveau de la fiche (dofusdb_id), pas seulement le flag de type.
+     *
+     * Un unique de scénario (pas d’id DofusDB) n’est pas gelé comme une fiche scrapée.
+     */
+    public function isDofusSourcedRow(?Model $model): bool
+    {
+        if (! $this->hasDofusSource) {
+            return false;
+        }
+        if ($model === null) {
+            return true;
+        }
+        $id = $model->getAttribute('dofusdb_id');
+        if ($id === null || $id === '' || $id === 0 || $id === '0') {
+            return false;
+        }
+
+        return true;
     }
 
     /**

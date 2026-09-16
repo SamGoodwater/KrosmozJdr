@@ -30,9 +30,9 @@ final class ItemSpecialization implements Specialization
         return 'item';
     }
 
-    public function jsonSchema(EntityGenerationProfile $profile): array
+    public function jsonSchema(EntityGenerationProfile $profile, ?ConversionRequest $request = null): array
     {
-        $fields = $this->effectiveWritable($profile);
+        $fields = $this->effectiveWritable($profile, $request);
         $properties = [];
         foreach ($fields as $field) {
             $properties[$field] = ['type' => 'string'];
@@ -46,9 +46,23 @@ final class ItemSpecialization implements Specialization
         ];
     }
 
+    public function extraContext(ConversionRequest $request, EntityGenerationProfile $profile): array
+    {
+        return [];
+    }
+
+    public function preflight(ConversionRequest $request, EntityGenerationProfile $profile): array
+    {
+        if ($this->effectiveWritable($profile, $request) === []) {
+            return ['Aucun champ writable pour les objets : l’IA ne retravaille pas une fiche figée.'];
+        }
+
+        return [];
+    }
+
     public function validate(array $payload, ConversionRequest $request, EntityGenerationProfile $profile): array
     {
-        $fields = $this->effectiveWritable($profile);
+        $fields = $this->effectiveWritable($profile, $request);
         if ($fields === []) {
             return ['Aucun champ writable pour les objets : l’IA ne retravaille pas une fiche figée.'];
         }
@@ -74,7 +88,7 @@ final class ItemSpecialization implements Specialization
         }
         $item = Item::query()->findOrFail($request->entityId);
         EntityStateGate::assertAutomatedWriterMaySet(EntityState::Auto->value);
-        app(AllowlistWriter::class)->apply($item, $this->effectiveWritable($profile), $payload);
+        app(AllowlistWriter::class)->apply($item, $this->effectiveWritable($profile, $request), $payload);
 
         return ['entity_id' => (int) $item->id, 'related_ids' => []];
     }
@@ -104,12 +118,13 @@ final class ItemSpecialization implements Specialization
     /**
      * @return list<string>
      */
-    private function effectiveWritable(EntityGenerationProfile $profile): array
+    private function effectiveWritable(EntityGenerationProfile $profile, ?ConversionRequest $request = null): array
     {
         if ($profile->writableFields !== []) {
             return $profile->writableFields;
         }
-        if (! $profile->hasDofusSource) {
+        $item = $request?->entityId !== null ? Item::query()->find($request->entityId) : null;
+        if (! $profile->isDofusSourcedRow($item)) {
             return ['name', 'description', 'bonus', 'effect'];
         }
 

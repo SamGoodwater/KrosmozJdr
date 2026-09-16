@@ -25,6 +25,7 @@ final class FewShotPanoplyGuard
         }
 
         $missing = [];
+        $found = 0;
         foreach ($names as $name) {
             $token = trim($name);
             if ($token === '') {
@@ -34,12 +35,14 @@ final class FewShotPanoplyGuard
                 ->where('state', EntityState::Playable->value)
                 ->where('name', $token)
                 ->exists();
-            if (! $exists) {
+            if ($exists) {
+                $found++;
+            } else {
                 $missing[] = $token;
             }
         }
 
-        if ($missing !== []) {
+        if ($found === 0 && $missing !== []) {
             throw new RuntimeException(
                 'Panoplies few-shot non jouables : '.implode(', ', $missing).'.'
             );

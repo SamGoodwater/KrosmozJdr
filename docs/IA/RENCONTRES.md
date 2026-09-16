@@ -28,7 +28,7 @@ Flux :
 3. Créer les `Spell` et poser le `Monster` / `Creature` en `auto` (`auto_update=false`), lier le pivot.
 4. Relire **le paquet**, pas quatre fiches orphelines.
 
-Commande : `php artisan ia:convert-encounter --id=12` ou `--official-id=jdr:bestiary:…`. UI : icône **Sources** → volet Conversion IA (admin).
+Commande : `php artisan ia:convert encounter --id=12` (alias `ia:convert-encounter`) ou `--official-id=jdr:bestiary:…`. UI : icône **Sources** → volet Conversion IA (admin).
 
 Plus tard : réutiliser un sort `playable` déjà collé (« même crachat que le Bouftou ») au lieu d’en créer un. En v1, créer les 2–3 sorts dans le même JSON suffit.
 
@@ -45,7 +45,7 @@ Réécriture JDR d’un sort Dofus `raw` :
 - PA / portée / dés dans les grilles existantes ;
 - pas de nouveaux types d’effets hors catalogue.
 
-À faire **au fil de l’eau** (PNJ ou perso), pas un batch de tout le grimoire Dofus. Le mapping d’effets scrap (`SpellEffectsConversionService`, `dofusdb_effect_mappings`) reste la conversion brute ; l’IA propose un `auto` par-dessus.
+À faire **au fil de l’eau** (PNJ ou perso), pas un batch de tout le grimoire Dofus. Le mapping d’effets scrap (`SpellEffectsConversionService`, `dofusdb_effect_mappings`) reste la conversion brute ; l’IA propose un `auto` par-dessus (`ia:convert spell`, POST `/api/entities/spells/{id}/ia-convert`).
 
 ## PNJ
 
@@ -53,7 +53,7 @@ Le modèle est en place : coquille `Npc` + corps `Creature` + `breed_id` / `spec
 
 Contrairement aux objets / sorts / monstres Dofus, **il n’y a rien à figer** : l’IA crée nom, histoire, rôle, stats et kit. Option : partir d’une **page de site** (encyclopédie, wiki, DofusDB) — Laravel en extrait nom / portrait / lore, le modèle complète la fiche JDR. Pas de scrap de masse. `Npc.official_id` sert au seeder (`jdr:npc:incarnam:…`), pas à DofusDB.
 
-La génération IA s’appuie sur ce schéma déjà persisté, elle ne le définit plus. Toujours hors scope d’implémentation ici. Détail des champs : [CHAMPS.md](./CHAMPS.md).
+La génération IA s’appuie sur ce schéma déjà persisté. Pipeline : `NpcSpecialization` + pré-filtre `NpcKitCatalog` injecté dans le prompt (`extraContext`). POST `/api/entities/npcs/{id}/ia-convert`, `ia:convert npc`. Détail des champs : [CHAMPS.md](./CHAMPS.md).
 
 **Socle few-shot** : 5 PNJ `playable` d’Incarnam (`jdr:npc:incarnam:ganymede` … `fouduglen`) — classe + spe jouable + kit. Pré-filtre : `NpcKitCatalog` / `php artisan ia:npc-kit-catalog` (objets, sorts, gabarit 5.1.2). Ids few-shot résolus au runtime, pas dans `generation.json`.
 

@@ -91,6 +91,8 @@
             "frozen_characteristics": "*",
             "writable_characteristics": [],
             "example_ids": [
+                "jdr:oeil-de-lynx",
+                "jdr:feca-immunite",
                 "Pression",
                 "Attaque Naturelle",
                 "Intimidation",
@@ -138,7 +140,9 @@
         "consumable": {
             "has_dofus_source": true,
             "frozen_fields": "*",
-            "writable_fields": [],
+            "writable_fields": [
+                "effect"
+            ],
             "frozen_characteristics": "*",
             "writable_characteristics": [],
             "example_ids": [

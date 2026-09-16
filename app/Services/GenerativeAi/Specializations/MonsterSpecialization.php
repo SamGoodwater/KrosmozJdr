@@ -36,7 +36,7 @@ final class MonsterSpecialization implements Specialization
         return 'monster';
     }
 
-    public function jsonSchema(EntityGenerationProfile $profile): array
+    public function jsonSchema(EntityGenerationProfile $profile, ?ConversionRequest $request = null): array
     {
         $monsterProps = [];
         foreach ($profile->writableFields as $field) {
@@ -75,6 +75,16 @@ final class MonsterSpecialization implements Specialization
                 ],
             ],
         ];
+    }
+
+    public function extraContext(ConversionRequest $request, EntityGenerationProfile $profile): array
+    {
+        return [];
+    }
+
+    public function preflight(ConversionRequest $request, EntityGenerationProfile $profile): array
+    {
+        return [];
     }
 
     public function validate(array $payload, ConversionRequest $request, EntityGenerationProfile $profile): array

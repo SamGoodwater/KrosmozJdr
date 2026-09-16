@@ -1,6 +1,6 @@
 # IA générative — cadrage
 
-Le **pipeline LLM** est branché : noyau générique (`GenerativeAiClient`, assembleur, writer allowlist, job) + spécialisations. Premier produit : **rencontre** (monstre + 2–3 sorts-créature) en état `auto`. La **grille d’objets** algorithmique reste `php artisan ia:equipment-grid`. Pas de fine-tuning / RAG / agent à outils.
+Le **pipeline LLM** est branché : noyau générique (`GenerativeAiClient`, assembleur, writer allowlist, job) + spécialisations persistées en `auto` (rencontre, sort `effect`, PNJ kit complet, objet unique, consommable `effect`). La **grille d’objets** algorithmique reste `php artisan ia:equipment-grid`. Pas de fine-tuning / RAG / agent à outils.
 
 À ne pas confondre avec les fichiers `_ai.md` du reste de `/docs` : ceux-là orientent les **agents de développement**. Ici, il s’agit du **LLM métier** (Anthropic Sonnet 5).
 
@@ -47,8 +47,8 @@ L’IA est pertinente là où il faut **du design** (simplifier, choisir, racont
 
 1. **Grille d’objets** par algorithme (`ia:equipment-grid`) — livré.
 2. Descriptions machine + JSON Schema + étalons `playable` — livré (admin + `generation.json`).
-3. **Rencontre à la demande** — livré : `ia:convert-encounter`, POST `/api/entities/monsters/{id}/ia-convert`, état `auto`.
-4. **PNJ / sort / objet / consommable** : specs présentes ; persistance allowlist. Produit rencontre d’abord.
+3. **Rencontre à la demande** — livré : `ia:convert encounter` / `ia:convert-encounter`, POST `/api/entities/monsters/{id}/ia-convert`, état `auto`.
+4. **PNJ / sort / objet / consommable** — livré : même POST `/api/entities/{type}/{id}/ia-convert`, `ia:convert {spell|npc|item|consumable}`.
 
 Les sorts de classe se réécrivent au fil de l’eau (quand un PNJ ou un perso en a besoin), pas en masse au départ.
 

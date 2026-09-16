@@ -54,7 +54,7 @@ Visibilité de `auto` : **comme `raw` / `draft`** (éditeurs seulement, `rôle �
 
 Métadonnées utiles (champs, pas un état) : `ai_generated_at`, identifiant du modèle, version de prompt, rapport du validateur. Permet de régénérer sans casser le cycle de vie.
 
-L’état `auto` est **dans le code**. Le pipeline LLM (assembleur, JSON Schema writable-only, retries, writer allowlist) est branché. Premier persist : rencontre. Ability `generate` = admin. Tokens réels : table `ai_generation_runs` (`model`, `input_tokens`, `output_tokens`, `ai_generated_at`).
+L’état `auto` est **dans le code**. Le pipeline LLM (assembleur, JSON Schema writable-only, retries, writer allowlist) est branché. Persist : rencontre, sort (`effect`), PNJ (kit `NpcKitCatalog`), objet unique, consommable (`effect`). Ability `generate` = admin. Tokens réels : table `ai_generation_runs` (`model`, `input_tokens`, `output_tokens`, `ai_generated_at`).
 
 ## Pourquoi pas un modèle « à nous »
 
@@ -106,7 +106,8 @@ Un JSON « dans les normes » mais idiot (sorts Terre, Force 0) doit **échouer*
 - Writer : `AllowlistWriter` — jamais `unguard` du JSON LLM ; `state=auto` via `EntityStateGate::assertAutomatedWriterMaySet` ; `auto_update=false`.
 - Job : `ConvertPacketJob` (queue `database` en prod, `sync` en tests). 1 paquet = 1 requête. Retries validateur = `generation.max_retries`.
 - Specs : `app/Services/GenerativeAi/Specializations/` (`spell`, `encounter`, `npc`, `item`, `consumable`).
-- HTTP : `POST /api/entities/{type}/{id}/ia-convert` (`role:admin`, throttle 12/min). Statut : `GET /api/ia/status`.
+- HTTP : `POST /api/entities/{type}/{id}/ia-convert` (`role:admin`, throttle 12/min). Types : `monsters`, `spells`, `npcs`, `items`, `consumables`. Statut : `GET /api/ia/status`.
+- CLI : `php artisan ia:convert {spell|encounter|npc|item|consumable}` (`ia:convert-encounter` reste un alias).
 - UI : une icône « Sources » → `EntitySourceModal` (DofusDB | Conversion IA). Volet IA si admin.
 - Tests : `Http::fake` — aucun appel LLM réel en CI (`ANTHROPIC_API_KEY` vide dans `phpunit.xml`).
 

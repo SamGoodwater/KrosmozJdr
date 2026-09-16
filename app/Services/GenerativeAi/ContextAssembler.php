@@ -41,7 +41,7 @@ final class ContextAssembler
             }
         }
 
-        $schema = $spec->jsonSchema($profile);
+        $schema = $spec->jsonSchema($profile, $request);
         $supervisor = $this->supervisor();
         $user = $this->userMessage($spec, $profile, $request, $examples);
 
@@ -127,6 +127,12 @@ final class ContextAssembler
 
         if (is_string($request->brief) && trim($request->brief) !== '') {
             $chunks[] = 'Brief MJ : '.trim($request->brief);
+        }
+
+        $extra = $spec->extraContext($request, $profile);
+        if ($extra !== []) {
+            $chunks[] = "Contexte métier (listes autorisées, gabarit) :\n"
+                .json_encode($extra, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         }
 
         $chunks[] = "Exemples playable (à imiter, ne pas republier) :\n"

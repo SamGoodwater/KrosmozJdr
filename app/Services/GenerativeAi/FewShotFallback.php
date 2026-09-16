@@ -29,7 +29,8 @@ final class FewShotFallback
             'npc' => app(NpcKitCatalog::class)->exampleIds(),
             'monster' => $this->idsByOfficialPrefix(Monster::class, 'jdr:bestiary:', $limit)
                 ?: $this->idsByOfficialPrefix(Monster::class, 'jdr:summon:', $limit),
-            'spell' => $this->named(Spell::class, ['Pression', 'Attaque Naturelle', 'Intimidation', 'Fendoir', 'Bond', 'Concentration', 'Puissance', 'Épée Divine'], $limit),
+            'spell' => $this->named(Spell::class, ['Pression', 'Attaque Naturelle', 'Intimidation', 'Fendoir', 'Bond', 'Concentration', 'Puissance', 'Épée Divine'], $limit)
+                ?: $this->idsByOfficialPrefix(Spell::class, 'jdr:', $limit),
             'item' => $this->named(Item::class, [
                 'Cape du Piou Vert',
                 'Cape du Piou Rouge',
@@ -39,7 +40,7 @@ final class FewShotFallback
                 'Anneau du Tofu',
                 'Anneau du Sanglier',
                 'Anneau du Mulou',
-            ], $limit),
+            ], $limit) ?: $this->idsByOfficialPrefix(Item::class, 'jdr:item:', $limit),
             'consumable' => $this->consumableIds($limit),
             default => [],
         };

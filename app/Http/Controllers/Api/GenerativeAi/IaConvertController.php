@@ -72,7 +72,11 @@ class IaConvertController extends Controller
             runId: (int) $run->id,
         );
 
-        ConvertPacketJob::dispatch($conversion);
+        try {
+            ConvertPacketJob::dispatch($conversion);
+        } catch (\Throwable) {
+            $run->refresh();
+        }
 
         $estimate = $estimator->forAction($action);
         $run->refresh();

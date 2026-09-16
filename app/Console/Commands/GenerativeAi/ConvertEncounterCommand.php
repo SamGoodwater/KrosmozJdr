@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\GenerativeAi;
 
-use App\Console\ArtisanExitCode;
-use App\Models\Entity\Monster;
-use App\Services\GenerativeAi\ConversionPipeline;
-use App\Services\GenerativeAi\ConversionRequest;
 use Illuminate\Console\Command;
 
 /**
@@ -26,59 +22,29 @@ final class ConvertEncounterCommand extends Command
 
     protected $description = 'Conversion IA d’une rencontre (monstre + 2–3 sorts-créature) → état auto';
 
-    public function handle(ConversionPipeline $pipeline): int
+    public function handle(): int
     {
-        $monster = $this->resolveMonster();
-        if ($monster === null) {
-            $this->error('Monstre introuvable (--id ou --official-id).');
-
-            return ArtisanExitCode::FAILURE;
-        }
-
-        $userRaw = $this->option('user');
-        $userId = is_numeric($userRaw) ? (int) $userRaw : null;
-        $briefRaw = $this->option('brief');
-        $brief = is_string($briefRaw) && trim($briefRaw) !== '' ? trim($briefRaw) : null;
-
-        try {
-            $result = $pipeline->run(new ConversionRequest(
-                action: 'encounter',
-                entityType: 'monster',
-                entityId: (int) $monster->id,
-                brief: $brief,
-                force: (bool) $this->option('force'),
-                userId: $userId,
-            ));
-        } catch (\Throwable $exception) {
-            $this->error($exception->getMessage());
-
-            return ArtisanExitCode::FAILURE;
-        }
-
-        $this->info(sprintf(
-            'Rencontre #%d en auto. Sorts : %s. Tokens %d/%d (%s). Run #%d.',
-            $result['entity_id'],
-            $result['related_ids'] === [] ? '—' : implode(',', $result['related_ids']),
-            $result['input_tokens'],
-            $result['output_tokens'],
-            $result['model'],
-            $result['run_id'],
-        ));
-
-        return ArtisanExitCode::SUCCESS;
-    }
-
-    private function resolveMonster(): ?Monster
-    {
-        $idRaw = $this->option('id');
-        if (is_numeric($idRaw) && (int) $idRaw > 0) {
-            return Monster::query()->find((int) $idRaw);
+        $params = ['type' => 'encounter'];
+        $id = $this->option('id');
+        if (is_numeric($id) && (int) $id > 0) {
+            $params['--id'] = (string) $id;
         }
         $official = $this->option('official-id');
-        if (is_string($official) && trim($official) !== '') {
-            return Monster::query()->where('official_id', trim($official))->first();
+        if (is_string($official) && $official !== '') {
+            $params['--official-id'] = $official;
+        }
+        $brief = $this->option('brief');
+        if (is_string($brief) && $brief !== '') {
+            $params['--brief'] = $brief;
+        }
+        $user = $this->option('user');
+        if (is_numeric($user) && (int) $user > 0) {
+            $params['--user'] = (string) $user;
+        }
+        if ((bool) $this->option('force')) {
+            $params['--force'] = true;
         }
 
-        return null;
+        return $this->call('ia:convert', $params);
     }
 }

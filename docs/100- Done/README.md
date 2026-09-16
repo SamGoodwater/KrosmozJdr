@@ -2,7 +2,7 @@
 
 ## Septembre 2026 — Pipeline de conversion IA
 
-On peut lancer une **conversion IA** depuis la fiche (même icône **Sources** que DofusDB) ou en console (`ia:convert-encounter`). Ça écrit une proposition en **auto**, jamais jouable. Premier cas : une **rencontre** (monstre + deux ou trois sorts). Les admins voient le solde Anthropic et un estimé de coût sur la page **IA métier**. Les MJ n’ont pas le bouton, pour limiter la facture.
+On peut lancer une **conversion IA** depuis la fiche (même icône **Sources** que DofusDB) ou en console (`ia:convert` / `ia:convert-encounter`). Ça écrit une proposition en **auto**, jamais jouable. Types : **rencontre** (monstre + deux ou trois sorts), **sort** (texte d’effets), **PNJ** (fiche + kit playable), **objet** unique, **consommable** (effet). Les admins voient le solde Anthropic et un estimé de coût sur la page **IA métier**. Les MJ n’ont pas le bouton, pour limiter la facture.
 
 ## Septembre 2026 — Leftover règles : équipement +4, index, annexe
 

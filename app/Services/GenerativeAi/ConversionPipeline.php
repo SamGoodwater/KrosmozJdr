@@ -39,6 +39,10 @@ final class ConversionPipeline
         try {
             $assembled = app(ContextAssembler::class)->assemble($request);
             $spec = app(SpecializationRegistry::class)->forAction($request->action);
+            $preflight = $spec->preflight($request, $assembled->profile);
+            if ($preflight !== []) {
+                throw new RuntimeException('Validateur IA : '.implode(' ', $preflight));
+            }
             $maxRetries = (int) (GenerationConfigLoader::default()->get('generation.max_retries', 2) ?: 2);
             $maxRetries = max(0, min(5, $maxRetries));
 

@@ -22,4 +22,4 @@ Les feuilles n'ont pas de sous-dossiers. Si un sujet devient trop gros, il devie
 
 - `private/game/` : règles, lore, ressources de jeu.
 - `private/archive/` : historique, plans, prompts, backups.
-- `docs/IA/` : exception volontaire — cadrage de l’**IA générative métier** (LLM pour objets, sorts, monstres, PNJ). Config des champs figés : admin `/admin/content/ia-generation`, repli `resources/ia/generation.json`. Pipeline : `GenerativeAiClient` (Anthropic) ; rencontre branchée. Les fichiers `_ai.md` ailleurs dans `/docs` orientent les agents de développement.
+- `docs/IA/` : exception volontaire — cadrage de l’**IA générative métier** (LLM pour objets, sorts, monstres, PNJ). Config des champs figés : admin `/admin/content/ia-generation`, repli `resources/ia/generation.json`. Pipeline : `GenerativeAiClient` (Anthropic) ; rencontre, sort, PNJ, objet unique et consommable branchés. Les fichiers `_ai.md` ailleurs dans `/docs` orientent les agents de développement.

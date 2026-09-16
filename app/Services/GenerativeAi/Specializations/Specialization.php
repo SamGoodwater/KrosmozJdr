@@ -20,7 +20,21 @@ interface Specialization
     /**
      * @return array<string, mixed>
      */
-    public function jsonSchema(EntityGenerationProfile $profile): array;
+    public function jsonSchema(EntityGenerationProfile $profile, ?ConversionRequest $request = null): array;
+
+    /**
+     * Contexte métier injecté dans le prompt (catalogue, gabarit…). Vide = rien.
+     *
+     * @return array<string, mixed>
+     */
+    public function extraContext(ConversionRequest $request, EntityGenerationProfile $profile): array;
+
+    /**
+     * Erreurs bloquantes avant l’appel LLM (ex. aucun champ writable).
+     *
+     * @return list<string>
+     */
+    public function preflight(ConversionRequest $request, EntityGenerationProfile $profile): array;
 
     /**
      * @param  array<string, mixed>  $payload

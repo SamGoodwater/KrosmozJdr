@@ -32,7 +32,7 @@ final class NpcSpecialization implements Specialization
         return 'npc';
     }
 
-    public function jsonSchema(EntityGenerationProfile $profile): array
+    public function jsonSchema(EntityGenerationProfile $profile, ?ConversionRequest $request = null): array
     {
         return [
             'type' => 'object',
@@ -69,6 +69,30 @@ final class NpcSpecialization implements Specialization
         ];
     }
 
+    public function extraContext(ConversionRequest $request, EntityGenerationProfile $profile): array
+    {
+        $npc = $this->sourceNpc($request);
+        $level = $this->levelOf($npc);
+        $breedId = $npc?->breed_id !== null ? (int) $npc->breed_id : null;
+        $role = is_string($npc?->npc_role) && $npc->npc_role !== '' ? $npc->npc_role : 'other';
+
+        $catalog = app(NpcKitCatalog::class)->assemble($level, null, $breedId, $role);
+
+        return [
+            'kit_catalog' => [
+                'gabarit' => $catalog['gabarit'],
+                'items' => $catalog['items'],
+                'spells' => $catalog['spells'],
+            ],
+            'consigne' => 'item_ids et spell_ids : uniquement des id de kit_catalog. Un objet par slot (deux anneaux max).',
+        ];
+    }
+
+    public function preflight(ConversionRequest $request, EntityGenerationProfile $profile): array
+    {
+        return [];
+    }
+
     public function validate(array $payload, ConversionRequest $request, EntityGenerationProfile $profile): array
     {
         $errors = [];
@@ -103,7 +127,7 @@ final class NpcSpecialization implements Specialization
             }
         }
         foreach ($spellIds as $id) {
-            if ($allowedSpells !== [] && ! in_array((int) $id, $allowedSpells, true)) {
+            if (! in_array((int) $id, $allowedSpells, true)) {
                 $errors[] = "Sort #{$id} hors pré-filtre de classe.";
             }
         }
@@ -147,20 +171,25 @@ final class NpcSpecialization implements Specialization
                 'specialization_id' => $row['specialization_id'] ?? $npc->specialization_id,
             ]);
 
-            $itemIds = array_map('intval', is_array($payload['item_ids'] ?? null) ? $payload['item_ids'] : []);
-            $spellIds = array_map('intval', is_array($payload['spell_ids'] ?? null) ? $payload['spell_ids'] : []);
-            if ($itemIds !== []) {
-                $sync = [];
-                foreach ($itemIds as $id) {
-                    $sync[$id] = ['quantity' => 1];
-                }
-                $creature->items()->sync($sync);
+            $itemIds = array_values(array_unique(array_filter(
+                array_map('intval', is_array($payload['item_ids'] ?? null) ? $payload['item_ids'] : []),
+                static fn (int $id): bool => $id > 0
+            )));
+            $spellIds = array_values(array_unique(array_filter(
+                array_map('intval', is_array($payload['spell_ids'] ?? null) ? $payload['spell_ids'] : []),
+                static fn (int $id): bool => $id > 0
+            )));
+            $sync = [];
+            foreach ($itemIds as $id) {
+                $sync[$id] = ['quantity' => 1];
             }
-            if ($spellIds !== []) {
-                $creature->spells()->sync($spellIds);
-            }
+            $creature->items()->sync($sync);
+            $creature->spells()->sync($spellIds);
 
-            return ['entity_id' => (int) $npc->id, 'related_ids' => $spellIds];
+            return [
+                'entity_id' => (int) $npc->id,
+                'related_ids' => array_values(array_unique([...$itemIds, ...$spellIds])),
+            ];
         });
     }
 
@@ -189,5 +218,22 @@ final class NpcSpecialization implements Specialization
         return "Crée un PNJ JDR complet : nom, histoire, rôle, niveau, classe, kit.\n"
             ."Objets et sorts : uniquement des ids des listes préfiltrées playable.\n"
             .'Un objet par slot (deux anneaux max). Cohérence voie ↔ carac ↔ sorts.';
+    }
+
+    private function sourceNpc(ConversionRequest $request): ?Npc
+    {
+        if ($request->entityId === null) {
+            return null;
+        }
+
+        return Npc::query()->with('creature')->find($request->entityId);
+    }
+
+    private function levelOf(?Npc $npc): int
+    {
+        $raw = $npc?->creature?->level;
+        $level = is_numeric($raw) ? (int) $raw : 4;
+
+        return max(1, min(20, $level));
     }
 }

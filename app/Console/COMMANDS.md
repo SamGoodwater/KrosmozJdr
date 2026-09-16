@@ -426,6 +426,27 @@ php artisan ia:equipment-grid --json=storage/logs/equipment-grid.json
 
 ---
 
+## `ia:convert`
+
+```yaml
+signature: ia:convert
+domain: data
+ui: false
+cron: false
+```
+
+Conversion IA générique d’une fiche (sort `effect`, rencontre, PNJ kit `NpcKitCatalog`, objet unique, consommable `effect`), persistée en `auto` (`auto_update=false`). 1 paquet = 1 requête Anthropic. Admin only si `--user` est fourni.
+
+```bash
+php artisan ia:convert spell --id=12 --brief="effet lisible à table"
+php artisan ia:convert npc --official-id=jdr:npc:incarnam:ganymede --user=1
+php artisan ia:convert item --id=44
+php artisan ia:convert consumable --id=8
+php artisan ia:convert encounter --id=12 --brief="chef Bouftou niveau 10"
+```
+
+---
+
 ## `ia:convert-encounter`
 
 ```yaml
@@ -435,7 +456,7 @@ ui: false
 cron: false
 ```
 
-Conversion IA d’une rencontre : un monstre + 2–3 sorts-créature, persistés en `auto` (`auto_update=false`). 1 paquet = 1 requête Anthropic. Admin only si `--user` est fourni.
+Alias de `ia:convert encounter` : un monstre + 2–3 sorts-créature, persistés en `auto` (`auto_update=false`). 1 paquet = 1 requête Anthropic. Admin only si `--user` est fourni.
 
 ```bash
 php artisan ia:convert-encounter --id=12 --brief="chef Bouftou niveau 10"

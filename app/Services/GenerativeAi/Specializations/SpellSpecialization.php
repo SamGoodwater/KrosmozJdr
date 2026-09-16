@@ -29,7 +29,7 @@ final class SpellSpecialization implements Specialization
         return 'spell';
     }
 
-    public function jsonSchema(EntityGenerationProfile $profile): array
+    public function jsonSchema(EntityGenerationProfile $profile, ?ConversionRequest $request = null): array
     {
         $fields = $profile->writableFields !== [] ? $profile->writableFields : ['effect'];
         $properties = [];
@@ -43,6 +43,16 @@ final class SpellSpecialization implements Specialization
             'required' => array_values($fields),
             'properties' => $properties,
         ];
+    }
+
+    public function extraContext(ConversionRequest $request, EntityGenerationProfile $profile): array
+    {
+        return [];
+    }
+
+    public function preflight(ConversionRequest $request, EntityGenerationProfile $profile): array
+    {
+        return [];
     }
 
     public function validate(array $payload, ConversionRequest $request, EntityGenerationProfile $profile): array

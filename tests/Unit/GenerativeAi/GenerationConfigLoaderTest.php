@@ -37,7 +37,10 @@ final class GenerationConfigLoaderTest extends TestCase
 
         $consumable = $loader->forEntity('consumable');
         $this->assertTrue($consumable->hasDofusSource);
+        $this->assertTrue($consumable->isFieldFrozen('name'));
+        $this->assertFalse($consumable->isFieldFrozen('effect'));
         $this->assertContains('Pain d\'Incarnam', $consumable->exampleIds);
+        $this->assertContains('jdr:heal:potion:5', $consumable->exampleIds);
 
         $this->assertSame(2, $loader->get('generation.max_retries'));
         $this->assertStringContainsString('jamais playable', (string) $loader->get('supervisor_prompt'));

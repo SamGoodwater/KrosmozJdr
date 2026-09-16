@@ -14,13 +14,14 @@
 - **Laravel assemble le contexte** ; l’IA ne « browse » pas l’API en batch.
 - L’IA **propose**, jamais `playable`. État `auto` (UI « Auto »). Ability `generate` = `isAdmin()` (rôle ≥ 4). Publication `auto` → `playable` : ability `publish`. `example_ids` : fiches `playable` (`official_id` / nom) ; pool vide refusé (`FewShotExamplePool`).
 - **Noyau** : `GenerativeAiClient` (HTTP Anthropic, outil `submit_json`, cache prompt), `ContextAssembler`, `AllowlistWriter` (jamais d’unguard JSON), `ConvertPacketJob` (1 paquet = 1 requête, retries `generation.max_retries`). Clé `ANTHROPIC_API_KEY`. Tests : `Http::fake`.
-- **Specs** : `spell`, `encounter` (monstre), `npc` (`NpcKitCatalog`), `item`, `consumable`. Premier produit persisté : rencontre.
+- **Specs** : `spell`, `encounter` (monstre), `npc` (`NpcKitCatalog`), `item`, `consumable`. Persistés en `auto` via le même pipeline.
 - **Objets** : grille algo `ia:equipment-grid`. Rapport ; `--write` = trous `draft`.
 - **Fiches Création** : `CreationGuideCatalog` injecté dans la couche tâche.
 - **UI** : un modal `EntitySourceModal` (DofusDB | IA), une icône « Sources ». Volet IA admin only.
 - **Admin** `/admin/content/ia-generation` : superviseur, prompts de tâche, étalons, gel, solde Anthropic, estimés (`CostEstimator`).
 - **L’IA ne réécrit pas l’identité** ni, par défaut, les **caractéristiques** d’une fiche Dofus. Liste éditable admin / `resources/ia/generation.json`.
-- **Monstres** : génération **à la demande**, paquet `{ monster, spells: [2-3] }` → `auto`. Commande `ia:convert-encounter`.
+- **Monstres** : génération **à la demande**, paquet `{ monster, spells: [2-3] }` → `auto`. Commande `ia:convert encounter` (`ia:convert-encounter` en alias).
+- **Sorts / PNJ / objets / conso** : même pipeline (`ia:convert {spell|npc|item|consumable}`). Sort = `effect` seulement ; PNJ = kit `NpcKitCatalog`.
 
 ## Fichiers
 

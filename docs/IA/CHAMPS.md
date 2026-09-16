@@ -42,7 +42,7 @@ Objet unique de scénario (sans source Dofus) : on ignore le gel, comme un PNJ.
 | **Sorts** | Tout sauf `effect` ; toutes les caracs (PA, portée…) | Texte d’effets (1 + 0–2 secondaires) |
 | **Monstres** | Tous les champs et toutes les caracs | 2–3 sorts-créature (paquet, pas des colonnes) |
 | **PNJ** | Rien | Toute la fiche ; kit = ids `playable` |
-| **Consommables** | Tous les champs et toutes les caracs | Exceptions `writable_fields` (effet lisible à table) |
+| **Consommables** | Tous les champs et toutes les caracs sauf `effect` | Texte d’effet lisible à table |
 
 **Source optionnelle PNJ (site)** : page encyclopédie / wiki / DofusDB. Laravel extrait nom / portrait / lore. Pas de scrap de masse, pas de `dofusdb_id` sur `Npc`.
 
