@@ -222,7 +222,7 @@
   {
     "path": "IA/ARCHITECTURE.md",
     "title": "Architecture de la génération",
-    "description": "Cadrage. Config des champs figés : page admin `/admin/content/ia-generation`. Pipeline Anthropic (`GenerativeAiClient`). Rencontre branchée."
+    "description": "Cadrage. Config des champs figés : page admin `/admin/content/ia-generation`. Pipeline Anthropic (`GenerativeAiClient`). Statut : tokens locaux + estimés."
   },
   {
     "path": "IA/CATALOGUE.md",

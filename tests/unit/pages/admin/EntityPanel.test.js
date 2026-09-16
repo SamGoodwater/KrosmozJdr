@@ -9,6 +9,7 @@ const modelValue = {
     frozen_characteristics: "*",
     writable_characteristics: [],
     example_ids: ["jdr:item:cape-piou"],
+    few_shot_panoplies: ["Panoplie du Bouftou"],
     task_prompt: "",
 };
 
@@ -38,10 +39,14 @@ describe("EntityPanel", () => {
             },
         });
 
+        expect(wrapper.get("[data-testid='ia-entity-panel']").exists()).toBe(true);
         expect(wrapper.text()).not.toContain("Clés d’exception");
         expect(wrapper.text()).toContain("Caracs que l’IA peut modifier");
-        const picker = wrapper.get(".example-picker-stub");
-        expect(picker.attributes("data-entity")).toBe("item");
+        const pickers = wrapper.findAll(".example-picker-stub");
+        expect(pickers).toHaveLength(2);
+        expect(pickers[0].attributes("data-entity")).toBe("item");
+        expect(pickers[1].attributes("data-entity")).toBe("panoply");
+        expect(wrapper.get("[data-testid='ia-example-panoplies']").exists()).toBe(true);
         expect(wrapper.find("input[type='text']").exists()).toBe(false);
     });
 });

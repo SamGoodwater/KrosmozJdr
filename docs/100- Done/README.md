@@ -1,5 +1,13 @@
 # Ce qui a été fait
 
+## Septembre 2026 — IA métier : un type à la fois
+
+Sur **IA métier**, objet, sort, monstre, PNJ et consommable ne sont plus empilés. On les ouvre comme les **caractéristiques** : une colonne d’onglets à gauche, un seul panneau à droite. Le solde, les prompts globaux et les étalons d’équipement restent sur la page.
+
+## Septembre 2026 — Solde IA visible et panoplies or
+
+Sur **IA métier**, on voit les **tokens du mois** (cette app) et le **crédit Anthropic restant** s’il est connu, plus les estimés par action. Le modal **Sources** affiche le même solde à côté du coût estimé. Les **panoplies exemples** se choisissent comme les fiches (recherche jouable), plus besoin de les coller dans un fichier.
+
 ## Septembre 2026 — Images des monstres
 
 Les fiches du **bestiaire** et des **invocations de classe** ont maintenant le portrait Dofus (URL `api.dofusdb.fr`, indexée par le `gfxId`, pas l’id de la fiche). Un scrap de monstre DofusDB pose aussi cette URL si le fichier n’arrive pas à se télécharger. Le catalogue et la vue ligne lisent `creature.image`.

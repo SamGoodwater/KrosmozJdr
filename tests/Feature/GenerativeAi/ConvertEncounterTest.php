@@ -101,6 +101,8 @@ final class ConvertEncounterTest extends TestCase
             ->getJson(route('api.ia.status'))
             ->assertOk()
             ->assertJsonPath('usage.available', false)
+            ->assertJsonPath('usage.local_input_tokens', 0)
+            ->assertJsonPath('usage.has_api_key', false)
             ->assertJsonPath('estimates.0.action', 'npc');
     }
 

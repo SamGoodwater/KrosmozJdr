@@ -81,6 +81,21 @@ final class CostEstimator
         return '~ '.number_format($usd, 2, ',', ' ').' $';
     }
 
+    /**
+     * Combien d’actions approximatives avec un crédit restant (ordre de grandeur).
+     */
+    public function remainingHint(?float $remainingUsd): ?string
+    {
+        if ($remainingUsd === null || $remainingUsd < 0) {
+            return null;
+        }
+
+        $encounters = (int) floor($remainingUsd / self::ACTIONS['encounter']['usd']);
+        $npcs = (int) floor($remainingUsd / self::ACTIONS['npc']['usd']);
+
+        return '≈ '.$encounters.' rencontres ou '.$npcs.' PNJ';
+    }
+
     public function actionForEntityType(string $entityType): string
     {
         return match ($entityType) {
