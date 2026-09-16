@@ -8,7 +8,7 @@ L’IA **ne réécrit pas une fiche Dofus entière**. Laravel recopie ce qui est
 
 ## Comment éditer
 
-Quatre types historiques plus le consommable : `item`, `spell`, `monster`, `npc`, `consumable`.
+Quatre types historiques plus le consommable : `item`, `spell`, `monster`, `npc`, `consumable`. Dans l’admin, un **onglet colonne** par type (`SidebarNav`, comme la page caractéristiques) : un seul panneau visible (prompts, gel, étalons, panoplies or). Solde et réglages globaux restent au-dessus.
 
 | Clé | Rôle |
 | --- | --- |

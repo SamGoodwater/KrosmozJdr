@@ -39,6 +39,7 @@ describe("EntityPanel", () => {
             },
         });
 
+        expect(wrapper.get("[data-testid='ia-entity-panel']").exists()).toBe(true);
         expect(wrapper.text()).not.toContain("Clés d’exception");
         expect(wrapper.text()).toContain("Caracs que l’IA peut modifier");
         const pickers = wrapper.findAll(".example-picker-stub");

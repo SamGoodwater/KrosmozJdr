@@ -1,17 +1,20 @@
 <script setup>
 /**
  * Admin — réglages IA métier (champs figés, caracs, étalons).
+ * Types d’entité en onglets colonne (`SidebarNav`, même pattern que caractéristiques).
  */
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { Head, useForm, usePage } from "@inertiajs/vue3";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { useProtectedAdminAction } from "@/Composables/auth/useProtectedAdminAction";
+import { getEntityIconUrl } from "@/config/entities";
 import AdminArea from "@/Pages/Layouts/AdminArea.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import TextareaField from "@/Pages/Molecules/data-input/TextareaField.vue";
 import ConfirmPasswordModal from "@/Pages/Molecules/action/ConfirmPasswordModal.vue";
+import SidebarNav from "@/Pages/Organismes/layout/SidebarNav.vue";
 import EntityPanel from "@/Pages/Admin/Content/IaGeneration/EntityPanel.vue";
 
 defineOptions({ layout: AdminArea });
@@ -64,6 +67,38 @@ const form = useForm({
 });
 
 const entityKeys = computed(() => Object.keys(props.entity_labels || {}));
+
+/** Classes DaisyUI figées (interdit de interpoler des tokens Tailwind). */
+const ENTITY_NAV_CLASSES = {
+    item: "color-indigo-500 box-shadow-glass-xs",
+    spell: "color-violet-500 box-shadow-glass-xs",
+    monster: "color-pink-500 box-shadow-glass-xs",
+    npc: "color-green-500 box-shadow-glass-xs",
+    consumable: "color-orange-500 box-shadow-glass-xs",
+};
+
+const entityItems = computed(() =>
+    entityKeys.value.map((key) => ({
+        key,
+        label: props.entity_labels[key],
+    }))
+);
+
+const activeEntityKey = ref(entityKeys.value[0] || "item");
+
+const activeEntityLabel = computed(() => props.entity_labels[activeEntityKey.value] || "");
+
+/**
+ * Active l’onglet d’un type d’entité (colonne gauche, comme caractéristiques).
+ *
+ * @param {{ key?: string }} item
+ * @returns {void}
+ */
+function selectEntity(item) {
+    if (item?.key) {
+        activeEntityKey.value = item.key;
+    }
+}
 
 const localTokensLabel = computed(() => {
     const usage = props.usage || {};
@@ -180,7 +215,7 @@ function importItemsFromFiles() {
 <template>
     <Head title="IA métier" />
 
-    <div class="space-y-6 pb-8 max-w-4xl">
+    <div class="space-y-6 pb-8">
         <div>
             <h1 class="text-2xl font-semibold text-base-content">IA métier</h1>
             <p class="mt-2 text-sm text-base-content/70 max-w-3xl">
@@ -277,15 +312,33 @@ function importItemsFromFiles() {
                 />
             </section>
 
-            <EntityPanel
-                v-for="key in entityKeys"
-                :key="key"
-                :entity="key"
-                :label="entity_labels[key]"
-                :model-value="form.entities[key]"
-                :characteristic-options="characteristic_options[key] || []"
-                @update:model-value="(row) => (form.entities[key] = row)"
-            />
+            <div
+                class="flex min-h-0 w-full flex-col lg:flex-row"
+                data-testid="ia-entity-tabs"
+            >
+                <SidebarNav
+                    title="Types d’entité"
+                    description="Gel, étalons et prompt de tâche. Un type à la fois."
+                    :items="entityItems"
+                    :get-item-href="() => null"
+                    :get-item-click="selectEntity"
+                    :get-item-label="(item) => item.label"
+                    :get-item-key="(item) => item.key"
+                    :is-item-active="(item) => item.key === activeEntityKey"
+                    :get-item-icon-url="(item) => getEntityIconUrl(item.key)"
+                    :get-item-css-classes="(item) => ENTITY_NAV_CLASSES[item.key] || ''"
+                />
+                <div class="min-w-0 flex-1 overflow-y-auto p-4 sm:p-6">
+                    <EntityPanel
+                        v-if="form.entities[activeEntityKey]"
+                        :entity="activeEntityKey"
+                        :label="activeEntityLabel"
+                        :model-value="form.entities[activeEntityKey]"
+                        :characteristic-options="characteristic_options[activeEntityKey] || []"
+                        @update:model-value="(row) => (form.entities[activeEntityKey] = row)"
+                    />
+                </div>
+            </div>
 
             <div class="flex flex-wrap gap-3">
                 <Btn type="submit" color="primary" :disabled="form.processing">Enregistrer</Btn>

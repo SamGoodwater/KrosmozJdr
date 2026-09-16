@@ -120,7 +120,11 @@ function toggleWritableCharacteristic(key, checked) {
 </script>
 
 <template>
-    <section class="rounded-box border border-base-300 bg-base-100/50 p-4 space-y-4" :id="'ia-entity-' + entity">
+    <section
+        class="space-y-4"
+        :id="'ia-entity-' + entity"
+        data-testid="ia-entity-panel"
+    >
         <h2 class="text-lg font-semibold text-base-content">{{ label }}</h2>
 
         <CheckboxField v-model="hasDofusSource" label="Fiche sourcée Dofus (recopier l’identité figée)" />
