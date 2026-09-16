@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Cms;
 
-use Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Garde-fous des canons publiés dans L’Essentiel (seed `essential-pages.php`).
+ * Lit le fichier PHP : pas de base, pas de bootstrap Laravel.
  */
 final class EssentialPagesCanonTest extends TestCase
 {
@@ -17,7 +18,8 @@ final class EssentialPagesCanonTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->pages = require database_path('seeders/data/essential-pages.php');
+        $path = dirname(__DIR__, 3).'/database/seeders/data/essential-pages.php';
+        $this->pages = require $path;
     }
 
     public function test_publishes_eight_essentiel_pages(): void
