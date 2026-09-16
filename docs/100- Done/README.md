@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Livre et L’Essentiel d’accord
+
+Le livre et L’Essentiel racontent maintenant la même partie : création, combat, sorts, métiers, progression. Les chiffres qui partaient dans deux sens (PV, critique, plafond de perso, équipements, compétences) n’ont plus qu’une version ; les chapitres qui recopiaient une table se contentent d’un renvoi. L’Essentiel a des puces MJ et joueur, assez pour une séance sans relire le tome. « PO » veut dire Portée.
+
 ## Septembre 2026 — Fiches Création (conversion)
 
 L’atelier **Pour les MJ → Création** détaille maintenant sorts, monstres, équipements, consommables, capacités, traits et ressources : philosophie, points à respecter, limites (chiffres et propriétés de fiche), conseils, exemples jouables. C’est le même texte que l’IA de conversion recevra plus tard (`ia:creation-guides`), sans l’appeler encore. Boutiques, langues, campagnes et scénarios attendront.
