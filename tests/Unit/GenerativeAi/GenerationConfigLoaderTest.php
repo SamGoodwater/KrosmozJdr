@@ -17,7 +17,8 @@ final class GenerationConfigLoaderTest extends TestCase
         $this->assertTrue($item->hasDofusSource);
         $this->assertTrue($item->isFieldFrozen('name'));
         $this->assertTrue($item->isCharacteristicFrozen('intelligence_object'));
-        $this->assertSame([], $item->exampleIds);
+        $this->assertContains('Cape du Piou Vert', $item->exampleIds);
+        $this->assertNotSame([], $item->exampleIds);
         $fewShotPanoplies = $item->extra['few_shot_panoplies'] ?? null;
         $this->assertIsArray($fewShotPanoplies);
         $this->assertCount(54, $fewShotPanoplies);
@@ -32,8 +33,14 @@ final class GenerationConfigLoaderTest extends TestCase
         $this->assertFalse($npc->hasDofusSource);
         $this->assertFalse($npc->isFieldFrozen('name'));
         $this->assertFalse($npc->isCharacteristicFrozen('strength_creature'));
+        $this->assertContains('jdr:npc:incarnam:ganymede', $npc->exampleIds);
+
+        $consumable = $loader->forEntity('consumable');
+        $this->assertTrue($consumable->hasDofusSource);
+        $this->assertContains('Pain d\'Incarnam', $consumable->exampleIds);
 
         $this->assertSame(2, $loader->get('generation.max_retries'));
+        $this->assertStringContainsString('jamais playable', (string) $loader->get('supervisor_prompt'));
     }
 
     public function test_writable_characteristic_overrides_wildcard(): void
@@ -174,6 +181,7 @@ final class GenerationConfigLoaderTest extends TestCase
             'spell' => $blank,
             'monster' => $blank,
             'npc' => $blank,
+            'consumable' => $blank,
         ];
 
         foreach ($overrides as $type => $row) {

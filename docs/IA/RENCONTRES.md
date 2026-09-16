@@ -21,18 +21,20 @@ Les sorts doivent coller aux caracs déjà présentes (Terre ↔ Force, peu de s
 - Liaison : `creature_spell` (`Creature::spells()`).
 - Les sorts créés ici sont des **sorts de créature**, pas des sorts de classe (Iop, Cra…).
 
-Flux prévu :
+Flux :
 
 1. Brief MJ (« chef Bouftou niveau 10 ») → Laravel : fiche source + gabarit 5.1.2 (stats **hors** LLM par défaut) + `example_ids`.
 2. Un JSON `{ monster, spells: [ … ] }` : le monstre ne porte que les clés `writable` ; les sorts-créature sont le delta.
-3. Créer les `Spell` et le `Monster` en `auto`, lier le pivot.
+3. Créer les `Spell` et poser le `Monster` / `Creature` en `auto` (`auto_update=false`), lier le pivot.
 4. Relire **le paquet**, pas quatre fiches orphelines.
+
+Commande : `php artisan ia:convert-encounter --id=12` ou `--official-id=jdr:bestiary:…`. UI : icône **Sources** → volet Conversion IA (admin).
 
 Plus tard : réutiliser un sort `playable` déjà collé (« même crachat que le Bouftou ») au lieu d’en créer un. En v1, créer les 2–3 sorts dans le même JSON suffit.
 
 Gabarits : `private/game/rules/5-Ressources-et-equilibrage/5.1-ressources-mj/5.1.2-creation-de-pnj-et-monstres.md` (PV, dégâts, CA par palier, archétypes, boss).
 
-UX : un geste **« Générer cette rencontre »**, pas « générer un monstre » puis « générer ses sorts ».
+UX : un geste **« Sources »** (même icône que DofusDB) ouvre le modal deux volets. Le volet IA lance la conversion de **cette rencontre** (pas un sort isolé).
 
 ## Sorts de classe (hors créature)
 

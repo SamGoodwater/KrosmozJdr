@@ -72,7 +72,7 @@ const emit = defineEmits([
 ]);
 
 const { copyToClipboard } = useCopyToClipboard();
-const { dispatchEntityAction, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh } =
+const { dispatchEntityAction, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh, submitAiConvert } =
     useEntityActionDispatcher("breeds", {
         onRefresh: () => router.reload(),
     });
@@ -354,8 +354,18 @@ const handleAction = async (actionKey) => {
         :error="refreshConfirm.error"
         :playable="refreshConfirm.playable"
         :entity-label="refreshConfirm.entityLabel"
+        :show-dofusdb="refreshConfirm.showDofusdb"
+        :show-ai="refreshConfirm.showAi"
+        :ai-brief="refreshConfirm.aiBrief"
+        :ai-submitting="refreshConfirm.aiSubmitting"
+        :ai-error="refreshConfirm.aiError"
+        :ai-success="refreshConfirm.aiSuccess"
+        :ai-estimate="refreshConfirm.aiEstimate"
+        :ai-action-label="refreshConfirm.aiActionLabel"
         @confirm="confirmPendingRefresh"
         @close="cancelPendingRefresh"
+        @update:ai-brief="(v) => (refreshConfirm.aiBrief = v)"
+        @convert="submitAiConvert"
     />
 </template>
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\GenerativeAi;
 
 use App\Enums\EntityState;
+use App\Models\Entity\Consumable;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Npc;
@@ -26,6 +27,7 @@ final class FewShotExamplePool
         'spell' => Spell::class,
         'monster' => Monster::class,
         'npc' => Npc::class,
+        'consumable' => Consumable::class,
     ];
 
     /**

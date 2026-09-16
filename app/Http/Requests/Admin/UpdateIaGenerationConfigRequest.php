@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Entity\Panoply;
 use App\Services\GenerativeAi\FewShotExamplePool;
+use App\Services\GenerativeAi\FewShotPanoplyGuard;
 use App\Services\GenerativeAi\GenerationConfigLoader;
 use App\Services\GenerativeAi\GenerationConfigStore;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
 
 class UpdateIaGenerationConfigRequest extends FormRequest
 {
@@ -44,8 +47,16 @@ class UpdateIaGenerationConfigRequest extends FormRequest
             if (is_array($ids)) {
                 $entities[$type]['example_ids'] = $this->normalizeExampleRefs($ids);
             }
+            if (isset($entities[$type]['task_prompt']) && is_string($entities[$type]['task_prompt'])) {
+                $entities[$type]['task_prompt'] = $entities[$type]['task_prompt'];
+            }
         }
         $this->merge(['entities' => $entities]);
+
+        $supervisor = $this->input('supervisor_prompt');
+        if (is_string($supervisor)) {
+            $this->merge(['supervisor_prompt' => $supervisor]);
+        }
     }
 
     /**
@@ -70,9 +81,11 @@ class UpdateIaGenerationConfigRequest extends FormRequest
                 },
             ];
             $entityRules["{$prefix}.example_ids.*"] = ['distinct'];
+            $entityRules["{$prefix}.task_prompt"] = ['nullable', 'string', 'max:20000'];
         }
 
         return [
+            'supervisor_prompt' => ['nullable', 'string', 'max:20000'],
             'generation.max_retries' => ['required', 'integer', 'min:0', 'max:5'],
             'generation.few_shot_count' => ['required', 'integer', 'min:0', 'max:30'],
             'generation.max_effects_per_spell' => ['required', 'integer', 'min:1', 'max:10'],
@@ -93,6 +106,9 @@ class UpdateIaGenerationConfigRequest extends FormRequest
         $generation = is_array($base['generation'] ?? null) ? $base['generation'] : [];
         $payload = [
             'version' => is_int($base['version'] ?? null) ? $base['version'] : 1,
+            'supervisor_prompt' => is_string($validated['supervisor_prompt'] ?? null)
+                ? $validated['supervisor_prompt']
+                : (is_string($base['supervisor_prompt'] ?? null) ? $base['supervisor_prompt'] : ''),
             'generation' => array_merge($generation, $validated['generation']),
             'entities' => [],
         ];
@@ -105,6 +121,26 @@ class UpdateIaGenerationConfigRequest extends FormRequest
             $payload['entities'][$entity]['has_dofus_source'] = (bool) $payload['entities'][$entity]['has_dofus_source'];
             $payload['entities'][$entity]['example_ids'] = app(FewShotExamplePool::class)
                 ->normalizePlayableRefs($entity, $payload['entities'][$entity]['example_ids'] ?? []);
+        }
+
+        $panoplies = $payload['entities']['item']['few_shot_panoplies'] ?? [];
+        if (is_array($panoplies)) {
+            $names = [];
+            foreach ($panoplies as $name) {
+                if (is_string($name) && trim($name) !== '') {
+                    $names[] = trim($name);
+                }
+            }
+            // Contrôle souple : si aucune panoplie n'est en base (CI vide), on ne bloque pas l'enregistrement.
+            try {
+                if ($names !== [] && Panoply::query()->exists()) {
+                    app(FewShotPanoplyGuard::class)->assertPlayable($names);
+                }
+            } catch (\RuntimeException $exception) {
+                throw ValidationException::withMessages([
+                    'entities.item.few_shot_panoplies' => $exception->getMessage(),
+                ]);
+            }
         }
 
         foreach ($base as $key => $value) {

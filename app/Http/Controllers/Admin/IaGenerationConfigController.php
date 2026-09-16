@@ -9,6 +9,8 @@ use App\Http\Requests\Admin\UpdateIaGenerationConfigRequest;
 use App\Models\Characteristic;
 use App\Models\Entity\Item;
 use App\Models\IaGenerationSetting;
+use App\Services\GenerativeAi\AnthropicUsageService;
+use App\Services\GenerativeAi\CostEstimator;
 use App\Services\GenerativeAi\GenerationConfigLoader;
 use App\Services\GenerativeAi\GenerationConfigStore;
 use App\Services\Seeder\Item\ItemSeederFileRepository;
@@ -24,6 +26,7 @@ class IaGenerationConfigController extends Controller
         'spell' => 'Sorts',
         'monster' => 'Monstres',
         'npc' => 'PNJ',
+        'consumable' => 'Consommables',
     ];
 
     /** @var array<string, string> */
@@ -32,6 +35,7 @@ class IaGenerationConfigController extends Controller
         'spell' => 'spell',
         'monster' => 'creature',
         'npc' => 'creature',
+        'consumable' => 'object',
     ];
 
     public function edit(GenerationConfigStore $store): Response
@@ -47,6 +51,9 @@ class IaGenerationConfigController extends Controller
             'entity_labels' => self::ENTITY_LABELS,
             'characteristic_options' => $this->characteristicOptions(),
             'items_seeder' => $this->itemsSeederState(),
+            'usage' => app(AnthropicUsageService::class)->snapshot(),
+            'estimates' => app(CostEstimator::class)->all(),
+            'has_api_key' => filled(config('services.anthropic.api_key')),
         ]);
     }
 

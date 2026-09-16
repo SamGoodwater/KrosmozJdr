@@ -426,6 +426,24 @@ php artisan ia:equipment-grid --json=storage/logs/equipment-grid.json
 
 ---
 
+## `ia:convert-encounter`
+
+```yaml
+signature: ia:convert-encounter
+domain: data
+ui: false
+cron: false
+```
+
+Conversion IA d’une rencontre : un monstre + 2–3 sorts-créature, persistés en `auto` (`auto_update=false`). 1 paquet = 1 requête Anthropic. Admin only si `--user` est fourni.
+
+```bash
+php artisan ia:convert-encounter --id=12 --brief="chef Bouftou niveau 10"
+php artisan ia:convert-encounter --official-id=jdr:bestiary:piou-vert --user=1
+```
+
+---
+
 ## `ia:npc-kit-catalog`
 
 ```yaml

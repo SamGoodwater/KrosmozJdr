@@ -180,6 +180,7 @@ vi.mock('@/Entities/entity-actions-config', () => ({
   },
   normalizeActionEntityType: (entityType) => entityType,
   isScrappableEntityType: (entityType) => ['spells', 'items'].includes(entityType),
+  isAiConvertibleEntityType: (entityType) => ['spells', 'items', 'monsters', 'npcs', 'consumables'].includes(entityType),
 }));
 
 describe('useEntityActions', () => {
@@ -553,6 +554,25 @@ describe('useEntityActions', () => {
 
       const wrapper = mount(TestComponent);
       expect((wrapper.vm.spells?.value ?? wrapper.vm.spells).map((a) => a.key)).toContain('refresh');
+      expect((wrapper.vm.conditions?.value ?? wrapper.vm.conditions).map((a) => a.key)).not.toContain('refresh');
+    });
+
+    it('affiche refresh pour un admin sur un type convertible IA même sans DofusDB', () => {
+      mockPermissions.canUpdateAny.mockReturnValue(false);
+      mockPermissions.isAdmin.value = true;
+      mockPermissions.can.mockImplementation(() => false);
+
+      const TestComponent = defineComponent({
+        setup() {
+          const npcs = useEntityActions('npcs', { id: 1 }, { context: { inModal: true } }).availableActions;
+          const conditions = useEntityActions('conditions', { id: 1 }, { context: { inModal: true } }).availableActions;
+          return { npcs, conditions };
+        },
+        template: '<div></div>',
+      });
+
+      const wrapper = mount(TestComponent);
+      expect((wrapper.vm.npcs?.value ?? wrapper.vm.npcs).map((a) => a.key)).toContain('refresh');
       expect((wrapper.vm.conditions?.value ?? wrapper.vm.conditions).map((a) => a.key)).not.toContain('refresh');
     });
   });

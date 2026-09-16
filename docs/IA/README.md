@@ -1,8 +1,8 @@
 # IA générative — cadrage
 
-Le **pipeline LLM** n’est pas branché. La **grille d’objets** algorithmique l’est : `php artisan ia:equipment-grid`. Ce dossier fixe l’intention : une IA qui aide à produire du contenu **jouable en JDR**, pas à recopier Dofus.
+Le **pipeline LLM** est branché : noyau générique (`GenerativeAiClient`, assembleur, writer allowlist, job) + spécialisations. Premier produit : **rencontre** (monstre + 2–3 sorts-créature) en état `auto`. La **grille d’objets** algorithmique reste `php artisan ia:equipment-grid`. Pas de fine-tuning / RAG / agent à outils.
 
-À ne pas confondre avec les fichiers `_ai.md` du reste de `/docs` : ceux-là orientent les **agents de développement**. Ici, il s’agit d’un **LLM métier** (GPT, Claude, etc.) branché plus tard sur le site.
+À ne pas confondre avec les fichiers `_ai.md` du reste de `/docs` : ceux-là orientent les **agents de développement**. Ici, il s’agit du **LLM métier** (Anthropic Sonnet 5).
 
 ## Le problème
 
@@ -45,10 +45,10 @@ L’IA est pertinente là où il faut **du design** (simplifier, choisir, racont
 
 ## Ordre de livraison
 
-1. **Grille d’objets** par algorithme (`ia:equipment-grid`, ~200–400 `playable` après relecture, pas tout Dofus). Sans ça, un PNJ n’a rien de cohérent à porter. Les représentants Dofus ne sont pas publiés tout seuls ; les trous sortent en `draft`.
-2. Descriptions machine + JSON Schema + ~20 étalons `playable` **par type** au moment où l’IA touche ce type.
-3. **Rencontre à la demande** : un monstre et ses sorts-créature dans le même JSON, état `auto`.
-4. **PNJ à la demande** : brief + listes préfiltrées (objets et sorts `playable`).
+1. **Grille d’objets** par algorithme (`ia:equipment-grid`) — livré.
+2. Descriptions machine + JSON Schema + étalons `playable` — livré (admin + `generation.json`).
+3. **Rencontre à la demande** — livré : `ia:convert-encounter`, POST `/api/entities/monsters/{id}/ia-convert`, état `auto`.
+4. **PNJ / sort / objet / consommable** : specs présentes ; persistance allowlist. Produit rencontre d’abord.
 
 Les sorts de classe se réécrivent au fil de l’eau (quand un PNJ ou un perso en a besoin), pas en masse au départ.
 

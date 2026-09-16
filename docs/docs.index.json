@@ -222,7 +222,7 @@
   {
     "path": "IA/ARCHITECTURE.md",
     "title": "Architecture de la génération",
-    "description": "Cadrage. Config des champs figés : page admin `/admin/content/ia-generation` (table `ia_generation_settings`) avec repli `resources/ia/generation.json`. Grille objets : `ia:equipment-grid`. Le pipeline LLM n’est pas encore branché."
+    "description": "Cadrage. Config des champs figés : page admin `/admin/content/ia-generation`. Pipeline Anthropic (`GenerativeAiClient`). Rencontre branchée."
   },
   {
     "path": "IA/CATALOGUE.md",
@@ -237,7 +237,7 @@
   {
     "path": "IA/CREATION.md",
     "title": "Fiches de création (prompt de conversion)",
-    "description": "Guides MJ et texte de prompt : `resources/ia/creation-guides/`. Commande `ia:creation-guides`. Pipeline LLM non branché."
+    "description": "Guides MJ et texte de prompt : `resources/ia/creation-guides/`. Injectés dans l’assembleur (`task_prompt` / `CreationGuideCatalog`)."
   },
   {
     "path": "IA/COUTS.md",
@@ -247,7 +247,7 @@
   {
     "path": "IA/README.md",
     "title": "IA générative — cadrage",
-    "description": "Le **pipeline LLM** n’est pas branché. La **grille d’objets** algorithmique l’est : `php artisan ia:equipment-grid`. Ce dossier fixe l’intention : une IA qui aide à produire du contenu **jouable en JDR**, pas à recopier Dofus."
+    "description": "Le **pipeline LLM** est branché (Anthropic Sonnet 5, rencontre `auto`). La **grille d’objets** algorithmique : `php artisan ia:equipment-grid`. Intention : contenu jouable en JDR, pas recopier Dofus."
   },
   {
     "path": "IA/RENCONTRES.md",

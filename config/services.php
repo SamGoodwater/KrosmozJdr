@@ -61,4 +61,13 @@ return [
         'api_key' => env('CURSOR_API_KEY'),
     ],
 
+    /** Anthropic — conversion IA métier (Claude Sonnet 5). */
+    'anthropic' => [
+        'api_key' => env('ANTHROPIC_API_KEY'),
+        'model' => env('ANTHROPIC_MODEL', 'claude-sonnet-5'),
+        'base_url' => env('ANTHROPIC_BASE_URL', 'https://api.anthropic.com'),
+        'version' => env('ANTHROPIC_VERSION', '2023-06-01'),
+        'timeout' => (int) env('ANTHROPIC_TIMEOUT', 120),
+    ],
+
 ];

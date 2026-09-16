@@ -41,7 +41,11 @@ class IaGenerationConfigControllerTest extends TestCase
                 ->component('Admin/Content/IaGeneration/Index')
                 ->where('is_stored', false)
                 ->has('config.entities.item')
-                ->has('characteristic_options.item'));
+                ->has('config.entities.consumable')
+                ->has('config.supervisor_prompt')
+                ->has('characteristic_options.item')
+                ->has('usage')
+                ->has('estimates'));
     }
 
     public function test_admin_can_save_and_reset_ia_generation_settings(): void
@@ -50,6 +54,10 @@ class IaGenerationConfigControllerTest extends TestCase
         $payload = $this->filePayload();
         $payload['generation']['max_retries'] = 1;
         $payload['entities']['item']['writable_characteristics'] = ['intelligence_object'];
+        $payload['supervisor_prompt'] = 'Prompt superviseur de test.';
+        foreach (array_keys($payload['entities']) as $type) {
+            $payload['entities'][$type]['example_ids'] = [];
+        }
 
         $this->actingAs($admin)
             ->withSession($this->passwordConfirmedSession())
@@ -62,6 +70,7 @@ class IaGenerationConfigControllerTest extends TestCase
         $loader = app(GenerationConfigLoader::class);
         $this->assertSame(1, $loader->get('generation.max_retries'));
         $this->assertFalse($loader->forEntity('item')->isCharacteristicFrozen('intelligence_object'));
+        $this->assertSame('Prompt superviseur de test.', $loader->get('supervisor_prompt'));
 
         $this->actingAs($admin)
             ->withSession($this->passwordConfirmedSession())
@@ -96,6 +105,9 @@ class IaGenerationConfigControllerTest extends TestCase
         ]);
 
         $payload = $this->filePayload();
+        foreach (array_keys($payload['entities']) as $type) {
+            $payload['entities'][$type]['example_ids'] = [];
+        }
         $payload['entities']['item']['example_ids'] = [$draft->id];
 
         $this->actingAs($admin)
@@ -146,6 +158,7 @@ class IaGenerationConfigControllerTest extends TestCase
     private function formPayload(array $payload): array
     {
         return [
+            'supervisor_prompt' => $payload['supervisor_prompt'] ?? '',
             'generation' => $payload['generation'],
             'entities' => $payload['entities'],
         ];

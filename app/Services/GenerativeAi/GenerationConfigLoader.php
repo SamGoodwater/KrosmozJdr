@@ -15,7 +15,7 @@ namespace App\Services\GenerativeAi;
 final class GenerationConfigLoader
 {
     /** @var list<string> */
-    public const ENTITY_TYPES = ['item', 'spell', 'monster', 'npc'];
+    public const ENTITY_TYPES = ['item', 'spell', 'monster', 'npc', 'consumable'];
 
     /** @var list<string> */
     public const ENTITY_KNOWN_KEYS = [

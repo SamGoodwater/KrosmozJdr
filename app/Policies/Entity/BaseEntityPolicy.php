@@ -172,6 +172,14 @@ abstract class BaseEntityPolicy
     }
 
     /**
+     * Lancer une conversion IA : admin et super-admin uniquement (coûts).
+     */
+    public function generate(User $user, ?Model $model = null): bool
+    {
+        return $user->isAdmin();
+    }
+
+    /**
      * Determine whether the user can delete the model.
      *
      * Par défaut, seuls les admins peuvent supprimer.

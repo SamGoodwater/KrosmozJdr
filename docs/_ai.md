@@ -17,7 +17,7 @@
 | Backend | Laravel, modèles, routes, BDD, services. | [backend/_ai.md](backend/_ai.md) |
 | Frontend | Vue/Inertia, design system, vues d'entités. | [frontend/_ai.md](frontend/_ai.md) |
 | Features | Systèmes métier transverses. | [features/_ai.md](features/_ai.md) |
-| IA générative | Cadrage LLM métier + grille objets `ia:equipment-grid`. Pipeline LLM non branché. | [IA/_ai.md](IA/_ai.md) |
+| IA générative | Cadrage LLM métier + pipeline `GenerativeAiClient` (Anthropic Sonnet 5). Rencontre branchée. | [IA/_ai.md](IA/_ai.md) |
 | Operations | Commandes, imports, maintenance. | [operations/_ai.md](operations/_ai.md) |
 | Best practices | Conventions et garde-fous. | [best-practices/_ai.md](best-practices/_ai.md) |
 | Avancées | Journal non technique. | [100- Done/README.md](100-%20Done/README.md) |

@@ -22,6 +22,8 @@ import { useCreatureResolvedStats } from "@/Composables/entity/useCreatureResolv
 import { CHARACTERISTIC_CARD_DENSITY } from "@/Utils/Entity/creatureCharacteristicGroups.manifest";
 import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
+import { useEntityActionDispatcher } from "@/Composables/entity/useEntityActionDispatcher";
+import EntityDofusdbRefreshPanel from "@/Pages/Molecules/entity/EntityDofusdbRefreshPanel.vue";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getNpcFieldDescriptors } from "@/Entities/npc/npc-descriptors";
@@ -70,6 +72,10 @@ const emit = defineEmits(["edit", "copy-link", "download-pdf", "refresh", "view"
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf("npc");
+const { dispatchEntityAction, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh, submitAiConvert } =
+    useEntityActionDispatcher("npcs", {
+        onRefresh: () => router.reload({ only: ["npc", "characteristicRuntime"] }),
+    });
 const permissions = usePermissions();
 
 const ctx = computed(() => {
@@ -297,7 +303,7 @@ const handleAction = async (actionKey) => {
             emit("download-pdf", props.npc);
             break;
         case "refresh":
-            router.reload({ only: ["npc", "npcs"] });
+            await dispatchEntityAction("refresh", props.npc);
             emit("refresh", props.npc);
             break;
         case "delete":
@@ -593,6 +599,27 @@ const handleAction = async (actionKey) => {
             </div>
         </div>
     </div>
+    <EntityDofusdbRefreshPanel
+        :open="refreshConfirm.open"
+        :loading="refreshConfirm.loading"
+        :applying="refreshConfirm.applying"
+        :preview="refreshConfirm.preview"
+        :error="refreshConfirm.error"
+        :playable="refreshConfirm.playable"
+        :entity-label="refreshConfirm.entityLabel"
+        :show-dofusdb="refreshConfirm.showDofusdb"
+        :show-ai="refreshConfirm.showAi"
+        :ai-brief="refreshConfirm.aiBrief"
+        :ai-submitting="refreshConfirm.aiSubmitting"
+        :ai-error="refreshConfirm.aiError"
+        :ai-success="refreshConfirm.aiSuccess"
+        :ai-estimate="refreshConfirm.aiEstimate"
+        :ai-action-label="refreshConfirm.aiActionLabel"
+        @confirm="confirmPendingRefresh"
+        @close="cancelPendingRefresh"
+        @update:ai-brief="(v) => (refreshConfirm.aiBrief = v)"
+        @convert="submitAiConvert"
+    />
 </template>
 
 <style scoped>

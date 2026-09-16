@@ -10,6 +10,7 @@ import { useProtectedAdminAction } from "@/Composables/auth/useProtectedAdminAct
 import AdminArea from "@/Pages/Layouts/AdminArea.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
+import TextareaField from "@/Pages/Molecules/data-input/TextareaField.vue";
 import ConfirmPasswordModal from "@/Pages/Molecules/action/ConfirmPasswordModal.vue";
 import EntityPanel from "@/Pages/Admin/Content/IaGeneration/EntityPanel.vue";
 
@@ -32,6 +33,9 @@ const props = defineProps({
             allowed: false,
         }),
     },
+    usage: { type: Object, default: () => ({ available: false, message: "" }) },
+    estimates: { type: Array, default: () => [] },
+    has_api_key: { type: Boolean, default: false },
 });
 
 const { setPageTitle } = usePageTitle();
@@ -50,6 +54,7 @@ const {
 } = useProtectedAdminAction();
 
 const form = useForm({
+    supervisor_prompt: props.config.supervisor_prompt ?? "",
     generation: {
         max_retries: props.config.generation?.max_retries ?? 2,
         few_shot_count: props.config.generation?.few_shot_count ?? 8,
@@ -80,7 +85,7 @@ const updatedLabel = computed(() => {
 function cloneEntities(entities) {
     const source = entities && typeof entities === "object" ? entities : {};
     const out = {};
-    for (const key of ["item", "spell", "monster", "npc"]) {
+    for (const key of ["item", "spell", "monster", "npc", "consumable"]) {
         const row = source[key] && typeof source[key] === "object" ? source[key] : {};
         out[key] = {
             has_dofus_source: Boolean(row.has_dofus_source),
@@ -90,6 +95,7 @@ function cloneEntities(entities) {
                 row.frozen_characteristics === "*" ? "*" : [...(row.frozen_characteristics || [])],
             writable_characteristics: [...(row.writable_characteristics || [])],
             example_ids: [...(row.example_ids || [])],
+            task_prompt: row.task_prompt || "",
         };
     }
     return out;
@@ -184,6 +190,30 @@ function importItemsFromFiles() {
         </p>
 
         <form class="space-y-6" @submit.prevent="save">
+            <section class="rounded-box border border-base-300 bg-base-100/50 p-4 space-y-3">
+                <h2 class="text-lg font-semibold text-base-content">Solde Anthropic</h2>
+                <p class="text-sm text-base-content/70">{{ usage.message || "Usage indisponible." }}</p>
+                <p v-if="!has_api_key" class="text-sm text-warning">
+                    Aucune clé <code>ANTHROPIC_API_KEY</code> : la génération est bloquée, les estimés restent affichés.
+                </p>
+                <ul class="text-sm space-y-1">
+                    <li v-for="row in estimates" :key="row.action">
+                        <span class="font-medium">{{ row.label }}</span>
+                        — {{ row.formatted }}
+                        <span class="text-base-content/60"> ({{ row.hint }})</span>
+                    </li>
+                </ul>
+            </section>
+
+            <TextareaField
+                v-model="form.supervisor_prompt"
+                label="Prompt superviseur"
+                helper="Court, stable, mis en cache. Interdits + sortie JSON uniquement."
+                rows="6"
+                default-label-position="top"
+                :error="form.errors.supervisor_prompt"
+            />
+
             <section class="rounded-box border border-base-300 bg-base-100/50 p-4 grid gap-4 md:grid-cols-3">
                 <InputField
                     v-model="form.generation.max_retries"
