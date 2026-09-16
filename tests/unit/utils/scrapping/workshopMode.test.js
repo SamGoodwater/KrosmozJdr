@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+    IA_GENERATION_PAGE_PATH,
     isWorkshopMode,
     propertyKeysFromConfig,
     propertyPayloadFromSelection,
+    workshopModeFromUrl,
+    workshopPageHref,
     workshopUpdateMode,
 } from "@/utils/scrapping/workshopMode";
 
@@ -29,6 +32,16 @@ describe("workshopMode", () => {
             "level",
             "image",
         ]);
+    });
+
+    it("lit le mode depuis ?mode= et ignore une valeur inconnue", () => {
+        expect(workshopModeFromUrl("/admin/content/dofusdb?mode=complete")).toBe("complete");
+        expect(workshopModeFromUrl("/admin/content/dofusdb?mode=update")).toBe("update");
+        expect(workshopModeFromUrl("/admin/content/dofusdb?mode=nope")).toBe("retrieve");
+        expect(workshopModeFromUrl("/admin/content/dofusdb")).toBe("retrieve");
+        expect(workshopPageHref("update")).toBe("/admin/content/dofusdb?mode=update");
+        expect(workshopPageHref("nope")).toBe("/admin/content/dofusdb?mode=retrieve");
+        expect(IA_GENERATION_PAGE_PATH).toBe("/admin/content/ia-generation");
     });
 
     it("envoie une whitelist vide si tout est coché, y compris image", () => {

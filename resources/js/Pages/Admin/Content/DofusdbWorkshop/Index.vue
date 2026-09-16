@@ -5,7 +5,7 @@
 import { ref, onMounted } from "vue";
 import { Head, Link, usePage } from "@inertiajs/vue3";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
-import { WORKSHOP_MODES } from "@/utils/scrapping/workshopMode";
+import { WORKSHOP_MODES, workshopModeFromUrl } from "@/utils/scrapping/workshopMode";
 import AdminArea from "@/Pages/Layouts/AdminArea.vue";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
@@ -26,7 +26,7 @@ onMounted(() => setPageTitle("Import DofusDB"));
 const page = usePage();
 const unlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
 const showConfirmModal = ref(false);
-const workshopMode = ref("retrieve");
+const workshopMode = ref(workshopModeFromUrl(page.url));
 
 function onPasswordConfirmed() {
     unlocked.value = true;

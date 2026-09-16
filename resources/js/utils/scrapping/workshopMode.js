@@ -31,6 +31,43 @@ export function isWorkshopMode(mode) {
     return mode === "retrieve" || mode === "update" || mode === "complete";
 }
 
+export const WORKSHOP_PAGE_PATH = "/admin/content/dofusdb";
+export const IA_GENERATION_PAGE_PATH = "/admin/content/ia-generation";
+
+/**
+ * Mode atelier depuis l’URL (`?mode=retrieve|update|complete`).
+ *
+ * @param {string} [url]
+ * @returns {WorkshopMode}
+ *
+ * @example
+ * workshopModeFromUrl("/admin/content/dofusdb?mode=complete"); // "complete"
+ */
+export function workshopModeFromUrl(url) {
+    const raw = String(url || "");
+    const queryIndex = raw.indexOf("?");
+    if (queryIndex === -1) {
+        return "retrieve";
+    }
+    const params = new URLSearchParams(raw.slice(queryIndex + 1));
+    const mode = params.get("mode");
+    return isWorkshopMode(mode) ? mode : "retrieve";
+}
+
+/**
+ * Lien atelier avec mode en query.
+ *
+ * @param {string} [mode]
+ * @returns {string}
+ *
+ * @example
+ * workshopPageHref("update"); // "/admin/content/dofusdb?mode=update"
+ */
+export function workshopPageHref(mode) {
+    const value = isWorkshopMode(mode) ? mode : "retrieve";
+    return `${WORKSHOP_PAGE_PATH}?mode=${value}`;
+}
+
 /**
  * @param {{ mode?: string, respectAutoUpdate?: boolean }} opts
  * @returns {"ignore"|"draft_raw_auto_update"|"auto_update"|"force"}

@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Ateliers sur la vue d’ensemble
+
+Sur **Gestion du contenu** (`/admin/content`), trois cartes **Récupérer / Mettre à jour / Compléter** ouvrent l’atelier DofusDB (avec `?mode=`), plus une carte **Génération IA** vers `/admin/content/ia-generation`. Les camemberts restent en dessous.
+
 ## Septembre 2026 — Atelier Import DofusDB
 
 L’atelier **Gestion du contenu → Import DofusDB** a trois modes : **Récupérer**, **Mettre à jour**, **Compléter**. On choisit l’entité, les filtres, les propriétés (tout ou rien, image comprise) et les relations. La recherche donne un compteur ; l’import part en jobs. **Compléter** ne prend que les IDs DofusDB encore absents. **Mettre à jour** respecte `auto_update` par défaut. Les nouvelles fiches arrivent en **raw**. Plus de mode « images seules » ni de preset tout auto_update sur cette page (la maj unitaire reste sur chaque fiche).

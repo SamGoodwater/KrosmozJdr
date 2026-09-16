@@ -1,11 +1,16 @@
 <script setup>
 /**
- * Vue d’ensemble — gestion du contenu (camemberts entités × statuts, CMS).
+ * Vue d’ensemble — gestion du contenu (ateliers DofusDB/IA, camemberts, CMS).
  */
 import { computed } from "vue";
-import { Head, useForm, usePage } from "@inertiajs/vue3";
+import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useProjectConsoleJob } from "@/Composables/admin/useProjectConsoleJob";
+import {
+    IA_GENERATION_PAGE_PATH,
+    WORKSHOP_MODES,
+    workshopPageHref,
+} from "@/utils/scrapping/workshopMode";
 import AdminArea from "@/Pages/Layouts/AdminArea.vue";
 import AdminDoughnutChart from "@/Pages/Molecules/data-display/AdminDoughnutChart.vue";
 import AdminConsoleJobPanel from "@/Pages/Admin/_components/AdminConsoleJobPanel.vue";
@@ -99,6 +104,63 @@ function canRecalculatePrices(entityKey) {
                 Vue d’ensemble des entités par statut et du contenu CMS (pages et sections).
             </p>
         </div>
+
+        <section aria-labelledby="content-ateliers-heading" class="space-y-3">
+            <div>
+                <h2 id="content-ateliers-heading" class="text-lg font-semibold text-base-content">
+                    Ateliers
+                </h2>
+                <p class="mt-1 text-sm text-base-content/70 max-w-3xl">
+                    Un clic ouvre l’outil. Les camemberts restent plus bas.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <article
+                    v-for="mode in WORKSHOP_MODES"
+                    :key="mode.value"
+                    class="card bg-base-100 border border-base-300"
+                >
+                    <div class="card-body gap-3">
+                        <p class="text-xs uppercase tracking-wide text-base-content/60">
+                            Atelier DofusDB
+                        </p>
+                        <h3 class="card-title text-xl">{{ mode.label }}</h3>
+                        <p class="text-sm text-base-content/80">{{ mode.hint }}</p>
+                        <div class="card-actions mt-auto">
+                            <Link
+                                :href="workshopPageHref(mode.value)"
+                                class="btn btn-primary"
+                                :aria-label="`Ouvrir l’atelier DofusDB : ${mode.label}`"
+                            >
+                                {{ mode.label }}
+                            </Link>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="card bg-base-100 border border-base-300">
+                    <div class="card-body gap-3">
+                        <p class="text-xs uppercase tracking-wide text-base-content/60">
+                            Génération IA
+                        </p>
+                        <h3 class="card-title text-xl">IA métier</h3>
+                        <p class="text-sm text-base-content/80">
+                            Réglages, étalons et conversion. Ouvre la page IA.
+                        </p>
+                        <div class="card-actions mt-auto">
+                            <Link
+                                :href="IA_GENERATION_PAGE_PATH"
+                                class="btn btn-secondary"
+                                aria-label="Ouvrir la génération IA"
+                            >
+                                Ouvrir l’IA
+                            </Link>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
 
         <p
             v-if="page.props.flash?.success"

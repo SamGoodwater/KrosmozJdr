@@ -33,5 +33,5 @@ Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interact
 - Source règles CMS : `private/game/rules/TABLE_DES_MATIERES.md`. Livre PDF/ODT : `php artisan rules:compile-downloads` (bouton admin `/admin/content` : file `rules-downloads` + worker ponctuel, pas besoin d’un `queue:listen` déjà lancé).
 - UI orphelins : `/admin/orphan-files` (super_admin).
 - UI nettoyage caches : `/admin/project-clear` (super_admin).
-- UI atelier DofusDB : `/admin/content/dofusdb` (admin, 3 modes Récupérer / Mettre à jour / Compléter). Cron `project_data_sync` inchangé.
+- UI atelier DofusDB : `/admin/content/dofusdb` (admin, 3 modes Récupérer / Mettre à jour / Compléter, `?mode=`). Cartes + IA sur `/admin/content`. Cron `project_data_sync` inchangé.
 - Jobs console admin : un actif max par domaine ; un `queued` sans démarrage > 15 min est abandonné ; poll `GET /admin/console-jobs/{uuid}` ; annulation `POST /admin/console-jobs/{uuid}/cancel` (file Laravel retirée si encore queued) ; toast fermable ; log filtré.
