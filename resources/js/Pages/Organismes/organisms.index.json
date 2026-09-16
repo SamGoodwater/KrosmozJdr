@@ -487,7 +487,7 @@
   },
   {
     "name": "ScrappingOptionsPanel",
-    "description": "ScrappingOptionsPanel — Options d'import, historique, erreurs batch. Bloc repliable ; n'exécute pas de logique batch, uniquement affichage et emit.",
+    "description": "ScrappingOptionsPanel — Historique et erreurs batch. Les options d’import (mode, propriétés, relations) sont sur le formulaire principal.",
     "props": [],
     "slots": [],
     "file": "scrapping/ScrappingOptionsPanel.vue"

@@ -1,7 +1,7 @@
 <script setup>
 /**
- * ScrappingOptionsPanel — Options d'import, historique, erreurs batch.
- * Bloc repliable ; n'exécute pas de logique batch, uniquement affichage et emit.
+ * ScrappingOptionsPanel — Historique et erreurs batch.
+ * Les options d’import (mode, propriétés, relations) sont sur le formulaire principal.
  * @see docs/features/scrapping/README.md
  */
 import Card from "@/Pages/Atoms/data-display/Card.vue";
@@ -9,30 +9,25 @@ import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Alert from "@/Pages/Atoms/feedback/Alert.vue";
-import ToggleField from "@/Pages/Molecules/data-input/ToggleField.vue";
 
 defineProps({
     open: { type: Boolean, default: false },
-    optIncludeRelations: { type: Boolean, default: false },
-    optUpdateMode: { type: String, default: "draft_raw_auto_update" },
-    optPropertyWhitelist: { type: String, default: "" },
-    optPropertyBlacklist: { type: String, default: "" },
     historyLines: { type: Array, default: () => [] },
     runId: { type: String, default: "" },
     unknownCharacteristics: { type: Object, default: null },
     batchErrorResults: { type: Array, default: () => [] },
 });
 
-const emit = defineEmits(["update:open", "update:optIncludeRelations", "update:optUpdateMode", "update:optPropertyWhitelist", "update:optPropertyBlacklist", "clear-history", "clear-errors", "export-errors-csv", "copy-run-id"]);
+const emit = defineEmits(["update:open", "clear-history", "clear-errors", "export-errors-csv", "copy-run-id"]);
 </script>
 
 <template>
     <Card class="p-6 space-y-4">
         <div class="flex items-center justify-between gap-2">
             <div>
-                <h3 class="font-semibold text-primary-100">Options & historique</h3>
+                <h3 class="font-semibold text-primary-100">Historique</h3>
                 <p class="text-xs text-primary-300 mt-1">
-                    Masqué par défaut pour garder l'interface légère.
+                    Jobs et messages du dernier import. Masqué par défaut.
                 </p>
             </div>
             <Btn size="sm" variant="outline" @click="emit('update:open', !open)">
@@ -40,93 +35,11 @@ const emit = defineEmits(["update:open", "update:optIncludeRelations", "update:o
             </Btn>
         </div>
 
-        <div v-if="open" class="grid gap-6 lg:grid-cols-2">
-            <Card class="p-6 space-y-3">
-                <h4 class="font-semibold text-primary-100">Options d'import</h4>
-                <div class="flex flex-col gap-4">
-                    <div class="space-y-2">
-                        <ToggleField
-                            :model-value="optIncludeRelations"
-                            label="Inclure les relations"
-                            helper="Importer aussi les relations (sorts, drops, recettes, invocations…). Ex. : monstres avec leurs ressources et sorts ; les sorts d'invocation importent à leur tour les monstres invoqués."
-                            @update:model-value="emit('update:optIncludeRelations', $event)"
-                        />
-                    </div>
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-primary-200">Mise à jour des entités déjà en BDD</label>
-                        <p class="text-xs text-primary-400">Un seul mode actif. Les entités existantes qu'on ne met pas à jour sont ignorées (pas d'appel API).</p>
-                        <div class="space-y-2 pt-1">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    :checked="optUpdateMode === 'ignore'"
-                                    type="radio"
-                                    value="ignore"
-                                    class="radio radio-sm radio-primary"
-                                    @change="emit('update:optUpdateMode', 'ignore')"
-                                />
-                                <span class="text-sm">Ignorer si existant — ne jamais remplacer</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    :checked="optUpdateMode === 'draft_raw_auto_update'"
-                                    type="radio"
-                                    value="draft_raw_auto_update"
-                                    class="radio radio-sm radio-primary"
-                                    @change="emit('update:optUpdateMode', 'draft_raw_auto_update')"
-                                />
-                                <span class="text-sm">Mettre à jour si (brouillon/raw) ET auto_update</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    :checked="optUpdateMode === 'auto_update'"
-                                    type="radio"
-                                    value="auto_update"
-                                    class="radio radio-sm radio-primary"
-                                    @change="emit('update:optUpdateMode', 'auto_update')"
-                                />
-                                <span class="text-sm">Mettre à jour tous les auto_update</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    :checked="optUpdateMode === 'force'"
-                                    type="radio"
-                                    value="force"
-                                    class="radio radio-sm radio-primary"
-                                    @change="emit('update:optUpdateMode', 'force')"
-                                />
-                                <span class="text-sm">Forcer les mises à jour</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-primary-200">Filtrer les propriétés</label>
-                        <p class="text-xs text-primary-400">Whitelist vide = toutes les propriétés. Sinon uniquement celles listées. Utilisez la blacklist pour exclure (ex. image).</p>
-                        <div class="grid grid-cols-1 gap-2 pt-1">
-                            <label class="text-xs text-primary-300">Whitelist (propriétés à inclure, séparées par des virgules)</label>
-                            <input
-                                :value="optPropertyWhitelist"
-                                type="text"
-                                placeholder="ex: name, description, level (vide = toutes)"
-                                class="input input-bordered input-sm w-full"
-                                @input="emit('update:optPropertyWhitelist', ($event.target).value)"
-                            />
-                            <label class="text-xs text-primary-300">Blacklist (propriétés à exclure, séparées par des virgules)</label>
-                            <input
-                                :value="optPropertyBlacklist"
-                                type="text"
-                                placeholder="ex: image, bonus"
-                                class="input input-bordered input-sm w-full"
-                                @input="emit('update:optPropertyBlacklist', ($event.target).value)"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </Card>
-
+        <div v-if="open" class="grid gap-6">
             <Card class="p-6 space-y-3">
                 <div class="flex items-center justify-between gap-2">
                     <div>
-                        <h4 class="font-semibold text-primary-100">Historique</h4>
+                        <h4 class="font-semibold text-primary-100">Console</h4>
                         <p v-if="runId" class="text-[11px] text-primary-300">
                             Dernier run_id: <span class="font-mono">{{ runId }}</span>
                         </p>

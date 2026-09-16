@@ -90,6 +90,13 @@
     "file": "table/TanStackTableFilters.vue"
   },
   {
+    "name": "ScrappingLightTable",
+    "description": "Tableau léger des résultats de recherche DofusDB (id, nom, présence locale).",
+    "props": [],
+    "slots": [],
+    "file": "table/ScrappingLightTable.vue"
+  },
+  {
     "name": "SectionHeader",
     "description": "SectionHeader Molecule",
     "props": [
@@ -716,6 +723,13 @@
     "file": "entity/EntityStateAction.vue"
   },
   {
+    "name": "EntitySourceModal",
+    "description": "Modal unique DofusDB + conversion IA (une icône menu).",
+    "props": [],
+    "slots": [],
+    "file": "entity/EntitySourceModal.vue"
+  },
+  {
     "name": "EntityFormField",
     "description": "EntityFormField — Composant Molecule pour le rendu d'un champ de formulaire d'entité",
     "props": [
@@ -756,15 +770,8 @@
     "file": "entity/EntityEditFormFieldBody.vue"
   },
   {
-    "name": "EntitySourceModal",
-    "description": "Modal unique sources de fiche : aperçu DofusDB et conversion IA (admin).",
-    "props": [],
-    "slots": [],
-    "file": "entity/EntitySourceModal.vue"
-  },
-  {
     "name": "EntityDofusdbRefreshPanel",
-    "description": "Compat : ouvre EntitySourceModal (DofusDB | conversion IA).",
+    "description": "Compat : l’ancien panneau DofusDB ouvre le modal unique Sources (DofusDB | IA).",
     "props": [],
     "slots": [],
     "file": "entity/EntityDofusdbRefreshPanel.vue"
@@ -2370,6 +2377,13 @@
     "props": [],
     "slots": [],
     "file": "data-input/SelectField.vue"
+  },
+  {
+    "name": "ScrappingPropertyCheckboxes",
+    "description": "Cases à cocher des propriétés à importer (tout / rien, image incluse).",
+    "props": [],
+    "slots": [],
+    "file": "data-input/ScrappingPropertyCheckboxes.vue"
   },
   {
     "name": "RichTextEditorField",

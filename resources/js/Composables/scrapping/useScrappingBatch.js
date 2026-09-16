@@ -7,6 +7,7 @@
 import { computed, ref } from "vue";
 import { DOFUSDB_API_PREFIX, getJson, postJson } from "@/utils/scrapping/api";
 import { parsePageRange } from "@/utils/scrapping/parsePageRange";
+import { propertyPayloadFromSelection } from "@/utils/scrapping/workshopMode";
 
 const JOB_POLL_INTERVAL_MS = 1500;
 /** Timeout pour la création du job (si queue=sync, le POST bloque). Après ce délai, on bascule en fallback synchrone. */
@@ -115,6 +116,8 @@ function signalWithTimeout(userSignal, timeoutMs) {
  *   optIncludeRelations: import('vue').Ref<boolean>,
  *   optPropertyWhitelist: import('vue').Ref<string>,
  *   optPropertyBlacklist: import('vue').Ref<string>,
+ *   selectedPropertyKeys?: import('vue').Ref<string[]>,
+ *   allPropertyKeys?: import('vue').Ref<string[]>,
  *   optSkipCache: import('vue').Ref<boolean>,
  *   optManualChoice: import('vue').Ref<boolean>,
  *   getCsrfToken: () => string | null,
@@ -145,6 +148,8 @@ export function useScrappingBatch(options) {
         optIncludeRelations,
         optPropertyWhitelist,
         optPropertyBlacklist,
+        selectedPropertyKeys,
+        allPropertyKeys,
         optSkipCache,
         optManualChoice,
         getCsrfToken,
@@ -203,6 +208,8 @@ export function useScrappingBatch(options) {
                 update_mode: payload.update_mode,
                 exclude_from_update: payload.exclude_from_update,
                 property_whitelist: payload.property_whitelist,
+                with_images: payload.with_images,
+                download_images: payload.download_images,
             }, {
                 headers: { "X-CSRF-TOKEN": csrf },
                 signal: createSignal,
@@ -320,8 +327,14 @@ export function useScrappingBatch(options) {
 
         const updateMode = optUpdateMode.value;
         const excludeFromUpdate = parseCommaList(optPropertyBlacklist.value);
-        const propertyWhitelist = parseCommaList(optPropertyWhitelist.value);
+        let propertyWhitelist = parseCommaList(optPropertyWhitelist.value);
         const validUpdateModes = ["ignore", "draft_raw_auto_update", "auto_update", "force"];
+        let withImages = !excludeFromUpdate.includes("image") && (propertyWhitelist.length === 0 || propertyWhitelist.includes("image"));
+        if (Array.isArray(selectedPropertyKeys?.value) && Array.isArray(allPropertyKeys?.value) && allPropertyKeys.value.length > 0) {
+            const fromChecks = propertyPayloadFromSelection(allPropertyKeys.value, selectedPropertyKeys.value);
+            propertyWhitelist = fromChecks.property_whitelist;
+            withImages = fromChecks.with_images;
+        }
 
         return {
             entities,
@@ -332,6 +345,8 @@ export function useScrappingBatch(options) {
             update_mode: validUpdateModes.includes(updateMode) ? updateMode : "draft_raw_auto_update",
             exclude_from_update: excludeFromUpdate,
             property_whitelist: propertyWhitelist,
+            with_images: withImages,
+            download_images: withImages,
         };
     }
 

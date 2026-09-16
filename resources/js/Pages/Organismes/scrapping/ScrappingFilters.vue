@@ -90,9 +90,9 @@ const coverageColor = computed(() => {
     <Card class="p-6 space-y-4">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div class="flex-1">
-                <h2 class="text-xl font-bold text-primary-100">Scrapping</h2>
+                <h2 class="text-xl font-bold text-primary-100">Filtres</h2>
                 <p class="text-sm text-primary-300 mt-1">
-                    Choisis une entité, filtre, recherche, puis simule ou importe.
+                    Choisis une entité, affine, puis lance la recherche (compteur).
                 </p>
             </div>
             <div class="min-w-[260px] space-y-2">

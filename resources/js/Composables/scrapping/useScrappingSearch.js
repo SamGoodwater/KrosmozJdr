@@ -26,7 +26,8 @@ import { parseIdsFilter } from "@/utils/scrapping/parseIdsFilter";
  *     filterLevelMin: import('vue').Ref<string>,
  *     filterLevelMax: import('vue').Ref<string>,
  *     pageNumber: import('vue').Ref<number>,
- *     perPage: import('vue').Ref<number>
+ *     perPage: import('vue').Ref<number>,
+ *     onlyMissing?: import('vue').Ref<boolean>
  *   },
  *   notifyError: (msg: string) => void,
  *   onSearchDone?: (ids: number[]) => void
@@ -78,6 +79,7 @@ export function useScrappingSearch(options) {
 
         q.set("page", String(Math.max(1, Math.floor(Number(r.pageNumber.value) || 1))));
         q.set("per_page", String(Math.max(1, Math.min(200, Math.floor(Number(r.perPage.value) || 50)))));
+        if (r.onlyMissing?.value) q.set("only_missing", "1");
 
         return q.toString();
     }

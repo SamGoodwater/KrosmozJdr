@@ -16,7 +16,7 @@ use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
 /**
- * Atelier DofusDB (admin) : recherche/import, maj de masse, preset auto_update.
+ * Atelier DofusDB (admin) : recherche/import (Récupérer, Mettre à jour, Compléter).
  */
 class ContentDofusdbWorkshopController extends Controller
 {

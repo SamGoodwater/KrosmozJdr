@@ -5,16 +5,16 @@
 import { ref, onMounted } from "vue";
 import { Head, Link, usePage } from "@inertiajs/vue3";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import { WORKSHOP_MODES } from "@/utils/scrapping/workshopMode";
 import AdminArea from "@/Pages/Layouts/AdminArea.vue";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import ConfirmPasswordModal from "@/Pages/Molecules/action/ConfirmPasswordModal.vue";
 import ScrappingDashboard from "@/Pages/Organismes/scrapping/ScrappingDashboard.vue";
-import DofusdbAutoUpdatePreset from "@/Pages/Admin/Content/DofusdbWorkshop/AutoUpdatePreset.vue";
 
 defineOptions({ layout: AdminArea });
 
-const props = defineProps({
+defineProps({
     entityChoices: { type: Array, default: () => [] },
     catalogTypeChoices: { type: Array, default: () => [] },
     consoleJob: { type: Object, default: null },
@@ -26,8 +26,7 @@ onMounted(() => setPageTitle("Import DofusDB"));
 const page = usePage();
 const unlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
 const showConfirmModal = ref(false);
-const workshopMode = ref("explore");
-const showPreset = ref(false);
+const workshopMode = ref("retrieve");
 
 function onPasswordConfirmed() {
     unlocked.value = true;
@@ -42,7 +41,7 @@ function onPasswordConfirmed() {
             <div>
                 <h1 class="text-3xl font-bold text-primary-100">Import DofusDB</h1>
                 <p class="text-primary-200 mt-2">
-                    Recherche, conversion et mise à jour de masse depuis DofusDB. La maj unitaire se fait depuis chaque fiche.
+                    Recherche, import et mise à jour de masse. La maj unitaire se fait depuis chaque fiche.
                 </p>
             </div>
             <div v-if="unlocked" class="flex flex-wrap gap-2">
@@ -66,43 +65,17 @@ function onPasswordConfirmed() {
         </div>
 
         <template v-else>
-            <div class="flex flex-wrap gap-2">
+            <div class="flex flex-wrap gap-2" role="tablist" aria-label="Mode d’import">
                 <Btn
+                    v-for="mode in WORKSHOP_MODES"
+                    :key="mode.value"
                     size="sm"
-                    :color="workshopMode === 'explore' ? 'primary' : undefined"
-                    :variant="workshopMode === 'explore' ? undefined : 'outline'"
-                    @click="workshopMode = 'explore'"
+                    :color="workshopMode === mode.value ? 'primary' : undefined"
+                    :variant="workshopMode === mode.value ? undefined : 'outline'"
+                    @click="workshopMode = mode.value"
                 >
-                    Explorer / importer
+                    {{ mode.label }}
                 </Btn>
-                <Btn
-                    size="sm"
-                    :color="workshopMode === 'update' ? 'primary' : undefined"
-                    :variant="workshopMode === 'update' ? undefined : 'outline'"
-                    @click="workshopMode = 'update'"
-                >
-                    Mettre à jour l’existant
-                </Btn>
-                <Btn
-                    size="sm"
-                    :color="workshopMode === 'images' ? 'primary' : undefined"
-                    :variant="workshopMode === 'images' ? undefined : 'outline'"
-                    @click="workshopMode = 'images'"
-                >
-                    Images seules
-                </Btn>
-                <Btn size="sm" variant="outline" @click="showPreset = !showPreset">
-                    {{ showPreset ? "Masquer" : "Preset" }} tout auto_update
-                </Btn>
-            </div>
-
-            <div v-if="showPreset" class="rounded-box border border-base-300 bg-base-100/40 p-4">
-                <h2 class="text-lg font-semibold mb-3">Preset tout auto_update</h2>
-                <DofusdbAutoUpdatePreset
-                    :entity-choices="props.entityChoices"
-                    :catalog-type-choices="props.catalogTypeChoices"
-                    :console-job="props.consoleJob"
-                />
             </div>
 
             <ScrappingDashboard :workshop-mode="workshopMode" />

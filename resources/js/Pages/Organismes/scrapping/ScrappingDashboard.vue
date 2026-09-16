@@ -5,11 +5,11 @@
  * @description
  * Dashboard de scrapping pour l’atelier contenu (`/admin/content/dofusdb`).
  * Flow:
- * - Choix de l'entité (header)
- * - Filtres (au moins IDs + name, + filtres dépendants)
- * - Recherche (collect-only) → tableau résultat + sélection
- * - Actions sur sélection: reset / simuler / importer
- * - Options d'import + historique type "invite de commande"
+ * - Choix de l'entité
+ * - Filtres + propriétés (tout/rien, image incluse) + relations
+ * - Recherche (compteur, only_missing en mode Compléter)
+ * - Import via jobs ; tableau léger optionnel
+ * - Historique repliable
  */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { Link, router } from "@inertiajs/vue3";
@@ -22,7 +22,9 @@ import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import CompareModal from "@/Pages/Organismes/scrapping/CompareModal.vue";
 import ScrappingFilters from "@/Pages/Organismes/scrapping/ScrappingFilters.vue";
 import ScrappingOptionsPanel from "@/Pages/Organismes/scrapping/ScrappingOptionsPanel.vue";
-import ScrappingResultsTable from "@/Pages/Organismes/scrapping/ScrappingResultsTable.vue";
+import ScrappingPropertyCheckboxes from "@/Pages/Molecules/data-input/ScrappingPropertyCheckboxes.vue";
+import ScrappingLightTable from "@/Pages/Molecules/table/ScrappingLightTable.vue";
+import ToggleField from "@/Pages/Molecules/data-input/ToggleField.vue";
 import TanStackTablePagination from "@/Pages/Molecules/table/TanStackTablePagination.vue";
 import EntityModal from "@/Pages/Organismes/entity/EntityModal.vue";
 import { Monster } from "@/Models/Entity/Monster";
@@ -51,14 +53,13 @@ import { useScrappingCompare } from "@/Composables/scrapping/useScrappingCompare
 import { useScrappingBatch } from "@/Composables/scrapping/useScrappingBatch";
 import { useScrappingJobManager } from "@/Composables/scrapping/useScrappingJobManager";
 import { getEntityConfigStatus } from "@/Composables/scrapping/useScrappingEntityConfigStatus";
-
-const IMAGE_ONLY_BLACKLIST = "name,description,level,effect,raw,pa,pm,po,po_min,po_max,weight,price,rarity,official_id,size,is_boss,boss_pa,monster_race_id,item_type_id,resource_type_id,consumable_type_id,spell_type_id";
+import { WORKSHOP_MODES, workshopUpdateMode, propertyKeysFromConfig } from "@/utils/scrapping/workshopMode";
 
 const props = defineProps({
     workshopMode: {
         type: String,
-        default: "explore",
-        validator: (v) => ["explore", "update", "images"].includes(v),
+        default: "retrieve",
+        validator: (v) => ["retrieve", "update", "complete"].includes(v),
     },
 });
 
@@ -273,26 +274,29 @@ const filterLevelMax = ref("");
 const optIncludeRelations = ref(_pref("optIncludeRelations"));
 const optUpdateMode = ref(_pref("optUpdateMode"));
 const optPropertyWhitelist = ref(_pref("optPropertyWhitelist"));
-const optPropertyBlacklist = ref(_pref("optPropertyBlacklist"));
+const optPropertyBlacklist = ref("");
 const optSkipCache = ref(_pref("optSkipCache"));
 const optForceUpdate = ref(_pref("optForceUpdate"));
 const optManualChoice = ref(_pref("optManualChoice"));
+const optRespectAutoUpdate = ref(true);
+const selectedPropertyKeys = ref([]);
+const showLightTable = ref(false);
+
+const onlyMissing = computed(() => props.workshopMode === "complete");
+const currentWorkshopModeMeta = computed(
+    () => WORKSHOP_MODES.find((m) => m.value === props.workshopMode) ?? WORKSHOP_MODES[0]
+);
 
 watch(
-    () => props.workshopMode,
-    (mode) => {
-        if (mode === "explore") {
-            optUpdateMode.value = "draft_raw_auto_update";
-            optPropertyBlacklist.value = "";
+    () => [props.workshopMode, optRespectAutoUpdate.value],
+    () => {
+        optUpdateMode.value = workshopUpdateMode({
+            mode: props.workshopMode,
+            respectAutoUpdate: optRespectAutoUpdate.value,
+        });
+        optPropertyBlacklist.value = "";
+        if (props.workshopMode === "complete") {
             optIncludeRelations.value = true;
-        } else if (mode === "update") {
-            optUpdateMode.value = "auto_update";
-            optPropertyBlacklist.value = "";
-            optIncludeRelations.value = true;
-        } else if (mode === "images") {
-            optUpdateMode.value = "auto_update";
-            optPropertyBlacklist.value = IMAGE_ONLY_BLACKLIST;
-            optIncludeRelations.value = false;
         }
     },
     { immediate: true }
@@ -461,7 +465,7 @@ hydratePrefs();
 // Import par plage de pages (ex: "1-6" ou "4,5" ou toutes)
 const pageRangeInput = ref("");
 /** Périmètre pour Simuler / Importer : 'selection' | 'all' | 'pages' */
-const batchScope = ref("selection");
+const batchScope = ref("all");
 
 // Historique (console)
 const historyLines = jobManager.historyLines;
@@ -591,6 +595,16 @@ const selectedEntityTypeStr = computed(() => {
     return String(v ?? "");
 });
 
+const propertyKeys = computed(() => propertyKeysFromConfig(configEntitiesByKey.value, selectedEntityTypeStr.value));
+
+watch(
+    propertyKeys,
+    (keys) => {
+        selectedPropertyKeys.value = Array.isArray(keys) ? [...keys] : [];
+    },
+    { immediate: true }
+);
+
 watch(
     () => selectedEntityTypeStr.value,
     (t) => {
@@ -685,6 +699,7 @@ const search = useScrappingSearch({
         filterLevelMax,
         pageNumber,
         perPage,
+        onlyMissing,
     },
     notifyError: showError,
 });
@@ -750,11 +765,17 @@ const visibleItems = computed(() => {
               return id.includes(q) || name.includes(q);
           });
     const byId = preview.convertedByItemId.value;
-    return filtered.map((it) => ({
-        ...it,
-        exists: !!byId[Number(it?.id)]?.existing,
-        existing: byId[Number(it?.id)]?.existing?.record ?? null,
-    }));
+    return filtered.map((it) => {
+        const converted = byId[Number(it?.id)];
+        if (converted) {
+            return {
+                ...it,
+                exists: !!converted.existing,
+                existing: converted.existing?.record ?? null,
+            };
+        }
+        return it;
+    });
 });
 
 /** Données de conversion pour une ligne (entité principale ou relation). */
@@ -836,6 +857,8 @@ const batch = useScrappingBatch({
     optIncludeRelations,
     optPropertyWhitelist,
     optPropertyBlacklist,
+    selectedPropertyKeys,
+    allPropertyKeys: propertyKeys,
     optSkipCache,
     optManualChoice,
     getCsrfToken,
@@ -1000,8 +1023,8 @@ async function runSearchAndPreview(options = {}) {
     const sig = useExistingSignal ? options.signal : searchAbortControllerRef.value.signal;
     if (!silentJob) {
         jobManager.startJob({
-            kind: "search-preview",
-            label: "Recherche et previsualisation",
+            kind: "search",
+            label: "Recherche",
             canCancel: true,
             cancelHandler: () => searchAbortControllerRef.value?.abort(),
         });
@@ -1017,15 +1040,9 @@ async function runSearchAndPreview(options = {}) {
         }
         if (!silentJob) {
             jobManager.updateProgress({ phase: "search", done: 1, total: 1, label: "Recherche terminee" });
-        }
-        await nextTick();
-        await applyStatusAndPreview(sig);
-        if (sig.aborted) {
-            if (!silentJob) jobManager.finishCancelled();
-            return;
-        }
-        if (!silentJob) {
-            jobManager.finishSuccess("Recherche/preview terminee");
+            const total = Number(search.lastMeta?.value?.total);
+            const countLabel = Number.isFinite(total) ? total : (search.rawItems?.value?.length ?? 0);
+            jobManager.finishSuccess(`${countLabel} fiche(s)`);
         }
     } catch (e) {
         if (e?.name === "AbortError" || sig.aborted) {
@@ -1033,7 +1050,7 @@ async function runSearchAndPreview(options = {}) {
             return;
         }
         if (!silentJob) {
-            jobManager.finishError(e?.message ?? "Erreur recherche/preview");
+            jobManager.finishError(e?.message ?? "Erreur recherche");
         }
         throw e;
     } finally {
@@ -1048,9 +1065,6 @@ const goPrev = async () => {
     const sig = searchAbortControllerRef.value.signal;
     try {
         await search.goPrev({ signal: sig });
-        if (sig.aborted) return;
-        await nextTick();
-        await applyStatusAndPreview(sig);
     } finally {
         searchAbortControllerRef.value = null;
     }
@@ -1060,9 +1074,6 @@ const goNext = async () => {
     const sig = searchAbortControllerRef.value.signal;
     try {
         await search.goNext({ signal: sig });
-        if (sig.aborted) return;
-        await nextTick();
-        await applyStatusAndPreview(sig);
     } finally {
         searchAbortControllerRef.value = null;
     }
@@ -1072,9 +1083,6 @@ const handlePaginationGo = async (pIdx) => {
     const sig = searchAbortControllerRef.value.signal;
     try {
         await search.goToPage(pIdx, { signal: sig });
-        if (sig.aborted) return;
-        await nextTick();
-        await applyStatusAndPreview(sig);
     } finally {
         searchAbortControllerRef.value = null;
     }
@@ -1084,9 +1092,6 @@ const handleSetPageSize = async (v) => {
     const sig = searchAbortControllerRef.value.signal;
     try {
         await search.setPageSize(v, { signal: sig });
-        if (sig.aborted) return;
-        await nextTick();
-        await applyStatusAndPreview(sig);
     } finally {
         searchAbortControllerRef.value = null;
     }
@@ -1346,17 +1351,39 @@ const onCompareImported = () => {
 
 <template>
     <div class="space-y-6">
-        <div class="rounded-box border border-base-300 bg-base-200/40 px-4 py-3 text-sm text-base-content/80">
-            <p v-if="workshopMode === 'explore'">
-                Mode <strong>explorer / importer</strong> : recherche DofusDB, aperçu, import des fiches neuves (et brouillons/raw si auto_update).
+        <div class="rounded-box border border-base-300 bg-base-200/40 px-4 py-3 text-sm text-base-content/80 space-y-1">
+            <p>
+                Mode <strong>{{ currentWorkshopModeMeta.label }}</strong> — {{ currentWorkshopModeMeta.hint }}
             </p>
-            <p v-else-if="workshopMode === 'update'">
-                Mode <strong>mettre à jour l’existant</strong> : les fiches <code class="text-xs">auto_update</code> sont synchronisées. Forcer une fiche jouable reste une option explicite dans « Options &amp; historique ».
-            </p>
-            <p v-else>
-                Mode <strong>images seules</strong> : télécharge les images sans écraser le contenu (nom, description, stats…).
+            <p>
+                État des nouvelles fiches : <code class="text-xs">raw</code>.
             </p>
         </div>
+
+        <Card class="p-6 space-y-4">
+            <ScrappingPropertyCheckboxes
+                :keys="propertyKeys"
+                :selected="selectedPropertyKeys"
+                @update:selected="selectedPropertyKeys = $event"
+            />
+            <ToggleField
+                v-model="optIncludeRelations"
+                label="Inclure les relations"
+                helper="Importer aussi les relations (sorts, drops, recettes, invocations…)."
+            />
+            <label
+                v-if="workshopMode === 'update'"
+                class="flex cursor-pointer items-start gap-2 text-sm"
+            >
+                <input v-model="optRespectAutoUpdate" type="checkbox" class="checkbox checkbox-sm mt-0.5" />
+                <span>
+                    <span class="font-medium">Respecter auto_update</span>
+                    <span class="block text-xs text-primary-400">
+                        Coché (défaut) : ne met à jour que les fiches auto_update. Décoché : forcer toutes les fiches correspondantes.
+                    </span>
+                </span>
+            </label>
+        </Card>
 
         <CompareModal
             :open="compareModalOpen"
@@ -1490,10 +1517,6 @@ const onCompareImported = () => {
 
         <ScrappingOptionsPanel
             v-model:open="showOptionsAndHistory"
-            v-model:opt-include-relations="optIncludeRelations"
-            v-model:opt-update-mode="optUpdateMode"
-            v-model:opt-property-whitelist="optPropertyWhitelist"
-            v-model:opt-property-blacklist="optPropertyBlacklist"
             :history-lines="historyLines"
             :run-id="currentRunId"
             :unknown-characteristics="currentUnknownCharacteristics"
@@ -1566,155 +1589,83 @@ const onCompareImported = () => {
             </p>
         </Card>
 
-        <!-- Corps: tableau -->
+        <!-- Corps: compteur + import + tableau optionnel -->
         <Card class="p-6 space-y-4">
             <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div class="flex items-center gap-2">
-                    <h3 class="font-semibold text-primary-100">Résultats</h3>
-                    <Badge :content="String(visibleItems.length)" color="neutral" />
-                    <span v-if="lastMetaUnwrapped && typeof lastMetaUnwrapped.total === 'number'" class="text-sm text-primary-300">
-                        · total filtré: {{ lastMetaUnwrapped.total }}
+                <div class="flex flex-wrap items-center gap-2">
+                    <h3 class="font-semibold text-primary-100">Recherche</h3>
+                    <Badge :content="String(totalRows)" color="primary" />
+                    <span class="text-sm text-primary-300">
+                        {{ workshopMode === 'complete' ? 'fiche(s) manquante(s)' : 'fiche(s) correspondante(s)' }}
                     </span>
                     <span v-if="selectedCount" class="text-sm text-primary-300">· sélection: {{ selectedCount }}</span>
-                    <span v-if="loadingConvertedUnwrapped" class="text-xs text-primary-300 flex flex-col gap-1">
-                        <span class="flex items-center gap-2">
-                            <Loading />
-                            <span>{{ conversionProgressUnwrapped?.phase === 'relations' ? 'Relations…' : 'Valeurs converties…' }}</span>
-                            <template v-if="conversionProgressUnwrapped && conversionProgressUnwrapped.total > 0">
-                                <div class="w-24 h-1.5 rounded-full bg-base-300 overflow-hidden" role="progressbar" :aria-valuenow="conversionProgressUnwrapped.done" :aria-valuemin="0" :aria-valuemax="conversionProgressUnwrapped.total">
-                                    <div
-                                        class="h-full bg-primary transition-all duration-200"
-                                        :style="{ width: Math.min(100, (conversionProgressUnwrapped.done / conversionProgressUnwrapped.total) * 100) + '%' }"
-                                    />
-                                </div>
-                                <span class="text-primary-400 tabular-nums">{{ conversionProgressUnwrapped.total ? Math.round((conversionProgressUnwrapped.done / conversionProgressUnwrapped.total) * 100) : 0 }}%</span>
-                            </template>
-                        </span>
-                        <span v-if="conversionProgressUnwrapped && conversionProgressUnwrapped.total > 0" class="text-[10px] text-primary-400/80">
-                            {{ conversionProgressUnwrapped.done }} traités / {{ conversionProgressUnwrapped.total - conversionProgressUnwrapped.done }} restant
-                        </span>
-                    </span>
                     <Btn
-                        v-if="searchingUnwrapped || loadingConvertedUnwrapped || batchImportingUnwrapped"
+                        v-if="searchingUnwrapped || batchImportingUnwrapped"
                         color="error"
                         variant="outline"
                         size="sm"
-                        class="ml-2"
-                        title="Arrêter la recherche et la conversion en cours"
+                        title="Arrêter la recherche ou l’import en cours"
                         @click="cancelSearchAndConversion"
                     >
                         <Icon source="fa-solid fa-stop" alt="" pack="solid" class="mr-1" />
                         Annuler
                     </Btn>
                 </div>
-
-                <div class="flex flex-wrap gap-2 items-center">
-                    <InputField v-model="tableSearch" label="Recherche dans le tableau" placeholder="id ou nom…" />
-                </div>
+                <label class="flex items-center gap-2 text-sm cursor-pointer">
+                    <input v-model="showLightTable" type="checkbox" class="checkbox checkbox-sm" />
+                    <span>Afficher le tableau</span>
+                </label>
             </div>
 
-            <div class="flex flex-wrap gap-2 items-center justify-between">
-                <div class="flex flex-wrap gap-2 items-center">
-                    <Btn variant="ghost" :disabled="!hasRawItems" @click="resetTable">
-                        Réinitialiser
-                    </Btn>
-                    <span class="text-sm text-primary-300 mr-1">Périmètre :</span>
-                    <label class="flex items-center gap-1.5 cursor-pointer">
-                        <input v-model="batchScope" type="radio" value="selection" class="radio radio-sm radio-primary" />
-                        <span class="text-sm">Sélection</span>
-                    </label>
-                    <label class="flex items-center gap-1.5 cursor-pointer">
-                        <input v-model="batchScope" type="radio" value="all" class="radio radio-sm radio-primary" />
-                        <span class="text-sm">Tous</span>
-                    </label>
-                    <label class="flex items-center gap-1.5 cursor-pointer">
-                        <input v-model="batchScope" type="radio" value="pages" class="radio radio-sm radio-primary" />
-                        <span class="text-sm">Par pages</span>
-                    </label>
-                    <template v-if="batchScope === 'pages'">
-                        <InputField
-                            v-model="pageRangeInput"
-                            label="Pages"
-                            :disabled="batchImportingUnwrapped"
-                            placeholder="ex: 1-6 ou 4,5"
-                            class="w-36"
-                        />
-                    </template>
-                    <Btn
-                        color="secondary"
-                        :disabled="batchImportingUnwrapped || (batchScope !== 'pages' && !hasRawItems)"
-                        title="Simule l'import sans écrire en base"
-                        @click="runBatchAction('simulate')"
-                    >
-                        <Loading v-if="batchImportingUnwrapped" class="mr-2" />
-                        {{ batchScope === 'pages' && batchImportByPagesProgressUnwrapped ? `Page ${batchImportByPagesProgressUnwrapped}` : 'Simuler' }}
-                    </Btn>
-                    <Btn
-                        color="success"
-                        :disabled="batchImportingUnwrapped || (batchScope !== 'pages' && !hasRawItems)"
-                        title="Importe en base (convert + validate + integrate)"
-                        @click="runBatchAction('import')"
-                    >
-                        <Loading v-if="batchImportingUnwrapped" class="mr-2" />
-                        {{ batchScope === 'pages' && batchImportByPagesProgressUnwrapped ? `Page ${batchImportByPagesProgressUnwrapped}` : 'Importer' }}
-                    </Btn>
-                    <Btn
-                        variant="ghost"
-                        :disabled="effectsAnalysisLoading || !canAnalyzeEffects"
-                        @click="analyzeEffects"
-                        title="Disponible pour équipement/consommable/ressource/sort (sur l’ID sélectionné)"
-                    >
-                        <Loading v-if="effectsAnalysisLoading" class="mr-2" />
-                        Analyser effets (non mappés)
-                    </Btn>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <Btn size="sm" variant="ghost" :disabled="!hasRawItems" @click="toggleSelectAll">
-                        {{ allSelected ? "Tout décocher" : "Tout cocher" }}
-                    </Btn>
-                </div>
+            <div class="flex flex-wrap gap-2 items-center">
+                <Btn variant="ghost" :disabled="!hasRawItems" @click="resetTable">
+                    Réinitialiser
+                </Btn>
+                <span class="text-sm text-primary-300 mr-1">Périmètre :</span>
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                    <input v-model="batchScope" type="radio" value="selection" class="radio radio-sm radio-primary" />
+                    <span class="text-sm">Sélection</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                    <input v-model="batchScope" type="radio" value="all" class="radio radio-sm radio-primary" />
+                    <span class="text-sm">Page courante</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                    <input v-model="batchScope" type="radio" value="pages" class="radio radio-sm radio-primary" />
+                    <span class="text-sm">Par pages</span>
+                </label>
+                <template v-if="batchScope === 'pages'">
+                    <InputField
+                        v-model="pageRangeInput"
+                        label="Pages"
+                        :disabled="batchImportingUnwrapped"
+                        placeholder="ex: 1-6 ou 4,5"
+                        class="w-36"
+                    />
+                </template>
+                <Btn
+                    color="primary"
+                    :disabled="batchImportingUnwrapped || selectedPropertyKeys.length === 0 || (batchScope !== 'pages' && !hasRawItems)"
+                    title="Importe en file d’attente (jobs)"
+                    @click="runBatchAction('import')"
+                >
+                    <Loading v-if="batchImportingUnwrapped" class="mr-2" />
+                    {{ batchScope === 'pages' && batchImportByPagesProgressUnwrapped ? `Page ${batchImportByPagesProgressUnwrapped}` : 'Importer' }}
+                </Btn>
             </div>
 
             <div v-if="!hasRawItems" class="text-sm text-primary-300 italic">
-                Aucun résultat. Lance une recherche.
+                Aucun résultat. Lance une recherche pour obtenir le compteur.
             </div>
 
-            <ScrappingResultsTable
-                :rows="visibleRowsWithRelations"
+            <ScrappingLightTable
+                v-if="showLightTable && hasRawItems"
+                :rows="visibleItems"
                 :selected-ids="selectedIds"
-                :expanded-row-key="expandedRowKey"
-                :get-expand-key="getExpandKey"
                 :all-selected="allSelected"
-                :get-status-entry="(item) => status.getStatusEntry(item)"
-                :get-status-label="(item) => status.getStatusLabel(item)"
-                :get-status-color="(item) => status.getStatusColor(item)"
-                :triple-name="(row) => compare.tripleName(row.item, getConvertedForRow(row))"
-                :triple-level="(row) => compare.tripleLevel(row.item, getConvertedForRow(row))"
-                :triple-type="(row) => compare.tripleType(row.item, getConvertedForRow(row))"
-                :comparison-rows="(row) => compare.comparisonRows(row.item, getConvertedForRow(row), row.isRelation ? (getConvertedForRow(row)?.resolvedEntityType ?? row.relation?.type) : undefined)"
-                :format-compare-val="compare.formatCompareVal"
-                :relation-type-label="(row) => relationTypeLabel(row?.relation, getConvertedForRow(row)?.resolvedEntityType)"
-                :supports="supports"
-                :format-name="(n) => (n?.fr ?? n?.en ?? (typeof n === 'string' ? n : '—'))"
-                :exists-label="existsLabel"
-                :exists-tooltip="existsTooltip"
-                :exists-entity-href="existsEntityHref"
-                :row-has-diff="(row) => compare.comparisonRows(row.item, getConvertedForRow(row), row.isRelation ? (getConvertedForRow(row)?.resolvedEntityType ?? row.relation?.type) : undefined).some(r => r.differs)"
-                :has-item-effects="hasItemEffects"
-                :item-effects-for-row="itemEffectsForRow"
-                :get-characteristic-label="getCharacteristicLabel"
-                :entity-type-str="selectedEntityTypeStr"
-                :get-relation-entity-type="(row) => getConvertedForRow(row)?.resolvedEntityType"
-                :entity-modal-loading="entityModalLoading"
-                :entity-modal-loading-id="entityModalLoadingId"
-                @update:selected-ids="(p) => p === 'toggle-all' ? toggleSelectAll() : (p?.type === 'toggle-one' && toggleSelectOne(p.id))"
-                @toggle-expand="toggleExpandedRow"
-                @open-compare="openCompareModalForRow"
-                @open-entity="openEntityModal"
+                @update:selected-ids="(p) => p === 'toggle-all' ? toggleSelectAll() : toggleSelectOne(p)"
             />
 
-            <!-- Pagination sous les résultats (visible après recherche) -->
             <div v-if="hasRawItems" class="mt-4 pt-4 border-t border-base-300">
                 <TanStackTablePagination
                     :page-index="pageIndex"
@@ -1733,63 +1684,6 @@ const onCompareImported = () => {
                     @go="handlePaginationGo"
                     @set-page-size="handleSetPageSize"
                 />
-            </div>
-        </Card>
-
-        <!-- Analyse des effets non mappés -->
-        <Card v-if="effectsAnalysisEntityId !== null" class="p-6 space-y-4">
-            <div class="flex items-center justify-between gap-2">
-                <div>
-                    <h3 class="font-semibold text-primary-100">Analyse des effets non mappés</h3>
-                    <p class="text-xs text-primary-300 mt-1">
-                        {{ effectsAnalysisType }} #{{ effectsAnalysisEntityId }}
-                        <span v-if="effectsAnalysisSummary && typeof effectsAnalysisSummary === 'object'">
-                            · unmapped: {{ Array.isArray(effectsAnalysisUnmapped) ? effectsAnalysisUnmapped.length : 0 }}
-                        </span>
-                    </p>
-                </div>
-                <Btn size="sm" variant="ghost" @click="clearEffectsAnalysis">Fermer</Btn>
-            </div>
-
-            <div v-if="effectsAnalysisLoading" class="flex items-center gap-2 text-primary-300">
-                <Loading />
-                <span>Analyse en cours…</span>
-            </div>
-
-            <div v-else-if="!effectsAnalysisUnmapped.length" class="text-sm text-primary-300 italic">
-                Aucun effet “unmapped” (ou format d’effets non reconnu).
-            </div>
-
-            <div v-else class="overflow-x-auto rounded-box border border-base-300">
-                <table class="table w-full">
-                    <thead>
-                        <tr>
-                            <th class="w-24">effectId</th>
-                            <th class="w-24">min</th>
-                            <th class="w-24">max</th>
-                            <th>Description (FR)</th>
-                            <th class="w-28">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(u, idx) in effectsAnalysisUnmapped" :key="String(u?.effectId ?? idx)">
-                            <td class="font-mono">{{ u?.effectId ?? "—" }}</td>
-                            <td class="font-mono">{{ u?.min ?? "—" }}</td>
-                            <td class="font-mono">{{ u?.max ?? "—" }}</td>
-                            <td class="text-sm">
-                                {{ u?.meta?.description_fr || "—" }}
-                            </td>
-                            <td>
-                                <Link
-                                    :href="effectMappingHref(u?.effectId)"
-                                    class="btn btn-ghost btn-xs"
-                                >
-                                    Corriger
-                                </Link>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </Card>
 
