@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\GenerativeAi;
 
+use App\Models\AiGenerationRun;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -24,73 +25,135 @@ final class AnthropicUsageService
      *     output_tokens: int|null,
      *     cost_usd: float|null,
      *     remaining_credits_usd: float|null,
+     *     remaining_hint: string|null,
+     *     local_input_tokens: int,
+     *     local_output_tokens: int,
+     *     local_runs: int,
+     *     has_api_key: bool,
      *     model: string
      * }
      */
     public function snapshot(): array
     {
         $client = app(GenerativeAiClient::class);
-        $empty = [
+        $local = $this->localMonth();
+        $base = [
             'available' => false,
-            'reason' => 'no_key',
-            'message' => 'Aucune clé Anthropic : solde indisponible.',
+            'reason' => $client->hasApiKey() ? null : 'no_key',
+            'message' => '',
             'input_tokens' => null,
             'output_tokens' => null,
             'cost_usd' => null,
             'remaining_credits_usd' => null,
+            'remaining_hint' => null,
+            'local_input_tokens' => $local['input_tokens'],
+            'local_output_tokens' => $local['output_tokens'],
+            'local_runs' => $local['runs'],
+            'has_api_key' => $client->hasApiKey(),
             'model' => $client->model(),
         ];
 
-        if (! $client->hasApiKey()) {
+        $remote = $client->hasApiKey()
+            ? Cache::remember('ia.anthropic.usage.remote.v1', 120, fn (): array => $this->fetchRemote($client))
+            : [
+                'available' => false,
+                'reason' => 'no_key',
+                'input_tokens' => null,
+                'output_tokens' => null,
+                'cost_usd' => null,
+                'remaining_credits_usd' => null,
+            ];
+
+        $merged = [
+            ...$base,
+            ...$remote,
+            'local_input_tokens' => $local['input_tokens'],
+            'local_output_tokens' => $local['output_tokens'],
+            'local_runs' => $local['runs'],
+            'has_api_key' => $client->hasApiKey(),
+            'model' => $client->model(),
+        ];
+        $merged['remaining_hint'] = app(CostEstimator::class)
+            ->remainingHint($merged['remaining_credits_usd'] ?? null);
+        $merged['message'] = $this->composeMessage($merged);
+
+        return $merged;
+    }
+
+    /**
+     * @return array{input_tokens: int, output_tokens: int, runs: int}
+     */
+    public function localMonth(): array
+    {
+        $row = AiGenerationRun::query()
+            ->where('status', AiGenerationRun::STATUS_SUCCESS)
+            ->where('created_at', '>=', now()->startOfMonth())
+            ->selectRaw(
+                'COALESCE(SUM(input_tokens), 0) as input_tokens, COALESCE(SUM(output_tokens), 0) as output_tokens, COUNT(*) as runs'
+            )
+            ->first();
+
+        return [
+            'input_tokens' => (int) ($row?->input_tokens ?? 0),
+            'output_tokens' => (int) ($row?->output_tokens ?? 0),
+            'runs' => (int) ($row?->runs ?? 0),
+        ];
+    }
+
+    /**
+     * @return array{
+     *     available: bool,
+     *     reason: string|null,
+     *     input_tokens: int|null,
+     *     output_tokens: int|null,
+     *     cost_usd: float|null,
+     *     remaining_credits_usd: float|null
+     * }
+     */
+    private function fetchRemote(GenerativeAiClient $client): array
+    {
+        $empty = [
+            'available' => false,
+            'reason' => 'http_error',
+            'input_tokens' => null,
+            'output_tokens' => null,
+            'cost_usd' => null,
+            'remaining_credits_usd' => null,
+        ];
+
+        try {
+            $base = rtrim((string) config('services.anthropic.base_url', 'https://api.anthropic.com'), '/');
+            $startingAt = now()->startOfMonth()->toIso8601String();
+            $response = Http::withHeaders([
+                'x-api-key' => $client->apiKey(),
+                'anthropic-version' => (string) config('services.anthropic.version', '2023-06-01'),
+                'content-type' => 'application/json',
+            ])
+                ->timeout(15)
+                ->acceptJson()
+                ->get($base.'/v1/organizations/usage', [
+                    'starting_at' => $startingAt,
+                ]);
+
+            if (! $response->successful()) {
+                return $empty;
+            }
+
+            $usage = $this->extractUsage($response->json());
+
+            return [
+                'available' => true,
+                'reason' => null,
+                'input_tokens' => $usage['input_tokens'],
+                'output_tokens' => $usage['output_tokens'],
+                'cost_usd' => $usage['cost_usd'],
+                'remaining_credits_usd' => $usage['remaining_credits_usd'],
+            ];
+        } catch (\Throwable $exception) {
+            Log::notice('Usage Anthropic indisponible', ['error' => $exception->getMessage()]);
+
             return $empty;
         }
-
-        return Cache::remember('ia.anthropic.usage', 120, function () use ($client, $empty): array {
-            try {
-                $base = rtrim((string) config('services.anthropic.base_url', 'https://api.anthropic.com'), '/');
-                $startingAt = now()->startOfMonth()->toIso8601String();
-                $response = Http::withHeaders([
-                    'x-api-key' => $client->apiKey(),
-                    'anthropic-version' => (string) config('services.anthropic.version', '2023-06-01'),
-                    'content-type' => 'application/json',
-                ])
-                    ->timeout(15)
-                    ->acceptJson()
-                    ->get($base.'/v1/organizations/usage', [
-                        'starting_at' => $startingAt,
-                    ]);
-
-                if (! $response->successful()) {
-                    return [
-                        ...$empty,
-                        'reason' => 'http_error',
-                        'message' => 'Usage Anthropic indisponible ('.$response->status().'). La génération reste possible.',
-                    ];
-                }
-
-                $body = $response->json();
-                $usage = $this->extractUsage($body);
-
-                return [
-                    'available' => true,
-                    'reason' => null,
-                    'message' => $this->formatMessage($usage),
-                    'input_tokens' => $usage['input_tokens'],
-                    'output_tokens' => $usage['output_tokens'],
-                    'cost_usd' => $usage['cost_usd'],
-                    'remaining_credits_usd' => $usage['remaining_credits_usd'],
-                    'model' => $client->model(),
-                ];
-            } catch (\Throwable $exception) {
-                Log::notice('Usage Anthropic indisponible', ['error' => $exception->getMessage()]);
-
-                return [
-                    ...$empty,
-                    'reason' => 'http_error',
-                    'message' => 'Usage Anthropic indisponible. La génération reste possible.',
-                ];
-            }
-        });
     }
 
     /**
@@ -168,23 +231,53 @@ final class AnthropicUsageService
     }
 
     /**
-     * @param  array{input_tokens: int|null, output_tokens: int|null, cost_usd: float|null, remaining_credits_usd: float|null}  $usage
+     * @param  array{
+     *     available: bool,
+     *     reason: string|null,
+     *     input_tokens: int|null,
+     *     output_tokens: int|null,
+     *     cost_usd: float|null,
+     *     remaining_credits_usd: float|null,
+     *     remaining_hint: string|null,
+     *     local_input_tokens: int,
+     *     local_output_tokens: int,
+     *     local_runs: int,
+     *     has_api_key: bool
+     * }  $usage
      */
-    private function formatMessage(array $usage): string
+    private function composeMessage(array $usage): string
     {
-        $parts = ['Usage Anthropic (mois en cours)'];
-        if ($usage['input_tokens'] !== null || $usage['output_tokens'] !== null) {
-            $parts[] = sprintf(
-                'entrée %s · sortie %s tokens',
-                number_format((int) ($usage['input_tokens'] ?? 0), 0, ',', ' '),
-                number_format((int) ($usage['output_tokens'] ?? 0), 0, ',', ' ')
-            );
+        $parts = [];
+        $parts[] = sprintf(
+            'Cette app (mois) : %s entrée · %s sortie · %s conversion(s)',
+            number_format((int) $usage['local_input_tokens'], 0, ',', ' '),
+            number_format((int) $usage['local_output_tokens'], 0, ',', ' '),
+            number_format((int) $usage['local_runs'], 0, ',', ' ')
+        );
+
+        if ($usage['available'] === true) {
+            if ($usage['input_tokens'] !== null || $usage['output_tokens'] !== null) {
+                $parts[] = sprintf(
+                    'Anthropic : entrée %s · sortie %s',
+                    number_format((int) ($usage['input_tokens'] ?? 0), 0, ',', ' '),
+                    number_format((int) ($usage['output_tokens'] ?? 0), 0, ',', ' ')
+                );
+            }
+            if ($usage['cost_usd'] !== null) {
+                $parts[] = 'coût ~ '.$this->usd($usage['cost_usd']);
+            }
+        } elseif (($usage['reason'] ?? null) === 'no_key') {
+            $parts[] = 'Aucune clé Anthropic : solde fournisseur indisponible';
+        } elseif (($usage['reason'] ?? null) === 'http_error') {
+            $parts[] = 'Usage Anthropic indisponible. La génération reste possible';
         }
-        if ($usage['cost_usd'] !== null) {
-            $parts[] = 'coût ~ '.$this->usd($usage['cost_usd']);
-        }
+
         if ($usage['remaining_credits_usd'] !== null) {
-            $parts[] = 'crédit restant '.$this->usd($usage['remaining_credits_usd']);
+            $credit = 'crédit restant '.$this->usd($usage['remaining_credits_usd']);
+            if (is_string($usage['remaining_hint'] ?? null) && $usage['remaining_hint'] !== '') {
+                $credit .= ' '.$usage['remaining_hint'];
+            }
+            $parts[] = $credit;
         }
 
         return implode(' — ', $parts).'.';

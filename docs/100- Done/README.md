@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Solde IA visible et panoplies or
+
+Sur **IA métier**, on voit les **tokens du mois** (cette app) et le **crédit Anthropic restant** s’il est connu, plus les estimés par action. Le modal **Sources** affiche le même solde à côté du coût estimé. Les **panoplies exemples** se choisissent comme les fiches (recherche jouable), plus besoin de les coller dans un fichier.
+
 ## Septembre 2026 — Ateliers sur la vue d’ensemble
 
 Sur **Gestion du contenu** (`/admin/content`), trois cartes **Récupérer / Mettre à jour / Compléter** ouvrent l’atelier DofusDB (avec `?mode=`), plus une carte **Génération IA** vers `/admin/content/ia-generation`. Les camemberts restent en dessous.

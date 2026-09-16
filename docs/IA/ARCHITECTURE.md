@@ -106,7 +106,7 @@ Un JSON « dans les normes » mais idiot (sorts Terre, Force 0) doit **échouer*
 - Writer : `AllowlistWriter` — jamais `unguard` du JSON LLM ; `state=auto` via `EntityStateGate::assertAutomatedWriterMaySet` ; `auto_update=false`.
 - Job : `ConvertPacketJob` (queue `database` en prod, `sync` en tests). 1 paquet = 1 requête. Retries validateur = `generation.max_retries`.
 - Specs : `app/Services/GenerativeAi/Specializations/` (`spell`, `encounter`, `npc`, `item`, `consumable`).
-- HTTP : `POST /api/entities/{type}/{id}/ia-convert` (`role:admin`, throttle 12/min). Types : `monsters`, `spells`, `npcs`, `items`, `consumables`. Statut : `GET /api/ia/status`.
+- HTTP : `POST /api/entities/{type}/{id}/ia-convert` (`role:admin`, throttle 12/min). Types : `monsters`, `spells`, `npcs`, `items`, `consumables`. Statut : `GET /api/ia/status` (tokens locaux du mois + estimés + crédit Anthropic s’il est lisible).
 - CLI : `php artisan ia:convert {spell|encounter|npc|item|consumable}` (`ia:convert-encounter` reste un alias).
 - UI : une icône « Sources » → `EntitySourceModal` (DofusDB | Conversion IA). Volet IA si admin.
 - Tests : `Http::fake` — aucun appel LLM réel en CI (`ANTHROPIC_API_KEY` vide dans `phpunit.xml`).

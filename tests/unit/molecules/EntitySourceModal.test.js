@@ -29,6 +29,7 @@ describe("EntitySourceModal", () => {
                 entityLabel: "Pression",
                 aiActionLabel: "Sort (effets)",
                 aiEstimate: { formatted: "~ 0,05 $" },
+                aiUsage: { remaining_credits_usd: 12, remaining_hint: "≈ 120 rencontres ou 34 PNJ" },
             },
             global: { stubs },
         });
@@ -43,6 +44,8 @@ describe("EntitySourceModal", () => {
         expect(wrapper.text()).toContain("Sort (effets)");
         expect(wrapper.text()).toContain("auto");
         expect(wrapper.text()).toContain("~ 0,05 $");
+        expect(wrapper.get("[data-testid='ia-source-remaining']").text()).toContain("Crédit restant");
+        expect(wrapper.get("[data-testid='ia-source-remaining']").text()).toContain("120 rencontres");
 
         const primaryButtons = wrapper.findAll("button").filter((btn) => btn.text().includes("Lancer la conversion"));
         expect(primaryButtons.length).toBe(1);

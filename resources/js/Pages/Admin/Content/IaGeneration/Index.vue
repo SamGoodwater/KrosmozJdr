@@ -65,6 +65,22 @@ const form = useForm({
 
 const entityKeys = computed(() => Object.keys(props.entity_labels || {}));
 
+const localTokensLabel = computed(() => {
+    const usage = props.usage || {};
+    const input = Number(usage.local_input_tokens || 0).toLocaleString("fr-FR");
+    const output = Number(usage.local_output_tokens || 0).toLocaleString("fr-FR");
+    const runs = Number(usage.local_runs || 0).toLocaleString("fr-FR");
+    return `${input} entrée · ${output} sortie · ${runs} conversion(s)`;
+});
+
+const remainingCreditLabel = computed(() => {
+    const remaining = props.usage?.remaining_credits_usd;
+    if (typeof remaining !== "number") {
+        return "Inconnu (clé org Anthropic ou usage fournisseur indisponible)";
+    }
+    return `${Number(remaining).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $`;
+});
+
 const updatedLabel = computed(() => {
     if (!props.updated_at) {
         return null;
@@ -97,6 +113,9 @@ function cloneEntities(entities) {
             example_ids: [...(row.example_ids || [])],
             task_prompt: row.task_prompt || "",
         };
+        if (key === "item") {
+            out[key].few_shot_panoplies = [...(row.few_shot_panoplies || [])];
+        }
     }
     return out;
 }
@@ -190,13 +209,30 @@ function importItemsFromFiles() {
         </p>
 
         <form class="space-y-6" @submit.prevent="save">
-            <section class="rounded-box border border-base-300 bg-base-100/50 p-4 space-y-3">
-                <h2 class="text-lg font-semibold text-base-content">Solde Anthropic</h2>
+            <section
+                class="rounded-box border border-base-300 bg-base-100/50 p-4 space-y-3"
+                data-testid="ia-usage"
+            >
+                <h2 class="text-lg font-semibold text-base-content">Solde et coûts</h2>
+                <dl class="grid gap-3 sm:grid-cols-2 text-sm">
+                    <div>
+                        <dt class="text-base-content/60">Tokens ce mois (cette app)</dt>
+                        <dd class="font-medium">{{ localTokensLabel }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-base-content/60">Crédit Anthropic restant</dt>
+                        <dd class="font-medium">{{ remainingCreditLabel }}</dd>
+                    </div>
+                    <div v-if="usage?.remaining_hint" class="sm:col-span-2">
+                        <dt class="text-base-content/60">Capacité restante</dt>
+                        <dd class="font-medium">{{ usage.remaining_hint }}</dd>
+                    </div>
+                </dl>
                 <p class="text-sm text-base-content/70">{{ usage.message || "Usage indisponible." }}</p>
                 <p v-if="!has_api_key" class="text-sm text-warning">
                     Aucune clé <code>ANTHROPIC_API_KEY</code> : la génération est bloquée, les estimés restent affichés.
                 </p>
-                <ul class="text-sm space-y-1">
+                <ul class="text-sm space-y-1" data-testid="ia-estimates">
                     <li v-for="row in estimates" :key="row.action">
                         <span class="font-medium">{{ row.label }}</span>
                         — {{ row.formatted }}

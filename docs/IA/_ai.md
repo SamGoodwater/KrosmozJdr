@@ -17,8 +17,8 @@
 - **Specs** : `spell`, `encounter` (monstre), `npc` (`NpcKitCatalog`), `item`, `consumable`. Persistés en `auto` via le même pipeline.
 - **Objets** : grille algo `ia:equipment-grid`. Rapport ; `--write` = trous `draft`.
 - **Fiches Création** : `CreationGuideCatalog` injecté dans la couche tâche.
-- **UI** : un modal `EntitySourceModal` (DofusDB | IA), une icône « Sources ». Volet IA admin only.
-- **Admin** `/admin/content/ia-generation` : superviseur, prompts de tâche, étalons (recherche de fiches playable), gel, solde Anthropic, estimés (`CostEstimator`). Carte d’entrée sur `/admin/content`.
+- **UI** : un modal `EntitySourceModal` (DofusDB | IA), une icône « Sources ». Volet IA admin only. Solde : tokens du mois (`ai_generation_runs`) + crédit Anthropic s’il est connu, dans la page admin **et** le modal.
+- **Admin** `/admin/content/ia-generation` : superviseur, prompts de tâche, étalons (recherche de fiches playable), panoplies or (objets, recherche playable), gel, tokens du mois + solde Anthropic, estimés (`CostEstimator`). Carte d’entrée sur `/admin/content`.
 - **L’IA ne réécrit pas l’identité** ni, par défaut, les **caractéristiques** d’une fiche Dofus. Liste éditable admin / `resources/ia/generation.json`.
 - **Monstres** : génération **à la demande**, paquet `{ monster, spells: [2-3] }` → `auto`. Commande `ia:convert encounter` (`ia:convert-encounter` en alias).
 - **Sorts / PNJ / objets / conso** : même pipeline (`ia:convert {spell|npc|item|consumable}`). Sort = `effect` seulement ; PNJ = kit `NpcKitCatalog`.

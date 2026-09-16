@@ -68,6 +68,12 @@ const exampleIds = computed({
     set: (ids) => patch({ example_ids: Array.isArray(ids) ? ids : [] }),
 });
 
+const fewShotPanoplies = computed({
+    get: () =>
+        Array.isArray(props.modelValue.few_shot_panoplies) ? props.modelValue.few_shot_panoplies : [],
+    set: (ids) => patch({ few_shot_panoplies: Array.isArray(ids) ? ids : [] }),
+});
+
 const taskPromptText = computed({
     get: () => props.modelValue.task_prompt || "",
     set: (text) => patch({ task_prompt: text }),
@@ -185,6 +191,18 @@ function toggleWritableCharacteristic(key, checked) {
         />
 
         <ExamplePicker v-model="exampleIds" :entity="entity" />
+
+        <div v-if="entity === 'item'" data-testid="ia-example-panoplies">
+            <ExamplePicker
+                v-model="fewShotPanoplies"
+                entity="panoply"
+                ref-mode="name"
+                title="Panoplies exemples (playable)"
+                helper="Noms des sets jouables que l’IA doit imiter. Pas d’id SQL, vivier jouable par défaut."
+                search-placeholder="Rechercher une panoplie…"
+                search-aria-label="Rechercher une panoplie"
+            />
+        </div>
 
         <TextareaField
             v-model="taskPromptText"

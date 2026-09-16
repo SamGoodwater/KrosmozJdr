@@ -27,6 +27,7 @@ const props = defineProps({
     aiError: { type: String, default: "" },
     aiSuccess: { type: String, default: "" },
     aiEstimate: { type: Object, default: null },
+    aiUsage: { type: Object, default: null },
     aiActionLabel: { type: String, default: "Conversion IA" },
 });
 
@@ -77,6 +78,23 @@ const estimateLabel = computed(() => {
     const row = props.aiEstimate;
     if (!row) return "";
     return row.formatted || row.label || "";
+});
+
+const remainingUsageLabel = computed(() => {
+    const usage = props.aiUsage;
+    if (!usage || typeof usage !== "object") return "";
+    if (typeof usage.remaining_credits_usd === "number") {
+        const credit = Number(usage.remaining_credits_usd).toLocaleString("fr-FR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+        const hint = usage.remaining_hint ? ` ${usage.remaining_hint}` : "";
+        return `Crédit restant : ${credit} $${hint}`;
+    }
+    const input = Number(usage.local_input_tokens || 0).toLocaleString("fr-FR");
+    const output = Number(usage.local_output_tokens || 0).toLocaleString("fr-FR");
+    const runs = Number(usage.local_runs || 0).toLocaleString("fr-FR");
+    return `Tokens ce mois (app) : ${input} entrée · ${output} sortie · ${runs} conversion(s)`;
 });
 
 function submitDofusdb() {
@@ -176,6 +194,9 @@ function submitAi() {
                 </p>
                 <p v-if="estimateLabel" class="text-sm text-base-content/70">
                     Coût estimé : <span class="font-medium">{{ estimateLabel }}</span>
+                </p>
+                <p v-if="remainingUsageLabel" class="text-sm text-base-content/70" data-testid="ia-source-remaining">
+                    {{ remainingUsageLabel }}
                 </p>
                 <TextareaField
                     :model-value="aiBrief"
