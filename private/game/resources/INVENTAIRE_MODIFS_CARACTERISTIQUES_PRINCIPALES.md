@@ -54,13 +54,13 @@ Les max affichés utilisaient 11 (mod max) ; ils passent à 7 :
 ## 4. Fichiers à modifier
 
 ### Seeders
-- `characteristic_creature.php` : max 24 pour les 6 carac principales, max 7 pour modificateurs, formules mod avec `min(..., 7)`, max des secondaires
-- `characteristic_object.php` : vérifier max équipement (+6, forgemagie +2)
+- Définitions JSON `database/seeders/data/characteristic-definitions/` : score créature max 24, mod max 7
+- `*_object` (6 caracs principales) : **+4** équipement, forgemagie **+2** (livre 2.6.1 — pas +6 / +8)
 
 ### Règles
-- `2.2.1-caracteristiques-principales.md` : score max 24, progression niv. 3/6/9/12/15/18, mod max 7, équip. +6, forgemagie +2
+- `2.2.1-caracteristiques-principales.md` : score max 24, paliers pairs (table 2.3.2), mod max 7, équip. **+4**, forgemagie +2
 - `2.2.2-caracteristiques-secondaires.md` : max CA, Esquive, Tacle, Fuite, sauvegardes
-- `2.6.1-equipements-de-base.md` : chapeaux/capes +6 max
+- `2.6.1-equipements-de-base.md` : chapeaux/capes **+4** max par objet
 
 ### Fiche personnage
 - Mise à jour manuelle si nécessaire (valeurs max, progression)

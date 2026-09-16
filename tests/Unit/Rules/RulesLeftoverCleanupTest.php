@@ -60,4 +60,28 @@ final class RulesLeftoverCleanupTest extends TestCase
             }
         }
     }
+
+    public function test_resources_docs_do_not_teach_plus_eight_main_stats(): void
+    {
+        $root = dirname(__DIR__, 3).'/private/game/resources';
+        $files = [
+            $root.'/PROPOSITIONS_FORMULES_ET_PROPRIETES.md',
+            $root.'/INVENTAIRE_MODIFS_CARACTERISTIQUES_PRINCIPALES.md',
+            $root.'/AUDIT_COHERENCE_GLOBALE.md',
+        ];
+
+        foreach ($files as $path) {
+            $text = (string) file_get_contents($path);
+            $this->assertStringNotContainsString(
+                'max 8 (6 équip.',
+                $text,
+                basename($path)
+            );
+            $this->assertStringNotContainsString(
+                'Le seeder utilise **max 8**',
+                $text,
+                basename($path)
+            );
+        }
+    }
 }

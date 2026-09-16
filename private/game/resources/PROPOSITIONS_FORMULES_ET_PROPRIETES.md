@@ -20,7 +20,7 @@ Remplacer les formules linéaires par des **formules-table** (syntaxe JSON suppo
 | **fixed_damage_*_object** | 1–2:1, 3–4:2, 5–6:3, 7–8:4, 9–10:5 (max 5, forgemagie +5) | `floor(-0.1 + 1.78*pow(...))` | Table équivalente au PDF pour conversion Dofus ; `formula` pour objet créé à la main : table niveau→bonus |
 | **fixed_damage_multiple_object** | 1–10:0, 11–12:1, 13–14:2, 15–16:3, 17–18:4, 19–20:5 | `[level]*(3/20)` | Table : `{"1":"0","11":"1","13":"2","15":"3","17":"4","19":"5","characteristic":"level"}` |
 | **life_points_max_object** | 1–2:1, 3–4:2, … 19–20:5 | `floor(-0.4+ 13.8587 * pow(...))` | Table niveau→bonus pour création manuelle ; conserver formule de conversion Dofus pour le scrapping |
-| **vitality_object, wisdom_object** | 1–2:0, 3–4:1, … 19–20:8 | `[level]*(8/20)` | Table : paliers 1→0, 3→1, 5→2, 7→3, 9→4, 11→5, 13→6, 15→7, 17→8 |
+| **vitality_object, wisdom_object** (et For/Int/Cha/Agi) | Ancien PDF jusqu’à 8 — **abandonné**. Canon livre **+4** (2.6.1) | paliers jusqu’à 4 | Table : 1→0, 3→1, 5→1, 7→2, 9→2, 11→3, 13→3, 15→4, 17→4, 20→4 |
 | **initiative_object** | 1–2:0, 3–4:1, … 19–20:3 | `floor(0.1973 * pow([d], 0.4519))` | Pour objet : table niveau→bonus. Conserver formule Dofus pour conversion |
 | **tackle_object, dodge_object** | 1–2:1, 3–4:2, … 19–20:8 | `floor(1.1 + 2* pow(([d]-1)/12, 0.6))` | Table : 1→1, 3→2, 5→3, 7→4, 9→5, 11→6, 13→7, 15→8 |
 | **fixed_resistance_*_object** (boucliers) | 1–2:1, 3–4:2, … 19–20:7 | `floor(1.1361 + 3.5* pow(...))` | Table : 1→1, 3→2, 5→3, 7→4, 9→5, 11→6, 13→7 |
@@ -33,15 +33,14 @@ Remplacer les formules linéaires par des **formules-table** (syntaxe JSON suppo
 
 ## 2. Incohérences règles vs seeders (COHERENCE_SEEDER_REGLES)
 
-### 2.1 Bonus par objet : stats principales (RÉSOLU)
+### 2.1 Bonus par objet : stats principales (RÉSOLU — sept. 2026)
 
 | Source | Vitalité / Force / etc. (chapeaux, capes) |
 |--------|-------------------------------------------|
-| **Règles 2.2.3 / 2.6.1** | +4 maximum (équipement) + 2 (forgemagie) = +6 total |
-| **Règles 2.6.1** | +6 maximum par slot (forgemagie +2) |
-| **Seeder actuel** | max 8 (6 équip. + 2 forgemagie), formula paliers niveau |
+| **Règles 2.2.3 / 2.6.1** | **+4** maximum (équipement) + **2** (forgemagie) = +6 total |
+| **Seeder `*_object`** | `min` −4, `max` 4, `forgemagie_max` 2 ; formules paliers jusqu’à 4 |
 
-**Décision** : Le seeder utilise **max 8** = **+6 équipement + 2 forgemagie**. Aligné avec les règles 2.2.1 et 2.6.1.
+**Décision** : le livre **prime**. Ne pas remettre le PDF « jusqu’à +8 ». `max` = équipement seul ; total jouable = `max` + `forgemagie_max`.
 
 ### 2.2 Anneaux : PO et invocations
 
