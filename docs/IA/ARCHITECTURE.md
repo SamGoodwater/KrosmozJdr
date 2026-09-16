@@ -16,6 +16,7 @@ Laravel — assembleur de contexte
   • panoplies or : noms `playable` dans `entities.item.few_shot_panoplies`
   • catalogue pré-filtré (ids, noms, bonus) si besoin
   • normes / gabarit de niveau
+  • fiches Création du type (`CreationGuideCatalog`, `resources/ia/creation-guides/`)
   • PNJ : brief MJ et/ou extrait d’une page de site
         │
         ▼
@@ -102,6 +103,7 @@ Un JSON « dans les normes » mais idiot (sorts Terre, Force 0) doit **échouer*
 
 - Pipeline scrap : `app/Services/Scrapping/` — Collecte → Conversion → Validation → Intégration. L’IA s’insère **après** la conversion, sur du `raw`.
 - Config gel / étalons : page admin `/admin/content/ia-generation`, `GenerationConfigStore`, `resources/ia/generation.json`.
+- Fiches de création (conversion) : `CreationGuideCatalog`, `resources/ia/creation-guides/`, commande `ia:creation-guides`. Détail : [CREATION.md](./CREATION.md).
 - Création intelligente objets v1 (preview, pas d’écriture auto) : `NormAwareEntityProcessor`, `ItemEffectsToBonusConverter`.
 - PNJ : `app/Models/Entity/Npc.php` (`creature_id`, `breed_id`, `specialization_id`, story, panoplies). Stats sur `Creature`.
 - Sorts d’une créature : pivot `creature_spell` (`Creature::spells()`).

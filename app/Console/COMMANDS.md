@@ -444,6 +444,25 @@ php artisan ia:npc-kit-catalog --json=storage/logs/npc-kit-catalog.json
 
 ---
 
+## `ia:creation-guides`
+
+```yaml
+signature: ia:creation-guides
+domain: data
+ui: false
+cron: false
+```
+
+Dump les fiches de bonne pratique de l’atelier MJ Création (philosophie, points, limites, conseils, exemples) en texte prêt pour un prompt de conversion. Sans LLM. Source : `resources/ia/creation-guides/` (même contenu que les pages `/pages/creation-*`).
+
+```bash
+php artisan ia:creation-guides
+php artisan ia:creation-guides spell
+php artisan ia:creation-guides --json=storage/logs/creation-guides.json
+```
+
+---
+
 ## `items:seeder-export`
 
 ```yaml

@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Fiches Création (conversion)
+
+L’atelier **Pour les MJ → Création** détaille maintenant sorts, monstres, équipements, consommables, capacités, traits et ressources : philosophie, points à respecter, limites (chiffres et propriétés de fiche), conseils, exemples jouables. C’est le même texte que l’IA de conversion recevra plus tard (`ia:creation-guides`), sans l’appeler encore. Boutiques, langues, campagnes et scénarios attendront.
+
 ## Septembre 2026 — Visuels des classes
 
 Chaque classe a ses **symboles** (couleur et N&B), ses **têtes** mâle / femelle et ses **personnages** full. La fiche complète montre le personnage (on peut passer de M à F), les petites cartes montrent la tête (mâle condensé, femelle déployé), et le menu utilise le symbole N&B qui passe en couleur au survol.

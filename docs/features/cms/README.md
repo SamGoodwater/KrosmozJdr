@@ -77,7 +77,7 @@ Les « kref » sont des références inline insérées dans le texte riche.
 
 **L’Essentiel** : aide-mémoire joueur (`database/seeders/data/essential-pages.php`), une page par sujet, chiffres alignés sur `private/game/rules`. Reseed : `php artisan db:seed --class=PageSeeder`.
 
-**Pour les MJ** n’est pas une page CMS : c’est un groupe de menu. L’atelier **Création** (`/pages/creation`, `read_level` MJ) propose une page d’aide par type d’entité : philosophie de conception, marche à suivre (stats, pièges), puis le tableau adapté (catalogue de chartes ou `equipment_bonus_table`). Contenu : `database/seeders/data/creation-pages.php`. Les anciens slugs `contribution-creatures|objets|sorts` redirigent (301). Contribution (Informations) ne contient que **Nous rejoindre**.
+**Pour les MJ** n’est pas une page CMS : c’est un groupe de menu. L’atelier **Création** (`/pages/creation`, `read_level` MJ) propose une page d’aide par type d’entité. Sorts, monstres, équipements, consommables, capacités, traits et ressources suivent cinq blocs (philosophie, points importants, limites et propriétés, conseils, exemples) — source `resources/ia/creation-guides/`, aussi destinée au prompt de conversion (`php artisan ia:creation-guides`). Classes, spés, PNJ, panoplies et états restent dans `database/seeders/data/creation-pages.php`. Chartes : catalogue ou `equipment_bonus_table`. Les anciens slugs `contribution-creatures|objets|sorts` redirigent (301). Contribution (Informations) ne contient que **Nous rejoindre**.
 
 Le tableau `equipment_bonus_table` est alimenté par `GET /api/characteristics/equipment-bonus-table` (session web, rôle ≥ MJ). Reseed atelier : `php artisan db:seed --class=CreationPagesSeeder`.
 

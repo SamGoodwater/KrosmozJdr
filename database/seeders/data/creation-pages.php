@@ -8,7 +8,8 @@ use Database\Seeders\CreationPagesSeeder;
  * Atelier MJ « Création » : guides de conception par type d’entité.
  *
  * Shortcodes {@code [[kref:…]]} convertis par {@see CreationPagesSeeder}.
- * Les chiffres viennent des chartes ; la philosophie reprend le livre (5.1.2, 5.2).
+ * Sorts, monstres, équipements, conso, capacités, traits et ressources :
+ * source unique {@code resources/ia/creation-guides/} (CMS + prompt de conversion).
  *
  * @return array{
  *   hub_intro: string,
@@ -28,22 +29,58 @@ $kSortsEq = '[[kref:pageSection:regles-5-2-principes-dequilibrage@regle-5-2-3-so
 $kEquipEq = '[[kref:pageSection:regles-5-2-principes-dequilibrage@regle-5-2-4-equipements-et-panoplies|Équipements et panoplies]]';
 $kClassesLivre = '[[kref:page:regles-2-3-choisir-sa-classe|Choisir sa classe]]';
 $kSpeLivre = '[[kref:page:regles-2-4-choisir-sa-specialisation|Choisir sa spécialisation]]';
-$kCapaLivre = '[[kref:pageSection:regles-2-4-choisir-sa-specialisation@regle-2-4-4-capacites|Capacités]]';
-$kSortsLivre = '[[kref:page:regles-3-3-sorts|Sorts]]';
 $kTraitsLivre = '[[kref:pageSection:regles-3-2-combat@regle-3-2-5-traits-et-etats|Traits et états]]';
-$kMetiers = '[[kref:page:les-metiers|Les métiers]]';
-$kConsoLivre = '[[kref:page:regles-4-4-ressources-et-consommables|Ressources et consommables]]';
-$kCaracs = '[[kref:page:caracteristiques|Caractéristiques]]';
 $pa = '[[kref:characteristic:action_points_creature|PA]]';
-$pm = '[[kref:characteristic:movement_points_creature|PM]]';
 $pv = '[[kref:characteristic:life_points_creature|PV]]';
 $ca = '[[kref:characteristic:armor_class_creature|CA]]';
 $intel = '[[kref:characteristic:intelligence_creature|Intelligence]]';
 $chance = '[[kref:characteristic:chance_creature|Chance]]';
 
+/**
+ * @param  array<string, mixed>  $guide
+ * @return array{title: string, slug: string, icon: string, menu_order: int, sections: list<array<string, mixed>>}
+ */
+$toCmsPage = static function (array $guide): array {
+    $slug = (string) ($guide['slug'] ?? '');
+    $sections = [];
+    foreach ($guide['sections'] ?? [] as $section) {
+        if (! is_array($section)) {
+            continue;
+        }
+        $id = (string) ($section['id'] ?? '');
+        if ($id === '') {
+            continue;
+        }
+        $sections[] = [
+            'slug' => $slug.'-'.$id,
+            'title' => (string) ($section['title'] ?? $id),
+            'html' => (string) ($section['html'] ?? ''),
+        ];
+    }
+    foreach ($guide['cms_extras'] ?? [] as $extra) {
+        if (is_array($extra)) {
+            $sections[] = $extra;
+        }
+    }
+
+    return [
+        'title' => (string) ($guide['title'] ?? $slug),
+        'slug' => $slug,
+        'icon' => (string) ($guide['icon'] ?? ''),
+        'menu_order' => (int) ($guide['menu_order'] ?? 0),
+        'sections' => $sections,
+    ];
+};
+
+$iaGuides = require resource_path('ia/creation-guides/index.php');
+if (! is_array($iaGuides)) {
+    $iaGuides = [];
+}
+
 return [
     'hub_intro' => '<h2>Atelier de création</h2>'
         .'<p>Ici tu conçois du contenu <strong>jouable</strong> : une identité (ce que la fiche fait à la table), puis des chiffres qui collent aux chartes. Les tableaux de cette section sont une <strong>projection</strong> du système de caractéristiques : si un chiffre est faux, on corrige la fiche ou la définition de caractéristique, pas une grille morte sur la page.</p>'
+        .'<p>Sorts, monstres, équipements, consommables, capacités, traits et ressources suivent le même canevas : <strong>philosophie</strong>, <strong>points importants</strong>, <strong>limites et propriétés</strong>, <strong>conseils</strong>, <strong>exemples</strong>. C’est aussi le texte que Laravel enverra à l’IA de conversion (sans l’appeler encore) : <code>php artisan ia:creation-guides</code>.</p>'
         .'<h3>Comment lire une charte</h3>'
         .'<ol>'
         .'<li>Ouvre la caractéristique (PV, dégâts, Force…).</li>'
@@ -123,117 +160,9 @@ return [
                 ],
             ],
         ],
-        [
-            'title' => 'Sorts',
-            'slug' => 'creation-sorts',
-            'icon' => 'fa-solid fa-wand-sparkles',
-            'menu_order' => 2,
-            'sections' => [
-                [
-                    'slug' => 'creation-sorts-intro',
-                    'title' => 'Philosophie',
-                    'html' => '<h2>Sorts</h2>'
-                        .'<p>Un sort a <strong>une job</strong> : dégâts, soin, contrôle, placement ou utilité. Le coût en '.$pa.' / '.$pm.' / Wakfu paie la puissance ; la fréquence (cooldown, 1/combat) empêche les combos abusifs. '.$kSortsEq.' · '.$kSortsLivre.'.</p>'
-                        .'<p>Les états infligés pointent vers les cinq états JDR jouables (Pesanteur, Empoisonné, Étourdi, Ralenti, Affaibli), pas vers chaque jeton Dofus en Brut — [[kref:page:creation-etats|États]].</p>',
-                ],
-                [
-                    'slug' => 'creation-sorts-methode',
-                    'title' => 'Comment le créer',
-                    'html' => '<h3>Marche à suivre</h3>'
-                        .'<ol>'
-                        .'<li>Fixe le niveau du sort et son rôle (une phrase).</li>'
-                        .'<li>Choisis un coût : action simple 3–4 '.$pa.' ; forte 5 '.$pa.' (souvent une seule par tour) ; bonus 2 '.$pa.' (3 si l’effet est important).</li>'
-                        .'<li>Lis la charte de dégâts / soins / bouclier : ligne neutre au niveau, puis régulateurs (5+ '.$pa.' → +1 puissance ; zone large → −1 par cible).</li>'
-                        .'<li>Borne les durées : plus c’est fort, plus c’est court. Contrôle (entrave, stun) = sauvegarde + durée limitée.</li>'
-                        .'<li>Si c’est trop fort à chaque tour, ajoute un cooldown (1–3 / 4–6 / 7–10 tours) ou une limite par combat.</li>'
-                        .'</ol>'
-                        .'<h3>Ordres de grandeur (dégâts / soins)</h3>'
-                        .'<table><thead><tr><th>Niveau</th><th>Dégâts</th><th>Soins</th></tr></thead><tbody>'
-                        .'<tr><td>1–5</td><td>1d6+mod à 2d6+mod</td><td>1d4+mod à 2d4+mod</td></tr>'
-                        .'<tr><td>6–10</td><td>2d6+mod à 3d6+mod</td><td>2d4+mod à 3d4+mod</td></tr>'
-                        .'<tr><td>11–15</td><td>3d6+mod à 4d6+mod</td><td>3d4+mod à 4d4+mod</td></tr>'
-                        .'<tr><td>16–20</td><td>4d6+mod à 5d6+mod</td><td>4d4+mod à 5d4+mod</td></tr>'
-                        .'</tbody></table>'
-                        .'<p>Ouvre une charte ci-dessous, choisis le niveau, active les régulateurs, compare à ta fiche. Catalogue : [[kref:page:bibliotheque-spell|Sorts]].</p>'
-                        .'<p><strong>À éviter :</strong> dégâts de sort fort + large zone + pas de cooldown ; un contrôle sans sauvegarde ; un état Dofus brut à la place d’un état JDR.</p>',
-                ],
-                [
-                    'slug' => 'creation-sorts-catalog',
-                    'title' => 'Chartes de sorts',
-                    'template' => 'characteristic_norms_catalog',
-                    'group' => 'spell',
-                ],
-            ],
-        ],
-        [
-            'title' => 'Capacités',
-            'slug' => 'creation-capacites',
-            'icon' => 'fa-solid fa-bolt',
-            'menu_order' => 3,
-            'sections' => [
-                [
-                    'slug' => 'creation-capacites-intro',
-                    'title' => 'Philosophie',
-                    'html' => '<h2>Capacités</h2>'
-                        .'<p>Une capacité est un <strong>avantage passif ou contextuel</strong> : elle tourne toute seule (ou se déclenche), en général sans dépenser de '.$pa.'. Une aptitude / un sort, toi tu les lances. À chaque palier de spé on choisit souvent aptitude <em>ou</em> capacité. '.$kCapaLivre.'.</p>'
-                        .'<p>Pas de grille de normes dédiée : pour des dégâts ou un coût, compare aux [[kref:page:creation-sorts|chartes de sorts]], en restant plus faible qu’un sort actif du même niveau (c’est « toujours là »).</p>',
-                ],
-                [
-                    'slug' => 'creation-capacites-methode',
-                    'title' => 'Comment la créer',
-                    'html' => '<h3>Marche à suivre</h3>'
-                        .'<ol>'
-                        .'<li>Décide : passive (toujours), contextuelle (situation), réactive (déclencheur).</li>'
-                        .'<li>Si ça ressemble à un sort (dégâts, zone, contrôle), c’est probablement un sort — ou alors baisse nettement la puissance et ajoute une condition rare.</li>'
-                        .'<li>Plafonds : un bonus de caractéristique ≈ ligne neutre d’un accessoire du même niveau, pas d’une arme + panoplie.</li>'
-                        .'<li>Catalogue : [[kref:page:bibliotheque-capability|Capacités]].</li>'
-                        .'</ol>'
-                        .'<p><strong>À éviter :</strong> un passif équivalent à 5 '.$pa.' de dégâts chaque tour ; une capacité « je choisis l’effet au moment du besoin » sans limite.</p>',
-                ],
-            ],
-        ],
-        [
-            'title' => 'Monstres',
-            'slug' => 'creation-monstres',
-            'icon' => 'fa-solid fa-dragon',
-            'menu_order' => 4,
-            'sections' => [
-                [
-                    'slug' => 'creation-monstres-intro',
-                    'title' => 'Philosophie',
-                    'html' => '<h2>Monstres</h2>'
-                        .'<p>Un monstre est une <strong>rencontre</strong> : danger, rythme, butin — pas un PJ. La fiche publique (Monster) porte nom, race, image ; les stats, sorts et équipements sont sur la <strong>créature</strong> liée. '.$kPnjMonstres.'.</p>'
-                        .'<p>Sur ce site, la référence chiffrée est la <strong>charte</strong> (ligne neutre au niveau du groupe). Le livre propose aussi des gabarits rapides ; s’il y a écart, tu suis la charte, puis tu ajustes d’une ligne selon le rôle (sbire / élite / boss).</p>',
-                ],
-                [
-                    'slug' => 'creation-monstres-methode',
-                    'title' => 'Comment le créer',
-                    'html' => '<h3>Marche à suivre</h3>'
-                        .'<ol>'
-                        .'<li>Niveau ≈ niveau du groupe. Rôle : sbire (très faible / faible), standard (neutre), élite (fort), boss (très fort + mécaniques).</li>'
-                        .'<li>Remplis le gabarit : 6 caracs, '.$pv.', '.$ca.', '.$pa.' / '.$pm.', 1–3 attaques ou sorts, éventuellement un passif lisible en une ligne.</li>'
-                        .'<li>Pour chaque stat importante, ouvre la charte, niveau du monstre, ligne du rôle. Un sbire n’a pas les '.$pv.' d’un boss.</li>'
-                        .'<li>Dégâts d’attaque alignés sur les mêmes bandes que les sorts (1d6+mod … 5d6+mod selon le palier). Un boss : +50 à 100 % de dégâts <em>ou</em> des phases, pas les deux à fond.</li>'
-                        .'<li>Résistances : un élément fort, souvent une vulnérabilité opposée. Pas six immunités.</li>'
-                        .'<li>Butin : 1–2 ressources du thème, rareté du palier. Catalogue : [[kref:page:bibliotheque-monster|Monstres]].</li>'
-                        .'</ol>'
-                        .'<h3>Rôles et puissance</h3>'
-                        .'<ul>'
-                        .'<li><strong>Sbire</strong> — meurt vite, menace si nombreux ; ligne faible ; peu de sorts.</li>'
-                        .'<li><strong>Standard</strong> — un pour un PJ à peu près ; ligne neutre.</li>'
-                        .'<li><strong>Élite</strong> — deux ou trois PJ ; ligne fort ; 1 capacité signature.</li>'
-                        .'<li><strong>Boss</strong> — table entière ; ligne très fort ; phases (100–50 %, 50–25 %, 25–0 %), éventuellement sbires ou terrain — voir '.$kPnjMonstres.'. Coche <strong>boss</strong> et inscris les <strong>PA légendaires</strong> (pool hors tour, recharge en fin de tour du boss).</li>'
-                        .'</ul>'
-                        .'<p><strong>À éviter :</strong> un « loup niveau 3 » avec les '.$pv.' d’un boss 10 ; copier un PJ (24 sorts, panoplie) ; tout en Neutre sans identité élémentaire.</p>',
-                ],
-                [
-                    'slug' => 'creation-monstres-catalog',
-                    'title' => 'Chartes créature',
-                    'template' => 'characteristic_norms_catalog',
-                    'group' => 'creature',
-                ],
-            ],
-        ],
+        $toCmsPage($iaGuides['spell'] ?? []),
+        $toCmsPage($iaGuides['capability'] ?? []),
+        $toCmsPage($iaGuides['monster'] ?? []),
         [
             'title' => 'PNJ',
             'slug' => 'creation-pnj',
@@ -270,57 +199,7 @@ return [
                 ],
             ],
         ],
-        [
-            'title' => 'Équipements',
-            'slug' => 'creation-equipements',
-            'icon' => 'fa-solid fa-shield-halved',
-            'menu_order' => 6,
-            'sections' => [
-                [
-                    'slug' => 'creation-equipements-intro',
-                    'title' => 'Philosophie',
-                    'html' => '<h2>Équipements</h2>'
-                        .'<p>Un objet occupe <strong>un emplacement</strong> et pousse <strong>un axe</strong> (dégâts, '.$ca.', une carac). Huit slots se cumulent : si chaque pièce est « très fort », le PJ explose les plafonds. '.$kEquipEq.' · '.$kCaracs.'.</p>'
-                        .'<p>Le tableau vivant ci-dessous projette les plafonds par emplacement et par caractéristique (formules objet). Un tiret = pas encore débloqué. On corrige la caractéristique si un chiffre cloche, pas cette page.</p>',
-                ],
-                [
-                    'slug' => 'creation-equipements-methode',
-                    'title' => 'Comment le créer',
-                    'html' => '<h3>Marche à suivre</h3>'
-                        .'<ol>'
-                        .'<li>Type (arme, chapeau, cape…) + niveau. Le type doit être « visible en jeu » pour apparaître en bibliothèque.</li>'
-                        .'<li>Bonus par palier : niv. 1–5 (+1–2) · 6–10 (+2–3) · 11–15 (+3–4) · 16–20 (+4–5). Arme → dégâts ; armure → '.$ca.' ; accessoire → une caractéristique.</li>'
-                        .'<li>Compare au tableau des plafonds (même slot, même bande de niveau) puis à la charte objet, ligne neutre. Rare / légendaire : ligne fort, pas très fort sur trois stats à la fois.</li>'
-                        .'<li>La rareté suit le <strong>prix</strong> dans la tranche, pas le nombre de lignes de bonus (détail plus bas).</li>'
-                        .'<li>Effet spécial : un seul, et tu baisses un bonus numérique. Catalogue : [[kref:page:bibliotheque-item|Équipements]].</li>'
-                        .'</ol>'
-                        .'<p><strong>À éviter :</strong> +5 partout dès le niveau 8 ; Unique hors Dofus / quête ; un accessoire qui copie une arme.</p>',
-                ],
-                [
-                    'slug' => 'creation-equipements-table',
-                    'title' => 'Tableau des bonus',
-                    'template' => 'equipment_bonus_table',
-                ],
-                [
-                    'slug' => 'creation-equipements-rarete',
-                    'title' => 'Rareté',
-                    'html' => '<h2>Rareté</h2>'
-                        .'<p>La rareté se déduit du <strong>prix</strong> dans la tranche de niveau.</p>'
-                        .'<ul>'
-                        .'<li>Plus de <strong>commun</strong> à partir du niveau 5</li>'
-                        .'<li>Plus de <strong>peu commun</strong> à partir du niveau 9</li>'
-                        .'<li>Plus de <strong>rare</strong> à partir du niveau 15 (très rare / légendaire)</li>'
-                        .'<li>Jamais <strong>unique</strong>, sauf Dofus et cas de quête</li>'
-                        .'</ul>',
-                ],
-                [
-                    'slug' => 'creation-equipements-catalog',
-                    'title' => 'Chartes objet',
-                    'template' => 'characteristic_norms_catalog',
-                    'group' => 'object',
-                ],
-            ],
-        ],
+        $toCmsPage($iaGuides['item'] ?? []),
         [
             'title' => 'Panoplies',
             'slug' => 'creation-panoplies',
@@ -347,64 +226,8 @@ return [
                 ],
             ],
         ],
-        [
-            'title' => 'Consommables',
-            'slug' => 'creation-consommables',
-            'icon' => 'fa-solid fa-flask',
-            'menu_order' => 8,
-            'sections' => [
-                [
-                    'slug' => 'creation-consommables-intro',
-                    'title' => 'Philosophie',
-                    'html' => '<h2>Consommables</h2>'
-                        .'<p>C’est un <strong>coup de pouce ponctuel</strong>, pas un équipement que tu bois. En combat : en général <strong>1 '.$pa.'</strong>. Même type d’effet : pas de cumul, le meilleur gagne. Types différents : cumul OK. '.$kConsoLivre.'.</p>',
-                ],
-                [
-                    'slug' => 'creation-consommables-methode',
-                    'title' => 'Comment le créer',
-                    'html' => '<h3>Marche à suivre</h3>'
-                        .'<ol>'
-                        .'<li>Un effet (soin, buff, antidote). Durée courte en combat.</li>'
-                        .'<li>Bonus inférieurs à un [[kref:page:creation-equipements|équipement]] permanent du même niveau (souvent une ligne en dessous sur la charte objet).</li>'
-                        .'<li>Parchemin de sortilège : détruit seulement si le sort réussit.</li>'
-                        .'<li>Type « visible en jeu ». Catalogue : [[kref:page:bibliotheque-consumable|Consommables]].</li>'
-                        .'</ol>'
-                        .'<p><strong>À éviter :</strong> potion = cape permanente ; deux potions de Force qui se stackent ; consommable sans coût d’action en combat.</p>',
-                ],
-                [
-                    'slug' => 'creation-consommables-catalog',
-                    'title' => 'Chartes objet',
-                    'template' => 'characteristic_norms_catalog',
-                    'group' => 'object',
-                ],
-            ],
-        ],
-        [
-            'title' => 'Ressources',
-            'slug' => 'creation-ressources',
-            'icon' => 'fa-solid fa-gem',
-            'menu_order' => 9,
-            'sections' => [
-                [
-                    'slug' => 'creation-ressources-intro',
-                    'title' => 'Philosophie',
-                    'html' => '<h2>Ressources</h2>'
-                        .'<p>Une ressource nourrit un <strong>métier</strong>, pas un build. Type, niveau, rareté, prix — rarement un bonus de combat. '.$kMetiers.' · '.$kConsoLivre.'.</p>',
-                ],
-                [
-                    'slug' => 'creation-ressources-methode',
-                    'title' => 'Comment la créer',
-                    'html' => '<h3>Marche à suivre</h3>'
-                        .'<ol>'
-                        .'<li>Branche métier (récolte / artisanat / rune) et bande de niveau (1–4, 5–8, … 17–20 pour la récolte).</li>'
-                        .'<li>Rareté alignée sur ce que le métier peut produire à ce palier. Unique : pas craft, c’est de la quête.</li>'
-                        .'<li>Prix cohérent avec les ressources voisines du même palier. Pas de charte de combat : l’économie suffit.</li>'
-                        .'<li>Catalogue : [[kref:page:bibliotheque-resource|Ressources]]. Les types hors jeu (quêtes, souvenirs…) restent en base mais hors bibliothèques.</li>'
-                        .'</ol>'
-                        .'<p><strong>À éviter :</strong> une ressource « +3 Force » ; un minerai niveau 2 au prix d’un légendaire 18.</p>',
-                ],
-            ],
-        ],
+        $toCmsPage($iaGuides['consumable'] ?? []),
+        $toCmsPage($iaGuides['resource'] ?? []),
         [
             'title' => 'États',
             'slug' => 'creation-etats',
@@ -431,31 +254,6 @@ return [
                 ],
             ],
         ],
-        [
-            'title' => 'Traits',
-            'slug' => 'creation-traits',
-            'icon' => 'fa-solid fa-fingerprint',
-            'menu_order' => 11,
-            'sections' => [
-                [
-                    'slug' => 'creation-traits-intro',
-                    'title' => 'Philosophie',
-                    'html' => '<h2>Traits</h2>'
-                        .'<p>Un trait est <strong>permanent</strong> (Lourd, petite taille, vol…) : identité de race, de classe ou de monstre, pas un buff de combat. Les états, eux, sont temporaires. '.$kTraitsLivre.'.</p>',
-                ],
-                [
-                    'slug' => 'creation-traits-methode',
-                    'title' => 'Comment le créer',
-                    'html' => '<h3>Marche à suivre</h3>'
-                        .'<ol>'
-                        .'<li>Une phrase d’identité (« ne peut pas être déplacé », « voit dans le noir »).</li>'
-                        .'<li>Si ça donne une stat, reste ligne neutre créature, et ce n’est pas un duplicata d’équipement du même niveau.</li>'
-                        .'<li>Un monstre : 0–2 traits lisibles. Une classe : le passif suffit souvent ; le trait ne le double pas.</li>'
-                        .'<li>Catalogue : [[kref:page:bibliotheque-creature-trait|Traits]].</li>'
-                        .'</ol>'
-                        .'<p><strong>À éviter :</strong> trait = cape +2 permanente ; cinq traits de combat sur un sbire.</p>',
-                ],
-            ],
-        ],
+        $toCmsPage($iaGuides['trait'] ?? []),
     ],
 ];

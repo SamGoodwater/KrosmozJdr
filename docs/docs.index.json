@@ -235,6 +235,11 @@
     "description": "Source de vérité **effective** : une ligne en base (`ia_generation_settings`) si un admin a enregistré la page **Gestion du contenu → IA métier** (`/admin/content/ia-generation`). Sinon le fichier **`resources/ia/generation.json`**."
   },
   {
+    "path": "IA/CREATION.md",
+    "title": "Fiches de création (prompt de conversion)",
+    "description": "Guides MJ et texte de prompt : `resources/ia/creation-guides/`. Commande `ia:creation-guides`. Pipeline LLM non branché."
+  },
+  {
     "path": "IA/COUTS.md",
     "title": "Coûts et choix de modèles",
     "description": "Ordres de grandeur, tarifs publics **août 2026**. À revérifier sur les pages fournisseurs avant un run réel."

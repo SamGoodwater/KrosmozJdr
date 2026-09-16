@@ -16,7 +16,7 @@
 - **Rendu front** : `PageRenderer` → `SectionLazyGate` (lazy) → `SectionRenderer` → template via registry auto-discovery. Détail : [README](./README.md#rendu-frontend).
 - **kref** : références inline `@` (Tiptap) sérialisées en `<span class="kref">`, validées et prévisualisées via API CMS. Détail : [README](./README.md#references-kref).
 - **Menu dynamique** : `GET /pages/menu` (JSON) → `useDynamicMenu` → `DynamicMenu.vue`. Groupes dans `config/nav_menu.php` (L'Essentiel, Règles, Bibliothèques, Pour les MJ, Informations) ; un groupe sans enfants visibles n’apparaît pas. Bibliothèques = classes, spés, sorts, capacités, monstres, **PNJ**, équipements… Classes / Spécialisations (`settings.menu_collapsible`) se déplient : une sous-page par fiche hors archive (`pages:sync-bibliotheque-entities`, `BibliothequeEntityPageService`). Jouable → `read_level` de la fiche ; brouillon/brut/auto → `read_level` MJ+ (absentes du menu invité). L’Essentiel = aide-mémoire (`database/seeders/data/essential-pages.php`), aligné sur `private/game/rules`.
-- **Atelier Création** (`/pages/creation`, MJ) : une page d’aide par type d’entité (philosophie + marche à suivre + tableau) dans `database/seeders/data/creation-pages.php`. Anciens slugs `contribution-creatures|objets|sorts` → 301.
+- **Atelier Création** (`/pages/creation`, MJ) : une page d’aide par type d’entité. Sorts, monstres, équipements, conso, capacités, traits, ressources : 5 blocs (philosophie, points, limites, conseils, exemples) dans `resources/ia/creation-guides/` (CMS + prompt conversion, `ia:creation-guides`). Les autres types restent dans `database/seeders/data/creation-pages.php`. Anciens slugs `contribution-creatures|objets|sorts` → 301.
 - **Page « Les métiers »** (`les-metiers`, Bibliothèques) : page documentaire sans entité, seedée depuis `database/seeders/data/jobs-page.php`. Icônes dans `storage/app/public/images/jobs/`, tableau des runes en section `forgemagie_rune_table`.
 - **Page « Ressources »** (`ressources-de-jeu`) : enfant du chapitre 5 (`regles-5-ressources-et-equilibrage`). Téléchargements (`download_catalog`, `config/game_downloads.php`). Compilation `rules:compile-downloads` (bouton `/admin/content`, file `rules-downloads`).
 - **Sécurité contenu** : Mews\Purifier (profil `section_text`) sur le HTML de section.
@@ -27,6 +27,7 @@
 - `app/Http/Controllers/PageController.php`, `SectionController.php` ; API `app/Http/Controllers/Api/Cms*.php` (×3).
 - `app/Services/PageService.php` (menu + cache), `app/Services/SectionService.php` (save + Purifier + kref).
 - `app/Policies/PagePolicy.php`, `SectionPolicy.php` ; resources `PageResource`/`SectionResource`.
+- `resources/ia/creation-guides/`, `app/Services/GenerativeAi/CreationGuideCatalog.php` — canevas conversion (7 types).
 - `database/seeders/data/creation-pages.php`, `database/seeders/CreationPagesSeeder.php` — atelier MJ Création.
 - `app/Support/Cms/CreationPageLegacyRedirects.php` — 301 des anciens slugs `contribution-*`.
 - `resources/js/Pages/Organismes/section/PageRenderer.vue` (+ `SectionRenderer`, `SectionLazyGate`, `templates/index.js`, `composables/useTemplateRegistry.js`).

@@ -57,13 +57,14 @@ Les sorts de classe se réécrivent au fil de l’eau (quand un PNJ ou un perso 
 - Contraintes machine par type (max d’effets, PA, cohérence élément ↔ carac, 1 item par slot…).
 - JSON Schema de sortie (pas une fiche prose).
 - Prompt superviseur court et stable (cacheable).
-- Prompt de tâche par type (objet, sort, monstre, PNJ).
+- Prompt de tâche par type (objet, sort, monstre, PNJ) — déjà cadré dans [CREATION.md](./CREATION.md) pour 7 types.
 - ~20 fiches or `playable` par type concerné.
 
 ## Suite de lecture
 
 - [CHAMPS.md](./CHAMPS.md) — ce que l’IA a le droit de modifier.
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — pipeline, état, prompts.
+- [CREATION.md](./CREATION.md) — fiches de bonne pratique (prompt conversion).
 - [CATALOGUE.md](./CATALOGUE.md) — objets et pré-filtre.
 - [RENCONTRES.md](./RENCONTRES.md) — monstres, sorts liés, PNJ.
 - [COUTS.md](./COUTS.md) — modèles et ordres de grandeur.

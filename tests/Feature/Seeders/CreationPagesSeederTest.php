@@ -112,12 +112,17 @@ class CreationPagesSeederTest extends TestCase
         ]);
         $this->assertDatabaseHas('sections', [
             'page_id' => $monstres->id,
-            'slug' => 'creation-monstres-methode',
+            'slug' => 'creation-monstres-points',
             'template' => SectionType::TEXT->value,
         ]);
-        $methode = Section::query()->where('slug', 'creation-monstres-methode')->first();
-        $this->assertNotNull($methode);
-        $html = (string) ($methode->data['content'] ?? '');
+        $this->assertDatabaseHas('sections', [
+            'page_id' => $monstres->id,
+            'slug' => 'creation-monstres-exemples',
+            'template' => SectionType::TEXT->value,
+        ]);
+        $points = Section::query()->where('slug', 'creation-monstres-points')->first();
+        $this->assertNotNull($points);
+        $html = (string) ($points->data['content'] ?? '');
         $this->assertStringContainsString('ligne faible', $html);
         $this->assertStringContainsString('Boss', $html);
         $this->assertSame(
@@ -150,9 +155,16 @@ class CreationPagesSeederTest extends TestCase
         ]);
         $this->assertDatabaseHas('sections', [
             'page_id' => $equipements->id,
-            'slug' => 'creation-equipements-methode',
+            'slug' => 'creation-equipements-limites',
             'template' => SectionType::TEXT->value,
         ]);
+        foreach (['philosophie', 'points', 'limites', 'conseils', 'exemples'] as $block) {
+            $this->assertDatabaseHas('sections', [
+                'page_id' => $equipements->id,
+                'slug' => 'creation-equipements-'.$block,
+                'template' => SectionType::TEXT->value,
+            ]);
+        }
         $this->assertDatabaseHas('sections', [
             'page_id' => $equipements->id,
             'slug' => 'creation-equipements-catalog',

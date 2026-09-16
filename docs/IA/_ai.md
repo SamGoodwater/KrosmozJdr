@@ -15,6 +15,7 @@
 - L’IA **propose**, jamais `playable`. État `auto` (UI « Auto ») : déjà dans le code. Pipeline LLM non branché. Publication `auto` → `playable` : ability `publish` (relecteur). `example_ids` : uniquement des fiches `playable` (`official_id` / nom / id) ; pool vide refusé à l’assembleur (`FewShotExamplePool`).
 - **Objets** : grille algo `ia:equipment-grid` (`resources/ia/equipment-grid.json`). Rapport ; `--write` = trous `draft`. Pas tout Dofus. Pipeline LLM non branché.
 - **PNJ pré-filtre** : `NpcKitCatalog` + `php artisan ia:npc-kit-catalog` (équipement compact, sorts de classe, gabarit 5.1.2). Few-shot : `jdr:npc:incarnam:%`. Pas d’appel LLM.
+- **Fiches Création (conversion)** : `resources/ia/creation-guides/` + `ia:creation-guides`. Cinq blocs (philosophie, points, limites, conseils, exemples) pour sorts, monstres, équipements, conso, capacités, traits, ressources. Même texte que l’atelier MJ. Pas d’appel LLM.
 - **L’IA ne réécrit pas l’identité** ni, par défaut, les **caractéristiques** d’une fiche Dofus. Liste éditable : page admin **IA métier** (`/admin/content/ia-generation`), fichier `resources/ia/generation.json` en repli. **PNJ** : création complète. Détail : [CHAMPS.md](./CHAMPS.md).
 - **Monstres / PNJ / sorts de créature** : génération **à la demande**, paquet cohérent.
 - Exemples few-shot : uniquement des fiches `playable`. **Panoplies or** : liste `entities.item.few_shot_panoplies` dans `generation.json` + [CATALOGUE](./CATALOGUE.md#liste-few-shot-panoplies-ce-que-lia-doit-imiter). ~54 sets (Piou, Bouftou For+Int au complet, Blop, Gelax, Craqueleur, Pandala, etc.).
@@ -31,6 +32,7 @@
 | [ARCHITECTURE](./ARCHITECTURE.md) | Pipeline, état, prompts, validateurs, code existant. |
 | [CATALOGUE](./CATALOGUE.md) | Objets, grille `ia:equipment-grid`, pré-filtre. |
 | Config grille | `resources/ia/equipment-grid.json` |
+| [CREATION](./CREATION.md) | Fiches de bonne pratique (prompt conversion). |
 | [RENCONTRES](./RENCONTRES.md) | Monstre + sorts, PNJ. |
 | [COUTS](./COUTS.md) | Modèles, tokens, ordres de grandeur. |
 
