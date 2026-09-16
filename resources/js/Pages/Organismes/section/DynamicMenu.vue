@@ -67,6 +67,13 @@ function resolveMenuIcon(item, placement) {
     return getEntityIconPath(key);
 }
 
+function resolveMenuIconHover(item, placement) {
+    if (placement !== 'nested-link' || item?.entity_key !== 'breed') {
+        return '';
+    }
+    return sanitizeMenuIconSource(item?.menu_icon_hover);
+}
+
 function isMenuGroupContainer(item) {
     const id = item?.id;
     return (
@@ -195,6 +202,7 @@ const groupedMenuItems = computed(() => {
                         :key="child.item.id"
                         :href="child.item.url"
                         :icon="resolveMenuIcon(child.item, 'nested-link')"
+                        :icon-hover="resolveMenuIconHover(child.item, 'nested-link')"
                         :class="[
                             'main-menu-item',
                             'main-menu-item-child',
@@ -248,6 +256,7 @@ const groupedMenuItems = computed(() => {
                                     :key="grandchild.item.id"
                                     :href="grandchild.item.url"
                                     :icon="resolveMenuIcon(grandchild.item, 'nested-link')"
+                                    :icon-hover="resolveMenuIconHover(grandchild.item, 'nested-link')"
                                     :class="[
                                         'main-menu-item',
                                         'main-menu-item-child',
@@ -307,6 +316,7 @@ const groupedMenuItems = computed(() => {
                                     :key="grandchild.item.id"
                                     :href="grandchild.item.url"
                                     :icon="resolveMenuIcon(grandchild.item, 'nested-link')"
+                                    :icon-hover="resolveMenuIconHover(grandchild.item, 'nested-link')"
                                     :class="[
                                         'main-menu-item',
                                         'main-menu-item-child',

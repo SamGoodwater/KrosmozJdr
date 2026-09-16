@@ -94,7 +94,17 @@ class EntityDofusdbRefreshService
             'respect_auto_update' => ! $adminForce,
             'include_relations' => ! $imagesOnly,
             'images_only' => $imagesOnly,
-            'exclude_from_update' => $imagesOnly ? DofusdbRefreshableEntities::IMAGE_ONLY_EXCLUDE : [],
+            'exclude_from_update' => array_values(array_unique(array_merge(
+                $imagesOnly ? DofusdbRefreshableEntities::IMAGE_ONLY_EXCLUDE : [],
+                [
+                    'symbol_full',
+                    'symbol_bw',
+                    'logo_male',
+                    'logo_female',
+                    'image_full_male',
+                    'image_full_female',
+                ],
+            ))),
             'download_images' => $imagesOnly || $mode === 'full' || $preview,
             'lang' => 'fr',
         ];

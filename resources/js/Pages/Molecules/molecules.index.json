@@ -1349,7 +1349,7 @@
       {
         "name": "surfaceStyle",
         "type": "",
-        "desc": "- style de surface (bordure élément `--element-border-color` / `--element-border-image`)"
+        "desc": "- style de surface (halo élément `--element-border-color` / `--element-border-image`)"
       }
     ],
     "slots": [
@@ -1638,7 +1638,7 @@
   },
   {
     "name": "PanoplyBonusTiers",
-    "description": "Bonus de panoplie par palier de pièces (chiffre seul, comme les sorts).",
+    "description": "Bonus de panoplie, un palier de pièces par ligne (ou par colonne en Full).",
     "props": [],
     "slots": [],
     "file": "entity/panoply/PanoplyBonusTiers.vue"
@@ -1735,6 +1735,29 @@
     "file": "entity/monster/MonsterLineRow.vue"
   },
   {
+    "name": "MonsterLegendaryPaMark",
+    "description": "Chip « Boss + PA légendaires » pour la rangée de propriétés sous le nom.",
+    "props": [
+      {
+        "name": "legendaryPa",
+        "type": "number|string|null",
+        "desc": "- Pool de PA légendaires"
+      },
+      {
+        "name": "tooltip",
+        "type": "string",
+        "desc": "- Texte du survol (règle des PA légendaires)"
+      },
+      {
+        "name": "sizeClass",
+        "type": "string",
+        "desc": "- Classes Tailwind pour l’icône Boss"
+      }
+    ],
+    "slots": [],
+    "file": "entity/monster/MonsterLegendaryPaMark.vue"
+  },
+  {
     "name": "MonsterCreatureSpellsList",
     "description": "MonsterCreatureSpellsList — Sorts liés à la créature du monstre (vue texte + aperçu minimal au survol)",
     "props": [
@@ -1781,17 +1804,17 @@
       {
         "name": "tooltip",
         "type": "string",
-        "desc": "Texte du survol (règle des PA légendaires)"
+        "desc": "- Texte du survol (règle des PA légendaires)"
       },
       {
         "name": "sizeClass",
         "type": "string",
-        "desc": "Classes Tailwind pour la taille du pictogramme"
+        "desc": "- Classes Tailwind pour la taille du pictogramme"
       },
       {
         "name": "legendaryPa",
         "type": "number|string|null",
-        "desc": "Pool de PA légendaires collé après l’icône (masqué si vide ou 0)"
+        "desc": "- Pool de PA légendaires (masqué si vide ou 0)"
       }
     ],
     "slots": [],
@@ -1884,6 +1907,11 @@
         "name": "formulaHint",
         "type": "string",
         "desc": "- Rappel de la formule"
+      },
+      {
+        "name": "allowRecalculate",
+        "type": "boolean",
+        "desc": "- Affiche le bouton Actualiser (désactivé si jouable)"
       }
     ],
     "slots": [],

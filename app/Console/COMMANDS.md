@@ -351,6 +351,24 @@ php artisan spells:sync-elements
 
 ---
 
+## `breeds:sync-images`
+
+```yaml
+signature: breeds:sync-images
+domain: data
+ui: false
+cron: false
+```
+
+Aligne `symbol_*`, `logo_*`, `image_full_*` (et les alias `image` / `icon`) sur `storage/app/public/images/breeds/{slug}/`. `--dry-run` pour compter sans écrire. Resync le menu Bibliothèques sauf `--skip-pages`.
+
+```bash
+php artisan breeds:sync-images --dry-run
+php artisan breeds:sync-images
+```
+
+---
+
 ## `game-terms:rewrite-dissipable`
 
 ```yaml

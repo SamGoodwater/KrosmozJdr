@@ -9,6 +9,7 @@ use App\Models\Entity\Specialization;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
+use App\Support\BreedImagePaths;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
@@ -149,10 +150,8 @@ class PageService
      *
      * @param  Page  $page  Page à transformer en item de menu
      * @param  Collection<Page>  $allChildren  Toutes les pages enfants disponibles
+     * @param  array<int, array{icon: string|null, hover: string|null}>  $breedMenuIcons
      * @return array<string, mixed> Item de menu avec structure
-     */
-    /**
-     * @param  array<int, string|null>  $breedMenuIcons  id Breed => URL/chemin icône menu
      */
     private static function buildMenuItem(Page $page, Collection $allChildren, array $breedMenuIcons = []): array
     {
@@ -167,7 +166,8 @@ class PageService
             'menu_group' => $page->menu_group,
             'entity_key' => $page->entity_key,
             'icon' => $page->icon,
-            'menu_icon' => $menuIcon,
+            'menu_icon' => $menuIcon['icon'],
+            'menu_icon_hover' => $menuIcon['hover'],
             'page_css_classes' => $page->page_css_classes,
             'title_css_classes' => $page->title_css_classes,
             'menu_item_css_classes' => $page->menu_item_css_classes,
@@ -192,10 +192,10 @@ class PageService
     }
 
     /**
-     * Précharge les icônes menu des classes liées (colonne icon + collection Spatie icons).
+     * Précharge les icônes menu des classes liées (symbol-bw + hover symbol-full).
      *
      * @param  Collection<Page>  $pages
-     * @return array<int, string|null>
+     * @return array<int, array{icon: string|null, hover: string|null}>
      */
     private static function prefetchBreedMenuIcons(Collection $pages): array
     {
@@ -221,39 +221,55 @@ class PageService
         Breed::query()
             ->whereIn('id', $breedIds)
             ->with(['media' => fn ($query) => $query->whereIn('collection_name', ['icons', 'images'])])
-            ->get(['id', 'icon', 'image'])
+            ->get(['id', 'icon', 'image', 'symbol_bw', 'symbol_full'])
             ->each(function (Breed $breed) use (&$map): void {
-                $map[(int) $breed->id] = self::resolveBreedMenuIcon($breed);
+                $map[(int) $breed->id] = [
+                    'icon' => self::resolveBreedMenuIcon($breed),
+                    'hover' => BreedImagePaths::menuIconHover($breed),
+                ];
             });
 
         return $map;
     }
 
     /**
-     * @param  array<int, string|null>  $breedMenuIcons
+     * @param  array<int, array{icon: string|null, hover: string|null}|string|null>  $breedMenuIcons
+     * @return array{icon: string|null, hover: string|null}
      */
-    private static function resolveMenuIconForPage(Page $page, array $breedMenuIcons): ?string
+    private static function resolveMenuIconForPage(Page $page, array $breedMenuIcons): array
     {
+        $empty = ['icon' => null, 'hover' => null];
         $linked = $page->settings['linked_entity'] ?? null;
         if (! is_array($linked)) {
-            return null;
+            return $empty;
         }
 
         $type = (string) ($linked['type'] ?? '');
         if ($type !== 'breed') {
-            return null;
+            return $empty;
         }
 
         $breedId = (int) ($linked['id'] ?? 0);
         if ($breedId < 1) {
-            return null;
+            return $empty;
         }
 
-        return $breedMenuIcons[$breedId] ?? null;
+        $entry = $breedMenuIcons[$breedId] ?? null;
+        if (is_array($entry)) {
+            return [
+                'icon' => $entry['icon'] ?? null,
+                'hover' => $entry['hover'] ?? null,
+            ];
+        }
+        if (is_string($entry) && $entry !== '') {
+            return ['icon' => $entry, 'hover' => null];
+        }
+
+        return $empty;
     }
 
     /**
-     * Icône menu d'une classe : colonne icon, sinon image, puis médias Spatie icons / images.
+     * Icône menu d'une classe : symbol-bw, sinon icon, sinon symbol-full, puis image / Spatie.
      */
     public static function resolveBreedMenuIconForSync(Breed $breed): ?string
     {
@@ -262,11 +278,9 @@ class PageService
 
     private static function resolveBreedMenuIcon(Breed $breed): ?string
     {
-        foreach ([$breed->icon, $breed->image] as $columnValue) {
-            $fromColumn = self::normalizeMenuIconUrl($columnValue);
-            if ($fromColumn !== null) {
-                return $fromColumn;
-            }
+        $fromLocal = BreedImagePaths::menuIcon($breed);
+        if ($fromLocal !== null) {
+            return self::normalizeMenuIconUrl($fromLocal);
         }
 
         foreach (['icons', 'images'] as $collection) {
@@ -509,6 +523,7 @@ class PageService
         $resolver = app(BibliothequeEntityPageService::class);
 
         return $children->map(function (Page $child) use ($user, $resolver, $breeds, $specializations) {
+            $menuIcons = self::resolveMenuIconForPage($child, []);
             $base = [
                 'id' => $child->id,
                 'title' => $child->title,
@@ -516,7 +531,8 @@ class PageService
                 'url' => route('pages.show', $child->slug, false),
                 'icon' => $child->icon,
                 'entity_key' => $child->entity_key,
-                'menu_icon' => self::resolveMenuIconForPage($child, []),
+                'menu_icon' => $menuIcons['icon'],
+                'menu_icon_hover' => $menuIcons['hover'],
             ];
 
             $linked = $child->settings['linked_entity'] ?? null;
@@ -546,6 +562,8 @@ class PageService
                 return array_merge($base, [
                     'kind' => 'breed',
                     'entity' => (new BreedResource($entity))->resolve(request()),
+                    'menu_icon' => BreedImagePaths::menuIcon($entity) ?? $base['menu_icon'],
+                    'menu_icon_hover' => BreedImagePaths::menuIconHover($entity),
                 ]);
             }
 

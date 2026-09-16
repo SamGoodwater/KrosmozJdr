@@ -487,6 +487,144 @@ export function getBreedFieldDescriptors(ctx = {}) {
         },
       },
     },
+    symbol_full: {
+      key: "symbol_full",
+      label: "Symbole couleur",
+      icon: "fa-solid fa-certificate",
+      display: {
+        sizes: {
+          xs: { mode: "image" },
+          sm: { mode: "image" },
+          md: { mode: "image" },
+          lg: { mode: "image" },
+          xl: { mode: "image" },
+        },
+      },
+      edit: {
+        form: {
+          type: "file",
+          group: "Médias",
+          required: false,
+          showInCompact: false,
+          bulk: { enabled: false },
+        },
+      },
+    },
+    symbol_bw: {
+      key: "symbol_bw",
+      label: "Symbole N&B",
+      icon: "fa-regular fa-circle",
+      display: {
+        sizes: {
+          xs: { mode: "image" },
+          sm: { mode: "image" },
+          md: { mode: "image" },
+          lg: { mode: "image" },
+          xl: { mode: "image" },
+        },
+      },
+      edit: {
+        form: {
+          type: "file",
+          group: "Médias",
+          required: false,
+          showInCompact: false,
+          bulk: { enabled: false },
+        },
+      },
+    },
+    logo_male: {
+      key: "logo_male",
+      label: "Logo mâle",
+      icon: "fa-solid fa-mars",
+      display: {
+        sizes: {
+          xs: { mode: "image" },
+          sm: { mode: "image" },
+          md: { mode: "image" },
+          lg: { mode: "image" },
+          xl: { mode: "image" },
+        },
+      },
+      edit: {
+        form: {
+          type: "file",
+          group: "Médias",
+          required: false,
+          showInCompact: false,
+          bulk: { enabled: false },
+        },
+      },
+    },
+    logo_female: {
+      key: "logo_female",
+      label: "Logo femelle",
+      icon: "fa-solid fa-venus",
+      display: {
+        sizes: {
+          xs: { mode: "image" },
+          sm: { mode: "image" },
+          md: { mode: "image" },
+          lg: { mode: "image" },
+          xl: { mode: "image" },
+        },
+      },
+      edit: {
+        form: {
+          type: "file",
+          group: "Médias",
+          required: false,
+          showInCompact: false,
+          bulk: { enabled: false },
+        },
+      },
+    },
+    image_full_male: {
+      key: "image_full_male",
+      label: "Personnage mâle",
+      icon: "fa-solid fa-image",
+      display: {
+        sizes: {
+          xs: { mode: "image" },
+          sm: { mode: "image" },
+          md: { mode: "image" },
+          lg: { mode: "image" },
+          xl: { mode: "image" },
+        },
+      },
+      edit: {
+        form: {
+          type: "file",
+          group: "Médias",
+          required: false,
+          showInCompact: false,
+          bulk: { enabled: false },
+        },
+      },
+    },
+    image_full_female: {
+      key: "image_full_female",
+      label: "Personnage femelle",
+      icon: "fa-solid fa-image",
+      display: {
+        sizes: {
+          xs: { mode: "image" },
+          sm: { mode: "image" },
+          md: { mode: "image" },
+          lg: { mode: "image" },
+          xl: { mode: "image" },
+        },
+      },
+      edit: {
+        form: {
+          type: "file",
+          group: "Médias",
+          required: false,
+          showInCompact: false,
+          bulk: { enabled: false },
+        },
+      },
+    },
     created_by: {
       key: "created_by",
       label: "Créé par",

@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Visuels des classes
+
+Chaque classe a ses **symboles** (couleur et N&B), ses **têtes** mâle / femelle et ses **personnages** full. La fiche complète montre le personnage (on peut passer de M à F), les petites cartes montrent la tête (mâle condensé, femelle déployé), et le menu utilise le symbole N&B qui passe en couleur au survol.
+
 ## Septembre 2026 — Cinq PNJ d’Incarnam
 
 Les coquilles vides (garde d’Astrub, marchande de Bonta, aubergiste) laissent la place à **cinq fiches jouables** : Ganymède (Xélor érudit), Dathura (Eniripsa dévote), Tabach (Enutrof boulanger), un milicien Iop, Fouduglen le voleur. Classe + spécialisation + quelques objets et sorts. L’atelier **Création → PNJ** pose le cadre (identité, rôle, gabarit, kit 1/slot). Un pré-filtre liste les équipements et sorts jouables à envoyer plus tard à l’IA, sans l’appeler.

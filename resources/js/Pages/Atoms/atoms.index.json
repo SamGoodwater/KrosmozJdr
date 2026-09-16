@@ -2157,7 +2157,7 @@
       {
         "name": "element",
         "type": "Number",
-        "desc": "- Masque 7 bits (1–127) ou ancien code 0–29 (normalisé côté util)."
+        "desc": "- Masque 7 bits (1–127)."
       },
       {
         "name": "size",

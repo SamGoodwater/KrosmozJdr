@@ -19,6 +19,7 @@ final class ClassBreedCatalogTest extends TestCase
 
         $this->assertSame(ClassBreedCatalog::BASE_CLASS_NAMES, $names);
         $this->assertCount(19, ClassBreedCatalog::PREFERRED_FILES);
+        $this->assertSame('iop', ClassBreedCatalog::load(ClassBreedCatalog::iopPath())->slug());
     }
 
     public function test_each_base_class_has_three_voices_from_rules(): void

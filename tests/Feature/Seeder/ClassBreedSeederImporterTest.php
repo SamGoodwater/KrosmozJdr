@@ -45,6 +45,9 @@ final class ClassBreedSeederImporterTest extends TestCase
         $this->assertNotNull($iop);
         $this->assertSame('Iop', $iop->name);
         $this->assertFalse($iop->auto_update);
+        $this->assertSame('/storage/images/breeds/iop/full_m.png', $iop->image_full_male);
+        $this->assertSame('/storage/images/breeds/iop/logo_m.png', $iop->logo_male);
+        $this->assertSame('/storage/images/breeds/iop/symbol-bw.png', $iop->icon);
 
         $this->assertSame(
             ['air' => 'tank', 'earth' => 'tank', 'water' => 'protection'],
