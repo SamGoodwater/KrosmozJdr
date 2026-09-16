@@ -3,6 +3,7 @@
 namespace Tests\Feature\Scrapping;
 
 use App\Http\Middleware\RequirePasswordWithInactivity;
+use App\Models\Entity\Monster;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use Tests\SeedsScrappingPipeline;
@@ -121,6 +122,103 @@ class ScrappingSearchControllerTest extends TestCase
         $this->assertCount(2, $seenUrls);
         // Le 2e appel doit être à skip=50 (et pas 200)
         $this->assertStringContainsString('%24skip=50', (string) $seenUrls[1]);
+    }
+
+    public function test_search_only_missing_filters_existing_ids_server_side(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        Monster::factory()->create(['dofusdb_id' => '31']);
+
+        Http::fake(function ($request) {
+            $url = (string) $request->url();
+            $skip = 0;
+            if (preg_match('/[\$%]24skip=(\d+)/', $url, $m)) {
+                $skip = (int) $m[1];
+            } elseif (preg_match('/[?&]skip=(\d+)/', $url, $m)) {
+                $skip = (int) $m[1];
+            }
+
+            if ($skip > 0) {
+                return Http::response([
+                    'data' => [],
+                    'total' => 2,
+                    'limit' => 50,
+                    'skip' => $skip,
+                ], 200);
+            }
+
+            return Http::response([
+                'data' => [
+                    ['id' => 31, 'name' => ['fr' => 'Bouftou']],
+                    ['id' => 32, 'name' => ['fr' => 'Tofu']],
+                ],
+                'total' => 2,
+                'limit' => 50,
+                'skip' => 0,
+            ], 200);
+        });
+
+        $withoutFilter = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])
+            ->getJson('/api/dofusdb/search/monster?limit=50&max_pages=1&skip_cache=true&race_mode=all');
+        $withoutFilter->assertOk();
+        $withoutFilter->assertJsonCount(2, 'data.items');
+
+        $res = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])
+            ->getJson('/api/dofusdb/search/monster?only_missing=1&page=1&per_page=50&skip_cache=true&race_mode=all');
+
+        $res->assertOk();
+        $res->assertJsonPath('success', true);
+        $res->assertJsonCount(1, 'data.items');
+        $res->assertJsonPath('data.items.0.id', 32);
+        $res->assertJsonPath('data.items.0.exists', false);
+        $res->assertJsonPath('data.meta.total', 1);
+        $res->assertJsonPath('data.meta.only_missing', true);
+        $res->assertJsonPath('data.meta.page', 1);
+        $res->assertJsonPath('data.meta.per_page', 50);
+    }
+
+    public function test_search_only_missing_paginates_missing_count(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        Monster::factory()->create(['dofusdb_id' => '10']);
+
+        Http::fake(function ($request) {
+            $url = (string) $request->url();
+            $skip = 0;
+            if (preg_match('/[\$%]24skip=(\d+)/', $url, $m)) {
+                $skip = (int) $m[1];
+            }
+
+            if ($skip > 0) {
+                return Http::response(['data' => [], 'total' => 3, 'limit' => 50, 'skip' => $skip], 200);
+            }
+
+            return Http::response([
+                'data' => [
+                    ['id' => 10, 'name' => ['fr' => 'Existant']],
+                    ['id' => 11, 'name' => ['fr' => 'Manquant A']],
+                    ['id' => 12, 'name' => ['fr' => 'Manquant B']],
+                ],
+                'total' => 3,
+                'limit' => 50,
+                'skip' => 0,
+            ], 200);
+        });
+
+        $page1 = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])
+            ->getJson('/api/dofusdb/search/monster?only_missing=1&page=1&per_page=1&skip_cache=true&race_mode=all');
+        $page1->assertOk();
+        $page1->assertJsonCount(1, 'data.items');
+        $page1->assertJsonPath('data.items.0.id', 11);
+        $page1->assertJsonPath('data.meta.total', 2);
+        $page1->assertJsonPath('data.meta.total_pages', 2);
+
+        $page2 = $this->actingAs($admin)->withSession(['auth.password_confirmed_at' => time()])
+            ->getJson('/api/dofusdb/search/monster?only_missing=1&page=2&per_page=1&skip_cache=true&race_mode=all');
+        $page2->assertOk();
+        $page2->assertJsonCount(1, 'data.items');
+        $page2->assertJsonPath('data.items.0.id', 12);
+        $page2->assertJsonPath('data.meta.total', 2);
     }
 
     public function test_search_unknown_entity_returns_404(): void

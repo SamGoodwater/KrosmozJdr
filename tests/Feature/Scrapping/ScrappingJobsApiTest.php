@@ -54,6 +54,67 @@ class ScrappingJobsApiTest extends TestCase
         Queue::assertPushed(ProcessScrappingJob::class);
     }
 
+    public function test_create_job_complete_mode_uses_update_mode_ignore(): void
+    {
+        Queue::fake();
+
+        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/dofusdb/jobs', [
+            'kind' => 'import_batch',
+            'entities' => [
+                ['type' => 'monster', 'id' => 32],
+            ],
+            'update_mode' => 'ignore',
+            'include_relations' => true,
+        ]);
+
+        $response->assertStatus(202);
+        $jobId = (string) $response->json('data.job_id');
+        $job = ScrappingJob::query()->find($jobId);
+        $this->assertNotNull($job);
+        $options = $job->payload['options'] ?? [];
+        $this->assertSame('never', $options['replace_mode'] ?? null);
+        $this->assertTrue((bool) ($options['skip_existing'] ?? false));
+        $this->assertTrue((bool) ($options['respect_auto_update'] ?? false));
+    }
+
+    public function test_create_job_update_mode_force_disables_respect_auto_update(): void
+    {
+        Queue::fake();
+
+        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/dofusdb/jobs', [
+            'kind' => 'import_batch',
+            'entities' => [
+                ['type' => 'monster', 'id' => 31],
+            ],
+            'update_mode' => 'force',
+        ]);
+
+        $response->assertStatus(202);
+        $job = ScrappingJob::query()->find((string) $response->json('data.job_id'));
+        $options = $job->payload['options'] ?? [];
+        $this->assertSame('always', $options['replace_mode'] ?? null);
+        $this->assertFalse((bool) ($options['respect_auto_update'] ?? true));
+    }
+
+    public function test_create_job_update_mode_auto_update_respects_flag(): void
+    {
+        Queue::fake();
+
+        $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/dofusdb/jobs', [
+            'kind' => 'import_batch',
+            'entities' => [
+                ['type' => 'monster', 'id' => 31],
+            ],
+            'update_mode' => 'auto_update',
+        ]);
+
+        $response->assertStatus(202);
+        $job = ScrappingJob::query()->find((string) $response->json('data.job_id'));
+        $options = $job->payload['options'] ?? [];
+        $this->assertSame('always', $options['replace_mode'] ?? null);
+        $this->assertTrue((bool) ($options['respect_auto_update'] ?? false));
+    }
+
     public function test_can_get_job_status(): void
     {
         $job = ScrappingJob::query()->create([

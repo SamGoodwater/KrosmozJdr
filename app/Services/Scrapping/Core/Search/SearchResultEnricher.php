@@ -74,14 +74,44 @@ final class SearchResultEnricher
     }
 
     /**
-     * Ajoute `exists` + `existing` (id interne) aux items.
+     * Ensemble des dofusdb_id déjà en base pour une entité d’atelier.
      *
-     * @param  array<int, array<string, mixed>>  $items
-     * @return array<int, array<string, mixed>>
+     * @return array<string, true> clés = identifiants DofusDB normalisés
      */
-    public function withExistsFlag(string $entity, array $items): array
+    public function localDofusdbIdSet(string $entity): array
     {
-        $modelClass = match ($entity) {
+        $modelClass = $this->modelClassForEntity($entity);
+        if ($modelClass === null) {
+            return [];
+        }
+
+        try {
+            $ids = $modelClass::query()
+                ->whereNotNull('dofusdb_id')
+                ->where('dofusdb_id', '!=', '')
+                ->pluck('dofusdb_id')
+                ->all();
+        } catch (\Throwable) {
+            return [];
+        }
+
+        $set = [];
+        foreach ($ids as $id) {
+            $normalized = (string) (int) $id;
+            if ($normalized !== '0') {
+                $set[$normalized] = true;
+            }
+        }
+
+        return $set;
+    }
+
+    /**
+     * @return class-string|null
+     */
+    private function modelClassForEntity(string $entity): ?string
+    {
+        return match ($entity) {
             'class' => Breed::class,
             'monster' => Monster::class,
             'item' => Item::class,
@@ -92,6 +122,17 @@ final class SearchResultEnricher
             'equipment' => Item::class,
             default => null,
         };
+    }
+
+    /**
+     * Ajoute `exists` + `existing` (id interne) aux items.
+     *
+     * @param  array<int, array<string, mixed>>  $items
+     * @return array<int, array<string, mixed>>
+     */
+    public function withExistsFlag(string $entity, array $items): array
+    {
+        $modelClass = $this->modelClassForEntity($entity);
 
         if ($modelClass === null) {
             return $items;

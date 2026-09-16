@@ -382,6 +382,7 @@ final class IntegrationService
                 $creature = $existingCreature;
                 $creatureAction = 'updated';
             } else {
+                $creatureAttributes['state'] = Creature::STATE_RAW;
                 $creature = Creature::create($creatureAttributes);
                 $creatureAction = 'created';
             }
@@ -697,6 +698,7 @@ final class IntegrationService
                 $spell = $existingSpell;
                 $action = 'updated';
             } else {
+                $payload['state'] = Spell::STATE_RAW;
                 $spell = Spell::create($payload);
                 $action = 'created';
             }
@@ -1597,6 +1599,7 @@ final class IntegrationService
                 $breed = $existingBreed;
                 $action = 'updated';
             } else {
+                $payload['state'] = Breed::STATE_RAW;
                 $breed = Breed::create($payload);
                 $action = 'created';
             }
@@ -1722,6 +1725,7 @@ final class IntegrationService
                     $existing->update($payload);
                     $entity = $existing;
                 } else {
+                    $payload['state'] = Resource::STATE_RAW;
                     $entity = Resource::create($payload);
                 }
                 if ($options['include_relations'] ?? true) {
@@ -1735,6 +1739,7 @@ final class IntegrationService
                     $existing->update($payload);
                     $entity = $existing;
                 } else {
+                    $payload['state'] = Consumable::STATE_RAW;
                     $entity = Consumable::create($payload);
                 }
             } else {
@@ -1745,6 +1750,7 @@ final class IntegrationService
                     $existing->update($payload);
                     $entity = $existing;
                 } else {
+                    $payload['state'] = Item::STATE_RAW;
                     $entity = Item::create($payload);
                 }
             }

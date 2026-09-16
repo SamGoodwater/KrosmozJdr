@@ -7,6 +7,7 @@ use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\CollectAliasResolver;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Config\EntityMetaService;
+use App\Services\Scrapping\Core\Search\MissingDofusDbSearchService;
 use App\Services\Scrapping\Core\Search\SearchResultEnricher;
 use App\Services\Scrapping\DataCollect\ItemEntityTypeFilterService;
 use App\Services\Scrapping\DataCollect\MonsterRaceFilterService;
@@ -29,6 +30,7 @@ class ScrappingSearchController extends Controller
         private EntityMetaService $entityMeta,
         private CollectService $collectService,
         private SearchResultEnricher $searchEnricher,
+        private MissingDofusDbSearchService $missingSearch,
         private ItemEntityTypeFilterService $itemEntityTypeFilters,
         private MonsterRaceFilterService $monsterRaceFilters,
     ) {}
@@ -79,7 +81,9 @@ class ScrappingSearchController extends Controller
             $filters = $this->monsterRaceFilters->applyDefaults($filters, $raceMode);
         }
 
-        $options = $this->extractOptions($request, $entity);
+        $onlyMissing = filter_var($request->query('only_missing'), FILTER_VALIDATE_BOOLEAN);
+        $pagination = $this->extractPagePagination($request);
+        $options = $this->extractOptions($request, $entity, applyPagePagination: ! $onlyMissing);
 
         // Ressources : ne pas charger recipesThatUse (recettes qui utilisent cette ressource comme ingrédient)
         // — on récupère les recettes à l'inverse (équipements/consommables → leurs ingrédients).
@@ -87,17 +91,30 @@ class ScrappingSearchController extends Controller
             $options['query_overrides'] = array_merge($options['query_overrides'] ?? [], ['$populate' => false]);
         }
 
-        $result = $this->collectService->fetchManyResult('dofusdb', $collectEntity, $filters, $options);
-        $items = $this->searchEnricher->enrich($entity, $result['items']);
+        if ($onlyMissing) {
+            $page = $pagination['page'] ?? 1;
+            $perPage = $pagination['per_page'] ?? 100;
+            $result = $this->missingSearch->paginateMissing(
+                $entity,
+                $collectEntity,
+                $filters,
+                $options,
+                $page,
+                $perPage,
+            );
+            $items = $this->searchEnricher->enrich($entity, $result['items']);
+            $meta = $result['meta'];
+        } else {
+            $result = $this->collectService->fetchManyResult('dofusdb', $collectEntity, $filters, $options);
+            $items = $this->searchEnricher->enrich($entity, $result['items']);
 
-        // Enrichir meta avec pagination "page/per_page" si utilisée
-        $meta = $result['meta'];
-        $pagination = $this->extractPagePagination($request);
-        if ($pagination !== null) {
-            $meta['page'] = $pagination['page'];
-            $meta['per_page'] = $pagination['per_page'];
-            if (isset($meta['total']) && is_int($meta['total']) && $meta['total'] > 0) {
-                $meta['total_pages'] = (int) ceil($meta['total'] / max(1, $pagination['per_page']));
+            $meta = $result['meta'];
+            if ($pagination !== null) {
+                $meta['page'] = $pagination['page'];
+                $meta['per_page'] = $pagination['per_page'];
+                if (isset($meta['total']) && is_int($meta['total']) && $meta['total'] > 0) {
+                    $meta['total_pages'] = (int) ceil($meta['total'] / max(1, $pagination['per_page']));
+                }
             }
         }
 
@@ -193,7 +210,7 @@ class ScrappingSearchController extends Controller
     /**
      * @return array{skip_cache?:bool, limit?:int, max_pages?:int, max_items?:int, start_skip?:int}
      */
-    private function extractOptions(Request $request, string $entity): array
+    private function extractOptions(Request $request, string $entity, bool $applyPagePagination = true): array
     {
         $options = [];
 
@@ -211,8 +228,9 @@ class ScrappingSearchController extends Controller
             $options['start_skip'] = max(0, $startSkip);
         }
 
-        // Pagination "page/per_page" (prioritaire sur l'usage manuel limit/offset si fourni)
-        $pagePagination = $this->extractPagePagination($request);
+        // Pagination "page/per_page" (prioritaire sur l'usage manuel limit/offset si fourni).
+        // Désactivée pour only_missing : le service de manquants pagine les IDs absents, pas DofusDB.
+        $pagePagination = $applyPagePagination ? $this->extractPagePagination($request) : null;
         if ($pagePagination !== null) {
             $perPage = $pagePagination['per_page'];
             $page = $pagePagination['page'];
