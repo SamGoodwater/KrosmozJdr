@@ -10,7 +10,7 @@
 
 ## Concepts clés
 
-- **Champs communs** : `state` (`raw`/`draft`/`auto`/`playable`/`archived`), `read_level` (0-5), `write_level` (0-5), `created_by`, soft delete. Beaucoup ont aussi `official_id`, `dofusdb_id`, `auto_update`. Détail : [README](./README.md#champs-communs). L’état `auto` (proposition IA/script à relire) est dans le code ; le pipeline LLM reste cadré : [IA générative](../../IA/_ai.md). Libellé `playable` = **Jouable** (affichage, tooltip du point, action) — pas « Actif ».
+- **Champs communs** : `state` (`raw`/`draft`/`auto`/`playable`/`archived`), `read_level` (0-5), `write_level` (0-5), `created_by`, soft delete. Beaucoup ont aussi `official_id`, `dofusdb_id`, `auto_update`. Détail : [README](./README.md#champs-communs). L’état `auto` (proposition IA/script à relire) est écrit par `AllowlistWriter`. Ability `generate` = admin. Cadrage : [IA générative](../../IA/_ai.md). Libellé `playable` = **Jouable** (affichage, tooltip du point, action) — pas « Actif ».
 - **Droits** : matrice rôle × état, puis `read_level`/`write_level`, l'auteur garde l'accès. Code : `app/Policies/Entity/BaseEntityPolicy.php`. Détail : [README](./README.md#droits).
 - **Backend CRUD** : un contrôleur web par entité dans `app/Http/Controllers/Entity/` ; validation par Form Requests `app/Http/Requests/Entity/`.
 - **Suppression** : `EntityDeletionService` (soft/restore/force + impact) ; API `EntityDeletionController` ; web `delete` → même service. UI : `ConfirmModal` + `delete-impact`.

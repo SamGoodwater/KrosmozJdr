@@ -1,6 +1,6 @@
 # Architecture de la génération
 
-Cadrage. Config des champs figés : page admin `/admin/content/ia-generation` (table `ia_generation_settings`) avec repli `resources/ia/generation.json`. Grille objets : `ia:equipment-grid`. Le pipeline LLM n’est pas encore branché.
+Cadrage. Config des champs figés : page admin `/admin/content/ia-generation` (table `ia_generation_settings`) avec repli `resources/ia/generation.json`. Grille objets : `ia:equipment-grid`. Pipeline LLM : `app/Services/GenerativeAi/` (Anthropic Sonnet 5).
 
 ## Partage des responsabilités
 
@@ -54,7 +54,7 @@ Visibilité de `auto` : **comme `raw` / `draft`** (éditeurs seulement, `rôle �
 
 Métadonnées utiles (champs, pas un état) : `ai_generated_at`, identifiant du modèle, version de prompt, rapport du validateur. Permet de régénérer sans casser le cycle de vie.
 
-L’état `auto` est **dans le code**. Le pipeline LLM (assembleur de contexte, JSON Schema, retries) n’est pas encore branché.
+L’état `auto` est **dans le code**. Le pipeline LLM (assembleur, JSON Schema writable-only, retries, writer allowlist) est branché. Premier persist : rencontre. Ability `generate` = admin. Tokens réels : table `ai_generation_runs` (`model`, `input_tokens`, `output_tokens`, `ai_generated_at`).
 
 ## Pourquoi pas un modèle « à nous »
 
@@ -98,6 +98,17 @@ Sur une fiche **sourcée Dofus**, le schéma n’expose que les clés `writable`
 | Gabarits règles 5.1.2 / 5.2.4 | Max 3 effets par sort JDR ; trop de sorts sur un monstre |
 
 Un JSON « dans les normes » mais idiot (sorts Terre, Force 0) doit **échouer**. Les bornes numériques ne suffisent pas.
+
+## Code branché
+
+- Client : `GenerativeAiClient` (Laravel HTTP, Messages API, outil forcé `submit_json`, `cache_control` ephemeral). Modèle `claude-sonnet-5`. Pas de SDK.
+- Assembleur : `ContextAssembler` — superviseur + `task_prompt` / fiche Création + few-shot compact + schéma writable-only.
+- Writer : `AllowlistWriter` — jamais `unguard` du JSON LLM ; `state=auto` via `EntityStateGate::assertAutomatedWriterMaySet` ; `auto_update=false`.
+- Job : `ConvertPacketJob` (queue `database` en prod, `sync` en tests). 1 paquet = 1 requête. Retries validateur = `generation.max_retries`.
+- Specs : `app/Services/GenerativeAi/Specializations/` (`spell`, `encounter`, `npc`, `item`, `consumable`).
+- HTTP : `POST /api/entities/{type}/{id}/ia-convert` (`role:admin`, throttle 12/min). Statut : `GET /api/ia/status`.
+- UI : une icône « Sources » → `EntitySourceModal` (DofusDB | Conversion IA). Volet IA si admin.
+- Tests : `Http::fake` — aucun appel LLM réel en CI (`ANTHROPIC_API_KEY` vide dans `phpunit.xml`).
 
 ## Code et docs existants à réutiliser
 

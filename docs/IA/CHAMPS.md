@@ -8,7 +8,7 @@ L’IA **ne réécrit pas une fiche Dofus entière**. Laravel recopie ce qui est
 
 ## Comment éditer
 
-Quatre types : `item`, `spell`, `monster`, `npc`.
+Quatre types historiques plus le consommable : `item`, `spell`, `monster`, `npc`, `consumable`.
 
 | Clé | Rôle |
 | --- | --- |
@@ -16,7 +16,7 @@ Quatre types : `item`, `spell`, `monster`, `npc`.
 | `writable_fields` | Exceptions : **gagne** sur `frozen_*`. |
 | `frozen_characteristics` | Clés `characteristics.key` (ex. `intelligence_object`). `"*"` = toutes. |
 | `writable_characteristics` | Caracs que l’IA **peut** toucher malgré le joker. |
-| `example_ids` | Ids locaux `playable` à envoyer en few-shot. |
+| `example_ids` | `official_id` ou nom d’une fiche `playable` (pas un id SQL portable). Pool vide refusé à l’assembleur. |
 | `few_shot_panoplies` (objets, extra) | Noms des panoplies `playable` que l’IA doit imiter. Portable entre bases. Détail : [CATALOGUE](./CATALOGUE.md#liste-few-shot-panoplies-ce-que-lia-doit-imiter). |
 | `has_dofus_source` | `true` : recopier l’identité depuis la fiche `raw`. |
 | `generation.*` | Variables globales (`max_retries`, `few_shot_count`, …). |
@@ -42,10 +42,11 @@ Objet unique de scénario (sans source Dofus) : on ignore le gel, comme un PNJ.
 | **Sorts** | Tout sauf `effect` ; toutes les caracs (PA, portée…) | Texte d’effets (1 + 0–2 secondaires) |
 | **Monstres** | Tous les champs et toutes les caracs | 2–3 sorts-créature (paquet, pas des colonnes) |
 | **PNJ** | Rien | Toute la fiche ; kit = ids `playable` |
+| **Consommables** | Tous les champs et toutes les caracs | Exceptions `writable_fields` (effet lisible à table) |
 
 **Source optionnelle PNJ (site)** : page encyclopédie / wiki / DofusDB. Laravel extrait nom / portrait / lore. Pas de scrap de masse, pas de `dofusdb_id` sur `Npc`.
 
-## Consigne pour le JSON Schema (plus tard)
+## Consigne pour le JSON Schema
 
 - Entité sourcée : le modèle **renvoie seulement les clés `writable`**. Laravel recopie le reste depuis `raw`.
 - PNJ (et objet unique sans source) : le modèle remplit l’identité **et** le kit ; le validateur refuse les ids hors liste.

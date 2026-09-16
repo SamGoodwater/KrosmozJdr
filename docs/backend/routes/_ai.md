@@ -6,6 +6,7 @@
 
 - `routes/web.php`
 - `routes/api.php`
+- `routes/api/generative-ai.php` — `GET /api/ia/status` (usage + estimés, admin)
 - `routes/auth.php`
 - `routes/web/page.php`
 - `routes/api/scrapping.php` — API atelier `/api/dofusdb` (redirect 307 depuis `/api/scrapping`).

@@ -2,7 +2,7 @@
 
 Source unique des guides MJ **et** du texte à injecter dans l’IA de conversion : `resources/ia/creation-guides/`.
 
-Pas d’appel LLM. Laravel lira ce pack plus tard dans l’assembleur de contexte (couche « tâche par type »).
+L’assembleur lit ce pack (`CreationGuideCatalog`) comme couche « tâche par type », sauf si un `task_prompt` admin le remplace.
 
 ## Types couverts
 
@@ -20,6 +20,4 @@ Classes, spés, PNJ, panoplies, états restent sur l’atelier CMS seulement (`d
 
 Le HTML CMS (krefs) est aplati en texte : `[[kref:…|PA]]` → `PA`.
 
-## Suite
-
-Quand le pipeline de conversion sera branché, coller le prompt du type dans la couche 2 (tâche + JSON Schema), avec les étalons `playable` et les clés `writable` de [CHAMPS.md](./CHAMPS.md).
+L’assembleur injecte `CreationGuideCatalog::promptFor($type)` (ou le `task_prompt` admin) dans la couche 2, avec les étalons `playable` et les clés `writable` de [CHAMPS.md](./CHAMPS.md).

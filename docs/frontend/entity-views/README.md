@@ -67,9 +67,10 @@ L’action `view-dofusdb` (icône `/images/logos/dofus.png`) apparaît si l’en
 `dofusDbReference` ; le panneau `DofusDbReferencePanel` (monté dans `Main`) affiche le deep-link
 et un bouton `window.open` (pas d’iframe).
 
-L’action `refresh` (modal / page, types scrapables) lance une maj DofusDB **unitaire**
-(`POST /api/entities/{type}/{id}/dofusdb-refresh`, id local, policy `update`). Les MJ
-n’ont pas l’atelier de masse.
+L’action `refresh` (**Sources**, une icône) ouvre `EntitySourceModal` : volet DofusDB
+(`POST /api/entities/{type}/{id}/dofusdb-refresh`, scrapable + `update`) et volet
+conversion IA (`POST /api/entities/{type}/{id}/ia-convert`, admin). Surfaces : page,
+modal, minimal, menu tableau.
 
 ## Caractéristiques
 
