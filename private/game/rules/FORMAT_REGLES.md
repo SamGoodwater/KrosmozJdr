@@ -165,13 +165,13 @@ La commande `php artisan pages:import-rules-toc` lit [TABLE_DES_MATIERES.md](TAB
 ```markdown
 ### Exemple de tour complet
 
-**Situation** : Cra niveau 3 (PA 6, PM 3) affronte un Bouftou (CA 11, 24 PV).
+**Situation** : Crâ niveau 3 (PA 6, PM 3, Agilité 13 / +1, maîtrise +1) affronte un Bouftou (CA 11, 24 PV), pas au corps-à-corps.
 
 1. **Initiative** : 1d20 + Intelligence = 12 → joue après le Bouftou.
 2. **Début de tour** : Récupère 6 PA, 3 PM.
-3. **Action 1** : Lance \"Flèche Magique\" (3 PA, portée 7). Jet d'attaque 15 vs CA 11 → touche. Dégâts = 1d6 + 2 = 6.
+3. **Action 1** : Lance « Flèche Magique » (3 PA, portée 7). Jet 14 vs CA 11 → touche. Dégâts = 1d6 + 1 = 5.
 4. **Action 2** : Se déplace de 3 cases (3 PM) pour garder ses distances.
-5. **Action bonus** : Utilise \"Esquive\" (2 PA) pour gagner +2 CA jusqu'à son prochain tour.
+5. **Action bonus** : Potion (1 PA). Pas l’action Esquiver (3 PA + 2 PM, unique action du tour).
 ```
 
 ### 5.2. Ajout d'un exemple de test

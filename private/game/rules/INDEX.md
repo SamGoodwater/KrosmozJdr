@@ -11,552 +11,552 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## A
 
 
-**Abondance/rareté** : 
+**Abondance/rareté** :
 4.3.5
 
 
 
-**Abri important (+5 CA et Agilité)** : 
+**Abri important (+5 CA et Agilité)** :
 3.2.2
 
 
 
-**Abri partiel (+2 CA et Agilité)** : 
+**Abri partiel (+2 CA et Agilité)** :
 3.2.2
 
 
 
-**Abri total (impossible à cibler)** : 
+**Abri total (impossible à cibler)** :
 3.2.2
 
 
 
-**Accroches** : 
+**Accroches** :
 5.1.3
 
 
 
-**Accumulation** : 
+**Accumulation** :
 3.4.2
 
 
 
-**Accès** : 
+**Accès** :
 1.1.4, 1.3.4
 
 
 
-**Accès aux métiers** : 
+**Accès aux métiers** :
 2.4.5
 
 
 
-**Acquisition** : 
+**Acquisition** :
 3.3.1
 
 
 
-**Acquisition automatique** : 
+**Acquisition automatique** :
 3.3.1
 
 
 
-**Action requise** : 
+**Action requise** :
 4.4.5
 
 
 
-**Actions bonus** : 
+**Actions bonus** :
 1.2.3
 
 
 
-**Actions bonus (2-3 PA)** : 
+**Actions bonus (2-3 PA)** :
 3.2.2
 
 
 
-**Actions des personnages** : 
+**Actions des personnages** :
 4.2.4
 
 
 
-**Actions du tour** : 
+**Actions du tour** :
 1.2.3
 
 
 
-**Actions fortes** : 
+**Actions fortes** :
 1.2.3
 
 
 
-**Actions fortes (5 PA)** : 
+**Actions fortes (5 PA)** :
 3.2.2
 
 
 
-**Actions nécessitant des tests** : 
+**Actions nécessitant des tests** :
 3.1.1
 
 
 
-**Actions nécessitant un test** : 
+**Actions nécessitant un test** :
 1.2.3
 
 
 
-**Actions simples** : 
+**Actions simples** :
 1.2.3, 3.1.1
 
 
 
-**Actions standard** : 
+**Actions standard** :
 1.2.3
 
 
 
-**Activation** : 
+**Activation** :
 3.3.1
 
 
 
-**Activation/désactivation** : 
+**Activation/désactivation** :
 2.6.4
 
 
 
-**Adaptabilité** : 
+**Adaptabilité** :
 1.1.3
 
 
 
-**Adaptation depuis Dofus** : 
+**Adaptation depuis Dofus** :
 4.2.2
 
 
 
-**Adaptation JDR** : 
+**Adaptation JDR** :
 2.3.1
 
 
 
-**Adaptation par campagne** : 
+**Adaptation par campagne** :
 3.4.5
 
 
 
-**Adaptation par famille** : 
+**Adaptation par famille** :
 4.2.5
 
 
 
-**Adaptation par univers** : 
+**Adaptation par univers** :
 3.4.5
 
 
 
-**Adaptations pour le JDR** : 
+**Adaptations pour le JDR** :
 1.1.2
 
 
 
-**Affectation par spécialisation** : 
+**Affectation par spécialisation** :
 2.4.5
 
 
 
-**Agilité** : 
+**Agilité** :
 3.5.1
 
 
 
-**Agressif** : 
+**Agressif** :
 4.2.4
 
 
 
-**Aide** : 
+**Aide** :
 3.5.4
 
 
 
-**Aider (2 PA)** : 
+**Aider (2 PA)** :
 3.2.2
 
 
 
-**Aides** : 
+**Aides** :
 5.1.2
 
 
 
-**Aides d'initiation** : 
+**Aides d'initiation** :
 1.1.2
 
 
 
-**Ajustement par le MJ** : 
+**Ajustement par le MJ** :
 3.5.2
 
 
 
-**Ajustement selon le niveau** : 
+**Ajustement selon le niveau** :
 3.5.4
 
 
 
-**Ajustements autorisés** : 
+**Ajustements autorisés** :
 3.3.5
 
 
 
-**Ajustements par niveau** : 
+**Ajustements par niveau** :
 5.1.3
 
 
 
-**Ajustements par région** : 
+**Ajustements par région** :
 5.1.3
 
 
 
-**Ajustements rapides** : 
+**Ajustements rapides** :
 5.1.1
 
 
 
-**Ajustements selon boss** : 
+**Ajustements selon boss** :
 5.3.2
 
 
 
-**Ajustements selon donjon** : 
+**Ajustements selon donjon** :
 5.3.2
 
 
 
-**Ajustements selon heure** : 
+**Ajustements selon heure** :
 5.3.4
 
 
 
-**Ajustements selon le groupe** : 
+**Ajustements selon le groupe** :
 4.2.2
 
 
 
-**Ajustements selon météo** : 
+**Ajustements selon météo** :
 5.3.4
 
 
 
-**Ajustements selon région** : 
+**Ajustements selon région** :
 5.3.2, 5.3.4
 
 
 
-**Ajustements selon réputation** : 
+**Ajustements selon réputation** :
 5.3.4
 
 
 
-**Ajuster les défenses** : 
+**Ajuster les défenses** :
 5.1.2
 
 
 
-**Ajuster les dégâts** : 
+**Ajuster les dégâts** :
 5.1.2
 
 
 
-**Ajuster les PV** : 
+**Ajuster les PV** :
 5.1.2
 
 
 
-**Alchimiste (Herboriste)** : 
+**Alchimiste (Herboriste)** :
 4.3.2
 
 
 
-**Alliances** : 
+**Alliances** :
 5.1.4
 
 
 
-**Alliances et conflits** : 
+**Alliances et conflits** :
 4.1.1
 
 
 
-**Alliés** : 
+**Alliés** :
 5.1.2
 
 
 
-**Alterner scènes calmes et intenses** : 
+**Alterner scènes calmes et intenses** :
 5.1.5
 
 
 
-**Amakna** : 
+**Amakna** :
 4.1.1
 
 
 
-**Amical** : 
+**Amical** :
 4.2.4
 
 
 
-**Analyse de scènes de crime** : 
+**Analyse de scènes de crime** :
 3.5.5
 
 
 
-**Ancien projet** : 
+**Ancien projet** :
 1.1.4
 
 
 
-**Anomalie temporelle** : 
+**Anomalie temporelle** :
 5.3.3
 
 
 
-**Anomalies** : 
+**Anomalies** :
 5.3.4
 
 
 
-**Antidotes** : 
+**Antidotes** :
 4.4.4
 
 
 
-**Application** : 
+**Application** :
 2.4.5, 3.5.3
 
 
 
-**Approche discrète** : 
+**Approche discrète** :
 3.5.5
 
 
 
-**Approche détaillée** : 
+**Approche détaillée** :
 3.1.1
 
 
 
-**Approche simple** : 
+**Approche simple** :
 3.1.1
 
 
 
-**Après la surprise** : 
+**Après la surprise** :
 3.2.1
 
 
 
-**aptitude** : 
+**aptitude** :
 1.2.2, 1.2.4, 2.2.1, 2.2.2, 2.3.2, 2.4.2, 2.4.3, 2.5, 3.1.2, 3.2.4, 3.2.5, 3.3.2, 3.3.4, 3.4.1, 3.4.3, 3.4.4, 3.4.5
 
 
 
-**Aptitude** : 
+**Aptitude** :
 2.4.2, 2.4.3, 3.4.3, 3.4.5, 5.2.1
 
 
 
-**aptitudes** : 
+**aptitudes** :
 1.1.4, 1.2.2, 1.2.3, 1.2.4, 1.3.3, 1.3.4, 2.1, 2.2.1, 2.2.2, 2.3.2, 2.4.1, 2.4.2, 2.4.3, 2.4.4, 2.4.5, 2.5, 3.2.4, 3.2.5, 3.3.4, 3.4.1, 3.4.3, 3.4.4, 3.4.5, 4.2.3, 5.2.1, 5.2.2, 5.2.3
 
 
 
-**Aptitudes** : 
+**Aptitudes** :
 1.3.3, 2.1, 2.4.1, 2.4.2, 2.4.3, 2.4.4, 3.3.4, 3.4.1, 3.4.3, 3.4.4, 3.4.5, 5.2.1, 5.2.2, 5.2.3
 
 
 
-**Aptitudes (sorts sans dégâts)** : 
+**Aptitudes (sorts sans dégâts)** :
 5.2.1
 
 
 
-**Aptitudes renforçant les rôles** : 
+**Aptitudes renforçant les rôles** :
 3.4.4
 
 
 
-**Arbitrage MJ** : 
+**Arbitrage MJ** :
 3.4.4
 
 
 
-**Armes** : 
+**Armes** :
 5.3.5
 
 
 
-**Armes improvisées** : 
+**Armes improvisées** :
 2.6.1
 
 
 
-**Artefacts et objets magiques** : 
+**Artefacts et objets magiques** :
 3.3.3
 
 
 
-**Artisan** : 
+**Artisan** :
 2.4.3, 2.4.4, 3.4.1, 3.4.2
 
 
 
-**Artisanat** : 
+**Artisanat** :
 3.5.1
 
 
 
-**Artiste** : 
+**Artiste** :
 2.4.3, 2.4.4, 3.4.1, 3.4.2
 
 
 
-**Assistance** : 
+**Assistance** :
 4.3.3
 
 
 
-**Assistance d'un maître** : 
+**Assistance d'un maître** :
 3.3.1
 
 
 
-**Assistance de PNJ** : 
+**Assistance de PNJ** :
 4.3.4
 
 
 
-**Astrub** : 
+**Astrub** :
 4.1.1
 
 
 
-**Ateliers** : 
+**Ateliers** :
 4.3.3
 
 
 
-**Ateliers requis** : 
+**Ateliers requis** :
 4.4.3
 
 
 
-**Attaque à mains nues (2 PA)** : 
+**Attaque à mains nues (2 PA)** :
 3.2.2
 
 
 
-**Attaquer avec son arme** : 
+**Attaquer avec son arme** :
 3.2.2
 
 
 
-**Attaquer depuis l'invisibilité** : 
+**Attaquer depuis l'invisibilité** :
 3.2.2
 
 
 
-**Attaquer une cible invisible** : 
+**Attaquer une cible invisible** :
 3.2.2
 
 
 
-**Attaques opportunistes** : 
+**Attaques opportunistes** :
 3.2.2
 
 
 
-**Automne (Septembre, Octobre, Novembre)** : 
+**Automne (Septembre, Octobre, Novembre)** :
 4.1.2
 
 
 
-**Autre chose ?** : 
+**Autre chose ?** :
 3.2.2
 
 
 
-**Autres créatures neutres** : 
+**Autres créatures neutres** :
 4.2.1
 
 
 
-**Autres humanoïdes** : 
+**Autres humanoïdes** :
 4.2.1
 
 
 
-**Autres invocations** : 
+**Autres invocations** :
 4.2.1
 
 
 
-**Autres méthodes** : 
+**Autres méthodes** :
 4.1.5
 
 
 
-**Autres panoplies** : 
+**Autres panoplies** :
 2.6.2
 
 
 
-**Autres régions** : 
+**Autres régions** :
 4.1.1
 
 
 
-**Avancement narratif** : 
+**Avancement narratif** :
 4.1.2
 
 
 
-**Avantage** : 
+**Avantage** :
 3.5.4
 
 
 
-**Avantage et désavantage** : 
+**Avantage et désavantage** :
 3.1.4
 
 
 
-**Avantages** : 
+**Avantages** :
 3.3.4
 
 
 
-**Avantages de la fusion** : 
+**Avantages de la fusion** :
 2.4.4
 
 
 
-**Avantages du multi-voix** : 
+**Avantages du multi-voix** :
 2.3.3
 
 
 
-**Avantages en combat** : 
+**Avantages en combat** :
 3.4.1
 
 
 
-**Avec un maître** : 
+**Avec un maître** :
 3.3.3
 
 
@@ -566,197 +566,197 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## B
 
 
-**Bandits** : 
+**Bandits** :
 4.2.1
 
 
 
-**Barème de base** : 
+**Barème de base** :
 5.1.1
 
 
 
-**Barème standard** : 
+**Barème standard** :
 1.2.1, 3.5.2
 
 
 
-**Blessures** : 
+**Blessures** :
 3.5.4
 
 
 
-**Bois** : 
+**Bois** :
 4.4.1
 
 
 
-**Bombes** : 
+**Bombes** :
 4.4.4
 
 
 
-**Bonta** : 
+**Bonta** :
 4.1.1
 
 
 
-**Bonus accordés** : 
+**Bonus accordés** :
 2.6.3
 
 
 
-**Bonus additionnels** : 
+**Bonus additionnels** :
 4.3.3, 5.3.1
 
 
 
-**Bonus associés** : 
+**Bonus associés** :
 4.3.1
 
 
 
-**Bonus ciblés** : 
+**Bonus ciblés** :
 3.4.4
 
 
 
-**Bonus cumulés** : 
+**Bonus cumulés** :
 5.2.4
 
 
 
-**Bonus d'équipe** : 
+**Bonus d'équipe** :
 4.3.2
 
 
 
-**Bonus d'équipement** : 
+**Bonus d'équipement** :
 2.2.3, 3.3.4
 
 
 
-**Bonus de caractéristiques** : 
+**Bonus de caractéristiques** :
 4.3.4
 
 
 
-**Bonus de combat** : 
+**Bonus de combat** :
 4.3.4
 
 
 
-**Bonus de compétences** : 
+**Bonus de compétences** :
 4.3.4
 
 
 
-**Bonus de groupe** : 
+**Bonus de groupe** :
 3.2.2
 
 
 
-**Bonus de maîtrise** : 
+**Bonus de maîtrise** :
 2.2.2, 3.3.4
 
 
 
-**Bonus de spécialisation** : 
+**Bonus de spécialisation** :
 4.1.4
 
 
 
-**Bonus de touche** : 
+**Bonus de touche** :
 2.2.2
 
 
 
-**Bonus des familiers** : 
+**Bonus des familiers** :
 2.6.4
 
 
 
-**Bonus des montures** : 
+**Bonus des montures** :
 2.6.4
 
 
 
-**Bonus fixe** : 
+**Bonus fixe** :
 3.5.3
 
 
 
-**Bonus fournis** : 
+**Bonus fournis** :
 3.5.4
 
 
 
-**Bonus innés** : 
+**Bonus innés** :
 4.2.3
 
 
 
-**Bonus permanents** : 
+**Bonus permanents** :
 3.4.2
 
 
 
-**Bonus situationnels** : 
+**Bonus situationnels** :
 5.2.4
 
 
 
-**Bonus temporaires** : 
+**Bonus temporaires** :
 4.4.4
 
 
 
-**Bornes par niveau** : 
+**Bornes par niveau** :
 5.2.3
 
 
 
-**Boss légendaires** : 
+**Boss légendaires** :
 4.2.1
 
 
 
-**Boucliers** : 
+**Boucliers** :
 2.6.1, 4.2.2
 
 
 
-**Bouftous** : 
+**Bouftous** :
 4.2.1
 
 
 
-**Bousculer une créature (2 PA)** : 
+**Bousculer une créature (2 PA)** :
 3.2.2
 
 
 
-**Brâkmar** : 
+**Brâkmar** :
 4.1.1
 
 
 
-**Buffs** : 
+**Buffs** :
 5.2.3
 
 
 
-**Butins par niveau** : 
+**Butins par niveau** :
 5.1.4
 
 
 
-**Butins par type de rencontre** : 
+**Butins par type de rencontre** :
 5.1.4
 
 
 
-**Bûcheron** : 
+**Bûcheron** :
 4.3.2
 
 
@@ -766,617 +766,617 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## C
 
 
-**CA** : 
+**CA** :
 2.2.2, 2.6.1, 2.6.2, 3.2.2, 3.3.2, 3.4.2, 4.1.3, 4.2.2, 4.3.3, 4.4.4, 5.1.1, 5.1.2, 5.2.1, 5.2.2, 5.2.3, 5.2.4, 5.3.5
 
 
 
-**Calcul** : 
+**Calcul** :
 1.2.2, 2.2.2, 2.4.5, 3.2.4
 
 
 
-**Calcul d'un test de compétence** : 
+**Calcul d'un test de compétence** :
 1.2.4
 
 
 
-**Calcul de l'initiative** : 
+**Calcul de l'initiative** :
 3.2.1
 
 
 
-**Canaux de contribution** : 
+**Canaux de contribution** :
 1.3.4
 
 
 
-**capacité** : 
+**capacité** :
 2.2.2, 2.3.1, 2.3.4, 2.4.2, 3.2.4, 3.2.5, 3.4.1, 3.4.2, 3.4.3, 3.4.4, 3.5.1, 3.5.5, 4.4.3, 5.2.4
 
 
 
-**Capacité** : 
+**Capacité** :
 2.3.1, 2.4.1, 2.4.2, 3.4.3, 3.5.4, 4.1.5, 4.4.3, 5.2.4
 
 
 
-**capacités** : 
+**capacités** :
 1.1.1, 1.1.4, 1.2.2, 1.2.4, 1.2.5, 1.3.3, 2.1, 2.2.1, 2.2.2, 2.3.2, 2.4.1, 2.4.2, 2.4.3, 2.4.4, 2.6.4, 3.1.2, 3.1.3, 3.1.4, 3.2.1, 3.2.2, 3.2.3, 3.2.4, 3.2.5, 3.3.3, 3.3.4, 3.3.5, 3.4.2, 3.4.3, 3.4.4, 3.4.5, 3.5.3, 3.5.4, 4.1.1, 4.1.2, 4.2.1, 4.2.2, 4.2.3, 5.1.1, 5.1.2, 5.2.2, 5.2.3, 5.2.5, 5.3.1
 
 
 
-**Capacités** : 
+**Capacités** :
 1.2.3, 1.3.3, 2.1, 2.3.2, 2.4.1, 2.4.2, 2.4.4, 2.5, 2.6.4, 3.1.2, 3.2.3, 3.3.4, 3.4.1, 3.4.2, 3.4.5, 4.2.2, 4.3.1, 5.1.2, 5.2.1, 5.2.2, 5.2.4, 5.2.5
 
 
 
-**Capacités spéciales** : 
+**Capacités spéciales** :
 5.1.2
 
 
 
-**caractéristique** : 
+**caractéristique** :
 1.1.3, 1.2.1, 1.2.2, 1.2.3, 1.2.4, 1.3.1, 2.1, 2.2.1, 2.2.2, 2.2.3, 2.3.2, 2.3.3, 2.4.4, 2.4.5, 2.6.2, 2.6.4, 3.2.2, 3.2.4, 3.4.2, 3.5.2, 3.5.3, 3.5.4, 4.3.2, 4.3.3, 4.3.4, 4.4.4, 5.2.4
 
 
 
-**Caractéristique** : 
+**Caractéristique** :
 2.3.3, 3.3.2, 3.5.1, 3.5.4, 5.1.2, 5.3.5
 
 
 
-**caractéristiques** : 
+**caractéristiques** :
 1.1.1, 1.1.2, 1.1.4, 1.2.4, 1.3.1, 1.3.2, 1.3.3, 2.1, 2.2.1, 2.2.2, 2.2.3, 2.3.1, 2.3.2, 2.3.3, 2.4.2, 2.5, 2.6.1, 2.6.3, 2.6.4, 3.2.2, 3.2.5, 3.3.1, 3.3.2, 3.3.3, 3.3.4, 3.3.5, 3.4.3, 3.5.1, 3.5.2, 3.5.4, 3.5.5, 4.1.1, 4.1.2, 4.2.2, 4.2.3, 4.3.1, 4.3.3, 4.3.4, 4.4.4, 4.4.5, 5.1.1, 5.1.2, 5.2.1, 5.2.3, 5.2.4
 
 
 
-**Caractéristiques** : 
+**Caractéristiques** :
 1.1.1, 1.2.4, 1.3.2, 2.1, 2.2.1, 2.2.2, 2.2.3, 2.3.2, 2.3.3, 2.3.4, 2.4.1, 2.5, 2.6.1, 2.6.2, 2.6.3, 2.6.4, 3.1.3, 3.3.1, 3.3.2, 3.4.2, 3.4.3, 4.1.1, 4.1.2, 4.1.3, 4.1.4, 4.1.5, 4.2.1, 4.2.2, 4.2.4, 4.2.5, 4.3.1, 4.3.2, 4.3.3, 4.3.4, 4.4.2, 4.4.5, 5.1.2, 5.1.5, 5.2.1, 5.2.2, 5.2.3, 5.2.4, 5.3.5
 
 
 
-**Caractéristiques communes** : 
+**Caractéristiques communes** :
 2.3.4
 
 
 
-**Caractéristiques de la quête personnelle** : 
+**Caractéristiques de la quête personnelle** :
 2.5
 
 
 
-**Caractéristiques des armes** : 
+**Caractéristiques des armes** :
 2.6.1
 
 
 
-**Caractéristiques des traits** : 
+**Caractéristiques des traits** :
 1.2.4
 
 
 
-**Caractéristiques des états** : 
+**Caractéristiques des états** :
 1.2.4
 
 
 
-**Caractéristiques par métier** : 
+**Caractéristiques par métier** :
 4.3.2, 4.3.3
 
 
 
-**Caravanes** : 
+**Caravanes** :
 4.1.5
 
 
 
-**Cas particuliers** : 
+**Cas particuliers** :
 1.2.1
 
 
 
-**Cas particuliers autorisés** : 
+**Cas particuliers autorisés** :
 3.4.1
 
 
 
-**Casse** : 
+**Casse** :
 4.3.4
 
 
 
-**Catalyseurs** : 
+**Catalyseurs** :
 4.3.4
 
 
 
-**Catégories d'illumination** : 
+**Catégories d'illumination** :
 3.1.1
 
 
 
-**Catégories de métiers** : 
+**Catégories de métiers** :
 4.3.1
 
 
 
-**Ce qui est exclu** : 
+**Ce qui est exclu** :
 1.1.1
 
 
 
-**Ce qui est inclus** : 
+**Ce qui est inclus** :
 1.1.1
 
 
 
-**Certifications** : 
+**Certifications** :
 4.4.5
 
 
 
-**Champignons** : 
+**Champignons** :
 4.4.1
 
 
 
-**Chance** : 
+**Chance** :
 3.5.1
 
 
 
-**Chances d'obtenir des pièces manquantes** : 
+**Chances d'obtenir des pièces manquantes** :
 5.3.2
 
 
 
-**Changement** : 
+**Changement** :
 2.6.4
 
 
 
-**Changement de variante de sort** : 
+**Changement de variante de sort** :
 2.3.2
 
 
 
-**Changer de variante** : 
+**Changer de variante** :
 3.3.5
 
 
 
-**Charte de modification** : 
+**Charte de modification** :
 1.3.4
 
 
 
-**Chasseur** : 
+**Chasseur** :
 4.3.2
 
 
 
-**Chasseurs de primes** : 
+**Chasseurs de primes** :
 5.3.4
 
 
 
-**Chercher** : 
+**Chercher** :
 3.2.2
 
 
 
-**Choisir les variantes** : 
+**Choisir les variantes** :
 3.4.5
 
 
 
-**Choisir une variante** : 
+**Choisir une variante** :
 3.3.5
 
 
 
-**Choix des variantes** : 
+**Choix des variantes** :
 2.3.2
 
 
 
-**Choix stratégiques** : 
+**Choix stratégiques** :
 2.4.5, 3.5.3
 
 
 
-**Chutes** : 
+**Chutes** :
 3.1.4
 
 
 
-**Cibles** : 
+**Cibles** :
 3.3.2
 
 
 
-**classe** : 
+**classe** :
 1.1.3, 1.1.4, 1.2.3, 1.2.4, 1.3.1, 1.3.2, 1.3.3, 1.3.4, 2.1, 2.2.1, 2.2.2, 2.2.3, 2.3.1, 2.3.2, 2.3.3, 2.3.4, 2.4.1, 2.4.2, 2.4.3, 2.4.5, 2.5, 2.6.1, 2.6.4, 3.1.1, 3.1.3, 3.2.1, 3.2.2, 3.2.4, 3.2.5, 3.3.1, 3.3.2, 3.3.4, 3.3.5, 3.4.4, 3.5.3, 4.1.1, 4.1.2, 4.1.4, 5.1.4, 5.2.2
 
 
 
-**Classe** : 
+**Classe** :
 1.2.1, 1.2.4, 2.2.2, 2.3.1, 2.3.2, 2.4.2, 2.6.1, 3.4.4, 3.5.2, 3.5.3, 4.2.2, 4.4.5, 5.1.2, 5.2.1
 
 
 
-**Classe d'Armure** : 
+**Classe d'Armure** :
 2.2.2, 2.6.1, 4.2.2
 
 
 
-**classe d'armure** : 
+**classe d'armure** :
 2.3.1, 3.1.1, 3.2.2, 3.3.2
 
 
 
-**Classe d'armure** : 
+**Classe d'armure** :
 2.6.1, 5.1.2, 5.2.1
 
 
 
-**Classe d'Armure (CA)** : 
+**Classe d'Armure (CA)** :
 2.2.2, 4.2.2
 
 
 
-**Classes** : 
+**Classes** :
 1.1.1, 1.2.1, 1.3.2, 2.3.1, 3.3.1, 3.5.2, 5.2.1, 5.2.2, 5.2.4
 
 
 
-**classes** : 
+**classes** :
 1.1.1, 1.1.2, 1.1.3, 1.1.4, 1.2.1, 1.2.3, 1.2.4, 1.3.1, 1.3.2, 1.3.3, 1.3.4, 2.1, 2.2.2, 2.2.3, 2.3.1, 2.3.4, 2.4.1, 2.4.2, 3.2.1, 3.3.1, 3.3.4, 3.3.5, 3.4.4, 3.5.4, 4.1.1, 4.1.4, 4.2.1, 4.4.5, 5.2.2, 5.2.4
 
 
 
-**Clins d'œil** : 
+**Clins d'œil** :
 1.1.3
 
 
 
-**Codes secrets** : 
+**Codes secrets** :
 4.1.4
 
 
 
-**Cohérence thématique** : 
+**Cohérence thématique** :
 5.2.2
 
 
 
-**Collaboration** : 
+**Collaboration** :
 5.1.5
 
 
 
-**Combinaisons possibles** : 
+**Combinaisons possibles** :
 3.2.5
 
 
 
-**Combinaisons recommandées** : 
+**Combinaisons recommandées** :
 3.4.4
 
 
 
-**Comment contribuer** : 
+**Comment contribuer** :
 1.3.4
 
 
 
-**Commerce inter-régions** : 
+**Commerce inter-régions** :
 4.1.3
 
 
 
-**Commun** : 
+**Commun** :
 4.2.5, 4.4.2
 
 
 
-**Comparaisons alternatives** : 
+**Comparaisons alternatives** :
 3.3.2
 
 
 
-**Complications** : 
+**Complications** :
 5.1.3
 
 
 
-**Composants du jet** : 
+**Composants du jet** :
 1.2.1
 
 
 
-**Composants du test** : 
+**Composants du test** :
 3.5.2
 
 
 
-**compétence** : 
+**compétence** :
 1.2.1, 1.2.3, 1.2.4, 1.2.5, 2.2.2, 2.4.2, 2.4.5, 2.6.1, 3.1.1, 3.5.2, 3.5.3, 3.5.4, 3.5.5, 4.1.3, 4.1.4, 4.1.5, 4.3.1, 4.3.2, 4.3.3, 4.4.3, 4.4.4
 
 
 
-**Compétence** : 
+**Compétence** :
 3.1.4, 3.5.1, 3.5.5, 4.1.3, 4.3.3
 
 
 
-**compétences** : 
+**compétences** :
 1.1.1, 1.1.3, 1.2.4, 1.3.3, 2.1, 2.2.2, 2.3.2, 2.4.1, 2.4.2, 2.4.3, 2.4.5, 2.5, 2.6.1, 2.6.2, 3.1.3, 3.2.4, 3.4.1, 3.4.3, 3.5.1, 3.5.3, 3.5.4, 3.5.5, 4.1.1, 4.2.4, 4.3.4, 4.4.3, 4.4.4, 4.4.5, 5.1.2, 5.2.3, 5.2.4
 
 
 
-**Compétences** : 
+**Compétences** :
 1.1.1, 1.2.4, 1.3.2, 2.1, 2.2.2, 2.2.3, 2.4.1, 2.4.2, 2.4.5, 2.5, 2.6.1, 3.1.3, 3.1.4, 3.2.1, 3.2.4, 3.4.3, 3.5.1, 3.5.3, 4.1.3, 4.2.3, 4.2.4, 4.3.2, 4.3.4, 5.1.2, 5.2.1, 5.2.3, 5.2.4, 5.3.5
 
 
 
-**Compétences non cumulables** : 
+**Compétences non cumulables** :
 3.5.3
 
 
 
-**Compétences nécessaires** : 
+**Compétences nécessaires** :
 3.1.3
 
 
 
-**Compétences requises** : 
+**Compétences requises** :
 3.1.4
 
 
 
-**Concept** : 
+**Concept** :
 2.6.4, 3.2.3, 3.2.5
 
 
 
-**Conditions** : 
+**Conditions** :
 3.2.3, 3.2.4, 3.3.2, 3.3.5, 4.4.3, 5.2.4
 
 
 
-**Conditions d'accès** : 
+**Conditions d'accès** :
 4.3.1
 
 
 
-**Conditions d'activation** : 
+**Conditions d'activation** :
 3.1.3
 
 
 
-**Conditions d'obtention** : 
+**Conditions d'obtention** :
 2.4.5, 2.6.3, 3.5.3
 
 
 
-**Conditions de surprise** : 
+**Conditions de surprise** :
 3.1.4
 
 
 
-**Conditions défavorables** : 
+**Conditions défavorables** :
 3.5.4
 
 
 
-**Conditions météorologiques** : 
+**Conditions météorologiques** :
 4.3.2
 
 
 
-**Conditions spéciales** : 
+**Conditions spéciales** :
 4.2.4
 
 
 
-**Connaissance des créatures** : 
+**Connaissance des créatures** :
 3.5.1
 
 
 
-**Conseils** : 
+**Conseils** :
 2.3.2, 2.4.1, 2.4.3
 
 
 
-**Conseils d'ajustement** : 
+**Conseils d'ajustement** :
 5.1.1
 
 
 
-**Conseils pour débutants** : 
+**Conseils pour débutants** :
 2.3.1
 
 
 
-**Conseils pour le MJ** : 
+**Conseils pour le MJ** :
 1.2.1, 2.6.3, 3.1.3, 3.5.2
 
 
 
-**Conseils pour le multi-voix** : 
+**Conseils pour le multi-voix** :
 2.3.3
 
 
 
-**Conseils pratiques** : 
+**Conseils pratiques** :
 3.5.4
 
 
 
-**Conservation magique** : 
+**Conservation magique** :
 4.4.3
 
 
 
-**Consommables** : 
+**Consommables** :
 1.2.5, 5.3.5
 
 
 
-**Consommation du parchemin** : 
+**Consommation du parchemin** :
 3.3.1
 
 
 
-**Conséquences narratives** : 
+**Conséquences narratives** :
 3.2.4
 
 
 
-**Contenu couvert en alpha** : 
+**Contenu couvert en alpha** :
 1.3.1
 
 
 
-**Contraintes de calendrier** : 
+**Contraintes de calendrier** :
 3.1.2
 
 
 
-**Contribution narrative** : 
+**Contribution narrative** :
 5.1.5
 
 
 
-**Contributions ouvertes** : 
+**Contributions ouvertes** :
 1.1.4
 
 
 
-**Contrôler l'inflation** : 
+**Contrôler l'inflation** :
 5.2.5
 
 
 
-**Conversion des actions** : 
+**Conversion des actions** :
 5.2.1
 
 
 
-**Conversion des modificateurs** : 
+**Conversion des modificateurs** :
 5.2.1
 
 
 
-**Conversion rapide depuis Dofus** : 
+**Conversion rapide depuis Dofus** :
 4.2.2
 
 
 
-**Cooldown** : 
+**Cooldown** :
 5.2.3
 
 
 
-**Cooldowns** : 
+**Cooldowns** :
 3.4.5
 
 
 
-**Couleurs locales** : 
+**Couleurs locales** :
 4.1.1
 
 
 
-**Coup critique (20)** : 
+**Coup critique (20)** :
 3.2.2
 
 
 
-**Coût d'utilisation** : 
+**Coût d'utilisation** :
 2.4.3
 
 
 
-**Coûts en PA** : 
+**Coûts en PA** :
 5.2.3
 
 
 
-**Coûts en PM** : 
+**Coûts en PM** :
 5.2.3
 
 
 
-**Coûts en Wakfu** : 
+**Coûts en Wakfu** :
 5.2.3
 
 
 
-**Cristaux wakfu** : 
+**Cristaux wakfu** :
 4.4.1
 
 
 
-**Critères de choix** : 
+**Critères de choix** :
 2.3.1, 2.4.1
 
 
 
-**Création de nouvelles aptitudes** : 
+**Création de nouvelles aptitudes** :
 3.4.5
 
 
 
-**créature** : 
+**créature** :
 1.1.3, 1.2.4, 1.2.5, 1.3.2, 2.2.1, 2.3.4, 2.6.2, 3.1.1, 3.1.3, 3.1.4, 3.2.1, 3.2.2, 3.2.3, 3.2.4, 3.2.5, 3.3.1, 3.3.2, 3.5.1, 3.5.5, 4.2.1, 4.2.2, 4.2.4, 4.3.4, 4.4.1, 4.4.4, 4.4.5, 5.1.2, 5.1.3
 
 
 
-**Créature** : 
+**Créature** :
 2.6.2, 3.3.2, 4.2.1, 4.2.2, 4.2.3, 4.2.4, 5.1.2, 5.1.3, 5.2.1, 5.3.3, 5.3.4
 
 
 
-**créatures** : 
+**créatures** :
 1.1.1, 1.1.2, 1.1.3, 1.1.4, 1.2.1, 1.2.2, 1.2.4, 1.2.5, 1.3.1, 1.3.2, 1.3.4, 2.2.2, 2.3.1, 2.3.4, 2.4.3, 2.4.5, 2.5, 2.6.2, 2.6.3, 2.6.4, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.2.1, 3.2.2, 3.2.3, 3.2.4, 3.2.5, 3.3.1, 3.3.2, 3.4.1, 3.5.1, 3.5.2, 4.1.1, 4.1.2, 4.1.4, 4.1.5, 4.2.1, 4.2.2, 4.2.3, 4.2.4, 4.2.5, 4.3.2, 4.3.5, 4.4.1, 4.4.2, 5.1.2, 5.1.3, 5.2.1, 5.3.3, 5.3.4
 
 
 
-**Créatures** : 
+**Créatures** :
 1.1.2, 1.2.2, 3.1.1, 3.2.1, 3.3.1, 4.1.1, 4.1.2, 4.1.5, 4.2.1, 4.2.2, 4.2.3, 4.2.4, 4.3.2, 4.3.5, 4.4.1, 4.4.2, 5.1.2, 5.1.3, 5.1.4, 5.3.3, 5.3.4
 
 
 
-**Créer de la tension** : 
+**Créer de la tension** :
 3.1.4, 3.2.1
 
 
 
-**Créer des scènes engageantes** : 
+**Créer des scènes engageantes** :
 3.5.5
 
 
 
-**Cultistes** : 
+**Cultistes** :
 4.2.1
 
 
 
-**Cumul des effets** : 
+**Cumul des effets** :
 2.6.1
 
 
 
-**Curieux** : 
+**Curieux** :
 4.2.4
 
 
 
-**Cycles économiques** : 
+**Cycles économiques** :
 4.4.2
 
 
@@ -1386,247 +1386,247 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## D
 
 
-**Dangers** : 
+**Dangers** :
 4.4.2
 
 
 
-**DD** : 
+**DD** :
 1.1.1, 1.1.2, 1.1.4, 1.2.1, 1.2.3, 1.2.4, 2.2.1, 3.1.1, 3.1.3, 3.1.4, 3.2.4, 3.3.2, 3.3.3, 3.4.3, 3.5.2, 3.5.4, 3.5.5, 4.1.4, 4.3.2, 4.3.3, 4.3.4, 4.4.3, 5.1.1, 5.1.3
 
 
 
-**Debuffs** : 
+**Debuffs** :
 5.2.3
 
 
 
-**Demandes particulières** : 
+**Demandes particulières** :
 4.2.5
 
 
 
-**Dialectes principaux** : 
+**Dialectes principaux** :
 4.1.4
 
 
 
-**Différence avec les sorts** : 
+**Différence avec les sorts** :
 2.4.3
 
 
 
-**Différences** : 
+**Différences** :
 3.2.3
 
 
 
-**Différences avec D&D** : 
+**Différences avec D&D** :
 3.2.3
 
 
 
-**Différences avec Dofus** : 
+**Différences avec Dofus** :
 2.6.4
 
 
 
-**Différences principales** : 
+**Différences principales** :
 5.2.1
 
 
 
-**Discord** : 
+**Discord** :
 1.1.4
 
 
 
-**Discours publics** : 
+**Discours publics** :
 3.5.5
 
 
 
-**Distinction avec les aptitudes** : 
+**Distinction avec les aptitudes** :
 2.4.4
 
 
 
-**Distribution** : 
+**Distribution** :
 5.1.4
 
 
 
-**Diversité** : 
+**Diversité** :
 2.4.2
 
 
 
-**Documents de travail** : 
+**Documents de travail** :
 1.3.4
 
 
 
-**Dofus** : 
+**Dofus** :
 1.1.1, 1.1.2, 1.1.3, 1.2.2, 1.2.4, 1.2.5, 1.3.1, 1.3.2, 1.3.3, 1.3.4, 2.1, 2.2.1, 2.2.2, 2.3.1, 2.3.4, 2.4.1, 2.6.2, 2.6.3, 2.6.4, 3.1.1, 3.2.3, 3.3.4, 4.1.1, 4.1.2, 4.1.3, 4.1.4, 4.1.5, 4.2.1, 4.2.2, 4.2.3, 4.2.4, 4.2.5, 4.4.1, 4.4.2, 4.4.3, 5.1.1, 5.1.2, 5.1.3, 5.1.4, 5.1.5, 5.2.1, 5.2.4, 5.2.5, 5.3.1, 5.3.2, 5.3.3, 5.3.4
 
 
 
-**Dofus Émeraude (exemple)** : 
+**Dofus Émeraude (exemple)** :
 2.6.3
 
 
 
-**Domestication** : 
+**Domestication** :
 4.2.4
 
 
 
-**Dommages fixes** : 
+**Dommages fixes** :
 2.2.2
 
 
 
-**Donjons emblématiques** : 
+**Donjons emblématiques** :
 4.1.1
 
 
 
-**Dons** : 
+**Dons** :
 3.5.3
 
 
 
-**Dons spéciaux** : 
+**Dons spéciaux** :
 3.4.1
 
 
 
-**Dopeuls** : 
+**Dopeuls** :
 4.1.2
 
 
 
-**Dragodindes** : 
+**Dragodindes** :
 4.2.1
 
 
 
-**Durée** : 
+**Durée** :
 4.3.3
 
 
 
-**Durées maximales** : 
+**Durées maximales** :
 5.2.3
 
 
 
-**Durées persistantes** : 
+**Durées persistantes** :
 3.3.2
 
 
 
-**Dynamique économique** : 
+**Dynamique économique** :
 4.3.5
 
 
 
-**Déblocage des sorts** : 
+**Déblocage des sorts** :
 2.3.2
 
 
 
-**Début de tour** : 
+**Début de tour** :
 1.2.3
 
 
 
-**Décisions rapides** : 
+**Décisions rapides** :
 3.1.4
 
 
 
-**Déclencheurs narratifs** : 
+**Déclencheurs narratifs** :
 3.4.2
 
 
 
-**Découpage en tours d'exploration** : 
+**Découpage en tours d'exploration** :
 3.1.2
 
 
 
-**Définir le caractère** : 
+**Définir le caractère** :
 2.5
 
 
 
-**Définition** : 
+**Définition** :
 2.6.2
 
 
 
-**Défis environnementaux** : 
+**Défis environnementaux** :
 5.1.3
 
 
 
-**Défis moraux** : 
+**Défis moraux** :
 5.1.3
 
 
 
-**Dégradation** : 
+**Dégradation** :
 4.4.3
 
 
 
-**Dégâts moyens par niveau** : 
+**Dégâts moyens par niveau** :
 5.1.1, 5.3.1
 
 
 
-**Dégâts à 0 point de vie** : 
+**Dégâts à 0 point de vie** :
 3.2.4
 
 
 
-**Délais** : 
+**Délais** :
 4.3.5
 
 
 
-**Dépendances** : 
+**Dépendances** :
 4.4.5
 
 
 
-**Déroulement d'un combat** : 
+**Déroulement d'un combat** :
 1.2.5
 
 
 
-**Dés de vie** : 
+**Dés de vie** :
 2.2.2
 
 
 
-**Désavantage** : 
+**Désavantage** :
 3.5.4
 
 
 
-**Dissipation** : 
+**Dissipation** :
 3.2.5
 
 
 
-**Détermination de la surprise** : 
+**Détermination de la surprise** :
 3.2.1
 
 
 
-**Dévot** : 
+**Dévot** :
 2.4.3, 2.4.4, 3.4.1, 3.4.2
 
 
@@ -1636,437 +1636,437 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## E
 
 
-**Effets de la surprise** : 
+**Effets de la surprise** :
 3.2.1
 
 
 
-**Effets exceptionnels** : 
+**Effets exceptionnels** :
 5.2.4
 
 
 
-**Effets immédiats** : 
+**Effets immédiats** :
 3.3.2
 
 
 
-**Effets narratifs** : 
+**Effets narratifs** :
 1.2.1
 
 
 
-**Effets persistants** : 
+**Effets persistants** :
 3.2.2
 
 
 
-**Effets sociaux** : 
+**Effets sociaux** :
 3.4.2
 
 
 
-**Effets spéciaux** : 
+**Effets spéciaux** :
 3.3.4
 
 
 
-**Effondrements** : 
+**Effondrements** :
 3.1.4
 
 
 
-**Ellipses** : 
+**Ellipses** :
 5.1.5
 
 
 
-**Empoignade (3 PA)** : 
+**Empoignade (3 PA)** :
 3.2.2
 
 
 
-**En combat (optionnel)** : 
+**En combat (optionnel)** :
 2.4.3
 
 
 
-**En combat non significatif** : 
+**En combat non significatif** :
 3.3.4
 
 
 
-**En combat significatif** : 
+**En combat significatif** :
 3.3.4
 
 
 
-**Enchères** : 
+**Enchères** :
 4.3.5
 
 
 
-**Eniripsa - Soin** : 
+**Eniripsa - Soin** :
 3.3.5
 
 
 
-**Eniripsa : Soins améliorés** : 
+**Eniripsa : Soins améliorés** :
 2.3.4
 
 
 
-**Ennemis** : 
+**Ennemis** :
 5.1.2
 
 
 
-**Enrage** : 
+**Enrage** :
 4.2.3
 
 
 
-**Entités wakfu corrompues** : 
+**Entités wakfu corrompues** :
 4.2.1
 
 
 
-**Entraves** : 
+**Entraves** :
 5.2.3
 
 
 
-**Entraînements** : 
+**Entraînements** :
 3.5.3
 
 
 
-**Environnement** : 
+**Environnement** :
 3.3.3, 3.5.4, 4.2.4
 
 
 
-**Erreurs courantes** : 
+**Erreurs courantes** :
 2.3.4
 
 
 
-**Erreurs courantes à éviter** : 
+**Erreurs courantes à éviter** :
 2.1
 
 
 
-**Erreurs à éviter** : 
+**Erreurs à éviter** :
 2.2.3, 2.4.1, 2.5
 
 
 
-**Escalades de conflits** : 
+**Escalades de conflits** :
 3.1.4
 
 
 
-**Espace en combat** : 
+**Espace en combat** :
 4.2.1
 
 
 
-**esquive** : 
+**esquive** :
 2.2.1, 2.3.3, 2.4.4, 3.1.3, 3.2.2, 3.3.2, 3.4.2, 4.2.2, 4.2.3, 5.1.1
 
 
 
-**Esquive** : 
+**Esquive** :
 2.2.2, 2.6.1, 4.1.3, 4.3.4, 5.3.5
 
 
 
-**Esquive PA** : 
+**Esquive PA** :
 2.2.2
 
 
 
-**Esquive PM** : 
+**Esquive PM** :
 2.2.2
 
 
 
-**Esquiver (3 PA + 2 PM)** : 
+**Esquiver (3 PA + 2 PM)** :
 3.2.2
 
 
 
-**Essences** : 
+**Essences** :
 4.3.4, 4.4.1
 
 
 
-**Exclusion** : 
+**Exclusion** :
 3.4.2
 
 
 
-**Exemple** : 
+**Exemple** :
 1.2.1, 2.4.5, 3.2.1, 3.5.3
 
 
 
-**Exemple 1 : Aptitude hors combat** : 
+**Exemple 1 : Aptitude hors combat** :
 3.4.3
 
 
 
-**Exemple 1 : Butin d'un Bouftou** : 
+**Exemple 1 : Butin d'un Bouftou** :
 4.2.5
 
 
 
-**Exemple 1 : Communication de base** : 
+**Exemple 1 : Communication de base** :
 4.1.4
 
 
 
-**Exemple 1 : Escalade avec outils** : 
+**Exemple 1 : Escalade avec outils** :
 3.5.4
 
 
 
-**Exemple 1 : Utilisation de potion en combat** : 
+**Exemple 1 : Utilisation de potion en combat** :
 4.4.5
 
 
 
-**Exemple 1 : Voyage par Zaap** : 
+**Exemple 1 : Voyage par Zaap** :
 4.1.5
 
 
 
-**Exemple 2 : Aptitude en combat** : 
+**Exemple 2 : Aptitude en combat** :
 3.4.3
 
 
 
-**Exemple 2 : Butin d'un Tofu royal** : 
+**Exemple 2 : Butin d'un Tofu royal** :
 4.2.5
 
 
 
-**Exemple 2 : Langue spécialisée** : 
+**Exemple 2 : Langue spécialisée** :
 4.1.4
 
 
 
-**Exemple 2 : Persuasion sous pression** : 
+**Exemple 2 : Persuasion sous pression** :
 3.5.4
 
 
 
-**Exemple 2 : Stack d'effets** : 
+**Exemple 2 : Stack d'effets** :
 4.4.5
 
 
 
-**Exemple 2 : Voyage par caravane** : 
+**Exemple 2 : Voyage par caravane** :
 4.1.5
 
 
 
-**Exemple 3 : Apprentissage** : 
+**Exemple 3 : Apprentissage** :
 4.1.4
 
 
 
-**Exemple 3 : Butin d'un Boss** : 
+**Exemple 3 : Butin d'un Boss** :
 4.2.5
 
 
 
-**Exemple 3 : Capacité passive** : 
+**Exemple 3 : Capacité passive** :
 3.4.3
 
 
 
-**Exemple 3 : Communication magique** : 
+**Exemple 3 : Communication magique** :
 4.1.5
 
 
 
-**Exemple 3 : Crochetage avec aide** : 
+**Exemple 3 : Crochetage avec aide** :
 3.5.4
 
 
 
-**Exemple 3 : Fabrication de consommable** : 
+**Exemple 3 : Fabrication de consommable** :
 4.4.5
 
 
 
-**Exemple avec expertise** : 
+**Exemple avec expertise** :
 3.5.2
 
 
 
-**Exemple d'évolution** : 
+**Exemple d'évolution** :
 2.4.3
 
 
 
-**Exemple de calcul** : 
+**Exemple de calcul** :
 3.5.2
 
 
 
-**Exemple de comparaison** : 
+**Exemple de comparaison** :
 5.2.2
 
 
 
-**Exemple de création** : 
+**Exemple de création** :
 2.6.2
 
 
 
-**Exemple de gestion des dés de vie** : 
+**Exemple de gestion des dés de vie** :
 3.1.2
 
 
 
-**Exemple de progression** : 
+**Exemple de progression** :
 2.3.2, 2.6.2
 
 
 
-**Exemple de répartition** : 
+**Exemple de répartition** :
 2.2.1
 
 
 
-**Exemple de répartition standard** : 
+**Exemple de répartition standard** :
 2.2.3
 
 
 
-**Exemples** : 
+**Exemples** :
 1.3.3, 3.2.5, 5.3.5
 
 
 
-**Exemples complets** : 
+**Exemples complets** :
 2.2.3
 
 
 
-**Exemples concrets** : 
+**Exemples concrets** :
 2.2.1
 
 
 
-**Exemples courants** : 
+**Exemples courants** :
 1.2.1
 
 
 
-**Exemples d'aptitudes** : 
+**Exemples d'aptitudes** :
 2.4.2
 
 
 
-**Exemples d'historiques** : 
+**Exemples d'historiques** :
 2.5
 
 
 
-**Exemples d'utilisation** : 
+**Exemples d'utilisation** :
 4.2.4
 
 
 
-**Exemples de builds** : 
+**Exemples de builds** :
 2.2.1
 
 
 
-**Exemples de builds multi-voix** : 
+**Exemples de builds multi-voix** :
 2.3.3
 
 
 
-**Exemples de capacités** : 
+**Exemples de capacités** :
 2.4.2
 
 
 
-**Exemples de conversion** : 
+**Exemples de conversion** :
 4.2.2
 
 
 
-**Exemples de familiers** : 
+**Exemples de familiers** :
 2.6.4
 
 
 
-**Exemples de limites** : 
+**Exemples de limites** :
 2.3.4
 
 
 
-**Exemples de montures** : 
+**Exemples de montures** :
 2.6.4
 
 
 
-**Exemples de quêtes personnelles** : 
+**Exemples de quêtes personnelles** :
 2.5
 
 
 
-**Exemples de sessions** : 
+**Exemples de sessions** :
 1.1.3
 
 
 
-**Exemples de tests opposés** : 
+**Exemples de tests opposés** :
 3.5.2
 
 
 
-**Exemples de traits** : 
+**Exemples de traits** :
 1.2.4
 
 
 
-**Exemples en jeu** : 
+**Exemples en jeu** :
 1.1.3
 
 
 
-**Exemples pratiques** : 
+**Exemples pratiques** :
 4.1.2
 
 
 
-**Exigence** : 
+**Exigence** :
 3.5.3
 
 
 
-**Expertise** : 
+**Expertise** :
 1.2.4
 
 
 
-**Expertises** : 
+**Expertises** :
 2.4.2
 
 
 
-**Explorateur** : 
+**Explorateur** :
 2.4.3, 2.4.4, 3.4.1, 3.4.2
 
 
 
-**Exploration et interactions** : 
+**Exploration et interactions** :
 1.2.3
 
 
@@ -2076,182 +2076,182 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## F
 
 
-**Fabrication** : 
+**Fabrication** :
 4.4.4
 
 
 
-**Facteurs influençant les prix** : 
+**Facteurs influençant les prix** :
 4.1.3
 
 
 
-**Facteurs à considérer** : 
+**Facteurs à considérer** :
 3.5.4
 
 
 
-**Faire 1 ou 20** : 
+**Faire 1 ou 20** :
 3.2.4
 
 
 
-**Familiers messagers** : 
+**Familiers messagers** :
 4.1.5
 
 
 
-**Fatigue** : 
+**Fatigue** :
 3.5.4
 
 
 
-**Faux** : 
+**Faux** :
 2.6.1
 
 
 
-**Faveur** : 
+**Faveur** :
 5.1.4
 
 
 
-**Fiches de personnage** : 
+**Fiches de personnage** :
 1.1.4, 1.3.4
 
 
 
-**Fidélité à l'univers** : 
+**Fidélité à l'univers** :
 1.1.1
 
 
 
-**Fin de tour** : 
+**Fin de tour** :
 1.2.3
 
 
 
-**Flashbacks** : 
+**Flashbacks** :
 5.1.5
 
 
 
-**Flexibilité** : 
+**Flexibilité** :
 1.1.1, 2.3.1, 3.1.4
 
 
 
-**Flexibilité narrative** : 
+**Flexibilité narrative** :
 2.4.1
 
 
 
-**Fonction** : 
+**Fonction** :
 2.6.3
 
 
 
-**Fonctionnalités prévues** : 
+**Fonctionnalités prévues** :
 1.1.4
 
 
 
-**Fonctionnement** : 
+**Fonctionnement** :
 1.3.3, 2.2.2, 2.4.5, 3.5.3
 
 
 
-**Force** : 
+**Force** :
 3.5.1
 
 
 
-**forgemagie** : 
+**forgemagie** :
 1.1.1, 1.1.2, 1.1.3, 1.3.1, 2.2.2, 2.2.3, 4.1.3, 4.3.1, 4.3.4, 4.4.1
 
 
 
-**Forgemagie** : 
+**Forgemagie** :
 1.3.1, 1.3.2, 1.3.3, 1.3.4, 2.2.1, 2.2.2, 2.2.3, 4.3.1, 4.3.4, 4.4.1
 
 
 
-**Format et conversion** : 
+**Format et conversion** :
 4.1.3
 
 
 
-**Format générique** : 
+**Format générique** :
 4.2.5
 
 
 
-**Formats disponibles** : 
+**Formats disponibles** :
 2.1
 
 
 
-**Formule** : 
+**Formule** :
 3.3.4
 
 
 
-**Formule de base** : 
+**Formule de base** :
 1.2.1, 3.5.2
 
 
 
-**Fragments de Dofus** : 
+**Fragments de Dofus** :
 4.4.1
 
 
 
-**Frais matériels** : 
+**Frais matériels** :
 3.3.3
 
 
 
-**Frigost** : 
+**Frigost** :
 4.1.1
 
 
 
-**Fruits et légumes** : 
+**Fruits et légumes** :
 4.4.1
 
 
 
-**Fréquence d'utilisation** : 
+**Fréquence d'utilisation** :
 3.4.1
 
 
 
-**Fuite** : 
+**Fuite** :
 1.2.3, 1.3.1, 1.3.2, 1.3.3, 1.3.4, 2.2.2, 2.2.3, 2.6.1, 3.2.2, 3.2.3, 4.1.3, 4.2.4, 4.3.2, 4.3.4, 5.3.5
 
 
 
-**fuite** : 
+**fuite** :
 1.2.4, 1.3.2, 2.4.4, 3.2.2, 3.2.3, 3.2.5, 3.4.2, 5.2.1
 
 
 
-**Fusion possible avec les aptitudes** : 
+**Fusion possible avec les aptitudes** :
 2.4.4
 
 
 
-**Féca - Bouclier Féca** : 
+**Féca - Bouclier Féca** :
 3.3.5
 
 
 
-**Féca : Glyphes protecteurs** : 
+**Féca : Glyphes protecteurs** :
 2.3.4
 
 
 
-**Fêtes importantes** : 
+**Fêtes importantes** :
 4.1.2
 
 
@@ -2261,167 +2261,167 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## G
 
 
-**Gags** : 
+**Gags** :
 5.1.5
 
 
 
-**Gain d'XP métier** : 
+**Gain d'XP métier** :
 4.3.1
 
 
 
-**Gains associés** : 
+**Gains associés** :
 2.3.2
 
 
 
-**Gains aux niveaux pairs** : 
+**Gains aux niveaux pairs** :
 2.3.2
 
 
 
-**Gains par niveau de spécialisation** : 
+**Gains par niveau de spécialisation** :
 2.4.2
 
 
 
-**Gameplay enrichi** : 
+**Gameplay enrichi** :
 2.4.1
 
 
 
-**Gameplay multi-voix** : 
+**Gameplay multi-voix** :
 2.3.3
 
 
 
-**Garanties** : 
+**Garanties** :
 4.3.5
 
 
 
-**Gardiens de donjons** : 
+**Gardiens de donjons** :
 4.2.1
 
 
 
-**Gestion** : 
+**Gestion** :
 2.4.4, 4.2.4
 
 
 
-**Gestion de la tension** : 
+**Gestion de la tension** :
 5.1.5
 
 
 
-**Gestion des prises de parole** : 
+**Gestion des prises de parole** :
 3.1.4
 
 
 
-**Gestion des variantes** : 
+**Gestion des variantes** :
 2.3.2
 
 
 
-**Gestion des versions** : 
+**Gestion des versions** :
 1.3.4
 
 
 
-**Gestion des égalités** : 
+**Gestion des égalités** :
 1.2.2, 3.2.1, 5.1.1
 
 
 
-**Gestion du temps** : 
+**Gestion du temps** :
 1.2.5
 
 
 
-**Gestion hors combat** : 
+**Gestion hors combat** :
 1.3.3
 
 
 
-**Gestion par le MJ** : 
+**Gestion par le MJ** :
 3.1.2
 
 
 
-**Gestion spéciale** : 
+**Gestion spéciale** :
 5.3.2
 
 
 
-**Gestion stratégique** : 
+**Gestion stratégique** :
 3.3.4
 
 
 
-**GitHub** : 
+**GitHub** :
 1.1.4, 1.3.4
 
 
 
-**Glissades** : 
+**Glissades** :
 5.3.3
 
 
 
-**Glyphes** : 
+**Glyphes** :
 3.3.1
 
 
 
-**Glyphes superposables** : 
+**Glyphes superposables** :
 3.1.3
 
 
 
-**Goulta** : 
+**Goulta** :
 4.1.2
 
 
 
-**Grades de qualité** : 
+**Grades de qualité** :
 4.3.3
 
 
 
-**Grandes villes** : 
+**Grandes villes** :
 5.3.5
 
 
 
-**Groupes de créatures** : 
+**Groupes de créatures** :
 1.2.2
 
 
 
-**Groupes de créatures identiques** : 
+**Groupes de créatures identiques** :
 3.2.1
 
 
 
-**Générateurs** : 
+**Générateurs** :
 1.1.4
 
 
 
-**Gérer la fuite** : 
+**Gérer la fuite** :
 3.2.3
 
 
 
-**Gérer le tacle** : 
+**Gérer le tacle** :
 3.2.3
 
 
 
-**Gérer les limites** : 
+**Gérer les limites** :
 3.3.3
 
 
@@ -2431,47 +2431,47 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## H
 
 
-**Herbaliste** : 
+**Herbaliste** :
 3.5.1
 
 
 
-**Herbes** : 
+**Herbes** :
 4.4.1
 
 
 
-**Historique** : 
+**Historique** :
 1.3.4
 
 
 
-**Hiver (Décembre, Janvier, Février)** : 
+**Hiver (Décembre, Janvier, Février)** :
 4.1.2
 
 
 
-**Horloge de campagne** : 
+**Horloge de campagne** :
 4.1.2
 
 
 
-**Hors combat** : 
+**Hors combat** :
 3.3.4, 3.4.3
 
 
 
-**Hors combat (principal)** : 
+**Hors combat (principal)** :
 2.4.3
 
 
 
-**Hostile** : 
+**Hostile** :
 4.2.4
 
 
 
-**Héritage Dofus** : 
+**Héritage Dofus** :
 2.3.1
 
 
@@ -2481,252 +2481,252 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## I
 
 
-**Identité des classes** : 
+**Identité des classes** :
 2.3.1
 
 
 
-**Immersion** : 
+**Immersion** :
 2.4.1
 
 
 
-**Immunité** : 
+**Immunité** :
 4.2.3
 
 
 
-**Impact narratif** : 
+**Impact narratif** :
 2.4.4
 
 
 
-**Impact sur déplacement** : 
+**Impact sur déplacement** :
 5.3.3
 
 
 
-**Impact sur jets** : 
+**Impact sur jets** :
 5.3.3
 
 
 
-**Impact sur la visibilité** : 
+**Impact sur la visibilité** :
 3.1.2
 
 
 
-**Impact sur les rencontres** : 
+**Impact sur les rencontres** :
 3.1.2
 
 
 
-**Impact sur les événements scriptés** : 
+**Impact sur les événements scriptés** :
 3.1.2
 
 
 
-**Impact sur sorts** : 
+**Impact sur sorts** :
 5.3.3
 
 
 
-**Implémenter les house rules** : 
+**Implémenter les house rules** :
 3.4.5
 
 
 
-**Importance des combats** : 
+**Importance des combats** :
 1.1.3
 
 
 
-**Importance du déplacement** : 
+**Importance du déplacement** :
 1.2.5
 
 
 
-**Incompréhensions possibles** : 
+**Incompréhensions possibles** :
 4.1.4
 
 
 
-**Inconvénients de la fusion** : 
+**Inconvénients de la fusion** :
 2.4.4
 
 
 
-**Indices visuels et sonores** : 
+**Indices visuels et sonores** :
 3.1.3
 
 
 
-**Inflation** : 
+**Inflation** :
 4.1.3
 
 
 
-**Influence sur les dommages** : 
+**Influence sur les dommages** :
 2.2.1
 
 
 
-**Influence sur les effets spéciaux** : 
+**Influence sur les effets spéciaux** :
 2.2.1
 
 
 
-**Influence sur les prix** : 
+**Influence sur les prix** :
 4.3.5
 
 
 
-**Influence sur les soins** : 
+**Influence sur les soins** :
 2.2.1
 
 
 
-**Influences magiques** : 
+**Influences magiques** :
 4.1.1
 
 
 
-**Informations** : 
+**Informations** :
 5.3.5
 
 
 
-**initiative** : 
+**initiative** :
 1.1.3, 1.2.2, 1.2.3, 1.2.4, 1.2.5, 1.3.1, 2.3.4, 3.1.4, 3.2.1, 3.2.5, 4.2.3, 5.1.2, 5.3.5
 
 
 
-**Initiative** : 
+**Initiative** :
 1.2.2, 1.2.5, 2.1, 2.2.1, 2.2.2, 2.6.1, 3.1.4, 3.2.1, 4.1.3, 4.2.2, 4.3.4, 5.1.2
 
 
 
-**Inspiration Dofus** : 
+**Inspiration Dofus** :
 2.3.4
 
 
 
-**Intelligence** : 
+**Intelligence** :
 3.5.1
 
 
 
-**Interaction avec la section Métiers** : 
+**Interaction avec la section Métiers** :
 2.4.5
 
 
 
-**Interaction avec les actions** : 
+**Interaction avec les actions** :
 3.4.3
 
 
 
-**Interaction avec les objets** : 
+**Interaction avec les objets** :
 3.1.1
 
 
 
-**Interaction avec les sorts** : 
+**Interaction avec les sorts** :
 3.4.3
 
 
 
-**Interaction avec les équipements** : 
+**Interaction avec les équipements** :
 3.4.3
 
 
 
-**Interactions** : 
+**Interactions** :
 4.4.5
 
 
 
-**Interactions environnementales** : 
+**Interactions environnementales** :
 3.4.1
 
 
 
-**Interactions sociales** : 
+**Interactions sociales** :
 3.4.1
 
 
 
-**Interactions spécifiques** : 
+**Interactions spécifiques** :
 3.4.2
 
 
 
-**Interceptions** : 
+**Interceptions** :
 3.2.3
 
 
 
-**Interrogatoires** : 
+**Interrogatoires** :
 3.5.5
 
 
 
-**Interruptions** : 
+**Interruptions** :
 3.1.4
 
 
 
-**Intégration dans la campagne** : 
+**Intégration dans la campagne** :
 2.5
 
 
 
-**Intégrer l'esprit Dofus** : 
+**Intégrer l'esprit Dofus** :
 5.1.5
 
 
 
-**Intégrer les compétences dans la narration** : 
+**Intégrer les compétences dans la narration** :
 3.5.5
 
 
 
-**Invasions cycliques** : 
+**Invasions cycliques** :
 4.1.2
 
 
 
-**invocation** : 
+**invocation** :
 1.2.3, 2.2.2, 2.3.4, 2.6.1, 3.2.2, 3.3.2, 4.4.4
 
 
 
-**Invocation** : 
+**Invocation** :
 2.3.1, 2.3.4, 5.1.2, 5.3.2
 
 
 
-**invocations** : 
+**invocations** :
 1.3.1, 1.3.2, 1.3.3, 1.3.4, 2.2.2, 2.3.1, 2.3.4, 3.3.1, 4.1.3, 4.2.1, 4.3.4, 4.4.4, 5.1.2, 5.3.4, 5.3.5
 
 
 
-**Invocations** : 
+**Invocations** :
 3.2.2, 3.3.2, 4.2.1, 4.4.4
 
 
 
-**Invocations d'Osamodas** : 
+**Invocations d'Osamodas** :
 4.2.1
 
 
 
-**Iop - Attaque Naturelle** : 
+**Iop - Attaque Naturelle** :
 3.3.5
 
 
 
-**Iop : Fureur** : 
+**Iop : Fureur** :
 2.3.4
 
 
@@ -2736,57 +2736,57 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## J
 
 
-**Jet de fuite** : 
+**Jet de fuite** :
 3.2.3
 
 
 
-**Jet de loot** : 
+**Jet de loot** :
 5.3.2
 
 
 
-**Jetons de tournois** : 
+**Jetons de tournois** :
 4.1.3
 
 
 
-**Jets contre la mort** : 
+**Jets contre la mort** :
 3.2.4
 
 
 
-**Jets d'attaque** : 
+**Jets d'attaque** :
 2.2.1
 
 
 
-**Jets d'esquive et de sauvegarde** : 
+**Jets d'esquive et de sauvegarde** :
 3.1.3
 
 
 
-**Jets de sauvegarde** : 
+**Jets de sauvegarde** :
 2.2.1, 2.2.2, 3.2.5, 3.3.2
 
 
 
-**Jets de touche (jets d'attaque)** : 
+**Jets de touche (jets d'attaque)** :
 3.3.2
 
 
 
-**Jouer ses défauts** : 
+**Jouer ses défauts** :
 2.5
 
 
 
-**Justification** : 
+**Justification** :
 1.3.3
 
 
 
-**Justification narrative** : 
+**Justification narrative** :
 1.3.3
 
 
@@ -2796,22 +2796,22 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## K
 
 
-**kamas** : 
+**kamas** :
 2.1, 2.5, 2.6.1, 3.1.1, 4.1.3, 4.1.5, 4.2.5, 4.3.4, 4.4.2, 4.4.4, 5.1.4, 5.3.2, 5.3.5
 
 
 
-**Kamas** : 
+**Kamas** :
 4.1.3, 5.1.4, 5.2.5, 5.3.4, 5.3.5
 
 
 
-**Kits** : 
+**Kits** :
 4.4.3
 
 
 
-**Kits de terrain** : 
+**Kits de terrain** :
 4.4.4
 
 
@@ -2821,222 +2821,222 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## L
 
 
-**La légende** : 
+**La légende** :
 2.6.3
 
 
 
-**Lancer un sort** : 
+**Lancer un sort** :
 3.2.2
 
 
 
-**Langues** : 
+**Langues** :
 2.4.5
 
 
 
-**Langues de base** : 
+**Langues de base** :
 2.5
 
 
 
-**Langues de classe** : 
+**Langues de classe** :
 4.1.4
 
 
 
-**Langues supplémentaires** : 
+**Langues supplémentaires** :
 2.5
 
 
 
-**Les 12 classes originales** : 
+**Les 12 classes originales** :
 2.3.1
 
 
 
-**Les 12 mois** : 
+**Les 12 mois** :
 4.1.2
 
 
 
-**Les 4 voies élémentaires** : 
+**Les 4 voies élémentaires** :
 2.3.1
 
 
 
-**Les 6 caractéristiques** : 
+**Les 6 caractéristiques** :
 2.2.1
 
 
 
-**Les 7 classes ajoutées** : 
+**Les 7 classes ajoutées** :
 2.3.1
 
 
 
-**Les 7 rôles** : 
+**Les 7 rôles** :
 2.3.1
 
 
 
-**Les dés de vie** : 
+**Les dés de vie** :
 3.2.4
 
 
 
-**Les monstres et la mort** : 
+**Les monstres et la mort** :
 3.2.4
 
 
 
-**Les neuf alignements** : 
+**Les neuf alignements** :
 2.5
 
 
 
-**Les six caractéristiques** : 
+**Les six caractéristiques** :
 4.2.2
 
 
 
-**Les Zaaps** : 
+**Les Zaaps** :
 3.1.1
 
 
 
-**Lignes de vue** : 
+**Lignes de vue** :
 1.2.2, 3.3.2
 
 
 
-**Lignes directrices** : 
+**Lignes directrices** :
 3.1.3
 
 
 
-**Limitation du nombre équipé** : 
+**Limitation du nombre équipé** :
 2.6.3
 
 
 
-**Limitations** : 
+**Limitations** :
 3.2.3, 3.2.5, 3.3.4, 3.3.5, 3.4.2, 4.3.4
 
 
 
-**Limitations contextuelles** : 
+**Limitations contextuelles** :
 3.4.3
 
 
 
-**Limitations de fréquence** : 
+**Limitations de fréquence** :
 3.3.5
 
 
 
-**Limitations par classe** : 
+**Limitations par classe** :
 3.3.1
 
 
 
-**Limitations par niveau** : 
+**Limitations par niveau** :
 3.4.5
 
 
 
-**Limitations supplémentaires** : 
+**Limitations supplémentaires** :
 5.2.3
 
 
 
-**Limites** : 
+**Limites** :
 2.4.2, 5.2.4
 
 
 
-**Limites au niveau 1** : 
+**Limites au niveau 1** :
 2.2.3
 
 
 
-**Limites communes** : 
+**Limites communes** :
 2.3.4
 
 
 
-**Limites d'expertise** : 
+**Limites d'expertise** :
 3.5.3
 
 
 
-**Limites d'équilibrage** : 
+**Limites d'équilibrage** :
 3.3.5
 
 
 
-**Limites de maîtrise** : 
+**Limites de maîtrise** :
 3.5.3
 
 
 
-**Limites de puissance** : 
+**Limites de puissance** :
 3.4.4
 
 
 
-**Limites de soins** : 
+**Limites de soins** :
 3.2.4
 
 
 
-**Limites des bonus d'équipement** : 
+**Limites des bonus d'équipement** :
 2.2.3
 
 
 
-**Limites des caractéristiques secondaires** : 
+**Limites des caractéristiques secondaires** :
 2.2.3
 
 
 
-**Limites du multi-voix** : 
+**Limites du multi-voix** :
 2.3.3
 
 
 
-**Limites maximales** : 
+**Limites maximales** :
 2.2.1
 
 
 
-**Limites par niveau** : 
+**Limites par niveau** :
 2.2.3
 
 
 
-**Limites par repos** : 
+**Limites par repos** :
 3.4.1
 
 
 
-**Limites par tour** : 
+**Limites par tour** :
 1.2.2
 
 
 
-**Liste des compétences** : 
+**Liste des compétences** :
 1.2.4, 2.4.5
 
 
 
-**Liste des traits** : 
+**Liste des traits** :
 3.2.5
 
 
 
-**Légendaire** : 
+**Légendaire** :
 4.2.5, 4.4.2
 
 
@@ -3046,242 +3046,242 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## M
 
 
-**Malus innés** : 
+**Malus innés** :
 4.2.3
 
 
 
-**Malus potentiels** : 
+**Malus potentiels** :
 4.4.5
 
 
 
-**Marchands** : 
+**Marchands** :
 5.1.2
 
 
 
-**Marchands itinérants** : 
+**Marchands itinérants** :
 5.3.4
 
 
 
-**Marche forcée** : 
+**Marche forcée** :
 3.1.1
 
 
 
-**Matrices courantes** : 
+**Matrices courantes** :
 5.1.1
 
 
 
-**Matériel nécessaire** : 
+**Matériel nécessaire** :
 2.1
 
 
 
-**Maître** : 
+**Maître** :
 3.3.3
 
 
 
-**Maîtrise** : 
+**Maîtrise** :
 1.2.4
 
 
 
-**Maîtrise des langues** : 
+**Maîtrise des langues** :
 2.5
 
 
 
-**Maîtrises** : 
+**Maîtrises** :
 2.4.2
 
 
 
-**Mentors et maîtres** : 
+**Mentors et maîtres** :
 3.3.3
 
 
 
-**Messages magiques** : 
+**Messages magiques** :
 4.1.5
 
 
 
-**Milices** : 
+**Milices** :
 5.3.4
 
 
 
-**Milicien** : 
+**Milicien** :
 2.4.3, 2.4.4, 3.4.1, 3.4.2
 
 
 
-**Miliciens** : 
+**Miliciens** :
 4.2.1
 
 
 
-**Minerais** : 
+**Minerais** :
 4.4.1
 
 
 
-**Mineur** : 
+**Mineur** :
 4.3.2
 
 
 
-**Mise en vente** : 
+**Mise en vente** :
 4.3.5
 
 
 
-**Mix panoplie/équipements** : 
+**Mix panoplie/équipements** :
 2.6.2
 
 
 
-**Mobs** : 
+**Mobs** :
 5.3.4
 
 
 
-**Modificateurs** : 
+**Modificateurs** :
 3.1.4, 5.3.2
 
 
 
-**Modificateurs de groupe** : 
+**Modificateurs de groupe** :
 5.3.2
 
 
 
-**Modifications de règles** : 
+**Modifications de règles** :
 3.4.2
 
 
 
-**Modules simplifiés** : 
+**Modules simplifiés** :
 1.1.2
 
 
 
-**Moment du choix** : 
+**Moment du choix** :
 3.3.5
 
 
 
-**Moments clés** : 
+**Moments clés** :
 2.4.2
 
 
 
-**Montures** : 
+**Montures** :
 1.3.3
 
 
 
-**Montures et véhicules** : 
+**Montures et véhicules** :
 3.1.1
 
 
 
-**Montures publiques** : 
+**Montures publiques** :
 4.1.5
 
 
 
-**Mort instantanée** : 
+**Mort instantanée** :
 3.2.4
 
 
 
-**Mouvement** : 
+**Mouvement** :
 5.2.1
 
 
 
-**Mouvements spéciaux** : 
+**Mouvements spéciaux** :
 3.1.1
 
 
 
-**Multiplicateurs** : 
+**Multiplicateurs** :
 5.3.1
 
 
 
-**Mécanique** : 
+**Mécanique** :
 1.2.1, 3.2.3
 
 
 
-**Mécaniques spécifiques** : 
+**Mécaniques spécifiques** :
 5.1.2
 
 
 
-**Méthode de comparaison** : 
+**Méthode de comparaison** :
 5.2.2
 
 
 
-**Méthode de fusion** : 
+**Méthode de fusion** :
 3.4.5
 
 
 
-**Méthodes** : 
+**Méthodes** :
 3.2.4
 
 
 
-**Méthodes d'apprentissage** : 
+**Méthodes d'apprentissage** :
 4.1.4
 
 
 
-**Méthodes de soins** : 
+**Méthodes de soins** :
 3.2.4
 
 
 
-**métier** : 
+**métier** :
 2.4.1, 2.4.5, 2.6.1, 4.3.1, 4.3.2, 4.3.3
 
 
 
-**Métier** : 
+**Métier** :
 4.3.1, 4.4.5
 
 
 
-**métiers** : 
+**métiers** :
 1.1.1, 1.1.2, 2.3.2, 2.4.1, 2.4.2, 2.4.5, 2.6.1, 4.2.5, 4.3.1, 4.3.3, 4.4.5
 
 
 
-**Métiers** : 
+**Métiers** :
 1.1.2, 2.2.1, 2.2.3, 2.4.2, 2.4.5, 2.6.1, 3.5.1, 4.2.5, 4.3.1, 4.3.2, 4.3.3, 4.3.4, 4.3.5, 4.4.2, 4.4.5
 
 
 
-**Métiers concernés** : 
+**Métiers concernés** :
 4.2.5
 
 
 
-**Métiers de fabrication** : 
+**Métiers de fabrication** :
 2.6.1
 
 
 
-**Métiers gourmands** : 
+**Métiers gourmands** :
 4.4.2
 
 
@@ -3291,97 +3291,97 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## N
 
 
-**Narration collaborative** : 
+**Narration collaborative** :
 1.1.3
 
 
 
-**Nature** : 
+**Nature** :
 3.3.1
 
 
 
-**Navigation** : 
+**Navigation** :
 3.5.5
 
 
 
-**Neutre** : 
+**Neutre** :
 4.2.4
 
 
 
-**Niveau requis** : 
+**Niveau requis** :
 4.3.2, 4.3.3
 
 
 
-**Niveaux 1-5 : Fondations** : 
+**Niveaux 1-5 : Fondations** :
 2.2.3
 
 
 
-**Niveaux 11-15 : Spécialisation avancée** : 
+**Niveaux 11-15 : Spécialisation avancée** :
 2.2.3
 
 
 
-**Niveaux 16-20 : Perfectionnement** : 
+**Niveaux 16-20 : Perfectionnement** :
 2.2.3
 
 
 
-**Niveaux 6-10 : Équilibrage** : 
+**Niveaux 6-10 : Équilibrage** :
 2.2.3
 
 
 
-**Niveaux clés** : 
+**Niveaux clés** :
 2.4.2
 
 
 
-**Niveaux d'agressivité des mobs** : 
+**Niveaux d'agressivité des mobs** :
 3.2.1
 
 
 
-**Niveaux de déblocage** : 
+**Niveaux de déblocage** :
 2.4.3
 
 
 
-**Niveaux requis** : 
+**Niveaux requis** :
 2.6.1
 
 
 
-**Nombre d'invocations** : 
+**Nombre d'invocations** :
 2.2.2
 
 
 
-**Nombre initial** : 
+**Nombre initial** :
 2.3.2
 
 
 
-**Négociant** : 
+**Négociant** :
 2.4.3, 2.4.4, 3.4.1, 3.4.2
 
 
 
-**Négociation** : 
+**Négociation** :
 4.3.5
 
 
 
-**Négociation vs affrontement** : 
+**Négociation vs affrontement** :
 3.2.1
 
 
 
-**Négociations** : 
+**Négociations** :
 3.5.5
 
 
@@ -3391,122 +3391,122 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## O
 
 
-**Objectif roleplay** : 
+**Objectif roleplay** :
 2.4.3
 
 
 
-**Objectifs** : 
+**Objectifs** :
 2.4.1, 2.6.2
 
 
 
-**Objets** : 
+**Objets** :
 3.3.4
 
 
 
-**Objets améliorant les aptitudes** : 
+**Objets améliorant les aptitudes** :
 3.4.4
 
 
 
-**Objets améliorant les capacités** : 
+**Objets améliorant les capacités** :
 3.4.4
 
 
 
-**Objets magiques → Équipements Dofus** : 
+**Objets magiques → Équipements Dofus** :
 5.2.1
 
 
 
-**Obstacles** : 
+**Obstacles** :
 3.2.2
 
 
 
-**Obtention des recettes** : 
+**Obtention des recettes** :
 4.3.3
 
 
 
-**Option de spécialisation** : 
+**Option de spécialisation** :
 2.2.3
 
 
 
-**Ordre d'initiative** : 
+**Ordre d'initiative** :
 1.2.3, 3.2.1
 
 
 
-**Ordre des résolutions** : 
+**Ordre des résolutions** :
 3.2.2
 
 
 
-**Ordre des tours** : 
+**Ordre des tours** :
 1.2.2
 
 
 
-**Origine D&D** : 
+**Origine D&D** :
 2.4.3
 
 
 
-**Origines** : 
+**Origines** :
 2.2.1
 
 
 
-**Osamodas : Invocation permanente** : 
+**Osamodas : Invocation permanente** :
 2.3.4
 
 
 
-**Oublier un sort** : 
+**Oublier un sort** :
 3.3.3
 
 
 
-**Outils** : 
+**Outils** :
 2.4.5
 
 
 
-**Outils avancés** : 
+**Outils avancés** :
 1.1.2
 
 
 
-**Outils complémentaires** : 
+**Outils complémentaires** :
 1.1.4
 
 
 
-**Outils d'aide** : 
+**Outils d'aide** :
 3.1.3
 
 
 
-**Outils de métiers** : 
+**Outils de métiers** :
 2.6.1
 
 
 
-**Outils par métier** : 
+**Outils par métier** :
 4.3.1
 
 
 
-**Outils spécialisés** : 
+**Outils spécialisés** :
 3.5.4
 
 
 
-**Overdoses** : 
+**Overdoses** :
 4.4.5
 
 
@@ -3516,607 +3516,602 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## P
 
 
-**PA** : 
+**PA** :
 1.1.1, 1.1.2, 1.1.3, 1.2.2, 1.2.3, 1.2.4, 1.2.5, 1.3.1, 1.3.2, 1.3.3, 1.3.4, 2.1, 2.2.2, 2.2.3, 2.3.1, 2.3.4, 2.4.3, 2.4.4, 2.6.1, 2.6.2, 2.6.3, 2.6.4, 3.1.2, 3.2.2, 3.2.3, 3.2.5, 3.3.1, 3.3.2, 3.3.4, 3.3.5, 3.4.1, 3.4.2, 3.4.3, 3.4.4, 3.4.5, 4.1.3, 4.2.2, 4.2.3, 4.3.4, 4.4.4, 4.4.5, 5.1.2, 5.2.1, 5.2.2, 5.2.3, 5.3.5
 
 
 
-**Paiements anticipés** : 
+**Paiements anticipés** :
 4.3.5
 
 
 
-**Pannes de Zaap** : 
+**Pannes de Zaap** :
 5.3.3
 
 
 
-**panoplie** : 
+**panoplie** :
 1.1.1, 1.1.3, 1.3.3, 2.1, 2.6.2, 5.1.4, 5.2.4, 5.3.2
 
 
 
-**Panoplie** : 
+**Panoplie** :
 2.6.2, 5.2.4
 
 
 
-**Panoplie Abraknyde** : 
+**Panoplie Abraknyde** :
 2.6.2
 
 
 
-**Panoplie Bouftou** : 
+**Panoplie Bouftou** :
 2.6.2
 
 
 
-**Panoplie complète vs équipements individuels** : 
+**Panoplie complète vs équipements individuels** :
 2.6.2
 
 
 
-**Panoplie Dragodinde** : 
+**Panoplie Dragodinde** :
 2.6.2
 
 
 
-**Panoplie partielle** : 
+**Panoplie partielle** :
 2.6.2
 
 
 
-**panoplies** : 
+**panoplies** :
 1.1.1, 1.1.4, 1.3.1, 1.3.3, 2.6.1, 2.6.2, 5.1.4, 5.2.1, 5.2.4, 5.3.2
 
 
 
-**Panoplies** : 
+**Panoplies** :
 1.1.2, 1.1.3, 1.3.2, 1.3.3, 2.6.1, 2.6.2, 5.1.4, 5.2.1, 5.2.4
 
 
 
-**Panoplies de départ** : 
+**Panoplies de départ** :
 2.6.1
 
 
 
-**Panoplies partielles** : 
+**Panoplies partielles** :
 5.1.4
 
 
 
-**Par niveau** : 
+**Par niveau** :
 5.1.1, 5.2.5
 
 
 
-**Par slot** : 
+**Par slot** :
 5.2.4
 
 
 
-**Parchemins d'apprentissage** : 
+**Parchemins d'apprentissage** :
 4.4.4
 
 
 
-**Parchemins de sort** : 
+**Parchemins de sort** :
 3.3.3
 
 
 
-**Parchemins de sorts jetables** : 
+**Parchemins de sorts jetables** :
 4.4.4
 
 
 
-**Parchemins utilitaires** : 
+**Parchemins utilitaires** :
 4.4.4
 
 
 
-**Parties Casual** : 
+**Parties Casual** :
 1.1.2
 
 
 
-**Parties Tactiques** : 
+**Parties Tactiques** :
 1.1.2
 
 
 
-**Passage dans un espace étroit** : 
+**Passage dans un espace étroit** :
 4.2.1
 
 
 
-**Paysan** : 
+**Paysan** :
 4.3.2
 
 
 
-**PDF du site DofusJDR (archivé)** : 
+**PDF du site DofusJDR (archivé)** :
 1.3.4
 
 
 
-**Peaux** : 
+**Peaux** :
 4.4.1
 
 
 
-**Pendant un tour** : 
+**Pendant un tour** :
 3.4.3
 
 
 
-**Perception passive** : 
+**Perception passive** :
 2.2.2
 
 
 
-**Perdre conscience** : 
+**Perdre conscience** :
 3.2.4
 
 
 
-**Perles** : 
+**Perles** :
 4.1.3
 
 
 
-**Personnalisation** : 
+**Personnalisation** :
 3.3.5
 
 
 
-**Personnalisation des personnages** : 
+**Personnalisation des personnages** :
 1.1.3
 
 
 
-**Personnalisations possibles** : 
+**Personnalisations possibles** :
 1.1.2
 
 
 
-**Personnaliser ton historique** : 
+**Personnaliser ton historique** :
 2.5
 
 
 
-**Perte de points de vie** : 
+**Perte de points de vie** :
 3.2.4
 
 
 
-**Perte de ressources** : 
+**Perte de ressources** :
 4.3.1
 
 
 
-**Pertes éventuelles** : 
+**Pertes éventuelles** :
 4.4.3
 
 
 
-**Petites villes** : 
+**Petites villes** :
 5.3.5
 
 
 
-**Peureux** : 
+**Peureux** :
 4.2.4
 
 
 
-**Pierres précieuses** : 
+**Pierres précieuses** :
 4.4.1
 
 
 
-**Pièges** : 
+**Pièges** :
 3.3.1, 4.4.4
 
 
 
-**Pièges créés par des créatures** : 
+**Pièges créés par des créatures** :
 3.1.3
 
 
 
-**Pièges environnementaux** : 
+**Pièges environnementaux** :
 3.1.3
 
 
 
-**Pièges et dangers** : 
+**Pièges et dangers** :
 1.2.5
 
 
 
-**Pièges magiques** : 
+**Pièges magiques** :
 3.1.3
 
 
 
-**Pièges mécaniques** : 
+**Pièges mécaniques** :
 3.1.3
 
 
 
-**Pièges naturels** : 
+**Pièges naturels** :
 4.3.2
 
 
 
-**Pièges non invocables directement** : 
+**Pièges non invocables directement** :
 3.1.3
 
 
 
-**Place du roleplay** : 
+**Place du roleplay** :
 1.1.3
 
 
 
-**Placement des personnages** : 
+**Placement des personnages** :
 3.2.1
 
 
 
-**Plafonds** : 
+**Plafonds** :
 2.6.4, 5.2.4
 
 
 
-**Planifier l'apprentissage** : 
+**Planifier l'apprentissage** :
 3.3.3
 
 
 
-**PM** : 
+**PM** :
 1.1.1, 1.1.2, 1.1.3, 1.2.2, 1.2.3, 1.2.4, 1.2.5, 1.3.1, 1.3.2, 2.1, 2.2.2, 2.2.3, 2.3.1, 2.3.4, 2.6.1, 2.6.2, 2.6.3, 2.6.4, 3.1.2, 3.2.2, 3.2.3, 3.2.5, 3.3.1, 3.3.2, 3.4.2, 3.4.3, 4.1.3, 4.2.2, 4.2.3, 4.3.4, 4.4.4, 5.1.1, 5.1.2, 5.2.1, 5.2.2, 5.2.3, 5.3.3, 5.3.5
 
 
 
-**PNJ sociaux** : 
+**PNJ sociaux** :
 5.1.2
 
 
 
-**PO** : 
+**PO** :
 1.1.1, 1.1.2, 1.1.3, 1.2.2, 1.2.5, 1.3.1, 1.3.2, 2.1, 2.2.2, 2.2.3, 2.3.1, 2.3.4, 2.6.1, 2.6.2, 2.6.3, 2.6.4, 3.2.2, 3.3.2, 3.3.5, 3.4.2, 4.1.3, 4.2.2, 4.3.4, 5.1.2, 5.2.1, 5.3.5
 
 
 
-**Poids** : 
+**Poids** :
 4.4.3
 
 
 
-**Poils** : 
+**Poils** :
 4.4.1
 
 
 
-**point de vie** : 
+**point de vie** :
 3.1.1, 3.2.4, 3.3.2
 
 
 
-**Points d'Action** : 
+**Points d'Action** :
 1.1.1, 1.2.2, 1.2.5, 2.2.2, 3.2.2, 3.3.2, 3.4.3, 4.2.2, 5.1.2
 
 
 
-**Points d'action** : 
+**Points d'action** :
 1.2.2, 2.6.4
 
 
 
-**points d'action** : 
+**points d'action** :
 3.2.2, 3.2.3, 5.2.1
 
 
 
-**Points d'Action (PA)** : 
+**Points d'Action (PA)** :
 2.2.2, 3.2.2, 3.3.2, 3.4.3, 4.2.2
 
 
 
-**Points d'Opportunité** : 
+**Portée (PO)** :
 4.2.2, 5.1.2
 
 
 
-**Points d'Opportunité (PO)** : 
-4.2.2
-
-
-
-**Points de Bouclier** : 
+**Points de Bouclier** :
 1.2.5, 2.2.2
 
 
 
-**Points de bouclier** : 
+**Points de bouclier** :
 3.2.4
 
 
 
-**Points de Mouvement** : 
+**Points de Mouvement** :
 1.1.1, 1.2.2, 1.2.5, 2.2.2, 3.2.2, 3.3.2, 3.4.3, 4.2.2, 5.1.2, 5.2.1
 
 
 
-**Points de mouvement** : 
+**Points de mouvement** :
 1.2.2, 2.6.4
 
 
 
-**points de mouvement** : 
+**points de mouvement** :
 3.2.2
 
 
 
-**Points de Mouvement (PM)** : 
+**Points de Mouvement (PM)** :
 2.2.2, 3.2.2, 3.3.2, 3.4.3, 4.2.2
 
 
 
-**points de vie** : 
+**points de vie** :
 1.2.4, 2.3.1, 3.1.1, 3.1.2, 3.2.4, 3.2.5, 3.3.1, 4.4.4
 
 
 
-**Points de Vie** : 
+**Points de Vie** :
 1.2.5, 2.2.2, 4.2.2
 
 
 
-**Points de vie** : 
+**Points de vie** :
 2.1, 2.2.1, 2.2.2, 2.6.1, 3.2.4, 3.2.5, 3.3.2, 4.2.2, 4.3.4, 5.1.1, 5.1.2, 5.2.1, 5.3.1
 
 
 
-**Points de Vie (PV)** : 
+**Points de Vie (PV)** :
 1.2.5, 2.2.2, 4.2.2
 
 
 
-**Points de vie moyens par niveau** : 
+**Points de vie moyens par niveau** :
 5.1.1, 5.3.1
 
 
 
-**Points de Vie Temporaires** : 
+**Points de Vie Temporaires** :
 1.2.5, 2.2.2
 
 
 
-**Points de vie temporaires** : 
+**Points de vie temporaires** :
 3.2.4
 
 
 
-**Points dédiés** : 
+**Points dédiés** :
 3.4.5
 
 
 
-**Points investis au-delà de la limite** : 
+**Points investis au-delà de la limite** :
 2.2.3
 
 
 
-**Portail instable** : 
+**Portail instable** :
 5.3.3
 
 
 
-**Portails magiques** : 
+**Portails magiques** :
 4.1.5
 
 
 
-**Portée** : 
+**Portée** :
 3.3.2
 
 
 
-**Portée (PO)** : 
+**Portée (PO)** :
 2.2.2, 3.2.2
 
 
 
-**Portée minimale/maximale** : 
+**Portée minimale/maximale** :
 1.2.2
 
 
 
-**Potions de buffs** : 
+**Potions de buffs** :
 4.4.4
 
 
 
-**Potions de soins** : 
+**Potions de soins** :
 4.4.4
 
 
 
-**Potions et sorts** : 
+**Potions et sorts** :
 2.2.3
 
 
 
-**Poupées de Sadida** : 
+**Poupées de Sadida** :
 4.2.1
 
 
 
-**Pour le MJ** : 
+**Pour le MJ** :
 2.4.4, 2.6.4, 3.4.4
 
 
 
-**Pour les débutants** : 
+**Pour les débutants** :
 2.1, 2.2.1, 2.3.4, 2.5
 
 
 
-**Pour les fans de Dofus** : 
+**Pour les fans de Dofus** :
 2.1, 2.3.1
 
 
 
-**Pour les joueurs** : 
+**Pour les joueurs** :
 2.4.4, 2.6.4, 3.4.4
 
 
 
-**Pour les joueurs expérimentés** : 
+**Pour les joueurs expérimentés** :
 2.1, 2.3.4, 2.5
 
 
 
-**Pour optimiser** : 
+**Pour optimiser** :
 2.2.1
 
 
 
-**Pourcentages recommandés par type** : 
+**Pourcentages recommandés par type** :
 5.3.1
 
 
 
-**Pourquoi ce changement ?** : 
+**Pourquoi ce changement ?** :
 2.4.1
 
 
 
-**Printemps (Mars, Avril, Mai)** : 
+**Printemps (Mars, Avril, Mai)** :
 4.1.2
 
 
 
-**Priorités d'application** : 
+**Priorités d'application** :
 3.2.5
 
 
 
-**Prix** : 
+**Prix** :
 4.2.5, 4.4.4
 
 
 
-**Prix et économie** : 
+**Prix et économie** :
 2.6.1
 
 
 
-**Prix moyens** : 
+**Prix moyens** :
 4.4.2
 
 
 
-**Probabilités** : 
+**Probabilités** :
 5.3.1
 
 
 
-**Problématique** : 
+**Problématique** :
 3.3.4
 
 
 
-**Problématique initiale** : 
+**Problématique initiale** :
 1.3.3
 
 
 
-**Processus de contribution** : 
+**Processus de contribution** :
 1.3.4
 
 
 
-**Processus de fabrication** : 
+**Processus de fabrication** :
 2.6.1
 
 
 
-**Processus de purification** : 
+**Processus de purification** :
 4.4.3
 
 
 
-**Profondeur stratégique** : 
+**Profondeur stratégique** :
 1.1.3
 
 
 
-**Progression continue** : 
+**Progression continue** :
 2.4.1
 
 
 
-**Progression par niveau** : 
+**Progression par niveau** :
 2.2.1, 3.3.1
 
 
 
-**Progression recommandée** : 
+**Progression recommandée** :
 2.3.2
 
 
 
-**Projets de craft** : 
+**Projets de craft** :
 3.5.5
 
 
 
-**Prérequis** : 
+**Prérequis** :
 3.5.4
 
 
 
-**Préservation de l'ADN Dofus** : 
+**Préservation de l'ADN Dofus** :
 1.3.3
 
 
 
-**Prévention des abus** : 
+**Prévention des abus** :
 5.2.4
 
 
 
-**Prévention du déséquilibre** : 
+**Prévention du déséquilibre** :
 5.2.5
 
 
 
-**Puissance des aptitudes** : 
+**Puissance des aptitudes** :
 5.2.2
 
 
 
-**Puissance des capacités** : 
+**Puissance des capacités** :
 5.2.2
 
 
 
-**Puzzles** : 
+**Puzzles** :
 5.1.3
 
 
 
-**PV** : 
+**PV** :
 1.2.5, 2.1, 2.2.2, 2.6.2, 2.6.3, 2.6.4, 3.2.4, 3.3.2, 4.2.2, 4.2.3, 4.4.4, 4.4.5, 5.1.1, 5.1.2, 5.2.1, 5.2.2, 5.3.1
 
 
 
-**Pêcheur** : 
+**Pêcheur** :
 4.3.2
 
 
@@ -4126,57 +4121,57 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## Q
 
 
-**Qualités et défauts** : 
+**Qualités et défauts** :
 2.5
 
 
 
-**Quand les activer** : 
+**Quand les activer** :
 2.4.4
 
 
 
-**Quand utiliser les tests opposés** : 
+**Quand utiliser les tests opposés** :
 1.2.1
 
 
 
-**Quand utiliser un test opposé** : 
+**Quand utiliser un test opposé** :
 3.5.2
 
 
 
-**Quantité obtenue** : 
+**Quantité obtenue** :
 4.3.2
 
 
 
-**Quantités recommandées** : 
+**Quantités recommandées** :
 5.1.4
 
 
 
-**Questions à se poser** : 
+**Questions à se poser** :
 2.5
 
 
 
-**Qui peut fabriquer** : 
+**Qui peut fabriquer** :
 4.4.5
 
 
 
-**Qui peut utiliser** : 
+**Qui peut utiliser** :
 4.4.5
 
 
 
-**Quêtes et récompenses** : 
+**Quêtes et récompenses** :
 3.5.3
 
 
 
-**Quêtes limitées dans le temps** : 
+**Quêtes limitées dans le temps** :
 3.1.2
 
 
@@ -4186,417 +4181,417 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## R
 
 
-**Rare** : 
+**Rare** :
 4.2.5, 4.4.2
 
 
 
-**Rareté** : 
+**Rareté** :
 2.6.1, 5.1.4
 
 
 
-**Rareté des ressources** : 
+**Rareté des ressources** :
 5.2.5
 
 
 
-**Ratio XP/Kamas/ressources** : 
+**Ratio XP/Kamas/ressources** :
 5.2.5
 
 
 
-**Recettes clés** : 
+**Recettes clés** :
 4.2.5
 
 
 
-**Recharges** : 
+**Recharges** :
 3.4.3
 
 
 
-**Recherche d'indices** : 
+**Recherche d'indices** :
 3.5.5
 
 
 
-**Recommandation** : 
+**Recommandation** :
 2.4.4, 3.4.5
 
 
 
-**Reconnaissance** : 
+**Reconnaissance** :
 1.3.4
 
 
 
-**Redondances à éviter** : 
+**Redondances à éviter** :
 3.4.4
 
 
 
-**Relations** : 
+**Relations** :
 4.2.4
 
 
 
-**Reliques** : 
+**Reliques** :
 4.1.5, 4.4.1
 
 
 
-**Remplacement des historiques D&D** : 
+**Remplacement des historiques D&D** :
 2.4.1
 
 
 
-**Remplacement des races D&D** : 
+**Remplacement des races D&D** :
 1.3.3, 2.4.1
 
 
 
-**Remplacement par le tacle** : 
+**Remplacement par le tacle** :
 3.2.3
 
 
 
-**Rencontres aléatoires** : 
+**Rencontres aléatoires** :
 4.3.2
 
 
 
-**Rencontres de combat** : 
+**Rencontres de combat** :
 5.1.3
 
 
 
-**Rencontres sociales** : 
+**Rencontres sociales** :
 5.1.3
 
 
 
-**Repos court** : 
+**Repos court** :
 3.1.2
 
 
 
-**Repos long** : 
+**Repos long** :
 3.1.2, 3.3.4
 
 
 
-**Respec éventuel** : 
+**Respec éventuel** :
 2.3.2
 
 
 
-**Ressources de combat** : 
+**Ressources de combat** :
 1.2.5
 
 
 
-**Ressources nécessaires** : 
+**Ressources nécessaires** :
 2.6.1
 
 
 
-**Ressources pour débutants** : 
+**Ressources pour débutants** :
 1.1.2
 
 
 
-**Ressources pour MJ** : 
+**Ressources pour MJ** :
 1.1.2
 
 
 
-**Ressources rares** : 
+**Ressources rares** :
 4.1.3
 
 
 
-**Restrictions** : 
+**Restrictions** :
 2.3.2, 2.6.1, 2.6.3, 2.6.4, 3.4.1
 
 
 
-**Restrictions alimentaires** : 
+**Restrictions alimentaires** :
 4.4.4
 
 
 
-**Restrictions en combat** : 
+**Restrictions en combat** :
 4.4.5
 
 
 
-**Restrictions simultanées** : 
+**Restrictions simultanées** :
 4.3.1
 
 
 
-**Risques** : 
+**Risques** :
 3.3.4, 4.3.2
 
 
 
-**Risques en cas d'échec** : 
+**Risques en cas d'échec** :
 3.1.3
 
 
 
-**Risques supplémentaires** : 
+**Risques supplémentaires** :
 4.3.1
 
 
 
-**Roadmap indicative** : 
+**Roadmap indicative** :
 1.3.1
 
 
 
-**Roleplay collaboratif** : 
+**Roleplay collaboratif** :
 5.1.5
 
 
 
-**Ruines** : 
+**Ruines** :
 5.3.4
 
 
 
-**Runes** : 
+**Runes** :
 4.3.4
 
 
 
-**Running jokes** : 
+**Running jokes** :
 5.1.5
 
 
 
-**Rythmes de déplacement** : 
+**Rythmes de déplacement** :
 1.2.5, 3.1.1
 
 
 
-**Règles anti-stack** : 
+**Règles anti-stack** :
 3.4.4
 
 
 
-**Règles de base** : 
+**Règles de base** :
 5.3.5
 
 
 
-**Règles générales** : 
+**Règles générales** :
 3.4.2
 
 
 
-**Règles optionnelles** : 
+**Règles optionnelles** :
 3.5.2
 
 
 
-**Réaction** : 
+**Réaction** :
 3.4.3
 
 
 
-**Réactions** : 
+**Réactions** :
 1.2.3, 5.2.1
 
 
 
-**Réactions en chaîne** : 
+**Réactions en chaîne** :
 3.1.4
 
 
 
-**Réalisation de plans** : 
+**Réalisation de plans** :
 3.5.5
 
 
 
-**Réassigner des variantes** : 
+**Réassigner des variantes** :
 3.3.3
 
 
 
-**Récompenses** : 
+**Récompenses** :
 4.3.5
 
 
 
-**Récupération** : 
+**Récupération** :
 1.2.2, 2.2.2, 3.4.1, 4.4.4
 
 
 
-**Récupération naturelle** : 
+**Récupération naturelle** :
 3.2.4
 
 
 
-**Récupération partielle** : 
+**Récupération partielle** :
 3.3.4
 
 
 
-**Références dans l'univers** : 
+**Références dans l'univers** :
 1.1.2
 
 
 
-**Régions reculées** : 
+**Régions reculées** :
 5.3.5
 
 
 
-**Régénération** : 
+**Régénération** :
 4.2.3
 
 
 
-**Répartition des dégâts** : 
+**Répartition des dégâts** :
 3.2.4
 
 
 
-**Répartition des sorts** : 
+**Répartition des sorts** :
 5.2.2
 
 
 
-**Répartition recommandée** : 
+**Répartition recommandée** :
 1.1.3
 
 
 
-**Répartitions recommandées par classe** : 
+**Répartitions recommandées par classe** :
 2.2.3
 
 
 
-**Répartitions spécialisées** : 
+**Répartitions spécialisées** :
 2.2.3
 
 
 
-**Répartitions équilibrées** : 
+**Répartitions équilibrées** :
 2.2.3
 
 
 
-**Répercussions** : 
+**Répercussions** :
 4.3.4
 
 
 
-**Réputation** : 
+**Réputation** :
 3.4.2, 4.3.5
 
 
 
-**réserve de Wakfu** : 
+**réserve de Wakfu** :
 1.1.2, 1.1.3, 1.2.2, 1.2.3, 1.3.1, 1.3.3, 2.2.2, 2.4.3, 2.4.5, 3.1.2, 3.3.2, 3.3.4, 3.4.1, 3.4.3, 3.4.4, 4.4.4
 
 
 
-**Réserve de Wakfu** : 
+**Réserve de Wakfu** :
 1.2.2, 1.2.3, 1.3.3, 2.2.2, 2.4.3, 2.4.4, 2.4.5, 3.3.2, 3.3.4, 3.4.3, 5.2.1, 5.2.3
 
 
 
-**réserve de wakfu** : 
+**réserve de wakfu** :
 3.3.4
 
 
 
-**Réserve vide** : 
+**Réserve vide** :
 3.3.4
 
 
 
-**Résistance** : 
+**Résistance** :
 1.3.2, 2.2.1, 2.2.2, 2.3.3, 2.4.1, 2.4.2, 2.4.4, 2.6.1, 2.6.2, 2.6.3, 3.4.2, 4.1.3, 4.2.2, 4.2.3, 4.3.4, 5.1.2, 5.2.3, 5.3.1, 5.3.5
 
 
 
-**résistance** : 
+**résistance** :
 2.2.1, 2.3.3, 2.4.2, 3.1.1, 3.2.4, 3.4.2, 3.5.5, 4.2.2, 4.2.3, 5.3.1
 
 
 
-**Résistances** : 
+**Résistances** :
 1.1.2, 2.2.2, 2.2.3, 2.4.4, 2.6.4, 3.2.5, 4.2.2, 4.3.4, 5.1.2, 5.2.4, 5.3.1
 
 
 
-**résistances** : 
+**résistances** :
 1.2.4, 2.2.2, 2.6.1, 2.6.2, 3.2.5, 3.3.1, 3.4.2, 3.5.1, 4.2.2, 5.2.2, 5.3.1, 5.3.5
 
 
 
-**Résolution d'énigmes** : 
+**Résolution d'énigmes** :
 3.5.5
 
 
 
-**Résolution de problèmes** : 
+**Résolution de problèmes** :
 3.4.1
 
 
 
-**Résolution simultanée** : 
+**Résolution simultanée** :
 3.1.4, 3.5.2
 
 
 
-**Résultat** : 
+**Résultat** :
 3.5.2
 
 
 
-**Réussite critique** : 
+**Réussite critique** :
 3.5.2
 
 
 
-**Réussite critique (20 naturel)** : 
+**Réussite critique (20 naturel)** :
 1.2.1
 
 
 
-**Rôle dans l'équipe** : 
+**Rôle dans l'équipe** :
 2.3.4
 
 
 
-**Rôle de l'historique** : 
+**Rôle de l'historique** :
 2.5
 
 
 
-**Rôle de l'Intelligence** : 
+**Rôle de l'Intelligence** :
 1.2.2
 
 
 
-**Rôle du passif** : 
+**Rôle du passif** :
 2.3.4
 
 
 
-**Rôles dans les spécialisations** : 
+**Rôles dans les spécialisations** :
 5.2.2
 
 
 
-**Rôles principaux** : 
+**Rôles principaux** :
 5.2.2
 
 
@@ -4606,407 +4601,407 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## S
 
 
-**Sacrifices éventuels** : 
+**Sacrifices éventuels** :
 3.3.2
 
 
 
-**Sagesse** : 
+**Sagesse** :
 3.5.1
 
 
 
-**Saharach** : 
+**Saharach** :
 4.1.1
 
 
 
-**Saisonniers** : 
+**Saisonniers** :
 4.4.2
 
 
 
-**Satire bienveillante** : 
+**Satire bienveillante** :
 1.1.3
 
 
 
-**Saturation** : 
+**Saturation** :
 1.2.2, 4.4.5
 
 
 
-**Sauvegardes** : 
+**Sauvegardes** :
 1.3.4, 3.2.2
 
 
 
-**Scripts comportementaux** : 
+**Scripts comportementaux** :
 4.2.4
 
 
 
-**Se cacher (5 PA)** : 
+**Se cacher (5 PA)** :
 3.2.2
 
 
 
-**Sections principales** : 
+**Sections principales** :
 2.1
 
 
 
-**Seuils d'avancement** : 
+**Seuils d'avancement** :
 5.2.5
 
 
 
-**Seuils de bonus** : 
+**Seuils de bonus** :
 2.6.2
 
 
 
-**Seuils de niveau** : 
+**Seuils de niveau** :
 4.3.1
 
 
 
-**Seuils de spécialisation** : 
+**Seuils de spécialisation** :
 2.3.2
 
 
 
-**Similitudes** : 
+**Similitudes** :
 3.2.3, 5.2.1
 
 
 
-**Simplicité** : 
+**Simplicité** :
 1.1.1
 
 
 
-**Slots limités** : 
+**Slots limités** :
 3.4.3
 
 
 
-**Soins** : 
+**Soins** :
 5.3.5
 
 
 
-**Soins moyens par niveau** : 
+**Soins moyens par niveau** :
 5.3.1
 
 
 
-**Solution** : 
+**Solution** :
 3.3.4
 
 
 
-**Solution : Réserve de Wakfu** : 
+**Solution : Réserve de Wakfu** :
 1.3.3
 
 
 
-**sort** : 
+**sort** :
 1.1.3, 1.2.1, 1.2.2, 1.2.3, 1.2.4, 1.2.5, 1.3.1, 1.3.2, 1.3.3, 1.3.4, 2.1, 2.2.1, 2.2.2, 2.3.1, 2.3.2, 3.1.1, 3.1.2, 3.1.3, 3.2.2, 3.2.3, 3.2.4, 3.2.5, 3.3.1, 3.3.2, 3.3.3, 3.3.4, 3.3.5, 3.4.3, 3.4.4, 3.5.1, 4.1.2, 4.1.3, 4.1.5, 4.2.1, 4.4.3, 4.4.4, 5.1.1, 5.2.1, 5.2.3, 5.3.1, 5.3.4, 5.3.5
 
 
 
-**Sort** : 
+**Sort** :
 3.3.2, 3.3.3, 4.1.3, 4.1.5, 5.2.1, 5.2.3, 5.3.1, 5.3.5
 
 
 
-**sorts** : 
+**sorts** :
 1.1.1, 1.1.2, 1.1.3, 1.1.4, 1.2.1, 1.2.2, 1.2.3, 1.2.4, 1.2.5, 1.3.1, 1.3.2, 1.3.3, 1.3.4, 2.1, 2.2.1, 2.2.2, 2.2.3, 2.3.1, 2.3.2, 2.3.3, 2.3.4, 2.4.2, 2.4.3, 2.4.4, 2.6.1, 2.6.3, 3.1.1, 3.1.2, 3.1.3, 3.2.2, 3.2.3, 3.2.4, 3.2.5, 3.3.1, 3.3.2, 3.3.3, 3.3.4, 3.3.5, 3.4.1, 3.4.2, 3.4.3, 3.4.4, 3.4.5, 3.5.1, 3.5.2, 4.1.1, 4.1.2, 4.1.4, 4.2.1, 4.2.3, 4.4.4, 4.4.5, 5.1.1, 5.2.1, 5.2.2, 5.2.3, 5.3.3
 
 
 
-**Sorts** : 
+**Sorts** :
 1.3.2, 2.1, 2.2.1, 2.3.1, 2.3.2, 2.3.3, 2.4.3, 3.1.2, 3.1.3, 3.1.4, 3.2.2, 3.2.4, 3.3.1, 3.3.2, 3.3.4, 4.1.1, 4.1.4, 4.1.5, 4.2.2, 4.2.3, 4.4.3, 4.4.4, 5.1.1, 5.1.2, 5.1.3, 5.2.1, 5.2.2, 5.2.3, 5.3.3
 
 
 
-**Sorts apprenables** : 
+**Sorts apprenables** :
 2.3.2
 
 
 
-**Sorts consommables** : 
+**Sorts consommables** :
 2.3.2
 
 
 
-**Sorts d'invocations** : 
+**Sorts d'invocations** :
 3.3.1
 
 
 
-**Sorts de boosts** : 
+**Sorts de boosts** :
 3.3.1
 
 
 
-**Sorts de Bouftous** : 
+**Sorts de Bouftous** :
 4.2.3
 
 
 
-**Sorts de Chafers** : 
+**Sorts de Chafers** :
 4.2.3
 
 
 
-**Sorts de Craqueleurs** : 
+**Sorts de Craqueleurs** :
 4.2.3
 
 
 
-**Sorts de dommages** : 
+**Sorts de dommages** :
 3.3.1
 
 
 
-**Sorts de dégâts** : 
+**Sorts de dégâts** :
 5.2.1
 
 
 
-**Sorts de manipulations** : 
+**Sorts de manipulations** :
 3.3.1
 
 
 
-**Sorts de placements** : 
+**Sorts de placements** :
 3.3.1
 
 
 
-**Sorts de protection** : 
+**Sorts de protection** :
 3.3.1
 
 
 
-**Sorts de retraits** : 
+**Sorts de retraits** :
 3.3.1
 
 
 
-**Sorts de Tofus** : 
+**Sorts de Tofus** :
 4.2.3
 
 
 
-**Sorts de transformations** : 
+**Sorts de transformations** :
 3.3.1
 
 
 
-**Sorts en zone** : 
+**Sorts en zone** :
 3.3.2
 
 
 
-**Source principale : Spécialisation** : 
+**Source principale : Spécialisation** :
 3.4.1
 
 
 
-**Soutien au roleplay** : 
+**Soutien au roleplay** :
 3.4.1
 
 
 
-**Spécialisation** : 
+**Spécialisation** :
 1.1.3, 2.1, 2.2.3, 2.3.2, 2.3.3, 2.3.4, 2.4.2, 2.4.5, 3.3.3, 3.4.1, 3.4.4, 4.1.4, 4.3.1, 4.3.2
 
 
 
-**spécialisation** : 
+**spécialisation** :
 1.2.4, 1.3.3, 2.1, 2.2.1, 2.2.3, 2.3.1, 2.3.2, 2.3.3, 2.3.4, 2.4.1, 2.4.2, 2.4.3, 2.4.4, 2.4.5, 2.6.4, 3.2.5, 3.3.3, 3.4.1, 3.4.2, 3.4.3, 3.4.4, 3.4.5, 3.5.3, 4.1.4
 
 
 
-**Spécialisation bi-voie** : 
+**Spécialisation bi-voie** :
 2.3.3
 
 
 
-**Spécialisation mono-voie** : 
+**Spécialisation mono-voie** :
 2.3.3
 
 
 
-**spécialisations** : 
+**spécialisations** :
 1.1.1, 1.1.2, 1.1.3, 1.1.4, 1.2.4, 1.3.1, 1.3.3, 1.3.4, 2.1, 2.2.3, 2.3.4, 2.4.1, 2.4.2, 2.4.5, 3.3.3, 3.4.4, 3.5.3, 4.1.4, 4.3.1, 5.2.1, 5.2.2
 
 
 
-**Spécialisations** : 
+**Spécialisations** :
 1.1.3, 1.3.2, 1.3.3, 2.4.1, 2.4.3, 3.4.1, 5.2.1, 5.2.2
 
 
 
-**Sram : Réseaux de pièges** : 
+**Sram : Réseaux de pièges** :
 2.3.4
 
 
 
-**Stabiliser une créature** : 
+**Stabiliser une créature** :
 3.2.4
 
 
 
-**Stabilité de l'ordre** : 
+**Stabilité de l'ordre** :
 3.2.1
 
 
 
-**Stack d'effets** : 
+**Stack d'effets** :
 4.4.5
 
 
 
-**Standard monétaire** : 
+**Standard monétaire** :
 4.1.3
 
 
 
-**Statut actuel** : 
+**Statut actuel** :
 2.6.4
 
 
 
-**Stratégies avancées** : 
+**Stratégies avancées** :
 2.3.4
 
 
 
-**Structure de fiche Monstre** : 
+**Structure de fiche Monstre** :
 5.1.2
 
 
 
-**Structure de fiche PNJ** : 
+**Structure de fiche PNJ** :
 5.1.2
 
 
 
-**Structure des dossiers** : 
+**Structure des dossiers** :
 1.1.4, 1.3.4
 
 
 
-**Structure du calendrier** : 
+**Structure du calendrier** :
 4.1.2
 
 
 
-**Sufokia** : 
+**Sufokia** :
 4.1.1
 
 
 
-**Suggestions pour MJ selon la difficulté** : 
+**Suggestions pour MJ selon la difficulté** :
 5.3.1
 
 
 
-**Suivi de pistes** : 
+**Suivi de pistes** :
 3.5.5
 
 
 
-**Surprise partielle** : 
+**Surprise partielle** :
 3.2.1
 
 
 
-**Survie** : 
+**Survie** :
 3.5.5
 
 
 
-**Sylvain** : 
+**Sylvain** :
 2.4.3, 2.4.4, 3.4.1, 3.4.2
 
 
 
-**Synergie 1 : Érudit + Xélor** : 
+**Synergie 1 : Érudit + Xélor** :
 3.4.4
 
 
 
-**Synergie 2 : Milicien + Iop** : 
+**Synergie 2 : Milicien + Iop** :
 3.4.4
 
 
 
-**Synergie 3 : Artiste + Eniripsa** : 
+**Synergie 3 : Artiste + Eniripsa** :
 3.4.4
 
 
 
-**Synergies** : 
+**Synergies** :
 5.2.4
 
 
 
-**Synergies avec l'équipement** : 
+**Synergies avec l'équipement** :
 2.4.2
 
 
 
-**Synergies avec la classe** : 
+**Synergies avec la classe** :
 2.4.2
 
 
 
-**Synergies avec les caractéristiques** : 
+**Synergies avec les caractéristiques** :
 2.4.2
 
 
 
-**Synergies avec les spécialisations** : 
+**Synergies avec les spécialisations** :
 2.3.4
 
 
 
-**Synergies avec les voies** : 
+**Synergies avec les voies** :
 2.3.4
 
 
 
-**Système d'alignement** : 
+**Système d'alignement** :
 2.5
 
 
 
-**Système de grille** : 
+**Système de grille** :
 1.1.3
 
 
 
-**Système de réactions** : 
+**Système de réactions** :
 1.3.2
 
 
 
-**Sécurisation** : 
+**Sécurisation** :
 4.4.3
 
 
 
-**Sélection par spécialisation** : 
+**Sélection par spécialisation** :
 2.4.3
 
 
 
-**Sélection selon le style** : 
+**Sélection selon le style** :
 2.4.3
 
 
@@ -5016,352 +5011,352 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## T
 
 
-**Table de complications (1d20)** : 
+**Table de complications (1d20)** :
 5.3.3
 
 
 
-**Table de météo (1d20)** : 
+**Table de météo (1d20)** :
 5.3.3
 
 
 
-**Table de phénomènes wakfu (1d20)** : 
+**Table de phénomènes wakfu (1d20)** :
 5.3.3
 
 
 
-**Table de rencontres d'exploration (1d20)** : 
+**Table de rencontres d'exploration (1d20)** :
 5.3.4
 
 
 
-**Table de rencontres de combat (1d20)** : 
+**Table de rencontres de combat (1d20)** :
 5.3.4
 
 
 
-**Table de rencontres sociales (1d20)** : 
+**Table de rencontres sociales (1d20)** :
 5.3.4
 
 
 
-**Tableau de progression** : 
+**Tableau de progression** :
 2.2.3, 5.2.5
 
 
 
-**Tableau des associations** : 
+**Tableau des associations** :
 2.3.1
 
 
 
-**Tableau des tailles** : 
+**Tableau des tailles** :
 4.2.1
 
 
 
-**Tables aléatoires** : 
+**Tables aléatoires** :
 4.2.4
 
 
 
-**Tacle** : 
+**Tacle** :
 1.2.3, 1.3.1, 1.3.2, 1.3.3, 1.3.4, 2.2.2, 2.2.3, 2.6.1, 3.2.2, 3.2.3, 4.1.3, 4.3.4, 5.2.1, 5.3.5
 
 
 
-**tacle** : 
+**tacle** :
 1.3.2, 2.3.1, 3.2.2, 3.2.3, 5.2.1
 
 
 
-**Tacle et fuite** : 
+**Tacle et fuite** :
 3.2.2
 
 
 
-**Taxes** : 
+**Taxes** :
 4.3.5
 
 
 
-**Temples** : 
+**Temples** :
 4.1.1
 
 
 
-**Temples et lieux sacrés** : 
+**Temples et lieux sacrés** :
 3.3.3
 
 
 
-**Temps** : 
+**Temps** :
 4.3.4
 
 
 
-**Temps d'activation** : 
+**Temps d'activation** :
 3.4.3
 
 
 
-**Temps d'apprentissage** : 
+**Temps d'apprentissage** :
 3.3.1, 3.3.3
 
 
 
-**Temps requis** : 
+**Temps requis** :
 3.1.3
 
 
 
-**Tempête de Wakfu** : 
+**Tempête de Wakfu** :
 5.3.3
 
 
 
-**Tendances du marché** : 
+**Tendances du marché** :
 4.4.2
 
 
 
-**Terrain de combat** : 
+**Terrain de combat** :
 3.2.1
 
 
 
-**Terrain difficile** : 
+**Terrain difficile** :
 1.2.2
 
 
 
-**Test de fabrication** : 
+**Test de fabrication** :
 4.3.3
 
 
 
-**Test de récolte** : 
+**Test de récolte** :
 4.3.2
 
 
 
-**Tests** : 
+**Tests** :
 4.4.3
 
 
 
-**Tests de caractéristique** : 
+**Tests de caractéristique** :
 2.2.1
 
 
 
-**Tests de compétence** : 
+**Tests de compétence** :
 4.1.4
 
 
 
-**Tests de détection** : 
+**Tests de détection** :
 3.1.3
 
 
 
-**Tests opposés** : 
+**Tests opposés** :
 3.1.4
 
 
 
-**Tests requis** : 
+**Tests requis** :
 3.3.3, 3.4.3
 
 
 
-**Titres** : 
+**Titres** :
 5.1.4
 
 
 
-**Tofus** : 
+**Tofus** :
 4.2.1
 
 
 
-**Ton léger** : 
+**Ton léger** :
 1.1.3
 
 
 
-**Tournois** : 
+**Tournois** :
 4.1.2
 
 
 
-**Tours vs rounds** : 
+**Tours vs rounds** :
 1.2.3
 
 
 
-**trait** : 
+**trait** :
 1.2.4, 3.1.1, 3.2.5
 
 
 
-**traits** : 
+**traits** :
 1.1.1, 1.2.4, 1.3.1, 1.3.2, 2.5, 3.2.5, 3.3.2, 4.2.3
 
 
 
-**Traits** : 
+**Traits** :
 1.1.1, 1.2.4, 1.2.5, 1.3.2, 3.2.5, 3.5.4, 4.2.3
 
 
 
-**Traits et états** : 
+**Traits et états** :
 1.3.2
 
 
 
-**Traits permanents** : 
+**Traits permanents** :
 4.2.3
 
 
 
-**Traits spéciaux** : 
+**Traits spéciaux** :
 4.2.3
 
 
 
-**Transitions** : 
+**Transitions** :
 1.2.3
 
 
 
-**Transports aériens** : 
+**Transports aériens** :
 4.1.5
 
 
 
-**Transports maritimes** : 
+**Transports maritimes** :
 4.1.5
 
 
 
-**Troc** : 
+**Troc** :
 4.1.3, 4.2.5
 
 
 
-**Trophée du Vainqueur (exemple)** : 
+**Trophée du Vainqueur (exemple)** :
 2.6.3
 
 
 
-**Trophées et Dofus** : 
+**Trophées et Dofus** :
 1.3.3
 
 
 
-**Trotinnettes dragodindes** : 
+**Trotinnettes dragodindes** :
 4.1.5
 
 
 
-**Trésors** : 
+**Trésors** :
 5.3.4
 
 
 
-**Twists** : 
+**Twists** :
 5.1.3
 
 
 
-**Types d'aptitudes** : 
+**Types d'aptitudes** :
 2.4.2
 
 
 
-**Types d'armes** : 
+**Types d'armes** :
 2.6.1
 
 
 
-**Types d'équipements** : 
+**Types d'équipements** :
 2.6.1
 
 
 
-**Types d'états** : 
+**Types d'états** :
 1.2.4
 
 
 
-**Types d'états négatifs** : 
+**Types d'états négatifs** :
 3.2.5
 
 
 
-**Types d'états positifs** : 
+**Types d'états positifs** :
 3.2.5
 
 
 
-**Types de bonus** : 
+**Types de bonus** :
 2.6.2, 2.6.4
 
 
 
-**Types de capacités** : 
+**Types de capacités** :
 2.4.4
 
 
 
-**Types de combats** : 
+**Types de combats** :
 3.2.1
 
 
 
-**Types de Dofus** : 
+**Types de Dofus** :
 2.6.3
 
 
 
-**Types de dons** : 
+**Types de dons** :
 5.2.5
 
 
 
-**Types de jets** : 
+**Types de jets** :
 1.2.1
 
 
 
-**Types de métiers** : 
+**Types de métiers** :
 2.4.5
 
 
 
-**Types de recettes** : 
+**Types de recettes** :
 4.3.3
 
 
 
-**Types de relations** : 
+**Types de relations** :
 2.5
 
 
 
-**Types de terrains** : 
+**Types de terrains** :
 3.1.1
 
 
 
-**Types de vision spéciaux** : 
+**Types de vision spéciaux** :
 3.1.1
 
 
 
-**Téléportations** : 
+**Téléportations** :
 5.3.5
 
 
@@ -5371,77 +5366,77 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## U
 
 
-**Usage** : 
+**Usage** :
 4.1.4
 
 
 
-**Usage en combat** : 
+**Usage en combat** :
 2.6.4
 
 
 
-**Usage hors combat** : 
+**Usage hors combat** :
 2.6.4
 
 
 
-**Usage unique** : 
+**Usage unique** :
 3.4.3
 
 
 
-**Usure d'outils** : 
+**Usure d'outils** :
 4.3.1
 
 
 
-**Utilisation** : 
+**Utilisation** :
 1.2.2, 2.2.2, 2.6.3, 3.3.1, 3.3.4
 
 
 
-**Utilisation de l'alignement** : 
+**Utilisation de l'alignement** :
 2.5
 
 
 
-**Utilisation de sorts hors combat** : 
+**Utilisation de sorts hors combat** :
 1.2.3, 3.1.1
 
 
 
-**Utilisation des compétences** : 
+**Utilisation des compétences** :
 1.2.4
 
 
 
-**Utilisation en combat** : 
+**Utilisation en combat** :
 1.2.2
 
 
 
-**Utilisation en jeu** : 
+**Utilisation en jeu** :
 2.5
 
 
 
-**Utilisation hors combat** : 
+**Utilisation hors combat** :
 1.2.2
 
 
 
-**Utilisation par le MJ** : 
+**Utilisation par le MJ** :
 3.3.1
 
 
 
-**Utiliser les maîtres** : 
+**Utiliser les maîtres** :
 3.3.3
 
 
 
-**Utiliser un objet (1 PA généralement)** : 
+**Utiliser un objet (1 PA généralement)** :
 3.2.2
 
 
@@ -5451,212 +5446,212 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## V
 
 
-**Valeurs de base** : 
+**Valeurs de base** :
 1.2.2, 2.2.1
 
 
 
-**Valeurs de départ** : 
+**Valeurs de départ** :
 2.2.3
 
 
 
-**Valeurs recommandées par niveau** : 
+**Valeurs recommandées par niveau** :
 5.2.4
 
 
 
-**Valeurs typiques** : 
+**Valeurs typiques** :
 3.3.4
 
 
 
-**Variantes disponibles** : 
+**Variantes disponibles** :
 3.3.5
 
 
 
-**Variantes régionales** : 
+**Variantes régionales** :
 4.1.4
 
 
 
-**Variations régionales** : 
+**Variations régionales** :
 4.4.2
 
 
 
-**Variations saisonnières** : 
+**Variations saisonnières** :
 5.3.3
 
 
 
-**Venins** : 
+**Venins** :
 4.4.1
 
 
 
-**Version allégée : Aptitudes uniquement** : 
+**Version allégée : Aptitudes uniquement** :
 3.4.5
 
 
 
-**Version allégée : Capacités uniquement** : 
+**Version allégée : Capacités uniquement** :
 3.4.5
 
 
 
-**Version allégée : Choix réduit** : 
+**Version allégée : Choix réduit** :
 3.4.5
 
 
 
-**Version α 1.1** : 
+**Version α 1.1** :
 1.3.1
 
 
 
-**Version α 1.1 : Base des règles** : 
+**Version α 1.1 : Base des règles** :
 1.3.2
 
 
 
-**Version α 1.1 : Base du système** : 
+**Version α 1.1 : Base du système** :
 1.3.2
 
 
 
-**Version α 1.1 : Passifs et équilibrage** : 
+**Version α 1.1 : Passifs et équilibrage** :
 1.3.2
 
 
 
-**Version α 1.1 : Simplification majeure** : 
+**Version α 1.1 : Simplification majeure** :
 1.3.2
 
 
 
-**Version α 1.2** : 
+**Version α 1.2** :
 1.3.1
 
 
 
-**Version α 1.3** : 
+**Version α 1.3** :
 1.3.1
 
 
 
-**Version α 1.3 : Ajustement des limites** : 
+**Version α 1.3 : Ajustement des limites** :
 1.3.2
 
 
 
-**Version α 1.3 : Amélioration des outils** : 
+**Version α 1.3 : Amélioration des outils** :
 1.3.2
 
 
 
-**Version α 1.3 : Amélioration des sorts** : 
+**Version α 1.3 : Amélioration des sorts** :
 1.3.2
 
 
 
-**Version α 1.4 (en cours)** : 
+**Version α 1.4 (en cours)** :
 1.3.1
 
 
 
-**Version α 1.4 : Refonte majeure** : 
+**Version α 1.4 : Refonte majeure** :
 1.3.2
 
 
 
-**Version α 1.4 : Révision pour s'approcher de D&D** : 
+**Version α 1.4 : Révision pour s'approcher de D&D** :
 1.3.2
 
 
 
-**Version α 1.4 : Système de sorts révisé** : 
+**Version α 1.4 : Système de sorts révisé** :
 1.3.2
 
 
 
-**Vitesse** : 
+**Vitesse** :
 3.1.1
 
 
 
-**Voie Air** : 
+**Voie Air** :
 2.3.3
 
 
 
-**Voie Air → Rôles typiques** : 
+**Voie Air → Rôles typiques** :
 2.3.3
 
 
 
-**Voie Eau** : 
+**Voie Eau** :
 2.3.3
 
 
 
-**Voie Eau → Rôles typiques** : 
+**Voie Eau → Rôles typiques** :
 2.3.3
 
 
 
-**Voie Feu** : 
+**Voie Feu** :
 2.3.3
 
 
 
-**Voie Feu → Rôles typiques** : 
+**Voie Feu → Rôles typiques** :
 2.3.3
 
 
 
-**Voie Terre** : 
+**Voie Terre** :
 2.3.3
 
 
 
-**Voie Terre → Rôles typiques** : 
+**Voie Terre → Rôles typiques** :
 2.3.3
 
 
 
-**Vol de vie** : 
+**Vol de vie** :
 3.2.4
 
 
 
-**Voleur** : 
+**Voleur** :
 2.4.3, 2.4.4, 3.4.1, 3.4.2
 
 
 
-**Volumes** : 
+**Volumes** :
 4.4.3
 
 
 
-**Voyages** : 
+**Voyages** :
 5.1.5
 
 
 
-**Vulnérabilités** : 
+**Vulnérabilités** :
 5.3.1
 
 
 
-**Véhicules à traction** : 
+**Véhicules à traction** :
 4.1.5
 
 
 
-**Vérification de couverture** : 
+**Vérification de couverture** :
 5.2.2
 
 
@@ -5666,12 +5661,12 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## W
 
 
-**Wakfu** : 
+**Wakfu** :
 1.1.2, 1.1.3, 1.2.2, 1.2.3, 1.3.1, 1.3.3, 2.2.2, 2.3.4, 2.4.3, 2.4.4, 2.4.5, 2.6.1, 3.1.2, 3.1.3, 3.3.1, 3.3.2, 3.3.4, 3.4.1, 3.4.3, 3.4.4, 4.1.1, 4.2.1, 4.2.5, 4.3.4, 4.4.1, 4.4.4, 5.1.3, 5.2.1, 5.2.2, 5.2.3, 5.3.3
 
 
 
-**wakfu** : 
+**wakfu** :
 3.3.1, 3.3.2, 3.3.3, 3.3.4, 4.2.1, 4.4.1, 4.4.2, 5.3.3
 
 
@@ -5681,7 +5676,7 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## X
 
 
-**Xélor : Manipulation du temps** : 
+**Xélor : Manipulation du temps** :
 2.3.4
 
 
@@ -5691,32 +5686,32 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## Z
 
 
-**Zaaps** : 
+**Zaaps** :
 4.1.5
 
 
 
-**Zones dangereuses** : 
+**Zones dangereuses** :
 3.2.1
 
 
 
-**Zones de guerre** : 
+**Zones de guerre** :
 5.3.5
 
 
 
-**Zones hostiles** : 
+**Zones hostiles** :
 4.1.1
 
 
 
-**Zones mystiques** : 
+**Zones mystiques** :
 4.1.1
 
 
 
-**Zones protégées** : 
+**Zones protégées** :
 4.4.2
 
 
@@ -5726,207 +5721,207 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## É
 
 
-**Éboulements** : 
+**Éboulements** :
 5.3.3
 
 
 
-**Échec** : 
+**Échec** :
 4.3.4
 
 
 
-**Échec critique** : 
+**Échec critique** :
 3.5.2, 4.3.3
 
 
 
-**Échec critique (1 naturel)** : 
+**Échec critique (1 naturel)** :
 1.2.1
 
 
 
-**Échec critique (1)** : 
+**Échec critique (1)** :
 3.2.2
 
 
 
-**Échelle de rareté** : 
+**Échelle de rareté** :
 5.3.2
 
 
 
-**Échelle de temps** : 
+**Échelle de temps** :
 1.2.3
 
 
 
-**Échelles de prix** : 
+**Échelles de prix** :
 4.1.3
 
 
 
-**Échelles de temps** : 
+**Échelles de temps** :
 3.1.2
 
 
 
-**Économie** : 
+**Économie** :
 5.1.4
 
 
 
-**Égalités** : 
+**Égalités** :
 3.5.2
 
 
 
-**Éléments** : 
+**Éléments** :
 5.2.1
 
 
 
-**Éléments familiers** : 
+**Éléments familiers** :
 1.1.2
 
 
 
-**Éléments à définir** : 
+**Éléments à définir** :
 2.6.2
 
 
 
-**Épique** : 
+**Épique** :
 4.2.5, 4.4.2
 
 
 
-**Épreuves physiques** : 
+**Épreuves physiques** :
 5.1.3
 
 
 
-**Équilibrage** : 
+**Équilibrage** :
 2.3.4, 2.6.2, 2.6.3, 3.1.4, 3.2.1, 5.2.5
 
 
 
-**Équilibrage des dégâts et effets** : 
+**Équilibrage des dégâts et effets** :
 3.1.3
 
 
 
-**Équilibre** : 
+**Équilibre** :
 3.5.3
 
 
 
-**Équilibre recommandé** : 
+**Équilibre recommandé** :
 1.1.2
 
 
 
-**Équilibrer** : 
+**Équilibrer** :
 3.4.5
 
 
 
-**Équipements** : 
+**Équipements** :
 3.5.3, 5.3.5
 
 
 
-**Équipements et potions** : 
+**Équipements et potions** :
 2.2.1
 
 
 
-**Érudit** : 
+**Érudit** :
 2.4.3, 2.4.4, 3.4.1, 3.4.2
 
 
 
-**Étapes** : 
+**Étapes** :
 4.3.4
 
 
 
-**état** : 
+**état** :
 1.2.4, 2.6.4, 3.1.1, 3.2.2, 3.2.3, 3.2.4, 3.2.5
 
 
 
-**État** : 
+**État** :
 2.6.4
 
 
 
-**État monté** : 
+**État monté** :
 2.6.4
 
 
 
-**états** : 
+**états** :
 1.1.1, 1.1.3, 1.2.1, 1.2.3, 1.2.4, 1.2.5, 1.3.1, 1.3.2, 2.3.1, 3.2.3, 3.2.4, 3.2.5, 3.5.2, 3.5.4, 4.2.3, 5.2.1, 5.3.1
 
 
 
-**États** : 
+**États** :
 1.2.4, 3.1.3, 3.2.3, 3.2.4, 3.2.5, 3.5.4, 4.2.3, 4.4.5, 5.1.1, 5.2.1, 5.2.3, 5.3.1
 
 
 
-**États et capacités** : 
+**États et capacités** :
 3.2.5
 
 
 
-**États et sorts** : 
+**États et sorts** :
 3.2.5
 
 
 
-**États neutres** : 
+**États neutres** :
 5.1.1
 
 
 
-**États négatifs** : 
+**États négatifs** :
 3.5.4, 4.2.3, 5.1.1
 
 
 
-**États positifs** : 
+**États positifs** :
 4.2.3, 5.1.1
 
 
 
-**Été (Juin, Juillet, Août)** : 
+**Été (Juin, Juillet, Août)** :
 4.1.2
 
 
 
-**Évaluation** : 
+**Évaluation** :
 5.3.5
 
 
 
-**Évaluation rapide** : 
+**Évaluation rapide** :
 3.5.4
 
 
 
-**Évolution des aptitudes** : 
+**Évolution des aptitudes** :
 2.4.2
 
 
 
-**Évolution des effets** : 
+**Évolution des effets** :
 2.4.3
 
 
 
-**Événements publics** : 
+**Événements publics** :
 5.3.4
 
 
@@ -5936,92 +5931,92 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 ## Symboles et chiffres
 
 
-**1. Choisir une classe** : 
+**1. Choisir une classe** :
 2.1
 
 
 
-**1. Vérifier que tu as les PA nécessaires** : 
+**1. Vérifier que tu as les PA nécessaires** :
 3.2.2
 
 
 
-**1. Érudit** : 
+**1. Érudit** :
 2.4.1
 
 
 
-**2. Choisir une cible ou une zone** : 
+**2. Choisir une cible ou une zone** :
 3.2.2
 
 
 
-**2. Choisir une spécialisation** : 
+**2. Choisir une spécialisation** :
 2.1
 
 
 
-**2. Milicien** : 
+**2. Milicien** :
 2.4.1
 
 
 
-**3. Déterminer les caractéristiques** : 
+**3. Déterminer les caractéristiques** :
 2.1
 
 
 
-**3. Déterminer les modificateurs** : 
+**3. Déterminer les modificateurs** :
 3.2.2
 
 
 
-**3. Dévot** : 
+**3. Dévot** :
 2.4.1
 
 
 
-**4. Artiste** : 
+**4. Artiste** :
 2.4.1
 
 
 
-**4. Définir la personnalité et l'historique** : 
+**4. Définir la personnalité et l'historique** :
 2.1
 
 
 
-**4. Résoudre le sort** : 
+**4. Résoudre le sort** :
 3.2.2
 
 
 
-**5. Négociant** : 
+**5. Négociant** :
 2.4.1
 
 
 
-**5. Équiper le personnage** : 
+**5. Équiper le personnage** :
 2.1
 
 
 
-**6. Explorateur** : 
+**6. Explorateur** :
 2.4.1
 
 
 
-**7. Sylvain** : 
+**7. Sylvain** :
 2.4.1
 
 
 
-**8. Artisan** : 
+**8. Artisan** :
 2.4.1
 
 
 
-**9. Voleur** : 
+**9. Voleur** :
 2.4.1
 
 
