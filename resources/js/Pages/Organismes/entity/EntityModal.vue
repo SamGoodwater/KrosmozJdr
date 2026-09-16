@@ -364,6 +364,7 @@ const handleAction = async (actionKey, entity) => {
         :ai-error="refreshConfirm.aiError"
         :ai-success="refreshConfirm.aiSuccess"
         :ai-estimate="refreshConfirm.aiEstimate"
+        :ai-usage="refreshConfirm.aiUsage"
         :ai-action-label="refreshConfirm.aiActionLabel"
         @confirm="confirmPendingRefresh"
         @close="cancelPendingRefresh"

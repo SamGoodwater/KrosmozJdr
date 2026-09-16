@@ -45,6 +45,7 @@ class IaGenerationConfigControllerTest extends TestCase
                 ->has('config.supervisor_prompt')
                 ->has('characteristic_options.item')
                 ->has('usage')
+                ->has('usage.local_input_tokens')
                 ->has('estimates'));
     }
 
@@ -132,6 +133,32 @@ class IaGenerationConfigControllerTest extends TestCase
         $this->assertSame(
             ['jdr:item:etalon-test'],
             app(GenerationConfigLoader::class)->forEntity('item')->exampleIds
+        );
+    }
+
+    public function test_admin_can_save_playable_few_shot_panoplies(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        \App\Models\Entity\Panoply::factory()->create([
+            'name' => 'Panoplie du Bouftou',
+            'state' => \App\Models\Entity\Panoply::STATE_PLAYABLE,
+        ]);
+
+        $payload = $this->filePayload();
+        foreach (array_keys($payload['entities']) as $type) {
+            $payload['entities'][$type]['example_ids'] = [];
+        }
+        $payload['entities']['item']['few_shot_panoplies'] = ['Panoplie du Bouftou'];
+
+        $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->putJson(route('admin.content.ia-generation.update'), $this->formPayload($payload))
+            ->assertRedirect(route('admin.content.ia-generation.edit'));
+
+        app()->forgetInstance(GenerationConfigLoader::class);
+        $this->assertSame(
+            ['Panoplie du Bouftou'],
+            app(GenerationConfigLoader::class)->forEntity('item')->extra['few_shot_panoplies'] ?? null
         );
     }
 

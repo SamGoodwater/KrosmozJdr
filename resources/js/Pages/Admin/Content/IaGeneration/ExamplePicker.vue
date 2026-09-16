@@ -8,6 +8,7 @@
  *
  * @example
  * <ExamplePicker entity="item" v-model="form.entities.item.example_ids" />
+ * <ExamplePicker entity="panoply" ref-mode="name" v-model="form.entities.item.few_shot_panoplies" />
  */
 import { computed, onMounted } from "vue";
 import InputCore from "@/Pages/Atoms/data-input/InputCore.vue";
@@ -26,6 +27,15 @@ import { resolveEntityImageUrl, resolveEntityThumbLabel } from "@/Utils/entity/e
 const props = defineProps({
     entity: { type: String, required: true },
     modelValue: { type: Array, default: () => [] },
+    title: { type: String, default: "Fiches exemples (playable)" },
+    helper: {
+        type: String,
+        default:
+            "Recherche parmi les fiches jouables du type. On stocke l’identifiant officiel ou le nom (pas l’id SQL). Clique une ligne pour ajouter ou retirer.",
+    },
+    searchPlaceholder: { type: String, default: "Rechercher un étalon…" },
+    searchAriaLabel: { type: String, default: "Rechercher un étalon" },
+    refMode: { type: String, default: "portable" },
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -54,7 +64,7 @@ const selectedRefs = computed(() =>
 const resultsByRef = computed(() => {
     const map = new Map();
     for (const entity of results.value || []) {
-        const ref = portableEntityRef(entity);
+        const ref = entityRef(entity);
         if (ref) {
             map.set(String(ref), entity);
         }
@@ -63,11 +73,25 @@ const resultsByRef = computed(() => {
 });
 
 /**
+ * Ref persistée : official_id/nom (`portable`) ou nom seul (`name`, panoplies).
+ *
+ * @param {object} entity
+ * @returns {string|null}
+ */
+function entityRef(entity) {
+    if (props.refMode === "name") {
+        const name = entityDisplayName(entity);
+        return name !== "" ? name : portableEntityRef(entity);
+    }
+    return portableEntityRef(entity);
+}
+
+/**
  * @param {object} entity
  * @returns {boolean}
  */
 function isSelected(entity) {
-    const ref = portableEntityRef(entity);
+    const ref = entityRef(entity);
     return ref != null && selectedRefs.value.includes(String(ref));
 }
 
@@ -95,7 +119,7 @@ function chipLabel(ref) {
  * @param {object} entity
  */
 function toggleEntity(entity) {
-    const ref = portableEntityRef(entity);
+    const ref = entityRef(entity);
     if (ref == null) {
         return;
     }
@@ -120,11 +144,8 @@ function removeRef(ref) {
 <template>
     <div class="space-y-3">
         <div>
-            <p class="text-sm font-medium text-base-content">Fiches exemples (playable)</p>
-            <p class="mt-1 text-xs text-base-content/60">
-                Recherche parmi les fiches jouables du type. On stocke l’identifiant officiel ou le
-                nom (pas l’id SQL). Clique une ligne pour ajouter ou retirer.
-            </p>
+            <p class="text-sm font-medium text-base-content">{{ title }}</p>
+            <p class="mt-1 text-xs text-base-content/60">{{ helper }}</p>
         </div>
 
         <div
@@ -165,8 +186,8 @@ function removeRef(ref) {
                 color="primary"
                 size="sm"
                 class="w-full"
-                placeholder="Rechercher un étalon…"
-                aria-label="Rechercher un étalon"
+                :placeholder="searchPlaceholder"
+                :aria-label="searchAriaLabel"
                 :model-value="query"
                 @update:model-value="(value) => (query = value)"
             />
@@ -186,7 +207,7 @@ function removeRef(ref) {
                 type="button"
                 class="flex w-full items-center justify-between gap-2.5 px-3 py-2 text-left text-sm transition-colors hover:bg-base-200/80"
                 :class="isSelected(row) ? 'bg-primary/10' : ''"
-                :disabled="!portableEntityRef(row)"
+                :disabled="!entityRef(row)"
                 @click="toggleEntity(row)"
             >
                 <EntityThumb
@@ -196,7 +217,7 @@ function removeRef(ref) {
                 />
                 <div class="flex min-w-0 flex-1 flex-col items-start gap-0.5">
                     <span class="w-full truncate font-medium">
-                        {{ entityDisplayName(row) || portableEntityRef(row) || `#${row.id}` }}
+                        {{ entityDisplayName(row) || entityRef(row) || `#${row.id}` }}
                     </span>
                     <span v-if="row.official_id" class="w-full truncate text-xs text-base-content/70">
                         {{ row.official_id }}

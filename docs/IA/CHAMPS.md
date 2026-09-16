@@ -17,7 +17,7 @@ Quatre types historiques plus le consommable : `item`, `spell`, `monster`, `npc`
 | `frozen_characteristics` | Clés `characteristics.key` (ex. `intelligence_object`). `"*"` = toutes. |
 | `writable_characteristics` | Caracs que l’IA **peut** toucher malgré le joker (libellé admin : « Caracs que l’IA peut modifier »). |
 | `example_ids` | `official_id` ou nom d’une fiche `playable` (pas un id SQL portable). Dans l’admin, un sélecteur cherche via `api.tables.{type}` (défaut `state=playable`). Pool vide refusé à l’assembleur. |
-| `few_shot_panoplies` (objets, extra) | Noms des panoplies `playable` que l’IA doit imiter. Portable entre bases. Détail : [CATALOGUE](./CATALOGUE.md#liste-few-shot-panoplies-ce-que-lia-doit-imiter). |
+| `few_shot_panoplies` (objets, extra) | Noms des panoplies `playable` que l’IA doit imiter. Portable entre bases. Dans l’admin, un sélecteur cherche via `api.tables.panoplies` (défaut jouable). Détail : [CATALOGUE](./CATALOGUE.md#liste-few-shot-panoplies-ce-que-lia-doit-imiter). |
 | `has_dofus_source` | `true` : recopier l’identité depuis la fiche `raw`. |
 | `generation.*` | Variables globales (`max_retries`, `few_shot_count`, …). |
 

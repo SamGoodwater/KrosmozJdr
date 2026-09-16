@@ -165,7 +165,7 @@ Sets Dofus emblématiques des premiers niveaux, pièces **et** bonus de set relu
 
 ### Liste few-shot panoplies (ce que l’IA doit imiter)
 
-Quand l’IA relit un objet ou un set Dofus, elle ne s’appuie **que** sur les panoplies `playable` (et leurs pièces). C’est cette liste, pas tout le scrap. Noms aussi dans `resources/ia/generation.json` → `entities.item.few_shot_panoplies`.
+Quand l’IA relit un objet ou un set Dofus, elle ne s’appuie **que** sur les panoplies `playable` (et leurs pièces). C’est cette liste, pas tout le scrap. Noms aussi dans `resources/ia/generation.json` → `entities.item.few_shot_panoplies`, éditables dans l’admin **IA métier** (sélecteur jouable).
 
 **Règles à recopier :**
 

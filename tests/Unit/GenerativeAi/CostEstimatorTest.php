@@ -26,5 +26,7 @@ final class CostEstimatorTest extends TestCase
         $this->assertGreaterThan($item['usd'], $spell['usd']);
         $this->assertSame('encounter', $estimator->actionForEntityType('monsters'));
         $this->assertStringContainsString('$', $npc['formatted']);
+        $this->assertSame('≈ 10 rencontres ou 2 PNJ', $estimator->remainingHint(1.0));
+        $this->assertNull($estimator->remainingHint(null));
     }
 }

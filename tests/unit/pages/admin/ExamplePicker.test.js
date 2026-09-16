@@ -132,4 +132,34 @@ describe("ExamplePicker", () => {
         await resultButtons[1].trigger("click");
         expect(wrapper.emitted("update:modelValue")?.[0]).toEqual([["Anneau du Tofu"]]);
     });
+
+    it("en mode name, stocke le nom (panoplies) même si official_id existe", async () => {
+        global.fetch = vi.fn(async () => ({
+            ok: true,
+            json: async () => ({
+                entities: [
+                    {
+                        id: 7,
+                        official_id: "jdr:panoply:bouftou",
+                        name: "Panoplie du Bouftou",
+                        state: "playable",
+                    },
+                ],
+                meta: {},
+            }),
+        }));
+
+        const wrapper = mount(ExamplePicker, {
+            props: { entity: "panoply", modelValue: [], refMode: "name" },
+            global: { stubs },
+        });
+        await flushPromises();
+        await nextTick();
+
+        expect(global.route.mock.calls[0][0]).toBe("api.tables.panoplies");
+        expect(global.route.mock.calls[0][1]["filters[state]"]).toBe("playable");
+
+        await wrapper.get("[data-testid='ia-example-results']").find("button").trigger("click");
+        expect(wrapper.emitted("update:modelValue")?.[0]).toEqual([["Panoplie du Bouftou"]]);
+    });
 });

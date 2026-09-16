@@ -11,7 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Usage Anthropic + estimations de coût (admin).
+ * Usage local + estimations de coût (admin). Pas d’appel org Anthropic : le modal Sources reste instantané.
  *
  * @example GET /api/ia/status
  */
@@ -22,7 +22,7 @@ class IaStatusController extends Controller
         abort_unless($request->user()?->isAdmin() === true, 403);
 
         return response()->json([
-            'usage' => app(AnthropicUsageService::class)->snapshot(),
+            'usage' => app(AnthropicUsageService::class)->snapshot(false),
             'estimates' => app(CostEstimator::class)->all(),
         ]);
     }

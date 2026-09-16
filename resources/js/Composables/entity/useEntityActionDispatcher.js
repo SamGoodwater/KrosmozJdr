@@ -161,6 +161,7 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         aiError: "",
         aiSuccess: "",
         aiEstimate: null,
+        aiUsage: null,
         aiAction: "",
         aiActionLabel: "Conversion IA",
     });
@@ -183,6 +184,7 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
             aiError: "",
             aiSuccess: "",
             aiEstimate: null,
+            aiUsage: null,
             aiAction: "",
             aiActionLabel: "Conversion IA",
         };
@@ -240,6 +242,7 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
             aiError: "",
             aiSuccess: "",
             aiEstimate: null,
+            aiUsage: null,
             aiAction,
             aiActionLabel: actionLabel(aiAction),
         };
@@ -250,10 +253,24 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
                 const estimates = Array.isArray(data?.estimates) ? data.estimates : [];
                 const estimate = estimates.find((row) => row.action === aiAction) || null;
                 if (refreshConfirm.value.open) {
-                    refreshConfirm.value = { ...refreshConfirm.value, aiEstimate: estimate };
+                    refreshConfirm.value = {
+                        ...refreshConfirm.value,
+                        aiEstimate: estimate,
+                        aiUsage: data?.usage && typeof data.usage === "object" ? data.usage : null,
+                    };
                 }
             } catch {
-                // Estimé optionnel.
+                if (refreshConfirm.value.open) {
+                    refreshConfirm.value = {
+                        ...refreshConfirm.value,
+                        aiUsage: {
+                            local_input_tokens: 0,
+                            local_output_tokens: 0,
+                            local_runs: 0,
+                            remaining_credits_usd: null,
+                        },
+                    };
+                }
             }
         }
 

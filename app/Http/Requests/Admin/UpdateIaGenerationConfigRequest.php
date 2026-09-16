@@ -50,6 +50,18 @@ class UpdateIaGenerationConfigRequest extends FormRequest
             if (isset($entities[$type]['task_prompt']) && is_string($entities[$type]['task_prompt'])) {
                 $entities[$type]['task_prompt'] = $entities[$type]['task_prompt'];
             }
+            if ($type === 'item') {
+                $panoplies = $entities[$type]['few_shot_panoplies'] ?? [];
+                if (is_array($panoplies)) {
+                    $names = [];
+                    foreach ($panoplies as $name) {
+                        if (is_string($name) && trim($name) !== '') {
+                            $names[] = trim($name);
+                        }
+                    }
+                    $entities[$type]['few_shot_panoplies'] = array_values(array_unique($names));
+                }
+            }
         }
         $this->merge(['entities' => $entities]);
 
@@ -83,6 +95,8 @@ class UpdateIaGenerationConfigRequest extends FormRequest
             $entityRules["{$prefix}.example_ids.*"] = ['distinct'];
             $entityRules["{$prefix}.task_prompt"] = ['nullable', 'string', 'max:20000'];
         }
+        $entityRules['entities.item.few_shot_panoplies'] = ['present', 'array', 'max:80'];
+        $entityRules['entities.item.few_shot_panoplies.*'] = ['string', 'max:191', 'distinct'];
 
         return [
             'supervisor_prompt' => ['nullable', 'string', 'max:20000'],
