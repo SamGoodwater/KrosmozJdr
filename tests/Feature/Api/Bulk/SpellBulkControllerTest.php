@@ -146,4 +146,41 @@ class SpellBulkControllerTest extends TestCase
             ->assertJson(['success' => false])
             ->assertJson(['message' => 'Aucun champ à mettre à jour.']);
     }
+
+    public function test_admin_can_bulk_publish_spells(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $spell = Spell::factory()->create(['state' => Spell::STATE_AUTO]);
+
+        $this->actingAs($admin)
+            ->patchJson('/api/entities/spells/bulk', [
+                'ids' => [$spell->id],
+                'state' => Spell::STATE_PLAYABLE,
+            ])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('spells', [
+            'id' => $spell->id,
+            'state' => Spell::STATE_PLAYABLE,
+        ]);
+    }
+
+    public function test_game_master_cannot_bulk_publish_spells(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $spell = Spell::factory()->create(['state' => Spell::STATE_DRAFT]);
+
+        $this->actingAs($gm)
+            ->patchJson('/api/entities/spells/bulk', [
+                'ids' => [$spell->id],
+                'state' => Spell::STATE_PLAYABLE,
+            ])
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('spells', [
+            'id' => $spell->id,
+            'state' => Spell::STATE_DRAFT,
+        ]);
+    }
 }

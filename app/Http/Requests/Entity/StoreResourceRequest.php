@@ -3,7 +3,9 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Http\Requests\Concerns\HasCharacteristicValidation;
+use App\Models\Entity\Resource;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -15,6 +17,7 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class StoreResourceRequest extends FormRequest
 {
+    use GuardsPlayableState;
     use HasCharacteristicValidation;
 
     /**
@@ -22,7 +25,7 @@ class StoreResourceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        return $this->user()?->can('create', Resource::class) === true;
     }
 
     /**
@@ -49,5 +52,10 @@ class StoreResourceRequest extends FormRequest
             'official_id' => ['nullable', 'integer'],
             'resource_type_id' => ['nullable', 'integer', 'exists:resource_types,id'],
         ];
+    }
+
+    protected function playableModelClass(): string
+    {
+        return Resource::class;
     }
 }

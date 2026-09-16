@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Models\Entity\Creature;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -17,7 +18,7 @@ class StoreCreatureRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        return $this->user()?->can('create', Creature::class) === true;
     }
 
     /**

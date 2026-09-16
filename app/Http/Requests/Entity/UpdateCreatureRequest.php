@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Models\Entity\Creature;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -17,7 +18,9 @@ class UpdateCreatureRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        $model = $this->route('creature');
+
+        return $model instanceof Creature && ($this->user()?->can('update', $model) === true);
     }
 
     /**

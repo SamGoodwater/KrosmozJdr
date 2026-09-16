@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Http\Requests\Concerns\HasCharacteristicValidation;
 use App\Models\Entity\Spell;
 use App\Policies\Entity\SpellPolicy;
@@ -18,6 +19,7 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class UpdateSpellRequest extends FormRequest
 {
+    use GuardsPlayableState;
     use HasCharacteristicValidation;
 
     /**
@@ -99,5 +101,10 @@ class UpdateSpellRequest extends FormRequest
              */
             'redirect_after_update' => ['nullable', 'string', 'in:stay,index,show,edit'],
         ];
+    }
+
+    protected function playableModelClass(): string
+    {
+        return Spell::class;
     }
 }

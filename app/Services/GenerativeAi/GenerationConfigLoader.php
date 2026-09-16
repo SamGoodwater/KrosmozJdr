@@ -100,7 +100,7 @@ final class GenerationConfigLoader
             writableFields: $this->stringList($row['writable_fields'] ?? [], "entities.{$entity}.writable_fields"),
             frozenCharacteristics: $this->frozenListOrWildcard($row['frozen_characteristics'] ?? [], "entities.{$entity}.frozen_characteristics"),
             writableCharacteristics: $this->stringList($row['writable_characteristics'] ?? [], "entities.{$entity}.writable_characteristics"),
-            exampleIds: $this->intList($row['example_ids'] ?? [], "entities.{$entity}.example_ids"),
+            exampleIds: $this->exampleRefList($row['example_ids'] ?? [], "entities.{$entity}.example_ids"),
             extra: $extra,
         );
     }
@@ -215,28 +215,33 @@ final class GenerationConfigLoader
     }
 
     /**
-     * @return list<int>
+     * @return list<int|string>
      */
-    private function intList(mixed $value, string $path): array
+    private function exampleRefList(mixed $value, string $path): array
     {
         if (! is_array($value)) {
-            throw new \InvalidArgumentException("Config IA : {$path} doit être une liste d'entiers.");
+            throw new \InvalidArgumentException("Config IA : {$path} doit être une liste d'ids, d'official_id ou de noms.");
         }
 
         $out = [];
         foreach ($value as $item) {
-            if (is_int($item)) {
+            if (is_int($item) && $item > 0) {
                 $out[] = $item;
 
                 continue;
             }
-            if (is_string($item) && is_numeric($item) && (string) (int) $item === $item) {
+            if (is_string($item) && is_numeric($item) && (string) (int) $item === $item && (int) $item > 0) {
                 $out[] = (int) $item;
 
                 continue;
             }
+            if (is_string($item) && trim($item) !== '' && strlen($item) <= 255) {
+                $out[] = trim($item);
 
-            throw new \InvalidArgumentException("Config IA : {$path} ne contient que des ids entiers.");
+                continue;
+            }
+
+            throw new \InvalidArgumentException("Config IA : {$path} ne contient que des ids, official_id ou noms.");
         }
 
         return array_values($out);

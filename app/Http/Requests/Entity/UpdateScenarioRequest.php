@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
+use App\Models\Entity\Scenario;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -13,12 +15,16 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class UpdateScenarioRequest extends FormRequest
 {
+    use GuardsPlayableState;
+
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        $model = $this->route('scenario');
+
+        return $model instanceof Scenario && ($this->user()?->can('update', $model) === true);
     }
 
     /**
@@ -40,5 +46,10 @@ class UpdateScenarioRequest extends FormRequest
             'write_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],
             'image' => ['nullable', 'string', 'max:255'],
         ];
+    }
+
+    protected function playableModelClass(): string
+    {
+        return Scenario::class;
     }
 }

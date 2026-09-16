@@ -17,7 +17,7 @@ final readonly class EntityGenerationProfile
      * @param  list<string>  $writableFields
      * @param  '*'|list<string>  $frozenCharacteristics
      * @param  list<string>  $writableCharacteristics
-     * @param  list<int>  $exampleIds
+     * @param  list<int|string>  $exampleIds
      * @param  array<string, mixed>  $extra
      */
     public function __construct(

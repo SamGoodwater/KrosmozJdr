@@ -3,18 +3,21 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Models\Entity\Condition;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreConditionRequest extends FormRequest
 {
+    use GuardsPlayableState;
+
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        return $this->user()?->can('create', Condition::class) === true;
     }
 
     /**
@@ -34,5 +37,10 @@ class StoreConditionRequest extends FormRequest
             'image' => ['nullable', 'string', 'max:255'],
             ...array_fill_keys(array_keys(Condition::MECHANICAL_FLAG_LABELS), ['sometimes', 'boolean']),
         ];
+    }
+
+    protected function playableModelClass(): string
+    {
+        return Condition::class;
     }
 }

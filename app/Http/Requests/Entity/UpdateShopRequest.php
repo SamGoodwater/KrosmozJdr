@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
+use App\Models\Entity\Shop;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -13,12 +15,16 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class UpdateShopRequest extends FormRequest
 {
+    use GuardsPlayableState;
+
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        $model = $this->route('shop');
+
+        return $model instanceof Shop && ($this->user()?->can('update', $model) === true);
     }
 
     /**
@@ -39,5 +45,10 @@ class UpdateShopRequest extends FormRequest
             'image' => ['nullable', 'string', 'max:255'],
             'npc_id' => ['nullable', 'integer', 'exists:npcs,id'],
         ];
+    }
+
+    protected function playableModelClass(): string
+    {
+        return Shop::class;
     }
 }

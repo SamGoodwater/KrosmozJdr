@@ -3,17 +3,23 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
+use App\Models\Entity\CreatureTrait;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateCreatureTraitRequest extends FormRequest
 {
+    use GuardsPlayableState;
+
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        $model = $this->route('creatureTrait');
+
+        return $model instanceof CreatureTrait && ($this->user()?->can('update', $model) === true);
     }
 
     /**
@@ -31,5 +37,10 @@ class UpdateCreatureTraitRequest extends FormRequest
             'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],
             'image' => ['nullable', 'string', 'max:255'],
         ];
+    }
+
+    protected function playableModelClass(): string
+    {
+        return CreatureTrait::class;
     }
 }

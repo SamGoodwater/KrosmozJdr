@@ -175,4 +175,26 @@ class ItemBulkControllerTest extends TestCase
             ->assertJson(['success' => false])
             ->assertJson(['message' => 'Aucun champ à mettre à jour.']);
     }
+
+    public function test_game_master_can_bulk_publish_items(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $item = Item::factory()->create([
+            'state' => Item::STATE_DRAFT,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $this->actingAs($gm)
+            ->patchJson('/api/entities/items/bulk', [
+                'ids' => [$item->id],
+                'state' => Item::STATE_PLAYABLE,
+            ])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('items', [
+            'id' => $item->id,
+            'state' => Item::STATE_PLAYABLE,
+        ]);
+    }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Admin;
 
+use App\Services\GenerativeAi\FewShotExamplePool;
 use App\Services\GenerativeAi\GenerationConfigLoader;
 use App\Services\GenerativeAi\GenerationConfigStore;
 use Illuminate\Foundation\Http\FormRequest;
@@ -41,10 +42,7 @@ class UpdateIaGenerationConfigRequest extends FormRequest
             );
             $ids = $entities[$type]['example_ids'] ?? [];
             if (is_array($ids)) {
-                $entities[$type]['example_ids'] = array_values(array_map(
-                    static fn (mixed $id): int => (int) $id,
-                    $ids
-                ));
+                $entities[$type]['example_ids'] = $this->normalizeExampleRefs($ids);
             }
         }
         $this->merge(['entities' => $entities]);
@@ -63,8 +61,15 @@ class UpdateIaGenerationConfigRequest extends FormRequest
             $entityRules["{$prefix}.writable_fields"] = $this->stringListRule();
             $entityRules["{$prefix}.frozen_characteristics"] = $this->frozenRule();
             $entityRules["{$prefix}.writable_characteristics"] = $this->stringListRule();
-            $entityRules["{$prefix}.example_ids"] = ['present', 'array', 'max:40'];
-            $entityRules["{$prefix}.example_ids.*"] = ['integer', 'min:1', 'distinct'];
+            $entityRules["{$prefix}.example_ids"] = [
+                'present',
+                'array',
+                'max:40',
+                function (string $attribute, mixed $value, \Closure $fail) use ($entity): void {
+                    $this->assertPlayableExampleRefs($entity, $value, $fail);
+                },
+            ];
+            $entityRules["{$prefix}.example_ids.*"] = ['distinct'];
         }
 
         return [
@@ -98,6 +103,8 @@ class UpdateIaGenerationConfigRequest extends FormRequest
             $extra = array_diff_key($previous, $known);
             $payload['entities'][$entity] = array_merge($extra, $validated['entities'][$entity]);
             $payload['entities'][$entity]['has_dofus_source'] = (bool) $payload['entities'][$entity]['has_dofus_source'];
+            $payload['entities'][$entity]['example_ids'] = app(FewShotExamplePool::class)
+                ->normalizePlayableRefs($entity, $payload['entities'][$entity]['example_ids'] ?? []);
         }
 
         foreach ($base as $key => $value) {
@@ -144,6 +151,51 @@ class UpdateIaGenerationConfigRequest extends FormRequest
                 $this->assertStringList($attribute, $value, $fail);
             },
         ];
+    }
+
+    /**
+     * @param  list<mixed>  $ids
+     * @return list<int|string>
+     */
+    private function normalizeExampleRefs(array $ids): array
+    {
+        $out = [];
+        foreach ($ids as $id) {
+            if (is_int($id) && $id > 0) {
+                $out[] = $id;
+
+                continue;
+            }
+            if (! is_string($id)) {
+                continue;
+            }
+            $token = trim($id);
+            if ($token === '') {
+                continue;
+            }
+            if (ctype_digit($token)) {
+                $out[] = (int) $token;
+
+                continue;
+            }
+            $out[] = $token;
+        }
+
+        return array_values($out);
+    }
+
+    private function assertPlayableExampleRefs(string $entity, mixed $value, \Closure $fail): void
+    {
+        if (! is_array($value)) {
+            $fail("entities.{$entity}.example_ids doit être une liste.");
+
+            return;
+        }
+        try {
+            app(FewShotExamplePool::class)->assertAllPlayable($entity, $value);
+        } catch (\RuntimeException $exception) {
+            $fail($exception->getMessage());
+        }
     }
 
     private function assertStringList(string $attribute, mixed $value, \Closure $fail): void

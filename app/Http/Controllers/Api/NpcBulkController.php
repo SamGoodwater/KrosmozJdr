@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Npc;
+use App\Support\Entity\EntityStateGate;
 use App\Support\Npc\NpcRole;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -86,6 +87,7 @@ class NpcBulkController extends Controller
 
                 try {
                     $this->authorize('update', $model);
+                    EntityStateGate::authorizeHttpTransition($request->user(), $model, $patch['state'] ?? null);
                     foreach ($patch as $k => $v) {
                         $model->{$k} = $v;
                     }

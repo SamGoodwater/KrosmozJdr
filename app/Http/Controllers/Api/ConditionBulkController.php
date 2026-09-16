@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Condition;
+use App\Support\Entity\EntityStateGate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -86,6 +87,7 @@ class ConditionBulkController extends Controller
 
                 try {
                     $this->authorize('update', $model);
+                    EntityStateGate::authorizeHttpTransition($request->user(), $model, $patch['state'] ?? null);
                     foreach ($patch as $k => $v) {
                         $model->{$k} = $v;
                     }

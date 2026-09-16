@@ -51,7 +51,7 @@ final class NpcKitCatalog
             'gabarit' => $this->gabarit->forLevelAndRole($level, $role),
             'items' => $this->equipment($level, $voie),
             'spells' => $breedId !== null ? $this->spells($breedId, $level) : [],
-            'example_ids' => $this->exampleIds(),
+            'example_ids' => $this->requiredExampleIds(),
         ];
     }
 
@@ -164,6 +164,43 @@ final class NpcKitCatalog
      * @return list<int>
      */
     public function exampleIds(): array
+    {
+        $configured = $this->configuredExampleRefs();
+        if ($configured !== []) {
+            return app(FewShotExamplePool::class)->resolvePlayableIds('npc', $configured);
+        }
+
+        return $this->incarnamFallbackIds();
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function requiredExampleIds(): array
+    {
+        return app(FewShotExamplePool::class)->requireIds(
+            'npc',
+            $this->configuredExampleRefs(),
+            $this->incarnamFallbackIds()
+        );
+    }
+
+    /**
+     * @return list<int|string>
+     */
+    private function configuredExampleRefs(): array
+    {
+        try {
+            return GenerationConfigLoader::default()->forEntity('npc')->exampleIds;
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
+    /**
+     * @return list<int>
+     */
+    private function incarnamFallbackIds(): array
     {
         return Npc::query()
             ->where('state', Npc::STATE_PLAYABLE)

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Http\Requests\Concerns\HasCharacteristicValidation;
 use App\Models\Entity\Spell;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -17,6 +18,7 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class StoreSpellRequest extends FormRequest
 {
+    use GuardsPlayableState;
     use HasCharacteristicValidation;
 
     /**
@@ -24,7 +26,7 @@ class StoreSpellRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('create', Spell::class) ?? false;
+        return $this->user()?->can('create', Spell::class) === true;
     }
 
     /**
@@ -91,5 +93,10 @@ class StoreSpellRequest extends FormRequest
             'official_id' => ['nullable', 'string', 'max:255'],
             'dofusdb_id' => ['nullable', 'string', 'max:255'],
         ];
+    }
+
+    protected function playableModelClass(): string
+    {
+        return Spell::class;
     }
 }

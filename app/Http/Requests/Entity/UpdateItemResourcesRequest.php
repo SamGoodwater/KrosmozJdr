@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -18,7 +19,9 @@ class UpdateItemResourcesRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        $model = $this->route('item');
+
+        return $model instanceof Item && ($this->user()?->can('update', $model) === true);
     }
 
     /**

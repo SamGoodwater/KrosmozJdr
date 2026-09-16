@@ -3,7 +3,9 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Http\Requests\Concerns\HasCharacteristicValidation;
+use App\Models\Entity\Item;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -15,6 +17,7 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class StoreItemRequest extends FormRequest
 {
+    use GuardsPlayableState;
     use HasCharacteristicValidation;
 
     /**
@@ -22,7 +25,7 @@ class StoreItemRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        return $this->user()?->can('create', Item::class) === true;
     }
 
     /**
@@ -54,5 +57,10 @@ class StoreItemRequest extends FormRequest
             'official_id' => ['nullable', 'string', 'max:255'],
             'dofusdb_id' => ['nullable', 'string', 'max:255'],
         ];
+    }
+
+    protected function playableModelClass(): string
+    {
+        return Item::class;
     }
 }

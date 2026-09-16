@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Monster;
+use App\Support\Entity\EntityStateGate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -87,6 +88,7 @@ class MonsterBulkController extends Controller
 
                 try {
                     $this->authorize('update', $model);
+                    EntityStateGate::authorizeHttpTransition($request->user(), $model, $patch['state'] ?? null);
                     foreach ($patch as $k => $v) {
                         $model->{$k} = $v;
                     }

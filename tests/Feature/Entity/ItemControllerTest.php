@@ -213,7 +213,10 @@ class ItemControllerTest extends TestCase
     public function test_user_cannot_update_resources_of_item(): void
     {
         $user = User::factory()->create(['role' => User::ROLE_USER]);
-        $item = Item::factory()->create();
+        $item = Item::factory()->create([
+            'created_by' => User::factory(),
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
         $resource1 = Resource::factory()->create();
 
         $response = $this->actingAs($user)

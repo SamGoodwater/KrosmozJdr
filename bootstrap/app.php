@@ -34,11 +34,6 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        $middleware->preventRequestForgery(except: [
-            'api/scrapping',
-            'api/scrapping/*',
-        ]);
-
         // Enregistrer les middlewares
         $middleware->alias([
             'role' => CheckRole::class,

@@ -46,7 +46,14 @@ class ImageController extends Controller
 
             // Vérifier le type MIME
             $mimeType = Storage::disk(FileService::DISK_DEFAULT)->mimeType($path);
-            $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+            $pathLooksSvg = str_ends_with(strtolower($path), '.svg');
+            if ($mimeType === 'image/svg+xml' || $pathLooksSvg) {
+                return response()->json([
+                    'error' => 'Les SVG ne sont pas servis comme document (risque XSS).',
+                    'mime' => $mimeType,
+                ], 415);
+            }
+            $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
             if (! in_array($mimeType, $allowedMimes)) {
                 return response()->json([

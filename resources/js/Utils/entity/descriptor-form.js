@@ -174,7 +174,8 @@ export function createDefaultEntityFromDescriptors(descriptors) {
 }
 
 /**
- * Génère le `fieldMeta` attendu par `useBulkEditPanel`.
+ * Agrège les descripteurs bulk (métadonnées de champs). Le panneau d’édition
+ * multiple n’est plus branché dans l’UI ; l’API bulk reste.
  *
  * @param {Record<string, any>} descriptors
  * @param {any} ctx
@@ -190,8 +191,8 @@ export function createBulkFieldMetaFromDescriptors(descriptors, ctx = {}) {
     out[key] = {
       label: d?.general?.label || d?.label || form?.label || key,
       nullable: Boolean(bulk.nullable),
-      // Si bulk.build existe encore (rétrocompatibilité), on le garde, sinon on laisse undefined
-      // Le mapper sera utilisé à la place dans useBulkEditPanel
+      // Si bulk.build existe encore (rétrocompatibilité), on le garde.
+
       ...(typeof bulk.build === "function" ? { build: (raw) => bulk.build(raw, ctx) } : {}),
     };
   }

@@ -3,7 +3,9 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Http\Requests\Concerns\HasCharacteristicValidation;
+use App\Models\Entity\Consumable;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -15,6 +17,7 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class StoreConsumableRequest extends FormRequest
 {
+    use GuardsPlayableState;
     use HasCharacteristicValidation;
 
     /**
@@ -22,7 +25,7 @@ class StoreConsumableRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        return $this->user()?->can('create', Consumable::class) === true;
     }
 
     /**
@@ -50,5 +53,10 @@ class StoreConsumableRequest extends FormRequest
             'dofusdb_id' => ['nullable', 'string', 'max:255'],
             'consumable_type_id' => ['nullable', 'integer', 'exists:type_consumable_types,id'],
         ];
+    }
+
+    protected function playableModelClass(): string
+    {
+        return Consumable::class;
     }
 }

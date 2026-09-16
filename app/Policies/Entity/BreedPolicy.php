@@ -81,6 +81,14 @@ class BreedPolicy
     }
 
     /**
+     * Publication `playable` : admin seulement (comme `updateAny`).
+     */
+    public function publish(User $user, ?Breed $breed = null): bool
+    {
+        return $user->isAdmin();
+    }
+
+    /**
      * Determine whether the user can delete the model.
      */
     public function delete(User $user, Breed $breed): bool

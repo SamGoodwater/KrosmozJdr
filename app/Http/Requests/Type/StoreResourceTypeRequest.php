@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Type;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
+use App\Models\Type\ResourceType;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -10,9 +12,11 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class StoreResourceTypeRequest extends FormRequest
 {
+    use GuardsPlayableState;
+
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        return $this->user()?->can('create', ResourceType::class) === true;
     }
 
     public function rules(): array
@@ -28,5 +32,10 @@ class StoreResourceTypeRequest extends FormRequest
             'seen_count' => ['nullable', 'integer', 'min:0'],
             'last_seen_at' => ['nullable', 'date'],
         ];
+    }
+
+    protected function playableModelClass(): string
+    {
+        return ResourceType::class;
     }
 }

@@ -163,4 +163,27 @@ class CampaignBulkControllerTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonValidationErrors('read_level');
     }
+
+    public function test_game_master_can_bulk_publish_campaigns(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $campaign = Campaign::factory()->create([
+            'state' => Campaign::STATE_DRAFT,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $gm->id,
+        ]);
+
+        $this->actingAs($gm)
+            ->patchJson('/api/entities/campaigns/bulk', [
+                'ids' => [$campaign->id],
+                'state' => Campaign::STATE_PLAYABLE,
+            ])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('campaigns', [
+            'id' => $campaign->id,
+            'state' => Campaign::STATE_PLAYABLE,
+        ]);
+    }
 }

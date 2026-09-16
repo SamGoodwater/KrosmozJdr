@@ -101,8 +101,12 @@ function textToIds(text) {
             continue;
         }
         const n = Number.parseInt(chunk, 10);
-        if (Number.isInteger(n) && n > 0 && !ids.includes(n)) {
+        if (String(n) === chunk && Number.isInteger(n) && n > 0 && !ids.includes(n)) {
             ids.push(n);
+            continue;
+        }
+        if (!ids.includes(chunk)) {
+            ids.push(chunk);
         }
     }
     return ids;
@@ -194,8 +198,8 @@ function toggleWritableCharacteristic(key, checked) {
 
         <InputField
             v-model="exampleIdsText"
-            label="Fiches exemples (ids playable)"
-            helper="IDs locaux séparés par des virgules, utilisés en few-shot."
+            label="Fiches exemples (playable)"
+            helper="official_id, nom, ou id local, séparés par des virgules. Uniquement des fiches jouables."
             default-label-position="top"
         />
     </section>

@@ -12,7 +12,7 @@
 
 - **Pas de modèle maison / fine-tuning** au départ. LLM du commerce + prompt + schéma JSON + validateurs PHP.
 - **Laravel assemble le contexte** ; l’IA ne « browse » pas l’API en batch.
-- L’IA **propose**, jamais `playable`. État `auto` (UI « Auto ») : déjà dans le code. Pipeline LLM non branché.
+- L’IA **propose**, jamais `playable`. État `auto` (UI « Auto ») : déjà dans le code. Pipeline LLM non branché. Publication `auto` → `playable` : ability `publish` (relecteur). `example_ids` : uniquement des fiches `playable` (`official_id` / nom / id) ; pool vide refusé à l’assembleur (`FewShotExamplePool`).
 - **Objets** : grille algo `ia:equipment-grid` (`resources/ia/equipment-grid.json`). Rapport ; `--write` = trous `draft`. Pas tout Dofus. Pipeline LLM non branché.
 - **PNJ pré-filtre** : `NpcKitCatalog` + `php artisan ia:npc-kit-catalog` (équipement compact, sorts de classe, gabarit 5.1.2). Few-shot : `jdr:npc:incarnam:%`. Pas d’appel LLM.
 - **L’IA ne réécrit pas l’identité** ni, par défaut, les **caractéristiques** d’une fiche Dofus. Liste éditable : page admin **IA métier** (`/admin/content/ia-generation`), fichier `resources/ia/generation.json` en repli. **PNJ** : création complète. Détail : [CHAMPS.md](./CHAMPS.md).

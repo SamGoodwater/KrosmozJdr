@@ -21,6 +21,7 @@ use App\Models\Entity\Shop;
 use App\Models\Entity\Specialization;
 use App\Models\Entity\Spell;
 use App\Models\Type\ResourceType;
+use App\Support\Entity\EntityStateGate;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -30,7 +31,7 @@ use Illuminate\Http\Request;
  *
  * @description
  * Utilise les policies `update` par entité, contrairement aux endpoints bulk qui
- * vérifient `updateAny`. Cela conserve les droits propriétaire quand ils existent.
+ * vérifient `updateAny`. Passer à `playable` exige en plus `publish`.
  *
  * @example
  * PATCH /api/entities/items/12/state
@@ -76,6 +77,7 @@ class EntityStateController extends Controller
         /** @var Model $model */
         $model = $modelClass::query()->findOrFail($id);
         $this->authorize('update', $model);
+        EntityStateGate::authorizeHttpTransition($request->user(), $model, $validated['state']);
 
         if (! array_key_exists('state', $model->getAttributes()) && ! $model->isFillable('state')) {
             return response()->json([

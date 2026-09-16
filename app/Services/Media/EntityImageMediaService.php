@@ -37,14 +37,18 @@ class EntityImageMediaService
                 }
                 $mime = strtolower((string) $value->getMimeType());
                 $ext = strtolower((string) $value->getClientOriginalExtension());
-                $vectorOk = in_array($mime, ['image/svg+xml'], true) || $ext === 'svg';
+                if ($ext === 'svg' || str_contains($mime, 'svg')) {
+                    $fail('Les fichiers SVG ne sont pas autorisés (contenu exécutable).');
+
+                    return;
+                }
                 $rasterMimes = [
                     'image/jpeg', 'image/png', 'image/gif', 'image/webp',
                     'image/bmp', 'image/tiff', 'image/x-ms-bmp',
                     'image/avif', 'image/heic', 'image/heif',
                     'image/x-icon', 'image/vnd.microsoft.icon',
                 ];
-                if ($vectorOk || in_array($mime, $rasterMimes, true)) {
+                if (in_array($mime, $rasterMimes, true)) {
                     return;
                 }
                 // Fallback : extension connue comme image

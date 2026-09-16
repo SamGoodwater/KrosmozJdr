@@ -3,17 +3,23 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
+use App\Models\Entity\Monster;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateMonsterRequest extends FormRequest
 {
+    use GuardsPlayableState;
+
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        $model = $this->route('monster');
+
+        return $model instanceof Monster && ($this->user()?->can('update', $model) === true);
     }
 
     /**
@@ -34,5 +40,10 @@ class UpdateMonsterRequest extends FormRequest
             'read_level' => ['nullable', 'integer', 'min:0', 'max:4'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:4'],
         ];
+    }
+
+    protected function playableModelClass(): string
+    {
+        return Monster::class;
     }
 }

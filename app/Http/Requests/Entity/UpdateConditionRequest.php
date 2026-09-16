@@ -3,18 +3,23 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Models\Entity\Condition;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateConditionRequest extends FormRequest
 {
+    use GuardsPlayableState;
+
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        $model = $this->route('condition');
+
+        return $model instanceof Condition && ($this->user()?->can('update', $model) === true);
     }
 
     /**
@@ -34,5 +39,10 @@ class UpdateConditionRequest extends FormRequest
             'image' => ['nullable', 'string', 'max:255'],
             ...array_fill_keys(array_keys(Condition::MECHANICAL_FLAG_LABELS), ['sometimes', 'boolean']),
         ];
+    }
+
+    protected function playableModelClass(): string
+    {
+        return Condition::class;
     }
 }

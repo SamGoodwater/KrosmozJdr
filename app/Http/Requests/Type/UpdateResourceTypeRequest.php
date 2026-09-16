@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Type;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Models\Type\ResourceType;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -11,9 +12,13 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class UpdateResourceTypeRequest extends FormRequest
 {
+    use GuardsPlayableState;
+
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        $model = $this->route('resourceType');
+
+        return $model instanceof ResourceType && ($this->user()?->can('update', $model) === true);
     }
 
     public function rules(): array
@@ -31,5 +36,10 @@ class UpdateResourceTypeRequest extends FormRequest
             'decision' => ['nullable', 'string', 'in:pending,allowed,blocked'],
             'show_in_catalog' => ['nullable', 'boolean'],
         ];
+    }
+
+    protected function playableModelClass(): string
+    {
+        return ResourceType::class;
     }
 }

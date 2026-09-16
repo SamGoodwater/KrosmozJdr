@@ -3,11 +3,15 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
+use App\Models\Entity\Panoply;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePanoplyRequest extends FormRequest
 {
+    use GuardsPlayableState;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -60,5 +64,10 @@ class UpdatePanoplyRequest extends FormRequest
         if (is_string($bonus) && trim($bonus) === '') {
             $this->merge(['bonus' => null]);
         }
+    }
+
+    protected function playableModelClass(): string
+    {
+        return Panoply::class;
     }
 }

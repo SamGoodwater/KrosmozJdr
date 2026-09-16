@@ -3,7 +3,9 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Http\Requests\Entity\Concerns\NormalizesCapabilityStringDefaults;
+use App\Models\Entity\Capability;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -14,6 +16,7 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class UpdateCapabilityRequest extends FormRequest
 {
+    use GuardsPlayableState;
     use NormalizesCapabilityStringDefaults;
 
     /**
@@ -21,7 +24,9 @@ class UpdateCapabilityRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        $model = $this->route('capability');
+
+        return $model instanceof Capability && ($this->user()?->can('update', $model) === true);
     }
 
     /**
@@ -59,5 +64,10 @@ class UpdateCapabilityRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->normalizeCapabilityNotNullDefaultsForDatabase();
+    }
+
+    protected function playableModelClass(): string
+    {
+        return Capability::class;
     }
 }

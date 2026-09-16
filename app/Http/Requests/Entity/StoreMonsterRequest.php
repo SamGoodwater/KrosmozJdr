@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
+use App\Models\Entity\Monster;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -13,12 +15,14 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class StoreMonsterRequest extends FormRequest
 {
+    use GuardsPlayableState;
+
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        return $this->user()?->can('create', Monster::class) === true;
     }
 
     /**
@@ -45,5 +49,10 @@ class StoreMonsterRequest extends FormRequest
             'read_level' => ['nullable', 'integer', 'min:0', 'max:4'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:4'],
         ];
+    }
+
+    protected function playableModelClass(): string
+    {
+        return Monster::class;
     }
 }

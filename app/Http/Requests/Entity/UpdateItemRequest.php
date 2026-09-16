@@ -3,7 +3,9 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Http\Requests\Concerns\HasCharacteristicValidation;
+use App\Models\Entity\Item;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -15,6 +17,7 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class UpdateItemRequest extends FormRequest
 {
+    use GuardsPlayableState;
     use HasCharacteristicValidation;
 
     /**
@@ -22,7 +25,9 @@ class UpdateItemRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        $model = $this->route('item');
+
+        return $model instanceof Item && ($this->user()?->can('update', $model) === true);
     }
 
     /**
@@ -52,5 +57,10 @@ class UpdateItemRequest extends FormRequest
             'auto_update' => ['nullable', 'boolean'],
             'item_type_id' => ['nullable', 'integer', 'exists:type_item_types,id'],
         ];
+    }
+
+    protected function playableModelClass(): string
+    {
+        return Item::class;
     }
 }

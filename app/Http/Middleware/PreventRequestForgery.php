@@ -10,24 +10,16 @@ class PreventRequestForgery extends Middleware
     /**
      * URIs excluded from CSRF / request-forgery verification.
      *
-     * Les routes API scrapping sont appelées depuis l'UI (même origine) avec X-CSRF-TOKEN,
-     * mais peuvent provoquer un mismatch si la session ou le token a été régénéré.
-     * On les exclut car elles sont protégées par auth et réservées aux admins.
+     * Aucune route applicative n’est exclue : l’atelier DofusDB est sous `/api/dofusdb`
+     * (session + CSRF). Les tests bypassent ce middleware via {@see handle()}.
      *
      * @var array<int, string>
      */
-    protected $except = [
-        'api/scrapping/*',
-    ];
+    protected $except = [];
 
     protected function inExceptArray($request)
     {
         if (app()->environment('testing') || config('app.env') === 'testing') {
-            return true;
-        }
-
-        $path = trim($request->path(), '/');
-        if (str_starts_with($path, 'api/scrapping')) {
             return true;
         }
 

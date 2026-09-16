@@ -55,6 +55,7 @@ class ScenarioResource extends JsonResource
             // Droits d'accès
             'can' => [
                 'update' => $user ? $user->can('update', $this->resource) : false,
+                'publish' => $user ? $user->can('publish', $this->resource) : false,
                 'delete' => $user ? $user->can('delete', $this->resource) : false,
                 'view' => $user ? $user->can('view', $this->resource) : false,
             ],

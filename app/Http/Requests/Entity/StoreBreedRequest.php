@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
+use App\Models\Entity\Breed;
 use App\Models\Entity\BreedElementOrientation;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -13,9 +15,11 @@ use Illuminate\Validation\Rule;
  */
 class StoreBreedRequest extends FormRequest
 {
+    use GuardsPlayableState;
+
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        return $this->user()?->can('create', Breed::class) === true;
     }
 
     /**
@@ -53,5 +57,10 @@ class StoreBreedRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    protected function playableModelClass(): string
+    {
+        return Breed::class;
     }
 }

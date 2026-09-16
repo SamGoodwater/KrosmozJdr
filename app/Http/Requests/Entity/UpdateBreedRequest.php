@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
+use App\Models\Entity\Breed;
 use App\Models\Entity\BreedElementOrientation;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -13,9 +15,13 @@ use Illuminate\Validation\Rule;
  */
 class UpdateBreedRequest extends FormRequest
 {
+    use GuardsPlayableState;
+
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        $model = $this->route('breed');
+
+        return $model instanceof Breed && ($this->user()?->can('update', $model) === true);
     }
 
     /**
@@ -53,5 +59,10 @@ class UpdateBreedRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    protected function playableModelClass(): string
+    {
+        return Breed::class;
     }
 }

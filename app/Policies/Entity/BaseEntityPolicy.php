@@ -161,6 +161,17 @@ abstract class BaseEntityPolicy
     }
 
     /**
+     * Publier une fiche (`playable`) : relecteur, pas l’auteur seul.
+     *
+     * Aligne le relecteur sur `updateAny` du type (admin si la policy l’a
+     * restreint, MJ sinon). Un writer automatique n’a pas cette ability.
+     */
+    public function publish(User $user, ?Model $model = null): bool
+    {
+        return $this->updateAny($user);
+    }
+
+    /**
      * Determine whether the user can delete the model.
      *
      * Par défaut, seuls les admins peuvent supprimer.

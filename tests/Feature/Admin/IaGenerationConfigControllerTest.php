@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Admin;
 
+use App\Models\Entity\Item;
 use App\Models\IaGenerationSetting;
 use App\Models\User;
 use App\Services\GenerativeAi\GenerationConfigLoader;
@@ -79,6 +80,47 @@ class IaGenerationConfigControllerTest extends TestCase
         $this->actingAs($admin)
             ->putJson(route('admin.content.ia-generation.update'), $this->formPayload($payload))
             ->assertStatus(423);
+    }
+
+    public function test_example_ids_must_exist_and_be_playable(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        Item::factory()->create([
+            'name' => 'Étalon playable',
+            'official_id' => 'jdr:item:etalon-test',
+            'state' => Item::STATE_PLAYABLE,
+        ]);
+        $draft = Item::factory()->create([
+            'name' => 'Brouillon',
+            'state' => Item::STATE_DRAFT,
+        ]);
+
+        $payload = $this->filePayload();
+        $payload['entities']['item']['example_ids'] = [$draft->id];
+
+        $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->putJson(route('admin.content.ia-generation.update'), $this->formPayload($payload))
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('entities.item.example_ids');
+
+        $payload['entities']['item']['example_ids'] = [999999];
+        $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->putJson(route('admin.content.ia-generation.update'), $this->formPayload($payload))
+            ->assertStatus(422);
+
+        $payload['entities']['item']['example_ids'] = ['jdr:item:etalon-test'];
+        $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->putJson(route('admin.content.ia-generation.update'), $this->formPayload($payload))
+            ->assertRedirect(route('admin.content.ia-generation.edit'));
+
+        app()->forgetInstance(GenerationConfigLoader::class);
+        $this->assertSame(
+            ['jdr:item:etalon-test'],
+            app(GenerationConfigLoader::class)->forEntity('item')->exampleIds
+        );
     }
 
     /**

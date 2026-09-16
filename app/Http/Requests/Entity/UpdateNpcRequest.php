@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Entity;
 
 use App\Enums\EntityState;
+use App\Http\Requests\Concerns\GuardsPlayableState;
+use App\Models\Entity\Npc;
 use App\Support\Creature\CreatureSize;
 use App\Support\Npc\NpcRole;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -13,9 +15,13 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class UpdateNpcRequest extends FormRequest
 {
+    use GuardsPlayableState;
+
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        $model = $this->route('npc');
+
+        return $model instanceof Npc && ($this->user()?->can('update', $model) === true);
     }
 
     /**
@@ -41,5 +47,10 @@ class UpdateNpcRequest extends FormRequest
             'read_level' => ['nullable', 'integer', 'min:0', 'max:4'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:4'],
         ];
+    }
+
+    protected function playableModelClass(): string
+    {
+        return Npc::class;
     }
 }
