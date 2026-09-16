@@ -510,6 +510,7 @@ class PageControllerTest extends TestCase
 
         $this->assertNotNull($child);
         $this->assertSame('/storage/images/entity/breeds/iop.webp', $child['menu_icon']);
+        $this->assertArrayHasKey('menu_icon_hover', $child);
     }
 
     /**

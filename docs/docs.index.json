@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Chaque classe a son **passif** dès le niveau 1 (gratuit) et un **moteur** parmi cinq : zones, invocations, état perso, marques, tempo. Le moteur reste simple au 1 et s’ouvre au 7."
+    "description": "Chaque classe a ses **symboles** (couleur et N&B), ses **têtes** mâle / femelle et ses **personnages** full. La fiche complète montre le personnage (on peut passer de M à F), les petites cartes montrent la tête (mâle condensé, femelle déployé), et le menu utilise le symbole N&B qui passe en couleur au survol."
   },
   {
     "path": "backend/_ai.md",
@@ -202,12 +202,12 @@
   {
     "path": "frontend/inertia/_ai.md",
     "title": "Inertia — IA",
-    "description": "`resources/js/app.js` — `createInertiaApp` + import statique `@/Utils/Formatters`"
+    "description": "`resources/js/app.js` — `createInertiaApp` + `setup({ el, App, props, plugin })` ; import statique `@/Utils/Formatters` (registre avant montage)"
   },
   {
     "path": "frontend/inertia/README.md",
     "title": "Inertia",
-    "description": "Les contrôleurs Laravel rendent les pages Vue via `Inertia::render()`. La résolution se fait depuis `resources/js/app.js` avec `import.meta.glob('./Pages/**/*.vue')`."
+    "description": "Les contrôleurs Laravel rendent les pages Vue via `Inertia::render()`. La résolution se fait depuis `resources/js/app.js` avec `import.meta.glob('./Pages/**/*.vue')`. Le client npm est `@inertiajs/vue3` 3 ; l’adaptateur PHP est `inertiajs/inertia-laravel` 3."
   },
   {
     "path": "frontend/README.md",
@@ -217,22 +217,22 @@
   {
     "path": "IA/_ai.md",
     "title": "IA générative — carte IA",
-    "description": "Cadrage LLM métier. Grille objets `ia:equipment-grid`. Config gel admin + JSON. Pipeline d’appel LLM non branché."
+    "description": "Améliorer des données Dofus pour le JDR (objets, sorts, monstres, PNJ)."
   },
   {
     "path": "IA/ARCHITECTURE.md",
     "title": "Architecture de la génération",
-    "description": "Cadrage. Config des champs figés : page admin `/admin/content/ia-generation` (table `ia_generation_settings`) avec repli `resources/ia/generation.json`. Le pipeline LLM n’est pas encore branché."
-  },
-  {
-    "path": "IA/CHAMPS.md",
-    "title": "Champs figés vs champs générés",
-    "description": "Source de vérité effective : admin `/admin/content/ia-generation` (table `ia_generation_settings`), sinon `resources/ia/generation.json`."
+    "description": "Cadrage. Config des champs figés : page admin `/admin/content/ia-generation` (table `ia_generation_settings`) avec repli `resources/ia/generation.json`. Grille objets : `ia:equipment-grid`. Le pipeline LLM n’est pas encore branché."
   },
   {
     "path": "IA/CATALOGUE.md",
     "title": "Catalogue objets et pré-filtre",
-    "description": "Grille algo `ia:equipment-grid` (niveau × slot × voie). Config `resources/ia/equipment-grid.json`. `--write` = trous `draft`, jamais `playable` auto. Panoplies or few-shot : `entities.item.few_shot_panoplies`."
+    "description": "Les objets sont le **socle** : sans un petit référentiel `playable`, PNJ et rencontres n’ont rien de cohérent à porter. Ce n’est **pas** un import massif de tout Dofus."
+  },
+  {
+    "path": "IA/CHAMPS.md",
+    "title": "Champs figés vs champs générés",
+    "description": "Source de vérité **effective** : une ligne en base (`ia_generation_settings`) si un admin a enregistré la page **Gestion du contenu → IA métier** (`/admin/content/ia-generation`). Sinon le fichier **`resources/ia/generation.json`**."
   },
   {
     "path": "IA/COUTS.md",
@@ -242,7 +242,7 @@
   {
     "path": "IA/README.md",
     "title": "IA générative — cadrage",
-    "description": "Pipeline LLM non branché. Grille d’objets algorithmique : `ia:equipment-grid`. Intention : contenu jouable en JDR, pas un miroir de Dofus."
+    "description": "Le **pipeline LLM** n’est pas branché. La **grille d’objets** algorithmique l’est : `php artisan ia:equipment-grid`. Ce dossier fixe l’intention : une IA qui aide à produire du contenu **jouable en JDR**, pas à recopier Dofus."
   },
   {
     "path": "IA/RENCONTRES.md",

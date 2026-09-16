@@ -66,6 +66,30 @@ export class Breed extends BaseModel {
         return this._data.icon || null;
     }
 
+    get symbolFull() {
+        return this._data.symbol_full || null;
+    }
+
+    get symbolBw() {
+        return this._data.symbol_bw || null;
+    }
+
+    get logoMale() {
+        return this._data.logo_male || null;
+    }
+
+    get logoFemale() {
+        return this._data.logo_female || null;
+    }
+
+    get imageFullMale() {
+        return this._data.image_full_male || null;
+    }
+
+    get imageFullFemale() {
+        return this._data.image_full_female || null;
+    }
+
     get autoUpdate() {
         return this._data.auto_update ?? false;
     }
@@ -154,6 +178,12 @@ export class Breed extends BaseModel {
                 return this._toSpecificityCell(format, size, options);
             case 'image':
             case 'icon':
+            case 'symbol_full':
+            case 'symbol_bw':
+            case 'logo_male':
+            case 'logo_female':
+            case 'image_full_male':
+            case 'image_full_female':
                 return this._toImageCell(fieldKey, format, size, options);
             case 'created_by':
                 return this._toCreatedByCell(format, size, options);
@@ -259,7 +289,17 @@ export class Breed extends BaseModel {
      * @private
      */
     _toImageCell(fieldKey, _format, size, _options) {
-        const imageUrl = fieldKey === 'icon' ? this.icon : this.image;
+        const urls = {
+            icon: this.icon,
+            symbol_full: this.symbolFull,
+            symbol_bw: this.symbolBw,
+            logo_male: this.logoMale,
+            logo_female: this.logoFemale,
+            image_full_male: this.imageFullMale,
+            image_full_female: this.imageFullFemale,
+            image: this.image,
+        };
+        const imageUrl = urls[fieldKey] || this.image;
         
         if (!imageUrl) {
             return {
@@ -375,6 +415,12 @@ export class Breed extends BaseModel {
             write_level: this.writeLevel,
             image: this.image,
             icon: this.icon,
+            symbol_full: this.symbolFull,
+            symbol_bw: this.symbolBw,
+            logo_male: this.logoMale,
+            logo_female: this.logoFemale,
+            image_full_male: this.imageFullMale,
+            image_full_female: this.imageFullFemale,
             auto_update: this.autoUpdate,
         };
     }

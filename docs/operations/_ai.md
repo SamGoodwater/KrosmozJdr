@@ -10,6 +10,7 @@ Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interact
 
 - `app/Console/COMMANDS.md` — vocabulaire CLI unique
 - `php artisan ia:equipment-grid` — grille d’équipements JDR (rapport ; `--write` = trous `draft`)
+- `php artisan breeds:sync-images` — aligne les visuels des classes sur `storage/app/public/images/breeds/{slug}/`
 - `php artisan entities:recalculate-prices {items|consumables}` — réécrit `price_calculated`, vide `price_custom` (consommables `playable` exclus) ; bouton admin sur `/admin/content`
 - `php artisan items:seeder-export` / `items:seeder-import` — aller-retour étalons d’équipement base ↔ `database/seeders/data/entities/items/` ; même code que `Database\Seeders\Entity\ItemSeeder` ; l’import marque aussi jouables les ressources des recettes (plancher 1 kama) ; `ConsumableSeeder` rejoue l’échelle de soins hors combat, les parchemins de caractéristique (respec) et les utilitaires (`utility-playable.json`) ; `ClassBreedSeeder` pose les 19 classes avant `CapabilitySeeder` / `MonsterSeeder` / `SpellSeeder` (24 sorts / classe : `*-level-1.json` + `*-progression.json` ; 19 invocations `class-summons.json` ; 28 monstres JDR `incarnam.json` + `amakna.json`) ; boutons super_admin sur `/admin/content/ia-generation`
 - `app/Console/Commands/Project/ProjectInitCommand.php`

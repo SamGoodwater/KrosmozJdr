@@ -19,6 +19,7 @@ import BreedCapabilitiesDisplay from "@/Pages/Molecules/entity/breed/BreedCapabi
 import BreedVariantsDisplay from "@/Pages/Molecules/entity/breed/BreedVariantsDisplay.vue";
 import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
 import LanguageViewMinimal from "@/Pages/Molecules/entity/language/LanguageViewMinimal.vue";
+import { breedLogoFemaleUrl, breedLogoMaleUrl } from "@/Utils/entity/breedImages";
 import { normalizeElementOrientationMap } from "@/Utils/entity/breedOrientations";
 import { buildSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
 
@@ -46,9 +47,14 @@ const emit = defineEmits(["edit", "view", "delete", "action", "quick-view"]);
 
 const entity = computed(() => props.breed);
 
-const imageUrl = computed(() => {
-    const u = entity.value?.image ?? entity.value?.icon ?? entity.value?._data?.image ?? entity.value?._data?.icon;
-    return u && String(u).trim() ? String(u) : null;
+const compactImageUrl = computed(() => {
+    const u = breedLogoMaleUrl(entity.value);
+    return u || null;
+});
+
+const expandedImageUrl = computed(() => {
+    const u = breedLogoFemaleUrl(entity.value);
+    return u || null;
 });
 
 const cellOpts = () => ({ size: "xs", context: "minimal" });
@@ -130,7 +136,7 @@ const handleLinkedQuickView = (linkedEntity) => {
                 <div class="flex gap-2">
                     <EntityThumb
                         size="compact"
-                        :src="imageUrl || ''"
+                        :src="compactImageUrl || ''"
                         :label="entity?.name ?? 'Classe'"
                     />
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
@@ -185,7 +191,7 @@ const handleLinkedQuickView = (linkedEntity) => {
                 <div class="flex gap-2">
                     <EntityThumb
                         size="compact"
-                        :src="imageUrl || ''"
+                        :src="expandedImageUrl || ''"
                         :label="entity?.name ?? 'Classe'"
                     />
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">

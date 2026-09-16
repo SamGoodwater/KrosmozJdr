@@ -6,6 +6,7 @@ namespace App\Services\Seeder\Breed;
 
 use App\Models\Entity\Breed;
 use App\Services\Entity\SyncBreedElementOrientations;
+use App\Support\BreedImagePaths;
 
 /**
  * Importe les fiches des 19 classes (voix §2.3.1) pour recoller les kits de sorts.
@@ -76,6 +77,7 @@ final class ClassBreedSeederImporter
             'specificity' => $entry['specificity'],
             'dofus_version' => $entry['dofus_version'],
             'auto_update' => false,
+            ...BreedImagePaths::columnValuesForSlug($catalog->slug()),
         ];
         if ($entry['dofusdb_id'] !== null) {
             $attributes['dofusdb_id'] = $entry['dofusdb_id'];

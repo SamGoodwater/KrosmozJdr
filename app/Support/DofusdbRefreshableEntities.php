@@ -50,6 +50,12 @@ final class DofusdbRefreshableEntities
         'resource_type_id',
         'consumable_type_id',
         'spell_type_id',
+        'symbol_full',
+        'symbol_bw',
+        'logo_male',
+        'logo_female',
+        'image_full_male',
+        'image_full_female',
     ];
 
     public static function isRefreshable(string $entityType): bool

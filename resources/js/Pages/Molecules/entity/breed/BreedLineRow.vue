@@ -14,6 +14,7 @@ import { getRowEntity } from "@/Utils/Entity/rowEntity";
 import BreedElementOrientationsDisplay from "@/Pages/Molecules/entity/breed/BreedElementOrientationsDisplay.vue";
 import BreedCapabilitiesDisplay from "@/Pages/Molecules/entity/breed/BreedCapabilitiesDisplay.vue";
 import BreedVariantsDisplay from "@/Pages/Molecules/entity/breed/BreedVariantsDisplay.vue";
+import { breedLogoMaleUrl } from "@/Utils/entity/breedImages";
 import { normalizeElementOrientationMap } from "@/Utils/entity/breedOrientations";
 import { buildSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
 import LanguageViewMinimal from "@/Pages/Molecules/entity/language/LanguageViewMinimal.vue";
@@ -41,8 +42,8 @@ const getCell = (fieldKey) => {
 };
 
 const imageUrl = computed(() => {
-    const u = entity.value?.image ?? entity.value?.icon ?? entity.value?._data?.image ?? entity.value?._data?.icon;
-    return u && String(u).trim() ? String(u) : null;
+    const u = breedLogoMaleUrl(entity.value);
+    return u || null;
 });
 
 const nameCell = computed(() => getCell("name"));

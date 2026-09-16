@@ -30,6 +30,7 @@ const props = defineProps({
     route: { type: String, default: "" },
     href: { type: String, default: "" },
     icon: { type: String, default: "" },
+    iconHover: { type: String, default: "" },
     iconAlt: { type: String, default: "" },
     iconPack: {
         type: String,
@@ -48,6 +49,10 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["click"]);
+
+const hasIconHover = computed(
+    () => Boolean(props.iconHover) && props.iconHover !== props.icon
+);
 
 const isLink = computed(() => Boolean(props.route || props.href));
 
@@ -90,14 +95,23 @@ function handleClick(event) {
         @click="handleClick"
     >
         <span :class="itemClasses">
-            <Icon
-                v-if="icon"
-                :source="icon"
-                :pack="iconPack"
-                :alt="iconAlt || ''"
-                size="sm"
-                class="glass-menu-item-icon"
-            />
+            <span v-if="icon" class="glass-menu-item-icon-wrap" :class="{ 'is-swappable': hasIconHover }">
+                <Icon
+                    :source="icon"
+                    :pack="iconPack"
+                    :alt="iconAlt || ''"
+                    size="sm"
+                    class="glass-menu-item-icon glass-menu-item-icon-default"
+                />
+                <Icon
+                    v-if="hasIconHover"
+                    :source="iconHover"
+                    :pack="iconPack"
+                    :alt="iconAlt || ''"
+                    size="sm"
+                    class="glass-menu-item-icon glass-menu-item-icon-hover"
+                />
+            </span>
             <slot />
         </span>
     </Route>
@@ -111,14 +125,23 @@ function handleClick(event) {
         v-on="$attrs"
         @click="handleClick"
     >
-        <Icon
-            v-if="icon"
-            :source="icon"
-            :pack="iconPack"
-            :alt="iconAlt || ''"
-            size="sm"
-            class="glass-menu-item-icon"
-        />
+        <span v-if="icon" class="glass-menu-item-icon-wrap" :class="{ 'is-swappable': hasIconHover }">
+            <Icon
+                :source="icon"
+                :pack="iconPack"
+                :alt="iconAlt || ''"
+                size="sm"
+                class="glass-menu-item-icon glass-menu-item-icon-default"
+            />
+            <Icon
+                v-if="hasIconHover"
+                :source="iconHover"
+                :pack="iconPack"
+                :alt="iconAlt || ''"
+                size="sm"
+                class="glass-menu-item-icon glass-menu-item-icon-hover"
+            />
+        </span>
         <slot />
     </button>
 </template>
@@ -166,15 +189,39 @@ function handleClick(event) {
     padding: 0.28rem 0.5rem;
 }
 
+.glass-menu-item-icon-wrap {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+}
+
 .glass-menu-item-icon {
     flex-shrink: 0;
     opacity: 0.82;
     transition: opacity 0.18s ease;
 }
 
+.glass-menu-item-icon-hover {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+}
+
 .glass-menu-item:hover .glass-menu-item-icon,
 .glass-menu-item:focus-visible .glass-menu-item-icon {
     opacity: 1;
+}
+
+.glass-menu-item:hover .glass-menu-item-icon-hover,
+.glass-menu-item:focus-visible .glass-menu-item-icon-hover {
+    opacity: 1;
+}
+
+.glass-menu-item:hover .glass-menu-item-icon-wrap.is-swappable .glass-menu-item-icon-default,
+.glass-menu-item:focus-visible .glass-menu-item-icon-wrap.is-swappable .glass-menu-item-icon-default {
+    opacity: 0;
 }
 
 .glass-menu-item-danger:hover:not(.glass-menu-item-disabled),

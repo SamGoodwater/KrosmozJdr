@@ -75,7 +75,18 @@ final class ClassBreedCatalog
     /**
      * @param  array<string, mixed>  $payload
      */
-    public function __construct(private readonly array $payload) {}
+    public function __construct(
+        private readonly array $payload,
+        private readonly string $slug = '',
+    ) {}
+
+    /**
+     * Slug dossier ASCII (`iop`, `cra`) — basename du JSON sans extension.
+     */
+    public function slug(): string
+    {
+        return $this->slug;
+    }
 
     public static function directory(): string
     {
@@ -156,8 +167,9 @@ final class ClassBreedCatalog
 
         /** @var array<string, mixed> $payload */
         $payload = json_decode(File::get($file), true, 512, JSON_THROW_ON_ERROR);
+        $slug = strtolower(pathinfo($file, PATHINFO_FILENAME));
 
-        return new self($payload);
+        return new self($payload, $slug);
     }
 
     /**

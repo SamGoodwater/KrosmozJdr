@@ -5,7 +5,7 @@
  * En-tête + blocs gameplay structuraux (orientations, traits, langues, variantes sorts).
  * Le contenu narratif (spécificité, dé de vie, évolution, capacités en prose) est dans les sections liées.
  */
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { router } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
@@ -27,6 +27,7 @@ import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/Creatur
 import EntityLanguagesInline from "@/Pages/Molecules/entity/language/EntityLanguagesInline.vue";
 import { buildSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
 import { normalizeElementOrientationMap } from "@/Utils/entity/breedOrientations";
+import { breedFullUrl, breedHasBothFullImages } from "@/Utils/entity/breedImages";
 
 const props = defineProps({
     breed: {
@@ -91,11 +92,11 @@ const ctx = computed(() => {
 
 const descriptors = computed(() => getBreedFieldDescriptors(ctx.value));
 
-const mediaSrc = computed(() => {
-    const b = props.breed;
-    const u = b?.image ?? b?.icon ?? b?._data?.image ?? b?._data?.icon;
-    return u && String(u).trim() ? String(u) : "";
-});
+const fullGender = ref("m");
+
+const mediaSrc = computed(() => breedFullUrl(props.breed, fullGender.value));
+
+const hasBothFullImages = computed(() => breedHasBothFullImages(props.breed));
 
 const spellSlotGroups = computed(() => {
     const raw = props.breed?._data ?? props.breed;
@@ -222,6 +223,30 @@ const handleAction = async (actionKey) => {
 
                     <div v-else class="w-full h-full flex items-center justify-center bg-base-200 entity-radius-box">
                         <Icon source="fa-solid fa-graduation-cap" :alt="breed.name" size="xl" />
+                    </div>
+
+                    <div
+                        v-if="hasBothFullImages"
+                        class="absolute bottom-2 right-2 z-10 join"
+                        role="group"
+                        aria-label="Genre du personnage"
+                    >
+                        <button
+                            type="button"
+                            class="btn btn-xs join-item"
+                            :class="fullGender === 'm' ? 'btn-primary' : 'btn-ghost'"
+                            @click="fullGender = 'm'"
+                        >
+                            M
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-xs join-item"
+                            :class="fullGender === 'f' ? 'btn-primary' : 'btn-ghost'"
+                            @click="fullGender = 'f'"
+                        >
+                            F
+                        </button>
                     </div>
                 </div>
             </template>

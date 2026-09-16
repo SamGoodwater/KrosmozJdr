@@ -79,6 +79,12 @@ erDiagram
     write_level : tinyint(4)
     image : varchar(255)
     icon : varchar(255)
+    symbol_full : varchar(255)
+    symbol_bw : varchar(255)
+    logo_male : varchar(255)
+    logo_female : varchar(255)
+    image_full_male : varchar(255)
+    image_full_female : varchar(255)
     auto_update : tinyint(1)
     deleted_at : timestamp
     created_by : bigint(20) unsigned
@@ -736,6 +742,13 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
+  IA_GENERATION_SETTINGS {
+    id : bigint(20) unsigned
+    payload : longtext
+    updated_by : bigint(20) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   ITEM_CAMPAIGN {
     item_id : bigint(20) unsigned
     campaign_id : bigint(20) unsigned
@@ -954,6 +967,14 @@ erDiagram
     npc_id : bigint(20) unsigned
     campaign_id : bigint(20) unsigned
   }
+  NPC_LANGUAGE {
+    id : bigint(20) unsigned
+    npc_id : bigint(20) unsigned
+    language_id : bigint(20) unsigned
+    sort_order : tinyint(3) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   NPC_PANOPLY {
     npc_id : bigint(20) unsigned
     panoply_id : bigint(20) unsigned
@@ -965,10 +986,13 @@ erDiagram
   NPCS {
     id : bigint(20) unsigned
     creature_id : bigint(20) unsigned
+    official_id : varchar(255)
+    auto_update : tinyint(1)
     story : varchar(255)
     historical : varchar(255)
     age : varchar(255)
-    size : varchar(255)
+    size : tinyint(3) unsigned
+    npc_role : varchar(255)
     breed_id : bigint(20) unsigned
     specialization_id : bigint(20) unsigned
     state : varchar(255)
@@ -1556,6 +1580,7 @@ erDiagram
   FEEDBACK_MESSAGES }o--|| USERS : "FK author_id"
   FEEDBACK_MESSAGES }o--|| FEEDBACK_THREADS : "FK feedback_thread_id"
   FEEDBACK_THREADS }o--|| USERS : "FK user_id"
+  IA_GENERATION_SETTINGS }o--|| USERS : "FK updated_by"
   ITEM_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   ITEM_CAMPAIGN }o--|| ITEMS : "FK item_id"
   ITEM_PANOPLY }o--|| ITEMS : "FK item_id"
@@ -1585,6 +1610,8 @@ erDiagram
   NOTIFICATION_DIGEST_QUEUE }o--|| USERS : "FK user_id"
   NPC_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   NPC_CAMPAIGN }o--|| NPCS : "FK npc_id"
+  NPC_LANGUAGE }o--|| LANGUAGES : "FK language_id"
+  NPC_LANGUAGE }o--|| NPCS : "FK npc_id"
   NPC_PANOPLY }o--|| NPCS : "FK npc_id"
   NPC_PANOPLY }o--|| PANOPLIES : "FK panoply_id"
   NPC_SCENARIO }o--|| NPCS : "FK npc_id"

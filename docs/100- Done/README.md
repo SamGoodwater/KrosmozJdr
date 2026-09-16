@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Visuels des classes
+
+Chaque classe a ses **symboles** (couleur et N&B), ses **têtes** mâle / femelle et ses **personnages** full. La fiche complète montre le personnage (on peut passer de M à F), les petites cartes montrent la tête (mâle condensé, femelle déployé), et le menu utilise le symbole N&B qui passe en couleur au survol.
+
 ## Septembre 2026 — Bestiaire d’Astrub et d’Amakna
 
 La faune des **champs d’Astrub**, de **Tainela**, de la **plage** et du **cimetière** a une fiche jouable : Pious de couleur, Tofu, Boufton Blanc, Bouftou, gelées, Crabe, Pichon, Chafer, Sanglier, Cochon de Lait, Pissenlit Diabolique. Même recette qu’Incarnam : **PA et noms de sorts Dofus**, un ou deux par créature. Les petits (piou, tofu) font **une action** ; gelées, crabe et pichon en font **deux**. Hostiles, le Chafer est agressif. **Pas de boss**. Distinct des invocations (Tofu, Bouftou) et des cousins d’Incarnam (Tofu Chimérique, Boufton Pâlichon).
