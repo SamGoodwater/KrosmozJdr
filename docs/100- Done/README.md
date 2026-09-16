@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Atelier Import DofusDB
+
+L’atelier **Gestion du contenu → Import DofusDB** a trois modes : **Récupérer**, **Mettre à jour**, **Compléter**. On choisit l’entité, les filtres, les propriétés (tout ou rien, image comprise) et les relations. La recherche donne un compteur ; l’import part en jobs. **Compléter** ne prend que les IDs DofusDB encore absents. **Mettre à jour** respecte `auto_update` par défaut. Les nouvelles fiches arrivent en **raw**. Plus de mode « images seules » ni de preset tout auto_update sur cette page (la maj unitaire reste sur chaque fiche).
+
 ## Septembre 2026 — Étalons IA : on cherche les fiches
 
 Sur **IA métier**, les fiches exemples se choisissent en les cherchant (vivier **jouable** par défaut). On en ajoute ou retire d’un clic ; plus besoin de coller des identifiants.

@@ -85,7 +85,7 @@ Les textes Dofus **désenvoûtable** / **Désenvoûtable** / **DÉSENVOÛTABLE**
 Toutes préfixées `/api/dofusdb` (`routes/api/scrapping.php`, noms `scrapping.*`). Ancien préfixe `/api/scrapping` : redirect 307.
 
 - `GET /config`, `GET /meta` — configuration et métadonnées.
-- `GET /search/{entity}` — recherche (collecte seule, sans intégration).
+- `GET /search/{entity}` — recherche (collecte seule, sans intégration). Query `only_missing=1` : uniquement les IDs DofusDB absents en local ; `meta.total` = nombre de manquants (pagination serveur).
 - `GET /preview/{type}/{id}`, `POST /preview/batch` — aperçu Brut / Converti / Krosmoz.
 - `POST /jobs`, `GET /jobs`, `GET /jobs/{id}`, `POST /jobs/{id}/cancel` — jobs asynchrones.
 - `POST /import/{class|monster|item|resource|consumable|spell|panoply}/{id}`, `POST /import/batch|range|all` — import.
@@ -144,9 +144,8 @@ Les sorts locaux dont le `dofusdb_id` renvoie 404 côté API sont archivés (`st
 
 ## UI (admin)
 
-- Atelier : `resources/js/Pages/Admin/Content/DofusdbWorkshop/Index.vue` (route `/admin/content/dofusdb`), modes explorer / maj / images + preset auto_update.
-- Tableau et options : `ScrappingDashboard.vue` + composables `resources/js/Composables/scrapping/*` (`useScrappingJobManager`, `useScrappingSearch`, `useScrappingCompare`…), préférences via `useScrappingPreferences`.
-- Comparaison Brut / Converti / Krosmoz dans `CompareModal`.
+- Atelier : `resources/js/Pages/Admin/Content/DofusdbWorkshop/Index.vue` (route `/admin/content/dofusdb`), modes **Récupérer** / **Mettre à jour** / **Compléter**. Checkboxes de propriétés (tout/rien, image incluse), relations, état `raw` à la création. Recherche = compteur ; tableau léger optionnel ; import via jobs `/api/dofusdb`. Compléter = `only_missing` serveur + `update_mode=ignore`. Mettre à jour = une case Respecter auto_update.
+- Tableau optionnel : `ScrappingLightTable.vue`. Composables `resources/js/Composables/scrapping/*`, modes `resources/js/utils/scrapping/workshopMode.js`.
 - Registres de types : page commune `/admin/content/types/{kind}`. `show_in_catalog` = marque « en jeu » dans le registre admin (plus un pré-coche des catalogues) ; `allow_scrap` = import / maj DofusDB. Déplacement équipements ↔ ressources ↔ consommables.
 - Maj unitaire MJ : panneau sur la fiche (`POST /api/entities/{type}/{id}/dofusdb-refresh`), pas l’atelier. Refusée si le type / la race n’a pas `allow_scrap`.
 
