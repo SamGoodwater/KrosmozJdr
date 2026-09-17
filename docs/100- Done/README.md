@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Upload : garder l’image si le fichier est refusé
+
+Remplacer l’illustration d’une ressource, l’icône d’une caractéristique ou un avatar n’efface plus l’ancien fichier **avant** de vérifier le nouveau. Un SVG (ou un envoi vide) est rejeté, et l’image d’origine reste. Les pièces jointes de section n’acceptent plus les SVG (contenu exécutable).
+
 ## Septembre 2026 — Prix kamas : plus d’écrasement ni de double compte
 
 Un consommable ou un équipement qui n’avait encore que la colonne `price` (sans part calculée / ajustement) ne passe plus à 0 kamas dès qu’on enregistre autre chose. Dans le catalogue, coller un prix en édition multiple pose le **total affiché**, pas un bonus empilé sur la formule.

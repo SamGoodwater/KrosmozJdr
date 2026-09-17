@@ -243,9 +243,9 @@ class UserController extends Controller
             unset($data['notification_channels']);
         }
 
-        // Gestion de l'avatar (Media Library)
+        // Gestion de l'avatar (Media Library). Collection `avatars` en singleFile :
+        // un attach réussi remplace l’ancien. Ne pas clear avant validation.
         if ($request->hasFile('avatar')) {
-            $user->clearMediaCollection('avatars');
             $this->entityImageMediaService->attachFromRequest($user, $request, 'avatar', 'avatars', 'avatar');
             unset($data['avatar']);
         }
@@ -368,7 +368,8 @@ class UserController extends Controller
             return redirect()->back()->withErrors(['avatar' => 'Aucun fichier n\'a été téléchargé.']);
         }
 
-        $user->clearMediaCollection('avatars');
+        // Collection `avatars` en singleFile : un attach réussi remplace l’ancien.
+        // Ne pas clear avant validation, sinon un fichier rejeté efface l’avatar.
         $this->entityImageMediaService->attachFromRequest($user, $request, 'avatar', 'avatars', 'avatar');
 
         // Recharger l'utilisateur avec les relations pour retourner les données complètes

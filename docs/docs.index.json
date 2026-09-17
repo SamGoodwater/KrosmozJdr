@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Sur **Gestion du contenu** (`/admin/content`), trois cartes **Récupérer / Mettre à jour / Compléter** ouvrent l’atelier DofusDB (avec `?mode=`), plus une carte **Génération IA** vers `/admin/content/ia-generation`. Les camemberts restent en dessous."
+    "description": "Remplacer l’illustration d’une ressource, l’icône d’une caractéristique ou un avatar n’efface plus l’ancien fichier **avant** de vérifier le nouveau. Un SVG (ou un envoi vide) est rejeté, et l’image d’origine reste. Les pièces jointes de section n’acceptent plus les SVG (contenu exécutable)."
   },
   {
     "path": "backend/_ai.md",

@@ -37,7 +37,7 @@ class EntityImageMediaService
                 }
                 $mime = strtolower((string) $value->getMimeType());
                 $ext = strtolower((string) $value->getClientOriginalExtension());
-                if ($ext === 'svg' || str_contains($mime, 'svg')) {
+                if (FileService::isSvgUpload($value)) {
                     $fail('Les fichiers SVG ne sont pas autorisés (contenu exécutable).');
 
                     return;

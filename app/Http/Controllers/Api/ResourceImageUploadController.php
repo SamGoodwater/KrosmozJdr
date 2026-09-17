@@ -36,7 +36,8 @@ class ResourceImageUploadController extends Controller
         if ($resourceId) {
             $resource = Resource::findOrFail($resourceId);
             $this->authorize('update', $resource);
-            $resource->clearMediaCollection('images');
+            // Collection Spatie `images` en singleFile : un attach réussi remplace l’ancien.
+            // Ne pas clear avant validation, sinon un SVG / fichier invalide efface l’image.
             $media = $this->entityImageMediaService->attachFromRequest($resource, $request, 'file', 'images', 'image');
         } else {
             $placeholder = EntityImageUpload::create();

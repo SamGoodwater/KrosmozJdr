@@ -27,7 +27,7 @@ Relations : `sections` (HasMany, ordonnées), `parent`/`children`, `users` (pivo
 | `data`, `settings` | Contenu et options du template |
 | `state`, `read_level`, `write_level`, `created_by` | États + droits |
 
-Médias via Spatie Media Library (collection `files`, conversions `thumb`/`webp`). Les droits d'une section vérifient aussi ceux de la page parente.
+Médias via Spatie Media Library (collection `files`, conversions `thumb`/`webp`). Les SVG ne sont pas acceptés en upload (contenu XML exécutable). Les droits d'une section vérifient aussi ceux de la page parente.
 
 ## Templates de sections
 
