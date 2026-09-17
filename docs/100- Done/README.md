@@ -1,8 +1,8 @@
 # Ce qui a été fait
 
-## Septembre 2026 — Avant / après après une maj
+## Septembre 2026 — Voir avant d’enregistrer
 
-Après un **scrap DofusDB** ou une **conversion IA**, on ne se contente plus d’un toast. Un tableau compare la version d’avant et la nouvelle (champs changés en surbrillance). **Enregistrer** garde la nouvelle version ; **Rétablir** revient à l’instantané. Si l’IA n’a rien pu écrire (gel, clé absente), le message est honnête : ce n’est plus un faux succès.
+Après une **mise à jour DofusDB** ou une **conversion IA**, un tableau pose l’ancienne fiche à côté de la nouvelle. **Enregistrer** garde ; **Rétablir** revient en arrière. On attend le vrai résultat : si l’IA n’a rien pu écrire, le message le dit, plus de succès trop tôt.
 
 ## Septembre 2026 — IA métier : un type à la fois
 
@@ -10,31 +10,31 @@ Sur **IA métier**, objet, sort, monstre, PNJ et consommable ne sont plus empil�
 
 ## Septembre 2026 — Solde IA visible et panoplies or
 
-Sur **IA métier**, on voit les **tokens du mois** (cette app) et le **crédit Anthropic restant** s’il est connu, plus les estimés par action. Le modal **Sources** affiche le même solde à côté du coût estimé. Les **panoplies exemples** se choisissent comme les fiches (recherche jouable), plus besoin de les coller dans un fichier.
+Sur **IA métier**, on voit les **tokens du mois** (cette app) et le **crédit restant** s’il est connu, plus les estimés par action. Le modal **Sources** affiche le même solde à côté du coût estimé. Les **panoplies exemples** se choisissent comme les fiches (recherche jouable), plus besoin de les coller dans un fichier.
 
 ## Septembre 2026 — Ateliers sur la vue d’ensemble
 
-Sur **Gestion du contenu** (`/admin/content`), trois cartes **Récupérer / Mettre à jour / Compléter** ouvrent l’atelier DofusDB (avec `?mode=`), plus une carte **Génération IA** vers `/admin/content/ia-generation`. Les camemberts restent en dessous.
+Sur **Gestion du contenu**, trois cartes **Récupérer / Mettre à jour / Compléter** ouvrent l’atelier DofusDB, plus une carte **Génération IA**. Les camemberts restent en dessous.
 
 ## Septembre 2026 — Atelier Import DofusDB
 
-L’atelier **Gestion du contenu → Import DofusDB** a trois modes : **Récupérer**, **Mettre à jour**, **Compléter**. On choisit l’entité, les filtres, les propriétés (tout ou rien, image comprise) et les relations. La recherche donne un compteur ; l’import part en jobs. **Compléter** ne prend que les IDs DofusDB encore absents. **Mettre à jour** respecte `auto_update` par défaut. Les nouvelles fiches arrivent en **raw**. Plus de mode « images seules » ni de preset tout auto_update sur cette page (la maj unitaire reste sur chaque fiche).
+L’atelier **Gestion du contenu → Import DofusDB** a trois modes : **Récupérer**, **Mettre à jour**, **Compléter**. On choisit l’entité, les filtres, les propriétés (tout ou rien, image comprise) et les relations. La recherche donne un compteur ; l’import se lance ensuite. **Compléter** ne prend que les fiches Dofus encore absentes. **Mettre à jour** respecte le réglage « maj auto » par défaut. Les nouvelles fiches arrivent en **brut**. Plus de mode « images seules » ni de tout-cocher maj auto sur cette page (la maj unitaire reste sur chaque fiche).
 
 ## Septembre 2026 — Étalons IA : on cherche les fiches
 
 Sur **IA métier**, les fiches exemples se choisissent en les cherchant (vivier **jouable** par défaut). On en ajoute ou retire d’un clic ; plus besoin de coller des identifiants.
 
-## Septembre 2026 — Pipeline de conversion IA
+## Septembre 2026 — L’IA convertit aussi sorts, PNJ, objets et consommables
 
-On peut lancer une **conversion IA** depuis la fiche (même icône **Sources** que DofusDB) ou en console (`ia:convert` / `ia:convert-encounter`). Ça écrit une proposition en **auto**, jamais jouable. Types : **rencontre** (monstre + deux ou trois sorts), **sort** (texte d’effets), **PNJ** (fiche + kit playable), **objet** unique, **consommable** (effet). Les admins voient le solde Anthropic et un estimé de coût sur la page **IA métier**. Les MJ n’ont pas le bouton, pour limiter la facture.
+On lance une **conversion IA** depuis la fiche, même icône **Sources** que DofusDB. Ça écrit une proposition en **auto**, jamais jouable. Types : **rencontre** (monstre + deux ou trois sorts), **sort**, **PNJ**, **objet** unique, **consommable**. Les admins voient un estimé de coût sur **IA métier**. Les MJ n’ont pas le bouton.
 
-## Septembre 2026 — Leftover règles : équipement +4, index, annexe
+## Septembre 2026 — Bonus d’objet et lecture du livre
 
-Les seeders d’objets (Vitalité, Force, Intelligence, Chance, Agilité, Sagesse) plafonnent à **+4** par pièce, forgemagie **+2**, comme le livre. L’index n’est plus un dump de titres. Le changelog (ex-1.3) est une **annexe 6.1**. Aptitudes : listes en 2.4, activation en 3.4, sans recopier les mêmes tableaux.
+Les bonus d’objet plafonnent à **+4** par pièce, forgemagie **+2**, comme le livre. L’index n’est plus un dump de titres. Le journal des mises à jour est une **annexe**. Les aptitudes : listes d’un côté, activation de l’autre, sans recopier les mêmes tableaux.
 
 ## Septembre 2026 — Fiches Création (conversion)
 
-L’atelier **Pour les MJ → Création** détaille maintenant sorts, monstres, équipements, consommables, capacités, traits et ressources : philosophie, points à respecter, limites (chiffres et propriétés de fiche), conseils, exemples jouables. C’est le même texte que l’IA de conversion recevra plus tard (`ia:creation-guides`), sans l’appeler encore. Boutiques, langues, campagnes et scénarios attendront.
+L’atelier **Pour les MJ → Création** détaille maintenant sorts, monstres, équipements, consommables, capacités, traits et ressources : philosophie, points à respecter, limites (chiffres et propriétés de fiche), conseils, exemples jouables. C’est le même texte que l’IA de conversion recevra plus tard, sans l’appeler encore. Boutiques, langues, campagnes et scénarios attendront.
 
 ## Septembre 2026 — Visuels des classes
 

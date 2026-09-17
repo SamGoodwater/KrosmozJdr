@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Sur **Gestion du contenu** (`/admin/content`), trois cartes **Récupérer / Mettre à jour / Compléter** ouvrent l’atelier DofusDB (avec `?mode=`), plus une carte **Génération IA** vers `/admin/content/ia-generation`. Les camemberts restent en dessous."
+    "description": "Après une **mise à jour DofusDB** ou une **conversion IA**, un tableau pose l’ancienne fiche à côté de la nouvelle."
   },
   {
     "path": "backend/_ai.md",
