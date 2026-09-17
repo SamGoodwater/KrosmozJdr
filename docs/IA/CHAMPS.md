@@ -2,7 +2,7 @@
 
 Source de vérité **effective** : une ligne en base (`ia_generation_settings`) si un admin a enregistré la page **Gestion du contenu → IA métier** (`/admin/content/ia-generation`). Sinon le fichier **`resources/ia/generation.json`**.
 
-L’UI n’écrit pas le JSON sur le disque (déploiement / git). Admin uniquement, enregistrement et reset protégés par `password.confirm`. Chargeur : `GenerationConfigStore` + `GenerationConfigLoader`.
+L’UI n’écrit pas le JSON sur le disque (déploiement / git). Admin uniquement. **Lecture et enregistrement** de la page, ainsi que `POST /api/entities/{type}/{id}/ia-convert` et `GET /api/ia/status`, sont protégés par `password.confirm` (même fenêtre d’inactivité que la gestion admin). Chargeur : `GenerationConfigStore` + `GenerationConfigLoader`.
 
 L’IA **ne réécrit pas une fiche Dofus entière**. Laravel recopie ce qui est figé ; le modèle ne reçoit que les clés `writable`. **Exception : les PNJ** (création complète, éventuellement à partir d’une page de site).
 
@@ -19,7 +19,7 @@ Quatre types historiques plus le consommable : `item`, `spell`, `monster`, `npc`
 | `example_ids` | `official_id` ou nom d’une fiche `playable` (pas un id SQL portable). Dans l’admin, un sélecteur cherche via `api.tables.{type}` (défaut `state=playable`). Pool vide refusé à l’assembleur. |
 | `few_shot_panoplies` (objets, extra) | Noms des panoplies `playable` que l’IA doit imiter. Portable entre bases. Dans l’admin, un sélecteur cherche via `api.tables.panoplies` (défaut jouable). Détail : [CATALOGUE](./CATALOGUE.md#liste-few-shot-panoplies-ce-que-lia-doit-imiter). |
 | `has_dofus_source` | `true` : recopier l’identité depuis la fiche `raw`. |
-| `generation.*` | Variables globales (`max_retries`, `few_shot_count`, …). |
+| `generation.*` | Variables globales : `max_retries`, `few_shot_count`, `max_effects_per_spell`, **`model`** (Haiku / Sonnet / Opus), **`prompt_cache`** (défaut `true`). |
 
 On peut ajouter **n’importe quelle clé** (`tone`, `prompt_pack`, …). `$loader->get('chemin.pointé')` la lit ; sur une entité, elle atterrit dans `extra`. Les clés `_…` sont de la doc, ignorées.
 

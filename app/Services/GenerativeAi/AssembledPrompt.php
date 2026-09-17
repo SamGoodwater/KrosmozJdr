@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Services\GenerativeAi;
 
 /**
- * Prompt assemblé (superviseur cacheable + tâche + schéma writable-only).
+ * Prompt assemblé : préfixe cacheable (tâche + étalons) et suffixe dynamique (fiche, brief).
  *
- * @example $assembled->supervisor
+ * @example $assembled->cachedUserPrefix
  */
 final readonly class AssembledPrompt
 {
@@ -17,7 +17,8 @@ final readonly class AssembledPrompt
      */
     public function __construct(
         public string $supervisor,
-        public string $userMessage,
+        public string $cachedUserPrefix,
+        public string $dynamicUserMessage,
         public array $schema,
         public EntityGenerationProfile $profile,
         public array $examples,

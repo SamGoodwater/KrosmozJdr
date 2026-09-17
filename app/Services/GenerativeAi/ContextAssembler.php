@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use RuntimeException;
 
 /**
- * Assembleur : superviseur + pack de type + few-shot compact + schéma writable-only.
+ * Assembleur : superviseur + pack de type + few-shot compact (cache) + suffixe dynamique.
  *
  * @example $assembled = app(ContextAssembler::class)->assemble($request);
  */
@@ -43,11 +43,11 @@ final class ContextAssembler
 
         $schema = $spec->jsonSchema($profile, $request);
         $supervisor = $this->supervisor();
-        $user = $this->userMessage($spec, $profile, $request, $examples);
 
         return new AssembledPrompt(
             supervisor: $supervisor,
-            userMessage: $user,
+            cachedUserPrefix: $this->cachedUserPrefix($spec, $profile, $examples),
+            dynamicUserMessage: $this->dynamicUserMessage($spec, $profile, $request),
             schema: $schema,
             profile: $profile,
             examples: $examples,
@@ -102,12 +102,13 @@ final class ContextAssembler
     }
 
     /**
+     * Préfixe stable (tâche, gel, étalons) : marqué `cache_control` côté client.
+     *
      * @param  list<array<string, mixed>>  $examples
      */
-    private function userMessage(
+    private function cachedUserPrefix(
         Specialization $spec,
         EntityGenerationProfile $profile,
-        ConversionRequest $request,
         array $examples,
     ): string {
         $chunks = [];
@@ -120,6 +121,23 @@ final class ContextAssembler
             .'; writable_characteristics='.json_encode($profile->writableCharacteristics, JSON_UNESCAPED_UNICODE)
             .'; has_dofus_source='.($profile->hasDofusSource ? 'true' : 'false').'.';
 
+        $chunks[] = "Exemples playable (à imiter, ne pas republier) :\n"
+            .json_encode($examples, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        $chunks[] = 'Réponds uniquement via l’outil JSON. 1 paquet = 1 réponse.';
+
+        return implode("\n\n", $chunks);
+    }
+
+    /**
+     * Suffixe qui change à chaque fiche (source, brief, catalogue PNJ). Hors cache.
+     */
+    private function dynamicUserMessage(
+        Specialization $spec,
+        EntityGenerationProfile $profile,
+        ConversionRequest $request,
+    ): string {
+        $chunks = [];
         $source = $this->sourceSnapshot($spec, $request);
         if ($source !== null) {
             $chunks[] = "Fiche source :\n".json_encode($source, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -134,11 +152,6 @@ final class ContextAssembler
             $chunks[] = "Contexte métier (listes autorisées, gabarit) :\n"
                 .json_encode($extra, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         }
-
-        $chunks[] = "Exemples playable (à imiter, ne pas republier) :\n"
-            .json_encode($examples, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
-        $chunks[] = 'Réponds uniquement via l’outil JSON. 1 paquet = 1 réponse.';
 
         return implode("\n\n", $chunks);
     }

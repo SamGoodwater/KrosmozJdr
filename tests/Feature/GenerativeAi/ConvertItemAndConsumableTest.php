@@ -38,7 +38,7 @@ final class ConvertItemAndConsumableTest extends TestCase
             'auto_update' => true,
         ]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->postJson(route('api.entities.ia-convert', ['entityType' => 'items', 'id' => $item->id]), [
                 'action' => 'item',
             ])
@@ -65,7 +65,7 @@ final class ConvertItemAndConsumableTest extends TestCase
             'state' => EntityState::Raw->value,
         ]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->postJson(route('api.entities.ia-convert', ['entityType' => 'items', 'id' => $item->id]), [
                 'action' => 'item',
             ])
@@ -89,7 +89,7 @@ final class ConvertItemAndConsumableTest extends TestCase
             'auto_update' => true,
         ]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->postJson(route('api.entities.ia-convert', ['entityType' => 'consumables', 'id' => $consumable->id]), [
                 'action' => 'consumable',
             ])

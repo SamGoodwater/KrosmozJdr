@@ -103,7 +103,7 @@ class ItemSeederFilesControllerTest extends TestCase
     {
         $superAdmin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
 
-        $this->actingAs($superAdmin)
+        $this->actingAsConfirmed($superAdmin)
             ->get(route('admin.content.ia-generation.edit'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page

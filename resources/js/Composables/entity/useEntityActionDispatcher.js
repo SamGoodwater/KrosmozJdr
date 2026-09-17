@@ -221,6 +221,42 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         return state === "playable" || state === "archived";
     }
 
+    async function loadAiStatus(aiAction) {
+        const action = aiAction || refreshConfirm.value.aiAction;
+        try {
+            const { data } = await axios.get("/api/ia/status", { headers: { Accept: "application/json" } });
+            const estimates = Array.isArray(data?.estimates) ? data.estimates : [];
+            const estimate = estimates.find((row) => row.action === action) || null;
+            if (refreshConfirm.value.open) {
+                refreshConfirm.value = {
+                    ...refreshConfirm.value,
+                    aiEstimate: estimate,
+                    aiUsage: data?.usage && typeof data.usage === "object" ? data.usage : null,
+                };
+            }
+        } catch (error) {
+            if (!refreshConfirm.value.open) {
+                return;
+            }
+            if (error?.response?.status === 423) {
+                refreshConfirm.value = {
+                    ...refreshConfirm.value,
+                    aiUsage: null,
+                };
+                return;
+            }
+            refreshConfirm.value = {
+                ...refreshConfirm.value,
+                aiUsage: {
+                    local_input_tokens: 0,
+                    local_output_tokens: 0,
+                    local_runs: 0,
+                    remaining_credits_usd: null,
+                },
+            };
+        }
+    }
+
     async function openRefreshPanel(entity, meta = {}) {
         const entityId = getEntityId(entity);
         const plural = normalizedType.value;
@@ -254,30 +290,7 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         };
 
         if (showAi) {
-            try {
-                const { data } = await axios.get("/api/ia/status", { headers: { Accept: "application/json" } });
-                const estimates = Array.isArray(data?.estimates) ? data.estimates : [];
-                const estimate = estimates.find((row) => row.action === aiAction) || null;
-                if (refreshConfirm.value.open) {
-                    refreshConfirm.value = {
-                        ...refreshConfirm.value,
-                        aiEstimate: estimate,
-                        aiUsage: data?.usage && typeof data.usage === "object" ? data.usage : null,
-                    };
-                }
-            } catch {
-                if (refreshConfirm.value.open) {
-                    refreshConfirm.value = {
-                        ...refreshConfirm.value,
-                        aiUsage: {
-                            local_input_tokens: 0,
-                            local_output_tokens: 0,
-                            local_runs: 0,
-                            remaining_credits_usd: null,
-                        },
-                    };
-                }
-            }
+            await loadAiStatus(aiAction);
         }
 
         if (!showDofusdb) {
@@ -368,6 +381,14 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
             }
             return openDiffFromResponse(pending, data);
         } catch (error) {
+            if (error?.response?.status === 423) {
+                refreshConfirm.value = {
+                    ...refreshConfirm.value,
+                    aiSubmitting: false,
+                    aiError: "Confirme ton mot de passe pour lancer une conversion IA.",
+                };
+                return false;
+            }
             const message =
                 error?.response?.data?.message
                 || Object.values(error?.response?.data?.errors || {})?.flat()?.[0]
@@ -510,6 +531,7 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         confirmPendingRefresh,
         cancelPendingRefresh,
         submitAiConvert,
+        reloadAiStatus: loadAiStatus,
         confirmUpdateDiffSave,
         confirmUpdateDiffRestore,
     };

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Admin;
 
 use App\Models\Entity\Item;
+use App\Models\Entity\Panoply;
 use App\Models\IaGenerationSetting;
 use App\Models\User;
 use App\Services\GenerativeAi\GenerationConfigLoader;
@@ -30,11 +31,20 @@ class IaGenerationConfigControllerTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_admin_can_view_ia_generation_page(): void
+    public function test_admin_without_password_is_redirected_from_ia_generation_page(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $this->actingAs($admin)
+            ->get(route('admin.content.ia-generation.edit'))
+            ->assertRedirect(route('password.confirm'));
+    }
+
+    public function test_admin_can_view_ia_generation_page(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $this->actingAsConfirmed($admin)
             ->get(route('admin.content.ia-generation.edit'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page
@@ -46,7 +56,8 @@ class IaGenerationConfigControllerTest extends TestCase
                 ->has('characteristic_options.item')
                 ->has('usage')
                 ->has('usage.local_input_tokens')
-                ->has('estimates'));
+                ->has('estimates')
+                ->has('available_models'));
     }
 
     public function test_admin_can_save_and_reset_ia_generation_settings(): void
@@ -54,6 +65,8 @@ class IaGenerationConfigControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $payload = $this->filePayload();
         $payload['generation']['max_retries'] = 1;
+        $payload['generation']['model'] = 'claude-sonnet-5';
+        $payload['generation']['prompt_cache'] = false;
         $payload['entities']['item']['writable_characteristics'] = ['intelligence_object'];
         $payload['supervisor_prompt'] = 'Prompt superviseur de test.';
         foreach (array_keys($payload['entities']) as $type) {
@@ -70,6 +83,8 @@ class IaGenerationConfigControllerTest extends TestCase
         app()->forgetInstance(GenerationConfigLoader::class);
         $loader = app(GenerationConfigLoader::class);
         $this->assertSame(1, $loader->get('generation.max_retries'));
+        $this->assertSame('claude-sonnet-5', $loader->get('generation.model'));
+        $this->assertFalse($loader->get('generation.prompt_cache'));
         $this->assertFalse($loader->forEntity('item')->isCharacteristicFrozen('intelligence_object'));
         $this->assertSame('Prompt superviseur de test.', $loader->get('supervisor_prompt'));
 
@@ -139,9 +154,9 @@ class IaGenerationConfigControllerTest extends TestCase
     public function test_admin_can_save_playable_few_shot_panoplies(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        \App\Models\Entity\Panoply::factory()->create([
+        Panoply::factory()->create([
             'name' => 'Panoplie du Bouftou',
-            'state' => \App\Models\Entity\Panoply::STATE_PLAYABLE,
+            'state' => Panoply::STATE_PLAYABLE,
         ]);
 
         $payload = $this->filePayload();

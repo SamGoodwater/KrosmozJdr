@@ -46,7 +46,7 @@ Route::middleware(['web', 'auth'])->prefix('entities')->group(function () {
         ->whereNumber('id')
         ->name('api.entities.dofusdb-refresh');
     Route::post('/{entityType}/{id}/ia-convert', IaConvertController::class)
-        ->middleware(['role:admin', 'throttle:12,1'])
+        ->middleware(['role:admin', 'password.confirm', 'throttle:12,1'])
         ->where('entityType', '[a-z-]+')
         ->whereNumber('id')
         ->name('api.entities.ia-convert');

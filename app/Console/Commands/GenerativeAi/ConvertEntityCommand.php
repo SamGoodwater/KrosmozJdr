@@ -24,7 +24,7 @@ final class ConvertEntityCommand extends Command
         {--id= : Id local de la fiche}
         {--official-id= : official_id de la fiche}
         {--brief= : Brief MJ}
-        {--user= : Id utilisateur admin (gate generate)}
+        {--user= : Id utilisateur admin obligatoire (gate generate)}
         {--force : Ignorer les gardes de fiche jouable côté métier}';
 
     protected $description = 'Conversion IA d’une fiche (sort, rencontre, PNJ, objet, conso) → état auto';
@@ -56,6 +56,11 @@ final class ConvertEntityCommand extends Command
 
         $userRaw = $this->option('user');
         $userId = is_numeric($userRaw) ? (int) $userRaw : null;
+        if ($userId === null || $userId <= 0) {
+            $this->error('Option --user obligatoire : id d’un administrateur (gate generate).');
+
+            return ArtisanExitCode::FAILURE;
+        }
         $briefRaw = $this->option('brief');
         $brief = is_string($briefRaw) && trim($briefRaw) !== '' ? trim($briefRaw) : null;
 

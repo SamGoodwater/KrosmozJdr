@@ -9,10 +9,12 @@ use App\Http\Requests\Admin\UpdateIaGenerationConfigRequest;
 use App\Models\Characteristic;
 use App\Models\Entity\Item;
 use App\Models\IaGenerationSetting;
+use App\Services\GenerativeAi\AnthropicModelCatalog;
 use App\Services\GenerativeAi\AnthropicUsageService;
 use App\Services\GenerativeAi\CostEstimator;
 use App\Services\GenerativeAi\GenerationConfigLoader;
 use App\Services\GenerativeAi\GenerationConfigStore;
+use App\Services\GenerativeAi\GenerativeAiClient;
 use App\Services\Seeder\Item\ItemSeederFileRepository;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -52,8 +54,9 @@ class IaGenerationConfigController extends Controller
             'characteristic_options' => $this->characteristicOptions(),
             'items_seeder' => $this->itemsSeederState(),
             'usage' => app(AnthropicUsageService::class)->snapshot(),
-            'estimates' => app(CostEstimator::class)->all(),
+            'estimates' => app(CostEstimator::class)->all(app(GenerativeAiClient::class)->model()),
             'has_api_key' => filled(config('services.anthropic.api_key')),
+            'available_models' => AnthropicModelCatalog::choices(),
         ]);
     }
 

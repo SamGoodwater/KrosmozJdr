@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Les fiches du bestiaire et des invocations de classe ont un portrait Dofus (`gfxId`). Un scrap de monstre pose aussi l’URL si le fichier n’est pas téléchargé."
+    "description": "La conversion IA et la page IA métier demandent la confirmation de mot de passe, comme la gestion admin. Haiku 4.5 par défaut, cache prompt coché."
   },
   {
     "path": "backend/_ai.md",
@@ -247,7 +247,7 @@
   {
     "path": "IA/README.md",
     "title": "IA générative — cadrage",
-    "description": "Le **pipeline LLM** est branché (Anthropic Sonnet 5, rencontre `auto`). La **grille d’objets** algorithmique : `php artisan ia:equipment-grid`. Intention : contenu jouable en JDR, pas recopier Dofus."
+    "description": "Le **pipeline LLM** est branché (Anthropic Haiku 4.5 par défaut, liste dans IA métier, rencontre `auto`). La **grille d’objets** algorithmique : `php artisan ia:equipment-grid`. Intention : contenu jouable en JDR, pas recopier Dofus."
   },
   {
     "path": "IA/RENCONTRES.md",

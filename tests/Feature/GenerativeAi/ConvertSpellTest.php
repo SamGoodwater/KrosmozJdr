@@ -29,7 +29,7 @@ final class ConvertSpellTest extends TestCase
             'dofusdb_id' => '13106',
         ]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->postJson(route('api.entities.ia-convert', ['entityType' => 'spells', 'id' => $spell->id]), [
                 'action' => 'spell',
                 'brief' => 'effet lisible à table',

@@ -52,15 +52,17 @@ final class ConversionPipeline
             $attempts = $maxRetries + 1;
 
             for ($i = 0; $i < $attempts; $i++) {
-                $userMessage = $assembled->userMessage;
+                $dynamic = $assembled->dynamicUserMessage;
                 if ($errors !== []) {
-                    $userMessage .= "\n\nLe JSON précédent a été refusé :\n- ".implode("\n- ", $errors)
+                    $dynamic .= ($dynamic !== '' ? "\n\n" : '')
+                        .'Le JSON précédent a été refusé :'."\n- ".implode("\n- ", $errors)
                         ."\nCorrige uniquement ces points, même schéma.";
                 }
                 $llm = app(GenerativeAiClient::class)->complete(
                     $assembled->supervisor,
-                    $userMessage,
-                    $assembled->schema
+                    $dynamic,
+                    $assembled->schema,
+                    $assembled->cachedUserPrefix,
                 );
                 $payload = $llm->json;
                 $errors = $spec->validate($payload, $request, $assembled->profile);

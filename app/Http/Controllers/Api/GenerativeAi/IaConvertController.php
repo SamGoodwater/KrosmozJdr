@@ -50,6 +50,7 @@ class IaConvertController extends Controller
         }
 
         $estimator = app(CostEstimator::class);
+        $model = $client->model();
         $fallbackAction = $estimator->actionForEntityType($entityType);
         $action = $request->action($fallbackAction);
 
@@ -104,12 +105,12 @@ class IaConvertController extends Controller
                 'run_id' => $run->id,
                 'entity_id' => $run->entity_id,
                 'related_ids' => $run->related_ids ?? [],
-                'estimate' => $estimator->forAction($action),
+                'estimate' => $estimator->forAction($action, $model),
                 'message' => $message,
             ], 422);
         }
 
-        $estimate = $estimator->forAction($action);
+        $estimate = $estimator->forAction($action, $model);
         $run->refresh();
 
         if ($run->status === AiGenerationRun::STATUS_QUEUED) {

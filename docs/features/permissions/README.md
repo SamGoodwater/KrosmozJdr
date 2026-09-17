@@ -58,7 +58,7 @@ Alias enregistrés dans `bootstrap/app.php` :
 | `content.area` | `EnsureContentManagementAccess.php` | `isAdmin()` sinon 403 |
 | `password.confirm` | `RequirePasswordWithInactivity.php` | Exige confirmation MDP récente (inactivité `password_inactivity_timeout`, défaut 3600 s) ; JSON/Inertia → **423**, sinon redirect `password.confirm` |
 
-Exemple : les routes scrapping cumulent `web`, `auth`, `role:admin`, `password.confirm`.
+Exemple : les routes scrapping et la conversion IA (`ia-convert`, `ia/status`, page `/admin/content/ia-generation`) cumulent `auth`, `role:admin`, `password.confirm`.
 
 ## Policies
 

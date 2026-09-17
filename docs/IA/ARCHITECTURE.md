@@ -1,6 +1,6 @@
 # Architecture de la génération
 
-Cadrage. Config des champs figés : page admin `/admin/content/ia-generation` (table `ia_generation_settings`) avec repli `resources/ia/generation.json`. Grille objets : `ia:equipment-grid`. Pipeline LLM : `app/Services/GenerativeAi/` (Anthropic Sonnet 5).
+Cadrage. Config des champs figés : page admin `/admin/content/ia-generation` (table `ia_generation_settings`) avec repli `resources/ia/generation.json`. Grille objets : `ia:equipment-grid`. Pipeline LLM : `app/Services/GenerativeAi/` (Anthropic, défaut Haiku 4.5).
 
 ## Partage des responsabilités
 
@@ -101,14 +101,14 @@ Un JSON « dans les normes » mais idiot (sorts Terre, Force 0) doit **échouer*
 
 ## Code branché
 
-- Client : `GenerativeAiClient` (Laravel HTTP, Messages API, outil forcé `submit_json`, `cache_control` ephemeral). Modèle `claude-sonnet-5`. Pas de SDK.
-- Assembleur : `ContextAssembler` — superviseur + `task_prompt` / fiche Création + few-shot compact + schéma writable-only.
+- Client : `GenerativeAiClient` (Laravel HTTP, Messages API, outil forcé `submit_json`). Cache **explicite** : `cache_control` ephemeral sur l’outil + le préfixe user stable (tâche, gel, few-shot). Le suffixe (fiche source, brief, retries) n’est pas caché. Pas de cache automatique top-level (le dernier bloc change à chaque fiche). Modèle : allowlist admin (`generation.model`, défaut `claude-haiku-4-5`). Toggle `generation.prompt_cache` (défaut on). Pas de SDK.
+- Assembleur : `ContextAssembler` — superviseur + `task_prompt` / fiche Création + few-shot compact (**préfixe cache**) + schéma writable-only. Fiche source, brief MJ, kit PNJ : **suffixe dynamique** (hors cache).
 - Writer : `AllowlistWriter` — jamais `unguard` du JSON LLM ; `state=auto` via `EntityStateGate::assertAutomatedWriterMaySet` ; `auto_update=false`.
 - Job : `ConvertPacketJob`. L’UI HTTP l’exécute en `dispatchSync` (file `database` sans worker = faux succès). Retries validateur = `generation.max_retries`.
 - Specs : `app/Services/GenerativeAi/Specializations/` (`spell`, `encounter`, `npc`, `item`, `consumable`).
-- HTTP : `POST /api/entities/{type}/{id}/ia-convert` (`role:admin`, throttle 12/min). Types : `monsters`, `spells`, `npcs`, `items`, `consumables`. Exécution **synchrone** (`dispatchSync`) pour l’UI ; réponse `queued` n’est plus un succès. Statut : `GET /api/ia/status` (tokens locaux du mois + estimés + crédit Anthropic s’il est lisible). Instantané : `POST /api/entities/{type}/{id}/update-diff/restore`.
-- CLI : `php artisan ia:convert {spell|encounter|npc|item|consumable}` (`ia:convert-encounter` reste un alias).
-- UI : une icône « Sources » → `EntitySourceModal` (DofusDB | Conversion IA). Après écriture : tableau avant/après, Enregistrer / Rétablir. Volet IA si admin.
+- HTTP : `POST /api/entities/{type}/{id}/ia-convert` (`role:admin`, `password.confirm`, throttle 12/min). Types : `monsters`, `spells`, `npcs`, `items`, `consumables`. Exécution **synchrone** (`dispatchSync`) pour l’UI ; réponse `queued` n’est plus un succès. Statut : `GET /api/ia/status` (même gates). Instantané : `POST /api/entities/{type}/{id}/update-diff/restore`.
+- CLI : `php artisan ia:convert {spell|encounter|npc|item|consumable}` (`ia:convert-encounter` reste un alias). `--user` admin obligatoire.
+- UI : une icône « Sources » → `EntitySourceModal` (DofusDB | Conversion IA). Après écriture : tableau avant/après, Enregistrer / Rétablir. Volet IA si admin **et** session déverrouillée (`password.confirm`, même fenêtre d’inactivité que la gestion admin).
 - Tests : `Http::fake` — aucun appel LLM réel en CI (`ANTHROPIC_API_KEY` vide dans `phpunit.xml`).
 
 ## Code et docs existants à réutiliser
@@ -124,7 +124,7 @@ Un JSON « dans les normes » mais idiot (sorts Terre, Force 0) doit **échouer*
 
 ## Appels LLM : 1 paquet = 1 requête
 
-Le prompt cache facture déjà le préfixe stable une fois (puis ~10 % sur les hits). Enchaîner des appels unitaires est donc peu cher.
+Le prompt cache facture le préfixe stable une fois (écriture 1,25×, puis ~10 % sur les hits, TTL 5 min). Seuil : 1 024 tokens (Sonnet 5) / 4 096 (Haiku 4.5). Le superviseur seul est trop court : on cache aussi schéma + étalons. Enchaîner des appels unitaires du même type reste cheap.
 
 Mettre 8 monstres dans **une** réponse : qualité en baisse, un JSON cassé fait tout rater, relecture impossible à l’unité, sortie (la partie chère) trop grosse.
 

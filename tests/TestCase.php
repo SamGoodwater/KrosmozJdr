@@ -57,6 +57,14 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
+     * Authentifie un utilisateur avec la session admin déjà déverrouillée.
+     */
+    protected function actingAsConfirmed(\Illuminate\Contracts\Auth\Authenticatable $user): static
+    {
+        return $this->actingAs($user)->withSession($this->passwordConfirmedSession());
+    }
+
+    /**
      * Configuration des tests d'authentification.
      */
     protected function setUp(): void

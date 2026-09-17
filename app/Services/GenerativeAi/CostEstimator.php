@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Services\GenerativeAi;
 
 /**
- * Estimations d’ordre de grandeur (docs/IA/COUTS.md, Sonnet 5 après cache).
+ * Estimations d’ordre de grandeur (docs/IA/COUTS.md, après cache).
  *
- * PNJ >> rencontre >> sort effet >> mise à jour objet.
+ * Défaut Haiku 4.5 (moitié de Sonnet). PNJ >> rencontre >> sort effet >> mise à jour objet.
  *
  * @example CostEstimator::forAction('encounter')['usd'];
  */
@@ -45,14 +45,19 @@ final class CostEstimator
     /**
      * @return list<array{action: string, usd: float, label: string, hint: string, formatted: string}>
      */
-    public function all(): array
+    public function all(?string $model = null): array
     {
+        $factor = AnthropicModelCatalog::costFactorVersusSonnet(
+            $model ?? AnthropicModelCatalog::DEFAULT
+        );
         $out = [];
         foreach (self::ACTIONS as $action => $row) {
+            $usd = round($row['usd'] * $factor, 2);
             $out[] = [
                 'action' => $action,
                 ...$row,
-                'formatted' => $this->formatUsd($row['usd']),
+                'usd' => $usd,
+                'formatted' => $this->formatUsd($usd),
             ];
         }
 
@@ -62,17 +67,22 @@ final class CostEstimator
     /**
      * @return array{action: string, usd: float, label: string, hint: string, formatted: string}|null
      */
-    public function forAction(string $action): ?array
+    public function forAction(string $action, ?string $model = null): ?array
     {
         $row = self::ACTIONS[$action] ?? null;
         if ($row === null) {
             return null;
         }
+        $factor = AnthropicModelCatalog::costFactorVersusSonnet(
+            $model ?? AnthropicModelCatalog::DEFAULT
+        );
+        $usd = round($row['usd'] * $factor, 2);
 
         return [
             'action' => $action,
             ...$row,
-            'formatted' => $this->formatUsd($row['usd']),
+            'usd' => $usd,
+            'formatted' => $this->formatUsd($usd),
         ];
     }
 
@@ -84,14 +94,19 @@ final class CostEstimator
     /**
      * Combien d’actions approximatives avec un crédit restant (ordre de grandeur).
      */
-    public function remainingHint(?float $remainingUsd): ?string
+    public function remainingHint(?float $remainingUsd, ?string $model = null): ?string
     {
         if ($remainingUsd === null || $remainingUsd < 0) {
             return null;
         }
 
-        $encounters = (int) floor($remainingUsd / self::ACTIONS['encounter']['usd']);
-        $npcs = (int) floor($remainingUsd / self::ACTIONS['npc']['usd']);
+        $factor = AnthropicModelCatalog::costFactorVersusSonnet(
+            $model ?? AnthropicModelCatalog::DEFAULT
+        );
+        $encounter = self::ACTIONS['encounter']['usd'] * $factor;
+        $npc = self::ACTIONS['npc']['usd'] * $factor;
+        $encounters = $encounter > 0 ? (int) floor($remainingUsd / $encounter) : 0;
+        $npcs = $npc > 0 ? (int) floor($remainingUsd / $npc) : 0;
 
         return '≈ '.$encounters.' rencontres ou '.$npcs.' PNJ';
     }

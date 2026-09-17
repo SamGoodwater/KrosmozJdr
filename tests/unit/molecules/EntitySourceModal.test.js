@@ -1,9 +1,39 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
 import EntitySourceModal from "@/Pages/Molecules/entity/EntitySourceModal.vue";
 
+const passwordMocks = vi.hoisted(() => ({
+    unlocked: { value: true },
+    requirePassword: vi.fn(),
+}));
+
 vi.mock("@/Composables/permissions/usePermissions", () => ({
     usePermissions: () => ({ isAdmin: { value: true } }),
+}));
+
+vi.mock("axios", () => ({
+    default: {
+        get: vi.fn(() => Promise.resolve({ data: { usage: null, estimates: [] } })),
+        post: vi.fn(),
+    },
+}));
+
+vi.mock("@/Composables/auth/useProtectedAdminAction", () => ({
+    useProtectedAdminAction: () => ({
+        isAdminUnlocked: passwordMocks.unlocked,
+        showPasswordModal: { value: false },
+        passwordModalTitle: { value: "Déverrouiller l’IA" },
+        passwordModalMessage: { value: "" },
+        passwordModalConfirmLabel: { value: "Déverrouiller" },
+        requirePassword: (title, message, label, action) => {
+            passwordMocks.requirePassword(title, message, label, action);
+            if (passwordMocks.unlocked.value) {
+                action?.();
+            }
+        },
+        onPasswordConfirmed: vi.fn(),
+        onPasswordModalCancel: vi.fn(),
+    }),
 }));
 
 const stubs = {
@@ -17,9 +47,15 @@ const stubs = {
         props: ["modelValue", "label"],
         template: "<textarea :value='modelValue' @input=\"$emit('update:modelValue', $event.target.value)\" />",
     },
+    ConfirmPasswordModal: { template: "<div class='password-modal-stub' />", props: ["open", "title", "message"] },
 };
 
 describe("EntitySourceModal", () => {
+    beforeEach(() => {
+        passwordMocks.unlocked.value = true;
+        passwordMocks.requirePassword.mockClear();
+    });
+
     it("affiche les volets DofusDB et Conversion IA puis émet convert", async () => {
         const wrapper = mount(EntitySourceModal, {
             props: {
@@ -79,6 +115,7 @@ describe("EntitySourceModal", () => {
                 showDofusdb: false,
                 showAi: true,
                 entityLabel: "Barricade",
+                aiActionLabel: "PNJ (fiche complète)",
                 aiEstimate: { formatted: "~ 0,12 $" },
                 aiUsage: {
                     local_input_tokens: 120,
@@ -110,6 +147,30 @@ describe("EntitySourceModal", () => {
         expect(wrapper.get("[data-testid='ia-source-remaining']").text()).toContain("Clé Anthropic absente");
         const convert = wrapper.findAll("button").filter((btn) => btn.text().includes("Lancer la conversion"));
         expect(convert[0].attributes("disabled")).toBeDefined();
+    });
+
+    it("demande le mot de passe avant d’afficher le formulaire IA", async () => {
+        passwordMocks.unlocked.value = false;
+        const wrapper = mount(EntitySourceModal, {
+            props: {
+                open: true,
+                showDofusdb: false,
+                showAi: true,
+                entityLabel: "Ganymède",
+                aiActionLabel: "PNJ (fiche complète)",
+            },
+            global: { stubs },
+        });
+
+        expect(wrapper.get("[data-testid='ia-unlock']").text()).toContain("Déverrouiller l’IA");
+        expect(wrapper.get("[data-testid='ia-source-remaining']").text()).toContain("Confirme ton mot de passe");
+        expect(wrapper.text()).not.toContain("Lancer la conversion");
+        expect(wrapper.emitted("convert")).toBeFalsy();
+        expect(passwordMocks.requirePassword).toHaveBeenCalled();
+
+        await wrapper.get("[data-testid='ia-unlock']").trigger("click");
+        expect(passwordMocks.requirePassword).toHaveBeenCalledTimes(2);
+        expect(wrapper.emitted("convert")).toBeFalsy();
     });
 
     it("affiche le tableau avant/après après une conversion", async () => {
