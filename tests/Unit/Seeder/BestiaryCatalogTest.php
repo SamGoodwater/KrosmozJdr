@@ -36,5 +36,6 @@ final class BestiaryCatalogTest extends TestCase
         $this->assertSame('4', $tofu['stats']['pa'] ?? null);
         $this->assertCount(1, $tofu['spells']);
         $this->assertSame('Béco-béco', $tofu['spells'][0]['name']);
+        $this->assertSame('https://api.dofusdb.fr/img/monsters/9.png', $tofu['image'] ?? null);
     }
 }

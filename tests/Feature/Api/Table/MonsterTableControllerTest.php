@@ -482,4 +482,29 @@ class MonsterTableControllerTest extends TestCase
         $this->assertSame(4, $row['cells']['is_boss']['params']['sortValue']);
         $this->assertStringContainsString('PA légendaires', $row['cells']['is_boss']['params']['tooltip']);
     }
+
+    public function test_cells_include_creature_image(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $creature = Creature::factory()->create([
+            'name' => 'Bouftou Image',
+            'image' => 'https://api.dofusdb.fr/img/monsters/3.png',
+        ]);
+        $monster = Monster::factory()->create(['creature_id' => $creature->id]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/monsters?limit=50');
+
+        $response->assertOk();
+        $row = collect($response->json('rows'))->firstWhere('id', $monster->id);
+        $this->assertNotNull($row);
+        $this->assertSame(
+            'https://api.dofusdb.fr/img/monsters/3.png',
+            $row['cells']['creature_image']['value']
+        );
+        $this->assertSame(
+            'https://api.dofusdb.fr/img/monsters/3.png',
+            $row['rowParams']['entity']['creature']['image']
+        );
+    }
 }

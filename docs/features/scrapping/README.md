@@ -14,7 +14,8 @@ Les autres conversions propres aux monstres suivent ces principes :
 - PA, PM, PO, esquives, Tacle et Fuite conservent leur valeur, avec des limites plus larges que les personnages ;
 - les résistances Dofus deviennent des paliers relatifs `-100`, `-50`, `0`, `50` ou `100` ; elles n'alimentent pas les résistances fixes ;
 - le bonus critique Dofus devient un bonus Krosmoz rare de 0 à 3 et le soin est ramené linéairement de 5–40 vers 0–7 ;
-- les Kamas ne sont pas importés depuis un monstre.
+- les Kamas ne sont pas importés depuis un monstre ;
+- l’image vient du champ `img`, sinon de `gfxId` (`https://api.dofusdb.fr/img/monsters/{gfxId}.png`). Le PNG n’est pas indexé par l’id de fiche. Si le téléchargement Media Library échoue (ou `--noimage`), l’URL DofusDB est tout de même écrite sur `creatures.image`.
 
 ### Conversion des objets et panoplies
 

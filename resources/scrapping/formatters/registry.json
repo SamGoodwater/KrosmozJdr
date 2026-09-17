@@ -57,9 +57,9 @@
     },
     {
       "name": "storeScrappedImage",
-      "type": "side_effect",
+      "type": "pure",
       "argsSchema": { "entityFolder": "string", "idPath": "string" },
-      "description": "Télécharge/stocke une image distante selon la config scrapping.images."
+      "description": "Résout l'URL d'image DofusDB (img, sinon gfxId pour les monstres, sinon idPath)."
     },
     {
       "name": "normalizeDofusdbEffects",

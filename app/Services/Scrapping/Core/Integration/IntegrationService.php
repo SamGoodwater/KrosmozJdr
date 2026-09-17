@@ -103,7 +103,7 @@ final class IntegrationService
         }
 
         $imageUrl = $this->imageUrlFromConverted($entityType, $convertedData);
-        $this->attachImageFromUrl($mediaTarget, $imageUrl, $options);
+        $this->persistConvertedImage($mediaTarget, $imageUrl, $options);
 
         return $this->imagesOnlyResult($entityType, $resolved, 'updated', 'Image mise à jour, contenu inchangé.');
     }
@@ -415,7 +415,7 @@ final class IntegrationService
 
             DB::commit();
 
-            $this->attachImageFromUrl($creature, $creatureData['image'] ?? null, $options);
+            $this->persistConvertedImage($creature, $creatureData['image'] ?? null, $options);
 
             Log::info('Intégration monstre', [
                 'creature_id' => $creature->id,
@@ -566,6 +566,33 @@ final class IntegrationService
 
             return false;
         }
+    }
+
+    /**
+     * Télécharge l'image via Media Library si possible ; sinon conserve l'URL DofusDB
+     * pour l'affichage (`--noimage` ou échec HTTP). N'écrase pas un média local.
+     *
+     * @param  object  $entity  Modèle avec colonne `image`
+     * @param  array{dry_run?: bool, download_images?: bool}  $options
+     */
+    private function persistConvertedImage(object $entity, ?string $imageUrl, array $options = []): void
+    {
+        if ($this->attachImageFromUrl($entity, $imageUrl, $options)) {
+            return;
+        }
+        if (! is_string($imageUrl) || trim($imageUrl) === '') {
+            return;
+        }
+        $url = trim($imageUrl);
+        if (! str_starts_with($url, 'http://') && ! str_starts_with($url, 'https://')) {
+            return;
+        }
+        $entity->refresh();
+        $current = is_string($entity->image ?? null) ? trim((string) $entity->image) : '';
+        if ($current !== '' && ! str_contains($current, 'api.dofusdb.fr')) {
+            return;
+        }
+        $entity->update(['image' => $url]);
     }
 
     private function resolveMonsterRaceId(mixed $monsterRaceId): ?int
@@ -720,7 +747,7 @@ final class IntegrationService
             }
 
             DB::commit();
-            $this->attachImageFromUrl($spell, $data['image'] ?? null, $options);
+            $this->persistConvertedImage($spell, $data['image'] ?? null, $options);
             Log::info('Intégration sort', ['spell_id' => $spell->id, 'action' => $action]);
 
             return IntegrationResult::okEntity(
@@ -1604,7 +1631,7 @@ final class IntegrationService
                 $action = 'created';
             }
             DB::commit();
-            $this->attachImageFromUrl($breed, $data['image'] ?? null, $options);
+            $this->persistConvertedImage($breed, $data['image'] ?? null, $options);
             Log::info('Intégration breed (classe)', ['breed_id' => $breed->id, 'action' => $action]);
 
             return IntegrationResult::okEntity(
@@ -1759,7 +1786,7 @@ final class IntegrationService
                 app(EntityPriceRecalculator::class)->recalculateItem($entity, resetCustom: true);
             }
             DB::commit();
-            $this->attachImageFromUrl($entity, $data['image'] ?? null, $options);
+            $this->persistConvertedImage($entity, $data['image'] ?? null, $options);
             Log::info('Intégration item', ['id' => $entity->id, 'table' => $targetTable, 'action' => $action]);
 
             return IntegrationResult::okEntity(

@@ -49,6 +49,7 @@ final class BestiarySeederImporterTest extends TestCase
         $this->assertSame('6', $creature->pm);
         $this->assertSame(3, $creature->hostility);
         $this->assertSame('Incarnam', $creature->location);
+        $this->assertSame('https://api.dofusdb.fr/img/monsters/540.png', $creature->image);
         $this->assertSame(Creature::STATE_PLAYABLE, $creature->state);
         $this->assertSame(1, $creature->spells()->count());
         $this->assertTrue($creature->creatureTraits()->where('name', 'Petite taille')->exists());

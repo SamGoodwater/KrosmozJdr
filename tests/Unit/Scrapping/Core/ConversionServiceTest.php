@@ -56,6 +56,18 @@ class ConversionServiceTest extends TestCase
         $this->assertIsArray($out['monsters']);
         $this->assertSame('31', $out['monsters']['dofusdb_id'] ?? null);
         $this->assertSame('Bouftou', $out['creatures']['name'] ?? null);
+        $this->assertSame('https://api.dofusdb.fr/img/monsters/3.png', $out['creatures']['image'] ?? null);
+    }
+
+    public function test_convert_monster_builds_image_url_from_gfx_id_when_img_missing(): void
+    {
+        $raw = ScrappingEntityFixtures::monster();
+        unset($raw['img']);
+        $raw['gfxId'] = 3;
+
+        $out = $this->service->convert('dofusdb', 'monster', $raw, ['entityType' => 'monster', 'lang' => 'fr']);
+
+        $this->assertSame('https://api.dofusdb.fr/img/monsters/3.png', $out['creatures']['image'] ?? null);
     }
 
     public function test_convert_monster_applies_monster_specific_characteristics(): void

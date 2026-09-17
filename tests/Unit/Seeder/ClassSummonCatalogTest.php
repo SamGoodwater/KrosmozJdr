@@ -25,6 +25,7 @@ final class ClassSummonCatalogTest extends TestCase
         $this->assertSame('jdr:summon:tofu:action', $entries[0]['action_official_id']);
         $this->assertSame('frapper', $entries[0]['action']['kind']);
         $this->assertSame('1d4', $entries[0]['action']['value']);
+        $this->assertSame('https://api.dofusdb.fr/img/monsters/9.png', $entries[0]['image'] ?? null);
     }
 
     public function test_healers_use_soigner(): void

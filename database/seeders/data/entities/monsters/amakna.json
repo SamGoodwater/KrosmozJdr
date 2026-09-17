@@ -5,6 +5,7 @@
         {
             "key": "piou-rouge",
             "name": "Piou Rouge",
+            "image": "https://api.dofusdb.fr/img/monsters/273.png",
             "level": 2,
             "size": 1,
             "monster_race": "Piou",
@@ -12,7 +13,10 @@
             "location": "Astrub",
             "description": "Un piou au plumage de braise. Il picore du bec, puis décampe.",
             "other_info": "Faune d’Astrub (famille Piou). 3 PA Dofus : une action par tour. Mort à 0 PV.",
-            "traits": ["Petite taille", "Vif / Vive"],
+            "traits": [
+                "Petite taille",
+                "Vif / Vive"
+            ],
             "stats": {
                 "life": "20",
                 "pa": "3",
@@ -39,6 +43,7 @@
         {
             "key": "piou-bleu",
             "name": "Piou Bleu",
+            "image": "https://api.dofusdb.fr/img/monsters/275.png",
             "level": 2,
             "size": 1,
             "monster_race": "Piou",
@@ -46,7 +51,10 @@
             "location": "Astrub",
             "description": "Un piou des flaques et des gouttières. Son picore est une goutte glacée.",
             "other_info": "Faune d’Astrub (famille Piou). 3 PA Dofus : une action par tour. Mort à 0 PV.",
-            "traits": ["Petite taille", "Vif / Vive"],
+            "traits": [
+                "Petite taille",
+                "Vif / Vive"
+            ],
             "stats": {
                 "life": "20",
                 "pa": "3",
@@ -73,6 +81,7 @@
         {
             "key": "piou-jaune",
             "name": "Piou Jaune",
+            "image": "https://api.dofusdb.fr/img/monsters/277.png",
             "level": 2,
             "size": 1,
             "monster_race": "Piou",
@@ -80,7 +89,10 @@
             "location": "Astrub",
             "description": "Un piou pâle, plus nerveux que les autres. Il picore et s’envole.",
             "other_info": "Faune d’Astrub (famille Piou). 3 PA Dofus : une action par tour. Mort à 0 PV.",
-            "traits": ["Petite taille", "Vif / Vive"],
+            "traits": [
+                "Petite taille",
+                "Vif / Vive"
+            ],
             "stats": {
                 "life": "20",
                 "pa": "3",
@@ -106,6 +118,7 @@
         {
             "key": "tofu",
             "name": "Tofu",
+            "image": "https://api.dofusdb.fr/img/monsters/9.png",
             "level": 2,
             "size": 1,
             "monster_race": "Tofu",
@@ -113,7 +126,10 @@
             "location": "Astrub",
             "description": "Le tofu des toits d’Astrub. Jaune, nerveux, il fonce le bec en avant.",
             "other_info": "Faune d’Astrub (famille Tofu). 4 PA Dofus, Béco-béco à 2 PA : une action par tour. Mort à 0 PV. Distinct du Tofu Chimérique d’Incarnam et du Tofu invoqué par un Osamodas.",
-            "traits": ["Petite taille", "Vif / Vive"],
+            "traits": [
+                "Petite taille",
+                "Vif / Vive"
+            ],
             "stats": {
                 "life": "22",
                 "pa": "4",
@@ -139,6 +155,7 @@
         {
             "key": "boufton-blanc",
             "name": "Boufton Blanc",
+            "image": "https://api.dofusdb.fr/img/monsters/73.png",
             "level": 3,
             "size": 1,
             "monster_race": "Bouftou",
@@ -146,7 +163,9 @@
             "location": "Champs d’Astrub",
             "description": "Un veau de Bouftou des champs. Il mordille ou crache, rarement les deux.",
             "other_info": "Faune des champs (famille Bouftou). 5 PA Dofus, sorts à 3 PA : une attaque par tour, deux options. Mort à 0 PV. Distinct du Boufton Pâlichon d’Incarnam.",
-            "traits": ["Petite taille"],
+            "traits": [
+                "Petite taille"
+            ],
             "stats": {
                 "life": "32",
                 "pa": "5",
@@ -184,6 +203,7 @@
         {
             "key": "bouftou",
             "name": "Bouftou",
+            "image": "https://api.dofusdb.fr/img/monsters/3.png",
             "level": 5,
             "size": 2,
             "monster_race": "Bouftou",
@@ -227,6 +247,7 @@
         {
             "key": "gelee-bleuet",
             "name": "Gelée Bleuet",
+            "image": "https://api.dofusdb.fr/img/monsters/17.png",
             "level": 6,
             "size": 2,
             "monster_race": "Gelée",
@@ -271,6 +292,7 @@
         {
             "key": "gelee-menthe",
             "name": "Gelée Menthe",
+            "image": "https://api.dofusdb.fr/img/monsters/18.png",
             "level": 6,
             "size": 2,
             "monster_race": "Gelée",
@@ -315,6 +337,7 @@
         {
             "key": "crabe",
             "name": "Crabe",
+            "image": "https://api.dofusdb.fr/img/monsters/24.png",
             "level": 4,
             "size": 1,
             "monster_race": "Crabe",
@@ -322,7 +345,9 @@
             "location": "Plage d’Astrub",
             "description": "Un crabe des sables. Pince d’abord, chancre ensuite.",
             "other_info": "Faune de la plage. 6 PA Dofus : Pince (3) et Chancre (3) dans le même tour. Mort à 0 PV.",
-            "traits": ["Petite taille"],
+            "traits": [
+                "Petite taille"
+            ],
             "stats": {
                 "life": "30",
                 "pa": "6",
@@ -362,6 +387,7 @@
         {
             "key": "pichon-orange",
             "name": "Pichon Orange",
+            "image": "https://api.dofusdb.fr/img/monsters/506.png",
             "level": 2,
             "size": 1,
             "monster_race": "Pichon",
@@ -369,7 +395,10 @@
             "location": "Plage d’Astrub",
             "description": "Un poisson des bas-fonds, hors de l’eau le temps d’un combat. Sable ou sel.",
             "other_info": "Faune de la plage. 6 PA Dofus : Sable Brûlant (3) et Sel Marin (3) dans le même tour. Mort à 0 PV.",
-            "traits": ["Petite taille", "Vif / Vive"],
+            "traits": [
+                "Petite taille",
+                "Vif / Vive"
+            ],
             "stats": {
                 "life": "20",
                 "pa": "6",
@@ -409,6 +438,7 @@
         {
             "key": "chafer",
             "name": "Chafer",
+            "image": "https://api.dofusdb.fr/img/monsters/16.png",
             "level": 4,
             "size": 2,
             "monster_race": "Chafer",
@@ -441,6 +471,7 @@
         {
             "key": "sanglier",
             "name": "Sanglier",
+            "image": "https://api.dofusdb.fr/img/monsters/54.png",
             "level": 5,
             "size": 2,
             "monster_race": "Sanglier",
@@ -483,6 +514,7 @@
         {
             "key": "cochon-de-lait",
             "name": "Cochon de Lait",
+            "image": "https://api.dofusdb.fr/img/monsters/68.png",
             "level": 4,
             "size": 2,
             "monster_race": "Cochon de Lait",
@@ -527,6 +559,7 @@
         {
             "key": "pissenlit-diabolique",
             "name": "Pissenlit Diabolique",
+            "image": "https://api.dofusdb.fr/img/monsters/33.png",
             "level": 4,
             "size": 1,
             "monster_race": "Végétal",
@@ -534,7 +567,9 @@
             "location": "Champs d’Astrub",
             "description": "Une mauvaise herbe des champs. Elle fouette, ou souffle un zizou.",
             "other_info": "Faune des champs. 6 PA Dofus : Herbe Sauvage (3) et Zizou (3) dans le même tour. Mort à 0 PV. Distinct du Pissenlit Miroitant d’Incarnam. Le dump Dofus 3 (niveau 20) n’est pas cette fiche.",
-            "traits": ["Petite taille"],
+            "traits": [
+                "Petite taille"
+            ],
             "stats": {
                 "life": "30",
                 "pa": "6",

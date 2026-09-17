@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Images des monstres
+
+Les fiches du **bestiaire** et des **invocations de classe** ont maintenant le portrait Dofus (URL `api.dofusdb.fr`, indexée par le `gfxId`, pas l’id de la fiche). Un scrap de monstre DofusDB pose aussi cette URL si le fichier n’arrive pas à se télécharger. Le catalogue et la vue ligne lisent `creature.image`.
+
 ## Septembre 2026 — Upload : garder l’image si le fichier est refusé
 
 Remplacer l’illustration d’une ressource, l’icône d’une caractéristique ou un avatar n’efface plus l’ancien fichier **avant** de vérifier le nouveau. Un SVG (ou un envoi vide) est rejeté, et l’image d’origine reste. Les pièces jointes de section n’acceptent plus les SVG (contenu exécutable).

@@ -95,7 +95,7 @@ Un JSON unique `class-passives.json` : 19 capacités passives (une par classe), 
 
 ## Invocations de classe (`entities/monsters/`)
 
-Un JSON unique `class-summons.json` : 19 fiches monstres `playable` (kit 1 Osa / Sadida / Steamer, puis Double, Bouftou, poupées 7, tourelles 7, Repaire, Griffe Joueuse, Arbre, Synchro, Malle Animée, Sacrifiée, Sulfénix). Chaque fiche = Creature (8/12/16 PV selon palier, 1 PM, 3 PA, CA 10–12) + 1 sort-créature (frapper 1d4/1d6/2d4 ou soigner 1d4). Upsert sur `official_id` `jdr:summon:{clé}`. `auto_update = false`. Le Coffre Enutrof n’est **pas** une invocation.
+Un JSON unique `class-summons.json` : 19 fiches monstres `playable` (kit 1 Osa / Sadida / Steamer, puis Double, Bouftou, poupées 7, tourelles 7, Repaire, Griffe Joueuse, Arbre, Synchro, Malle Animée, Sacrifiée, Sulfénix). Chaque fiche = Creature (8/12/16 PV selon palier, 1 PM, 3 PA, CA 10–12) + 1 sort-créature (frapper 1d4/1d6/2d4 ou soigner 1d4). Champ `image` : URL DofusDB (`/img/monsters/{gfxId}.png`) ; posée au seed si la créature n’a pas déjà un média local. Upsert sur `official_id` `jdr:summon:{clé}`. `auto_update = false`. Le Coffre Enutrof n’est **pas** une invocation.
 
 - **Seed** : `Database\Seeders\Entity\MonsterSeeder`, **après** `SubEffectSeeder` / `CapabilitySeeder`, **avant** `SpellSeeder`.
 
@@ -106,7 +106,7 @@ Un JSON par zone, tous lus par `BestiaryCatalog::loadAll()` (sauf `class-summons
 - `incarnam.json` : 14 fiches (Piou Vert, Tofu Chimérique, Boufton Pâlichon, Bouftou Nuageux, Larves bleue/orange/verte, Arakne, Champ Champ, Aminite, Moskito, Pissenlit Miroitant, Rose Vaporeuse, Tournesol Nébuleux).
 - `amakna.json` : 14 fiches (Piou Rouge / Bleu / Jaune, Tofu, Boufton Blanc, Bouftou, Gelée Bleuet / Menthe, Crabe, Pichon Orange, Chafer, Sanglier, Cochon de Lait, Pissenlit Diabolique).
 
-Coquille `Monster` + `Creature` (PV 18–45, PA/PM Dofus, 1 à 2 sorts-créature aux coûts Dofus). Hostilité 3 (Hostile) ou 4 (Agressif). Traits existants (`Petite taille`, `Vif / Vive`, `Agile`). Pas de boss / PA légendaires. Upsert sur `official_id` `jdr:bestiary:{clé}`. `auto_update = false`. Pas de `dofusdb_id` (les dumps scrap restent distincts). Distinct des invocations `jdr:summon:…` (Tofu, Bouftou).
+Coquille `Monster` + `Creature` (PV 18–45, PA/PM Dofus, 1 à 2 sorts-créature aux coûts Dofus). Hostilité 3 (Hostile) ou 4 (Agressif). Traits existants (`Petite taille`, `Vif / Vive`, `Agile`). Pas de boss / PA légendaires. Upsert sur `official_id` `jdr:bestiary:{clé}`. `auto_update = false`. Pas de `dofusdb_id` (les dumps scrap restent distincts). Champ `image` : URL DofusDB indexée par `gfxId` (pas l’id de fiche). Distinct des invocations `jdr:summon:…` (Tofu, Bouftou).
 
 - **Seed** : même `MonsterSeeder` / `BestiarySeederImporter`, après les invocations.
 

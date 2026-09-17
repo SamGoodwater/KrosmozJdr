@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Remplacer l’illustration d’une ressource, l’icône d’une caractéristique ou un avatar n’efface plus l’ancien fichier **avant** de vérifier le nouveau. Un SVG (ou un envoi vide) est rejeté, et l’image d’origine reste. Les pièces jointes de section n’acceptent plus les SVG (contenu exécutable)."
+    "description": "Les fiches du bestiaire et des invocations de classe ont un portrait Dofus (`gfxId`). Un scrap de monstre pose aussi l’URL si le fichier n’est pas téléchargé."
   },
   {
     "path": "backend/_ai.md",

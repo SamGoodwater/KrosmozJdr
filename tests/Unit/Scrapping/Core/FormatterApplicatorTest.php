@@ -113,6 +113,33 @@ class FormatterApplicatorTest extends TestCase
         $this->assertGreaterThanOrEqual($limits['min'], $result);
     }
 
+    public function test_store_scrapped_image_keeps_absolute_url(): void
+    {
+        $applicator = new FormatterApplicator(null, null);
+        $url = 'https://api.dofusdb.fr/img/monsters/1.png';
+
+        $this->assertSame(
+            $url,
+            $applicator->apply('storeScrappedImage', $url, ['entityFolder' => 'monsters', 'idPath' => 'id'], ['id' => 31, 'gfxId' => 1], [])
+        );
+    }
+
+    public function test_store_scrapped_image_uses_monster_gfx_id_when_img_missing(): void
+    {
+        $applicator = new FormatterApplicator(null, null);
+
+        $this->assertSame(
+            'https://api.dofusdb.fr/img/monsters/1.png',
+            $applicator->apply(
+                'storeScrappedImage',
+                null,
+                ['entityFolder' => 'monsters', 'idPath' => 'id'],
+                ['id' => 31, 'gfxId' => 1],
+                []
+            )
+        );
+    }
+
     public function test_apply_dofusdb_formatters_require_conversion_service(): void
     {
         $applicator = new FormatterApplicator(null, null);

@@ -148,6 +148,7 @@ final class BestiaryCatalog
                 'capabilities' => $this->stringList($row['capabilities'] ?? null),
                 'stats' => $stats,
                 'spells' => $spells,
+                'image' => $this->nullableString($row['image'] ?? null),
             ];
         }
 
