@@ -310,6 +310,7 @@ function importItemsFromFiles() {
                         :helper="selectedModelHint"
                         :options="modelOptions"
                         :searchable="false"
+                        required
                         default-label-position="top"
                         :error="form.errors['generation.model']"
                     />
