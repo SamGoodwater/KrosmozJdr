@@ -79,7 +79,7 @@ final class AnthropicUsageService
             'model' => $client->model(),
         ];
         $merged['remaining_hint'] = app(CostEstimator::class)
-            ->remainingHint($merged['remaining_credits_usd'] ?? null);
+            ->remainingHint($merged['remaining_credits_usd'] ?? null, $client->model());
         $merged['message'] = $this->composeMessage($merged);
 
         return $merged;

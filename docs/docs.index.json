@@ -247,7 +247,7 @@
   {
     "path": "IA/README.md",
     "title": "IA générative — cadrage",
-    "description": "Le **pipeline LLM** est branché (Anthropic Sonnet 5, rencontre `auto`). La **grille d’objets** algorithmique : `php artisan ia:equipment-grid`. Intention : contenu jouable en JDR, pas recopier Dofus."
+    "description": "Le **pipeline LLM** est branché (Anthropic Haiku 4.5 par défaut, liste dans IA métier, rencontre `auto`). La **grille d’objets** algorithmique : `php artisan ia:equipment-grid`. Intention : contenu jouable en JDR, pas recopier Dofus."
   },
   {
     "path": "IA/RENCONTRES.md",

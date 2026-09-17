@@ -48,6 +48,11 @@ const defaultProps = {
     usage: { available: false, message: "Usage indisponible." },
     estimates: [],
     has_api_key: false,
+    available_models: [
+        { id: "claude-haiku-4-5", label: "Haiku 4.5 (moins cher)", hint: "Défaut." },
+        { id: "claude-sonnet-5", label: "Sonnet 5", hint: "Qualité." },
+        { id: "claude-opus-5", label: "Opus 5", hint: "Plus cher." },
+    ],
 };
 
 vi.mock("@inertiajs/vue3", () => ({
@@ -92,6 +97,14 @@ function mountIndex() {
                 AdminArea: { template: "<div><slot /></div>" },
                 Btn: { template: '<button type="button"><slot /></button>' },
                 InputField: {
+                    props: ["modelValue", "label"],
+                    template: "<label>{{ label }}</label>",
+                },
+                SelectField: {
+                    props: ["modelValue", "label"],
+                    template: "<label>{{ label }}</label>",
+                },
+                CheckboxField: {
                     props: ["modelValue", "label"],
                     template: "<label>{{ label }}</label>",
                 },
@@ -159,5 +172,8 @@ describe("IaGeneration Index", () => {
         expect(wrapper.text()).toContain("Prompt superviseur");
         expect(wrapper.text()).toContain("Étalons d’équipement");
         expect(wrapper.text()).toContain("Solde et coûts");
+        expect(wrapper.get("[data-testid='ia-model-cache']").exists()).toBe(true);
+        expect(wrapper.text()).toContain("Modèle Anthropic");
+        expect(wrapper.text()).toContain("Cache prompt Anthropic");
     });
 });

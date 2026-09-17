@@ -2,7 +2,7 @@
 
 Le **pipeline LLM** est branché : noyau générique (`GenerativeAiClient`, assembleur, writer allowlist, job) + spécialisations persistées en `auto` (rencontre, sort `effect`, PNJ kit complet, objet unique, consommable `effect`). La **grille d’objets** algorithmique reste `php artisan ia:equipment-grid`. Pas de fine-tuning / RAG / agent à outils.
 
-À ne pas confondre avec les fichiers `_ai.md` du reste de `/docs` : ceux-là orientent les **agents de développement**. Ici, il s’agit du **LLM métier** (Anthropic Sonnet 5).
+À ne pas confondre avec les fichiers `_ai.md` du reste de `/docs` : ceux-là orientent les **agents de développement**. Ici, il s’agit du **LLM métier** (Anthropic, défaut Haiku 4.5, liste dans IA métier).
 
 ## Le problème
 

@@ -5,7 +5,9 @@
     "generation": {
         "max_retries": 2,
         "few_shot_count": 8,
-        "max_effects_per_spell": 3
+        "max_effects_per_spell": 3,
+        "model": "claude-haiku-4-5",
+        "prompt_cache": true
     },
     "entities": {
         "item": {

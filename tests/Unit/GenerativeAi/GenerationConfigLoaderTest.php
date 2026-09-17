@@ -43,6 +43,8 @@ final class GenerationConfigLoaderTest extends TestCase
         $this->assertContains('jdr:heal:potion:5', $consumable->exampleIds);
 
         $this->assertSame(2, $loader->get('generation.max_retries'));
+        $this->assertSame('claude-haiku-4-5', $loader->get('generation.model'));
+        $this->assertTrue($loader->get('generation.prompt_cache'));
         $this->assertStringContainsString('jamais playable', (string) $loader->get('supervisor_prompt'));
     }
 

@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Requests\Admin;
 
 use App\Models\Entity\Panoply;
+use App\Services\GenerativeAi\AnthropicModelCatalog;
 use App\Services\GenerativeAi\FewShotExamplePool;
 use App\Services\GenerativeAi\FewShotPanoplyGuard;
 use App\Services\GenerativeAi\GenerationConfigLoader;
 use App\Services\GenerativeAi\GenerationConfigStore;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class UpdateIaGenerationConfigRequest extends FormRequest
@@ -27,6 +29,12 @@ class UpdateIaGenerationConfigRequest extends FormRequest
                 if (array_key_exists($key, $generation) && is_numeric($generation[$key])) {
                     $generation[$key] = (int) $generation[$key];
                 }
+            }
+            if (array_key_exists('prompt_cache', $generation)) {
+                $generation['prompt_cache'] = filter_var(
+                    $generation['prompt_cache'],
+                    FILTER_VALIDATE_BOOLEAN
+                );
             }
             $this->merge(['generation' => $generation]);
         }
@@ -103,6 +111,8 @@ class UpdateIaGenerationConfigRequest extends FormRequest
             'generation.max_retries' => ['required', 'integer', 'min:0', 'max:5'],
             'generation.few_shot_count' => ['required', 'integer', 'min:0', 'max:30'],
             'generation.max_effects_per_spell' => ['required', 'integer', 'min:1', 'max:10'],
+            'generation.model' => ['required', 'string', Rule::in(AnthropicModelCatalog::ids())],
+            'generation.prompt_cache' => ['required', 'boolean'],
             ...$entityRules,
         ];
     }

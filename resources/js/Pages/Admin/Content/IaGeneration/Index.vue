@@ -16,6 +16,8 @@ import TextareaField from "@/Pages/Molecules/data-input/TextareaField.vue";
 import ConfirmPasswordModal from "@/Pages/Molecules/action/ConfirmPasswordModal.vue";
 import SidebarNav from "@/Pages/Organismes/layout/SidebarNav.vue";
 import EntityPanel from "@/Pages/Admin/Content/IaGeneration/EntityPanel.vue";
+import SelectField from "@/Pages/Molecules/data-input/SelectField.vue";
+import CheckboxField from "@/Pages/Molecules/data-input/CheckboxField.vue";
 
 defineOptions({ layout: AdminArea });
 
@@ -39,6 +41,7 @@ const props = defineProps({
     usage: { type: Object, default: () => ({ available: false, message: "" }) },
     estimates: { type: Array, default: () => [] },
     has_api_key: { type: Boolean, default: false },
+    available_models: { type: Array, default: () => [] },
 });
 
 const { setPageTitle } = usePageTitle();
@@ -62,11 +65,26 @@ const form = useForm({
         max_retries: props.config.generation?.max_retries ?? 2,
         few_shot_count: props.config.generation?.few_shot_count ?? 8,
         max_effects_per_spell: props.config.generation?.max_effects_per_spell ?? 3,
+        model: props.config.generation?.model ?? "claude-haiku-4-5",
+        prompt_cache: props.config.generation?.prompt_cache !== false,
     },
     entities: cloneEntities(props.config.entities),
 });
 
 const entityKeys = computed(() => Object.keys(props.entity_labels || {}));
+
+const modelOptions = computed(() =>
+    (props.available_models || []).map((row) => ({
+        value: row.id,
+        label: row.label,
+    }))
+);
+
+const selectedModelHint = computed(() => {
+    const id = form.generation.model;
+    const row = (props.available_models || []).find((item) => item.id === id);
+    return row?.hint || "Modèle envoyé à Anthropic pour chaque conversion.";
+});
 
 /** Classes DaisyUI figées (interdit de interpoler des tokens Tailwind). */
 const ENTITY_NAV_CLASSES = {
@@ -285,31 +303,50 @@ function importItemsFromFiles() {
                 :error="form.errors.supervisor_prompt"
             />
 
-            <section class="rounded-box border border-base-300 bg-base-100/50 p-4 grid gap-4 md:grid-cols-3">
-                <InputField
-                    v-model="form.generation.max_retries"
-                    type="number"
-                    label="Tentatives de correction"
-                    helper="0 à 5 retries si le validateur refuse le JSON."
-                    default-label-position="top"
-                    :error="form.errors['generation.max_retries']"
-                />
-                <InputField
-                    v-model="form.generation.few_shot_count"
-                    type="number"
-                    label="Nombre d’exemples"
-                    helper="Fiches playable envoyées au modèle (plafond)."
-                    default-label-position="top"
-                    :error="form.errors['generation.few_shot_count']"
-                />
-                <InputField
-                    v-model="form.generation.max_effects_per_spell"
-                    type="number"
-                    label="Effets max par sort"
-                    helper="1 effet principal + secondaires, plafond JDR."
-                    default-label-position="top"
-                    :error="form.errors['generation.max_effects_per_spell']"
-                />
+            <section class="rounded-box border border-base-300 bg-base-100/50 p-4 space-y-4">
+                <div class="grid gap-4 md:grid-cols-2" data-testid="ia-model-cache">
+                    <SelectField
+                        v-model="form.generation.model"
+                        label="Modèle Anthropic"
+                        :helper="selectedModelHint"
+                        :options="modelOptions"
+                        :searchable="false"
+                        default-label-position="top"
+                        :error="form.errors['generation.model']"
+                    />
+                    <CheckboxField
+                        v-model="form.generation.prompt_cache"
+                        label="Cache prompt Anthropic"
+                        helper="Préfixe (règles, schéma, exemples) réutilisé 5 min : un hit coûte ~10 % du prix d’entrée. Laisser coché, sauf pour déboguer."
+                        :error="form.errors['generation.prompt_cache']"
+                    />
+                </div>
+                <div class="grid gap-4 md:grid-cols-3">
+                    <InputField
+                        v-model="form.generation.max_retries"
+                        type="number"
+                        label="Tentatives de correction"
+                        helper="0 à 5 retries si le validateur refuse le JSON."
+                        default-label-position="top"
+                        :error="form.errors['generation.max_retries']"
+                    />
+                    <InputField
+                        v-model="form.generation.few_shot_count"
+                        type="number"
+                        label="Nombre d’exemples"
+                        helper="Fiches playable envoyées au modèle (plafond)."
+                        default-label-position="top"
+                        :error="form.errors['generation.few_shot_count']"
+                    />
+                    <InputField
+                        v-model="form.generation.max_effects_per_spell"
+                        type="number"
+                        label="Effets max par sort"
+                        helper="1 effet principal + secondaires, plafond JDR."
+                        default-label-position="top"
+                        :error="form.errors['generation.max_effects_per_spell']"
+                    />
+                </div>
             </section>
 
             <div

@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\GenerativeAi;
 use App\Http\Controllers\Controller;
 use App\Services\GenerativeAi\AnthropicUsageService;
 use App\Services\GenerativeAi\CostEstimator;
+use App\Services\GenerativeAi\GenerativeAiClient;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -23,7 +24,7 @@ class IaStatusController extends Controller
 
         return response()->json([
             'usage' => app(AnthropicUsageService::class)->snapshot(false),
-            'estimates' => app(CostEstimator::class)->all(),
+            'estimates' => app(CostEstimator::class)->all(app(GenerativeAiClient::class)->model()),
         ]);
     }
 }
