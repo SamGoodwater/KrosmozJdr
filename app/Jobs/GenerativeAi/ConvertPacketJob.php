@@ -10,9 +10,12 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
 /**
- * Un paquet de conversion IA = une requête LLM. Queue `database`.
+ * Un paquet de conversion IA = une requête LLM.
  *
- * @example ConvertPacketJob::dispatch($request);
+ * L’UI HTTP exécute ce job en `dispatchSync` (sinon toast « lancé » sans worker).
+ * La file `database` reste possible hors UI.
+ *
+ * @example ConvertPacketJob::dispatchSync($request);
  */
 final class ConvertPacketJob implements ShouldQueue
 {

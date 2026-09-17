@@ -103,7 +103,7 @@ const { downloadPdf } = useDownloadPdf(normalizedEntityType);
 /** Pluriel normalisé (ex. spells) — actions, reload Inertia */
 const entityTypePlural = computed(() => normalizeEntityType(props.entityType));
 
-const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPendingDelete, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh, submitAiConvert } = useEntityActionDispatcher(entityTypePlural, {
+const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPendingDelete, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh, submitAiConvert, confirmUpdateDiffSave, confirmUpdateDiffRestore } = useEntityActionDispatcher(entityTypePlural, {
     onOpenPage: (entity) => {
         emit('expand', entity);
         handleClose();
@@ -366,7 +366,11 @@ const handleAction = async (actionKey, entity) => {
         :ai-estimate="refreshConfirm.aiEstimate"
         :ai-usage="refreshConfirm.aiUsage"
         :ai-action-label="refreshConfirm.aiActionLabel"
+        :diff="refreshConfirm.diff"
+        :diff-busy="refreshConfirm.diffBusy"
         @confirm="confirmPendingRefresh"
+        @save-diff="confirmUpdateDiffSave"
+        @restore-diff="confirmUpdateDiffRestore"
         @close="cancelPendingRefresh"
         @update:ai-brief="(v) => (refreshConfirm.aiBrief = v)"
         @convert="submitAiConvert"

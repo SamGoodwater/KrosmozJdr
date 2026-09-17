@@ -89,7 +89,8 @@ class EntityDofusdbRefreshControllerTest extends TestCase
                 'force' => true,
             ])
             ->assertOk()
-            ->assertJsonPath('success', true);
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('diff.source', 'dofusdb');
     }
 
     public function test_non_scrappable_type_is_rejected(): void

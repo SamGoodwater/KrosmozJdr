@@ -164,6 +164,8 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         aiUsage: null,
         aiAction: "",
         aiActionLabel: "Conversion IA",
+        diff: null,
+        diffBusy: false,
     });
 
     function resetRefreshConfirm() {
@@ -187,6 +189,8 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
             aiUsage: null,
             aiAction: "",
             aiActionLabel: "Conversion IA",
+            diff: null,
+            diffBusy: false,
         };
     }
 
@@ -245,6 +249,8 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
             aiUsage: null,
             aiAction,
             aiActionLabel: actionLabel(aiAction),
+            diff: null,
+            diffBusy: false,
         };
 
         if (showAi) {
@@ -305,6 +311,31 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         return true;
     }
 
+    function openDiffFromResponse(pending, data) {
+        const diff = data?.diff && typeof data.diff === "object" ? data.diff : null;
+        if (!diff) {
+            refreshConfirm.value = {
+                ...refreshConfirm.value,
+                applying: false,
+                aiSubmitting: false,
+                aiError: data?.message || "La mise à jour n’a renvoyé aucun comparatif.",
+            };
+            return false;
+        }
+        refreshConfirm.value = {
+            ...pending,
+            loading: false,
+            applying: false,
+            aiSubmitting: false,
+            aiError: "",
+            aiSuccess: "",
+            diff,
+            diffBusy: false,
+            open: true,
+        };
+        return true;
+    }
+
     async function submitAiConvert() {
         const pending = refreshConfirm.value;
         const entity = pending.entity;
@@ -312,15 +343,22 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         const plural = normalizedType.value;
         const action = pending.aiAction || actionForType(plural);
         if (!entityId || !plural || pending.aiSubmitting || !action) return false;
+        if (pending.aiUsage?.has_api_key === false) {
+            refreshConfirm.value = {
+                ...pending,
+                aiError: "Clé Anthropic absente : aucun appel n’a été lancé.",
+            };
+            return false;
+        }
 
         refreshConfirm.value = { ...pending, aiSubmitting: true, aiError: "", aiSuccess: "" };
         try {
             const { data } = await axios.post(
                 `/api/entities/${encodeURIComponent(plural)}/${entityId}/ia-convert`,
                 { action, brief: pending.aiBrief || null, force: Boolean(pending.playable) },
-                { headers: { Accept: "application/json" } },
+                { headers: { Accept: "application/json" }, timeout: 180000 },
             );
-            if (data?.success === false) {
+            if (data?.success === false || data?.queued === true) {
                 refreshConfirm.value = {
                     ...refreshConfirm.value,
                     aiSubmitting: false,
@@ -328,10 +366,7 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
                 };
                 return false;
             }
-            notificationStore.success(data?.message || "Conversion IA enregistrée en auto.");
-            handlers.onRefresh?.(entity, pending.meta);
-            resetRefreshConfirm();
-            return true;
+            return openDiffFromResponse(pending, data);
         } catch (error) {
             const message =
                 error?.response?.data?.message
@@ -350,21 +385,61 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         if (!entityId || !plural || pending.applying) return false;
 
         refreshConfirm.value = { ...pending, applying: true };
-        const ok = await applyRefresh(plural, entityId, {
+        const result = await applyRefresh(plural, entityId, {
             mode: options.mode === "images_only" ? "images_only" : "full",
             force: Boolean(options.force),
         });
-        if (!ok) {
+        if (!result?.success) {
             refreshConfirm.value = { ...refreshConfirm.value, applying: false };
             return false;
         }
-        handlers.onRefresh?.(entity, pending.meta);
+        return openDiffFromResponse(pending, result.body);
+    }
+
+    function cancelPendingRefresh() {
+        if (refreshConfirm.value.diff) {
+            confirmUpdateDiffSave();
+            return;
+        }
+        resetRefreshConfirm();
+    }
+
+    function confirmUpdateDiffSave() {
+        const pending = refreshConfirm.value;
+        notificationStore.success("Nouvelle version conservée.");
+        handlers.onRefresh?.(pending.entity, pending.meta);
         resetRefreshConfirm();
         return true;
     }
 
-    function cancelPendingRefresh() {
-        resetRefreshConfirm();
+    async function confirmUpdateDiffRestore() {
+        const pending = refreshConfirm.value;
+        const entity = pending.entity;
+        const entityId = getEntityId(entity);
+        const plural = normalizedType.value;
+        const snapshotId = pending.diff?.snapshot_id;
+        if (!entityId || !plural || !snapshotId || pending.diffBusy) return false;
+
+        refreshConfirm.value = { ...pending, diffBusy: true };
+        try {
+            await axios.post(
+                `/api/entities/${encodeURIComponent(plural)}/${entityId}/update-diff/restore`,
+                { snapshot_id: snapshotId },
+                { headers: { Accept: "application/json" } },
+            );
+            notificationStore.success("Version précédente rétablie.");
+            handlers.onRefresh?.(entity, pending.meta);
+            resetRefreshConfirm();
+            return true;
+        } catch (error) {
+            const message =
+                error?.response?.data?.message
+                || Object.values(error?.response?.data?.errors || {})?.flat()?.[0]
+                || "Impossible de rétablir la version précédente.";
+            notificationStore.error(String(message));
+            refreshConfirm.value = { ...refreshConfirm.value, diffBusy: false };
+            return false;
+        }
     }
 
     async function dispatchEntityAction(actionKey, entity, meta = {}) {
@@ -435,5 +510,7 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         confirmPendingRefresh,
         cancelPendingRefresh,
         submitAiConvert,
+        confirmUpdateDiffSave,
+        confirmUpdateDiffRestore,
     };
 }

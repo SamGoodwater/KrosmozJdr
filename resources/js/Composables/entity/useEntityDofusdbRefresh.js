@@ -46,7 +46,7 @@ async function postRefresh(entityType, entityId, payload) {
 }
 
 export function useEntityDofusdbRefresh() {
-    const { success, error: showError } = useNotificationStore();
+    const { error: showError } = useNotificationStore();
 
     /**
      * @param {string} entityType
@@ -77,11 +77,10 @@ export function useEntityDofusdbRefresh() {
             force: Boolean(options.force),
         });
         if (result.ok && result.body.success !== false) {
-            success(result.body.message || "Fiche mise à jour depuis DofusDB.");
-            return true;
+            return { success: true, body: result.body };
         }
         showError(result.body.message || "Erreur lors de la mise à jour DofusDB.");
-        return false;
+        return { success: false, body: result.body };
     };
 
     return { previewRefresh, applyRefresh };

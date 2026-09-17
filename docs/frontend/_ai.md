@@ -10,6 +10,7 @@
 - Tableaux : TanStack Table 9 (`useTable` + `tableFeatures` dans `TanStackTable.vue`).
 - Footer desktop (`Layouts/Footer.vue`) : 2 lignes, logo centré ; padding via le layout, pas la molécule.
 - Dashboard `/admin/content` : cartes Atelier DofusDB (3 modes) + Génération IA ; camemberts inchangés.
+- Modal **Sources** : après scrap DofusDB ou conversion IA, tableau avant/après (pas un toast + refresh seuls).
 - `vite.config.js` `manualChunks` : uniquement `node_modules` (`vendor` / `cally` / `utils`). Ne pas extraire `Main.vue` ni `Utils/Formatters` : cycle de chunks au boot.
 
 ## Descendre

@@ -94,4 +94,44 @@ describe("EntitySourceModal", () => {
         expect(wrapper.get("[data-testid='ia-source-remaining']").text()).toContain("Tokens ce mois");
         expect(wrapper.get("[data-testid='ia-source-remaining']").text()).toContain("120");
     });
+
+    it("bloque la conversion si la clé Anthropic est absente", () => {
+        const wrapper = mount(EntitySourceModal, {
+            props: {
+                open: true,
+                showDofusdb: false,
+                showAi: true,
+                entityLabel: "Cape",
+                aiUsage: { has_api_key: false, local_input_tokens: 0, local_output_tokens: 0, local_runs: 0 },
+            },
+            global: { stubs },
+        });
+
+        expect(wrapper.get("[data-testid='ia-source-remaining']").text()).toContain("Clé Anthropic absente");
+        const convert = wrapper.findAll("button").filter((btn) => btn.text().includes("Lancer la conversion"));
+        expect(convert[0].attributes("disabled")).toBeDefined();
+    });
+
+    it("affiche le tableau avant/après après une conversion", async () => {
+        const wrapper = mount(EntitySourceModal, {
+            props: {
+                open: true,
+                showDofusdb: true,
+                showAi: true,
+                diff: {
+                    source: "ia",
+                    changed_count: 0,
+                    before: { preview: { name: "Bouftou", state: "raw" } },
+                    after: { preview: { name: "Bouftou", state: "auto" } },
+                    fields: [],
+                },
+            },
+            global: { stubs },
+        });
+
+        expect(wrapper.text()).toContain("Avant / après");
+        expect(wrapper.get("[data-testid='entity-update-diff-empty']").text()).toContain("Aucun champ modifié");
+        await wrapper.get("[data-testid='entity-update-diff-save']").trigger("click");
+        expect(wrapper.emitted("save-diff")).toBeTruthy();
+    });
 });

@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Avant / après après une maj
+
+Après un **scrap DofusDB** ou une **conversion IA**, on ne se contente plus d’un toast. Un tableau compare la version d’avant et la nouvelle (champs changés en surbrillance). **Enregistrer** garde la nouvelle version ; **Rétablir** revient à l’instantané. Si l’IA n’a rien pu écrire (gel, clé absente), le message est honnête : ce n’est plus un faux succès.
+
 ## Septembre 2026 — IA métier : un type à la fois
 
 Sur **IA métier**, objet, sort, monstre, PNJ et consommable ne sont plus empilés. On les ouvre comme les **caractéristiques** : une colonne d’onglets à gauche, un seul panneau à droite. Le solde, les prompts globaux et les étalons d’équipement restent sur la page.

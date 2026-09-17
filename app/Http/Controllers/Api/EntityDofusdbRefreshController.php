@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\DofusdbRefreshRequest;
 use App\Services\Entity\EntityDofusdbRefreshService;
+use App\Services\Entity\EntityUpdateDiffService;
 use App\Support\DofusdbRefreshableEntities;
 use App\Support\EntityModelRegistry;
 use Illuminate\Database\Eloquent\Model;
@@ -32,11 +33,15 @@ class EntityDofusdbRefreshController extends Controller
         $entity = $this->resolveEntity($entityType, $id);
         $this->authorize('update', $entity);
 
+        $mode = $request->mode();
+        $diffService = app(EntityUpdateDiffService::class);
+        $before = $mode === 'preview' ? null : $diffService->capture($entity);
+
         try {
             $payload = app(EntityDofusdbRefreshService::class)->run(
                 $entity,
                 $request->user(),
-                $request->mode(),
+                $mode,
                 $request->force(),
             );
         } catch (HttpException $e) {
@@ -44,6 +49,22 @@ class EntityDofusdbRefreshController extends Controller
                 'success' => false,
                 'message' => $e->getMessage(),
             ], $e->getStatusCode());
+        }
+
+        if ($before !== null && ($payload['success'] ?? false) === true && $request->user() !== null) {
+            $fresh = $entity->fresh() ?? $entity;
+            $payload['diff'] = $diffService->remember(
+                $request->user(),
+                $entityType,
+                $id,
+                'dofusdb',
+                $before,
+                $fresh,
+            );
+            $changed = (int) ($payload['diff']['changed_count'] ?? 0);
+            if ($changed === 0) {
+                $payload['message'] = 'Mise à jour DofusDB terminée : aucun champ modifié.';
+            }
         }
 
         return response()->json($payload, $payload['success'] ? 200 : 400);

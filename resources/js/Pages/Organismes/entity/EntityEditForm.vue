@@ -199,7 +199,7 @@ const entitiesPluralSegment = computed(() => {
     return `${et}s`;
 });
 
-const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPendingDelete, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh, submitAiConvert } =
+const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPendingDelete, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh, submitAiConvert, confirmUpdateDiffSave, confirmUpdateDiffRestore } =
     useEntityActionDispatcher(entitiesPluralSegment, {
         onRefresh: () => router.reload(),
     });
@@ -1342,7 +1342,11 @@ async function handleEditPageAction(actionKey) {
         :ai-estimate="refreshConfirm.aiEstimate"
         :ai-usage="refreshConfirm.aiUsage"
         :ai-action-label="refreshConfirm.aiActionLabel"
+        :diff="refreshConfirm.diff"
+        :diff-busy="refreshConfirm.diffBusy"
         @confirm="confirmPendingRefresh"
+        @save-diff="confirmUpdateDiffSave"
+        @restore-diff="confirmUpdateDiffRestore"
         @close="cancelPendingRefresh"
         @update:ai-brief="(v) => (refreshConfirm.aiBrief = v)"
         @convert="submitAiConvert"

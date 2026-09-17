@@ -29,7 +29,9 @@ final class ConvertEncounterTest extends TestCase
             ])
             ->assertOk()
             ->assertJsonPath('success', true)
-            ->assertJsonPath('status', AiGenerationRun::STATUS_SUCCESS);
+            ->assertJsonPath('queued', false)
+            ->assertJsonPath('status', AiGenerationRun::STATUS_SUCCESS)
+            ->assertJsonPath('diff.source', 'ia');
 
         $monster->refresh();
         $this->assertSame(EntityState::Auto->value, $monster->state);
@@ -56,6 +58,79 @@ final class ConvertEncounterTest extends TestCase
         $this->assertNotNull($run->ai_generated_at);
 
         Http::assertSentCount(1);
+    }
+
+    public function test_missing_api_key_does_not_pretend_success(): void
+    {
+        config(['services.anthropic.api_key' => '']);
+        Http::fake();
+        Http::preventStrayRequests();
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $monster = $this->sourceMonster();
+
+        $this->actingAs($admin)
+            ->postJson(route('api.entities.ia-convert', ['entityType' => 'monsters', 'id' => $monster->id]), [
+                'action' => 'encounter',
+            ])
+            ->assertStatus(422)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('message', 'Clé Anthropic absente : aucun appel n’a été lancé.');
+
+        $this->assertDatabaseCount('ai_generation_runs', 0);
+        $this->assertSame(EntityState::Raw->value, $monster->fresh()->state);
+        Http::assertSentCount(0);
+    }
+
+    public function test_http_convert_runs_inline_when_queue_is_database(): void
+    {
+        config(['queue.default' => 'database']);
+        $this->fakeAnthropicEncounter();
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $this->seedPlayableEtalon();
+        $monster = $this->sourceMonster();
+
+        $this->actingAs($admin)
+            ->postJson(route('api.entities.ia-convert', ['entityType' => 'monsters', 'id' => $monster->id]), [
+                'action' => 'encounter',
+                'brief' => 'chef Bouftou niveau 10',
+            ])
+            ->assertOk()
+            ->assertJsonPath('queued', false)
+            ->assertJsonPath('status', AiGenerationRun::STATUS_SUCCESS);
+
+        $this->assertSame(EntityState::Auto->value, $monster->fresh()->state);
+        Http::assertSentCount(1);
+        $this->assertDatabaseCount('jobs', 0);
+    }
+
+    public function test_restore_reverts_ia_snapshot(): void
+    {
+        $this->fakeAnthropicEncounter();
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $this->seedPlayableEtalon();
+        $monster = $this->sourceMonster();
+        $beforeState = $monster->state;
+
+        $payload = $this->actingAs($admin)
+            ->postJson(route('api.entities.ia-convert', ['entityType' => 'monsters', 'id' => $monster->id]), [
+                'action' => 'encounter',
+            ])
+            ->assertOk()
+            ->json();
+
+        $this->assertSame(EntityState::Auto->value, $monster->fresh()->state);
+        $snapshotId = $payload['diff']['snapshot_id'] ?? null;
+        $this->assertIsString($snapshotId);
+
+        $this->actingAs($admin)
+            ->postJson(route('api.entities.update-diff.restore', ['entityType' => 'monsters', 'id' => $monster->id]), [
+                'snapshot_id' => $snapshotId,
+            ])
+            ->assertOk()
+            ->assertJsonPath('success', true);
+
+        $this->assertSame($beforeState, $monster->fresh()->state);
+        $this->assertCount(0, $monster->fresh()->creature?->spells ?? collect());
     }
 
     public function test_game_master_cannot_convert(): void

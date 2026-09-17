@@ -33,7 +33,7 @@ export function useScrapping() {
         return applyRefresh(entityType, entityId, {
             mode: options.imagesOnly ? "images_only" : "full",
             force: Boolean(options.forceUpdate),
-        });
+        }).then((result) => result?.success === true);
     };
 
     return {

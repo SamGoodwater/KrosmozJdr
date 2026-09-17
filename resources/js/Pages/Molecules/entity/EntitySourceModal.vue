@@ -10,6 +10,7 @@ import Modal from "@/Pages/Molecules/action/Modal.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import TextareaField from "@/Pages/Molecules/data-input/TextareaField.vue";
+import EntityUpdateDiffView from "@/Pages/Molecules/entity/EntityUpdateDiffView.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 
 const props = defineProps({
@@ -29,9 +30,11 @@ const props = defineProps({
     aiEstimate: { type: Object, default: null },
     aiUsage: { type: Object, default: null },
     aiActionLabel: { type: String, default: "Conversion IA" },
+    diff: { type: Object, default: null },
+    diffBusy: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(["close", "confirm", "update:aiBrief", "convert"]);
+const emit = defineEmits(["close", "confirm", "update:aiBrief", "convert", "save-diff", "restore-diff"]);
 
 const { isAdmin } = usePermissions();
 const mode = ref("full");
@@ -80,9 +83,16 @@ const estimateLabel = computed(() => {
     return row.formatted || row.label || "";
 });
 
+const hasDiff = computed(() => Boolean(props.diff && typeof props.diff === "object"));
+
+const missingApiKey = computed(() => props.aiUsage && props.aiUsage.has_api_key === false);
+
 const remainingUsageLabel = computed(() => {
     const usage = props.aiUsage;
     if (!usage || typeof usage !== "object") return "Solde : chargement…";
+    if (usage.has_api_key === false) {
+        return "Clé Anthropic absente : aucun appel ne sera lancé.";
+    }
     if (typeof usage.remaining_credits_usd === "number") {
         const credit = Number(usage.remaining_credits_usd).toLocaleString("fr-FR", {
             minimumFractionDigits: 2,
@@ -107,16 +117,32 @@ function submitAi() {
 </script>
 
 <template>
-    <Modal :open="open" size="lg" placement="middle-center" close-on-esc @close="emit('close')">
+    <Modal
+        :open="open"
+        :size="hasDiff ? 'xl' : 'lg'"
+        placement="middle-center"
+        close-on-esc
+        @close="hasDiff ? emit('save-diff') : emit('close')"
+    >
         <template #header>
             <div class="flex items-center justify-between gap-3 w-full">
-                <div class="font-semibold text-primary-100">Sources de la fiche</div>
-                <Btn size="sm" variant="ghost" @click="emit('close')">Fermer</Btn>
+                <div class="font-semibold text-primary-100">
+                    {{ hasDiff ? "Avant / après" : "Sources de la fiche" }}
+                </div>
+                <Btn v-if="!hasDiff" size="sm" variant="ghost" @click="emit('close')">Fermer</Btn>
             </div>
         </template>
 
         <div class="space-y-4">
-            <div v-if="showDofusdb && showAi" class="tabs tabs-boxed bg-base-200/60 p-1 w-fit">
+            <EntityUpdateDiffView
+                v-if="hasDiff"
+                :diff="diff"
+                :busy="diffBusy"
+                @save="emit('save-diff')"
+                @restore="emit('restore-diff')"
+            />
+
+            <div v-else-if="showDofusdb && showAi" class="tabs tabs-boxed bg-base-200/60 p-1 w-fit">
                 <button
                     type="button"
                     class="tab"
@@ -130,7 +156,7 @@ function submitAi() {
                 </button>
             </div>
 
-            <div v-if="pane === 'dofusdb' && showDofusdb" class="space-y-4">
+            <div v-if="!hasDiff && pane === 'dofusdb' && showDofusdb" class="space-y-4">
                 <p class="text-sm text-base-content/80">
                     Mettre à jour « {{ entityLabel }} » depuis DofusDB (aperçu puis écriture).
                 </p>
@@ -187,7 +213,7 @@ function submitAi() {
                 </div>
             </div>
 
-            <div v-else-if="pane === 'ia' && showAi" class="space-y-4">
+            <div v-else-if="!hasDiff && pane === 'ia' && showAi" class="space-y-4">
                 <p class="text-sm text-base-content/80">
                     Conversion IA de « {{ entityLabel }} » — {{ aiActionLabel }}. Proposition en état
                     <span class="font-medium">auto</span>, jamais jouable.
@@ -206,11 +232,14 @@ function submitAi() {
                     default-label-position="top"
                     @update:model-value="(v) => emit('update:aiBrief', v)"
                 />
+                <p v-if="missingApiKey" class="text-sm text-warning">
+                    Aucune clé Anthropic configurée : la conversion est bloquée. Ce n’est pas un succès.
+                </p>
                 <p v-if="aiError" class="text-sm text-error">{{ aiError }}</p>
                 <p v-if="aiSuccess" class="text-sm text-success">{{ aiSuccess }}</p>
                 <div class="flex justify-end gap-2">
                     <Btn variant="ghost" :disabled="aiSubmitting" @click="emit('close')">Annuler</Btn>
-                    <Btn color="primary" :disabled="aiSubmitting" @click="submitAi">
+                    <Btn color="primary" :disabled="aiSubmitting || missingApiKey" @click="submitAi">
                         <Icon source="fa-wand-magic-sparkles" pack="solid" alt="" class="mr-2" />
                         {{ aiSubmitting ? "Conversion…" : "Lancer la conversion" }}
                     </Btn>

@@ -724,10 +724,17 @@
   },
   {
     "name": "EntitySourceModal",
-    "description": "Modal unique DofusDB + conversion IA (une icône menu).",
+    "description": "Modal unique DofusDB + conversion IA, puis tableau avant/après.",
     "props": [],
     "slots": [],
     "file": "entity/EntitySourceModal.vue"
+  },
+  {
+    "name": "EntityUpdateDiffView",
+    "description": "Tableau avant/après d’une maj DofusDB ou d’une conversion IA (Enregistrer / Rétablir).",
+    "props": [],
+    "slots": [],
+    "file": "entity/EntityUpdateDiffView.vue"
   },
   {
     "name": "EntityFormField",

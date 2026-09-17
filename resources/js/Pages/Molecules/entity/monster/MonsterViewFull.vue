@@ -75,7 +75,7 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('monster');
-const { dispatchEntityAction, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh, submitAiConvert } =
+const { dispatchEntityAction, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh, submitAiConvert, confirmUpdateDiffSave, confirmUpdateDiffRestore } =
     useEntityActionDispatcher('monsters', {
         onRefresh: () => router.reload({ only: ['monster', 'characteristicRuntime'] }),
     });
@@ -654,7 +654,11 @@ const handleAction = async (actionKey) => {
         :ai-estimate="refreshConfirm.aiEstimate"
         :ai-usage="refreshConfirm.aiUsage"
         :ai-action-label="refreshConfirm.aiActionLabel"
+        :diff="refreshConfirm.diff"
+        :diff-busy="refreshConfirm.diffBusy"
         @confirm="confirmPendingRefresh"
+        @save-diff="confirmUpdateDiffSave"
+        @restore-diff="confirmUpdateDiffRestore"
         @close="cancelPendingRefresh"
         @update:ai-brief="(v) => (refreshConfirm.aiBrief = v)"
         @convert="submitAiConvert"

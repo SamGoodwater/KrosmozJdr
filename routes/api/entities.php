@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\CreatureTraitBulkController;
 use App\Http\Controllers\Api\EntityDeletionController;
 use App\Http\Controllers\Api\EntityDofusdbRefreshController;
 use App\Http\Controllers\Api\EntityStateController;
+use App\Http\Controllers\Api\EntityUpdateDiffController;
 use App\Http\Controllers\Api\GenerativeAi\IaConvertController;
 use App\Http\Controllers\Api\ItemBulkController;
 use App\Http\Controllers\Api\MonsterBulkController;
@@ -49,6 +50,11 @@ Route::middleware(['web', 'auth'])->prefix('entities')->group(function () {
         ->where('entityType', '[a-z-]+')
         ->whereNumber('id')
         ->name('api.entities.ia-convert');
+    Route::post('/{entityType}/{id}/update-diff/restore', [EntityUpdateDiffController::class, 'restore'])
+        ->middleware(['role:game_master', 'throttle:12,1'])
+        ->where('entityType', '[a-z-]+')
+        ->whereNumber('id')
+        ->name('api.entities.update-diff.restore');
     Route::get('/{entityType}/{id}/delete-impact', [EntityDeletionController::class, 'impact'])
         ->where('entityType', '[a-z-]+')
         ->whereNumber('id')

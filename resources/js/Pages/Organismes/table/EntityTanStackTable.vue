@@ -324,7 +324,7 @@ const handleRefresh = async () => {
     emit("refresh");
 };
 
-const { dispatchEntityAction, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh, submitAiConvert } =
+const { dispatchEntityAction, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh, submitAiConvert, confirmUpdateDiffSave, confirmUpdateDiffRestore } =
     useEntityActionDispatcher(
         computed(() => props.entityType),
         { onRefresh: () => handleRefresh() },
@@ -403,7 +403,11 @@ const handleDownloadSelectionPdf = async () => {
             :ai-estimate="refreshConfirm.aiEstimate"
             :ai-usage="refreshConfirm.aiUsage"
             :ai-action-label="refreshConfirm.aiActionLabel"
+            :diff="refreshConfirm.diff"
+            :diff-busy="refreshConfirm.diffBusy"
             @confirm="confirmPendingRefresh"
+            @save-diff="confirmUpdateDiffSave"
+            @restore-diff="confirmUpdateDiffRestore"
             @close="cancelPendingRefresh"
             @update:ai-brief="(v) => (refreshConfirm.aiBrief = v)"
             @convert="submitAiConvert"
