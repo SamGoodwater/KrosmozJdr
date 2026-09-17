@@ -435,11 +435,11 @@ ui: false
 cron: false
 ```
 
-Conversion IA générique d’une fiche (sort `effect`, rencontre, PNJ kit `NpcKitCatalog`, objet unique, consommable `effect`), persistée en `auto` (`auto_update=false`). 1 paquet = 1 requête Anthropic. Admin only si `--user` est fourni.
+Conversion IA générique d’une fiche (sort `effect`, rencontre, PNJ kit `NpcKitCatalog`, objet unique, consommable `effect`), persistée en `auto` (`auto_update=false`). 1 paquet = 1 requête Anthropic. Admin only si `--user` est fourni. Une fiche **jouable ou archivée** exige `--force` (sinon rien n’est écrit).
 
 ```bash
 php artisan ia:convert spell --id=12 --brief="effet lisible à table"
-php artisan ia:convert npc --official-id=jdr:npc:incarnam:ganymede --user=1
+php artisan ia:convert npc --official-id=jdr:npc:incarnam:ganymede --user=1 --force
 php artisan ia:convert item --id=44
 php artisan ia:convert consumable --id=8
 php artisan ia:convert encounter --id=12 --brief="chef Bouftou niveau 10"
@@ -456,11 +456,11 @@ ui: false
 cron: false
 ```
 
-Alias de `ia:convert encounter` : un monstre + 2–3 sorts-créature, persistés en `auto` (`auto_update=false`). 1 paquet = 1 requête Anthropic. Admin only si `--user` est fourni.
+Alias de `ia:convert encounter` : un monstre + 2–3 sorts-créature, persistés en `auto` (`auto_update=false`). 1 paquet = 1 requête Anthropic. Admin only si `--user` est fourni. `--force` pour une fiche jouable / archivée.
 
 ```bash
 php artisan ia:convert-encounter --id=12 --brief="chef Bouftou niveau 10"
-php artisan ia:convert-encounter --official-id=jdr:bestiary:piou-vert --user=1
+php artisan ia:convert-encounter --official-id=jdr:bestiary:piou-vert --user=1 --force
 ```
 
 ---

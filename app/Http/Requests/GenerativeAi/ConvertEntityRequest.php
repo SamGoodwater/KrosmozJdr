@@ -26,7 +26,21 @@ class ConvertEntityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'action' => ['sometimes', 'string', Rule::in(array_keys(CostEstimator::ACTIONS))],
+            'action' => [
+                'sometimes',
+                'string',
+                Rule::in(array_keys(CostEstimator::ACTIONS)),
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (! is_string($value) || $value === '') {
+                        return;
+                    }
+                    $entityType = (string) $this->route('entityType');
+                    $expected = app(CostEstimator::class)->actionForEntityType($entityType);
+                    if ($value !== $expected) {
+                        $fail("L’action IA « {$value} » ne correspond pas au type « {$entityType} » (attendu : {$expected}).");
+                    }
+                },
+            ],
             'brief' => ['nullable', 'string', 'max:2000'],
             'force' => ['sometimes', 'boolean'],
         ];

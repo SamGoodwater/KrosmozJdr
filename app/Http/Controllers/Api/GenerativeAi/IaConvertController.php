@@ -10,17 +10,18 @@ use App\Jobs\GenerativeAi\ConvertPacketJob;
 use App\Models\AiGenerationRun;
 use App\Services\Entity\EntityUpdateDiffService;
 use App\Services\GenerativeAi\ConversionRequest;
+use App\Services\GenerativeAi\ConversionSafety;
 use App\Services\GenerativeAi\CostEstimator;
 use App\Services\GenerativeAi\GenerativeAiClient;
 use App\Services\GenerativeAi\Specializations\SpecializationRegistry;
 use App\Support\EntityModelRegistry;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model; // pragma: allowlist secret
 use Illuminate\Http\JsonResponse;
 
 /**
  * Déclenche une conversion IA (admin). 1 paquet = 1 job synchrone = 1 requête LLM.
  *
- * Le job n’est plus poussé en file `database` : un toast « lancé » sans worker
+ * Le job s’exécute en `dispatchSync` : un toast « lancé » sans worker
  * laissait croire à un succès (0 token Anthropic, fiche inchangée).
  *
  * @example POST /api/entities/monsters/12/ia-convert {"action":"encounter"}
@@ -50,15 +51,21 @@ class IaConvertController extends Controller
         }
 
         $estimator = app(CostEstimator::class);
-        $fallbackAction = $estimator->actionForEntityType($entityType);
+        $safety = app(ConversionSafety::class);
+        $fallbackAction = $safety->expectedAction($entityType);
         $action = $request->action($fallbackAction);
 
         try {
             app(SpecializationRegistry::class)->forAction($action);
-        } catch (\InvalidArgumentException) {
+            $safety->assertActionMatches($action, $entityType);
+            $safety->assertMayOverwrite($entity, $request->force());
+        } catch (\InvalidArgumentException|\RuntimeException $exception) {
             return response()->json([
                 'success' => false,
-                'message' => 'Action IA inconnue.',
+                'queued' => false,
+                'message' => $exception instanceof \InvalidArgumentException
+                    ? 'Action IA inconnue.'
+                    : $exception->getMessage(),
             ], 422);
         }
 

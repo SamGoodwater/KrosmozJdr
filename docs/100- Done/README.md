@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Conversion IA : pas d’écrasement silencieux
+
+Une conversion IA ne peut plus viser **un autre type** que la fiche ouverte (l’action doit coller à l’URL). Une fiche **jouable ou archivée** exige une confirmation (`force` / `--force`), comme DofusDB : les exemples de commandes sur Ganymède ou le Piou Vert ne les écrasent plus par accident.
+
 ## Septembre 2026 — Avant / après après une maj
 
 Après un **scrap DofusDB** ou une **conversion IA**, on ne se contente plus d’un toast. Un tableau compare la version d’avant et la nouvelle (champs changés en surbrillance). **Enregistrer** garde la nouvelle version ; **Rétablir** revient à l’instantané. Si l’IA n’a rien pu écrire (gel, clé absente), le message est honnête : ce n’est plus un faux succès.
