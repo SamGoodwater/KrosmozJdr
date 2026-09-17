@@ -1,0 +1,42 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8227",
+        "official_id": null
+    },
+    "item": {
+        "name": "Sandales du Piou Violet",
+        "level": "1",
+        "description": "Parfaites pour protéger votre petite voûte plantaire, ces sandales sont en outre parfaites pour écraser les petites créatures qui rampent entre les brins d'herbe, comme les Xélors ou les Eniripsas par exemple.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 150,
+        "price_custom": null,
+        "effect": null,
+        "bonus": null,
+        "item_type_dofus_id": 11,
+        "item_type_name": "Bottes"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "62"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "16515",
+                "name": "Queue de Chapardam",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "6898",
+                "name": "Plume de Piou Violet",
+                "quantity": 3
+            }
+        ]
+    }
+}

@@ -1,0 +1,66 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8609",
+        "official_id": null
+    },
+    "item": {
+        "name": "Geish'Arc",
+        "level": "8",
+        "description": "Cet arc est léger, fin, élégant et sent bon la fleur de cerisier. Il est également meurtrier si l'on s'en sert pour autre chose que se pavaner.",
+        "recipe": null,
+        "rarity": 1,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 4500,
+        "price_custom": 8100,
+        "effect": {
+            "fixed_damage_air": 1,
+            "hit_bonus": 2
+        },
+        "bonus": {
+            "fixed_damage_air": 1,
+            "hit_bonus": 2
+        },
+        "item_type_dofus_id": 2,
+        "item_type_name": "Arc"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [],
+        "resources": [
+            {
+                "dofusdb_id": "2543",
+                "name": "Substrat de Fascine",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "18371",
+                "name": "Carapace du Mantiscore",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "18369",
+                "name": "Queue de Scordion Bleu",
+                "quantity": 12
+            },
+            {
+                "dofusdb_id": "8075",
+                "name": "Boomerang du Dok Alako",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "845",
+                "name": "Œuf de Dragoeuf Argile",
+                "quantity": 12
+            },
+            {
+                "dofusdb_id": "21264",
+                "name": "Étoffe de Draegnerys",
+                "quantity": 3
+            }
+        ]
+    }
+}

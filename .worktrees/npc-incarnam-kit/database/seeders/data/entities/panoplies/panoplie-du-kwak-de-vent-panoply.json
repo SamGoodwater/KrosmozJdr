@@ -1,0 +1,34 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "15"
+    },
+    "panoply": {
+        "name": "Panoplie du Kwak de Vent",
+        "description": null,
+        "bonus": {
+            "4": {
+                "agility": 1
+            },
+            "7": {
+                "agility": 1,
+                "range": 1,
+                "acrobatics": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "6752",
+            "6755",
+            "6757",
+            "6759",
+            "6747",
+            "6749",
+            "6761"
+        ]
+    }
+}

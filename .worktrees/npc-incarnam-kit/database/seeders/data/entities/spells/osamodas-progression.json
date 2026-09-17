@@ -1,0 +1,697 @@
+{
+    "_schema_version": "1",
+    "breed": "Osamodas",
+    "entries": [
+        {
+            "key": "osamodas-fouet",
+            "name": "Fouet",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 3,
+            "types": [
+                "Buff"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 3,
+            "effect": "+1d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+            "description": "Fouet : tu te prépares. Le prochain élan frappe plus fort.",
+            "sub_effects": [
+                {
+                    "slug": "booster",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "dommages_spell",
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
+                        "effect_direction": "self",
+                        "duration_formula": "1"
+                    }
+                }
+            ],
+            "dofusdb_id": "31114",
+            "auto_success_if_willing_target": true,
+            "duration": "jusqu’à la fin de ton prochain tour",
+            "max_stack": 1
+        },
+        {
+            "key": "osamodas-cri-de-l-ours",
+            "name": "Cri de l'Ours",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 3,
+            "types": [
+                "Offensif"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "Attirance de 2 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
+            "description": "Cri de l'Ours : tu ramènes la cible.",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "2",
+                        "movement_kind": "pull",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "31132",
+            "attack_characteristic_key": "agi"
+        },
+        {
+            "key": "osamodas-crocs-du-mulou",
+            "name": "Crocs du Mulou",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 4,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Crocs du Mulou : attaque simple, même budget que le palier 4.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "value_formula_crit": "2d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "32380",
+            "attack_characteristic_key": "strong"
+        },
+        {
+            "key": "osamodas-piqûre-motivante",
+            "name": "Piqûre motivante",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 4,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+            "description": "Piqûre motivante : attaque simple, même budget que le palier 4.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "1d6+Agilité",
+                        "value_formula": "1d6+[agi]",
+                        "dice_formula": "1d6+[agi]",
+                        "value_formula_crit": "2d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "32382",
+            "attack_characteristic_key": "agi"
+        },
+        {
+            "key": "osamodas-souffle-draconique",
+            "name": "Souffle Draconique",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "2d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Souffle Draconique : sort fort de palier 5.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "2d6+Intelligence",
+                        "value_formula": "2d6+[intel]",
+                        "dice_formula": "2d6+[intel]",
+                        "value_formula_crit": "3d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "31122",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "osamodas-tornade-de-plumes",
+            "name": "Tornade de Plumes",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 5,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "2d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Tornade de Plumes : sort fort de palier 5.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "2d6+Agilité",
+                        "value_formula": "2d6+[agi]",
+                        "dice_formula": "2d6+[agi]",
+                        "value_formula_crit": "3d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "31143",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "osamodas-bouftou",
+            "name": "Bouftou",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 7,
+            "types": [
+                "Invocation"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 2 invocations à la fois (Troupeau). 3 PA, 1×/tour.",
+            "description": "Bouftou : la 2e bête du Troupeau.",
+            "sub_effects": [
+                {
+                    "slug": "invoquer",
+                    "area": "point",
+                    "params": {
+                        "monster_official_id": "jdr:summon:osamodas-bouftou",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "31116"
+        },
+        {
+            "key": "osamodas-dragonnet",
+            "name": "Dragonnet",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 7,
+            "types": [
+                "Invocation"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 2 invocations à la fois (Troupeau). 3 PA, 1×/tour.",
+            "description": "Dragonnet : l’autre 2e bête du Troupeau.",
+            "sub_effects": [
+                {
+                    "slug": "invoquer",
+                    "area": "point",
+                    "params": {
+                        "monster_official_id": "jdr:summon:osamodas-dragonnet",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "31129"
+        },
+        {
+            "key": "osamodas-morsure-du-serpent",
+            "name": "Morsure du Serpent",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 8,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 5,
+            "effect": "2d6 + Intelligence (Feu) et Empoisonné jusqu’à la fin du prochain tour. 3 PA, 2×/tour.",
+            "description": "Morsure du Serpent : ça s’accroche après le coup.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "2d6+Intelligence",
+                        "value_formula": "2d6+[intel]",
+                        "dice_formula": "2d6+[intel]",
+                        "value_formula_crit": "3d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Empoisonné jusqu’à la fin du prochain tour de la cible.",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "31112",
+            "attack_characteristic_key": "intel"
+        },
+        {
+            "key": "osamodas-dents-du-piranya",
+            "name": "Dents du Piranya",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 8,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 5,
+            "effect": "2d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Dents du Piranya : attaque simple, même budget que le palier 8.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d6+Chance",
+                        "value_formula": "2d6+[chance]",
+                        "dice_formula": "2d6+[chance]",
+                        "value_formula_crit": "3d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "31135",
+            "attack_characteristic_key": "chance"
+        },
+        {
+            "key": "osamodas-chant-du-phenix",
+            "name": "Chant du Phénix",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 10,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "3d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Chant du Phénix : sort fort de palier 10.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "3d6+Intelligence",
+                        "value_formula": "3d6+[intel]",
+                        "dice_formula": "3d6+[intel]",
+                        "value_formula_crit": "4d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "31145",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "osamodas-craquolosse",
+            "name": "Craquolosse",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 10,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "3d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Craquolosse : sort fort de palier 10.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "3d6+Force",
+                        "value_formula": "3d6+[strong]",
+                        "dice_formula": "3d6+[strong]",
+                        "value_formula_crit": "4d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "31149",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "osamodas-pacte-bestial",
+            "name": "Pacte Bestial",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Buff"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 8,
+            "effect": "+3d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+            "description": "Pacte Bestial : tu te prépares. Le prochain élan frappe plus fort.",
+            "sub_effects": [
+                {
+                    "slug": "booster",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "dommages_spell",
+                        "value": "3d4",
+                        "value_formula": "3d4",
+                        "dice_formula": "3d4",
+                        "effect_direction": "self",
+                        "duration_formula": "1"
+                    }
+                }
+            ],
+            "dofusdb_id": "32557",
+            "auto_success_if_willing_target": true,
+            "duration": "jusqu’à la fin de ton prochain tour",
+            "max_stack": 1
+        },
+        {
+            "key": "osamodas-communion-animale",
+            "name": "Communion Animale",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 11,
+            "types": [
+                "Défensif"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 8,
+            "effect": "3d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+            "description": "Communion Animale : une couche de Wakfu avant les PV.",
+            "sub_effects": [
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "3d4+Sagesse",
+                        "value_formula": "3d4+[sagesse]",
+                        "effect_direction": "self",
+                        "duration_formula": "1"
+                    }
+                }
+            ],
+            "dofusdb_id": "32554",
+            "auto_success_if_willing_target": true,
+            "duration": "jusqu’à la fin de ton prochain tour",
+            "max_stack": 1
+        },
+        {
+            "key": "osamodas-crapaud",
+            "name": "Bave du Crapaud",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 13,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Bave du Crapaud : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "3d6+Chance",
+                        "value_formula": "3d6+[chance]",
+                        "dice_formula": "3d6+[chance]",
+                        "value_formula_crit": "4d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "31139",
+            "attack_characteristic_key": "chance"
+        },
+        {
+            "key": "osamodas-corbac",
+            "name": "Cri du Corbac",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 13,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+            "description": "Cri du Corbac : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "3d6+Agilité",
+                        "value_formula": "3d6+[agi]",
+                        "dice_formula": "3d6+[agi]",
+                        "value_formula_crit": "4d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "31110",
+            "attack_characteristic_key": "agi"
+        },
+        {
+            "key": "osamodas-toison-d-or",
+            "name": "Toison d'Or",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 14,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "4d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Toison d'Or : sort fort de palier 14.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "4d6+Force",
+                        "value_formula": "4d6+[strong]",
+                        "dice_formula": "4d6+[strong]",
+                        "value_formula_crit": "5d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "31138",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "osamodas-sulfenix",
+            "name": "Sulfénix",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 14,
+            "types": [
+                "Invocation"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 8,
+            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 2d4, 1 PM. Au plus 1 invocation à la fois. 3 PA, 1×/tour.",
+            "description": "Sulfénix : une invocation. Fragile, mais elle occupe.",
+            "sub_effects": [
+                {
+                    "slug": "invoquer",
+                    "area": "point",
+                    "params": {
+                        "monster_official_id": "jdr:summon:osamodas-sulfenix",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "31151"
+        }
+    ]
+}

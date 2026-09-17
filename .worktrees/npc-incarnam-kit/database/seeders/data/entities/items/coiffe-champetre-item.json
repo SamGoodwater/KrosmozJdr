@@ -1,0 +1,46 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6797",
+        "official_id": null
+    },
+    "item": {
+        "name": "Coiffe Champêtre",
+        "level": "1",
+        "description": "Si vous avez toujours rêvé d'être fleuriste et d'avoir une haleine parfumée à l'eau de rose, c'est le moment d'adopter cette étrange coiffe.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 550,
+        "price_custom": null,
+        "effect": {
+            "nature": 1
+        },
+        "bonus": {
+            "nature": 1
+        },
+        "item_type_dofus_id": 16,
+        "item_type_name": "Chapeau"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "18"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "306",
+                "name": "Fleur de Pissenlit Diabolique",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "2665",
+                "name": "Herbe Folle",
+                "quantity": 1
+            }
+        ]
+    }
+}

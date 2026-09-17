@@ -1,0 +1,27 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "25"
+    },
+    "panoply": {
+        "name": "Panoplie du Bandit",
+        "description": null,
+        "bonus": {
+            "4": {
+                "agility": 1,
+                "stealth": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "6923",
+            "6961",
+            "6925",
+            "6924"
+        ]
+    }
+}

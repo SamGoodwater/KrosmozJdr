@@ -1,0 +1,44 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "casting_time_spell",
+        "name": "Temps d'incantation",
+        "short_name": "Cast",
+        "helper": "Temps nécessaire pour lancer le sort ou la capacité (pas la durée de l'effet ni le délai de relance).",
+        "descriptions": "Temps d'incantation (3.3.2.1). Valeur texte : « 1 » (instantané), « 10m » (rituel), etc.",
+        "icon": "castingTime.webp",
+        "icon_false": null,
+        "color": "amber",
+        "value_overrides": null,
+        "hide_when_empty": false,
+        "hide_when_false": false,
+        "unit": null,
+        "type": "string",
+        "status": "validee",
+        "sort_order": 22,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "casting_time",
+            "min": null,
+            "max": null,
+            "formula": null,
+            "formula_display": null,
+            "default_value": null,
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": "Temps d’incantation textuel : instantané, action, tours, minutes ou rituel.",
+            "norms_help_section_id": null,
+            "value_available": null
+        }
+    },
+    "relations": null
+}

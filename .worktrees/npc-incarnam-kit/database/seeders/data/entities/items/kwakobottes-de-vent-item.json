@@ -1,0 +1,51 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6755",
+        "official_id": null
+    },
+    "item": {
+        "name": "Kwakobottes de Vent",
+        "level": "4",
+        "description": "Rudimentaires mais efficaces, ces bottes d'une légéreté surprenante sont parfois utilisées après avoir été retravaillées, comme manche à air pour indiquer la direction et la force du vent. Il est alors conseillé de se placer du bon côté de la manche à air, pour ne pas mourir asphyxié.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 700,
+        "price_custom": null,
+        "effect": {
+            "initiative": 1
+        },
+        "bonus": {
+            "initiative": 1
+        },
+        "item_type_dofus_id": 11,
+        "item_type_name": "Bottes"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "15"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "12016",
+                "name": "Plume du Kwakwa",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "416",
+                "name": "Plume du Kwak de Vent",
+                "quantity": 5
+            },
+            {
+                "dofusdb_id": "2648",
+                "name": "Griffes de Kwak",
+                "quantity": 5
+            }
+        ]
+    }
+}

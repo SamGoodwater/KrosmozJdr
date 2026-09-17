@@ -1,0 +1,51 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "7108",
+        "official_id": null
+    },
+    "item": {
+        "name": "Larvasac",
+        "level": "2",
+        "description": "Ce sac original mais sans fioritures était très en vogue il y a bien longtemps. Un exemple typique du mauvais goût de vos ancêtres.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 700,
+        "price_custom": null,
+        "effect": {
+            "medicine": 1
+        },
+        "bonus": {
+            "medicine": 1
+        },
+        "item_type_dofus_id": 17,
+        "item_type_name": "Cape"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "33"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "362",
+                "name": "Peau de Larve Bleue",
+                "quantity": 5
+            },
+            {
+                "dofusdb_id": "643",
+                "name": "Fil de Soie",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "364",
+                "name": "Peau de Larve Verte",
+                "quantity": 5
+            }
+        ]
+    }
+}

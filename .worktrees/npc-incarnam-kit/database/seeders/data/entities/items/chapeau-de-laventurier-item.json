@@ -1,0 +1,46 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "2474",
+        "official_id": null
+    },
+    "item": {
+        "name": "Chapeau de l'Aventurier",
+        "level": "1",
+        "description": "À part faire fuir les nanas, ce chapeau n'a pas vraiment grande utilité.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 550,
+        "price_custom": null,
+        "effect": {
+            "perception": 1
+        },
+        "bonus": {
+            "perception": 1
+        },
+        "item_type_dofus_id": 16,
+        "item_type_name": "Chapeau"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "5"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "16524",
+                "name": "Relique d'Incarnam",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "16440",
+                "name": "Ferrite",
+                "quantity": 2
+            }
+        ]
+    }
+}

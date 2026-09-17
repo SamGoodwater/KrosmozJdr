@@ -1,0 +1,32 @@
+---
+globs: app/**/*.php,config/**/*.php,database/**/*.php,routes/**/*.php,tests/**/*.php,composer.json
+alwaysApply: false
+---
+# Structure Backend Laravel
+
+Backend Laravel 12 / PHP 8.4, **monolithe classique sous `app/`** (il n'y a pas de dossier `app/Modules/`). Sert Inertia.js + une API « hybride » (souvent `middleware ['web','auth']`, donc session + CSRF).
+
+## Organisation réelle
+
+- `app/Models/` — modèles Eloquent (`User`, `Page`, `Section`, `Entity/*`, `Type/*`, `Scrapping/*`, `Effect*`, `Characteristic*`).
+- `app/Http/Controllers/` — sous-dossiers `Entity/`, `Admin/`, `Auth/`, `Api/`, `Scrapping/`, `Type/`.
+- `app/Http/Requests/` — validation par action (Form Requests dédiées).
+- `app/Http/Resources/` — transformation JSON (Inertia/API).
+- `app/Http/Middleware/` — `HandleInertiaRequests`, `CheckRole`, `EnsureAdminAreaAccess`, `RequirePasswordWithInactivity`…
+- `app/Policies/` — autorisation (`Entity/BaseEntityPolicy`, `UserPolicy`, `PagePolicy`…).
+- `app/Services/` — logique métier (`Scrapping/`, `Characteristic/`, `Effect/`, `Entity/`, `Media/`, `Privacy/`…).
+- `app/Jobs/`, `app/Console/Commands/` — files d'attente et CLI (`project:*`, `scrapping:*`).
+- `routes/` — modulaire : `web.php` / `api.php` incluent `routes/{web,api,entities,admin}/*.php`.
+- `config/` — `scrapping.php`, `entity-permissions.php`, `access-permissions.php`, `services.php`.
+
+## Conventions
+
+- `declare(strict_types=1);` sur les fichiers récents ; PHPDoc riche sur modèles/contrôleurs.
+- Validation via Form Requests (mass assignment global `Model::unguard()` dans `AppServiceProvider`).
+- Policies : `BaseEntityPolicy` + surcharge ponctuelle (abilities `viewAny`, `createAny`, `updateAny`, `manageAny`).
+- Outils : Pint (formatage), PHPStan (`phpstan.neon`), PHPUnit.
+
+## Pour aller plus loin
+
+- Carte IA : `docs/backend/_ai.md` ; entités : `docs/features/entities/_ai.md`.
+- Doc : [PROJECT_STRUCTURE.md](../../docs/backend/README.md), [ROUTES_ARCHITECTURE.md](../../docs/backend/routes/README.md), [TESTING_PRACTICES.md](../../docs/best-practices/README.md).

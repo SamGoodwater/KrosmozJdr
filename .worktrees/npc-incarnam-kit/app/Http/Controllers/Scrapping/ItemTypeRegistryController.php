@@ -1,0 +1,260 @@
+<?php
+
+namespace App\Http\Controllers\Scrapping;
+
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\Scrapping\Concerns\AppliesTypeRegistryListFilters;
+use App\Http\Controllers\Scrapping\Concerns\BulkDecisionUpdateTrait;
+use App\Http\Controllers\Scrapping\Concerns\UpdatesCatalogVisibilityTrait;
+use App\Models\Type\ItemType;
+use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
+use App\Services\Scrapping\Http\DofusDbClient;
+use App\Services\Scrapping\Registry\ItemTypeCategoryMoveService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+/**
+ * API de gestion des typeId DofusDB détectés (registry) pour les équipements/objets.
+ *
+ * Permet de marquer un typeId comme "utilisé" (allowed), "non utilisé" (blocked)
+ * ou le remettre en attente (pending).
+ */
+class ItemTypeRegistryController extends Controller
+{
+    use AppliesTypeRegistryListFilters;
+    use BulkDecisionUpdateTrait;
+    use UpdatesCatalogVisibilityTrait;
+
+    public function __construct(
+        private DofusDbClient $dofusDbClient,
+        private DofusDbItemTypesCatalogService $itemTypesCatalog,
+        private ItemTypeCategoryMoveService $typeCategoryMove,
+    ) {}
+
+    /**
+     * Normalise un libellé métier (used/unused) vers le stockage (allowed/blocked).
+     */
+    private function normalizeDecision(string $decision): string
+    {
+        return match ($decision) {
+            'used' => ItemType::DECISION_ALLOWED,
+            'unused' => ItemType::DECISION_BLOCKED,
+            default => $decision,
+        };
+    }
+
+    private function stripDofusdbSuffix(?string $name): ?string
+    {
+        return $this->itemTypesCatalog->stripDofusdbSuffix($name);
+    }
+
+    /**
+     * Liste des ItemType avec dofusdb_type_id, filtrable par décision.
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $this->authorize('viewAny', ItemType::class);
+
+        $decision = $request->query('decision');
+        if (is_string($decision)) {
+            $decision = $this->normalizeDecision($decision);
+        }
+
+        $query = ItemType::query()
+            ->whereNotNull('dofusdb_type_id')
+            ->orderByDesc('last_seen_at');
+
+        $this->applyTypeRegistryListFilters($query, $request);
+
+        if (is_string($decision) && in_array($decision, ['pending', 'allowed', 'blocked'], true)) {
+            $query->where('decision', $decision);
+        }
+
+        $rows = $query->get([
+            'id',
+            'name',
+            'dofusdb_type_id',
+            'decision',
+            'allow_scrap',
+            'seen_count',
+            'last_seen_at',
+            'show_in_catalog',
+        ]);
+
+        // Améliorer les placeholders "DofusDB type #X" en allant chercher le vrai nom côté DofusDB.
+        foreach ($rows as $model) {
+            $typeId = is_numeric($model->dofusdb_type_id) ? (int) $model->dofusdb_type_id : 0;
+            if ($typeId <= 0) {
+                continue;
+            }
+
+            $currentName = $this->stripDofusdbSuffix(is_string($model->name) ? $model->name : null);
+            $isPlaceholder = $currentName === null || $currentName === '' || str_starts_with($currentName, 'DofusDB type #');
+
+            if (! $isPlaceholder) {
+                // On nettoie juste un éventuel suffixe (DofusDB) en sortie sans écraser le nom en base
+                $model->name = $currentName;
+
+                continue;
+            }
+
+            $resolved = $this->itemTypesCatalog->fetchName($typeId, 'fr', false);
+            if ($resolved) {
+                $model->name = $resolved;
+                try {
+                    $model->save();
+                } catch (\Throwable) {
+                    // Non bloquant
+                }
+            } else {
+                $model->name = $currentName ?: $model->name;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $rows,
+        ]);
+    }
+
+    /**
+     * Liste des types en attente de décision.
+     */
+    public function pending(Request $request): JsonResponse
+    {
+        $request->merge(['decision' => 'pending']);
+
+        return $this->index($request);
+    }
+
+    /**
+     * Mise à jour en masse des ItemType (registry DofusDB).
+     *
+     * @example
+     * PATCH /api/dofusdb/item-types/bulk
+     * { "ids":[1,2,3], "decision":"allowed" }
+     */
+    public function bulkUpdate(Request $request): JsonResponse
+    {
+        return $this->bulkUpdateDecision($request, ItemType::class, fn (string $d) => $this->normalizeDecision($d));
+    }
+
+    /**
+     * Supprime une entrée de registry (soft delete).
+     *
+     * @example
+     * DELETE /api/dofusdb/item-types/{itemType}
+     */
+    public function destroy(ItemType $itemType): JsonResponse
+    {
+        $this->authorize('delete', $itemType);
+
+        $itemType->delete();
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    /**
+     * Déplace en masse des types vers une autre catégorie.
+     *
+     * @example POST /api/dofusdb/item-types/move-bulk { "ids": [1,2], "target": "resource" }
+     */
+    public function moveBulkToCategory(Request $request): JsonResponse
+    {
+        $this->authorize('updateAny', ItemType::class);
+
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'min:1'],
+            'target' => ['required', 'string', 'in:resource,consumable'],
+        ]);
+
+        $result = $this->typeCategoryMove->moveBulk('equipment', $validated['ids'], $validated['target']);
+
+        return response()->json([
+            'success' => true,
+            'message' => $this->typeCategoryMove->formatBulkMoveMessage($result, $validated['target']),
+            'moved' => $result['moved'],
+            'failed' => $result['failed'],
+            'errors' => $result['errors'],
+        ]);
+    }
+
+    /**
+     * Déplace ce type vers une autre catégorie (ressource ou consommable).
+     *
+     * @example POST /api/dofusdb/item-types/{id}/move { "target": "resource" }
+     */
+    public function moveToCategory(Request $request, ItemType $itemType): JsonResponse
+    {
+        $this->authorize('update', $itemType);
+
+        $validated = $request->validate([
+            'target' => ['required', 'string', 'in:resource,consumable'],
+        ]);
+
+        $result = $this->typeCategoryMove->move('equipment', $itemType->id, $validated['target']);
+
+        if (! $result['success']) {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'],
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $result['message'],
+            'target_id' => $result['target_id'] ?? null,
+        ]);
+    }
+
+    /**
+     * Met à jour la décision d'un type détecté.
+     */
+    public function updateDecision(Request $request, ItemType $itemType): JsonResponse
+    {
+        $this->authorize('update', $itemType);
+
+        if ($itemType->dofusdb_type_id === null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ce type n’est pas lié à un typeId DofusDB.',
+            ], 422);
+        }
+
+        $validated = $request->validate([
+            // On accepte aussi les alias UX: used/unused
+            'decision' => ['required', 'string', 'in:pending,allowed,blocked,used,unused'],
+        ]);
+
+        $itemType->decision = $this->normalizeDecision($validated['decision']);
+        $itemType->save();
+
+        return response()->json([
+            'success' => true,
+            'data' => $itemType->only([
+                'id',
+                'name',
+                'dofusdb_type_id',
+                'decision',
+                'allow_scrap',
+                'seen_count',
+                'last_seen_at',
+                'show_in_catalog',
+            ]),
+        ]);
+    }
+
+    /**
+     * Affiche ou masque ce type dans les filtres catalogue.
+     *
+     * @example PATCH /api/dofusdb/item-types/{itemType}/catalog { "show_in_catalog": true }
+     */
+    public function updateCatalog(Request $request, ItemType $itemType): JsonResponse
+    {
+        return $this->updateShowInCatalog($request, $itemType);
+    }
+}

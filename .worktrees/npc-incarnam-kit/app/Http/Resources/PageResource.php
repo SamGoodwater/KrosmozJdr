@@ -1,0 +1,72 @@
+<?php
+
+namespace App\Http\Resources;
+
+use App\Models\Page;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+/**
+ * Resource API/Frontend pour l'entité Page.
+ *
+ * Structure et expose les champs principaux, relations et droits d'accès pour le frontend/API.
+ * Permet d'inclure dynamiquement les relations si chargées.
+ */
+class PageResource extends JsonResource
+{
+    /** @mixin Page */
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        $user = $request->user();
+        /** @var Page $page */
+        $page = $this->resource;
+
+        return [
+            'id' => $page->id,
+            'title' => $page->title,
+            'slug' => $page->slug,
+            'in_menu' => $page->in_menu,
+            'state' => $page->state,
+            'read_level' => (int) ($page->read_level ?? 0),
+            'write_level' => (int) ($page->write_level ?? 0),
+            'parent_id' => $page->parent_id,
+            'menu_order' => $page->menu_order,
+            'menu_group' => $page->menu_group,
+            'entity_key' => $page->entity_key,
+            'icon' => $page->icon,
+            'page_css_classes' => $page->page_css_classes,
+            'title_css_classes' => $page->title_css_classes,
+            'menu_item_css_classes' => $page->menu_item_css_classes,
+            'settings' => $page->settings,
+            'created_by' => $page->created_by,
+            'created_at' => $page->created_at?->toISOString(),
+            'updated_at' => $page->updated_at?->toISOString(),
+
+            // Relations (chargées uniquement si incluses)
+            'parent' => $this->whenLoaded('parent'),
+            'children' => $this->whenLoaded('children'),
+            'users' => $this->whenLoaded('users'),
+            'sections' => $this->when($page->relationLoaded('sections') || $page->sections, function () use ($request, $page) {
+                return $page->sections->map(function ($section) use ($request) {
+                    return (new SectionResource($section))->toArray($request);
+                });
+            }),
+            'campaigns' => $this->whenLoaded('campaigns'),
+            'scenarios' => $this->whenLoaded('scenarios'),
+            'createdBy' => $this->whenLoaded('createdBy'),
+
+            // Droits d'accès pour l'utilisateur courant
+            'can' => [
+                'update' => $user ? $user->can('update', $page) : false,
+                'delete' => $user ? $user->can('delete', $page) : false,
+                'forceDelete' => $user ? $user->can('forceDelete', $page) : false,
+                'restore' => $user ? $user->can('restore', $page) : false,
+            ],
+        ];
+    }
+}

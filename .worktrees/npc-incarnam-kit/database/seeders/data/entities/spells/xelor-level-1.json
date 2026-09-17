@@ -1,0 +1,220 @@
+{
+    "_schema_version": "1",
+    "breed": "Xélor",
+    "entries": [
+        {
+            "key": "aiguille",
+            "name": "Aiguille",
+            "dofusdb_id": "30842",
+            "slot_index": 1,
+            "choice_order": 0,
+            "types": ["Offensif"],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "attack_characteristic_key": "intel",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour, PO 1–4 adapté.",
+            "description": "Une aiguille de feu, nette. Tu piques de loin comme de près.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "value_formula_crit": "2d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "gelure",
+            "name": "Gelure",
+            "dofusdb_id": "13274",
+            "slot_index": 1,
+            "choice_order": 1,
+            "types": ["Offensif"],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "attack_characteristic_key": "chance",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour, PO 1–4 adapté.",
+            "description": "Le temps pique le froid. Même cadence qu’Aiguille, autre voie.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "1d6+Chance",
+                        "value_formula": "1d6+[chance]",
+                        "dice_formula": "1d6+[chance]",
+                        "value_formula_crit": "2d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "raulebaque",
+            "name": "Raulebaque",
+            "dofusdb_id": "31500",
+            "slot_index": 2,
+            "choice_order": 0,
+            "types": ["Offensif", "Téléportation"],
+            "element": "fire",
+            "pa": "5",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât et pas de téléportation.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Intelligence (Feu). À la fin de son tour, la cible revient à sa position de début de tour. Magique, 5 PA, 1×/tour, PO 1–4 adapté.",
+            "description": "Tu blesses, puis tu rembobines le pas. L’ennemi n’a pas bougé — trop tard.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "order": 0,
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "value_formula_crit": "2d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "order": 1,
+                    "params": {
+                        "value": "À la fin de son tour, la cible est téléportée à sa position de début de tour.",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "flou-temporel",
+            "name": "Flou Temporel",
+            "dofusdb_id": "13246",
+            "slot_index": 2,
+            "choice_order": 1,
+            "types": ["Debuff"],
+            "element": "earth",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun retrait de PA.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "Retrait de 1 PA en petite zone autour de toi (sauvegarde). Magique, 5 PA, 1×/tour. Ne t’affecte pas.",
+            "description": "Le temps se fige autour de toi. Un PA de moins, assez pour casser un combo.",
+            "sub_effects": [
+                {
+                    "slug": "retirer",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "action_points_creature",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "teleportation",
+            "name": "Téléportation",
+            "dofusdb_id": "23704",
+            "slot_index": 3,
+            "choice_order": 0,
+            "types": ["Téléportation"],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 3,
+            "effect": "Téléportation 1–4 cases, pas de ligne de vue. Action bonus, 3 PA, 1×/tour.",
+            "description": "Tu sautes un instant. Assez pour coller Aiguille dans le même tour.",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "4",
+                        "teleport": true,
+                        "movement_kind": "teleport",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "permutation",
+            "name": "Permutation",
+            "dofusdb_id": "30841",
+            "slot_index": 3,
+            "choice_order": 1,
+            "types": ["Téléportation"],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 3,
+            "effect": "Échange de position avec la cible. Magique, 3 PA, 1×/tour, PO 1–4 adapté.",
+            "description": "Vous changez de place. Allié ou ennemi : le temps n’a plus le même ordre.",
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Échange de position avec la cible.",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        }
+    ]
+}

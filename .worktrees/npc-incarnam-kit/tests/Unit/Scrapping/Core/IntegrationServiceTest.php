@@ -1,0 +1,1263 @@
+<?php
+
+namespace Tests\Unit\Scrapping\Core;
+
+use App\Models\Effect;
+use App\Models\EffectSubEffect;
+use App\Models\Entity\Breed;
+use App\Models\Entity\Condition;
+use App\Models\Entity\Consumable;
+use App\Models\Entity\Creature;
+use App\Models\Entity\Item;
+use App\Models\Entity\Monster;
+use App\Models\Entity\Panoply;
+use App\Models\Entity\Resource;
+use App\Models\Entity\Spell;
+use App\Models\Type\ConsumableType;
+use App\Models\Type\MonsterRace;
+use App\Models\Type\ResourceType;
+use App\Models\Type\SpellType;
+use App\Models\User;
+use App\Services\Scrapping\Core\Integration\IntegrationResult;
+use App\Services\Scrapping\Core\Integration\IntegrationService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\CreatesSystemUser;
+use Tests\TestCase;
+
+/**
+ * Tests unitaires pour IntegrationService (monster, spell, class, item, dry_run).
+ */
+class IntegrationServiceTest extends TestCase
+{
+    use CreatesSystemUser;
+    use RefreshDatabase;
+
+    private IntegrationService $service;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->service = new IntegrationService;
+    }
+
+    public function test_integrate_unknown_entity_returns_fail(): void
+    {
+        $result = $this->service->integrate('unknown-entity', [], []);
+
+        $this->assertInstanceOf(IntegrationResult::class, $result);
+        $this->assertFalse($result->isSuccess());
+        $this->assertStringContainsString('non supporté', $result->getMessage());
+    }
+
+    public function test_integrate_monster_incomplete_data_returns_fail(): void
+    {
+        $convertedData = [
+            'creatures' => [],
+            'monsters' => ['dofusdb_id' => '31'],
+        ];
+
+        $result = $this->service->integrate('monster', $convertedData, []);
+
+        $this->assertFalse($result->isSuccess());
+        $this->assertStringContainsString('incomplètes', $result->getMessage());
+    }
+
+    public function test_integrate_monster_missing_creatures_or_monsters_returns_fail(): void
+    {
+        $result1 = $this->service->integrate('monster', ['monsters' => ['dofusdb_id' => '31']], []);
+        $result2 = $this->service->integrate('monster', ['creatures' => ['name' => 'Bouftou']], []);
+
+        $this->assertFalse($result1->isSuccess());
+        $this->assertFalse($result2->isSuccess());
+    }
+
+    public function test_integrate_monster_dry_run_returns_would_create(): void
+    {
+        $convertedData = [
+            'creatures' => [
+                'name' => 'Bouftou Test',
+                'level' => '1',
+                'life' => '10',
+            ],
+            'monsters' => [
+                'dofusdb_id' => '99999',
+                'size' => 'medium',
+                'monster_race_id' => null,
+            ],
+        ];
+
+        $result = $this->service->integrate('monster', $convertedData, ['dry_run' => true]);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('would_create', $result->getCreatureAction());
+        $this->assertSame('would_create', $result->getMonsterAction());
+        $this->assertStringContainsString('Simulation', $result->getMessage());
+    }
+
+    public function test_integrate_monster_creates_creature_and_monster(): void
+    {
+        $this->createSystemUser();
+        $race = MonsterRace::factory()->create(['name' => 'Test Race', 'dofusdb_race_id' => 4321]);
+
+        $convertedData = [
+            'creatures' => [
+                'name' => 'Bouftou Integration Test',
+                'description' => 'Description conservée.',
+                'level' => '1',
+                'life' => '10',
+                'tacle' => '12',
+                'fuite' => '8',
+                'critical_hit' => '2',
+                'heal_bonus' => '5',
+            ],
+            'monsters' => [
+                'dofusdb_id' => '88888',
+                'size' => 'medium',
+                'monster_race_id' => 4321,
+            ],
+        ];
+
+        $result = $this->service->integrate('monster', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('created', $result->getCreatureAction());
+        $this->assertSame('created', $result->getMonsterAction());
+        $creatureId = $result->getCreatureId();
+        $monsterId = $result->getMonsterId();
+        $this->assertNotNull($creatureId);
+        $this->assertNotNull($monsterId);
+
+        $creature = Creature::find($creatureId);
+        $monster = Monster::find($monsterId);
+        $this->assertNotNull($creature);
+        $this->assertNotNull($monster);
+        $this->assertSame('Bouftou Integration Test', $creature->name);
+        $this->assertSame('Description conservée.', $creature->description);
+        $this->assertSame('12', (string) $creature->tacle);
+        $this->assertSame('8', (string) $creature->fuite);
+        $this->assertSame('2', (string) $creature->critical_hit);
+        $this->assertSame('5', (string) $creature->heal_bonus);
+        $this->assertSame($creature->id, $monster->creature_id);
+        $this->assertSame('88888', $monster->dofusdb_id);
+        $this->assertSame($race->id, $monster->monster_race_id);
+    }
+
+    public function test_integrate_monster_creates_missing_dofus_race(): void
+    {
+        $this->createSystemUser();
+
+        $result = $this->service->integrate('monster', [
+            'creatures' => ['name' => 'Monstre sans race locale', 'level' => '1', 'life' => '10'],
+            'monsters' => ['dofusdb_id' => '88999', 'size' => 'medium', 'monster_race_id' => 9876],
+        ]);
+
+        $this->assertTrue($result->isSuccess());
+        $race = MonsterRace::query()->where('dofusdb_race_id', 9876)->first();
+        $this->assertNotNull($race);
+        $this->assertSame($race->id, Monster::findOrFail($result->getMonsterId())->monster_race_id);
+    }
+
+    public function test_integrate_monster_skips_when_dofusdb_id_exists_without_force_update(): void
+    {
+        $this->createSystemUser();
+        $race = MonsterRace::factory()->create();
+        $creature = Creature::factory()->create(['name' => 'Existing Creature']);
+        $monster = Monster::factory()->create([
+            'creature_id' => $creature->id,
+            'dofusdb_id' => '77777',
+            'monster_race_id' => $race->id,
+        ]);
+
+        $convertedData = [
+            'creatures' => ['name' => 'Other Name', 'level' => '1', 'life' => '5'],
+            'monsters' => ['dofusdb_id' => '77777', 'size' => 'medium', 'monster_race_id' => $race->id],
+        ];
+
+        $result = $this->service->integrate('monster', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('skipped', $result->getCreatureAction());
+        $this->assertSame('skipped', $result->getMonsterAction());
+        $creature->refresh();
+        $this->assertSame('Existing Creature', $creature->name);
+    }
+
+    public function test_integrate_spell_dry_run_returns_would_create(): void
+    {
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '12345',
+                'name' => 'Évaporation Test',
+                'description' => 'Desc',
+                'pa' => '4',
+                'po' => '1',
+                'level' => '1',
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, ['dry_run' => true]);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('would_create', $result->getPrimaryAction());
+    }
+
+    public function test_integrate_spell_creates_spell(): void
+    {
+        $this->createSystemUser();
+
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '54321',
+                'name' => 'Sort Integration Test',
+                'description' => 'Description',
+                'pa' => '4',
+                'po' => '1',
+                'level' => '1',
+                'cast_in_line' => 1,
+                'cast_in_diagonal' => 1,
+                'target_type' => 'glyph',
+                'max_stack' => 4,
+                'global_cooldown' => 3,
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('created', $result->getPrimaryAction());
+        $spell = Spell::find($result->getPrimaryId());
+        $this->assertNotNull($spell);
+        $this->assertSame('Sort Integration Test', $spell->name);
+        $this->assertSame('54321', $spell->dofusdb_id);
+        $this->assertTrue($spell->cast_in_line);
+        $this->assertTrue($spell->cast_in_diagonal);
+        $this->assertSame('glyph', $spell->target_type);
+        $this->assertSame(4, $spell->max_stack);
+        $this->assertSame(3, $spell->global_cooldown);
+        $this->assertSame('1', $spell->cast_per_target);
+    }
+
+    public function test_integrate_condition_persists_local_reference_in_sub_effect_params(): void
+    {
+        $this->createSystemUser();
+
+        $playable = Condition::query()->create([
+            'name' => 'Pesanteur',
+            'state' => Condition::STATE_PLAYABLE,
+            'read_level' => 0,
+            'write_level' => 4,
+            'cant_be_moved' => true,
+        ]);
+
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '54322',
+                'name' => 'Sort État Integration Test',
+                'description' => 'Description',
+                'pa' => '4',
+                'po' => '1',
+                'level' => '1',
+            ],
+            'spell_effects' => [
+                'effect_group' => ['name' => 'Sort État Integration Test', 'slug' => 'sort-etat-integration-test'],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Sort État Integration Test',
+                        'slug' => 'sort-etat-integration-test-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [
+                            [
+                                'order' => 0,
+                                'sub_effect_slug' => 'appliquer-etat',
+                                'params' => [
+                                    'condition_dofusdb_id' => 987654,
+                                    'condition_name' => 'Pesanteur Test',
+                                    'condition_icon' => 'icons/states/pesanteur.webp',
+                                    'duration' => 2,
+                                    'dispellable' => true,
+                                    'target_mask' => 'A',
+                                    'dofus_effect_id' => 950,
+                                    'condition_flags' => [
+                                        'cant_be_moved' => true,
+                                        'cant_deal_damage' => true,
+                                        'cant_be_tackled' => true,
+                                    ],
+                                ],
+                                'crit_only' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $spell = Spell::find($result->getPrimaryId());
+        $this->assertNotNull($spell);
+
+        $condition = Condition::where('dofusdb_id', 987654)->first();
+        $this->assertNotNull($condition);
+        $this->assertSame('Pesanteur Test', $condition->name);
+        $this->assertSame(Condition::STATE_RAW, $condition->state);
+        $this->assertSame($playable->id, $condition->canonical_condition_id);
+        $this->assertTrue($condition->cant_be_moved);
+        $this->assertTrue($condition->cant_deal_damage);
+        $this->assertTrue($condition->cant_be_tackled);
+
+        $pivot = EffectSubEffect::query()->firstOrFail();
+        $pivotParams = $pivot->params;
+        $this->assertSame($playable->id, $pivotParams['condition_id'] ?? null);
+        $this->assertSame(987654, $pivotParams['condition_dofusdb_id'] ?? null);
+        $this->assertSame('Pesanteur', $pivotParams['condition_name'] ?? null);
+        $this->assertSame('2', $pivot->duration_formula);
+
+        // Re-import : met à jour la durée au lieu d'ignorer le pivot existant.
+        $convertedData['spell_effects']['effects'][0]['sub_effects'][0]['params']['duration'] = 5;
+        $convertedData['spell_effects']['effects'][0]['sub_effects'][0]['params']['duration_formula'] = '5';
+        $result = $this->service->integrate('spell', $convertedData, []);
+        $this->assertTrue($result->isSuccess());
+        $pivot->refresh();
+        $this->assertSame('5', $pivot->duration_formula);
+        $this->assertSame(5, $pivot->params['duration'] ?? null);
+
+        $attachedState = $spell->conditions()->first();
+        $this->assertNotNull($attachedState);
+        $this->assertSame($playable->id, $attachedState->id);
+        $this->assertSame('target', $attachedState->pivot->application_mode);
+        $this->assertSame(5, $attachedState->pivot->duration);
+        $this->assertTrue((bool) $attachedState->pivot->dispellable);
+        $this->assertSame('A', $attachedState->pivot->target_mask);
+
+        $secondResult = $this->service->integrate('spell', $convertedData, ['force_update' => true]);
+        $this->assertTrue($secondResult->isSuccess());
+        $this->assertSame(1, Effect::query()->count());
+        $this->assertSame(1, EffectSubEffect::query()->count());
+    }
+
+    public function test_integrate_spell_condition_does_not_downgrade_playable_state(): void
+    {
+        $this->createSystemUser();
+
+        $existing = Condition::factory()->create([
+            'dofusdb_id' => 111222,
+            'name' => 'Pesanteur',
+            'state' => Condition::STATE_PLAYABLE,
+            'cant_be_moved' => false,
+        ]);
+
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '54323',
+                'name' => 'Sort État Playable',
+                'description' => 'Description',
+                'pa' => '4',
+                'po' => '1',
+                'level' => '1',
+            ],
+            'spell_effects' => [
+                'effect_group' => ['name' => 'Sort État Playable', 'slug' => 'sort-etat-playable'],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Sort État Playable',
+                        'slug' => 'sort-etat-playable-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [
+                            [
+                                'order' => 0,
+                                'sub_effect_slug' => 'appliquer-etat',
+                                'params' => [
+                                    'condition_dofusdb_id' => 111222,
+                                    'condition_name' => 'Pesanteur',
+                                    'condition_flags' => [
+                                        'cant_be_moved' => true,
+                                    ],
+                                ],
+                                'crit_only' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, []);
+        $this->assertTrue($result->isSuccess());
+
+        $existing->refresh();
+        $this->assertSame(Condition::STATE_PLAYABLE, $existing->state);
+        $this->assertTrue($existing->cant_be_moved);
+
+        $spell = Spell::find($result->getPrimaryId());
+        $this->assertNotNull($spell);
+        $this->assertSame($existing->id, $spell->conditions()->first()?->id);
+
+        $pivotParams = EffectSubEffect::query()->firstOrFail()->params;
+        $this->assertSame($existing->id, $pivotParams['condition_id'] ?? null);
+        $this->assertSame(111222, $pivotParams['condition_dofusdb_id'] ?? null);
+    }
+
+    public function test_integrate_unmapped_condition_keeps_raw_without_spell_link(): void
+    {
+        $this->createSystemUser();
+
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '54324',
+                'name' => 'Sort État Jeton',
+                'description' => 'Description',
+                'pa' => '4',
+                'po' => '1',
+                'level' => '1',
+            ],
+            'spell_effects' => [
+                'effect_group' => ['name' => 'Sort État Jeton', 'slug' => 'sort-etat-jeton'],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Sort État Jeton',
+                        'slug' => 'sort-etat-jeton-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [
+                            [
+                                'order' => 0,
+                                'sub_effect_slug' => 'appliquer-etat',
+                                'params' => [
+                                    'condition_dofusdb_id' => 250,
+                                    'condition_name' => 'Invisible',
+                                    'dofus_effect_id' => 150,
+                                    'condition_flags' => [
+                                        'invulnerable' => true,
+                                    ],
+                                ],
+                                'crit_only' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, []);
+        $this->assertTrue($result->isSuccess());
+
+        $spell = Spell::find($result->getPrimaryId());
+        $this->assertNotNull($spell);
+        $this->assertSame(0, $spell->conditions()->count());
+
+        $raw = Condition::where('dofusdb_id', 250)->first();
+        $this->assertNotNull($raw);
+        $this->assertSame(Condition::STATE_RAW, $raw->state);
+        $this->assertNull($raw->canonical_condition_id);
+
+        $pivotParams = EffectSubEffect::query()->firstOrFail()->params;
+        $this->assertArrayNotHasKey('condition_id', $pivotParams);
+        $this->assertSame(250, $pivotParams['condition_dofusdb_id'] ?? null);
+        $this->assertSame('Invisible', $pivotParams['condition_name'] ?? null);
+    }
+
+    public function test_integrate_spell_infere_element_et_types_depuis_sous_effets(): void
+    {
+        $this->createSystemUser();
+
+        $typeDegats = SpellType::factory()->create(['name' => 'Dégâts']);
+        $typeSoin = SpellType::factory()->create(['name' => 'Soin']);
+        $typePlacement = SpellType::factory()->create(['name' => 'Placement']);
+
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '554433',
+                'name' => 'Sort Inférence',
+                'description' => 'Desc',
+                'pa' => '4',
+                'po' => '1',
+                'level' => '1',
+            ],
+            'spell_effects' => [
+                'effect_group' => [
+                    'name' => 'Sort Inférence',
+                    'slug' => 'sort-inference',
+                ],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Sort Inférence',
+                        'slug' => 'sort-inference-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [
+                            [
+                                'order' => 0,
+                                'sub_effect_slug' => 'frapper',
+                                'params' => [
+                                    'characteristic' => 'fixed_damage_sagesse_spell',
+                                    'value_formula' => '10',
+                                ],
+                                'crit_only' => false,
+                            ],
+                            [
+                                'order' => 1,
+                                'sub_effect_slug' => 'soigner',
+                                'params' => [
+                                    'characteristic' => 'res_vitalite_spell',
+                                    'value_formula' => '5',
+                                ],
+                                'crit_only' => false,
+                            ],
+                            [
+                                'order' => 2,
+                                'sub_effect_slug' => 'deplacer',
+                                'params' => [
+                                    'value_formula' => '2',
+                                ],
+                                'crit_only' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $spell = Spell::find($result->getPrimaryId());
+        $this->assertNotNull($spell);
+
+        $this->assertSame(1 << 5, (int) $spell->element);
+
+        $attachedTypeIds = $spell->spellTypes()->pluck('spell_types.id')->all();
+        $this->assertContains($typeDegats->id, $attachedTypeIds);
+        $this->assertContains($typeSoin->id, $attachedTypeIds);
+        $this->assertContains($typePlacement->id, $attachedTypeIds);
+    }
+
+    public function test_integrate_spell_element_uniquement_si_dofus_element_id_dans_sous_effets(): void
+    {
+        $this->createSystemUser();
+
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '554434',
+                'name' => 'Sort Élément eau',
+                'description' => 'Desc',
+                'pa' => '4',
+                'po' => '1',
+                'level' => '1',
+            ],
+            'spell_effects' => [
+                'effect_group' => [
+                    'name' => 'Sort Élément eau',
+                    'slug' => 'sort-element-eau',
+                ],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Sort Élément eau',
+                        'slug' => 'sort-element-eau-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [
+                            [
+                                'order' => 0,
+                                'sub_effect_slug' => 'frapper',
+                                'params' => [
+                                    'dofus_element_id' => 2,
+                                    'characteristic' => 'water',
+                                    'value_formula' => '10',
+                                ],
+                                'crit_only' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $spell = Spell::find($result->getPrimaryId());
+        $this->assertNotNull($spell);
+        // Dofus 2 = eau → primaire Krosmoz 4 (Eau)
+        $this->assertSame(1 << 4, (int) $spell->element);
+    }
+
+    public function test_integrate_spell_booster_negatif_associe_entrave_sans_buff(): void
+    {
+        $this->createSystemUser();
+
+        $typeDebuff = SpellType::factory()->create(['name' => 'Debuff']);
+        $typeBuff = SpellType::factory()->create(['name' => 'Buff']);
+
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '600001',
+                'name' => 'Malus booster',
+                'description' => 'Desc',
+                'pa' => '3',
+                'po' => '1',
+                'level' => '1',
+            ],
+            'spell_effects' => [
+                'effect_group' => ['name' => 'Malus booster', 'slug' => 'malus-booster'],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Malus booster',
+                        'slug' => 'malus-booster-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [
+                            [
+                                'order' => 0,
+                                'sub_effect_slug' => 'booster',
+                                'params' => [
+                                    'characteristic' => 'action_points_variation_spell',
+                                    'value_formula' => '-2',
+                                ],
+                                'crit_only' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $spell = Spell::find($result->getPrimaryId());
+        $this->assertNotNull($spell);
+
+        $attachedTypeIds = $spell->spellTypes()->pluck('spell_types.id')->all();
+        $this->assertContains($typeDebuff->id, $attachedTypeIds);
+        $this->assertNotContains($typeBuff->id, $attachedTypeIds);
+    }
+
+    public function test_integrate_spell_booster_positif_associe_buff(): void
+    {
+        $this->createSystemUser();
+
+        $typeBuff = SpellType::factory()->create(['name' => 'Buff']);
+        $typeDebuff = SpellType::factory()->create(['name' => 'Debuff']);
+
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '600002',
+                'name' => 'Bonus booster',
+                'description' => 'Desc',
+                'pa' => '3',
+                'po' => '1',
+                'level' => '1',
+            ],
+            'spell_effects' => [
+                'effect_group' => ['name' => 'Bonus booster', 'slug' => 'bonus-booster'],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Bonus booster',
+                        'slug' => 'bonus-booster-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [
+                            [
+                                'order' => 0,
+                                'sub_effect_slug' => 'booster',
+                                'params' => [
+                                    'characteristic' => 'strong_spell',
+                                    'value_formula' => '3',
+                                ],
+                                'crit_only' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $spell = Spell::find($result->getPrimaryId());
+        $this->assertNotNull($spell);
+
+        $attachedTypeIds = $spell->spellTypes()->pluck('spell_types.id')->all();
+        $this->assertContains($typeBuff->id, $attachedTypeIds);
+        $this->assertNotContains($typeDebuff->id, $attachedTypeIds);
+    }
+
+    public function test_integrate_spell_sous_effet_autre_detecte_invocation_et_dommages_via_texte(): void
+    {
+        $this->createSystemUser();
+
+        $typeInvocation = SpellType::factory()->create(['name' => 'Invocation']);
+        $typeDegats = SpellType::factory()->create(['name' => 'Dégâts']);
+
+        $convertedData = [
+            'spells' => [
+                'dofusdb_id' => '600003',
+                'name' => 'Effet autre',
+                'description' => 'Desc',
+                'pa' => '3',
+                'po' => '1',
+                'level' => '1',
+            ],
+            'spell_effects' => [
+                'effect_group' => ['name' => 'Effet autre', 'slug' => 'effet-autre'],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Effet autre',
+                        'slug' => 'effet-autre-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [
+                            [
+                                'order' => 0,
+                                'sub_effect_slug' => 'autre',
+                                'params' => [
+                                    'value' => 'Invoque une créature et inflige des dommages de feu.',
+                                ],
+                                'crit_only' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->service->integrate('spell', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $spell = Spell::find($result->getPrimaryId());
+        $this->assertNotNull($spell);
+
+        $attachedTypeIds = $spell->spellTypes()->pluck('spell_types.id')->all();
+        $this->assertContains($typeInvocation->id, $attachedTypeIds);
+        $this->assertContains($typeDegats->id, $attachedTypeIds);
+    }
+
+    public function test_integrate_spell_incomplete_returns_fail(): void
+    {
+        $result = $this->service->integrate('spell', [], []);
+
+        $this->assertFalse($result->isSuccess());
+        $this->assertStringContainsString('spells', $result->getMessage());
+    }
+
+    public function test_integrate_class_dry_run_returns_would_create(): void
+    {
+        $convertedData = [
+            'breeds' => [
+                'dofusdb_id' => '1',
+                'name' => 'Feca',
+                'description' => 'Desc',
+            ],
+        ];
+
+        $result = $this->service->integrate('class', $convertedData, ['dry_run' => true]);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('would_create', $result->getPrimaryAction());
+    }
+
+    public function test_integrate_class_creates_breed(): void
+    {
+        $this->createSystemUser();
+
+        $convertedData = [
+            'breeds' => [
+                'dofusdb_id' => '2',
+                'name' => 'Classe Integration Test',
+                'description' => 'Desc',
+            ],
+        ];
+
+        $result = $this->service->integrate('class', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('created', $result->getPrimaryAction());
+        $breed = Breed::find($result->getPrimaryId());
+        $this->assertNotNull($breed);
+        $this->assertSame('Classe Integration Test', $breed->name);
+    }
+
+    public function test_integrate_item_dry_run_returns_would_create(): void
+    {
+        $convertedData = [
+            'items' => [
+                'type_id' => 15,
+                'dofusdb_id' => '100',
+                'name' => 'Ressource Test',
+                'description' => 'Desc',
+                'level' => '1',
+            ],
+        ];
+
+        $result = $this->service->integrate('item', $convertedData, ['dry_run' => true]);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('would_create', $result->getPrimaryAction());
+    }
+
+    public function test_integrate_item_incomplete_returns_fail(): void
+    {
+        $result = $this->service->integrate('item', [], []);
+
+        $this->assertFalse($result->isSuccess());
+    }
+
+    public function test_integrate_item_routes_to_consumable_and_persists_effect(): void
+    {
+        $this->createSystemUser();
+        $consumableType = ConsumableType::factory()->create(['dofusdb_type_id' => 12001]);
+
+        $convertedData = [
+            'items' => [
+                'type_id' => $consumableType->dofusdb_type_id,
+                'dofusdb_id' => '9001',
+                'name' => 'Pain de test',
+                'description' => 'Desc',
+                'level' => '1',
+                'price' => null,
+                'effect' => '{"vitality":5}',
+                'rarity' => 0,
+            ],
+        ];
+
+        $result = $this->service->integrate('item', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $consumable = Consumable::where('dofusdb_id', '9001')->first();
+        $this->assertNotNull($consumable);
+        $this->assertSame('{"vitality":5}', $consumable->effect);
+    }
+
+    public function test_integrate_item_routes_to_resource_and_persists_effect(): void
+    {
+        $this->createSystemUser();
+        $resourceType = ResourceType::factory()->create(['dofusdb_type_id' => 13001]);
+
+        $convertedData = [
+            'items' => [
+                'type_id' => $resourceType->dofusdb_type_id,
+                'dofusdb_id' => '9002',
+                'name' => 'Ressource avec effet',
+                'description' => 'Desc',
+                'level' => '1',
+                'price' => null,
+                'effect' => '{"intel":3}',
+                'rarity' => 0,
+            ],
+        ];
+
+        $result = $this->service->integrate('item', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $resource = Resource::where('dofusdb_id', '9002')->first();
+        $this->assertNotNull($resource);
+        $this->assertSame('{"intel":3}', $resource->effect);
+    }
+
+    public function test_integrate_item_routes_to_resource_when_only_resources_block_is_present(): void
+    {
+        $this->createSystemUser();
+        $resourceType = ResourceType::factory()->create(['dofusdb_type_id' => 13002]);
+
+        $convertedData = [
+            'resources' => [
+                'type_id' => $resourceType->dofusdb_type_id,
+                'dofusdb_id' => '9003',
+                'name' => 'Ressource bloc resources',
+                'description' => 'Desc',
+                'level' => '1',
+                'price' => null,
+                'effect' => '{"chance":4}',
+                'rarity' => 0,
+            ],
+        ];
+
+        $result = $this->service->integrate('item', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertNotNull(Resource::where('dofusdb_id', '9003')->first());
+        $this->assertNull(Item::where('dofusdb_id', '9003')->first());
+        $this->assertNull(Consumable::where('dofusdb_id', '9003')->first());
+    }
+
+    public function test_integrate_breed_dispatches_to_class(): void
+    {
+        $convertedData = [
+            'breeds' => [
+                'dofusdb_id' => '3',
+                'name' => 'Breed Alias Test',
+                'description' => 'Desc',
+            ],
+        ];
+
+        $result = $this->service->integrate('breed', $convertedData, ['dry_run' => true]);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('would_create', $result->getPrimaryAction());
+    }
+
+    public function test_integrate_panoply_dry_run_returns_would_create(): void
+    {
+        $convertedData = [
+            'panoplies' => [
+                'dofusdb_id' => '42',
+                'name' => 'Panoplie Test',
+                'description' => 'Description',
+                'bonus' => '[]',
+                'item_dofusdb_ids' => [],
+            ],
+        ];
+
+        $result = $this->service->integrate('panoply', $convertedData, ['dry_run' => true]);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('would_create', $result->getPrimaryAction());
+    }
+
+    public function test_integrate_panoply_creates_panoply(): void
+    {
+        $this->createSystemUser();
+
+        $convertedData = [
+            'panoplies' => [
+                'dofusdb_id' => '100',
+                'name' => 'Panoplie Integration Test',
+                'description' => 'Description panoplie',
+                'bonus' => '[{"effectId":1,"value":10}]',
+                'item_dofusdb_ids' => [],
+            ],
+        ];
+
+        $result = $this->service->integrate('panoply', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('created', $result->getPrimaryAction());
+        $panoply = Panoply::find($result->getPrimaryId());
+        $this->assertNotNull($panoply);
+        $this->assertSame('Panoplie Integration Test', $panoply->name);
+        $this->assertSame('100', $panoply->dofusdb_id);
+        $this->assertSame('[{"effectId":1,"value":10}]', $panoply->bonus);
+        $this->assertSame(Panoply::STATE_RAW, $panoply->state);
+    }
+
+    /**
+     * Un force_update DofusDB met à jour le contenu sans dépublier ni réécrire les droits.
+     */
+    public function test_integrate_panoply_force_update_does_not_downgrade_playable_state(): void
+    {
+        $this->createSystemUser();
+        $author = User::factory()->create();
+        $existing = Panoply::factory()->create([
+            'dofusdb_id' => '200',
+            'name' => 'Panoplie jouable',
+            'state' => Panoply::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'created_by' => $author->id,
+            'bonus' => 'old-bonus',
+        ]);
+
+        $convertedData = [
+            'panoplies' => [
+                'dofusdb_id' => '200',
+                'name' => 'Panoplie DofusDB',
+                'description' => 'Nouvelle desc',
+                'bonus' => '[{"effectId":1}]',
+                'item_dofusdb_ids' => [],
+            ],
+        ];
+
+        $result = $this->service->integrate('panoply', $convertedData, [
+            'force_update' => true,
+            'replace_mode' => 'always',
+            'respect_auto_update' => false,
+        ]);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('updated', $result->getPrimaryAction());
+        $existing->refresh();
+        $this->assertSame(Panoply::STATE_PLAYABLE, $existing->state);
+        $this->assertSame(User::ROLE_GUEST, $existing->read_level);
+        $this->assertSame(User::ROLE_ADMIN, $existing->write_level);
+        $this->assertSame($author->id, $existing->created_by);
+        $this->assertSame('Panoplie DofusDB', $existing->name);
+        $this->assertSame('[{"effectId":1}]', $existing->bonus);
+        $this->assertSame('Nouvelle desc', $existing->description);
+    }
+
+    public function test_integrate_panoply_incomplete_returns_fail(): void
+    {
+        $result = $this->service->integrate('panoply', [], []);
+
+        $this->assertFalse($result->isSuccess());
+        $this->assertStringContainsString('panoplies', $result->getMessage());
+    }
+
+    public function test_integrate_panoply_skips_when_dofusdb_id_exists_without_force_update(): void
+    {
+        $this->createSystemUser();
+        $existing = Panoply::factory()->create([
+            'dofusdb_id' => '200',
+            'name' => 'Panoplie existante',
+        ]);
+
+        $convertedData = [
+            'panoplies' => [
+                'dofusdb_id' => '200',
+                'name' => 'Autre nom',
+                'description' => 'Desc',
+                'bonus' => '[]',
+                'item_dofusdb_ids' => [],
+            ],
+        ];
+
+        $result = $this->service->integrate('panoply', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('skipped', $result->getPrimaryAction());
+        $existing->refresh();
+        $this->assertSame('Panoplie existante', $existing->name);
+    }
+
+    public function test_integrate_panoply_syncs_items(): void
+    {
+        $this->createSystemUser();
+        $item1 = Item::factory()->create(['dofusdb_id' => '501']);
+        $item2 = Item::factory()->create(['dofusdb_id' => '502']);
+
+        $convertedData = [
+            'panoplies' => [
+                'dofusdb_id' => '300',
+                'name' => 'Panoplie avec items',
+                'description' => 'Desc',
+                'bonus' => '[]',
+                'item_dofusdb_ids' => [501, 502],
+            ],
+        ];
+
+        $result = $this->service->integrate('panoply', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('created', $result->getPrimaryAction());
+        $panoply = Panoply::find($result->getPrimaryId());
+        $this->assertNotNull($panoply);
+        $syncedIds = $panoply->items()->pluck('items.id')->all();
+        $this->assertCount(2, $syncedIds);
+        $this->assertContains($item1->id, $syncedIds);
+        $this->assertContains($item2->id, $syncedIds);
+    }
+
+    public function test_images_only_does_not_overwrite_spell_fields_or_effects(): void
+    {
+        $this->createSystemUser();
+        $author = User::factory()->create();
+        $spell = Spell::factory()->create([
+            'dofusdb_id' => '54321',
+            'name' => 'Sort local',
+            'pa' => '9',
+            'cast_per_turn' => '7',
+            'created_by' => $author->id,
+            'auto_update' => true,
+        ]);
+
+        $result = $this->service->integrate('spell', [
+            'spells' => [
+                'dofusdb_id' => '54321',
+                'name' => 'Sort Dofus écrasé',
+                'description' => 'Nouvelle desc',
+                'pa' => '1',
+                'po' => '6',
+                'level' => '200',
+                'cast_per_turn' => '1',
+                'created_by' => 1,
+            ],
+            'spell_effects' => [
+                'effect_group' => ['name' => 'Groupe écrasé', 'slug' => 'groupe-ecrase'],
+                'effects' => [
+                    [
+                        'degree' => 1,
+                        'name' => 'Effet écrasé',
+                        'slug' => 'effet-ecrase-1',
+                        'target_type' => 'direct',
+                        'area' => 'point',
+                        'sub_effects' => [],
+                    ],
+                ],
+            ],
+        ], [
+            'images_only' => true,
+            'force_update' => true,
+            'download_images' => false,
+        ]);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('updated', $result->getPrimaryAction());
+        $spell->refresh();
+        $this->assertSame('Sort local', $spell->name);
+        $this->assertSame('9', $spell->pa);
+        $this->assertSame('7', $spell->cast_per_turn);
+        $this->assertSame($author->id, $spell->created_by);
+        $this->assertSame(0, $spell->effects()->count());
+    }
+
+    public function test_images_only_does_not_overwrite_item_bonus_or_price(): void
+    {
+        $this->createSystemUser();
+        $item = Item::factory()->create([
+            'dofusdb_id' => '42',
+            'name' => 'Gelano local',
+            'bonus' => '{"chance":6}',
+            'price_custom' => 1234,
+        ]);
+
+        $result = $this->service->integrate('item', [
+            'items' => [
+                'dofusdb_id' => '42',
+                'name' => 'Gelano Dofus',
+                'description' => 'Écrasé',
+                'level' => '200',
+                'bonus' => '{"chance":1}',
+                'price' => 1,
+                'rarity' => 5,
+            ],
+        ], [
+            'images_only' => true,
+            'force_update' => true,
+            'download_images' => false,
+        ]);
+
+        $this->assertTrue($result->isSuccess());
+        $item->refresh();
+        $this->assertSame('Gelano local', $item->name);
+        $this->assertSame('{"chance":6}', $item->bonus);
+        $this->assertSame(1234, $item->price_custom);
+    }
+
+    public function test_integrate_item_uses_formula_and_ignores_dofus_price(): void
+    {
+        $this->createSystemUser();
+
+        $result = $this->service->integrate('item', [
+            'items' => [
+                'dofusdb_id' => '88',
+                'name' => 'Cape test',
+                'description' => 'Desc',
+                'level' => '8',
+                'price' => 99999,
+                'rarity' => 1,
+                'bonus' => '{"strength":2}',
+            ],
+        ], []);
+
+        $this->assertTrue($result->isSuccess());
+        $item = Item::query()->where('dofusdb_id', '88')->first();
+        $this->assertNotNull($item);
+        $this->assertNull($item->price_custom);
+        $this->assertSame(150 * 8 + 200 * 1, $item->price_calculated);
+    }
+
+    public function test_images_only_does_not_detach_panoply_items(): void
+    {
+        $this->createSystemUser();
+        $piece = Item::factory()->create(['dofusdb_id' => '501']);
+        $panoply = Panoply::factory()->create([
+            'dofusdb_id' => '88',
+            'name' => 'Set local',
+        ]);
+        $panoply->items()->sync([$piece->id]);
+
+        $result = $this->service->integrate('panoply', [
+            'panoplies' => [
+                'dofusdb_id' => '88',
+                'name' => 'Set Dofus',
+                'item_dofusdb_ids' => ['99999'],
+            ],
+        ], [
+            'images_only' => true,
+            'force_update' => true,
+            'download_images' => false,
+        ]);
+
+        $this->assertTrue($result->isSuccess());
+        $panoply->refresh();
+        $this->assertSame('Set local', $panoply->name);
+        $this->assertTrue($panoply->items->contains($piece));
+        $this->assertCount(1, $panoply->items);
+    }
+
+    public function test_images_only_does_not_create_missing_entity(): void
+    {
+        $this->createSystemUser();
+
+        $result = $this->service->integrate('spell', [
+            'spells' => [
+                'dofusdb_id' => '404404',
+                'name' => 'Sort inexistant',
+                'pa' => '3',
+            ],
+        ], [
+            'images_only' => true,
+            'force_update' => true,
+            'download_images' => false,
+        ]);
+
+        $this->assertFalse($result->isSuccess());
+        $this->assertNull(Spell::query()->where('dofusdb_id', '404404')->first());
+    }
+
+    /**
+     * Test : attachImageFromUrl retourne false quand l'URL est vide.
+     */
+    public function test_attach_image_from_url_returns_false_when_url_empty(): void
+    {
+        $this->createSystemUser();
+        $resource = Resource::factory()->create();
+
+        $this->assertFalse($this->service->attachImageFromUrl($resource, null, ['download_images' => true]));
+        $this->assertFalse($this->service->attachImageFromUrl($resource, '', ['download_images' => true]));
+        $this->assertFalse($this->service->attachImageFromUrl($resource, '   ', ['download_images' => true]));
+    }
+
+    /**
+     * Test : attachImageFromUrl retourne false quand download_images est false.
+     */
+    public function test_attach_image_from_url_returns_false_when_download_images_disabled(): void
+    {
+        $this->createSystemUser();
+        $resource = Resource::factory()->create();
+        config(['scrapping.images.allowed_hosts' => ['api.dofusdb.fr']]);
+
+        $this->assertFalse($this->service->attachImageFromUrl(
+            $resource,
+            'https://api.dofusdb.fr/img/items/1.png',
+            ['download_images' => false]
+        ));
+    }
+
+    /**
+     * Test : attachImageFromUrl retourne false quand l'hôte n'est pas dans allowed_hosts.
+     */
+    public function test_attach_image_from_url_returns_false_when_host_not_allowed(): void
+    {
+        $this->createSystemUser();
+        config(['scrapping.images.allowed_hosts' => ['api.dofusdb.fr']]);
+
+        $resource = Resource::factory()->create();
+        $otherUrl = 'https://other.example.com/img/1.png';
+
+        $this->assertFalse($this->service->attachImageFromUrl($resource, $otherUrl, ['download_images' => true]));
+        $this->assertCount(0, $resource->getMedia('images'));
+    }
+}

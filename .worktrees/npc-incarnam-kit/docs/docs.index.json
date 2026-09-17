@@ -1,0 +1,282 @@
+[
+  {
+    "path": "_ai.md",
+    "title": "KrosmozJDR — carte IA",
+    "description": "1. Choisis le domaine dans la table."
+  },
+  {
+    "path": "100- Done/README.md",
+    "title": "Ce qui a été fait",
+    "description": "Chaque classe a son **passif** dès le niveau 1 (gratuit) et un **moteur** parmi cinq : zones, invocations, état perso, marques, tempo. Le moteur reste simple au 1 et s’ouvre au 7."
+  },
+  {
+    "path": "backend/_ai.md",
+    "title": "Backend — IA",
+    "description": "Modèles, contrôleurs, services, policies, jobs, commandes, routes."
+  },
+  {
+    "path": "backend/database/_ai.md",
+    "title": "Database — IA",
+    "description": "`database/migrations/`"
+  },
+  {
+    "path": "backend/database/README.md",
+    "title": "Database",
+    "description": "La base MySQL contient les tables Laravel, le CMS, les entités JDR, les caractéristiques/effets et le scrapping."
+  },
+  {
+    "path": "backend/database/SCHEMA.md",
+    "title": "Schéma relationnel global",
+    "description": "```mermaid"
+  },
+  {
+    "path": "backend/laravel/_ai.md",
+    "title": "Laravel — IA",
+    "description": "`bootstrap/app.php` — middlewares et routing."
+  },
+  {
+    "path": "backend/laravel/README.md",
+    "title": "Laravel",
+    "description": "L'application utilise la structure Laravel classique : modèles Eloquent, contrôleurs HTTP, services métier, policies et commandes Artisan."
+  },
+  {
+    "path": "backend/README.md",
+    "title": "Backend",
+    "description": "Le backend est un monolithe Laravel 12 sous `app/`, sans architecture `app/Modules`. Il expose les pages Inertia, les APIs sessionnées et les commandes de maintenance."
+  },
+  {
+    "path": "backend/routes/_ai.md",
+    "title": "Routes — IA",
+    "description": "`routes/web.php`"
+  },
+  {
+    "path": "backend/routes/README.md",
+    "title": "Routes",
+    "description": "Les routes sont modulaires. `routes/web.php` et `routes/api.php` incluent des fichiers spécialisés."
+  },
+  {
+    "path": "best-practices/_ai.md",
+    "title": "Best practices — IA",
+    "description": "`README.md` humain + `_ai.md` condensé par nœud."
+  },
+  {
+    "path": "best-practices/README.md",
+    "title": "Bonnes pratiques",
+    "description": "Conventions appliquées au projet."
+  },
+  {
+    "path": "DOCUMENTATION_GUIDE.md",
+    "title": "Guide de documentation",
+    "description": "La documentation active décrit l'état actuel du projet. Elle ne raconte pas les phases, plans passés ni décisions historiques."
+  },
+  {
+    "path": "features/_ai.md",
+    "title": "Features — IA",
+    "description": "| Feature | Carte |"
+  },
+  {
+    "path": "features/characteristics/_ai.md",
+    "title": "Caractéristiques — IA",
+    "description": "Modifier une formule, une limite ou une norme de caractéristique."
+  },
+  {
+    "path": "features/characteristics/COMPUTED_VALUES.md",
+    "title": "Valeurs calculées des caractéristiques",
+    "description": "Une caractéristique d’entité (créature, plus tard équipement) peut être un **total explicite**"
+  },
+  {
+    "path": "features/characteristics/README.md",
+    "title": "Caractéristiques",
+    "description": "Les caractéristiques décrivent les valeurs numériques et règles de lecture des créatures, objets et sorts : niveaux, dégâts, PA/PM/PO, limites, formules et normes."
+  },
+  {
+    "path": "features/cms/_ai.md",
+    "title": "CMS Pages & Sections — carte IA (degré 1a)",
+    "description": "Travailler sur les pages publiques/règles, le menu, les sections de contenu."
+  },
+  {
+    "path": "features/cms/README.md",
+    "title": "CMS Pages & Sections",
+    "description": "Le CMS maison gère le contenu éditorial du site (accueil, règles, bibliothèques, pages légales). Une **page** est un nœud d'un arbre hiérarchique exposé dans le menu ; elle contient des **sections** ordonnées, chacune d'un **template** typé."
+  },
+  {
+    "path": "features/effects/_ai.md",
+    "title": "Effets — IA",
+    "description": "`app/Models/Effect*.php`, `app/Models/ObjectEffect.php`"
+  },
+  {
+    "path": "features/effects/MAPPINGS_HORS_PERIMETRE.md",
+    "title": "Mappings d'effets sans caractéristique Krosmoz",
+    "description": "Triage des `dofusdb_effect_mappings` dont `characteristic_source = characteristic`"
+  },
+  {
+    "path": "features/effects/README.md",
+    "title": "Effets",
+    "description": "Le système d'effets décrit les effets de sorts et d'objets : effets principaux, sous-effets, degrés, usages et mappings DofusDB."
+  },
+  {
+    "path": "features/entities/_ai.md",
+    "title": "Entités JDR — carte IA (degré 1a)",
+    "description": "Ajouter/modifier un type d'entité, un champ, une vue, une colonne de table."
+  },
+  {
+    "path": "features/entities/README.md",
+    "title": "Entités JDR",
+    "description": "Les « entités de jeu » sont les objets métier du référentiel KrosmozJDR : sorts, objets, ressources, consommables, monstres, PNJ, classes, spécialisations, capacités, conditions, traits, panoplies, boutiques, campagnes, scénarios. Elles partagent un modèle de champs, un système de droits et un pipeline d'affichage communs."
+  },
+  {
+    "path": "features/feedback/_ai.md",
+    "title": "Feedback — IA",
+    "description": "`app/Http/Controllers/FeedbackController.php`"
+  },
+  {
+    "path": "features/feedback/README.md",
+    "title": "Feedback",
+    "description": "Le feedback permet aux utilisateurs d'envoyer des retours depuis le site."
+  },
+  {
+    "path": "features/notifications/_ai.md",
+    "title": "Notifications — IA",
+    "description": "`app/Support/Notifications/NotificationCatalog.php`"
+  },
+  {
+    "path": "features/notifications/README.md",
+    "title": "Notifications",
+    "description": "Le système de notifications combine notifications Laravel, toasts front et emails/digests."
+  },
+  {
+    "path": "features/permissions/_ai.md",
+    "title": "Permissions & Auth — carte IA (degré 1a)",
+    "description": "Gérer les rôles, l'inscription/login, l'OAuth, la confirmation de mot de passe."
+  },
+  {
+    "path": "features/permissions/README.md",
+    "title": "Permissions & Authentification",
+    "description": "La sécurité repose sur trois couches : un **rôle** utilisateur (entier 0→5), des **middlewares** qui protègent des zones de routes, et des **policies** qui décident finement par ressource. La **source de vérité est le serveur** (policies + middlewares) ; le front ne fait que projeter ces droits."
+  },
+  {
+    "path": "features/README.md",
+    "title": "Fonctionnalités",
+    "description": "Les fonctionnalités traversent souvent backend, frontend et base de données."
+  },
+  {
+    "path": "features/scrapping/_ai.md",
+    "title": "Scrapping DofusDB — carte IA (degré 1a)",
+    "description": "Importer/mettre à jour des entités depuis DofusDB."
+  },
+  {
+    "path": "features/scrapping/README.md",
+    "title": "Scrapping DofusDB",
+    "description": "Le scrapping importe des données du jeu Dofus depuis l'API **DofusDB** et les convertit en entités KrosmozJDR (sorts, objets, ressources, consommables, monstres, classes, panoplies…). Le système est **config-driven** : la source de vérité du mapping est en base de données (bootstrappée depuis des fichiers JSON), pas dans le code."
+  },
+  {
+    "path": "features/scrapping/SERVER_MASS_SCRAP.md",
+    "title": "Checklist — scrap massif serveur",
+    "description": "Procédure pour récupérer **tout** le catalogue DofusDB d’un coup, avec conversion et"
+  },
+  {
+    "path": "frontend/_ai.md",
+    "title": "Frontend — IA",
+    "description": "Pas de TypeScript généralisé."
+  },
+  {
+    "path": "frontend/atomic-design/_ai.md",
+    "title": "Atomic Design — IA",
+    "description": "`Btn` : `color` = teinte DaisyUI, `variant` = style (`glass`/`ghost`/`outline`/…). Une couleur passée en `variant` (`variant=\"primary\"`) est remappée vers `color` + `glass` (compat) — les usages corrects ne changent pas."
+  },
+  {
+    "path": "frontend/atomic-design/README.md",
+    "title": "Atomic Design",
+    "description": "Les composants UI sont organisés dans `resources/js/Pages/Atoms`, `Molecules` et `Organismes`."
+  },
+  {
+    "path": "frontend/entity-views/_ai.md",
+    "title": "Entity views — IA",
+    "description": "`resources/js/Utils/entity/resolveEntityViewComponent.js`"
+  },
+  {
+    "path": "frontend/entity-views/README.md",
+    "title": "Entity views",
+    "description": "Les vues d'entités standardisent l'affichage des fiches JDR."
+  },
+  {
+    "path": "frontend/inertia/_ai.md",
+    "title": "Inertia — IA",
+    "description": "`resources/js/app.js` — `createInertiaApp` + import statique `@/Utils/Formatters`"
+  },
+  {
+    "path": "frontend/inertia/README.md",
+    "title": "Inertia",
+    "description": "Les contrôleurs Laravel rendent les pages Vue via `Inertia::render()`. La résolution se fait depuis `resources/js/app.js` avec `import.meta.glob('./Pages/**/*.vue')`."
+  },
+  {
+    "path": "frontend/README.md",
+    "title": "Frontend",
+    "description": "Frontend Vue 3 en JavaScript, servi par Inertia.js. L'UI suit Atomic Design et utilise Tailwind CSS + DaisyUI."
+  },
+  {
+    "path": "IA/_ai.md",
+    "title": "IA générative — carte IA",
+    "description": "Cadrage LLM métier. Grille objets `ia:equipment-grid`. Config gel admin + JSON. Pipeline d’appel LLM non branché."
+  },
+  {
+    "path": "IA/ARCHITECTURE.md",
+    "title": "Architecture de la génération",
+    "description": "Cadrage. Config des champs figés : page admin `/admin/content/ia-generation` (table `ia_generation_settings`) avec repli `resources/ia/generation.json`. Le pipeline LLM n’est pas encore branché."
+  },
+  {
+    "path": "IA/CHAMPS.md",
+    "title": "Champs figés vs champs générés",
+    "description": "Source de vérité effective : admin `/admin/content/ia-generation` (table `ia_generation_settings`), sinon `resources/ia/generation.json`."
+  },
+  {
+    "path": "IA/CREATION.md",
+    "title": "Fiches de création (prompt de conversion)",
+    "description": "Guides MJ et texte de prompt : `resources/ia/creation-guides/`. Commande `ia:creation-guides`. Pipeline LLM non branché."
+  },
+  {
+    "path": "IA/CATALOGUE.md",
+    "title": "Catalogue objets et pré-filtre",
+    "description": "Grille algo `ia:equipment-grid` (niveau × slot × voie). Config `resources/ia/equipment-grid.json`. `--write` = trous `draft`, jamais `playable` auto. Panoplies or few-shot : `entities.item.few_shot_panoplies`."
+  },
+  {
+    "path": "IA/COUTS.md",
+    "title": "Coûts et choix de modèles",
+    "description": "Ordres de grandeur, tarifs publics **août 2026**. À revérifier sur les pages fournisseurs avant un run réel."
+  },
+  {
+    "path": "IA/README.md",
+    "title": "IA générative — cadrage",
+    "description": "Pipeline LLM non branché. Grille d’objets algorithmique : `ia:equipment-grid`. Intention : contenu jouable en JDR, pas un miroir de Dofus."
+  },
+  {
+    "path": "IA/RENCONTRES.md",
+    "title": "Rencontres et PNJ (à la demande)",
+    "description": "Monstres, sorts de créature et PNJ ne se génèrent **pas** en masse au départ. On les crée quand un scénario en a besoin : moins cher, relecture d’une fiche à la fois."
+  },
+  {
+    "path": "operations/_ai.md",
+    "title": "Operations — IA",
+    "description": "Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interaction` (Symfony). Helper : `App\\Console\\YesNoFlags`."
+  },
+  {
+    "path": "operations/README.md",
+    "title": "Operations",
+    "description": "Commandes métier hors recettes CLI quotidiennes. Vocabulaire Artisan : [app/Console/COMMANDS.md](../../app/Console/COMMANDS.md)."
+  },
+  {
+    "path": "project/_ai.md",
+    "title": "Project — IA",
+    "description": "Site Laravel + Vue/Inertia pour gérer règles CMS, bibliothèques d'entités et administration JDR."
+  },
+  {
+    "path": "project/README.md",
+    "title": "Projet",
+    "description": "KrosmozJDR est une application web pour jeu de rôle inspiré du Krosmoz. Le site centralise les règles publiées en CMS, les bibliothèques d'entités de jeu, les outils d'import depuis DofusDB et les interfaces d'administration."
+  },
+  {
+    "path": "README.md",
+    "title": "Documentation KrosmozJDR",
+    "description": "Documentation technique active du projet. Elle décrit l'état actuel du site et sert à la fois aux humains et aux agents IA."
+  }
+]

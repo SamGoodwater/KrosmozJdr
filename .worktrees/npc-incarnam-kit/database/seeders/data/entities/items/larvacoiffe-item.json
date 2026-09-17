@@ -1,0 +1,51 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "7109",
+        "official_id": null
+    },
+    "item": {
+        "name": "Larvacoiffe",
+        "level": "3",
+        "description": "Enfin, l'opportunité de ressembler à une vraie larve s'offre à vous. Vous pourrez enfin afficher ouvertement votre mode de vie larvesque.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 1050,
+        "price_custom": null,
+        "effect": {
+            "vitality": 1
+        },
+        "bonus": {
+            "vitality": 1
+        },
+        "item_type_dofus_id": 16,
+        "item_type_name": "Chapeau"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "33"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "643",
+                "name": "Fil de Soie",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "2563",
+                "name": "Peau de Larve Jaune",
+                "quantity": 5
+            },
+            {
+                "dofusdb_id": "363",
+                "name": "Peau de Larve Orange",
+                "quantity": 5
+            }
+        ]
+    }
+}

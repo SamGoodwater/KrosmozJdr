@@ -1,0 +1,42 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8131",
+        "official_id": null
+    },
+    "item": {
+        "name": "Sac du Paysan",
+        "level": "1",
+        "description": "Ce sac très en vogue chez les jeunes écoliers, est idéal pour entreposer des farines animales et végétales. Une fois ouvert, puis déplié et déchiré le long des coutures, il pourra vous servir de jupe si vous n'avez pas peur de montrer vos cuisses velues.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 150,
+        "price_custom": null,
+        "effect": null,
+        "bonus": null,
+        "item_type_dofus_id": 17,
+        "item_type_name": "Cape"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "47"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "2665",
+                "name": "Herbe Folle",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "8157",
+                "name": "Pétale Magique du Tournesol Affamé",
+                "quantity": 2
+            }
+        ]
+    }
+}

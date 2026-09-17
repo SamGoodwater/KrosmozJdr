@@ -1,0 +1,52 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8120",
+        "official_id": null
+    },
+    "item": {
+        "name": "Amulette du Scarabosse Doré",
+        "level": "4",
+        "description": "Portée sur un torse velu, cette amulette a tout pour plaire tant elle se marie bien avec les touffes de poils.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 600,
+        "price_custom": null,
+        "effect": [],
+        "bonus": [],
+        "item_type_dofus_id": 1,
+        "item_type_name": "Amulette"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "51"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "2294",
+                "name": "Viscères de Scarafeuille",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "12745",
+                "name": "Substrat de Bocage",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "8161",
+                "name": "Ailes du Scarabosse Doré",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "8141",
+                "name": "Ailes du Scarafeuille Noir",
+                "quantity": 1
+            }
+        ]
+    }
+}

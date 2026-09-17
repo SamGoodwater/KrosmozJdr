@@ -1,0 +1,110 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Intervention\Image\Geometry\Factories;
+
+use Intervention\Image\Exceptions\InvalidArgumentException;
+use Intervention\Image\Geometry\Ellipse;
+use Intervention\Image\Interfaces\ColorInterface;
+use Intervention\Image\Interfaces\DrawableFactoryInterface;
+use Intervention\Image\Interfaces\DrawableInterface;
+
+class EllipseFactory implements DrawableFactoryInterface
+{
+    protected Ellipse $ellipse;
+
+    /**
+     * Create new factory instance.
+     */
+    public function __construct(null|callable|Ellipse $ellipse = null)
+    {
+        $this->ellipse = $ellipse instanceof Ellipse ? clone $ellipse : new Ellipse(0, 0);
+
+        if (is_callable($ellipse)) {
+            $ellipse($this);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see DrawableFactoryInterface::build()
+     */
+    public static function build(null|callable|DrawableInterface $drawable = null): Ellipse
+    {
+        return (new self($drawable))->drawable();
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see DrawableFactoryInterface::drawable()
+     */
+    public function drawable(): Ellipse
+    {
+        return $this->ellipse;
+    }
+
+    /**
+     * Set the size of the ellipse to be produced.
+     */
+    public function size(int $width, int $height): self
+    {
+        $this->ellipse->setSize($width, $height);
+
+        return $this;
+    }
+
+    /**
+     * Set the width of the ellipse to be produced.
+     */
+    public function width(int $width): self
+    {
+        $this->ellipse->setWidth($width);
+
+        return $this;
+    }
+
+    /**
+     * Set the height of the ellipse to be produced.
+     */
+    public function height(int $height): self
+    {
+        $this->ellipse->setHeight($height);
+
+        return $this;
+    }
+
+    /**
+     * Set the background color of the ellipse to be produced.
+     */
+    public function background(string|ColorInterface $color): self
+    {
+        $this->ellipse->setBackgroundColor($color);
+
+        return $this;
+    }
+
+    /**
+     * Set the border color & border size of the ellipse to be produced.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function border(string|ColorInterface $color, int $size = 1): self
+    {
+        $this->ellipse->setBorder($color, $size);
+
+        return $this;
+    }
+
+    /**
+     * Set the position where the ellipse should be drawn.
+     */
+    public function at(int $x, int $y): self
+    {
+        $this->ellipse->position()->setPosition($x, $y);
+
+        return $this;
+    }
+}

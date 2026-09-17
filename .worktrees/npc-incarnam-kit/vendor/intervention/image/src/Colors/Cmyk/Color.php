@@ -1,0 +1,185 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Intervention\Image\Colors\Cmyk;
+
+use Intervention\Image\Colors\AbstractColor;
+use Intervention\Image\Colors\Cmyk\Channels\Alpha;
+use Intervention\Image\Colors\Cmyk\Channels\Cyan;
+use Intervention\Image\Colors\Cmyk\Channels\Key;
+use Intervention\Image\Colors\Cmyk\Channels\Magenta;
+use Intervention\Image\Colors\Cmyk\Channels\Yellow;
+use Intervention\Image\Colors\Cmyk\Decoders\StringColorDecoder;
+use Intervention\Image\Colors\Rgb\Colorspace as Rgb;
+use Intervention\Image\Exceptions\ColorException;
+use Intervention\Image\Exceptions\DriverException;
+use Intervention\Image\Exceptions\InvalidArgumentException;
+use Intervention\Image\Exceptions\NotSupportedException;
+use Intervention\Image\InputHandler;
+use Intervention\Image\Interfaces\ColorChannelInterface;
+use Intervention\Image\Interfaces\ColorspaceInterface;
+
+class Color extends AbstractColor
+{
+    /**
+     * Create new instance.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function __construct(int|Cyan $c, int|Magenta $m, int|Yellow $y, int|Key $k, float|Alpha $a = 1)
+    {
+        $this->channels = [
+            is_int($c) ? new Cyan($c) : $c,
+            is_int($m) ? new Magenta($m) : $m,
+            is_int($y) ? new Yellow($y) : $y,
+            is_int($k) ? new Key($k) : $k,
+            is_float($a) ? new Alpha($a) : $a,
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see ColorInterface::create()
+     *
+     * @throws InvalidArgumentException
+     */
+    public static function create(int|Cyan $c, int|Magenta $m, int|Yellow $y, int|Key $k, float|Alpha $a = 1): self
+    {
+        return new self($c, $m, $y, $k, $a);
+    }
+
+    /**
+     * Parse CMYK color from string.
+     *
+     * @throws InvalidArgumentException
+     * @throws ColorException
+     */
+    public static function parse(string $input): self
+    {
+        try {
+            $color = InputHandler::usingDecoders([
+                StringColorDecoder::class,
+            ])->handle($input);
+        } catch (NotSupportedException | DriverException $e) {
+            throw new InvalidArgumentException(
+                'Unable to parse CMYK color from input "' . $input . '"',
+                previous: $e,
+            );
+        }
+
+        if (!$color instanceof self) {
+            throw new ColorException('Result must be instance of ' . self::class);
+        }
+
+        return $color;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see ColorInterface::colorspace()
+     */
+    public function colorspace(): ColorspaceInterface
+    {
+        return new Colorspace();
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see ColorInterface::toHex()
+     */
+    public function toHex(bool $prefix = false): string
+    {
+        // @phpstan-ignore missingType.checkedException
+        return $this->toColorspace(Rgb::class)->toHex($prefix);
+    }
+
+    /**
+     * Return the CMYK cyan channel.
+     */
+    public function cyan(): ColorChannelInterface
+    {
+        /** @throws void */
+        return $this->channel(Cyan::class);
+    }
+
+    /**
+     * Return the CMYK magenta channel.
+     */
+    public function magenta(): ColorChannelInterface
+    {
+        /** @throws void */
+        return $this->channel(Magenta::class);
+    }
+
+    /**
+     * Return the CMYK yellow channel.
+     */
+    public function yellow(): ColorChannelInterface
+    {
+        /** @throws void */
+        return $this->channel(Yellow::class);
+    }
+
+    /**
+     * Return the CMYK key channel.
+     */
+    public function key(): ColorChannelInterface
+    {
+        /** @throws void */
+        return $this->channel(Key::class);
+    }
+
+    /**
+     * Return the CMYK alpha channel.
+     */
+    public function alpha(): ColorChannelInterface
+    {
+        /** @throws void */
+        return $this->channel(Alpha::class);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see ColorInterface::toString()
+     */
+    public function toString(): string
+    {
+        if ($this->isTransparent()) {
+            return sprintf(
+                'cmyk(%d %d %d %d / %s)',
+                $this->cyan()->value(),
+                $this->magenta()->value(),
+                $this->yellow()->value(),
+                $this->key()->value(),
+                $this->alpha()->toString(),
+            );
+        }
+
+        return sprintf(
+            'cmyk(%d %d %d %d)',
+            $this->cyan()->value(),
+            $this->magenta()->value(),
+            $this->yellow()->value(),
+            $this->key()->value(),
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see ColorInterface::isGrayscale()
+     */
+    public function isGrayscale(): bool
+    {
+        return 0 === array_sum([
+            $this->cyan()->value(),
+            $this->magenta()->value(),
+            $this->yellow()->value(),
+        ]);
+    }
+}

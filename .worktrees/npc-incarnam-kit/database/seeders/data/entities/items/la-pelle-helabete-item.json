@@ -1,0 +1,66 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6540",
+        "official_id": null
+    },
+    "item": {
+        "name": "La Pelle Hélabète",
+        "level": "8",
+        "description": "On raconte que celui qui a forgé cette pelle ressemblait à une véritable bête. Une sorte de croisement entre un Sadida et un Mulou. Sa pelle serait tombée amoureuse de lui. Vraiment une histoire débile.",
+        "recipe": null,
+        "rarity": 1,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 4500,
+        "price_custom": 8600,
+        "effect": {
+            "fixed_damage_water": 1,
+            "hit_bonus": 2
+        },
+        "bonus": {
+            "fixed_damage_water": 1,
+            "hit_bonus": 2
+        },
+        "item_type_dofus_id": 8,
+        "item_type_name": "Pelle"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [],
+        "resources": [
+            {
+                "dofusdb_id": "8496",
+                "name": "Racine d'Abraknyde Ancestral",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "749",
+                "name": "Bakélélite",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "8002",
+                "name": "Étoffe de Dok Alako",
+                "quantity": 9
+            },
+            {
+                "dofusdb_id": "18385",
+                "name": "Cœur du Mantiscore",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "21264",
+                "name": "Étoffe de Draegnerys",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "14472",
+                "name": "Bâton de Blanc Pa Wabbit",
+                "quantity": 3
+            }
+        ]
+    }
+}

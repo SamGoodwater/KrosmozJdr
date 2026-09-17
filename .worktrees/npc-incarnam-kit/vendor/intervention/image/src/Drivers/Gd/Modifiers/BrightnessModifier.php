@@ -1,0 +1,39 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Intervention\Image\Drivers\Gd\Modifiers;
+
+use Intervention\Image\Exceptions\ModifierException;
+use Intervention\Image\Interfaces\ImageInterface;
+use Intervention\Image\Interfaces\SpecializedInterface;
+use Intervention\Image\Modifiers\BrightnessModifier as GenericBrightnessModifier;
+
+class BrightnessModifier extends GenericBrightnessModifier implements SpecializedInterface
+{
+    /**
+     * {@inheritdoc}
+     *
+     * @see ModifierInterface::apply()
+     *
+     * @throws ModifierException
+     */
+    public function apply(ImageInterface $image): ImageInterface
+    {
+        foreach ($image as $frame) {
+            $result = imagefilter(
+                $frame->native(),
+                IMG_FILTER_BRIGHTNESS,
+                max(-255, min(255, intval($this->level * 2.55))),
+            );
+
+            if ($result === false) {
+                throw new ModifierException(
+                    'Failed to apply ' . self::class . ', unable to set image brightness',
+                );
+            }
+        }
+
+        return $image;
+    }
+}

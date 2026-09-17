@@ -1,0 +1,220 @@
+{
+    "_schema_version": "1",
+    "breed": "Pandawa",
+    "entries": [
+        {
+            "key": "poing-enflamme",
+            "name": "Poing Enflammé",
+            "dofusdb_id": "2008",
+            "slot_index": 1,
+            "choice_order": 0,
+            "types": ["Offensif"],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "attack_characteristic_key": "intel",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour, PO 1. Pas besoin d’être Saoul.",
+            "description": "Un poing de feu. Direct, collé, sans attendre la flasque.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "value_formula_crit": "2d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "vague-a-lame",
+            "name": "Vague à Lame",
+            "dofusdb_id": "24246",
+            "slot_index": 1,
+            "choice_order": 1,
+            "types": ["Offensif"],
+            "element": "earth",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "attack_characteristic_key": "strong",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour, PO 1.",
+            "description": "Le bambou cogne. Même cadence que le poing, autre voie.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "value_formula_crit": "2d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "pandatak",
+            "name": "Pandatak",
+            "dofusdb_id": "24108",
+            "slot_index": 2,
+            "choice_order": 0,
+            "types": ["Offensif"],
+            "element": "earth",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Force (Terre) en petite zone autour de toi. Magique, 5 PA, 1×/tour.",
+            "description": "Tu tapes le sol. Ceux qui restent collés prennent le choc.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "value_formula_crit": "2d6+[strong]",
+                        "effect_direction": "self"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "flasque-explosive",
+            "name": "Flasque Explosive",
+            "dofusdb_id": "24101",
+            "slot_index": 2,
+            "choice_order": 1,
+            "types": ["Offensif"],
+            "element": "fire",
+            "pa": "5",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Intelligence (Feu) en petite zone autour de l’impact. Magique, 5 PA, 1×/tour, PO 1–4 adapté.",
+            "description": "La flasque éclate. Le feu prend ceux qui restent collés.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "value_formula_crit": "2d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "picole",
+            "name": "Picole",
+            "dofusdb_id": "12780",
+            "slot_index": 3,
+            "choice_order": 0,
+            "types": ["Buff"],
+            "element": null,
+            "pa": "3",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "max_stack": 1,
+            "resolution_mode": "auto_success",
+            "auto_success_if_willing_target": true,
+            "is_magic": true,
+            "powerful": 3,
+            "duration": "jusqu’à la fin de ton prochain tour",
+            "effect": "Tu entres en Saoul jusqu’à la fin de ton prochain tour : +1d4 aux dégâts, −1 CA. Optionnel (le Portage n’a pas besoin d’être Saoul). Pas de cumul. 3 PA, 1×/tour.",
+            "description": "Une gorgée. Tu titubes, tu frappes plus fort. Tu n’es pas obligé de boire pour porter.",
+            "sub_effects": [
+                {
+                    "slug": "booster",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "dommages_spell",
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
+                        "effect_direction": "self",
+                        "duration_formula": "1"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "chamrak",
+            "name": "Chamrak",
+            "dofusdb_id": "24251",
+            "slot_index": 3,
+            "choice_order": 1,
+            "types": ["Debuff"],
+            "element": "air",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "attack_roll",
+            "attack_characteristic_key": "agi",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "Poussée de 2 cases, pas de dégâts. Physique, 3 PA, 1×/tour, PO 1–4 adapté. Si tu portes une créature, tu la lances à la place.",
+            "description": "Tu jettes. Allié, ennemi, ou celui que tu portes : ça recule.",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "2",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    }
+                }
+            ]
+        }
+    ]
+}

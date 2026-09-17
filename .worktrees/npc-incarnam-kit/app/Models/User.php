@@ -1,0 +1,780 @@
+<?php
+
+namespace App\Models;
+
+use App\Models\Concerns\HasMediaCustomNaming;
+use App\Models\Entity\Breed;
+use App\Models\Entity\Campaign;
+use App\Models\Entity\Capability;
+use App\Models\Entity\Condition;
+use App\Models\Entity\Consumable;
+use App\Models\Entity\Item;
+use App\Models\Entity\Panoply;
+use App\Models\Entity\Resource;
+use App\Models\Entity\Scenario;
+use App\Models\Entity\Shop;
+use App\Models\Entity\Specialization;
+use App\Models\Entity\Spell;
+use App\Models\Type\ConsumableType;
+use App\Models\Type\ItemType;
+use App\Models\Type\MonsterRace;
+use App\Models\Type\ResourceType;
+use App\Models\Type\SpellType;
+use App\Notifications\VerifyEmailNotification;
+use Database\Factories\UserFactory;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Notifications\DatabaseNotificationCollection;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+
+/**
+ * Modèle User central du projet Krosmoz JDR.
+ *
+ * Gère l'authentification, les rôles, l'avatar, les notifications et les relations avec les entités du jeu.
+ *
+ * Champs principaux :
+ * - id, name, email, password, role, avatar
+ * - notifications_enabled, notification_channels
+ *
+ * Relations :
+ * - scénarios, campagnes, pages, sections, et entités créées
+ *
+ * @property int $id Identifiant unique
+ * @property string $name Nom d'utilisateur
+ * @property string $email Email
+ * @property string $password Mot de passe (hashé)
+ * @property string $role Rôle (voir self::ROLES)
+ * @property string|null $avatar Chemin de l'avatar ou null
+ * @property bool $notifications_enabled Notifications activées ?
+ * @property array $notification_channels Canaux de notification
+ * @method bool wantsNotification(string $type = null) L'utilisateur veut-il des notifications ?
+ * @method array notificationChannels() Retourne les canaux de notification
+ * @method bool wantsProfileNotification() Toujours true (modif profil)
+ * @method string avatarPath() URL de l'avatar (jamais null)
+ * @method bool verifyRole(string|int $role) Possède au moins le rôle donné
+ * @method bool updateRole(User $user) Peut-il modifier le rôle d'un autre ?
+ * @property Carbon|null $email_verified_at
+ * @property string|null $remember_token
+ * @property Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Page> $createdPages
+ * @property-read int|null $created_pages_count
+ * @property-read Collection<int, Section> $createdSections
+ * @property-read int|null $created_sections_count
+ * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
+ * @property-read int|null $notifications_count
+ * @property-read Collection<int, Page> $pages
+ * @property-read int|null $pages_count
+ * @property-read Collection<int, Section> $sections
+ * @property-read int|null $sections_count
+ * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereAvatar($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmailVerifiedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereNotificationChannels($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereNotificationsEnabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutTrashed()
+ * @property-read Collection<int, Campaign> $campaigns
+ * @property-read int|null $campaigns_count
+ * @property-read Collection<int, Condition> $createdConditions
+ * @property-read int|null $created_conditions_count
+ * @property-read Collection<int, Capability> $createdCapabilities
+ * @property-read int|null $created_capabilities_count
+ * @property-read Collection<int, Breed> $createdBreeds
+ * @property-read int|null $created_breeds_count
+ * @property-read Collection<int, ConsumableType> $createdConsumableTypes
+ * @property-read int|null $created_consumable_types_count
+ * @property-read Collection<int, Consumable> $createdConsumables
+ * @property-read int|null $created_consumables_count
+ * @property-read Collection<int, ItemType> $createdItemTypes
+ * @property-read int|null $created_item_types_count
+ * @property-read Collection<int, Item> $createdItems
+ * @property-read int|null $created_items_count
+ * @property-read Collection<int, MonsterRace> $createdMonsterRaces
+ * @property-read int|null $created_monster_races_count
+ * @property-read Collection<int, Panoply> $createdPanoplies
+ * @property-read int|null $created_panoplies_count
+ * @property-read Collection<int, ResourceType> $createdResourceTypes
+ * @property-read int|null $created_resource_types_count
+ * @property-read Collection<int, resource> $createdResources
+ * @property-read int|null $created_resources_count
+ * @property-read Collection<int, Scenario> $createdScenarios
+ * @property-read int|null $created_scenarios_count
+ * @property-read Collection<int, Shop> $createdShops
+ * @property-read int|null $created_shops_count
+ * @property-read Collection<int, Specialization> $createdSpecializations
+ * @property-read int|null $created_specializations_count
+ * @property-read Collection<int, SpellType> $createdSpellTypes
+ * @property-read int|null $created_spell_types_count
+ * @property-read Collection<int, Spell> $createdSpells
+ * @property-read int|null $created_spells_count
+ * @property-read Collection<int, Scenario> $scenarios
+ * @property-read int|null $scenarios_count
+ * @property-read string $role_name
+ * @property Carbon|null $last_login_at
+ * @property bool $is_system
+ * @property array<array-key, mixed>|null $notification_preferences
+ * @property-read MediaCollection<int, Media> $media
+ * @property-read int|null $media_count
+ * @property-read Collection<int, OAuthAccount> $oauthAccounts
+ * @property-read int|null $oauth_accounts_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereIsSystem($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLastLoginAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereNotificationPreferences($value)
+ * @property-read Collection<int, \App\Models\UserFavorite> $favorites
+ * @property-read int|null $favorites_count
+ * @mixin \Eloquent
+ */
+class User extends Authenticatable implements HasMedia, MustVerifyEmail
+{
+    /** @use HasFactory<UserFactory> */
+    use HasFactory, HasMediaCustomNaming, InteractsWithMedia, Notifiable, SoftDeletes;
+
+    use \Illuminate\Auth\MustVerifyEmail;
+
+    const ROLES = [
+        0 => 'guest', // Visiteur non connecté
+        1 => 'user', // Utilisateur inscrit
+        2 => 'player', // Joueur participant à une campagne/scénario
+        3 => 'game_master', // Meneur de jeu
+        4 => 'admin', // Administrateur
+        5 => 'super_admin', // Administrateur suprême (unique)
+    ];
+
+    const ROLE_GUEST = 0; // Visiteur non connecté
+
+    const ROLE_USER = 1; // Utilisateur inscrit
+
+    const ROLE_PLAYER = 2; // Joueur participant à une campagne/scénario
+
+    const ROLE_GAME_MASTER = 3; // Meneur de jeu
+
+    const ROLE_ADMIN = 4; // Administrateur
+
+    const ROLE_SUPER_ADMIN = 5; // Administrateur suprême (unique)
+
+    const NOTIFICATION_CHANNELS = ['database', 'email'];
+
+    public const DEFAULT_AVATAR = 'storage/images/avatar/default_avatar_head.webp';
+
+    /** Répertoire Media Library pour ce modèle. */
+    public const MEDIA_PATH = 'images/users';
+
+    /** Motif de nommage pour la collection avatars (placeholders: [name], [date], [id]). */
+    public const MEDIA_FILE_PATTERN_AVATARS = 'avatar-[id]';
+
+    /**
+     * ID de l'utilisateur système (pour les imports automatiques)
+     * Note: L'ID réel peut varier, on utilise l'email pour l'identifier
+     */
+    const SYSTEM_USER_ID = 0; // ID théorique (peut ne pas être utilisé si auto-increment)
+
+    const SYSTEM_USER_EMAIL = 'system@krosmozjdr.local'; // Email unique pour identifier l'utilisateur système
+
+    /**
+     * The conditions that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'email_verified_at',
+        'password',
+        'role',
+        'avatar',
+        'notifications_enabled',
+        'notification_channels',
+        'notification_preferences',
+        'is_system',
+        'last_login_at',
+    ];
+
+    /**
+     * The conditions that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * The conditions that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'notifications_enabled' => 'boolean',
+        'notification_channels' => 'array',
+        'notification_preferences' => 'array',
+        'is_system' => 'boolean',
+        'last_login_at' => 'datetime',
+    ];
+
+    /**
+     * Défaut JSON côté Eloquent : MySQL n’accepte pas DEFAULT sur une colonne JSON.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'notification_channels' => '["database"]',
+    ];
+
+    /**
+     * Retourne true si l'utilisateur souhaite recevoir des notifications (hors notification de profil).
+     * Si $type est fourni, utilise les préférences par type (notification_preferences).
+     *
+     * @param  string|null  $type  Type de notification (clé config/notifications.php)
+     */
+    public function wantsNotification(?string $type = null): bool
+    {
+        if ($type !== null) {
+            return $this->wantsNotificationForType($type);
+        }
+
+        return $this->notifications_enabled;
+    }
+
+    /**
+     * Retourne les canaux pour un type de notification donné (préférences par type ou défaut).
+     * Forme préférence : { channels: ['database','mail'], frequency: 'instant' } ou legacy [ 'database' ].
+     *
+     * @param  string  $type  Clé du type (ex: entity_modified, new_account_registered)
+     * @return list<string> Canaux ('database', 'mail') ou vide si désactivé
+     */
+    public function getChannelsForNotificationType(string $type): array
+    {
+        if (! $this->notifications_enabled) {
+            return [];
+        }
+
+        $prefs = $this->notification_preferences ?? [];
+        if (array_key_exists($type, $prefs)) {
+            $ch = $prefs[$type];
+            if (is_array($ch)) {
+                $allowed = ['database', 'mail'];
+                if (isset($ch['channels']) && is_array($ch['channels'])) {
+                    return array_values(array_intersect($ch['channels'], $allowed));
+                }
+
+                return array_values(array_intersect($ch, $allowed));
+            }
+            if ($ch === false || $ch === 'off') {
+                return [];
+            }
+        }
+        if (! $this->notifications_enabled) {
+            return [];
+        }
+        $defaults = config('notifications.types.'.$type.'.channels_default', null);
+        if (is_array($defaults)) {
+            return $defaults;
+        }
+        $channels = $this->notification_channels ?? ['database'];
+
+        return array_values(array_intersect((array) $channels, ['database', 'mail']));
+    }
+
+    /**
+     * Retourne la fréquence pour un type de notification (instant, daily, weekly, monthly).
+     *
+     * @param  string  $type  Clé du type
+     * @return string 'instant'|'daily'|'weekly'|'monthly'
+     */
+    public function getFrequencyForNotificationType(string $type): string
+    {
+        $prefs = $this->notification_preferences ?? [];
+        if (array_key_exists($type, $prefs)) {
+            $p = $prefs[$type];
+            if (is_array($p) && isset($p['frequency']) && in_array($p['frequency'], ['instant', 'daily', 'weekly', 'monthly'], true)) {
+                return $p['frequency'];
+            }
+        }
+
+        return config('notifications.types.'.$type.'.frequency_default', 'instant');
+    }
+
+    /**
+     * Indique si l'utilisateur souhaite recevoir ce type de notification (au moins un canal).
+     *
+     * @param  string  $type  Clé du type
+     */
+    public function wantsNotificationForType(string $type): bool
+    {
+        return count($this->getChannelsForNotificationType($type)) > 0;
+    }
+
+    /**
+     * Retourne la liste des canaux de notification préférés de l'utilisateur (défaut global).
+     *
+     * @return array Liste des canaux (ex: ['database', 'mail'])
+     */
+    public function notificationChannels(): array
+    {
+        return $this->notification_channels ?? ['database'];
+    }
+
+    /**
+     * Retourne toujours true : l'utilisateur doit toujours être notifié pour la modification de son profil.
+     */
+    public function wantsProfileNotification(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Collections et conversions Media Library pour l'avatar.
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('avatars')->singleFile();
+    }
+
+    /**
+     * Conversions pour la collection avatars (WebP + miniature).
+     */
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->performOnCollections('avatars')
+            ->width(150)
+            ->height(150)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('webp')
+            ->performOnCollections('avatars')
+            ->format('webp')
+            ->nonQueued();
+    }
+
+    /**
+     * Retourne l'URL de l'avatar de l'utilisateur (jamais null).
+     * Priorité : média collection avatars > colonne avatar (legacy) > défaut.
+     *
+     * @return string URL absolue de l'avatar
+     */
+    public function avatarPath(): string
+    {
+        $url = $this->getFirstMediaUrl('avatars');
+        if ($url !== '') {
+            return $url;
+        }
+        if ($this->avatar) {
+            if (str_starts_with($this->avatar, 'http://') || str_starts_with($this->avatar, 'https://')) {
+                return $this->avatar;
+            }
+            if (str_starts_with($this->avatar, 'storage/')) {
+                return asset($this->avatar);
+            }
+
+            return Storage::url($this->avatar);
+        }
+
+        return asset(self::DEFAULT_AVATAR);
+    }
+
+    /**
+     * Indique si l'utilisateur n'a pas d'avatar personnalisé (colonne legacy ou média).
+     */
+    public function usesDefaultAvatar(): bool
+    {
+        if ($this->getFirstMediaUrl('avatars') !== '') {
+            return false;
+        }
+
+        if ($this->avatar === null || $this->avatar === '') {
+            return true;
+        }
+
+        return $this->avatar === self::DEFAULT_AVATAR
+            || str_ends_with($this->avatar, 'default_avatar_head.webp');
+    }
+
+    /**
+     * Relation vers les comptes OAuth liés.
+     *
+     * @return HasMany<OAuthAccount>
+     */
+    public function oauthAccounts()
+    {
+        return $this->hasMany(OAuthAccount::class);
+    }
+
+    /**
+     * Indique si l'email est vérifié.
+     * Retourne true si email_verified_at est défini OU si un provider OAuth est lié
+     * (GitHub, Discord, Steam considèrent l'identité comme vérifiée).
+     */
+    public function hasVerifiedEmail(): bool
+    {
+        if ($this->email_verified_at !== null) {
+            return true;
+        }
+
+        return $this->oauthAccounts()->exists();
+    }
+
+    /**
+     * Envoie la notification de vérification d'email (comptes classiques).
+     * Utilise notre Mailable personnalisé et le layout emails.
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new VerifyEmailNotification);
+    }
+
+    /**
+     * Indique si l'utilisateur a un mot de passe défini (compte classique).
+     */
+    public function hasPassword(): bool
+    {
+        return $this->password !== null && $this->password !== '';
+    }
+
+    /**
+     * Indique si l'utilisateur a lié un provider OAuth donné.
+     */
+    public function hasOAuthProvider(string $provider): bool
+    {
+        return $this->oauthAccounts()->provider($provider)->exists();
+    }
+
+    /**
+     * Indique si l'utilisateur peut délier ce provider (au moins une autre méthode de connexion restante).
+     */
+    public function canUnlinkProvider(string $provider): bool
+    {
+        if (! $this->hasOAuthProvider($provider)) {
+            return false;
+        }
+        $hasPassword = $this->hasPassword();
+        $oauthCount = $this->oauthAccounts()->count();
+
+        return $hasPassword || $oauthCount > 1;
+    }
+
+    /**
+     * Retourne le nom du rôle de l'utilisateur.
+     *
+     * @return string Nom du rôle
+     */
+    public function getRoleNameAttribute(): string
+    {
+        return self::ROLES[$this->role] ?? 'unknown';
+    }
+
+    /**
+     * Retourne la valeur entière du rôle (par nom ou par valeur).
+     *
+     * @param  string|int  $role  Nom du rôle (ex: 'admin') ou valeur entière (ex: 4)
+     * @return int|null Valeur entière du rôle ou null si invalide
+     */
+    public static function roleValue(string|int $role): ?int
+    {
+        if (is_int($role)) {
+            return array_key_exists($role, self::ROLES) ? $role : null;
+        }
+
+        return array_search($role, self::ROLES, true) !== false ? array_search($role, self::ROLES, true) : null;
+    }
+
+    /**
+     * Vérifie si l'utilisateur possède au moins le rôle donné (par nom ou par valeur).
+     *
+     * @param  string|int  $role  Nom du rôle (ex: 'admin') ou valeur entière (ex: 4)
+     */
+    public function verifyRole(string|int $role): bool
+    {
+        $roleValue = self::roleValue($role);
+        if ($roleValue === null || ! is_int($roleValue)) {
+            return false;
+        }
+        if ($this->role === array_key_last(self::ROLES)) {
+            return true;
+        } // super_admin
+
+        return $this->role >= $roleValue;
+    }
+
+    /**
+     * Vérifie si l'utilisateur peut modifier le rôle d'un autre utilisateur.
+     *
+     * @param  User  $user  Utilisateur à modifier
+     */
+    public function updateRole(User $user): bool
+    {
+        // Seuls les admins et super_admins peuvent modifier les rôles
+        return $this->verifyRole(User::ROLE_ADMIN) && // admin = 4
+            // Un admin ne peut pas modifier le rôle d'un super_admin
+            $user->role !== User::ROLE_SUPER_ADMIN && // super_admin = 5
+            // Un admin ne peut pas se modifier lui-même
+            $this->id !== $user->id;
+    }
+
+    /**
+     * Vérifie si l'utilisateur est un administrateur (admin ou super_admin).
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role >= self::ROLE_ADMIN;
+    }
+
+    /**
+     * Vérifie si l'utilisateur est un super administrateur.
+     *
+     * Inclut le compte technique `is_system` (cron, scraping) — préférer
+     * `isInteractiveSuperAdmin()` pour l’application web sécurisée.
+     *
+     * @example
+     * $user->isSuperAdmin(); // true si role = super_admin
+     *
+     * @return bool True si role super_admin (y compris compte système)
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === self::ROLE_SUPER_ADMIN;
+    }
+
+    /**
+     * Super-administrateur « humain » : console instance / droits métiers web.
+     *
+     * Exclut `is_system` (impossible à authentifier de façon interactive).
+     *
+     * @example
+     * $user->isInteractiveSuperAdmin();
+     *
+     * @return bool True si role super_admin et pas compte système
+     */
+    public function isInteractiveSuperAdmin(): bool
+    {
+        return $this->role === self::ROLE_SUPER_ADMIN && ! $this->is_system;
+    }
+
+    /**
+     * Vérifie si l'utilisateur est un game master ou supérieur.
+     */
+    public function isGameMaster(): bool
+    {
+        return $this->role >= self::ROLE_GAME_MASTER;
+    }
+
+    /**
+     * Relations: entités créées par l'utilisateur (hasMany)
+     *
+     * @return HasMany
+     */
+    public function createdConditions()
+    {
+        return $this->hasMany(Condition::class, 'created_by');
+    }
+
+    public function createdItems()
+    {
+        return $this->hasMany(Item::class, 'created_by');
+    }
+
+    public function createdConsumables()
+    {
+        return $this->hasMany(Consumable::class, 'created_by');
+    }
+
+    public function createdResources()
+    {
+        return $this->hasMany(Resource::class, 'created_by');
+    }
+
+    public function createdCapabilities()
+    {
+        return $this->hasMany(Capability::class, 'created_by');
+    }
+
+    public function createdBreeds()
+    {
+        return $this->hasMany(Breed::class, 'created_by');
+    }
+
+    public function createdSpecializations()
+    {
+        return $this->hasMany(Specialization::class, 'created_by');
+    }
+
+    public function createdMonsterRaces()
+    {
+        return $this->hasMany(MonsterRace::class, 'created_by');
+    }
+
+    public function createdShops()
+    {
+        return $this->hasMany(Shop::class, 'created_by');
+    }
+
+    public function createdScenarios()
+    {
+        return $this->hasMany(Scenario::class, 'created_by');
+    }
+
+    public function createdSections()
+    {
+        return $this->hasMany(Section::class, 'created_by');
+    }
+
+    public function createdPanoplies()
+    {
+        return $this->hasMany(Panoply::class, 'created_by');
+    }
+
+    public function createdSpellTypes()
+    {
+        return $this->hasMany(SpellType::class, 'created_by');
+    }
+
+    public function createdConsumableTypes()
+    {
+        return $this->hasMany(ConsumableType::class, 'created_by');
+    }
+
+    public function createdItemTypes()
+    {
+        return $this->hasMany(ItemType::class, 'created_by');
+    }
+
+    public function createdResourceTypes()
+    {
+        return $this->hasMany(ResourceType::class, 'created_by');
+    }
+
+    public function createdSpells()
+    {
+        return $this->hasMany(Spell::class, 'created_by');
+    }
+
+    public function createdPages()
+    {
+        return $this->hasMany(Page::class, 'created_by');
+    }
+
+    /**
+     * Relations: scénarios auxquels l'utilisateur participe (belongsToMany)
+     *
+     * @return BelongsToMany
+     */
+    public function scenarios()
+    {
+        return $this->belongsToMany(Scenario::class, 'scenario_user');
+    }
+
+    /**
+     * Relations: campagnes auxquelles l'utilisateur participe (belongsToMany)
+     *
+     * @return BelongsToMany
+     */
+    public function campaigns()
+    {
+        return $this->belongsToMany(Campaign::class, 'campaign_user');
+    }
+
+    /**
+     * Relations: pages auxquelles l'utilisateur participe (belongsToMany)
+     *
+     * @return BelongsToMany
+     */
+    public function pages()
+    {
+        return $this->belongsToMany(Page::class, 'page_user');
+    }
+
+    /**
+     * Relations: sections auxquelles l'utilisateur participe (belongsToMany)
+     *
+     * @return BelongsToMany
+     */
+    public function sections()
+    {
+        return $this->belongsToMany(Section::class, 'section_user');
+    }
+
+    /**
+     * Vérifie si l'utilisateur peut se connecter
+     * Les utilisateurs système ne peuvent pas se connecter
+     */
+    public function canLogin(): bool
+    {
+        return ! $this->is_system;
+    }
+
+    /**
+     * Un seul super_admin humain par instance (hors compte `is_system`).
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (User $user): void {
+            if (! $user->isDirty('role') && ! $user->isDirty('is_system')) {
+                return;
+            }
+            if ($user->role !== self::ROLE_SUPER_ADMIN || $user->is_system) {
+                return;
+            }
+            $query = self::query()
+                ->where('role', self::ROLE_SUPER_ADMIN)
+                ->where('is_system', false);
+            if ($user->exists) {
+                $query->whereKeyNot($user->getKey());
+            }
+            if ($query->exists()) {
+                throw ValidationException::withMessages([
+                    'role' => ['Un compte super administrateur humain existe déjà pour cette instance.'],
+                ]);
+            }
+        });
+    }
+
+    /**
+     * Favoris catalogue de l'utilisateur.
+     *
+     * @return HasMany<UserFavorite, $this>
+     */
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(UserFavorite::class);
+    }
+
+    /**
+     * Récupère l'utilisateur système (pour les imports automatiques)
+     */
+    public static function getSystemUser(): ?User
+    {
+        return static::where('email', self::SYSTEM_USER_EMAIL)->first();
+    }
+}

@@ -1,0 +1,56 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8008",
+        "official_id": null
+    },
+    "item": {
+        "name": "Ceinture du Koalak",
+        "level": "6",
+        "description": "Cette ceinture en feuilles de Kaliptus diffuse une délicieuse odeur, capable d'en masquer d'autres. Elle est en outre parfaite pour masquer vos rondeurs.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 1800,
+        "price_custom": null,
+        "effect": {
+            "dodge": 3
+        },
+        "bonus": {
+            "dodge": 3
+        },
+        "item_type_dofus_id": 10,
+        "item_type_name": "Ceinture"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "46"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "2540",
+                "name": "Substrat de Futaie",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "12016",
+                "name": "Plume du Kwakwa",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "8083",
+                "name": "Os de Pékeualak",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "7904",
+                "name": "Fleur de Kaliptus",
+                "quantity": 3
+            }
+        ]
+    }
+}

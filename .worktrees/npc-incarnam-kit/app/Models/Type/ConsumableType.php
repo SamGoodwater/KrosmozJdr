@@ -1,0 +1,219 @@
+<?php
+
+namespace App\Models\Type;
+
+use App\Models\Entity\Consumable;
+use App\Models\Type\Concerns\HasTypeRegistryFlags;
+use App\Models\User;
+use Database\Factories\ConsumableTypeFactory;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
+
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property int|null $created_by
+ * @property-read Collection<int, Consumable> $consumables
+ * @property-read int|null $consumables_count
+ * @property-read User|null $createdBy
+ *
+ * @method static \Database\Factories\Type\ConsumableTypeFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereReadLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereWriteLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType withoutTrashed()
+ *
+ * @property int|null $dofusdb_type_id
+ * @property string $decision
+ * @property int $seen_count
+ * @property Carbon|null $last_seen_at
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType allowed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType blocked()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType pending()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereDecision($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereDofusdbTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereLastSeenAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereSeenCount($value)
+ *
+ * @property bool|null $show_in_catalog
+ * @property bool|null $allow_scrap
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType allowScrap()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType visibleInCatalog()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereAllowScrap($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereShowInCatalog($value)
+ *
+ * @mixin \Eloquent
+ */
+class ConsumableType extends Model
+{
+    /** @use HasFactory<ConsumableTypeFactory> */
+    use HasFactory, HasTypeRegistryFlags, SoftDeletes;
+
+    public const STATE_RAW = 'raw';
+
+    public const STATE_DRAFT = 'draft';
+
+    public const STATE_AUTO = 'auto';
+
+    public const STATE_PLAYABLE = 'playable';
+
+    public const STATE_ARCHIVED = 'archived';
+
+    public const DECISION_PENDING = 'pending';
+
+    public const DECISION_ALLOWED = 'allowed';
+
+    public const DECISION_BLOCKED = 'blocked';
+
+    /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'show_in_catalog' => false,
+        'allow_scrap' => false,
+    ];
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'dofusdb_type_id',
+        'decision',
+        'seen_count',
+        'last_seen_at',
+        'show_in_catalog',
+        'allow_scrap',
+        'state',
+        'read_level',
+        'write_level',
+        'created_by',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'read_level' => 'integer',
+        'write_level' => 'integer',
+        'dofusdb_type_id' => 'integer',
+        'seen_count' => 'integer',
+        'last_seen_at' => 'datetime',
+        'show_in_catalog' => 'boolean',
+        'allow_scrap' => 'boolean',
+    ];
+
+    /**
+     * Scope: types en attente de validation UX.
+     */
+    public function scopePending($query)
+    {
+        return $query->where('decision', self::DECISION_PENDING);
+    }
+
+    /**
+     * Scope: types bloqués (blacklist).
+     */
+    public function scopeBlocked($query)
+    {
+        return $query->where('decision', self::DECISION_BLOCKED);
+    }
+
+    /**
+     * Indique si un typeId DofusDB est explicitement autorisé au scrap.
+     *
+     * Comportement:
+     * - Si le type n'existe pas encore, il est créé en `allow_scrap=false` et la méthode retourne false.
+     */
+    public static function isDofusdbTypeAllowed(int $typeId): bool
+    {
+        $type = static::where('dofusdb_type_id', $typeId)->first();
+
+        if (! $type) {
+            static::touchDofusdbType($typeId);
+
+            return false;
+        }
+
+        return (bool) $type->allow_scrap;
+    }
+
+    /**
+     * Enregistre/actualise un typeId DofusDB détecté (pour revue dans le dashboard).
+     *
+     * @param  string|null  $label  Libellé optionnel pour initialiser ou améliorer `name`.
+     */
+    public static function touchDofusdbType(int $typeId, ?string $label = null): static
+    {
+        $placeholderName = "DofusDB type #{$typeId}";
+        $name = $label ?: $placeholderName;
+
+        /** @var static $type */
+        $type = static::firstOrCreate(
+            ['dofusdb_type_id' => $typeId],
+            [
+                'name' => $name,
+                'usable' => 0,
+                'is_visible' => 'guest',
+                'decision' => self::DECISION_PENDING,
+                'allow_scrap' => false,
+                'show_in_catalog' => false,
+                'seen_count' => 0,
+                'created_by' => User::getSystemUser()?->id,
+            ]
+        );
+
+        // Si on a un meilleur label et que le nom actuel est un placeholder, on remplace
+        if ($label && $type->name === $placeholderName) {
+            $type->name = $label;
+        }
+
+        $type->seen_count = (int) ($type->seen_count ?? 0) + 1;
+        $type->last_seen_at = now();
+        $type->save();
+
+        return $type;
+    }
+
+    /**
+     * Get the user that created the consumable type.
+     */
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Les consommables de ce type.
+     */
+    public function consumables()
+    {
+        return $this->hasMany(Consumable::class, 'consumable_type_id');
+    }
+}

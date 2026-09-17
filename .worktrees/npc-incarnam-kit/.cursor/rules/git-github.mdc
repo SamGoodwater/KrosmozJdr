@@ -1,0 +1,30 @@
+---
+description: Git/GitHub — branches courtes par sujet, merge dans main, puis suppression.
+alwaysApply: true
+---
+
+# Git et GitHub
+
+`main` est la **seule** branche durable et toujours déployable. Pas de branches longues `ui`, `security`, `optimisation`.
+
+## Cycle obligatoire d’un changement
+
+1. `git fetch --prune` puis `git checkout main && git pull --ff-only`.
+2. Créer une branche **courte et spécifique** : `feat/…`, `fix/…`, `security/…`, `docs/…` (ex. `fix/npc-table-sql`, pas `cursor/wip`).
+3. Si une branche du même sujet existe déjà avec du WIP, **continuer dessus** au lieu d’en ouvrir une autre.
+4. Quand le travail est fini (code + tests ciblés + doc) : **committer sur cette branche**, merger dans `main`, pousser `main`, **supprimer** la branche locale et distante.
+5. PR GitHub : **optionnelle** en solo. Utile pour Dependabot ou un changement risqué. Si ouverte : merger ou fermer **dans la foulée**, jamais la laisser en draft.
+
+Ne pas attendre une demande explicite de commit/merge : terminer la tâche inclut ce cycle. Ne pas force-push `main`. Ne pas skipper les hooks.
+
+## Dependabot
+
+- npm minor/patch groupé : merger si le lockfile est cohérent, puis supprimer la branche.
+- Composer : PR individuelles ; **ne pas merger** un lockfile qui rétrograde Symfony.
+- Majors (Vitest, Tiptap, Actions…) : ignorées dans `.github/dependabot.yml` ; chantier dédié.
+
+## Interdit
+
+- Empiler des PR / branches « pour plus tard ».
+- Travailler longtemps hors `main` sans merger.
+- Recréer des branches génériques permanentes.

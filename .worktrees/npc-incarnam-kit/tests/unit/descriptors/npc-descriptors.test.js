@@ -1,0 +1,89 @@
+/**
+ * Tests unitaires pour npc-descriptors
+ *
+ * @description
+ * Vérifie que :
+ * - La structure des descriptors est correcte
+ * - visibleIf / editableIf fonctionnent correctement
+ * - La configuration bulk est correcte
+ * - Les groupes de champs sont définis
+ * - QUICK_EDIT_FIELDS est cohérent avec les champs bulk
+ */
+
+import { describe, it, expect } from 'vitest';
+import { getNpcFieldDescriptors } from '@/Entities/npc/npc-descriptors';
+
+describe('npc-descriptors', () => {
+    describe('Structure des descriptors', () => {
+        it('retourne un objet avec tous les champs requis', () => {
+            const descriptors = getNpcFieldDescriptors();
+            const requiredFields = ['id', 'creature_name', 'state', 'read_level', 'write_level'];
+
+            requiredFields.forEach((field) => {
+                expect(descriptors).toHaveProperty(field);
+                expect(descriptors[field]).toHaveProperty('key');
+                const label = descriptors[field].label ?? descriptors[field].general?.label;
+                expect(label).toBeDefined();
+                expect(descriptors[field].key).toBe(field);
+            });
+        });
+
+        it('expose rôle, taille enum et lieu créature', () => {
+            const descriptors = getNpcFieldDescriptors();
+            expect(descriptors.npc_role.edit.form.type).toBe('select');
+            expect(descriptors.size.edit.form.type).toBe('select');
+            expect(descriptors.size.table.filterable.id).toBe('size');
+            expect(descriptors.creature_location.table.searchable).toBe(true);
+            expect(descriptors._tableConfig.features.search.placeholder).toContain('PNJ');
+        });
+
+        it('expose les colonnes combat créature comme les monstres', () => {
+            const descriptors = getNpcFieldDescriptors();
+            expect(descriptors.creature_hostility.table.filterable.id).toBe('creature_hostility');
+            expect(descriptors.creature_life.table.filterable.type).toBe('range');
+            expect(descriptors.creature_pa.table.filterable.id).toBe('creature_pa');
+            expect(descriptors.creature_image.table.cell.sizes.md.mode).toBe('thumb');
+        });
+
+        it('tous les descriptors ont une propriété display avec sizes (pour les tableaux)', () => {
+            const descriptors = getNpcFieldDescriptors();
+            Object.values(descriptors).forEach((desc) => {
+                if (desc.display) {
+                    expect(desc.display).toHaveProperty('sizes');
+                }
+            });
+        });
+    });
+
+    describe('visibleIf / editableIf', () => {
+        it('visibleIf sur id suit canCreateAny (fermeture sur le factory)', () => {
+            const on = getNpcFieldDescriptors({ capabilities: { createAny: true } });
+            const off = getNpcFieldDescriptors({ capabilities: { createAny: false } });
+            expect(on.id.visibleIf?.()).toBe(true);
+            expect(off.id.visibleIf?.()).toBe(false);
+        });
+    });
+
+
+    describe('Configuration bulk', () => {
+        it('les champs avec edit.form ont une configuration bulk', () => {
+            const descriptors = getNpcFieldDescriptors();
+            Object.values(descriptors).forEach((desc) => {
+                if (desc.edit?.form) {
+                    expect(desc.edit.form).toHaveProperty('bulk');
+                    expect(desc.edit.form.bulk).toHaveProperty('enabled');
+                    expect(typeof desc.edit.form.bulk.enabled).toBe('boolean');
+                }
+            });
+        });
+
+        it('bulk.build est optionnel : si présent, c’est une fonction (déprécié, mappers)', () => {
+            const descriptors = getNpcFieldDescriptors();
+            Object.values(descriptors).forEach((desc) => {
+                if (desc.edit?.form?.bulk?.build != null) {
+                    expect(typeof desc.edit.form.bulk.build).toBe('function');
+                }
+            });
+        });
+    });
+});

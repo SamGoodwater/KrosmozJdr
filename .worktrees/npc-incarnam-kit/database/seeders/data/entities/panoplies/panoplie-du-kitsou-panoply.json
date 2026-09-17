@@ -1,0 +1,27 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "41"
+    },
+    "panoply": {
+        "name": "Panoplie du Kitsou",
+        "description": null,
+        "bonus": {
+            "4": {
+                "intelligence": 1,
+                "arcana": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "7342",
+            "7341",
+            "7340",
+            "7339"
+        ]
+    }
+}

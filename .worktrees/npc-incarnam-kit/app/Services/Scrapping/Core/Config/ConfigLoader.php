@@ -1,0 +1,239 @@
+<?php
+
+namespace App\Services\Scrapping\Core\Config;
+
+/**
+ * Charge les configs depuis resources/scrapping/config/ (source + entités).
+ * Endpoints, filtres, target, meta, relations viennent des JSON.
+ * Mapping runtime : BDD via ScrappingMappingService (source de vérité applicative).
+ * Sans mappingService (tests/outils), le mapping JSON d'entité reste disponible.
+ *
+ * Validation minimale : version, source, entity, endpoints.
+ */
+final class ConfigLoader
+{
+    /** @var list<string> */
+    private const ENTITY_REQUIRED_KEYS = ['version', 'source', 'entity', 'endpoints', 'target'];
+
+    /** @var array<string, array<string, mixed>> */
+    private array $sourceCache = [];
+
+    /** @var array<string, array<string, mixed>> */
+    private array $entityCache = [];
+
+    public function __construct(
+        private string $baseDir,
+        private ?ScrappingMappingService $mappingService = null
+    ) {
+        if (! is_dir($this->baseDir)) {
+            throw new \InvalidArgumentException("Répertoire config scrapping introuvable: {$this->baseDir}");
+        }
+    }
+
+    public static function default(): self
+    {
+        return new self(base_path('resources/scrapping/config'));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function loadSource(string $source): array
+    {
+        if (isset($this->sourceCache[$source])) {
+            return $this->sourceCache[$source];
+        }
+
+        $path = $this->baseDir."/sources/{$source}/source.json";
+        $data = $this->readJson($path);
+
+        if (($data['source'] ?? null) !== $source) {
+            throw new \InvalidArgumentException("Source mismatch: attendu '{$source}', trouvé '".($data['source'] ?? 'null')."'");
+        }
+
+        $this->sourceCache[$source] = $data;
+
+        return $data;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function listEntities(string $source): array
+    {
+        $dir = $this->baseDir."/sources/{$source}/entities";
+        if (! is_dir($dir)) {
+            return [];
+        }
+
+        $files = glob($dir.'/*.json') ?: [];
+        $entities = [];
+        foreach ($files as $file) {
+            $name = basename($file, '.json');
+            if ($name !== '') {
+                $entities[] = $name;
+            }
+        }
+        sort($entities);
+
+        return $entities;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function loadEntity(string $source, string $entity): array
+    {
+        $cacheKey = "{$source}:{$entity}";
+        if (isset($this->entityCache[$cacheKey])) {
+            return $this->entityCache[$cacheKey];
+        }
+
+        $path = $this->baseDir."/sources/{$source}/entities/{$entity}.json";
+        $data = $this->readJson($path);
+        $this->validateEntitySchema($data, $source, $entity);
+
+        if (($data['source'] ?? null) !== $source) {
+            throw new \InvalidArgumentException("Source mismatch pour entité '{$entity}'.");
+        }
+        if (($data['entity'] ?? null) !== $entity) {
+            throw new \InvalidArgumentException("Entity mismatch: attendu '{$entity}'.");
+        }
+
+        $endpoints = $data['endpoints'] ?? null;
+        if (! is_array($endpoints)) {
+            throw new \InvalidArgumentException("Config entité '{$source}/{$entity}': 'endpoints' requis.");
+        }
+
+        // Mapping runtime: BDD uniquement quand mappingService est injecté.
+        // Le JSON est une source de bootstrap/édition, mais pas la source applicative en production.
+        $jsonMapping = is_array($data['mapping'] ?? null) ? $data['mapping'] : [];
+        $isCatalogOnly = (bool) (($data['meta']['catalogOnly'] ?? false) === true);
+        if ($this->mappingService !== null) {
+            $fromDb = $this->mappingService->getMappingForEntity($source, $entity);
+            if ($fromDb === null || $fromDb === []) {
+                if ($isCatalogOnly) {
+                    // Entité catalogue-only : pas d'import/intégration, mapping BDD optionnel.
+                    $data['mapping'] = $jsonMapping;
+                } else {
+                    throw new \RuntimeException(
+                        "Aucun mapping BDD pour {$source}/{$entity}. ".
+                        'Exécutez le seeder ScrappingEntityMappingSeeder.'
+                    );
+                }
+            } else {
+                $data['mapping'] = $fromDb;
+            }
+        } else {
+            $data['mapping'] = $jsonMapping;
+        }
+
+        $this->entityCache[$cacheKey] = $data;
+
+        return $data;
+    }
+
+    /**
+     * Lit le mapping d'une entité depuis le fichier JSON uniquement (sans fusion BDD).
+     * Utilisé pour lister les chemins possibles (modal « Lier » depuis la caractéristique).
+     * Ne retourne que les entrées ayant "from.path" (pas "extract").
+     *
+     * @return list<array{path: string, key: string, langAware: bool, targets: list<array{model: string, field: string}>, formatters: list<array{name: string, args: array}>}>
+     */
+    public function getEntityMappingEntriesFromFile(string $source, string $entity): array
+    {
+        $path = $this->baseDir."/sources/{$source}/entities/{$entity}.json";
+        $data = $this->readJson($path);
+        $mapping = $data['mapping'] ?? [];
+        if (! is_array($mapping)) {
+            return [];
+        }
+        $out = [];
+        foreach ($mapping as $entry) {
+            $from = $entry['from'] ?? null;
+            if (! is_array($from) || ! isset($from['path']) || is_string($from['path']) === false) {
+                continue;
+            }
+            $to = $entry['to'] ?? [];
+            $targets = [];
+            foreach (is_array($to) ? $to : [] as $t) {
+                if (isset($t['model'], $t['field'])) {
+                    $targets[] = ['model' => (string) $t['model'], 'field' => (string) $t['field']];
+                }
+            }
+            $formatters = $entry['formatters'] ?? [];
+            if (! is_array($formatters)) {
+                $formatters = [];
+            }
+            $out[] = [
+                'path' => $from['path'],
+                'key' => $entry['key'] ?? $from['path'],
+                'langAware' => (bool) ($from['langAware'] ?? false),
+                'targets' => $targets,
+                'formatters' => $formatters,
+            ];
+        }
+
+        return $out;
+    }
+
+    /**
+     * Retourne le libellé d'une entité depuis son fichier JSON (clé "label" ou id de l'entité).
+     */
+    public function getEntityLabel(string $source, string $entity): string
+    {
+        $path = $this->baseDir."/sources/{$source}/entities/{$entity}.json";
+        if (! is_file($path)) {
+            return $entity;
+        }
+        $data = $this->readJson($path);
+
+        return (string) ($data['label'] ?? $entity);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function readJson(string $path): array
+    {
+        if (! is_file($path)) {
+            throw new \RuntimeException("Config JSON introuvable: {$path}");
+        }
+        $raw = file_get_contents($path);
+        if ($raw === false) {
+            throw new \RuntimeException("Impossible de lire le fichier JSON: {$path}");
+        }
+        $decoded = json_decode($raw, true);
+        if (! is_array($decoded)) {
+            throw new \RuntimeException("JSON invalide: {$path}");
+        }
+
+        return $decoded;
+    }
+
+    /**
+     * Valide le contrat canonique minimal des fichiers d'entité.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function validateEntitySchema(array $data, string $source, string $entity): void
+    {
+        foreach (self::ENTITY_REQUIRED_KEYS as $key) {
+            if (! array_key_exists($key, $data)) {
+                throw new \InvalidArgumentException("Config entité '{$source}/{$entity}' : clé '{$key}' requise.");
+            }
+        }
+        if (! is_int($data['version']) || $data['version'] < 1) {
+            throw new \InvalidArgumentException("Config entité '{$source}/{$entity}' : version doit être un entier positif.");
+        }
+        if (! is_string($data['source']) || ! is_string($data['entity'])) {
+            throw new \InvalidArgumentException("Config entité '{$source}/{$entity}' : source et entity doivent être des chaînes.");
+        }
+        if (! is_array($data['endpoints']) || ! is_array($data['target'])) {
+            throw new \InvalidArgumentException("Config entité '{$source}/{$entity}' : endpoints et target doivent être des objets.");
+        }
+        if (isset($data['mapping']) && ! is_array($data['mapping'])) {
+            throw new \InvalidArgumentException("Config entité '{$source}/{$entity}' : mapping doit être une liste.");
+        }
+    }
+}

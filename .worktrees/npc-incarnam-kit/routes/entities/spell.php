@@ -1,0 +1,25 @@
+<?php
+
+use App\Http\Controllers\Entity\SpellController;
+use Illuminate\Support\Facades\Route;
+
+// Routes publiques (accessibles sans authentification)
+Route::prefix('entities/spells')->name('entities.spells.')->group(function () {
+    Route::get('/', [SpellController::class, 'index'])->name('index');
+    Route::get('/{spell}', [SpellController::class, 'show'])->name('show');
+});
+
+// Routes protégées (nécessitent une authentification)
+Route::prefix('entities/spells')->name('entities.spells.')->middleware('auth')->group(function () {
+    Route::get('/create', [SpellController::class, 'create'])->name('create');
+    Route::post('/', [SpellController::class, 'store'])->name('store');
+    Route::get('/{spell}/edit', [SpellController::class, 'edit'])->name('edit');
+    Route::get('/{spell}/edit-payload', [SpellController::class, 'editPayload'])->name('edit-payload');
+    // Routes spécifiques pour les relations (doivent être avant la route update générique)
+    Route::patch('/{spell}/breeds', [SpellController::class, 'updateBreeds'])->name('updateBreeds');
+    Route::patch('/{spell}/spell-types', [SpellController::class, 'updateSpellTypes'])->name('updateSpellTypes');
+    Route::patch('/{spell}/effect-groups/{effect}', [SpellController::class, 'updateEffectGroup'])->name('updateEffectGroup');
+    Route::get('/{spell}/pdf', [SpellController::class, 'downloadPdf'])->name('pdf');
+    Route::patch('/{spell}', [SpellController::class, 'update'])->name('update');
+    Route::delete('/{spell}', [SpellController::class, 'delete'])->name('delete');
+});

@@ -1,0 +1,64 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6504",
+        "official_id": null
+    },
+    "item": {
+        "name": "Marteau Fantal",
+        "level": "8",
+        "description": "On ne connaît que le diminutif de son créateur, un certain Fantal, mais on sait qu'il avait très mauvais goût. En effet, il appréciait s'enduire de Gelée Royale pour ensuite se recouvrir de plumes de Tofu Royal. Et oui en plus, il avait des goûts de luxe.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 1900,
+        "price_custom": 8100,
+        "effect": {
+            "fixed_damage_earth": 1
+        },
+        "bonus": {
+            "fixed_damage_earth": 1
+        },
+        "item_type_dofus_id": 7,
+        "item_type_name": "Marteau"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [],
+        "resources": [
+            {
+                "dofusdb_id": "8495",
+                "name": "Bourgeon d'Abraknyde Ancestral",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "2543",
+                "name": "Substrat de Fascine",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "14470",
+                "name": "Poil de Wobot Kiafin",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "18385",
+                "name": "Cœur du Mantiscore",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "846",
+                "name": "Œuf de Dragoeuf Charbon",
+                "quantity": 11
+            },
+            {
+                "dofusdb_id": "845",
+                "name": "Œuf de Dragoeuf Argile",
+                "quantity": 12
+            }
+        ]
+    }
+}

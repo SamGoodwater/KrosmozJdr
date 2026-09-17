@@ -1,0 +1,197 @@
+<?php
+
+namespace App\Models\Entity;
+
+use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\Concerns\VisibleToViewer;
+use App\Models\User;
+use Database\Factories\CapabilityFactory;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+
+/**
+ * @property int $id
+ * @property string $name
+ * @property string|null $description
+ * @property string|null $effect
+ * @property string $level
+ * @property string $pa
+ * @property string $po
+ * @property bool $po_editable
+ * @property string $time_before_use_again
+ * @property string $casting_time
+ * @property string $duration
+ * @property string $element
+ * @property bool $is_magic
+ * @property bool $ritual_available
+ * @property bool $is_passive
+ * @property string|null $powerful
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
+ * @property string|null $image
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property int|null $created_by
+ * @property-read User|null $createdBy
+ * @property-read Collection<int, Creature> $creatures
+ * @property-read int|null $creatures_count
+ * @property-read Collection<int, Specialization> $specializations
+ * @property-read int|null $specializations_count
+ *
+ * @method static \Database\Factories\Entity\CapabilityFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereCastingTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereDuration($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereEffect($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereElement($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereIsMagic($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereReadLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability wherePa($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability wherePo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability wherePoEditable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability wherePowerful($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereRitualAvailable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereTimeBeforeUseAgain($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereWriteLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withoutTrashed()
+ *
+ * @property-read MediaCollection<int, Media> $media
+ * @property-read int|null $media_count
+ * @property-read Collection<int, Breed> $breeds
+ * @property-read int|null $breeds_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereIsPassive($value)
+ *
+ * @property-read Collection<int, Condition> $conditions
+ * @property-read int|null $conditions_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability visibleToUser(?\App\Models\User $user)
+ *
+ * @mixin \Eloquent
+ */
+class Capability extends Model implements HasMedia
+{
+    /** @use HasFactory<CapabilityFactory> */
+    use HasEntityImageMedia, HasFactory, SoftDeletes, VisibleToViewer;
+
+    public const STATE_RAW = 'raw';
+
+    public const STATE_DRAFT = 'draft';
+
+    public const STATE_AUTO = 'auto';
+
+    public const STATE_PLAYABLE = 'playable';
+
+    public const STATE_ARCHIVED = 'archived';
+
+    /** Répertoire Media Library pour ce modèle. */
+    public const MEDIA_PATH = 'images/entity/capabilities';
+
+    /** Motif de nommage pour la collection images (placeholders: [name], [date], [id]). */
+    public const MEDIA_FILE_PATTERN_IMAGES = 'image-[id]-[slug]';
+
+    /** Référentiel éléments (0-29) — partagé avec Spell. */
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'description',
+        'effect',
+        'level',
+        'pa',
+        'po',
+        'po_editable',
+        'time_before_use_again',
+        'casting_time',
+        'duration',
+        'element',
+        'is_magic',
+        'ritual_available',
+        'is_passive',
+        'powerful',
+        'state',
+        'read_level',
+        'write_level',
+        'image',
+        'created_by',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'element' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
+        'po_editable' => 'boolean',
+        'is_magic' => 'boolean',
+        'ritual_available' => 'boolean',
+        'is_passive' => 'boolean',
+    ];
+
+    /**
+     * Get the user that created the capability.
+     */
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Les spécialisations associées à cette capacité.
+     */
+    public function specializations()
+    {
+        return $this->belongsToMany(Specialization::class, 'capability_specialization');
+    }
+
+    /**
+     * Les créatures associées à cette capacité.
+     */
+    public function creatures()
+    {
+        return $this->belongsToMany(Creature::class, 'capability_creature');
+    }
+
+    public function conditions()
+    {
+        return $this->belongsToMany(Condition::class, 'condition_capability')
+            ->withTimestamps();
+    }
+
+    /**
+     * Classes (breeds) qui référencent cette capacité.
+     */
+    public function breeds()
+    {
+        return $this->belongsToMany(Breed::class, 'breed_capability', 'capability_id', 'breed_id')
+            ->withTimestamps();
+    }
+}

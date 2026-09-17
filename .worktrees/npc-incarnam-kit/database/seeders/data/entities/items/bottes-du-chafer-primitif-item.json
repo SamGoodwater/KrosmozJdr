@@ -1,0 +1,56 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "13094",
+        "official_id": null
+    },
+    "item": {
+        "name": "Bottes du Chafer Primitif",
+        "level": "4",
+        "description": "Le cordonnier qui a créé ces bottes s'est trompé et les a faites à l'image de celles du Chafer Rōnin. Il a sûrement pensé que vous aviez suffisamment l'air primitif sans ça.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 700,
+        "price_custom": null,
+        "effect": {
+            "initiative": 1
+        },
+        "bonus": {
+            "initiative": 1
+        },
+        "item_type_dofus_id": 11,
+        "item_type_name": "Bottes"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "239"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "746",
+                "name": "Ébonite",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "13096",
+                "name": "Fémur du Chafer Rōnin",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "2278",
+                "name": "Tissu Invisible",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "432",
+                "name": "Côtes du Rib",
+                "quantity": 7
+            }
+        ]
+    }
+}

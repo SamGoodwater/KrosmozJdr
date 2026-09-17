@@ -1,0 +1,71 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8641",
+        "official_id": null
+    },
+    "item": {
+        "name": "Cape Routh",
+        "level": "8",
+        "description": "Cette cape est si légère et si fine qu'elle s'envole à la moindre brise de vent, de n'importe quel vent. Pas toujours très pratique, surtout lorsque l'on veut se faire discret, après un repas composé de légumineuses et de diverses boissons fermentées.",
+        "recipe": null,
+        "rarity": 1,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 2400,
+        "price_custom": 8000,
+        "effect": {
+            "strength": 2
+        },
+        "bonus": {
+            "strength": 2
+        },
+        "item_type_dofus_id": 17,
+        "item_type_name": "Cape"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "89"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "8757",
+                "name": "Maillot de corps de Barbroussa",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "8760",
+                "name": "Foulard du Sparo",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "8766",
+                "name": "Plume de fesse du Kido",
+                "quantity": 10
+            },
+            {
+                "dofusdb_id": "8767",
+                "name": "Aile du Bitouf des Plaines",
+                "quantity": 10
+            },
+            {
+                "dofusdb_id": "8995",
+                "name": "Étoffe de Gourlo le Terrible",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "13496",
+                "name": "Bandeau de Nakunbra",
+                "quantity": 20
+            },
+            {
+                "dofusdb_id": "2301",
+                "name": "Moustache de Kolérat",
+                "quantity": 20
+            }
+        ]
+    }
+}

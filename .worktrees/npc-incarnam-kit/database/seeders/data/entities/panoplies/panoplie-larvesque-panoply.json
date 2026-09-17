@@ -1,0 +1,28 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "33"
+    },
+    "panoply": {
+        "name": "Panoplie Larvesque",
+        "description": null,
+        "bonus": {
+            "5": {
+                "intelligence": 1,
+                "heal_bonus": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "7106",
+            "7107",
+            "7108",
+            "7109",
+            "7110"
+        ]
+    }
+}

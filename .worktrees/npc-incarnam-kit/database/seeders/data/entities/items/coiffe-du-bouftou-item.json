@@ -1,0 +1,46 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "2411",
+        "official_id": null
+    },
+    "item": {
+        "name": "Coiffe du Bouftou",
+        "level": "2",
+        "description": "Ce superbe chapeau permet à son porteur de gagner force et intelligence si ce dernier parvient à s'accommoder de l'odeur.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 700,
+        "price_custom": null,
+        "effect": {
+            "intimidation": 1
+        },
+        "bonus": {
+            "intimidation": 1
+        },
+        "item_type_dofus_id": 16,
+        "item_type_name": "Chapeau"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "1"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "383",
+                "name": "Corne de Boufton",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "882",
+                "name": "Laine du Chef de Guerre Bouftou",
+                "quantity": 1
+            }
+        ]
+    }
+}

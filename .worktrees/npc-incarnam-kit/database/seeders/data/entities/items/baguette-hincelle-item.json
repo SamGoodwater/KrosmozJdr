@@ -1,0 +1,66 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "7169",
+        "official_id": null
+    },
+    "item": {
+        "name": "Baguette Hincelle",
+        "level": "8",
+        "description": "Idéale pour allumer le feu, ou animer les mariages ennuyeux, cette baguette vous permettra peut-être une fois dans votre vie, de faire des étincelles. Une occasion à saisir.",
+        "recipe": null,
+        "rarity": 1,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 4500,
+        "price_custom": 8100,
+        "effect": {
+            "fixed_damage_fire": 1,
+            "hit_bonus": 2
+        },
+        "bonus": {
+            "fixed_damage_fire": 1,
+            "hit_bonus": 2
+        },
+        "item_type_dofus_id": 3,
+        "item_type_name": "Baguette"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [],
+        "resources": [
+            {
+                "dofusdb_id": "2543",
+                "name": "Substrat de Fascine",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "18371",
+                "name": "Carapace du Mantiscore",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "14473",
+                "name": "Boulon Wabbit",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "8077",
+                "name": "Boomerang du Warko Marron",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "14468",
+                "name": "Barbe du Wa Wobot",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "845",
+                "name": "Œuf de Dragoeuf Argile",
+                "quantity": 12
+            }
+        ]
+    }
+}

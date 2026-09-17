@@ -1,0 +1,694 @@
+{
+    "_schema_version": "1",
+    "breed": "Ouginak",
+    "entries": [
+        {
+            "key": "ouginak-rage",
+            "name": "Rage Bestiale",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 3,
+            "types": [
+                "Buff"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 3,
+            "effect": "Tu entres en Rage jusqu’à la fin du combat (1 fois / combat) : +1d4 vs ta Proie, −1 CA. Sans Proie, désigne la première créature que tu blesses ensuite. 3 PA.",
+            "description": "Rage Bestiale : tu lâches les chiens contre la Proie. Pas un buff générique.",
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Rage (1/combat) : +1d4 vs la Proie, −1 CA.",
+                        "effect_direction": "self"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-rage",
+            "auto_success_if_willing_target": true,
+            "duration": "jusqu’à la fin de ton prochain tour",
+            "max_stack": 1
+        },
+        {
+            "key": "ouginak-pillage",
+            "name": "Butin",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 3,
+            "types": [
+                "Offensif"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "Attirance de 2 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
+            "description": "Butin : tu ramènes la cible.",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "2",
+                        "movement_kind": "pull",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-pillage",
+            "attack_characteristic_key": "agi"
+        },
+        {
+            "key": "ouginak-croc",
+            "name": "Croc du Molosse",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 4,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Croc du Molosse : attaque simple, même budget que le palier 4.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "value_formula_crit": "2d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-croc",
+            "attack_characteristic_key": "strong"
+        },
+        {
+            "key": "ouginak-cerbere",
+            "name": "Cerbère",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 4,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+            "description": "Cerbère : attaque simple, même budget que le palier 4.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "value_formula_crit": "2d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-cerbere",
+            "attack_characteristic_key": "intel"
+        },
+        {
+            "key": "ouginak-chasse",
+            "name": "Chasse",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "2d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Chasse : sort fort de palier 5.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "2d6+Agilité",
+                        "value_formula": "2d6+[agi]",
+                        "dice_formula": "2d6+[agi]",
+                        "value_formula_crit": "3d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-chasse",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "ouginak-charogne-majeure",
+            "name": "Pourriture",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 5,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "2d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Pourriture : sort fort de palier 5.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "2d6+Intelligence",
+                        "value_formula": "2d6+[intel]",
+                        "dice_formula": "2d6+[intel]",
+                        "value_formula_crit": "3d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-charogne-majeure",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "ouginak-repaire",
+            "name": "Repaire",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 7,
+            "types": [
+                "Invocation"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 1 invocation à la fois. 3 PA, 1×/tour.",
+            "description": "Repaire : une invocation. Fragile, mais elle occupe.",
+            "sub_effects": [
+                {
+                    "slug": "invoquer",
+                    "area": "point",
+                    "params": {
+                        "monster_official_id": "jdr:summon:ouginak-repaire",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-repaire"
+        },
+        {
+            "key": "ouginak-marche",
+            "name": "Marche Forcée",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 7,
+            "types": [
+                "Téléportation"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "Téléportation 1–5 cases, pas de ligne de vue. 3 PA, 1×/tour.",
+            "description": "Marche Forcée : tu disparais et tu réapparais.",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "5",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-marche"
+        },
+        {
+            "key": "ouginak-molosse-majeur",
+            "name": "Morsure",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 8,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 5,
+            "effect": "2d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Morsure : attaque simple, même budget que le palier 8.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
+                        "value_formula_crit": "3d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-molosse-majeur",
+            "attack_characteristic_key": "strong"
+        },
+        {
+            "key": "ouginak-os-a-moelle-majeur",
+            "name": "Moelle",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 8,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 5,
+            "effect": "2d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Moelle : attaque simple, même budget que le palier 8.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
+                        "value_formula_crit": "3d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-os-a-moelle-majeur",
+            "attack_characteristic_key": "strong"
+        },
+        {
+            "key": "ouginak-lance-roquet-majeur",
+            "name": "Roquet",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 10,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "3d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Roquet : sort fort de palier 10.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "3d6+Agilité",
+                        "value_formula": "3d6+[agi]",
+                        "dice_formula": "3d6+[agi]",
+                        "value_formula_crit": "4d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-lance-roquet-majeur",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "ouginak-traque-majeure",
+            "name": "Poursuite",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 10,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "3d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Poursuite : sort fort de palier 10.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "3d6+Agilité",
+                        "value_formula": "3d6+[agi]",
+                        "dice_formula": "3d6+[agi]",
+                        "value_formula_crit": "4d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-traque-majeure",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "ouginak-amarok-majeur",
+            "name": "Meute",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Buff"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 8,
+            "effect": "+3d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+            "description": "Meute : tu te prépares. Le prochain élan frappe plus fort.",
+            "sub_effects": [
+                {
+                    "slug": "booster",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "dommages_spell",
+                        "value": "3d4",
+                        "value_formula": "3d4",
+                        "dice_formula": "3d4",
+                        "effect_direction": "self",
+                        "duration_formula": "1"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-amarok-majeur",
+            "auto_success_if_willing_target": true,
+            "duration": "jusqu’à la fin de ton prochain tour",
+            "max_stack": 1
+        },
+        {
+            "key": "ouginak-veille",
+            "name": "Veille",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 11,
+            "types": [
+                "Défensif"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 8,
+            "effect": "3d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+            "description": "Veille : une couche de Wakfu avant les PV.",
+            "sub_effects": [
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "3d4+Sagesse",
+                        "value_formula": "3d4+[sagesse]",
+                        "effect_direction": "self",
+                        "duration_formula": "1"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-veille",
+            "auto_success_if_willing_target": true,
+            "duration": "jusqu’à la fin de ton prochain tour",
+            "max_stack": 1
+        },
+        {
+            "key": "ouginak-barbare",
+            "name": "Barbare",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 13,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Barbare : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "3d6+Force",
+                        "value_formula": "3d6+[strong]",
+                        "dice_formula": "3d6+[strong]",
+                        "value_formula_crit": "4d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-barbare",
+            "attack_characteristic_key": "strong"
+        },
+        {
+            "key": "ouginak-sang",
+            "name": "Soif de Sang",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 13,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Intelligence (Feu) et vol de vie 3d4. 3 PA, 2×/tour.",
+            "description": "Soif de Sang : tu frappes, tu récupères.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "3d6+Intelligence",
+                        "value_formula": "3d6+[intel]",
+                        "dice_formula": "3d6+[intel]",
+                        "value_formula_crit": "4d6+[intel]",
+                        "effect_direction": "action",
+                        "life_steal_formula": "3d4"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-sang",
+            "attack_characteristic_key": "intel"
+        },
+        {
+            "key": "ouginak-hurlement",
+            "name": "Hurlement",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 14,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "4d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Hurlement : sort fort de palier 14.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "4d6+Agilité",
+                        "value_formula": "4d6+[agi]",
+                        "dice_formula": "4d6+[agi]",
+                        "value_formula_crit": "5d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-hurlement",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "ouginak-bestial",
+            "name": "Bestial",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 14,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "4d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Bestial : sort fort de palier 14.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "4d6+Force",
+                        "value_formula": "4d6+[strong]",
+                        "dice_formula": "4d6+[strong]",
+                        "value_formula_crit": "5d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-bestial",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        }
+    ]
+}

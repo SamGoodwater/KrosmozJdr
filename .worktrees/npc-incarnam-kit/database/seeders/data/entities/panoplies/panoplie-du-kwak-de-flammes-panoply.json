@@ -1,0 +1,34 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "2"
+    },
+    "panoply": {
+        "name": "Panoplie du Kwak de Flammes",
+        "description": null,
+        "bonus": {
+            "4": {
+                "intelligence": 1
+            },
+            "7": {
+                "intelligence": 1,
+                "range": 1,
+                "arcana": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "2412",
+            "2415",
+            "2421",
+            "2427",
+            "2409",
+            "2418",
+            "2424"
+        ]
+    }
+}

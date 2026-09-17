@@ -1,0 +1,27 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "31"
+    },
+    "panoply": {
+        "name": "Panoplie du Prespic",
+        "description": null,
+        "bonus": {
+            "5": {
+                "wisdom": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "6926",
+            "6927",
+            "6928",
+            "6929",
+            "30681"
+        ]
+    }
+}

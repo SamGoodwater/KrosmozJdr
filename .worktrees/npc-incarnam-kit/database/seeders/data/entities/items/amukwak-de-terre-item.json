@@ -1,0 +1,52 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6746",
+        "official_id": null
+    },
+    "item": {
+        "name": "Amukwak de Terre",
+        "level": "4",
+        "description": "Jadis portée par Oto Mustam, chef des guerriers de Brâkmar, cette petite amulette ne lui servait qu'à se faire beau lors des orgies organisées à Brâkmar. Tout un programme.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 600,
+        "price_custom": null,
+        "effect": null,
+        "bonus": null,
+        "item_type_dofus_id": 1,
+        "item_type_name": "Amulette"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "14"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "746",
+                "name": "Ébonite",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "1142",
+                "name": "Bec du Kwak de Terre",
+                "quantity": 5
+            },
+            {
+                "dofusdb_id": "12016",
+                "name": "Plume du Kwakwa",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "2649",
+                "name": "Ver de Terre",
+                "quantity": 1
+            }
+        ]
+    }
+}

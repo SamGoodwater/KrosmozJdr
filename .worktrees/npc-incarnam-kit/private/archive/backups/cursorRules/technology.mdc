@@ -1,0 +1,37 @@
+---
+name: technology
+description: >
+  Décrit la **stack Krosmoz‑JDR** : Laravel 12, PHP 8.4, Vue 3, Inertia, Vite, Tailwind, DaisyUI, Tiptap, Pinia, pnpm,
+  tests (PHPUnit, Vitest, Cypress) et normes CI/CD. Référence la doc projet dans /docs/.
+globs:
+  - "**/*.php"
+  - "**/*.js"
+  - "**/*.vue"
+alwaysApply: true
+---
+
+## 📦 Stack & Technologies Krosmoz‑JDR
+
+- **Backend** : Laravel 12 (PHP 8.4), MySQL (`krosmozDB`), secrets via `.env` (ne **jamais** versionner). Composer pour les dépendances PHP. Outils dev : Pint (formatage), Larastan/PHPStan (analyse statique).
+- **Frontend** : Vue 3, **Inertia.js** (liaison Laravel–Vue), **Vite** (build et HMR), SCSS, Tailwind CSS + DaisyUI, Tiptap (WYSIWYG), **Pinia** (état), TanStack Table (tables), vue-i18n, FontAwesome, **Ziggy** (routes Laravel en JS). Structure : Atomic Design (`resources/js/Pages/`). **pnpm** pour les dépendances (imposé via `only-allow pnpm`).
+- **Tests** : PHPUnit (backend), Vitest (frontend), Cypress (E2E).
+- **Qualité / CI** : ESLint + Prettier (frontend), pipelines GitHub/GitLab CI (lint, tests, build, déploiement).
+- **Doc** : à jour dans `/docs/` (voir `TECHNOLOGIES.md`, `PROJECT_STRUCTURE.md`, `docs.index.json`).
+
+## 📁 Références documentation
+
+- `/docs/docs.index.json` — Index de la documentation
+- `/docs/00-Project/TECHNOLOGIES.md` — Stack détaillée et organisation
+- `/docs/10-BestPractices/PROJECT_STRUCTURE.md` — Structure et conventions
+
+## 🔄 Workflow recommandé pour l'IA
+
+1. **Backend** : s'appuyer sur le code Laravel existant, les migrations et la doc dans `/docs/`.
+2. **Frontend** : respecter Atomic Design, les composants dans `resources/js/Pages/`, Tailwind + DaisyUI.
+3. **Nouveautés** : vérifier `TECHNOLOGIES.md` et les bonnes pratiques avant d'ajouter des dépendances ou outils.
+
+## ✅ Pourquoi cette rule est pertinente
+
+- **AlwaysApply = true** : l'IA dispose en permanence du contexte stack et des références doc.
+- **Cohérence** : mêmes technologies et conventions que le reste du projet.
+- **Onboarding** : une seule rule pour retrouver rapidement la stack et les liens utiles.

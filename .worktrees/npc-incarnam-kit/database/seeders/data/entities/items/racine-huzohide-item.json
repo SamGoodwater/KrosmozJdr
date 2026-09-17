@@ -1,0 +1,68 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "7183",
+        "official_id": null
+    },
+    "item": {
+        "name": "Racine Huzohide",
+        "level": "8",
+        "description": "Cette racine a des formes pures, que certains artisans n'hésiteront pas à qualifier de parfaites. C'est peut-être pour cela que certains aventuriers y attachent plus d'importance qu'à leur dulcinée.",
+        "recipe": null,
+        "rarity": 3,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 8200,
+        "price_custom": 8800,
+        "effect": {
+            "fixed_damage_fire": 2,
+            "hit_bonus": 3,
+            "fixed_damage_neutral": 2
+        },
+        "bonus": {
+            "fixed_damage_fire": 2,
+            "hit_bonus": 3,
+            "fixed_damage_neutral": 2
+        },
+        "item_type_dofus_id": 4,
+        "item_type_name": "Bâton"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [],
+        "resources": [
+            {
+                "dofusdb_id": "1682",
+                "name": "Écorce de Liroye Merline",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "13167",
+                "name": "Plume du Rasboul Majeur",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "18371",
+                "name": "Carapace du Mantiscore",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "749",
+                "name": "Bakélélite",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "18369",
+                "name": "Queue de Scordion Bleu",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "18367",
+                "name": "Boule de Boulépique",
+                "quantity": 8
+            }
+        ]
+    }
+}

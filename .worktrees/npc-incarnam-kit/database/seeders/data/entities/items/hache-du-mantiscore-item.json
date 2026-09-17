@@ -1,0 +1,63 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "18429",
+        "official_id": null
+    },
+    "item": {
+        "name": "Hache du Mantiscore",
+        "level": "8",
+        "description": "L'objectif ici n'est pas de trancher, une simple piqûre est déjà suffisamment dangereuse.",
+        "recipe": null,
+        "rarity": 3,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 8200,
+        "price_custom": 8000,
+        "effect": {
+            "fixed_damage_water": 2,
+            "hit_bonus": 3,
+            "fixed_damage_neutral": 2
+        },
+        "bonus": {
+            "fixed_damage_water": 2,
+            "hit_bonus": 3,
+            "fixed_damage_neutral": 2
+        },
+        "item_type_dofus_id": 19,
+        "item_type_name": "Hache"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [],
+        "resources": [
+            {
+                "dofusdb_id": "18370",
+                "name": "Queue de Fennex",
+                "quantity": 27
+            },
+            {
+                "dofusdb_id": "18371",
+                "name": "Carapace du Mantiscore",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "749",
+                "name": "Bakélélite",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "18411",
+                "name": "Œil de Léolhyène",
+                "quantity": 20
+            },
+            {
+                "dofusdb_id": "18366",
+                "name": "Sable Fin",
+                "quantity": 3
+            }
+        ]
+    }
+}

@@ -1,0 +1,26 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "21"
+    },
+    "panoply": {
+        "name": "Panoplie du Sanglier",
+        "description": null,
+        "bonus": {
+            "3": {
+                "vitality": 1,
+                "intimidation": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "6908",
+            "6909",
+            "6910"
+        ]
+    }
+}

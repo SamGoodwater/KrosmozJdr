@@ -1,0 +1,138 @@
+/**
+ * Tests unitaires pour panoply-descriptors
+ *
+ * @description
+ * Vérifie que :
+ * - La structure des descriptors est correcte
+ * - visibleIf / editableIf fonctionnent correctement
+ * - La configuration bulk est correcte
+ * - Les groupes de champs sont définis
+ */
+
+import { describe, it, expect } from 'vitest';
+import { getPanoplyFieldDescriptors } from '@/Entities/panoply/panoply-descriptors';
+import { getDescriptorForm, getDescriptorFormOptions, resolveDescriptorOptions } from './descriptor-test-helpers.js';
+
+describe('panoply-descriptors', () => {
+    describe('Structure des descriptors', () => {
+        it('retourne un objet avec tous les champs requis', () => {
+            const descriptors = getPanoplyFieldDescriptors();
+            const requiredFields = ['id', 'name', 'state', 'read_level', 'write_level'];
+
+            requiredFields.forEach((field) => {
+                expect(descriptors).toHaveProperty(field);
+                expect(descriptors[field]).toHaveProperty('key');
+                expect(descriptors[field]).toHaveProperty('label');
+                expect(descriptors[field].key).toBe(field);
+            });
+        });
+
+        it('tous les descriptors ont une propriété display avec sizes (pour les tableaux)', () => {
+            const descriptors = getPanoplyFieldDescriptors();
+            Object.values(descriptors).forEach((desc) => {
+                if (desc.display) {
+                    // display.views est obsolète (vues manuelles maintenant)
+                    // display.sizes est utilisé pour les tableaux (xs-xl)
+                    expect(desc.display).toHaveProperty('sizes');
+                }
+            });
+        });
+    });
+
+    describe('visibleIf / editableIf', () => {
+        it('created_by est piloté par canCreateAny sur le factory (fermeture)', () => {
+            const on = getPanoplyFieldDescriptors({ capabilities: { createAny: true } });
+            const off = getPanoplyFieldDescriptors({ capabilities: { createAny: false } });
+            expect(on.created_by.visibleIf?.()).toBe(true);
+            expect(off.created_by.visibleIf?.()).toBe(false);
+        });
+    });
+
+    describe('Configuration bulk', () => {
+        it('les champs bulk-enabled ont enabled: true', () => {
+            const descriptors = getPanoplyFieldDescriptors();
+            const bulkEnabledFields = Object.keys(descriptors).filter((k) => descriptors[k]?.edit?.form?.bulk?.enabled);
+
+            bulkEnabledFields.forEach((fieldKey) => {
+                const desc = descriptors[fieldKey];
+                if (desc?.edit?.form?.bulk) {
+                    expect(desc.edit.form.bulk.enabled).toBe(true);
+                }
+            });
+        });
+
+        it('les champs bulk ont une fonction build', () => {
+            const descriptors = getPanoplyFieldDescriptors();
+            Object.values(descriptors).forEach((desc) => {
+                if (desc.edit?.form?.bulk?.enabled) {
+                    expect(desc.edit.form.bulk).toHaveProperty('build');
+                    expect(typeof desc.edit.form.bulk.build).toBe('function');
+                }
+            });
+        });
+    });
+
+    describe('Groupes de champs', () => {
+        it('les champs avec edit.form ont un groupe défini', () => {
+            const descriptors = getPanoplyFieldDescriptors();
+            const fieldsWithEdit = Object.values(descriptors).filter((desc) => desc.edit?.form);
+
+            fieldsWithEdit.forEach((desc) => {
+                if (desc.edit.form.bulk?.enabled) {
+                    expect(desc.edit.form).toHaveProperty('group');
+                    expect(typeof desc.edit.form.group).toBe('string');
+                    expect(desc.edit.form.group.length).toBeGreaterThan(0);
+                }
+            });
+        });
+    });
+
+    describe('Filtres tableau', () => {
+        it('filtre le nombre de pièces, le niveau et les types d’objets', () => {
+            const descriptors = getPanoplyFieldDescriptors();
+            expect(descriptors.level.table.filterable).toMatchObject({
+                id: 'level',
+                type: 'range',
+                defaultVisible: true,
+            });
+            expect(descriptors.items_count.table.filterable).toMatchObject({
+                id: 'items_count',
+                type: 'range',
+                defaultVisible: true,
+            });
+            expect(descriptors.item_type.table.filterable).toMatchObject({
+                id: 'item_type_id',
+                type: 'multi',
+                defaultVisible: true,
+            });
+            expect(descriptors.item_type.table.filterable.defaultByCatalog).toBeFalsy();
+            expect(descriptors.bonus.table.filterable).toMatchObject({
+                id: 'bonus',
+                type: 'picked-range',
+                defaultVisible: true,
+            });
+            expect(descriptors._tableConfig.features.sort.initial).toMatchObject({
+                field: 'level',
+                dir: 'asc',
+            });
+        });
+    });
+
+    describe('Options des selects', () => {
+        it('read_level a les bonnes options', () => {
+            const descriptors = getPanoplyFieldDescriptors();
+            const isVisibleDesc = descriptors.read_level;
+            const form = getDescriptorForm(isVisibleDesc);
+
+            if (form?.type === 'select') {
+                const options = resolveDescriptorOptions(getDescriptorFormOptions(isVisibleDesc), {});
+                expect(Array.isArray(options)).toBe(true);
+                const values = options.map((opt) => opt.value);
+                expect(values).toContain(0);
+                expect(values).toContain(1);
+                expect(values).toContain(4);
+            }
+        });
+    });
+});
+

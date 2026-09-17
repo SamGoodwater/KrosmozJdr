@@ -1,0 +1,77 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "17449",
+        "official_id": null
+    },
+    "item": {
+        "name": "Cape Rimordiale",
+        "level": "8",
+        "description": "Traditionnellement revêtue lors de cérémonies et de voyages, cette cape est imprégnée d'une puissante magie qui donne à son porteur un charisme incroyable, une attitude héroïque, et une protection à toute épreuve contre la pluie et les éclats de boue.",
+        "recipe": null,
+        "rarity": 3,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 4400,
+        "price_custom": 8000,
+        "effect": {
+            "intelligence": 3,
+            "initiative": 2,
+            "save_intelligence": 1,
+            "life_points_max": 4
+        },
+        "bonus": {
+            "intelligence": 3,
+            "initiative": 2,
+            "save_intelligence": 1,
+            "life_points_max": 4
+        },
+        "item_type_dofus_id": 17,
+        "item_type_name": "Cape"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "392"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "447",
+                "name": "Charbon",
+                "quantity": 20
+            },
+            {
+                "dofusdb_id": "8757",
+                "name": "Maillot de corps de Barbroussa",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "8760",
+                "name": "Foulard du Sparo",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "8766",
+                "name": "Plume de fesse du Kido",
+                "quantity": 10
+            },
+            {
+                "dofusdb_id": "8767",
+                "name": "Aile du Bitouf des Plaines",
+                "quantity": 10
+            },
+            {
+                "dofusdb_id": "8995",
+                "name": "Étoffe de Gourlo le Terrible",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "2551",
+                "name": "Oreille de Foufayteur",
+                "quantity": 20
+            }
+        ]
+    }
+}

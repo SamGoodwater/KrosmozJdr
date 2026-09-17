@@ -1,0 +1,42 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "2422",
+        "official_id": null
+    },
+    "item": {
+        "name": "Boufbottes",
+        "level": "2",
+        "description": "Ces bottes sont d'un confort inégalé, l'intérieur a l'air d'être doublé en laine de Bouftou, mais on peut ressentir également comme un liquide circulant entre les orteils. Reste à savoir si c'est de la bave ou du sang de Bouftou. Peu importe.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 300,
+        "price_custom": null,
+        "effect": null,
+        "bonus": null,
+        "item_type_dofus_id": 11,
+        "item_type_name": "Bottes"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "1"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "384",
+                "name": "Laine de Bouftou",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "383",
+                "name": "Corne de Boufton",
+                "quantity": 1
+            }
+        ]
+    }
+}

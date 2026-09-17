@@ -1,0 +1,47 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6915",
+        "official_id": null
+    },
+    "item": {
+        "name": "Mos Kitano",
+        "level": "2",
+        "description": "Cet anneau est si léger qu'il vous permettra de réaliser n'importe quelle acrobatie avec vos doigts. Très pratique pour humilier un adversaire dix fois plus petit que vous, en lui écrasant la tête avec le pouce.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 300,
+        "price_custom": null,
+        "effect": null,
+        "bonus": null,
+        "item_type_dofus_id": 9,
+        "item_type_name": "Anneau"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "23"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "307",
+                "name": "Ailes de Moskito",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "1673",
+                "name": "Patte d'Arakne Magique",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "8157",
+                "name": "Pétale Magique du Tournesol Affamé",
+                "quantity": 1
+            }
+        ]
+    }
+}

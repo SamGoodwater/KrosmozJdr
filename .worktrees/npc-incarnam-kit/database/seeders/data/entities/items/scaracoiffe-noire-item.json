@@ -1,0 +1,56 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8133",
+        "official_id": null
+    },
+    "item": {
+        "name": "Scaracoiffe Noire",
+        "level": "5",
+        "description": "C'est la coiffe parfaite pour ceux qui veulent avoir des idées noires.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 1950,
+        "price_custom": null,
+        "effect": {
+            "vitality": 2
+        },
+        "bonus": {
+            "vitality": 2
+        },
+        "item_type_dofus_id": 16,
+        "item_type_name": "Chapeau"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "49"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "2294",
+                "name": "Viscères de Scarafeuille",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "8137",
+                "name": "Viscères du Scarabosse Doré",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "2540",
+                "name": "Substrat de Futaie",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "8141",
+                "name": "Ailes du Scarafeuille Noir",
+                "quantity": 2
+            }
+        ]
+    }
+}

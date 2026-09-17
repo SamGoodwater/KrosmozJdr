@@ -1,0 +1,27 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "9"
+    },
+    "panoply": {
+        "name": "Panoplie Tortue",
+        "description": null,
+        "bonus": {
+            "3": {
+                "armor_class": 1,
+                "vitality": 1,
+                "survival": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "2530",
+            "2531",
+            "2532"
+        ]
+    }
+}

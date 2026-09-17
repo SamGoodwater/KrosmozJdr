@@ -1,0 +1,47 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8108",
+        "official_id": null
+    },
+    "item": {
+        "name": "Amulette du Tofu",
+        "level": "2",
+        "description": "Légère comme une plume de Tofu, cette amulette se porte autour du cou ou du front, pour les aventuriers en quête d'originalité.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 300,
+        "price_custom": null,
+        "effect": null,
+        "bonus": null,
+        "item_type_dofus_id": 1,
+        "item_type_name": "Amulette"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "50"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "6900",
+                "name": "Plume de Piou Rouge",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "366",
+                "name": "Bec du Tofu",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "8682",
+                "name": "Peau de Mob l'Éponge",
+                "quantity": 3
+            }
+        ]
+    }
+}

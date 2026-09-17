@@ -1,0 +1,52 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8129",
+        "official_id": null
+    },
+    "item": {
+        "name": "Amuloumulette",
+        "level": "5",
+        "description": "Derrière ce surnom stupide, se cache en réalité une amulette relativement puissante, confectionnée à partir de crocs, de dents et d'ossements de Mulous, ce qui explique la terrible odeur qui s'en dégage. A défaut d'être assortie à votre cou, elle sera assortie à votre haleine.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 750,
+        "price_custom": null,
+        "effect": [],
+        "bonus": [],
+        "item_type_dofus_id": 1,
+        "item_type_name": "Amulette"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "32"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "2627",
+                "name": "Poupée Vaudou Sarbak",
+                "quantity": 7
+            },
+            {
+                "dofusdb_id": "649",
+                "name": "Poils de Wo Wabbit",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "11696",
+                "name": "Cagoule du Kanniboul Ebil",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "2321",
+                "name": "Babines de Macien",
+                "quantity": 3
+            }
+        ]
+    }
+}

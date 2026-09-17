@@ -1,0 +1,53 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Guide Cursor : Développement de Modules Internes Laravel (PHP 8.4+)
+
+## Contexte
+Cette règle s'applique à la création de modules internes dans l'application Laravel du projet Krosmoz-JDR. Elle vise à garantir la qualité, la maintenabilité et la cohérence des modules, en s'appuyant sur les conventions Laravel, les outils modernes, et les bonnes pratiques PHP 8.4+.
+
+## Directives de Développement
+- **Version PHP** : Utiliser les fonctionnalités de PHP 8.4+ dès que pertinent.
+- **Conventions Laravel** : Respecter les conventions officielles Laravel pour la structure, le nommage et l'organisation du code.
+- **Organisation modulaire** : Chaque module doit être autonome, bien structuré, et facilement testable.
+- **Pint** : Configurer Pint pour l'auto-formatage du code.
+- **Helpers** : Privilégier les helpers Laravel natifs aux facades pour la simplicité et la lisibilité.
+- **Expérience Développeur (DX)** : Soigner l'autocomplétion, la sécurité de typage et la documentation (docblocks).
+
+## Standards de Nommage
+- **Fichiers** : kebab-case (ex : `my-class-file.php`)
+- **Classes & Enums** : PascalCase (ex : `MyClass`)
+- **Méthodes** : camelCase (ex : `myMethod`)
+- **Variables & Propriétés** : snake_case (ex : `my_variable`)
+- **Constantes & Enum Cases** : SCREAMING_SNAKE_CASE (ex : `MY_CONSTANT`)
+
+## Structure d'un module interne
+
+Un module interne peut être organisé comme suit (dans `app/Modules/NomDuModule/` ou structure équivalente) :
+
+- `src/` : Logique principale et classes du module.
+- `config/` : Fichiers de configuration spécifiques au module.
+- `database/` : Migrations et seeders propres au module.
+- `resources/` : Vues, assets, ressources diverses.
+- `tests/` : Tests unitaires et fonctionnels du module.
+- `routes/` : Routes API et web du module.
+- `lang/` : Fichiers de langue pour la localisation.
+
+## Intégration dans l'application
+- Fournir un ServiceProvider pour l'enregistrement automatique du module.
+- Permettre la publication de la configuration si besoin (`php artisan vendor:publish`).
+- Documenter l'intégration d'éventuels facades ou helpers.
+- Expliquer comment utiliser le module dans l'application principale.
+
+## Tests et Documentation
+- **Tests unitaires** : Tester chaque composant ou méthode individuellement.
+- **Tests fonctionnels** : Vérifier l'intégration du module dans l'application Laravel.
+- **README.md** (dans le dossier du module) : Présenter le module, l'installation, la configuration et les exemples d'utilisation.
+- **Exemples d'usage** : Fournir des cas concrets et des snippets.
+- **Référence API** : Documenter toutes les méthodes et classes publiques du module.
+
+---
+
+> Respecter cette règle pour tout nouveau module interne Laravel afin d'assurer la qualité, la cohérence et la maintenabilité du code applicatif.

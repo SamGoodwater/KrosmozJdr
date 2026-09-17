@@ -1,0 +1,47 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6909",
+        "official_id": null
+    },
+    "item": {
+        "name": "Pieds du Sanglier",
+        "level": "2",
+        "description": "Ces bottes sont parfaites pour marcher dans la boue et rayer les parquets. Elles sont généralement interdites sur toutes les pistes de danse.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 300,
+        "price_custom": null,
+        "effect": null,
+        "bonus": null,
+        "item_type_dofus_id": 11,
+        "item_type_name": "Bottes"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "21"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "387",
+                "name": "Défense du Sanglier",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "8157",
+                "name": "Pétale Magique du Tournesol Affamé",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "2576",
+                "name": "Scalp de Milimulou",
+                "quantity": 1
+            }
+        ]
+    }
+}

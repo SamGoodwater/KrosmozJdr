@@ -1,0 +1,16 @@
+{
+    "_schema_version": "1",
+    "name": "Enutrof",
+    "dofusdb_id": "3",
+    "description_fast": "Chasseur de trésors",
+    "description": "Les Enutrofs sont des chasseurs de trésor avides de kamas, qui malgré leur grand âge courent comme des dragodindes à la vue d'un coffre bien rempli. Ils sont experts dans l'art de ralentir leurs ennemis : ils peuvent ainsi les harceler avant de les assomm",
+    "dofus_version": "3",
+    "state": "draft",
+    "read_level": 0,
+    "write_level": 3,
+    "element_orientations": {
+        "water": "entrave",
+        "fire": "degats",
+        "earth": "placement"
+    }
+}

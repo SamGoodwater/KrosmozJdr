@@ -1,0 +1,71 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8647",
+        "official_id": null
+    },
+    "item": {
+        "name": "Cape Wéra",
+        "level": "8",
+        "description": "Les Pandawas se servent de cette cape comme protection contre les intempéries et comme accessoire de danse. Ils la posent à terre, au centre d'un cercle de danseurs éméchés. Puis, ils commencent leur chorégraphie improvisée sans que le pied touche le sol en dehors de la zone délimitée par ce vêtement.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 1700,
+        "price_custom": 8000,
+        "effect": {
+            "strength": 1
+        },
+        "bonus": {
+            "strength": 1
+        },
+        "item_type_dofus_id": 17,
+        "item_type_name": "Cape"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "92"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "8077",
+                "name": "Boomerang du Warko Marron",
+                "quantity": 20
+            },
+            {
+                "dofusdb_id": "8757",
+                "name": "Maillot de corps de Barbroussa",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "8760",
+                "name": "Foulard du Sparo",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "8766",
+                "name": "Plume de fesse du Kido",
+                "quantity": 10
+            },
+            {
+                "dofusdb_id": "8767",
+                "name": "Aile du Bitouf des Plaines",
+                "quantity": 10
+            },
+            {
+                "dofusdb_id": "8995",
+                "name": "Étoffe de Gourlo le Terrible",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "308",
+                "name": "Coquille de Dragoeuf Calcaire",
+                "quantity": 20
+            }
+        ]
+    }
+}

@@ -1,0 +1,56 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "13092",
+        "official_id": null
+    },
+    "item": {
+        "name": "Marteau du Chafer Draugr",
+        "level": "4",
+        "description": "Se fiant à une obscure légende entendue sur les Chafers Draugr, certains aventuriers s'imaginent que si ils lancent ce marteau sur leurs ennemis, il leur reviendra dans la main tel un boomerang. On n'a jamais su si c'était vrai, personne n'ayant jamais réussi à le lancer plus loin que sur ses propres orteils.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 2000,
+        "price_custom": null,
+        "effect": {
+            "fixed_damage_earth": 2
+        },
+        "bonus": {
+            "fixed_damage_earth": 2
+        },
+        "item_type_dofus_id": 7,
+        "item_type_name": "Marteau"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "239"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "12745",
+                "name": "Substrat de Bocage",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "13096",
+                "name": "Fémur du Chafer Rōnin",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "1675",
+                "name": "Os Surprise du Chafer Fantassin",
+                "quantity": 5
+            },
+            {
+                "dofusdb_id": "2297",
+                "name": "Flèche du Chafer Archer",
+                "quantity": 7
+            }
+        ]
+    }
+}

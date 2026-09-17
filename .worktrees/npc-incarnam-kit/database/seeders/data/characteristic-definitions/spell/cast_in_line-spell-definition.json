@@ -1,0 +1,44 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "cast_in_line_spell",
+        "name": "Lancer en ligne",
+        "short_name": "En ligne",
+        "helper": "Le sort doit être lancé sur une ligne droite depuis le lanceur.",
+        "descriptions": "Restriction tactique issue de `castInLine` dans DofusDB.",
+        "icon": "sightLine.webp",
+        "icon_false": null,
+        "color": "sky",
+        "value_overrides": null,
+        "hide_when_empty": false,
+        "hide_when_false": false,
+        "unit": null,
+        "type": "bool",
+        "status": "validee",
+        "sort_order": 18,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "cast_in_line",
+            "min": "0",
+            "max": "1",
+            "formula": null,
+            "formula_display": null,
+            "default_value": "0",
+            "conversion_formula": "min(1,max(0,round([d])))",
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": "Grille 5×20 non utilisée : métadonnée de lancement du sort.",
+            "norms_help_section_id": null,
+            "value_available": null
+        }
+    },
+    "relations": null
+}

@@ -1,0 +1,47 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "2426",
+        "official_id": null
+    },
+    "item": {
+        "name": "Araknamu",
+        "level": "4",
+        "description": "Cette petite Arakne est la preuve vivante que l'on est pas obligé d'empailler un animal pour en faire une Amulette. Elle vous chatouillera le cou, et tissera peut-être une toile devant votre bouche, si vous baillez trop souvent, ou si vous avez trop mauvaise haleine.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 600,
+        "price_custom": null,
+        "effect": null,
+        "bonus": null,
+        "item_type_dofus_id": 1,
+        "item_type_name": "Amulette"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "3"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "435",
+                "name": "Racine d'Abraknyde",
+                "quantity": 5
+            },
+            {
+                "dofusdb_id": "464",
+                "name": "Ambre d'Abraknyde",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "11815",
+                "name": "Boostoplasme",
+                "quantity": 1
+            }
+        ]
+    }
+}

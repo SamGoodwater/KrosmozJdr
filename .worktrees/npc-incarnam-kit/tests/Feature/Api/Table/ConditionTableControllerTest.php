@@ -1,0 +1,244 @@
+<?php
+
+namespace Tests\Feature\Api\Table;
+
+use App\Http\Middleware\CheckRole;
+use App\Models\Entity\Condition;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+/**
+ * Tests Feature pour ConditionTableController
+ *
+ * @description
+ * Vérifie que :
+ * - Le format `entities` retourne les données brutes
+ * - Le format par défaut (`cells`) retourne les cellules formatées
+ * - Les permissions sont respectées
+ */
+class ConditionTableControllerTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutMiddleware(CheckRole::class);
+    }
+
+    /**
+     * Test : Le format `entities` retourne les données brutes
+     */
+    public function test_format_entities_returns_raw_data(): void
+    {
+        $user = User::factory()->create();
+        $condition = Condition::factory()->create([
+            'name' => 'Test Condition',
+            'created_by' => $user->id,
+            'dissipable' => true,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/conditions?format=entities&limit=10');
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'meta' => [
+                    'entityType',
+                    'query',
+                    'capabilities',
+                    'format',
+                ],
+                'entities' => [
+                    '*' => [
+                        'id',
+                        'name',
+                    ],
+                ],
+            ]);
+
+        $data = $response->json();
+        $this->assertEquals('entities', $data['meta']['format']);
+        $this->assertArrayHasKey('entities', $data);
+        $this->assertArrayNotHasKey('rows', $data);
+        $this->assertCount(1, $data['entities']);
+        $this->assertArrayHasKey('dissipable', $data['entities'][0]);
+        $this->assertTrue($data['entities'][0]['dissipable']);
+    }
+
+    /**
+     * Test : Le format par défaut (`cells`) retourne les cellules formatées
+     */
+    public function test_format_cells_returns_formatted_cells(): void
+    {
+        $user = User::factory()->create();
+        $condition = Condition::factory()->create([
+            'name' => 'Test Condition',
+            'created_by' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/conditions?limit=10');
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'meta' => [
+                    'entityType',
+                    'query',
+                    'capabilities',
+                ],
+                'rows' => [
+                    '*' => [
+                        'id',
+                        'cells' => [
+                            'name',
+                        ],
+                    ],
+                ],
+            ]);
+
+        $data = $response->json();
+        $this->assertArrayHasKey('rows', $data);
+        $this->assertArrayNotHasKey('entities', $data);
+        $this->assertArrayHasKey('cells', $data['rows'][0]);
+        $this->assertEquals('route', $data['rows'][0]['cells']['name']['type']);
+        $this->assertArrayHasKey('dissipable', $data['rows'][0]['cells']);
+        $this->assertSame('image', $data['rows'][0]['cells']['dissipable']['type']);
+    }
+
+    /**
+     * Test : Le format `entities` inclut les relations
+     */
+    public function test_entities_format_includes_relations(): void
+    {
+        $user = User::factory()->create();
+        $condition = Condition::factory()->create([
+            'created_by' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/conditions?format=entities&limit=10');
+
+        $response->assertOk();
+
+        $data = $response->json();
+        $entity = $data['entities'][0];
+        $this->assertArrayHasKey('createdBy', $entity);
+        $this->assertNotNull($entity['createdBy']);
+        $this->assertEquals($user->id, $entity['createdBy']['id']);
+    }
+
+    /**
+     * Test : Le format `entities` respecte les permissions
+     */
+    public function test_entities_format_respects_permissions(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_USER]);
+        Condition::factory()->create(['created_by' => $user->id]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/conditions?format=entities&limit=10');
+
+        $response->assertOk();
+
+        $data = $response->json();
+        $this->assertArrayHasKey('capabilities', $data['meta']);
+        $this->assertIsBool($data['meta']['capabilities']['viewAny']);
+        $this->assertIsBool($data['meta']['capabilities']['updateAny']);
+    }
+
+    /**
+     * Test : Le format `entities` gère la pagination/limite
+     */
+    public function test_entities_format_respects_limit(): void
+    {
+        $user = User::factory()->create();
+        // La factory Condition utilise unique()->randomElement() avec seulement 6 valeurs possibles
+        // Créer seulement 5 entités pour éviter les collisions
+        Condition::factory()->count(5)->create(['created_by' => $user->id]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/conditions?format=entities&limit=3');
+
+        $response->assertOk();
+
+        $data = $response->json();
+        $this->assertLessThanOrEqual(3, count($data['entities']));
+        $this->assertEquals(3, $data['meta']['query']['limit']);
+    }
+
+    public function test_index_excludes_raw_by_default(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $playable = Condition::factory()->create([
+            'name' => 'Force',
+            'state' => Condition::STATE_PLAYABLE,
+            'created_by' => $user->id,
+        ]);
+        $raw = Condition::factory()->create([
+            'name' => 'Intelligence',
+            'state' => Condition::STATE_RAW,
+            'dofusdb_id' => 900001,
+            'created_by' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/conditions?format=entities&limit=50');
+
+        $response->assertOk();
+        $ids = collect($response->json('entities'))->pluck('id')->all();
+        $this->assertContains($playable->id, $ids);
+        $this->assertNotContains($raw->id, $ids);
+    }
+
+    public function test_index_includes_raw_when_state_filter_asks_for_it(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        Condition::factory()->create([
+            'name' => 'Force',
+            'state' => Condition::STATE_PLAYABLE,
+            'created_by' => $user->id,
+        ]);
+        $raw = Condition::factory()->create([
+            'name' => 'Intelligence',
+            'state' => Condition::STATE_RAW,
+            'dofusdb_id' => 900002,
+            'created_by' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/conditions?format=entities&limit=50&filters[state][]=raw');
+
+        $response->assertOk();
+        $ids = collect($response->json('entities'))->pluck('id')->all();
+        $this->assertSame([$raw->id], $ids);
+        $this->assertArrayHasKey('cant_be_moved', $response->json('entities.0'));
+    }
+
+    public function test_filters_by_dissipable_boolean(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $yes = Condition::factory()->create([
+            'name' => 'DissipableOui',
+            'state' => Condition::STATE_PLAYABLE,
+            'dissipable' => true,
+            'created_by' => $user->id,
+        ]);
+        $no = Condition::factory()->create([
+            'name' => 'DissipableNon',
+            'state' => Condition::STATE_PLAYABLE,
+            'dissipable' => false,
+            'created_by' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/tables/conditions?format=entities&limit=50&filters[dissipable]=1');
+
+        $response->assertOk();
+        $ids = collect($response->json('entities'))->pluck('id')->all();
+        $this->assertContains($yes->id, $ids);
+        $this->assertNotContains($no->id, $ids);
+        $this->assertArrayNotHasKey('dissipable', $response->json('meta.filterOptions') ?? []);
+    }
+}

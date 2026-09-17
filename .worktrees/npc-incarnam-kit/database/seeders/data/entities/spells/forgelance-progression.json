@@ -1,0 +1,699 @@
+{
+    "_schema_version": "1",
+    "breed": "Forgelance",
+    "entries": [
+        {
+            "key": "forgelance-garde-au-fer",
+            "name": "Garde au Fer",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 3,
+            "types": [
+                "Défensif"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 3,
+            "effect": "1d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+            "description": "Garde au Fer : une couche de Wakfu avant les PV.",
+            "sub_effects": [
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "1d4+Sagesse",
+                        "value_formula": "1d4+[sagesse]",
+                        "effect_direction": "self",
+                        "duration_formula": "1"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-garde-au-fer",
+            "auto_success_if_willing_target": true,
+            "duration": "jusqu’à la fin de ton prochain tour",
+            "max_stack": 1
+        },
+        {
+            "key": "forgelance-percee",
+            "name": "Percée",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 3,
+            "types": [
+                "Téléportation"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 3,
+            "effect": "Téléportation 1–4 cases, pas de ligne de vue. 3 PA, 1×/tour.",
+            "description": "Percée : tu disparais et tu réapparais.",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "4",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-percee"
+        },
+        {
+            "key": "forgelance-brulure-de-lance",
+            "name": "Brûlure de Lance",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 4,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+            "description": "Brûlure de Lance : attaque simple, même budget que le palier 4.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "value_formula_crit": "2d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-brulure-de-lance",
+            "attack_characteristic_key": "intel"
+        },
+        {
+            "key": "forgelance-eclat-liquide",
+            "name": "Éclat Liquide",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 4,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Éclat Liquide : attaque simple, même budget que le palier 4.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "1d6+Chance",
+                        "value_formula": "1d6+[chance]",
+                        "dice_formula": "1d6+[chance]",
+                        "value_formula_crit": "2d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-eclat-liquide",
+            "attack_characteristic_key": "chance"
+        },
+        {
+            "key": "forgelance-pluie-de-lances",
+            "name": "Pluie de Lances",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "2d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Pluie de Lances : sort fort de palier 5.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "2d6+Agilité",
+                        "value_formula": "2d6+[agi]",
+                        "dice_formula": "2d6+[agi]",
+                        "value_formula_crit": "3d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-pluie-de-lances",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "forgelance-seisme-de-lance",
+            "name": "Séisme de Lance",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 5,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "2d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Séisme de Lance : sort fort de palier 5.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
+                        "value_formula_crit": "3d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-seisme-de-lance",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "forgelance-ligne-de-front",
+            "name": "Ligne de Front",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 7,
+            "types": [
+                "Buff"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "Phalange jusqu’à la fin de ton prochain tour : un allié adjacent bénéficie d’un abri partiel. 3 PA, 1×/tour.",
+            "description": "Ligne de Front : tu couvres, tu ne gagnes pas un 2d4.",
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "Un allié adjacent a un abri partiel jusqu’à la fin de ton prochain tour.",
+                        "effect_direction": "self",
+                        "duration_formula": "1"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-ligne-de-front",
+            "auto_success_if_willing_target": true,
+            "duration": "jusqu’à la fin de ton prochain tour",
+            "max_stack": 1
+        },
+        {
+            "key": "forgelance-rempart-de-lances",
+            "name": "Rempart de Lances",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 7,
+            "types": [
+                "Défensif"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "Phalange jusqu’à la fin de ton prochain tour : les allié·e·s adjacents bénéficient d’un abri partiel. 2d4+Sagesse de bouclier sur toi. 3 PA, 1×/tour.",
+            "description": "Rempart de Lances : abri pour le rang, bouclier pour toi.",
+            "sub_effects": [
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "2d4+Sagesse",
+                        "value_formula": "2d4+[sagesse]",
+                        "effect_direction": "self",
+                        "duration_formula": "1"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-rempart-de-lances",
+            "auto_success_if_willing_target": true,
+            "duration": "jusqu’à la fin de ton prochain tour",
+            "max_stack": 1
+        },
+        {
+            "key": "forgelance-estoc-brulant-majeur",
+            "name": "Estocade",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 8,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 5,
+            "effect": "2d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+            "description": "Estocade : attaque simple, même budget que le palier 8.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "2d6+Intelligence",
+                        "value_formula": "2d6+[intel]",
+                        "dice_formula": "2d6+[intel]",
+                        "value_formula_crit": "3d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-estoc-brulant-majeur",
+            "attack_characteristic_key": "intel"
+        },
+        {
+            "key": "forgelance-lance-du-lac-majeure",
+            "name": "Lance Lacustre",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 8,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 5,
+            "effect": "2d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Lance Lacustre : attaque simple, même budget que le palier 8.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d6+Chance",
+                        "value_formula": "2d6+[chance]",
+                        "dice_formula": "2d6+[chance]",
+                        "value_formula_crit": "3d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-lance-du-lac-majeure",
+            "attack_characteristic_key": "chance"
+        },
+        {
+            "key": "forgelance-volee-d-airain-majeure",
+            "name": "Airain",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 10,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "3d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Airain : sort fort de palier 10.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "3d6+Agilité",
+                        "value_formula": "3d6+[agi]",
+                        "dice_formula": "3d6+[agi]",
+                        "value_formula_crit": "4d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-volee-d-airain-majeure",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "forgelance-effondrement-majeur",
+            "name": "Effondrement Sacre",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 10,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "3d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Effondrement Sacre : sort fort de palier 10.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "3d6+Force",
+                        "value_formula": "3d6+[strong]",
+                        "dice_formula": "3d6+[strong]",
+                        "value_formula_crit": "4d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-effondrement-majeur",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "forgelance-charge-heroique-majeure",
+            "name": "Charge de Fer",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Téléportation"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 8,
+            "effect": "Téléportation 1–6 cases, pas de ligne de vue. 3 PA, 1×/tour.",
+            "description": "Charge de Fer : tu disparais et tu réapparais.",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "6",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-charge-heroique-majeure"
+        },
+        {
+            "key": "forgelance-phalange-majeure",
+            "name": "Mur de Lances",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 11,
+            "types": [
+                "Défensif"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 8,
+            "effect": "3d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+            "description": "Mur de Lances : une couche de Wakfu avant les PV.",
+            "sub_effects": [
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "3d4+Sagesse",
+                        "value_formula": "3d4+[sagesse]",
+                        "effect_direction": "self",
+                        "duration_formula": "1"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-phalange-majeure",
+            "auto_success_if_willing_target": true,
+            "duration": "jusqu’à la fin de ton prochain tour",
+            "max_stack": 1
+        },
+        {
+            "key": "forgelance-javeline",
+            "name": "Javeline",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 13,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+            "description": "Javeline : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "3d6+Agilité",
+                        "value_formula": "3d6+[agi]",
+                        "dice_formula": "3d6+[agi]",
+                        "value_formula_crit": "4d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-javeline",
+            "attack_characteristic_key": "agi"
+        },
+        {
+            "key": "forgelance-trident",
+            "name": "Trident",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 13,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Trident : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "3d6+Chance",
+                        "value_formula": "3d6+[chance]",
+                        "dice_formula": "3d6+[chance]",
+                        "value_formula_crit": "4d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-trident",
+            "attack_characteristic_key": "chance"
+        },
+        {
+            "key": "forgelance-apotheose-forgelance",
+            "name": "Apothéose",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 14,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "4d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Apothéose : sort fort de palier 14.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "4d6+Intelligence",
+                        "value_formula": "4d6+[intel]",
+                        "dice_formula": "4d6+[intel]",
+                        "value_formula_crit": "5d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-apotheose-forgelance",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "forgelance-orage-d-acier",
+            "name": "Orage d'Acier",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 14,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "4d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Orage d'Acier : sort fort de palier 14.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "4d6+Agilité",
+                        "value_formula": "4d6+[agi]",
+                        "dice_formula": "4d6+[agi]",
+                        "value_formula_crit": "5d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-orage-d-acier",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        }
+    ]
+}

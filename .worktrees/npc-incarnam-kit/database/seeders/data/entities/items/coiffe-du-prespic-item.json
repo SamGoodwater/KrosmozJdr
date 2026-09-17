@@ -1,0 +1,47 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6926",
+        "official_id": null
+    },
+    "item": {
+        "name": "Coiffe du Prespic",
+        "level": "3",
+        "description": "Avec cette coiffe de Prespic sur la tête, vous ressemblez presque à Dévie Cloquette, célèbre chasseuse des temps modernes, prête à tout pour cacher sa calvitie naissante. Pas de chance pour vous si vous vouliez faire de même, vous devrez vous contenter d'une coiffe de couleur rousse, qui de toute évidence, dégagera une horrible odeur dès qu'il se mettra à pleuvoir.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 450,
+        "price_custom": null,
+        "effect": null,
+        "bonus": null,
+        "item_type_dofus_id": 16,
+        "item_type_name": "Chapeau"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "31"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "407",
+                "name": "Pic de Prespic",
+                "quantity": 5
+            },
+            {
+                "dofusdb_id": "886",
+                "name": "Cuir de Bouftou Royal",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "1672",
+                "name": "Poils de Darit",
+                "quantity": 1
+            }
+        ]
+    }
+}

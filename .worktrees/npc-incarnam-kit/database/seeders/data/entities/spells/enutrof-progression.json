@@ -1,0 +1,691 @@
+{
+    "_schema_version": "1",
+    "breed": "Enutrof",
+    "entries": [
+        {
+            "key": "enutrof-coffre-anime",
+            "name": "Coffre Animé",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 3,
+            "types": [
+                "Buff"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 3,
+            "effect": "Pose un Coffre (zone visible, 1 case, PO 1–4). Un allié adjacent peut y piocher 1d4 PV, 1 fois / combat. Pas une invocation. 3 PA, 1×/tour.",
+            "description": "Coffre Animé : une caisse sur le sol, pas une bête.",
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Zone 1 case : un allié adjacent pioche 1d4 PV, 1 fois / combat.",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "13347",
+            "target_type": "glyph"
+        },
+        {
+            "key": "enutrof-acceleration",
+            "name": "Accélération",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 3,
+            "types": [
+                "Buff"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 3,
+            "effect": "+1d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+            "description": "Accélération : tu te prépares. Le prochain élan frappe plus fort.",
+            "sub_effects": [
+                {
+                    "slug": "booster",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "dommages_spell",
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
+                        "effect_direction": "self",
+                        "duration_formula": "1"
+                    }
+                }
+            ],
+            "official_id": "jdr:enutrof-acceleration",
+            "auto_success_if_willing_target": true,
+            "duration": "jusqu’à la fin de ton prochain tour",
+            "max_stack": 1
+        },
+        {
+            "key": "enutrof-pelle-des-anciens",
+            "name": "Pelle des Anciens",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 4,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Pelle des Anciens : attaque simple, même budget que le palier 4.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "value_formula_crit": "2d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "13345",
+            "attack_characteristic_key": "strong"
+        },
+        {
+            "key": "enutrof-corruption",
+            "name": "Corruption",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 4,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Corruption : attaque simple, même budget que le palier 4.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "1d6+Chance",
+                        "value_formula": "1d6+[chance]",
+                        "dice_formula": "1d6+[chance]",
+                        "value_formula_crit": "2d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "28391",
+            "attack_characteristic_key": "chance"
+        },
+        {
+            "key": "enutrof-coup-de-grisou",
+            "name": "Coup de Grisou",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "2d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Coup de Grisou : sort fort de palier 5.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "2d6+Intelligence",
+                        "value_formula": "2d6+[intel]",
+                        "dice_formula": "2d6+[intel]",
+                        "value_formula_crit": "3d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "29772",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "enutrof-eboulement",
+            "name": "Éboulement",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 5,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "2d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Éboulement : sort fort de palier 5.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
+                        "value_formula_crit": "3d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "31368",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "enutrof-cles-du-tresor",
+            "name": "Clef du Trésor",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 7,
+            "types": [
+                "Offensif"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 5,
+            "effect": "Attirance de 3 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
+            "description": "Clef du Trésor : tu ramènes la cible.",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "3",
+                        "movement_kind": "pull",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "13332",
+            "attack_characteristic_key": "agi"
+        },
+        {
+            "key": "enutrof-ruée-vers-l-or",
+            "name": "Ruée vers l'Or",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 7,
+            "types": [
+                "Téléportation"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "Téléportation 1–5 cases, pas de ligne de vue. 3 PA, 1×/tour.",
+            "description": "Ruée vers l'Or : tu disparais et tu réapparais.",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "5",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    }
+                }
+            ],
+            "dofusdb_id": "29757"
+        },
+        {
+            "key": "enutrof-pelle-fantomatique",
+            "name": "Pelle Fantomatique",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 8,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 5,
+            "effect": "2d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Pelle Fantomatique : attaque simple, même budget que le palier 8.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
+                        "value_formula_crit": "3d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "13336",
+            "attack_characteristic_key": "strong"
+        },
+        {
+            "key": "enutrof-monnaie-sonnante",
+            "name": "Monnaie Sonnante",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 8,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 5,
+            "effect": "2d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Monnaie Sonnante : attaque simple, même budget que le palier 8.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d6+Chance",
+                        "value_formula": "2d6+[chance]",
+                        "dice_formula": "2d6+[chance]",
+                        "value_formula_crit": "3d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "29770",
+            "attack_characteristic_key": "chance"
+        },
+        {
+            "key": "enutrof-feu-de-mine",
+            "name": "Feu de Mine",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 10,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "3d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Feu de Mine : sort fort de palier 10.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "3d6+Intelligence",
+                        "value_formula": "3d6+[intel]",
+                        "dice_formula": "3d6+[intel]",
+                        "value_formula_crit": "4d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "13355",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "enutrof-tourbiere",
+            "name": "Tourbière",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 10,
+            "types": [
+                "Debuff"
+            ],
+            "element": "water",
+            "pa": "5",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "Retrait de 1 PM. Magique, 5 PA, 1×/tour. Sauvegarde Sagesse.",
+            "description": "Tourbière : les jambes pèsent.",
+            "sub_effects": [
+                {
+                    "slug": "retirer",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "movement_points",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "23609",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun retrait."
+        },
+        {
+            "key": "enutrof-malle-animee",
+            "name": "Malle Animée",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Invocation"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 8,
+            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 2d4, 1 PM. Au plus 1 invocation à la fois. 3 PA, 1×/tour.",
+            "description": "Malle Animée : une invocation. Fragile, mais elle occupe.",
+            "sub_effects": [
+                {
+                    "slug": "invoquer",
+                    "area": "point",
+                    "params": {
+                        "monster_official_id": "jdr:summon:enutrof-malle-animee",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "13371"
+        },
+        {
+            "key": "enutrof-opportunite",
+            "name": "Opportunité",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 11,
+            "types": [
+                "Buff"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 8,
+            "effect": "+3d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+            "description": "Opportunité : tu te prépares. Le prochain élan frappe plus fort.",
+            "sub_effects": [
+                {
+                    "slug": "booster",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "dommages_spell",
+                        "value": "3d4",
+                        "value_formula": "3d4",
+                        "dice_formula": "3d4",
+                        "effect_direction": "self",
+                        "duration_formula": "1"
+                    }
+                }
+            ],
+            "dofusdb_id": "13366",
+            "auto_success_if_willing_target": true,
+            "duration": "jusqu’à la fin de ton prochain tour",
+            "max_stack": 1
+        },
+        {
+            "key": "enutrof-pelle-de-fortune",
+            "name": "Pelle de Fortune",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 13,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Pelle de Fortune : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "3d6+Force",
+                        "value_formula": "3d6+[strong]",
+                        "dice_formula": "3d6+[strong]",
+                        "value_formula_crit": "4d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "30775",
+            "attack_characteristic_key": "strong"
+        },
+        {
+            "key": "enutrof-orpaillage",
+            "name": "Orpaillage",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 13,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Orpaillage : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "3d6+Chance",
+                        "value_formula": "3d6+[chance]",
+                        "dice_formula": "3d6+[chance]",
+                        "value_formula_crit": "4d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "29769",
+            "attack_characteristic_key": "chance"
+        },
+        {
+            "key": "enutrof-age-d-or",
+            "name": "Âge d'Or",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 14,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "4d6 + Chance (Eau) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Âge d'Or : sort fort de palier 14.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "4d6+Chance",
+                        "value_formula": "4d6+[chance]",
+                        "dice_formula": "4d6+[chance]",
+                        "value_formula_crit": "5d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "13329",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "enutrof-banqueroute",
+            "name": "Banqueroute",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 14,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "4d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Banqueroute : sort fort de palier 14.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "4d6+Intelligence",
+                        "value_formula": "4d6+[intel]",
+                        "dice_formula": "4d6+[intel]",
+                        "value_formula_crit": "5d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "14278",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        }
+    ]
+}

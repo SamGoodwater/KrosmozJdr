@@ -1,0 +1,45 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "stealth_passive_creature",
+        "name": "Discrétion (passif)",
+        "short_name": "Discr. pass.",
+        "helper": "Discrétion passive : valeur fixe dérivée de la compétence active, sans lancer de dé.",
+        "descriptions": "Ta capacité à passer pour un élément du décor.",
+        "icon": "skillAgility.webp",
+        "icon_false": null,
+        "color": "neutral",
+        "value_overrides": null,
+        "hide_when_empty": false,
+        "hide_when_false": false,
+        "unit": null,
+        "type": "int",
+        "status": "a_valider",
+        "sort_order": 12,
+        "group": "creature",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": null,
+            "min": "8",
+            "max": "34",
+            "formula": "[modifier_agility_creature]+[mastery_bonus_creature]*[discretion_mastery]+[discretion_bonus]+10",
+            "formula_display": "modifier_agility_creature + mastery_bonus_creature × discretion_mastery + discretion_bonus",
+            "default_value": "10",
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "labels": null,
+            "validation": null
+        }
+    },
+    "relations": null
+}

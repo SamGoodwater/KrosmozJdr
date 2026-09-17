@@ -1,0 +1,207 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "soin_spell",
+        "name": "Soin",
+        "short_name": "Soin",
+        "helper": "Montant de soins appliqués par un sous-effet soigner. Conversion Dofus → Krosmoz.",
+        "descriptions": "Soins (sous-effet soigner, 3.2.4). Barèmes 5.2.3 : niv 1–3 1d4+mod, niv 16–20 5d4+mod. Plafonnés aux PV max. Souvent lié à Sagesse/Vitalité.",
+        "icon": "heal.webp",
+        "icon_false": null,
+        "color": "red",
+        "value_overrides": null,
+        "hide_when_empty": false,
+        "hide_when_false": false,
+        "unit": null,
+        "type": "int",
+        "status": "validee",
+        "sort_order": 33,
+        "group": "spell",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": null,
+            "min": "0",
+            "max": "32",
+            "formula": null,
+            "formula_display": null,
+            "default_value": "0",
+            "conversion_formula": "round(min(32, max(0, 0.95 * pow(max(0,[d]), 0.475))))",
+            "conversion_function": "convertToDice",
+            "conversion_dofus_sample": {
+                "10": 10,
+                "50": 50,
+                "100": 100,
+                "300": 300,
+                "1000": 1000
+            },
+            "conversion_krosmoz_sample": {
+                "10": 3,
+                "50": 6,
+                "100": 8,
+                "300": 14,
+                "1000": 25
+            },
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 10,
+                    "dofus_value": 10,
+                    "krosmoz_level": 10,
+                    "krosmoz_value": 3
+                },
+                {
+                    "dofus_level": 50,
+                    "dofus_value": 50,
+                    "krosmoz_level": 50,
+                    "krosmoz_value": 6
+                },
+                {
+                    "dofus_level": 100,
+                    "dofus_value": 100,
+                    "krosmoz_level": 100,
+                    "krosmoz_value": 8
+                },
+                {
+                    "dofus_level": 300,
+                    "dofus_value": 300,
+                    "krosmoz_level": 300,
+                    "krosmoz_value": 14
+                },
+                {
+                    "dofus_level": 1000,
+                    "dofus_value": 1000,
+                    "krosmoz_level": 1000,
+                    "krosmoz_value": 25
+                }
+            ],
+            "norms_grid": {
+                "very_weak": [
+                    1,
+                    1,
+                    2,
+                    1,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    3,
+                    3,
+                    3,
+                    4,
+                    4,
+                    4,
+                    4,
+                    5,
+                    5,
+                    6,
+                    6
+                ],
+                "weak": [
+                    1,
+                    1,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    3,
+                    3,
+                    3,
+                    3,
+                    4,
+                    4,
+                    4,
+                    5,
+                    5,
+                    5,
+                    6,
+                    6,
+                    7
+                ],
+                "neutral": [
+                    2,
+                    2,
+                    3,
+                    3,
+                    3,
+                    3,
+                    4,
+                    4,
+                    5,
+                    5,
+                    5,
+                    5,
+                    6,
+                    6,
+                    7,
+                    7,
+                    8,
+                    8,
+                    9,
+                    10
+                ],
+                "strong": [
+                    2,
+                    2,
+                    3,
+                    3,
+                    3,
+                    3,
+                    4,
+                    5,
+                    5,
+                    5,
+                    6,
+                    6,
+                    7,
+                    7,
+                    8,
+                    8,
+                    8,
+                    9,
+                    10,
+                    10
+                ],
+                "very_strong": [
+                    3,
+                    4,
+                    4,
+                    4,
+                    4,
+                    5,
+                    5,
+                    6,
+                    6,
+                    7,
+                    7,
+                    8,
+                    8,
+                    9,
+                    9,
+                    10,
+                    10,
+                    11,
+                    12,
+                    13
+                ]
+            },
+            "norms_conditions": [
+                {
+                    "characteristic_key": "action_points_spell",
+                    "operator": ">=",
+                    "value": 5,
+                    "target": "power",
+                    "modifier": 1,
+                    "comment": "Sort coûteux → soins supérieurs"
+                }
+            ],
+            "norms_description": "Budget de soins par lancement de référence à 3 PA. Le total par tour suit dégâts max × 0,35 + 2 + modificateur de Vitalité, puis est réparti selon les PA.",
+            "norms_help_section_id": null,
+            "value_available": null
+        }
+    },
+    "relations": null
+}

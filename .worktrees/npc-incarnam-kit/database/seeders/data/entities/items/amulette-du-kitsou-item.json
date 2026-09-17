@@ -1,0 +1,52 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "7342",
+        "official_id": null
+    },
+    "item": {
+        "name": "Amulette du Kitsou",
+        "level": "5",
+        "description": "Cette amulette du Kitsou attirera l'attention sur votre double menton.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 750,
+        "price_custom": null,
+        "effect": [],
+        "bonus": [],
+        "item_type_dofus_id": 1,
+        "item_type_name": "Amulette"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "41"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "12737",
+                "name": "Galet cramoisi",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "14460",
+                "name": "Branche de Tiwabbit Kiafin",
+                "quantity": 7
+            },
+            {
+                "dofusdb_id": "11695",
+                "name": "Carniflore",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "2288",
+                "name": "Patte de Wabbit",
+                "quantity": 4
+            }
+        ]
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "71"
+    },
+    "panoply": {
+        "name": "Panoplie du Piou Jaune",
+        "description": null,
+        "bonus": {
+            "6": {
+                "acrobatics": 1,
+                "range": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "8216",
+            "8222",
+            "8228",
+            "8233",
+            "8240",
+            "8246"
+        ]
+    }
+}

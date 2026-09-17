@@ -1,0 +1,224 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "life_points_creature",
+        "name": "Points de vie",
+        "short_name": "PV",
+        "helper": "Ta réserve de vie avant l’inconscience.",
+        "descriptions": "Les points de vie représentent ton état de santé au combat. Ils s’appuient sur ta Vitalité et sur les dés de vie de ta classe.",
+        "icon": "life.webp",
+        "icon_false": null,
+        "color": "red",
+        "value_overrides": null,
+        "hide_when_empty": false,
+        "hide_when_false": false,
+        "unit": null,
+        "type": "int",
+        "status": "validee",
+        "sort_order": 1,
+        "group": "creature",
+        "linked_to_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": "life",
+            "min": "[hit_dice_creature]",
+            "max": "∞",
+            "formula": "[hit_dice_creature] + [modifier_vitality_creature]*[level_creature] + ([level_creature]-1)*(round([hit_dice_creature]/2)) + [life_points_max_object]",
+            "formula_display": "[hit_dice_creature] + [modifier_vitality_creature]×[level_creature] + ([level_creature]-1)×(round([hit_dice_creature]/2)) + life_points_max_object",
+            "default_value": "[hit_dice_creature]",
+            "conversion_formula": "floor([d]/200)+[level]*5",
+            "conversion_function": null,
+            "conversion_dofus_sample": {
+                "1": 255,
+                "40": 681,
+                "80": 1906,
+                "120": 3533,
+                "160": 5542,
+                "200": 9528
+            },
+            "conversion_krosmoz_sample": {
+                "1": 6,
+                "40": 203,
+                "80": 409,
+                "120": 617,
+                "160": 827,
+                "200": 1047
+            },
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": null,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": null,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": null,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": null,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": null,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": null,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": null
+                }
+            ],
+            "norms_grid": {
+                "very_weak": [
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    10,
+                    12,
+                    14,
+                    16,
+                    18,
+                    21,
+                    24,
+                    27,
+                    30,
+                    34,
+                    38,
+                    42,
+                    44,
+                    46,
+                    48
+                ],
+                "weak": [
+                    7,
+                    9,
+                    10,
+                    12,
+                    14,
+                    17,
+                    20,
+                    24,
+                    28,
+                    32,
+                    36,
+                    42,
+                    47,
+                    53,
+                    59,
+                    66,
+                    73,
+                    77,
+                    80,
+                    84
+                ],
+                "neutral": [
+                    10,
+                    13,
+                    15,
+                    18,
+                    21,
+                    25,
+                    30,
+                    35,
+                    40,
+                    46,
+                    52,
+                    60,
+                    68,
+                    76,
+                    85,
+                    95,
+                    105,
+                    110,
+                    115,
+                    120
+                ],
+                "strong": [
+                    13,
+                    17,
+                    20,
+                    23,
+                    27,
+                    33,
+                    39,
+                    46,
+                    52,
+                    60,
+                    68,
+                    78,
+                    88,
+                    99,
+                    111,
+                    124,
+                    137,
+                    143,
+                    150,
+                    156
+                ],
+                "very_strong": [
+                    16,
+                    21,
+                    24,
+                    28,
+                    34,
+                    40,
+                    48,
+                    56,
+                    64,
+                    74,
+                    83,
+                    96,
+                    109,
+                    122,
+                    136,
+                    152,
+                    168,
+                    176,
+                    184,
+                    192
+                ]
+            },
+            "norms_conditions": [
+                {
+                    "characteristic_key": "vitality_creature",
+                    "operator": ">=",
+                    "value": 18,
+                    "target": "power",
+                    "modifier": 1,
+                    "comment": "Vitalité élevée → +1 ligne puissance PV"
+                },
+                {
+                    "characteristic_key": "vitality_creature",
+                    "operator": "<=",
+                    "value": 10,
+                    "target": "power",
+                    "modifier": -1,
+                    "comment": "Vitalité basse → -1 ligne puissance PV"
+                }
+            ],
+            "norms_description": "Points de vie. Progression exponentielle douce. Très faible = cible fragile (mage verre), très fort = tank pur.",
+            "norms_help_section_id": null,
+            "labels": null,
+            "validation": null
+        }
+    },
+    "relations": null
+}

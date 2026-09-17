@@ -1,0 +1,56 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6759",
+        "official_id": null
+    },
+    "item": {
+        "name": "Kwakture de Vent",
+        "level": "4",
+        "description": "\"La seule façon d'attraper un vieux mâle Kwak du Vent contrarié, c'est de se déguiser en femelle Kwak du Vent contrariée. Dès lors, le mâle tentera de comprendre pourquoi la femelle est contrariée et tentera avec tous les moyens dont il dispose, de satisfaire la femelle. Une fois le mâle satisfait de sa prestation, il faut profiter de sa béatitude pour le plumer.\" Voici ce que l'on peut lire dans la section douze du tome trois sur la chasse aux Kwaks du Vent. Il y est en outre clairement indiqué, que cette ceinture est un élément indispensable pour se faire passer pour une femelle Kwak du Vent. Vous savez ce qu'il vous reste à faire.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 1200,
+        "price_custom": null,
+        "effect": {
+            "dodge": 2
+        },
+        "bonus": {
+            "dodge": 2
+        },
+        "item_type_dofus_id": 10,
+        "item_type_name": "Ceinture"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "15"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "12745",
+                "name": "Substrat de Bocage",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "12016",
+                "name": "Plume du Kwakwa",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "416",
+                "name": "Plume du Kwak de Vent",
+                "quantity": 7
+            },
+            {
+                "dofusdb_id": "2648",
+                "name": "Griffes de Kwak",
+                "quantity": 5
+            }
+        ]
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "14492",
+        "official_id": null
+    },
+    "item": {
+        "name": "Cape du Wa Wobot",
+        "level": "8",
+        "description": "Cette cape pèse bien lourd sur vos épaules. Est-ce le poids de la culpabilité du Wa Wabbit ou plutôt de la vôtre ?",
+        "recipe": null,
+        "rarity": 2,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 3300,
+        "price_custom": 8100,
+        "effect": {
+            "strength": 3,
+            "initiative": 2
+        },
+        "bonus": {
+            "strength": 3,
+            "initiative": 2
+        },
+        "item_type_dofus_id": 17,
+        "item_type_name": "Cape"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "294"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "12737",
+                "name": "Galet cramoisi",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "2543",
+                "name": "Substrat de Fascine",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "14470",
+                "name": "Poil de Wobot Kiafin",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "14473",
+                "name": "Boulon Wabbit",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "14468",
+                "name": "Barbe du Wa Wobot",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "14469",
+                "name": "Estomac de Black Wo Wabbit",
+                "quantity": 3
+            }
+        ]
+    }
+}

@@ -1,0 +1,71 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8640",
+        "official_id": null
+    },
+    "item": {
+        "name": "Cape Aillé",
+        "level": "8",
+        "description": "Faite dans un tissu doux et résistant, cette cape donne aux Ecaflips l'impression qu'ils sont toujours des as, quoi qu'il arrive. Lorsqu'ils remportent la victoire, ils adorent se draper dans ce vêtement avant de réclamer leur récompense : « Et maintenant, t'as qu'à payer ! »",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 1700,
+        "price_custom": 8000,
+        "effect": {
+            "agility": 1
+        },
+        "bonus": {
+            "agility": 1
+        },
+        "item_type_dofus_id": 17,
+        "item_type_name": "Cape"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "88"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "8061",
+                "name": "Poils de Koalak Reinette",
+                "quantity": 20
+            },
+            {
+                "dofusdb_id": "8757",
+                "name": "Maillot de corps de Barbroussa",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "8760",
+                "name": "Foulard du Sparo",
+                "quantity": 4
+            },
+            {
+                "dofusdb_id": "8766",
+                "name": "Plume de fesse du Kido",
+                "quantity": 10
+            },
+            {
+                "dofusdb_id": "8767",
+                "name": "Aile du Bitouf des Plaines",
+                "quantity": 10
+            },
+            {
+                "dofusdb_id": "8995",
+                "name": "Étoffe de Gourlo le Terrible",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "1890",
+                "name": "Poil de Vétauran",
+                "quantity": 20
+            }
+        ]
+    }
+}

@@ -1,0 +1,52 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "2424",
+        "official_id": null
+    },
+    "item": {
+        "name": "Amukwak de Flammes",
+        "level": "4",
+        "description": "Avec toutes ces plumes autour du cou, vous ressemblerez à Aldo Rado, grand Sacrieur aventurier en quête d'une cité d'or.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 600,
+        "price_custom": null,
+        "effect": null,
+        "bonus": null,
+        "item_type_dofus_id": 1,
+        "item_type_name": "Amulette"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "2"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "746",
+                "name": "Ébonite",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "12016",
+                "name": "Plume du Kwakwa",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "412",
+                "name": "Bec du Kwak de Flamme",
+                "quantity": 5
+            },
+            {
+                "dofusdb_id": "2651",
+                "name": "Ver de Feu",
+                "quantity": 1
+            }
+        ]
+    }
+}

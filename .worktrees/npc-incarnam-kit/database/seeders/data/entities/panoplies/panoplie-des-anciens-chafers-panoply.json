@@ -1,0 +1,27 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "239"
+    },
+    "panoply": {
+        "name": "Panoplie des Anciens Chafers",
+        "description": null,
+        "bonus": {
+            "4": {
+                "strength": 1,
+                "intimidation": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "13094",
+            "13093",
+            "13092",
+            "13091"
+        ]
+    }
+}

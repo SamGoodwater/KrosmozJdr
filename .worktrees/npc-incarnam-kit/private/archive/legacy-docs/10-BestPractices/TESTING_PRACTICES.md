@@ -1,0 +1,113 @@
+# Tests — Bonnes pratiques
+ 
+- Mettre en place des tests unitaires et d'intégration (backend, frontend).
+- Outils recommandés : PHPUnit (Laravel), Vitest/Jest (Vue), Cypress (E2E).
+- Les tests doivent vérifier la présence des logs attendus, la cohérence des artefacts générés, la communication inter-composants.
+- Couvrir les helpers, les formules, les composants critiques.
+- Voir aussi : [CODE_DOCUMENTATION.md](./CODE_DOCUMENTATION.md)
+
+---
+
+## 📊 État actuel des tests
+
+Pour un chiffre à jour (nombre de tests, assertions, durée), exécuter localement :
+
+```bash
+php artisan test
+```
+
+Les sections ci-dessous décrivent l’organisation des suites, pas un total figé.
+
+### Tests Backend (PHPUnit)
+
+#### Tests Bulk Controllers (14 fichiers)
+- Tests pour toutes les opérations bulk (mise à jour en masse)
+- Couverture : autorisation, validation, transactions, gestion d'erreurs
+- **Localisation** : `tests/Feature/Api/Bulk/*BulkControllerTest.php`
+
+#### Tests Table Controllers (14 fichiers)
+- Tests pour les endpoints table avec format `entities` et `cells`
+- Couverture : format de réponse, permissions, pagination, relations
+- **Localisation** : `tests/Feature/Api/Table/*TableControllerTest.php`
+
+#### Tests Admin (caractéristiques, mapping scrapping)
+- **CharacteristicControllerTest** : index, show, create, store, update, destroy, formula-preview, suggest-conversion-formula, upload-icon ; payload show (selected, scrappingMappingsUsingThis, characteristicsForConvertToLinked).
+- **ScrappingMappingControllerTest** : index (Inertia), store, update, destroy ; accès guest/user/admin.
+- **CharacteristicShowPayloadBuilderTest** (unit) : build() retourne selected, scrappingMappingsUsingThis, characteristicsForConvertToLinked ; intégration avec règles de mapping liées.
+- **ScrappingMappingServiceTest** (unit) : listMappingsForCharacteristic (vide / avec règles), getMappingForEntity, hasMappingForEntity.
+- **FormatterApplicatorTest** (unit) : registry (supports, apply formatter inconnu → valeur inchangée), toInt, toString, clampToCharacteristic, dofusdb_* sans service.
+
+### Tests Frontend (Vitest)
+
+#### Tests Adapters (12 fichiers)
+- Tests pour la transformation des données backend → frontend
+- Couverture : génération de cellules, gestion des valeurs nulles, relations
+- **Localisation** : `tests/unit/adapters/*-adapter.test.js`
+
+#### Tests Utils/Composables (4 fichiers)
+- Tests pour les utilitaires de descriptors et les composables bulk
+- **Localisation** : `tests/unit/utils/` et `tests/unit/composables/`
+
+**Voir** : [TESTS_ENTITY_DESCRIPTORS_IMPLEMENTATION.md](../100-%20Done/TESTS_ENTITY_DESCRIPTORS_IMPLEMENTATION.md) pour les détails complets.
+
+---
+
+## 🎯 Bonnes pratiques spécifiques
+
+### Tests Backend
+
+- **Nommage** : `*ControllerTest.php` pour les tests de contrôleurs
+- **Structure** : Un test par cas d'usage (succès, échec, validation, permissions)
+- **Assertions** : Vérifier à la fois le code HTTP et les données retournées
+- **Fixtures** : Utiliser les factories Laravel pour créer les données de test
+- **Transactions** : Utiliser `RefreshDatabase` pour isoler les tests
+- **Base de données** : une base **dédiée** aux tests est obligatoire pour ne pas toucher la base de dev. Le dépôt configure `phpunit.xml` avec **MySQL** (`DB_DATABASE=krosmoz_testing` par défaut) : le serveur MySQL doit être joignable et la base créée. (Une variante SQLite `:memory:` est possible en local si vous adaptez `phpunit.xml`.) Sans connexion BDD, les tests Feature qui utilisent `RefreshDatabase` échouent avec une erreur de connexion.
+
+### Tests Frontend
+
+- **Nommage** : `*.test.js` pour les tests Vitest
+- **Structure** : Grouper par fonctionnalité avec `describe()`
+- **Mocks** : Mocker les dépendances externes (route, Inertia, etc.)
+- **Assertions** : Vérifier la structure ET le contenu des données transformées
+
+### Exemple de test backend
+
+```php
+public function test_admin_can_bulk_update_entities(): void
+{
+    $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+    $entity1 = Entity::factory()->create();
+    $entity2 = Entity::factory()->create();
+
+    $response = $this->actingAs($admin)
+        ->patchJson('/api/entities/entities/bulk', [
+            'ids' => [$entity1->id, $entity2->id],
+            'read_level' => User::ROLE_ADMIN,
+        ]);
+
+    $response->assertOk()
+        ->assertJson(['success' => true]);
+
+    $this->assertDatabaseHas('entities', [
+        'id' => $entity1->id,
+        'read_level' => User::ROLE_ADMIN,
+    ]);
+}
+```
+
+### Exemple de test frontend
+
+```javascript
+describe('entity-adapter', () => {
+    describe('buildEntityCell', () => {
+        it('génère une cellule route pour name', () => {
+            const entity = { id: 1, name: 'Test Entity' };
+            const cell = buildEntityCell('name', entity, {}, { context: 'table' });
+
+            expect(cell.type).toBe('route');
+            expect(cell.value).toBe('Test Entity');
+            expect(cell.params.href).toContain('/entities/1');
+        });
+    });
+});
+``` 

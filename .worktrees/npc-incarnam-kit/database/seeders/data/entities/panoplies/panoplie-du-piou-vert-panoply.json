@@ -1,0 +1,29 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "72"
+    },
+    "panoply": {
+        "name": "Panoplie du Piou Vert",
+        "description": null,
+        "bonus": {
+            "6": {
+                "athletics": 1,
+                "range": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "8217",
+            "8223",
+            "8229",
+            "8236",
+            "8241",
+            "8247"
+        ]
+    }
+}

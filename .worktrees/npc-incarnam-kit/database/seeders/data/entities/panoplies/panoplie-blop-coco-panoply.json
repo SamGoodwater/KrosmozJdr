@@ -1,0 +1,27 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "100"
+    },
+    "panoply": {
+        "name": "Panoplie Blop Coco",
+        "description": null,
+        "bonus": {
+            "4": {
+                "agility": 1,
+                "acrobatics": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "9160",
+            "9124",
+            "9151",
+            "9169"
+        ]
+    }
+}

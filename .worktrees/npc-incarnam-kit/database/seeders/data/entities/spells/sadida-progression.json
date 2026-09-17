@@ -1,0 +1,692 @@
+{
+    "_schema_version": "1",
+    "breed": "Sadida",
+    "entries": [
+        {
+            "key": "sadida-herbe-folle",
+            "name": "Herbe Folle",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 3,
+            "types": [
+                "Offensif"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "Attirance de 2 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
+            "description": "Herbe Folle : tu ramènes la cible.",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "2",
+                        "movement_kind": "pull",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-herbe-folle",
+            "attack_characteristic_key": "agi"
+        },
+        {
+            "key": "sadida-sacrifice-poupesque",
+            "name": "Sacrifice Poupesque",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 3,
+            "types": [
+                "Téléportation"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 3,
+            "effect": "Échange de position avec la cible. 3 PA, 1×/tour.",
+            "description": "Sacrifice Poupesque : vous changez de place.",
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Échange de position avec la cible.",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-sacrifice-poupesque",
+            "auto_success_if_willing_target": true
+        },
+        {
+            "key": "sadida-ronce-insolente",
+            "name": "Ronce Insolente",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 4,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Ronce Insolente : attaque simple, même budget que le palier 4.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "value_formula_crit": "2d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-ronce-insolente",
+            "attack_characteristic_key": "strong"
+        },
+        {
+            "key": "sadida-poison-paralysant",
+            "name": "Poison Paralysant",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 4,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Intelligence (Feu) et Empoisonné jusqu’à la fin du prochain tour. 3 PA, 2×/tour.",
+            "description": "Poison Paralysant : ça s’accroche après le coup.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "value_formula_crit": "2d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Empoisonné jusqu’à la fin du prochain tour de la cible.",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-poison-paralysant",
+            "attack_characteristic_key": "intel"
+        },
+        {
+            "key": "sadida-multiple-ronce",
+            "name": "Ronces Multiples",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "2d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Ronces Multiples : sort fort de palier 5.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
+                        "value_formula_crit": "3d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-multiple-ronce",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "sadida-puissance-sylvestre",
+            "name": "Puissance Sylvestre",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 5,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "2d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Puissance Sylvestre : sort fort de palier 5.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "2d6+Intelligence",
+                        "value_formula": "2d6+[intel]",
+                        "dice_formula": "2d6+[intel]",
+                        "value_formula_crit": "3d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-puissance-sylvestre",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "sadida-la-bloqueuse",
+            "name": "La Bloqueuse",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 7,
+            "types": [
+                "Invocation"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "Invoque une poupée alliée adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 2 poupées (Jardin). Terrain difficile autour. 3 PA, 1×/tour.",
+            "description": "La Bloqueuse : 2e poupée du Jardin.",
+            "sub_effects": [
+                {
+                    "slug": "invoquer",
+                    "area": "point",
+                    "params": {
+                        "monster_official_id": "jdr:summon:sadida-la-bloqueuse",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-la-bloqueuse"
+        },
+        {
+            "key": "sadida-la-gonflable",
+            "name": "La Gonflable",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 7,
+            "types": [
+                "Invocation"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "Invoque une poupée alliée adjacente. Elle agit à ton initiative : soigne 1d4, 1 PM. Au plus 2 poupées (Jardin). Terrain difficile autour. 3 PA, 1×/tour.",
+            "description": "La Gonflable : l’autre 2e poupée, qui soigne.",
+            "sub_effects": [
+                {
+                    "slug": "invoquer",
+                    "area": "point",
+                    "params": {
+                        "monster_official_id": "jdr:summon:sadida-la-gonflable",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-la-gonflable"
+        },
+        {
+            "key": "sadida-ronce-aggressive",
+            "name": "Ronce Agressive",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 8,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 5,
+            "effect": "2d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Ronce Agressive : attaque simple, même budget que le palier 8.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
+                        "value_formula_crit": "3d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-ronce-aggressive",
+            "attack_characteristic_key": "strong"
+        },
+        {
+            "key": "sadida-vent-empoisonne-majeur",
+            "name": "Feu de Brousse",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 8,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 5,
+            "effect": "2d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+            "description": "Feu de Brousse : attaque simple, même budget que le palier 8.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "2d6+Intelligence",
+                        "value_formula": "2d6+[intel]",
+                        "dice_formula": "2d6+[intel]",
+                        "value_formula_crit": "3d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-vent-empoisonne-majeur",
+            "attack_characteristic_key": "intel"
+        },
+        {
+            "key": "sadida-arbre",
+            "name": "Arbre",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 10,
+            "types": [
+                "Invocation"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 1 invocation à la fois. 3 PA, 1×/tour.",
+            "description": "Arbre : une invocation. Fragile, mais elle occupe.",
+            "sub_effects": [
+                {
+                    "slug": "invoquer",
+                    "area": "point",
+                    "params": {
+                        "monster_official_id": "jdr:summon:sadida-arbre",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-arbre"
+        },
+        {
+            "key": "sadida-ronce-magistrale",
+            "name": "Ronce Magistrale",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 10,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "3d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Ronce Magistrale : sort fort de palier 10.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "3d6+Force",
+                        "value_formula": "3d6+[strong]",
+                        "dice_formula": "3d6+[strong]",
+                        "value_formula_crit": "4d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-ronce-magistrale",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "sadida-la-sacrifiee",
+            "name": "La Sacrifiée",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Invocation"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 8,
+            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 2d4, 1 PM. Au plus 1 invocation à la fois. 3 PA, 1×/tour.",
+            "description": "La Sacrifiée : une invocation. Fragile, mais elle occupe.",
+            "sub_effects": [
+                {
+                    "slug": "invoquer",
+                    "area": "point",
+                    "params": {
+                        "monster_official_id": "jdr:summon:sadida-la-sacrifiee",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-la-sacrifiee"
+        },
+        {
+            "key": "sadida-connaissance-des-poupées",
+            "name": "Connaissance des Poupées",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 11,
+            "types": [
+                "Buff"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 8,
+            "effect": "+3d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+            "description": "Connaissance des Poupées : tu te prépares. Le prochain élan frappe plus fort.",
+            "sub_effects": [
+                {
+                    "slug": "booster",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "dommages_spell",
+                        "value": "3d4",
+                        "value_formula": "3d4",
+                        "dice_formula": "3d4",
+                        "effect_direction": "self",
+                        "duration_formula": "1"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-connaissance-des-poupées",
+            "auto_success_if_willing_target": true,
+            "duration": "jusqu’à la fin de ton prochain tour",
+            "max_stack": 1
+        },
+        {
+            "key": "sadida-poison-dissipateur",
+            "name": "Poison Dissipé",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 13,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Chance (Eau) et Empoisonné jusqu’à la fin du prochain tour. 3 PA, 2×/tour.",
+            "description": "Poison Dissipé : ça s’accroche après le coup.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "3d6+Chance",
+                        "value_formula": "3d6+[chance]",
+                        "dice_formula": "3d6+[chance]",
+                        "value_formula_crit": "4d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Empoisonné jusqu’à la fin du prochain tour de la cible.",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-poison-dissipateur",
+            "attack_characteristic_key": "chance"
+        },
+        {
+            "key": "sadida-larme-majeure",
+            "name": "Larme Épaisse",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 13,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Larme Épaisse : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "3d6+Chance",
+                        "value_formula": "3d6+[chance]",
+                        "dice_formula": "3d6+[chance]",
+                        "value_formula_crit": "4d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-larme-majeure",
+            "attack_characteristic_key": "chance"
+        },
+        {
+            "key": "sadida-tremblement-majeur",
+            "name": "Séisme",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 14,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "4d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Séisme : sort fort de palier 14.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "4d6+Force",
+                        "value_formula": "4d6+[strong]",
+                        "dice_formula": "4d6+[strong]",
+                        "value_formula_crit": "5d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-tremblement-majeur",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "sadida-vent-de-panique",
+            "name": "Vent de Panique",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 14,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "4d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+            "description": "Vent de Panique : sort fort de palier 14.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "4d6+Agilité",
+                        "value_formula": "4d6+[agi]",
+                        "dice_formula": "4d6+[agi]",
+                        "value_formula_crit": "5d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sadida-vent-de-panique",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        }
+    ]
+}

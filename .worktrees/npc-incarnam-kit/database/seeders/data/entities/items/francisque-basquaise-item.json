@@ -1,0 +1,66 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "2608",
+        "official_id": null
+    },
+    "item": {
+        "name": "Francisque Basquaise",
+        "level": "8",
+        "description": "Cette hache fait souvent le tour du monde en commençant par le bas. Et pour cause c'est dans le sud d'Amakna que ce type de hache est forgée, par une petite guilde de chasseurs de trésors réputée pour leur efficacité.",
+        "recipe": null,
+        "rarity": 1,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 4500,
+        "price_custom": 8400,
+        "effect": {
+            "fixed_damage_earth": 1,
+            "hit_bonus": 2
+        },
+        "bonus": {
+            "fixed_damage_earth": 1,
+            "hit_bonus": 2
+        },
+        "item_type_dofus_id": 19,
+        "item_type_name": "Hache"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [],
+        "resources": [
+            {
+                "dofusdb_id": "546",
+                "name": "Pierre de Saphir",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "2543",
+                "name": "Substrat de Fascine",
+                "quantity": 2
+            },
+            {
+                "dofusdb_id": "18371",
+                "name": "Carapace du Mantiscore",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "14473",
+                "name": "Boulon Wabbit",
+                "quantity": 1
+            },
+            {
+                "dofusdb_id": "445",
+                "name": "Manganèse",
+                "quantity": 20
+            },
+            {
+                "dofusdb_id": "2056",
+                "name": "Œil de Crowneille",
+                "quantity": 1
+            }
+        ]
+    }
+}

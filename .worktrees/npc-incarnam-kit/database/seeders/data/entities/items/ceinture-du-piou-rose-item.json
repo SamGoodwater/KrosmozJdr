@@ -1,0 +1,46 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "8242",
+        "official_id": null
+    },
+    "item": {
+        "name": "Ceinture du Piou Rose",
+        "level": "1",
+        "description": "Cette petite ceinture mettra vos hanches en valeur l'espace d'un combat. Elle servira ensuite à contenir vos tripes lorsqu'un sanglier des plaines un peu énervé vous aura éventré au fin fond des bois.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 450,
+        "price_custom": null,
+        "effect": {
+            "dodge": 1
+        },
+        "bonus": {
+            "dodge": 1
+        },
+        "item_type_dofus_id": 10,
+        "item_type_name": "Ceinture"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "70"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "310",
+                "name": "Os de Chafer",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "6903",
+                "name": "Plume de Piou Rose",
+                "quantity": 3
+            }
+        ]
+    }
+}

@@ -1,0 +1,112 @@
+{
+    "_schema_version": "1",
+    "types": [
+        { "dofusdb_type_id": 12, "name": "Potion" },
+        { "dofusdb_type_id": 37, "name": "Bière" },
+        { "dofusdb_type_id": 42, "name": "Friandise" },
+        { "dofusdb_type_id": 43, "name": "Potion de téléportation" },
+        { "dofusdb_type_id": 79, "name": "Boisson" }
+    ],
+    "entries": [
+        {
+            "name": "Potion de Rappel",
+            "dofusdb_id": "548",
+            "type_dofus_id": 43,
+            "level": "6",
+            "rarity": 1,
+            "price": 800,
+            "effect": "Téléporte vers un zaap ou un sanctuaire déjà visité. Hors combat. Usage unique.",
+            "description": "Plus pratique qu’un billet de zaap : tu l’as dans la poche et tu pars d’où tu veux, vers un endroit que tu connais déjà."
+        },
+        {
+            "name": "Antidote",
+            "official_id": "jdr:antidote",
+            "type_dofus_id": 12,
+            "level": "8",
+            "rarity": 1,
+            "price": 1500,
+            "effect": "Retire l’état Empoisonné. Combat (1 PA) ou hors combat. Usage unique.",
+            "description": "Un flacon amer qui casse le poison. Ça ne soigne pas les PV déjà perdus."
+        },
+        {
+            "name": "Bière d'Amakna",
+            "dofusdb_id": "351",
+            "type_dofus_id": 37,
+            "level": "2",
+            "rarity": 0,
+            "price": 200,
+            "effect": "+1 Supercherie jusqu’au prochain repos long (8 h max). Hors combat pour boire. Usage unique.",
+            "description": "La pinte du village : ça délie la langue plus que les muscles."
+        },
+        {
+            "name": "Café",
+            "official_id": "jdr:cafe",
+            "type_dofus_id": 79,
+            "level": "3",
+            "rarity": 0,
+            "price": 250,
+            "effect": "+1 Investigation jusqu’au prochain repos long (8 h max). Hors combat pour boire. Usage unique.",
+            "description": "Chaud, amer, et ça tient éveillé le temps d’une enquête."
+        },
+        {
+            "name": "Élixir de réserve de Wakfu",
+            "official_id": "jdr:wakfu-elixir",
+            "type_dofus_id": 12,
+            "level": "10",
+            "rarity": 2,
+            "price": 3500,
+            "effect": "Restaure 2 points de réserve de Wakfu (sans dépasser le maximum). Hors combat. Usage unique.",
+            "description": "Ça ne remplace pas une vraie nuit, mais ça redonne deux charges de magie personnelle."
+        },
+        {
+            "name": "Bonbon de Renaissance du Chanceux",
+            "dofusdb_id": "12196",
+            "type_dofus_id": 42,
+            "level": "12",
+            "rarity": 3,
+            "price": 10000,
+            "effect": "Renaissance : la prochaine fois que tu tomberais à 0 PV, tu restes à 1 PV. Jusqu’au prochain repos long (8 h max) ou au déclenchement. Usage unique.",
+            "description": "Un sucre d’Ecaflip : une seconde chance, une seule, et encore faut-il que la mort frappe avant le repos."
+        },
+        {
+            "name": "Potion de bouclier",
+            "official_id": "jdr:shield-potion:5",
+            "type_dofus_id": 12,
+            "level": "5",
+            "rarity": 0,
+            "price": 800,
+            "effect": "+5 points de bouclier jusqu’au prochain repos long (8 h max) ou jusqu’à absorption. Usage unique.",
+            "description": "Une couche de Wakfu liquide. Elle encaisse avant tes PV, puis disparaît."
+        },
+        {
+            "name": "Potion de grand bouclier",
+            "official_id": "jdr:shield-potion:10",
+            "type_dofus_id": 12,
+            "level": "10",
+            "rarity": 1,
+            "price": 2500,
+            "effect": "+10 points de bouclier jusqu’au prochain repos long (8 h max) ou jusqu’à absorption. Usage unique.",
+            "description": "Même principe que la petite fiole, en plus dense. Toujours pas un vrai bouclier d’acier."
+        },
+        {
+            "name": "Friandise de vitalité",
+            "official_id": "jdr:temp-hp:candy:5",
+            "type_dofus_id": 42,
+            "level": "5",
+            "rarity": 0,
+            "price": 800,
+            "effect": "+5 PV temporaires jusqu’au prochain repos long (8 h max) ou jusqu’à absorption. Usage unique.",
+            "description": "Un sucre qui gonfle un peu la réserve de vie, sans soigner les vraies plaies."
+        },
+        {
+            "name": "Élixir de vie temporaire",
+            "official_id": "jdr:temp-hp:elixir:10",
+            "type_dofus_id": 12,
+            "level": "10",
+            "rarity": 1,
+            "price": 2500,
+            "effect": "+10 PV temporaires jusqu’au prochain repos long (8 h max) ou jusqu’à absorption. Usage unique.",
+            "description": "Une réserve de vie d’emprunt : elle encaisse après le bouclier, avant tes PV réels."
+        }
+    ]
+}

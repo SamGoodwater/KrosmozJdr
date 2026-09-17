@@ -1,0 +1,34 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "14"
+    },
+    "panoply": {
+        "name": "Panoplie du Kwak de Terre",
+        "description": null,
+        "bonus": {
+            "4": {
+                "strength": 1
+            },
+            "7": {
+                "strength": 1,
+                "range": 1,
+                "athletics": 1
+            }
+        },
+        "state": "playable",
+        "read_level": 0,
+        "write_level": 3
+    },
+    "relations": {
+        "item_dofusdb_ids": [
+            "6746",
+            "6754",
+            "6758",
+            "6756",
+            "6760",
+            "6748",
+            "6751"
+        ]
+    }
+}

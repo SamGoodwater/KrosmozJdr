@@ -1,0 +1,25 @@
+# Bonnes pratiques
+
+Conventions appliquées au projet.
+
+## Documentation
+
+- Décrire l'état actuel, sans historique.
+- Exception : cadrage de l’IA générative métier dans `docs/IA/` (config JSON en code, pipeline LLM non branché).
+- Mettre les contenus de jeu dans `private/game/`.
+- Mettre les plans, prompts et anciennes notes dans `private/archive/`.
+- Ajouter un `README.md` humain et un `_ai.md` condensé à chaque nœud.
+
+## Code
+
+- Backend : validation via Form Requests, policies pour les droits, services pour la logique métier.
+- Frontend : Composition API, composants Atomic Design, pas de classes Tailwind dynamiques. Lint JS/Vue : ESLint 10 (`eslint.config.js`, `pnpm lint` sur un sous-ensemble de fichiers).
+- Sécurité : valider les entrées, ne pas versionner `.env`, garder les actions admin sous confirmation de mot de passe si sensibles. Les CVE transitives Node se corrigent via `pnpm.overrides` dans `package.json` (ex. `undici` 6.28.0, `qs` 6.16.0 pour les CVE GHSA-x5fp-wj9c-mxmx / GHSA-4mjr-xmp4-gh2g via Inertia, `brace-expansion` 1.1.18 / 2.1.4 / 5.0.9 pour CVE-2026-13149) plutôt qu’en patchant le code applicatif. Dependabot versionne npm, Composer et GitHub Actions via `.github/dependabot.yml` (weekly ; npm groupé minor/patch ; Composer sans groupe pour éviter de mélanger le lockfile ; un bump majeur de Vitest ou des Actions se fait à part).
+
+## Git et GitHub
+
+`main` est la seule branche durable. Une modification se fait sur une branche courte et spécifique (`feat/…`, `fix/…`, `security/…`, `docs/…`), puis est mergée dans `main` et la branche est supprimée. Pas de branches longues `ui` / `security` / `optimisation`. En solo, une PR GitHub n’est pas obligatoire ; si elle est ouverte, elle se merge ou se ferme tout de suite. Dependabot : merger les PR npm minor/patch cohérentes ; ne pas merger un lockfile Composer qui rétrograde Symfony. Détail agent : `.cursor/rules/git-github.mdc`.
+
+## Tests
+
+Adapter la couverture au risque : tests ciblés pour une modification locale, tests plus larges pour une feature partagée. Backend : PHPUnit 13 (`php artisan test`).

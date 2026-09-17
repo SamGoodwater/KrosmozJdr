@@ -1,0 +1,189 @@
+<?php
+
+namespace App\Models\Entity;
+
+use App\Models\Concerns\HasEntityImageMedia;
+use App\Models\Concerns\VisibleToViewer;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+
+/**
+ * @property int $id
+ * @property string $name
+ * @property string|null $description
+ * @property string|null $location
+ * @property int $price
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
+ * @property string|null $image
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property int|null $created_by
+ * @property int|null $npc_id
+ * @property-read Collection<int, Campaign> $campaigns
+ * @property-read int|null $campaigns_count
+ * @property-read Collection<int, Consumable> $consumables
+ * @property-read int|null $consumables_count
+ * @property-read User|null $createdBy
+ * @property-read Collection<int, Item> $items
+ * @property-read int|null $items_count
+ * @property-read Npc|null $npc
+ * @property-read Collection<int, Panoply> $panoplies
+ * @property-read int|null $panoplies_count
+ * @property-read Collection<int, resource> $resources
+ * @property-read int|null $resources_count
+ * @property-read Collection<int, Scenario> $scenarios
+ * @property-read int|null $scenarios_count
+ *
+ * @method static \Database\Factories\Entity\ShopFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereReadLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereLocation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereNpcId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop wherePrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereWriteLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withoutTrashed()
+ *
+ * @property-read MediaCollection<int, Media> $media
+ * @property-read int|null $media_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop visibleToUser(?\App\Models\User $user)
+ *
+ * @mixin \Eloquent
+ */
+class Shop extends Model implements HasMedia
+{
+    /** @use HasFactory<\\Database\\Factories\\ShopFactory> */
+    use HasEntityImageMedia, HasFactory, SoftDeletes, VisibleToViewer;
+
+    public const STATE_RAW = 'raw';
+
+    public const STATE_DRAFT = 'draft';
+
+    public const STATE_AUTO = 'auto';
+
+    public const STATE_PLAYABLE = 'playable';
+
+    public const STATE_ARCHIVED = 'archived';
+
+    /** Répertoire Media Library pour ce modèle. */
+    public const MEDIA_PATH = 'images/entity/shops';
+
+    /** Motif de nommage pour la collection images (placeholders: [name], [date], [id]). */
+    public const MEDIA_FILE_PATTERN_IMAGES = 'image-[id]-[name]';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'description',
+        'location',
+        'price',
+        'state',
+        'read_level',
+        'write_level',
+        'image',
+        'created_by',
+        'npc_id',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'price' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
+    ];
+
+    /**
+     * Get the user that created the shop.
+     */
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get the NPC associated with the shop.
+     */
+    public function npc()
+    {
+        return $this->belongsTo(Npc::class, 'npc_id');
+    }
+
+    /**
+     * Les objets vendus dans cette hotel de vente.
+     */
+    public function items()
+    {
+        return $this->belongsToMany(Item::class, 'item_shop')->withPivot('quantity', 'price', 'comment');
+    }
+
+    /**
+     * Les panoplies vendues dans cette hotel de vente.
+     */
+    public function panoplies()
+    {
+        return $this->belongsToMany(Panoply::class, 'panoply_shop');
+    }
+
+    /**
+     * Les consommables vendus dans cette hotel de vente.
+     */
+    public function consumables()
+    {
+        return $this->belongsToMany(Consumable::class, 'consumable_shop')->withPivot('quantity', 'price', 'comment');
+    }
+
+    /**
+     * Les ressources vendues dans cette hotel de vente.
+     */
+    public function resources()
+    {
+        return $this->belongsToMany(Resource::class, 'resource_shop')->withPivot('quantity', 'price', 'comment');
+    }
+
+    /**
+     * Les scénarios associés à cette hotel de vente.
+     */
+    public function scenarios()
+    {
+        return $this->belongsToMany(Scenario::class, 'scenario_shop');
+    }
+
+    /**
+     * Les campagnes associées à cette hotel de vente vente.
+     */
+    public function campaigns()
+    {
+        return $this->belongsToMany(Campaign::class, 'campaign_shop');
+    }
+}

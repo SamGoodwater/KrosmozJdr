@@ -1,0 +1,42 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": "6916",
+        "official_id": null
+    },
+    "item": {
+        "name": "Sac du Petit Moskito",
+        "level": "1",
+        "description": "Ce sac en peau et en ailes de Moskitos faisait jadis fureur à la sortie des écoles. Aujourd'hui, il est totalement démodé, et a été remplacé dans le cœur des enfants par le Petit sac d'écolier du Chef Crocodaille. Du grand n'importe quoi, quand on voit que ce dernier est largement plus cher, et surtout beaucoup plus laid. Une sombre histoire de mode.",
+        "recipe": null,
+        "rarity": 0,
+        "state": "playable",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 150,
+        "price_custom": null,
+        "effect": null,
+        "bonus": null,
+        "item_type_dofus_id": 17,
+        "item_type_name": "Cape"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [
+            "23"
+        ],
+        "resources": [
+            {
+                "dofusdb_id": "307",
+                "name": "Ailes de Moskito",
+                "quantity": 3
+            },
+            {
+                "dofusdb_id": "16487",
+                "name": "Bois Vermoulu",
+                "quantity": 1
+            }
+        ]
+    }
+}

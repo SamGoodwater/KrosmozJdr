@@ -1,0 +1,23 @@
+---
+globs: resources/**/*.scss,resources/**/*.vue,resources/**/*.js,resources/**/*.css,resources/**/*.php,package.json,postcss.config.js,vite.config.js,jsconfig.json
+alwaysApply: false
+---
+# Structure Frontend Vue 3
+
+- Utiliser la Composition API, TypeScript, et Pinia pour la gestion d’état.
+- Organisation recommandée :
+  - `components/` : composants réutilisables
+  - `composables/` : hooks/fonctions de composition
+  - `views/` : pages principales
+  - `store/` : Pinia
+  - `assets/` : images, styles
+- Les tests unitaires sont écrits avec Vitest ou Jest, voir [FRONTEND_TESTS.md](../../docs/10-BestPractices/TESTING_PRACTICES.md) (à compléter si besoin).
+- Respecter le guide officiel Vue 3 et la structure Atomic Design ([ATOMIC_DESIGN.md](../../docs/30-UI/ATOMIC_DESIGN.md)).
+
+Exemples :
+- Un composant doit avoir un fichier de test associé dans `__tests__/`.
+- Les props et emits sont typés.
+description:
+globs:
+alwaysApply: false
+---
