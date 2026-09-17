@@ -1,9 +1,0 @@
-{
-    "compilerOptions": {
-        "module": "ESNext",
-        "moduleResolution": "Bundler",
-        "target": "ESNext",
-        "types": ["node"]
-    },
-    "exclude": ["vendor", "tests/fixtures"]
-}

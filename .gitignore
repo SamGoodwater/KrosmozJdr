@@ -102,6 +102,9 @@ desktop.ini
 # Cursor (secrets MCP ; les rules restent versionnées)
 .cursor/mcp.json
 
+# Copies / worktrees locaux (jamais versionner)
+/.worktrees/
+
 # --- Divers ---
 npm-debug.log
 yarn-error.log
