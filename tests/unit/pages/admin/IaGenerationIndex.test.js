@@ -104,10 +104,6 @@ function mountIndex() {
                     props: ["modelValue", "label"],
                     template: "<label>{{ label }}</label>",
                 },
-                CheckboxField: {
-                    props: ["modelValue", "label"],
-                    template: "<label>{{ label }}</label>",
-                },
                 TextareaField: {
                     props: ["modelValue", "label"],
                     template: "<label>{{ label }}</label>",
@@ -173,6 +169,7 @@ describe("IaGeneration Index", () => {
         expect(wrapper.text()).toContain("Étalons d’équipement");
         expect(wrapper.text()).toContain("Solde et coûts");
         expect(wrapper.get("[data-testid='ia-model-cache']").exists()).toBe(true);
+        expect(wrapper.get("[data-testid='ia-prompt-cache']").element.checked).toBe(true);
         expect(wrapper.text()).toContain("Modèle Anthropic");
         expect(wrapper.text()).toContain("Cache prompt Anthropic");
     });

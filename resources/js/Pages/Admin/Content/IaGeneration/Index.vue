@@ -17,7 +17,6 @@ import ConfirmPasswordModal from "@/Pages/Molecules/action/ConfirmPasswordModal.
 import SidebarNav from "@/Pages/Organismes/layout/SidebarNav.vue";
 import EntityPanel from "@/Pages/Admin/Content/IaGeneration/EntityPanel.vue";
 import SelectField from "@/Pages/Molecules/data-input/SelectField.vue";
-import CheckboxField from "@/Pages/Molecules/data-input/CheckboxField.vue";
 
 defineOptions({ layout: AdminArea });
 
@@ -314,12 +313,22 @@ function importItemsFromFiles() {
                         default-label-position="top"
                         :error="form.errors['generation.model']"
                     />
-                    <CheckboxField
-                        v-model="form.generation.prompt_cache"
-                        label="Cache prompt Anthropic"
-                        helper="Préfixe (règles, schéma, exemples) réutilisé 5 min : un hit coûte ~10 % du prix d’entrée. Laisser coché, sauf pour déboguer."
-                        :error="form.errors['generation.prompt_cache']"
-                    />
+                    <label class="label cursor-pointer justify-start gap-3 items-start py-0">
+                        <input
+                            type="checkbox"
+                            class="checkbox checkbox-primary mt-1"
+                            data-testid="ia-prompt-cache"
+                            :checked="form.generation.prompt_cache"
+                            @change="form.generation.prompt_cache = $event.target.checked"
+                        />
+                        <span>
+                            <span class="label-text font-medium text-base-content">Cache prompt Anthropic</span>
+                            <span class="block text-sm text-base-content/60 font-normal">
+                                Préfixe (règles, schéma, exemples) réutilisé 5 min : un hit coûte ~10 % du
+                                prix d’entrée. Laisser coché, sauf pour déboguer.
+                            </span>
+                        </span>
+                    </label>
                 </div>
                 <div class="grid gap-4 md:grid-cols-3">
                     <InputField
