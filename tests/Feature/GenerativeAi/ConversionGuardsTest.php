@@ -30,7 +30,7 @@ final class ConversionGuardsTest extends TestCase
         ]);
         $monster->creature?->update(['state' => EntityState::Raw->value]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->postJson(route('api.entities.ia-convert', ['entityType' => 'monsters', 'id' => $monster->id]), [
                 'action' => 'spell',
             ])
@@ -54,7 +54,7 @@ final class ConversionGuardsTest extends TestCase
             'auto_update' => false,
         ]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->postJson(route('api.entities.ia-convert', ['entityType' => 'spells', 'id' => $spell->id]), [
                 'action' => 'spell',
             ])
@@ -78,7 +78,7 @@ final class ConversionGuardsTest extends TestCase
             'state' => EntityState::Playable->value,
         ]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->postJson(route('api.entities.ia-convert', ['entityType' => 'spells', 'id' => $spell->id]), [
                 'action' => 'spell',
                 'force' => true,
@@ -135,7 +135,7 @@ final class ConversionGuardsTest extends TestCase
         ]);
         $monster->creature?->update(['state' => EntityState::Playable->value, 'pa' => '6']);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->postJson(route('api.entities.ia-convert', ['entityType' => 'monsters', 'id' => $monster->id]), [
                 'action' => 'encounter',
             ])
@@ -171,7 +171,7 @@ final class ConversionGuardsTest extends TestCase
             'state' => EntityState::Playable->value,
         ]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->postJson(route('api.entities.ia-convert', ['entityType' => 'monsters', 'id' => $monster->id]), [
                 'action' => 'encounter',
             ])
