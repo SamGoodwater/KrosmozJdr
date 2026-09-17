@@ -22,7 +22,7 @@ final class ConvertEncounterTest extends TestCase
         $this->seedPlayableEtalon();
         $monster = $this->sourceMonster();
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->postJson(route('api.entities.ia-convert', ['entityType' => 'monsters', 'id' => $monster->id]), [
                 'action' => 'encounter',
                 'brief' => 'chef Bouftou niveau 10',
@@ -68,7 +68,7 @@ final class ConvertEncounterTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $monster = $this->sourceMonster();
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->postJson(route('api.entities.ia-convert', ['entityType' => 'monsters', 'id' => $monster->id]), [
                 'action' => 'encounter',
             ])
@@ -89,7 +89,7 @@ final class ConvertEncounterTest extends TestCase
         $this->seedPlayableEtalon();
         $monster = $this->sourceMonster();
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->postJson(route('api.entities.ia-convert', ['entityType' => 'monsters', 'id' => $monster->id]), [
                 'action' => 'encounter',
                 'brief' => 'chef Bouftou niveau 10',
@@ -111,7 +111,7 @@ final class ConvertEncounterTest extends TestCase
         $monster = $this->sourceMonster();
         $beforeState = $monster->state;
 
-        $payload = $this->actingAs($admin)
+        $payload = $this->actingAsConfirmed($admin)
             ->postJson(route('api.entities.ia-convert', ['entityType' => 'monsters', 'id' => $monster->id]), [
                 'action' => 'encounter',
             ])
@@ -172,7 +172,7 @@ final class ConvertEncounterTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->getJson(route('api.ia.status'))
             ->assertOk()
             ->assertJsonPath('usage.available', false)

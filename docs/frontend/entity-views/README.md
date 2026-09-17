@@ -69,7 +69,7 @@ et un bouton `window.open` (pas d’iframe).
 
 L’action `refresh` (**Sources**, une icône) ouvre `EntitySourceModal` : volet DofusDB
 (`POST /api/entities/{type}/{id}/dofusdb-refresh`, scrapable + `update`) et volet
-conversion IA (`POST /api/entities/{type}/{id}/ia-convert`, admin). Surfaces : page,
+conversion IA (`POST /api/entities/{type}/{id}/ia-convert`, admin + `password.confirm`). Surfaces : page,
 modal, minimal, menu tableau.
 
 ## Caractéristiques

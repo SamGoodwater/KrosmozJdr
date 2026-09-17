@@ -31,11 +31,20 @@ class IaGenerationConfigControllerTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_admin_can_view_ia_generation_page(): void
+    public function test_admin_without_password_is_redirected_from_ia_generation_page(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $this->actingAs($admin)
+            ->get(route('admin.content.ia-generation.edit'))
+            ->assertRedirect(route('password.confirm'));
+    }
+
+    public function test_admin_can_view_ia_generation_page(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $this->actingAsConfirmed($admin)
             ->get(route('admin.content.ia-generation.edit'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page

@@ -23,12 +23,12 @@ final readonly class ConversionRequest
         public ?int $runId = null,
     ) {}
 
+    /**
+     * Refuse les invités et tout rôle < admin (y compris un job CLI sans --user).
+     */
     public static function assertUserMayGenerate(?User $user): void
     {
-        if ($user === null) {
-            return;
-        }
-        if (! $user->isAdmin()) {
+        if ($user === null || ! $user->isAdmin()) {
             abort(403, 'Seuls les administrateurs peuvent lancer une conversion IA.');
         }
     }

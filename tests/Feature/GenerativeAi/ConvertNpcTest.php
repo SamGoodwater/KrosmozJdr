@@ -77,7 +77,7 @@ final class ConvertNpcTest extends TestCase
             'spell_ids' => [(int) $spell->id],
         ]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->postJson(route('api.entities.ia-convert', ['entityType' => 'npcs', 'id' => $npc->id]), [
                 'action' => 'npc',
                 'brief' => 'garde Iop niveau 4',

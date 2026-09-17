@@ -106,9 +106,9 @@ Un JSON « dans les normes » mais idiot (sorts Terre, Force 0) doit **échouer*
 - Writer : `AllowlistWriter` — jamais `unguard` du JSON LLM ; `state=auto` via `EntityStateGate::assertAutomatedWriterMaySet` ; `auto_update=false`.
 - Job : `ConvertPacketJob`. L’UI HTTP l’exécute en `dispatchSync` (file `database` sans worker = faux succès). Retries validateur = `generation.max_retries`.
 - Specs : `app/Services/GenerativeAi/Specializations/` (`spell`, `encounter`, `npc`, `item`, `consumable`).
-- HTTP : `POST /api/entities/{type}/{id}/ia-convert` (`role:admin`, throttle 12/min). Types : `monsters`, `spells`, `npcs`, `items`, `consumables`. Exécution **synchrone** (`dispatchSync`) pour l’UI ; réponse `queued` n’est plus un succès. Statut : `GET /api/ia/status` (tokens locaux du mois + estimés + crédit Anthropic s’il est lisible). Instantané : `POST /api/entities/{type}/{id}/update-diff/restore`.
-- CLI : `php artisan ia:convert {spell|encounter|npc|item|consumable}` (`ia:convert-encounter` reste un alias).
-- UI : une icône « Sources » → `EntitySourceModal` (DofusDB | Conversion IA). Après écriture : tableau avant/après, Enregistrer / Rétablir. Volet IA si admin.
+- HTTP : `POST /api/entities/{type}/{id}/ia-convert` (`role:admin`, `password.confirm`, throttle 12/min). Types : `monsters`, `spells`, `npcs`, `items`, `consumables`. Exécution **synchrone** (`dispatchSync`) pour l’UI ; réponse `queued` n’est plus un succès. Statut : `GET /api/ia/status` (même gates). Instantané : `POST /api/entities/{type}/{id}/update-diff/restore`.
+- CLI : `php artisan ia:convert {spell|encounter|npc|item|consumable}` (`ia:convert-encounter` reste un alias). `--user` admin obligatoire.
+- UI : une icône « Sources » → `EntitySourceModal` (DofusDB | Conversion IA). Après écriture : tableau avant/après, Enregistrer / Rétablir. Volet IA si admin **et** session déverrouillée (`password.confirm`, même fenêtre d’inactivité que la gestion admin).
 - Tests : `Http::fake` — aucun appel LLM réel en CI (`ANTHROPIC_API_KEY` vide dans `phpunit.xml`).
 
 ## Code et docs existants à réutiliser

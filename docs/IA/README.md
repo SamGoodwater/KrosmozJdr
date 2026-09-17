@@ -47,7 +47,7 @@ L’IA est pertinente là où il faut **du design** (simplifier, choisir, racont
 
 1. **Grille d’objets** par algorithme (`ia:equipment-grid`) — livré.
 2. Descriptions machine + JSON Schema + étalons `playable` — livré (admin + `generation.json`).
-3. **Rencontre à la demande** — livré : `ia:convert encounter` / `ia:convert-encounter`, POST `/api/entities/monsters/{id}/ia-convert`, état `auto`.
+3. **Rencontre à la demande** — livré : `ia:convert encounter` / `ia:convert-encounter` (`--user` admin), POST `/api/entities/monsters/{id}/ia-convert` (`role:admin` + `password.confirm`), état `auto`.
 4. **PNJ / sort / objet / consommable** — livré : même POST `/api/entities/{type}/{id}/ia-convert`, `ia:convert {spell|npc|item|consumable}`.
 
 Les sorts de classe se réécrivent au fil de l’eau (quand un PNJ ou un perso en a besoin), pas en masse au départ.

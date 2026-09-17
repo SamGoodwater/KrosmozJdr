@@ -17,7 +17,7 @@ final class ConvertEncounterCommand extends Command
         {--id= : Id local du monstre}
         {--official-id= : official_id du monstre (ex. jdr:bestiary:piou-vert)}
         {--brief= : Brief MJ}
-        {--user= : Id utilisateur admin (gate generate)}
+        {--user= : Id utilisateur admin obligatoire (gate generate)}
         {--force : Ignorer les gardes de fiche jouable côté métier}';
 
     protected $description = 'Conversion IA d’une rencontre (monstre + 2–3 sorts-créature) → état auto';

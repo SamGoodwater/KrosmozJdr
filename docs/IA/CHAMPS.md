@@ -2,7 +2,7 @@
 
 Source de vérité **effective** : une ligne en base (`ia_generation_settings`) si un admin a enregistré la page **Gestion du contenu → IA métier** (`/admin/content/ia-generation`). Sinon le fichier **`resources/ia/generation.json`**.
 
-L’UI n’écrit pas le JSON sur le disque (déploiement / git). Admin uniquement, enregistrement et reset protégés par `password.confirm`. Chargeur : `GenerationConfigStore` + `GenerationConfigLoader`.
+L’UI n’écrit pas le JSON sur le disque (déploiement / git). Admin uniquement. **Lecture et enregistrement** de la page, ainsi que `POST /api/entities/{type}/{id}/ia-convert` et `GET /api/ia/status`, sont protégés par `password.confirm` (même fenêtre d’inactivité que la gestion admin). Chargeur : `GenerationConfigStore` + `GenerationConfigLoader`.
 
 L’IA **ne réécrit pas une fiche Dofus entière**. Laravel recopie ce qui est figé ; le modèle ne reçoit que les clés `writable`. **Exception : les PNJ** (création complète, éventuellement à partir d’une page de site).
 
