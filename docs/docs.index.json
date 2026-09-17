@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "La conversion IA et la page IA métier demandent la confirmation de mot de passe, comme la gestion admin. Haiku 4.5 par défaut, cache prompt coché."
+    "description": "Une conversion IA ne peut plus viser un autre type que la fiche ouverte. Une fiche jouable ou archivée exige force/--force."
   },
   {
     "path": "backend/_ai.md",

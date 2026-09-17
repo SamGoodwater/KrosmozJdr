@@ -37,8 +37,9 @@ final class ConversionPipeline
             ]);
 
         try {
-            $assembled = app(ContextAssembler::class)->assemble($request);
             $spec = app(SpecializationRegistry::class)->forAction($request->action);
+            app(ConversionSafety::class)->assertRequest($request, $spec);
+            $assembled = app(ContextAssembler::class)->assemble($request);
             $preflight = $spec->preflight($request, $assembled->profile);
             if ($preflight !== []) {
                 throw new RuntimeException('Validateur IA : '.implode(' ', $preflight));

@@ -107,7 +107,11 @@ final class ConvertNpcTest extends TestCase
             'state' => EntityState::Draft->value,
             'npc_role' => 'other',
         ]);
-        $npc->creature?->update(['name' => 'PNJ CLI', 'level' => '4']);
+        $npc->creature?->update([
+            'name' => 'PNJ CLI',
+            'level' => '4',
+            'state' => EntityState::Draft->value,
+        ]);
 
         $this->fakeAnthropicJson([
             'npc' => [

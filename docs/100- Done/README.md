@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Conversion IA : pas d’écrasement silencieux
+
+Une conversion IA ne peut plus viser **un autre type** que la fiche ouverte (l’action doit coller à l’URL). Une fiche **jouable ou archivée** exige une confirmation (`force` / `--force`), comme DofusDB : les exemples de commandes sur Ganymède ou le Piou Vert ne les écrasent plus par accident.
+
 ## Septembre 2026 — L’IA derrière le même cadenas que la gestion admin
 
 La conversion IA n’est plus ouverte dès qu’on est admin. Il faut **confirmer le mot de passe** (comme pour la gestion admin) : ensuite le compte reste déverrouillé un moment, et on peut lancer des conversions sans retaper le mot de passe. Les MJ, joueurs et invités n’y ont pas accès. La page **IA métier** demande aussi ce déverrouillage pour la consulter.
