@@ -11,6 +11,18 @@ namespace App\Support;
  */
 final class KamasAmount
 {
+    /**
+     * Comme {@see parse()} mais `null` / chaîne vide restent `null` (effacer un ajustement).
+     */
+    public static function parseNullable(mixed $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return self::parse($value);
+    }
+
     public static function parse(mixed $value): int
     {
         if ($value === null || $value === '') {

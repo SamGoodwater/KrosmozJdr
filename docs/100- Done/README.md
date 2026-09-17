@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Prix kamas : plus d’écrasement ni de double compte
+
+Un consommable ou un équipement qui n’avait encore que la colonne `price` (sans part calculée / ajustement) ne passe plus à 0 kamas dès qu’on enregistre autre chose. Dans le catalogue, coller un prix en édition multiple pose le **total affiché**, pas un bonus empilé sur la formule.
+
 ## Septembre 2026 — Avant / après après une maj
 
 Après un **scrap DofusDB** ou une **conversion IA**, on ne se contente plus d’un toast. Un tableau compare la version d’avant et la nouvelle (champs changés en surbrillance). **Enregistrer** garde la nouvelle version ; **Rétablir** revient à l’instantané. Si l’IA n’a rien pu écrire (gel, clé absente), le message est honnête : ce n’est plus un faux succès.

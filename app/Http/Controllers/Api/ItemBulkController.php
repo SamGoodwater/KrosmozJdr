@@ -6,6 +6,7 @@ use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Item;
 use App\Support\Entity\EntityStateGate;
+use App\Support\KamasAmount;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -73,12 +74,10 @@ class ItemBulkController extends Controller
                 $patch[$k] = $validated[$k];
             }
         }
-        if (array_key_exists('price', $validated)) {
-            $raw = $validated['price'];
-            $patch['price_custom'] = $raw === null || $raw === '' ? null : (int) (is_numeric($raw) ? $raw : preg_replace('/\D/', '', (string) $raw));
-        }
+        $hasDisplayedPrice = array_key_exists('price', $validated);
+        $desiredTotal = $hasDisplayedPrice ? KamasAmount::parseNullable($validated['price']) : null;
 
-        if (empty($patch)) {
+        if ($patch === [] && ! $hasDisplayedPrice) {
             return response()->json([
                 'success' => false,
                 'message' => 'Aucun champ à mettre à jour.',
@@ -105,6 +104,9 @@ class ItemBulkController extends Controller
                     EntityStateGate::authorizeHttpTransition($request->user(), $model, $patch['state'] ?? null);
                     foreach ($patch as $k => $v) {
                         $model->{$k} = $v;
+                    }
+                    if ($hasDisplayedPrice) {
+                        $model->applyDisplayedPriceKamas($desiredTotal);
                     }
                     $model->save();
                     $updated++;
