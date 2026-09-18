@@ -183,6 +183,105 @@ class IntegrationServiceTest extends TestCase
         $this->assertSame($race->id, Monster::findOrFail($result->getMonsterId())->monster_race_id);
     }
 
+    public function test_integrate_monster_does_not_overwrite_jdr_bestiary_homonym(): void
+    {
+        $this->createSystemUser();
+        $race = MonsterRace::factory()->create(['dofusdb_race_id' => 36]);
+        $creature = Creature::factory()->create([
+            'name' => 'Bouftou',
+            'description' => 'Fiche JDR',
+            'life' => '42',
+            'state' => Creature::STATE_PLAYABLE,
+        ]);
+        $monster = Monster::factory()->create([
+            'creature_id' => $creature->id,
+            'official_id' => 'jdr:bestiary:bouftou',
+            'dofusdb_id' => null,
+            'auto_update' => false,
+            'monster_race_id' => $race->id,
+        ]);
+
+        $result = $this->service->integrate('monster', [
+            'creatures' => [
+                'name' => 'Bouftou',
+                'description' => 'Scrap Dofus',
+                'level' => '4',
+                'life' => '99',
+            ],
+            'monsters' => [
+                'dofusdb_id' => '101',
+                'size' => 'medium',
+                'monster_race_id' => 36,
+            ],
+        ], [
+            'replace_mode' => 'never',
+            'respect_auto_update' => true,
+            'force_update' => false,
+        ]);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('created', $result->getCreatureAction());
+        $this->assertSame('created', $result->getMonsterAction());
+
+        $creature->refresh();
+        $monster->refresh();
+        $this->assertSame('Fiche JDR', $creature->description);
+        $this->assertSame('42', (string) $creature->life);
+        $this->assertNull($monster->dofusdb_id);
+        $this->assertSame('jdr:bestiary:bouftou', $monster->official_id);
+        $this->assertNotSame($monster->id, $result->getMonsterId());
+
+        $created = Monster::query()->find($result->getMonsterId());
+        $this->assertNotNull($created);
+        $this->assertSame('101', $created->dofusdb_id);
+        $this->assertSame('Scrap Dofus', $created->creature?->description);
+        $this->assertSame(Creature::STATE_RAW, $created->creature?->state);
+    }
+
+    public function test_integrate_monster_force_update_still_does_not_reuse_homonym_without_dofusdb_id(): void
+    {
+        $this->createSystemUser();
+        $race = MonsterRace::factory()->create(['dofusdb_race_id' => 37]);
+        $creature = Creature::factory()->create([
+            'name' => 'Tofu',
+            'description' => 'Invocation JDR',
+            'life' => '8',
+            'state' => Creature::STATE_PLAYABLE,
+        ]);
+        Monster::factory()->create([
+            'creature_id' => $creature->id,
+            'official_id' => 'jdr:summon:tofu',
+            'dofusdb_id' => null,
+            'auto_update' => false,
+            'monster_race_id' => $race->id,
+        ]);
+
+        $result = $this->service->integrate('monster', [
+            'creatures' => [
+                'name' => 'Tofu',
+                'description' => 'Tofu DofusDB',
+                'level' => '1',
+                'life' => '50',
+            ],
+            'monsters' => [
+                'dofusdb_id' => '202',
+                'size' => 'small',
+                'monster_race_id' => 37,
+            ],
+        ], [
+            'replace_mode' => 'always',
+            'respect_auto_update' => false,
+            'force_update' => true,
+        ]);
+
+        $this->assertTrue($result->isSuccess());
+        $creature->refresh();
+        $this->assertSame('Invocation JDR', $creature->description);
+        $this->assertSame('8', (string) $creature->life);
+        $this->assertSame('202', Monster::query()->find($result->getMonsterId())?->dofusdb_id);
+        $this->assertSame(2, Monster::query()->count());
+    }
+
     public function test_integrate_monster_skips_when_dofusdb_id_exists_without_force_update(): void
     {
         $this->createSystemUser();
