@@ -1286,4 +1286,15 @@ class IntegrationServiceTest extends TestCase
         $this->assertFalse($this->service->attachImageFromUrl($resource, $otherUrl, ['download_images' => true]));
         $this->assertCount(0, $resource->getMedia('images'));
     }
+
+    public function test_would_not_replace_existing_when_auto_update_is_false(): void
+    {
+        $item = Item::factory()->create([
+            'auto_update' => false,
+            'name' => 'Cape figée',
+        ]);
+
+        $this->assertFalse($this->service->wouldReplaceExisting(true, null, $item, $item, true));
+        $this->assertTrue($this->service->wouldReplaceExisting(true, 'always', $item, $item, false));
+    }
 }

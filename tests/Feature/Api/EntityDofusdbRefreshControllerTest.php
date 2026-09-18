@@ -188,6 +188,22 @@ class EntityDofusdbRefreshControllerTest extends TestCase
         $this->assertTrue($options['integrate']);
     }
 
+    public function test_gm_full_refresh_options_respect_auto_update(): void
+    {
+        $gmOptions = (new \ReflectionMethod(EntityDofusdbRefreshService::class, 'orchestratorOptions'))
+            ->invoke(app(EntityDofusdbRefreshService::class), 'full', false);
+
+        $this->assertTrue($gmOptions['respect_auto_update']);
+        $this->assertTrue($gmOptions['force_update']);
+        $this->assertNull($gmOptions['replace_mode']);
+
+        $adminForceOptions = (new \ReflectionMethod(EntityDofusdbRefreshService::class, 'orchestratorOptions'))
+            ->invoke(app(EntityDofusdbRefreshService::class), 'full', true);
+
+        $this->assertFalse($adminForceOptions['respect_auto_update']);
+        $this->assertSame('always', $adminForceOptions['replace_mode']);
+    }
+
     private function mockOrchestratorPreview(): void
     {
         $service = Mockery::mock(EntityDofusdbRefreshService::class);
