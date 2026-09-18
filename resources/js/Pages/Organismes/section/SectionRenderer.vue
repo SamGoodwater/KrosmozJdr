@@ -18,6 +18,7 @@
 import { computed, ref, watch, shallowRef, nextTick } from 'vue';
 import { router } from '@inertiajs/vue3';
 import SectionHeader from '@/Pages/Molecules/section/SectionHeader.vue';
+import SectionContentSkeleton from '@/Pages/Molecules/section/SectionContentSkeleton.vue';
 import SectionParamsModal from './modals/SectionParamsModal.vue';
 import { useSectionMode } from './composables/useSectionMode';
 import { useSectionSave } from './composables/useSectionSave';
@@ -355,8 +356,11 @@ const handleDeleteSection = async () => {
     <div class="section-renderer__body min-w-0 max-w-full overflow-x-auto">
     <!-- Contenu selon le mode -->
     <div v-if="isLoadingTemplate" class="section-loading">
-      <span class="loading loading-spinner"></span>
-      <p class="mt-2 text-sm text-base-content/70">Chargement...</p>
+      <SectionContentSkeleton
+        :template="templateValue"
+        :title="section.title || sectionModel?.title || ''"
+        :show-header="false"
+      />
         </div>
 
         <component
@@ -409,12 +413,8 @@ const handleDeleteSection = async () => {
 }
 
 .section-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    min-height: 100px;
+    padding: 0.25rem 0 0.5rem;
+    min-height: 6rem;
 }
 
 .section-error {

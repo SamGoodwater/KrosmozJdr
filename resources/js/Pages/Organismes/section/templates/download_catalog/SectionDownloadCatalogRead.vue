@@ -7,6 +7,7 @@
  */
 import { computed, onMounted, ref } from "vue";
 import axios from "axios";
+import SectionContentSkeleton from "@/Pages/Molecules/section/SectionContentSkeleton.vue";
 
 const props = defineProps({
     section: { type: Object, required: true },
@@ -89,7 +90,7 @@ onMounted(fetchCatalog);
 
 <template>
     <div class="space-y-6">
-        <p v-if="loading" class="text-sm opacity-70">Chargement des fichiers…</p>
+        <SectionContentSkeleton v-if="loading" template="download_catalog" :show-header="false" />
         <p v-else-if="error" class="text-sm text-error">{{ error }}</p>
         <p v-else-if="visibleGroups.length === 0" class="text-sm opacity-70">
             Aucun fichier à afficher pour le moment.

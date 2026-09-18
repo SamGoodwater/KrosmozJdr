@@ -8,6 +8,7 @@
  */
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import SectionRenderer from "@/Pages/Organismes/section/SectionRenderer.vue";
+import SectionContentSkeleton from "@/Pages/Molecules/section/SectionContentSkeleton.vue";
 
 const props = defineProps({
     section: {
@@ -148,12 +149,12 @@ onBeforeUnmount(() => {
             class="section-scroll-anchor pointer-events-none absolute left-0 top-0 block h-px w-px -translate-y-20 opacity-0"
             aria-hidden="true"
         />
-        <div
-            class="section-lazy-gate__placeholder flex min-h-[4.5rem] items-center justify-center py-6"
-            aria-hidden="true"
-        >
-            <span class="loading loading-spinner loading-sm text-base-content/40" />
-            <span class="sr-only">Chargement de la section {{ sectionTitle }}</span>
+        <div class="section-lazy-gate__placeholder py-1" aria-hidden="true">
+            <SectionContentSkeleton
+                :template="sectionTemplateValue"
+                :title="sectionTitle"
+            />
         </div>
+        <span class="sr-only">Chargement de la section {{ sectionTitle }}</span>
     </div>
 </template>

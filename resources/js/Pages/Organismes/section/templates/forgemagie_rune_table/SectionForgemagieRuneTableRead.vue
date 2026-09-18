@@ -11,6 +11,7 @@
 import { computed, onMounted, ref, watch } from "vue";
 import axios from "axios";
 import { getCharacteristicColorStyle } from "@/Utils/color/Color";
+import SectionContentSkeleton from "@/Pages/Molecules/section/SectionContentSkeleton.vue";
 
 const props = defineProps({
     section: { type: Object, required: true },
@@ -99,8 +100,8 @@ onMounted(fetchTable);
 
 <template>
     <div class="space-y-3">
-        <div v-if="loading" class="flex items-center justify-center py-8">
-            <span class="loading loading-spinner loading-md" />
+        <div v-if="loading">
+            <SectionContentSkeleton template="forgemagie_rune_table" :show-header="false" />
         </div>
 
         <div v-else-if="error" class="alert alert-warning">

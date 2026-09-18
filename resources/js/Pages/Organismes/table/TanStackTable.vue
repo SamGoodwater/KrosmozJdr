@@ -7,7 +7,7 @@
  * - Client-first: tri côté client par défaut sur dataset
  * - Serveur opt-in: géré par wrapper (EntityTanStackTable) via `serverUrl` (Phase 2)
  * - Cellules: rend `Cell{type,value,params}` via `CellRenderer`
- * - Loading: skeleton par cellule
+ * - Loading: skeleton par cellule (vue colonnes) ; cartes / lignes pour Minimal et Line
  *
  * @see docs/frontend/README.md
  *
@@ -28,6 +28,7 @@ import {
 import TanStackTableHeader from "@/Pages/Molecules/table/TanStackTableHeader.vue";
 import TanStackTableRow from "@/Pages/Molecules/table/TanStackTableRow.vue";
 import TanStackTableSkeletonBody from "@/Pages/Molecules/table/TanStackTableSkeletonBody.vue";
+import EntityViewSkeleton from "@/Pages/Molecules/entity/shared/EntityViewSkeleton.vue";
 import TanStackTableToolbar from "@/Pages/Molecules/table/TanStackTableToolbar.vue";
 import TanStackTableFilters from "@/Pages/Molecules/table/TanStackTableFilters.vue";
 import TanStackTablePagination from "@/Pages/Molecules/table/TanStackTablePagination.vue";
@@ -1774,6 +1775,10 @@ const applySortingFromPanel = (next) => {
 
 const skeletonRows = computed(() => Number(props.config?.ui?.skeletonRows ?? 8));
 
+/** Visible seulement sur la carte minimale déployée (ou si déjà cochée). */
+const MINIMAL_SELECTION_CHECKBOX_CLASS =
+    "absolute top-2 left-2 z-[110] flex items-center justify-center opacity-0 pointer-events-none group-hover/minrow:opacity-100 group-hover/minrow:pointer-events-auto group-focus-within/minrow:opacity-100 group-focus-within/minrow:pointer-events-auto group-has-[.entity-minimal-card--expanded]/minrow:opacity-100 group-has-[.entity-minimal-card--expanded]/minrow:pointer-events-auto";
+
 // Pagination config
 const paginationEnabled = computed(() => Boolean(props.config?.features?.pagination?.enabled));
 const perPageOptions = computed(() => props.config?.features?.pagination?.perPage?.options || [10, 25, 50, 100]);
@@ -2494,12 +2499,10 @@ const handleExport = () => {
             :class="[bgClass]"
         >
             <div ref="tableContainerEl" class="w-full overflow-y-auto max-h-[70vh]">
-                <TanStackTableSkeletonBody
+                <EntityViewSkeleton
                     v-if="loading"
-                    :columns="columnsWithoutActions.slice(0, 1)"
-                    :rows-count="skeletonRows"
-                    :show-selection="false"
-                    :show-actions-column="false"
+                    variant="line"
+                    :count="skeletonRows"
                 />
                 <template v-else-if="rowsToRender.length">
                     <div class="space-y-2 p-2" :class="lineRowComponent ? '' : 'flex flex-col gap-3'">
@@ -2540,13 +2543,13 @@ const handleExport = () => {
                                 data-table-row-focus
                                 :data-row-id="String(row.id)"
                                 tabindex="0"
-                                class="relative z-0 w-full rounded-box transition-shadow duration-200 hover:z-30 hover:shadow-md focus-within:z-30 outline-none [&:has(.entity-minimal-card--expanded)]:z-40"
+                                class="group/minrow relative z-0 w-full rounded-box transition-shadow duration-200 hover:z-30 hover:shadow-md focus-within:z-30 outline-none [&:has(.entity-minimal-card--expanded)]:z-40"
                                 :class="{ 'ring-2 ring-primary/50': isSelected(row) }"
                                 @keydown="(e) => handleLineRowBlockKeydown(e, row)"
                             >
                                 <div
                                     v-if="showSelectionCheckboxes"
-                                    class="absolute top-2 left-2 z-30 flex items-center justify-center"
+                                    :class="[MINIMAL_SELECTION_CHECKBOX_CLASS, isSelected(row) ? 'opacity-100 pointer-events-auto' : '']"
                                     @click.stop="toggleRow(row, !isSelected(row))"
                                 >
                                     <input
@@ -2621,12 +2624,10 @@ const handleExport = () => {
             :class="[bgClass]"
         >
             <div ref="tableContainerEl" class="w-full overflow-y-auto max-h-[70vh]">
-                <TanStackTableSkeletonBody
+                <EntityViewSkeleton
                     v-if="loading"
-                    :columns="columnsWithoutActions.slice(0, 1)"
-                    :rows-count="skeletonRows"
-                    :show-selection="false"
-                    :show-actions-column="false"
+                    variant="compact"
+                    :count="skeletonRows"
                 />
                 <template v-else-if="rowsToRender.length">
                     <div class="flex flex-wrap gap-3 p-2">
@@ -2636,13 +2637,13 @@ const handleExport = () => {
                             data-table-row-focus
                             :data-row-id="String(row.id)"
                             tabindex="0"
-                            class="relative z-0 flex-[1_1_280px] min-w-[280px] max-w-full rounded-box transition-shadow duration-200 hover:z-30 hover:shadow-md focus-within:z-30 outline-none [&:has(.entity-minimal-card--expanded)]:z-40"
+                            class="group/minrow relative z-0 flex-[1_1_280px] min-w-[280px] max-w-full rounded-box transition-shadow duration-200 hover:z-30 hover:shadow-md focus-within:z-30 outline-none [&:has(.entity-minimal-card--expanded)]:z-40"
                             :class="{ 'ring-2 ring-primary/50': isSelected(row) }"
                             @keydown="(e) => handleLineRowBlockKeydown(e, row)"
                         >
                             <div
                                 v-if="showSelectionCheckboxes"
-                                class="absolute top-2 left-2 z-30 flex items-center justify-center"
+                                :class="[MINIMAL_SELECTION_CHECKBOX_CLASS, isSelected(row) ? 'opacity-100 pointer-events-auto' : '']"
                                 @click.stop="toggleRow(row, !isSelected(row))"
                             >
                                 <input

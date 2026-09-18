@@ -60,6 +60,8 @@ flowchart TD
 
 Largeur des sections (cadre page / fiche) : le layout et `Container fluid` occupent toute la zone utile (`w-full min-w-0`, plus de shrink-to-fit). Les sections hors tableaux font `w-full` puis `md:w-2/3` (centrées). Les templates dont le nom finit par `_table` (`entity_table`, `characteristic_reference_table`, `equipment_bonus_table`, `forgemagie_rune_table`) prennent 100 % dès le chargement. Si le contenu (tableau TanStack `width: fit-content`) dépasse, le corps de section a `overflow-x-auto`. Même règle sur `EntitySectionsRenderer`.
 
+Chargement : `SectionContentSkeleton` (`SectionLazyGate`, `SectionRenderer`, templates async) reprend la forme du contenu (lignes de texte, média, galerie, tableau, cartes `entity_table`, fichiers, chartes). Les catalogues d’entités en vue minimale utilisent `EntityViewSkeleton` (plusieurs cartes vignette + titre), pas un seul bloc gris.
+
 Édition : `usePageForm`/`useSectionForm` (composables `resources/js/Composables/pages|sections/`), modales `CreatePageModal`/`EditPageModal`/`CreateSectionModal`. Si `settings.linked_entity` est présent, `PageController::show` renvoie `Pages/page/LinkedEntityShow.vue` (page CMS + fiche breed/spécialisation). Les sorts, capacités et autres liaisons de cette fiche sont filtrés avec `visibleToUser` (même règle que la page Show de l’entité) : un brouillon ne fuit pas via une fiche jouable. `pages:sync-bibliotheque-entities` crée une sous-page menu (`in_menu`) pour chaque classe / spécialisation **hors archive**. Jouable : `read_level` de la fiche. Brouillon / brut / auto : `read_level` MJ+ (le menu invité ne les liste pas). Les parents `bibliotheque-breed` et `bibliotheque-specialization` ont `settings.menu_collapsible`.
 
 ## Références kref

@@ -48,6 +48,37 @@
     "file": "table/TanStackTableSkeletonBody.vue"
   },
   {
+    "name": "EntityViewSkeleton",
+    "description": "Placeholder de chargement calqué sur la vue Minimal compacte ou Line.",
+    "props": [
+      {
+        "name": "variant",
+        "type": "String",
+        "desc": "- compact (grille) ou line"
+      },
+      {
+        "name": "count",
+        "type": "Number",
+        "desc": "- Nombre de cartes / lignes fantômes"
+      }
+    ],
+    "slots": [],
+    "file": "entity/shared/EntityViewSkeleton.vue"
+  },
+  {
+    "name": "SectionContentSkeleton",
+    "description": "Placeholder de chargement d’une section CMS selon son template.",
+    "props": [
+      {
+        "name": "template",
+        "type": "String",
+        "desc": "- Valeur SectionType"
+      }
+    ],
+    "slots": [],
+    "file": "section/SectionContentSkeleton.vue"
+  },
+  {
     "name": "TanStackTableShortcutsModal",
     "description": "Aide : raccourcis clavier et clics souris du tableau TanStack.",
     "props": [],

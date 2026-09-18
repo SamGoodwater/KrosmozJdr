@@ -5,6 +5,7 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import NormsViewer from '@/Pages/Organismes/data-display/NormsViewer.vue';
 import axios from 'axios';
+import SectionContentSkeleton from '@/Pages/Molecules/section/SectionContentSkeleton.vue';
 
 const props = defineProps({
     section: { type: Object, required: true },
@@ -206,8 +207,8 @@ watch(searchTerm, (value) => {
             </div>
         </div>
 
-        <div v-if="catalogLoading" class="flex items-center justify-center py-10">
-            <span class="loading loading-spinner loading-lg text-primary" />
+        <div v-if="catalogLoading">
+            <SectionContentSkeleton template="characteristic_norms_catalog" :show-header="false" />
         </div>
 
         <div v-else-if="catalogError" class="alert alert-warning">

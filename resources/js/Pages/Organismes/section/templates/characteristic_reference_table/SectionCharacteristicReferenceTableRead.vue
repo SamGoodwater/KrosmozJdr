@@ -6,6 +6,7 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import NormsViewer from "@/Pages/Organismes/data-display/NormsViewer.vue";
 import CharacteristicFormulaRichText from "@/Pages/Molecules/data-display/CharacteristicFormulaRichText.vue";
 import { getCharacteristicColorStyle, resolveDef } from "@/Composables/entity/useCharacteristicDisplay";
+import SectionContentSkeleton from "@/Pages/Molecules/section/SectionContentSkeleton.vue";
 
 const props = defineProps({
     section: { type: Object, required: true },
@@ -452,8 +453,8 @@ watch([group, entity, search, sortBy, sortDir, statusFilter, onlyWithEquipment, 
             {{ meta.price_notice || "Prix indicatifs: valeurs de référence, non contractuelles." }}
         </div>
 
-        <div v-if="loading" class="flex items-center justify-center py-8">
-            <span class="loading loading-spinner loading-md" />
+        <div v-if="loading">
+            <SectionContentSkeleton template="characteristic_reference_table" :show-header="false" />
         </div>
 
         <div v-else-if="error" class="alert alert-warning">

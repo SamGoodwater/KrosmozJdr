@@ -47,11 +47,17 @@ const classes = computed(() => {
     const width = props.widthClass ? props.widthClass : "";
     return [base, shapeClasses.value, width].filter(Boolean).join(" ");
 });
+
+const showImageCaption = computed(() => String(props.type || "text") === "image");
 </script>
 
 <template>
-    <div class="flex items-center">
+    <div class="flex items-center gap-2">
         <div :class="classes" />
+        <div v-if="showImageCaption" class="flex min-w-0 flex-col gap-1">
+            <div class="skeleton bg-base-200/70 h-3 w-28 rounded" />
+            <div class="skeleton bg-base-200/70 h-2 w-16 rounded" />
+        </div>
     </div>
 </template>
 

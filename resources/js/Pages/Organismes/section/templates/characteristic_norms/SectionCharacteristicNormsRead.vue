@@ -6,6 +6,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import NormsViewer from '@/Pages/Organismes/data-display/NormsViewer.vue';
 import axios from 'axios';
+import SectionContentSkeleton from '@/Pages/Molecules/section/SectionContentSkeleton.vue';
 
 const props = defineProps({
     section: { type: Object, required: true },
@@ -44,8 +45,8 @@ watch([characteristicKey, entity], fetchNorms);
 
 <template>
     <div class="section-characteristic-norms">
-        <div v-if="loading" class="flex items-center justify-center py-8">
-            <span class="loading loading-spinner loading-md" />
+        <div v-if="loading">
+            <SectionContentSkeleton template="characteristic_norms" :show-header="false" />
         </div>
 
         <div v-else-if="error" class="alert alert-warning">

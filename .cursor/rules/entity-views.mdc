@@ -29,7 +29,7 @@ alwaysApply: false
 - **Agrandir** (depuis la modal) ou Ctrl+clic : page Show.
 - **Éditer** (Minimal / Line / listes) : page Modifier (`edit`). Pas de modal d’édition unitaire ni de panneau d’édition multiple.
 - Preset `minimalLine` : pas d’action `view`.
-- **Sélection tableau** : cases toujours visibles ; indépendante de l’édition.
+- **Sélection tableau** : cases toujours visibles en vue colonnes et Line ; en vue **minimale**, visibles seulement sur la carte **déployée** (ou si déjà cochée). Indépendante de l’édition.
 
 ## Distinctions
 

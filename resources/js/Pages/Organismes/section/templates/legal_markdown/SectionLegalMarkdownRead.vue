@@ -9,6 +9,7 @@
 import { computed, ref, watch } from 'vue';
 import { marked } from 'marked';
 import { sanitizeHtml } from '@/Utils/security/sanitizeHtml';
+import SectionContentSkeleton from '@/Pages/Molecules/section/SectionContentSkeleton.vue';
 
 const props = defineProps({
   section: { type: Object, required: true },
@@ -82,10 +83,7 @@ watch(sourceUrl, () => {
       {{ sectionTitle }}
     </h2>
 
-    <div v-if="isLoading" class="alert alert-info">
-      <span class="loading loading-spinner loading-sm"></span>
-      <span>Chargement du document legal...</span>
-    </div>
+    <SectionContentSkeleton v-if="isLoading" template="legal_markdown" :show-header="false" />
 
     <div v-else-if="errorMessage" class="alert alert-warning">
       <i class="fa-solid fa-triangle-exclamation"></i>
