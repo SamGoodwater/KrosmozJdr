@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Une conversion IA ne peut plus viser un autre type que la fiche ouverte. Une fiche jouable ou archivée exige force/--force."
+    "description": "Importer un monstre DofusDB homonyme n’écrase plus le bestiaire JDR."
   },
   {
     "path": "backend/_ai.md",

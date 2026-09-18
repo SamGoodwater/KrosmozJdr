@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Scrap monstre : ne plus écraser le bestiaire JDR
+
+Importer un monstre DofusDB qui porte le même nom qu’une fiche du **bestiaire** ou une **invocation** (Bouftou, Tofu, Chafer…) ne réécrit plus cette fiche jouable. Le scrap crée une **nouvelle** entrée Dofus (état raw), l’étalon JDR reste intact.
+
 ## Septembre 2026 — Conversion IA : pas d’écrasement silencieux
 
 Une conversion IA ne peut plus viser **un autre type** que la fiche ouverte (l’action doit coller à l’URL). Une fiche **jouable ou archivée** exige une confirmation (`force` / `--force`), comme DofusDB : les exemples de commandes sur Ganymède ou le Piou Vert ne les écrasent plus par accident.
