@@ -118,12 +118,25 @@ const sectionSettings = computed(() => {
   return props.section.settings || {};
 });
 
+/**
+ * Templates tableaux : largeur 100 % du cadre (évite le shrink-to-fit au chargement).
+ * Les autres sections occupent 2/3 à partir de `md`, centrées par défaut.
+ */
+const isFullWidthSection = computed(() => templateValue.value.endsWith('_table'));
+
 const sectionAlignSelfClass = computed(() => {
+  if (isFullWidthSection.value) return 'self-stretch';
   const raw = String(sectionSettings.value?.layoutAlignSelf || 'center').toLowerCase().trim();
   if (raw === 'start' || raw === 'left') return 'self-start';
   if (raw === 'end' || raw === 'right') return 'self-end';
   return 'self-center';
 });
+
+const sectionWidthClass = computed(() =>
+  isFullWidthSection.value
+    ? 'w-full min-w-0 max-w-full'
+    : 'w-full min-w-0 max-w-full md:w-2/3'
+);
 
 /**
  * Charge le composant template selon le mode (via registry)
@@ -311,7 +324,7 @@ const handleDeleteSection = async () => {
     <div 
         :id="sectionId ? `section-${sectionId}` : undefined"
         class="section-renderer section-renderer-surface group relative rounded-2xl border border-base-300/40 bg-base-100/40 px-3 pb-4 pt-2 shadow-sm backdrop-blur-[1px] md:px-5 md:pb-6 md:pt-3" 
-        :class="[uiData.containerClass, sectionAlignSelfClass]"
+        :class="[uiData.containerClass, sectionAlignSelfClass, sectionWidthClass]"
         :data-section-id="sectionModel?.id" 
         :data-section-slug="sectionWebSlug || undefined"
         :data-section-template="templateValue"
@@ -339,6 +352,7 @@ const handleDeleteSection = async () => {
       @request-delete="handleDeleteSection"
     />
     
+    <div class="section-renderer__body min-w-0 max-w-full overflow-x-auto">
     <!-- Contenu selon le mode -->
     <div v-if="isLoadingTemplate" class="section-loading">
       <span class="loading loading-spinner"></span>
@@ -369,6 +383,7 @@ const handleDeleteSection = async () => {
                 </p>
             </div>
         </div>
+    </div>
     </div>
 
     <!-- Modal de paramètres -->

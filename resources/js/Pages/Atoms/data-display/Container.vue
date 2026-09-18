@@ -8,7 +8,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * Composant atomique Container conforme Atomic Design, basé sur Tailwind (pas DaisyUI).
  * - Utilise la classe Tailwind 'container' (et 'mx-auto' par défaut)
  * - Props utilitaires custom : shadow, backdrop, opacity
- * - Prop 'fluid' (bool) : désactive 'container' pour un conteneur full width
+ * - Prop 'fluid' (bool) : désactive 'container' et pose `w-full min-w-0` (pleine largeur, pas de shrink-to-fit flex)
  * - Prop 'responsive' (string) : applique 'md:container', 'lg:container', etc.
  * - Prop 'color' : couleur de fond (classe Tailwind, ex: bg-base-100)
  * - Prop 'border' : bordure (classe Tailwind, ex: border-gray-200)
@@ -50,6 +50,7 @@ const atomClasses = computed(() =>
         [
             !props.fluid && (props.responsive ? `${props.responsive}:container` : 'container'),
             !props.fluid && 'mx-auto',
+            props.fluid && 'w-full min-w-0',
             props.color,
             props.allowOverflow && 'overflow-visible',
             props.border && `${props.border} border-1 border-solid`,

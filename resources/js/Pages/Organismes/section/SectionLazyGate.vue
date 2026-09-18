@@ -38,6 +38,20 @@ const sectionId = computed(() => props.section?.id ?? null);
 const sectionSlug = computed(() => String(props.section?.slug || "").trim());
 const sectionTitle = computed(() => String(props.section?.title || "").trim() || "Section");
 
+/** Même gabarit que SectionRenderer : tableaux 100 %, le reste 2/3 dès md. */
+const sectionTemplateValue = computed(() => {
+    const raw = props.section?.template ?? props.section?.type ?? "text";
+    if (raw && typeof raw === "object" && "value" in raw) {
+        return String(raw.value || "text");
+    }
+    return String(raw || "text");
+});
+const placeholderLayoutClass = computed(() =>
+    sectionTemplateValue.value.endsWith("_table")
+        ? "w-full min-w-0 max-w-full self-stretch"
+        : "w-full min-w-0 max-w-full self-center md:w-2/3",
+);
+
 const rootId = computed(() => (sectionId.value ? `section-${sectionId.value}` : undefined));
 
 let observer = null;
@@ -123,6 +137,7 @@ onBeforeUnmount(() => {
         ref="rootRef"
         :id="rootId"
         class="section-lazy-gate section-renderer-surface relative mb-8 rounded-2xl border border-base-300/40 bg-base-100/40 px-3 pb-4 pt-2 shadow-sm backdrop-blur-[1px] md:px-5 md:pb-6 md:pt-3"
+        :class="placeholderLayoutClass"
         :data-section-id="sectionId ?? undefined"
         :data-section-slug="sectionSlug || undefined"
         data-section-lazy="pending"

@@ -665,7 +665,8 @@ watch(sectionToEdit, (id) => {
 <template>
     <main class="page-show-main">
         <Container
-            class="page-renderer"
+            fluid
+            class="page-renderer w-full min-w-0"
             :class="pageModel?.pageCssClasses"
             :allow-overflow="true"
         >
@@ -810,7 +811,9 @@ watch(sectionToEdit, (id) => {
 }
 
 .page-renderer {
-    max-width: 4xl;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     margin: 0 auto;
     padding: 0;
     overflow: visible;
@@ -898,15 +901,17 @@ watch(sectionToEdit, (id) => {
 .sections {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    --section-content-width: clamp(48rem, 84vw, 76rem);
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 
     > * {
-        width: min(100%, var(--section-content-width));
-        // Espacement entre les sections
+        min-width: 0;
+        max-width: 100%;
         margin-bottom: 2rem;
-        
+
         &:last-child {
             margin-bottom: 0;
         }

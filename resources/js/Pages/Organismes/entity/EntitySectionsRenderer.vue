@@ -55,7 +55,7 @@ const normalizedSections = computed(() => {
 </script>
 
 <template>
-    <div class="entity-sections-renderer space-y-4">
+    <div class="entity-sections-renderer w-full min-w-0 space-y-4">
         <div v-if="normalizedSections.length > 0" class="sections">
             <SectionRenderer
                 v-for="section in normalizedSections"
@@ -74,12 +74,15 @@ const normalizedSections = computed(() => {
 .sections {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    --section-content-width: clamp(48rem, 84vw, 76rem);
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 
     > * {
-        width: min(100%, var(--section-content-width));
+        min-width: 0;
+        max-width: 100%;
         margin-bottom: 1.5rem;
 
         &:last-child {

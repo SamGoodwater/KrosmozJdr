@@ -317,7 +317,7 @@ onUnmounted(() => {
     margin-inline: auto;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     justify-content: flex-start;
 }
 

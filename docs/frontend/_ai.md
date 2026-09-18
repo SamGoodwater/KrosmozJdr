@@ -8,6 +8,8 @@
 - `vue-i18n` est documenté historiquement mais non branché côté `resources/js`.
 - State principal : props Inertia (`@inertiajs/vue3` 3), composables, Pinia 4 (peer `@vue/devtools-api`).
 - Tableaux : TanStack Table 9 (`useTable` + `tableFeatures` dans `TanStackTable.vue`).
+- CMS sections : hors tableaux `md:w-2/3` centrées ; `*_table` en `w-full` ; overflow-x si dépassement (`SectionRenderer`, `PageRenderer` / `EntitySectionsRenderer`).
+- `Container fluid` : `w-full min-w-0` (évite le shrink-to-fit dans un parent flex).
 - Footer desktop (`Layouts/Footer.vue`) : 2 lignes, logo centré ; padding via le layout, pas la molécule.
 - Dashboard `/admin/content` : cartes Atelier DofusDB (3 modes) + Génération IA ; camemberts inchangés.
 - Modal **Sources** : après scrap DofusDB ou conversion IA, tableau avant/après (pas un toast + refresh seuls).

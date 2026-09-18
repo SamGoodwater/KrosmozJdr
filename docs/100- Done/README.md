@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Largeur des pages et des sections
+
+Les blocs de page ne se collent plus au contenu : texte et images occupent les **deux tiers** de la zone (centrés), les **tableaux** prennent toute la largeur dès l’affichage (plus de carte étroite qui s’élargit au chargement). Si un tableau dépasse, on **défile horizontalement** dans la section.
+
 ## Septembre 2026 — Conversion IA : kit PNJ et gabarit monstres
 
 Une conversion **PNJ** refuse deux objets sur le même emplacement (deux capes, etc.) et complète les stats manquantes avec le gabarit de niveau. Une conversion **rencontre** reçoit le même gabarit dans le prompt, pour coller les sorts aux PV / PA de la fiche. Les objets Dofus scrapés restent hors scope : l’IA ne retravaille que les uniques. Sur **IA métier**, un enregistrement incomplet écrasait les étalons du dépôt : on peut **réinitialiser** pour retomber sur le fichier.
