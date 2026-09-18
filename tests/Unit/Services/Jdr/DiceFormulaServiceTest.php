@@ -65,6 +65,26 @@ class DiceFormulaServiceTest extends TestCase
         $this->assertSame(['[2-6] = 1d5+1'], $result->rangeEquivalents);
     }
 
+    public function test_numeric_operations_are_recognized(): void
+    {
+        $hp = $this->service->analyze('50-17');
+        $this->assertTrue($hp->isValid);
+        $this->assertTrue($hp->isRecognized);
+        $this->assertSame(33, $hp->min);
+        $this->assertSame(33, $hp->max);
+        $this->assertSame(33, $hp->average);
+
+        $ops = $this->service->analyze('1+4*7');
+        $this->assertTrue($ops->isRecognized);
+        $this->assertSame(29, $ops->min);
+        $this->assertSame(29, $ops->max);
+        $this->assertSame(29, $ops->average);
+
+        $rolled = $this->service->roll('50-17');
+        $this->assertTrue($rolled->isValid);
+        $this->assertSame(33, $rolled->result);
+    }
+
     public function test_operators_aliases_and_priority(): void
     {
         $result = $this->service->analyze('2d6+3');

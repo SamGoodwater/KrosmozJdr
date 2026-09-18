@@ -41,8 +41,9 @@ final class DiceFormulaService
     /**
      * Analyse une formule : min, max, moyenne, équivalents de tranches.
      *
-     * `isRecognized` est vrai seulement si la formule est valide et contient au moins
-     * un dé ou une tranche (évite d’intercepter une recherche « 12 »).
+     * `isRecognized` est vrai si la formule est valide et contient un dé, une tranche
+     * ou un opérateur (évite d’intercepter une recherche « 12 », tout en acceptant
+     * `50-17` ou `1+4*7`).
      */
     public function analyze(string $formula): DiceFormulaAnalysis
     {
@@ -134,7 +135,7 @@ final class DiceFormulaService
 
         $recognized = false;
         foreach ($tokenized['tokens'] as $token) {
-            if ($token['type'] === 'dice' || $token['type'] === 'range') {
+            if ($token['type'] === 'dice' || $token['type'] === 'range' || $token['type'] === 'op') {
                 $recognized = true;
                 break;
             }

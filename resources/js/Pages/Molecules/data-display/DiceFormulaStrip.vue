@@ -104,9 +104,7 @@ function hasRollResult(value) {
                 {{ rangeEquivalents.join(' · ') }}
             </span>
 
-            <span
-                class="ml-auto flex shrink-0 items-center gap-2 rounded-box bg-primary/20 py-0.5 pl-3 pr-1"
-            >
+            <span class="ml-auto flex shrink-0 items-center gap-2 bg-transparent">
                 <span class="flex items-baseline gap-1.5 tabular-nums leading-none">
                     <span
                         class="font-medium text-base-content/80"
@@ -124,10 +122,9 @@ function hasRollResult(value) {
                 <Tooltip content="Lancer" placement="top">
                     <Btn
                         type="button"
-                        circle
-                        variant="glass"
+                        variant="ghost"
                         color="primary"
-                        :size="density === 'compact' ? 'md' : 'lg'"
+                        animation="none"
                         aria-label="Lancer"
                         @mousedown.prevent
                         @click="$emit('roll')"

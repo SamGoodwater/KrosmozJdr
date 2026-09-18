@@ -6,7 +6,7 @@ Les pastilles **Jouable / Brouillon / Brut / Auto / Archivé** de la barre de re
 
 ## Septembre 2026 — Formules de dés dans la recherche et l’outil
 
-On peut taper une formule de dés dans la **barre de recherche** (`d12`, `3d8+2`, `[2-6]`) : une bande affiche min / moyenne / max, l’équivalent en dés des tranches, **Valeur :** du lancer et un bouton icône (tooltip « Lancer »). Chaque jet s’ajoute en historique (`formule = valeur`), uniquement en mémoire : fermer la recherche ou l’outil l’efface. L’outil **Lanceur de dés** reprend la même bande, avec une courte explication et les raccourcis d4–d100. Les tranches se convertissent exactement (`[2-6]` → `1d5+1`).
+On peut taper une formule dans la **barre de recherche** (`d12`, `3d8+2`, `[2-6]`, mais aussi `50-17` ou `1+4×7`) : une bande affiche min / moyenne / max, l’équivalent en dés des tranches, **Valeur :** du lancer et une icône sans contour (ombre au survol, tooltip « Lancer »). Un nombre seul (`12`) reste une recherche. Chaque jet s’ajoute en historique (`formule = valeur`), uniquement en mémoire : fermer la recherche ou l’outil l’efface. L’outil **Lanceur de dés** reprend la même bande, avec une courte explication et les raccourcis d4–d100. Les tranches se convertissent exactement (`[2-6]` → `1d5+1`).
 
 ## Septembre 2026 — Skeletons de chargement et case de sélection minimale
 

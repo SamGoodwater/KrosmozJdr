@@ -56,6 +56,23 @@ describe('parseDiceFormula', () => {
         });
     });
 
+    it('reconnaît une opération sur des nombres seuls', () => {
+        expect(parseDiceFormula('50-17')).toMatchObject({
+            isValid: true,
+            isRecognized: true,
+            min: 33,
+            max: 33,
+            average: 33,
+        });
+        expect(parseDiceFormula('1+4*7')).toMatchObject({
+            isValid: true,
+            isRecognized: true,
+            min: 29,
+            max: 29,
+            average: 29,
+        });
+    });
+
     it('accepte les opérateurs et alias x / ÷', () => {
         expect(parseDiceFormula('2d6+3')).toMatchObject({ min: 5, max: 15, average: 10 });
         expect(parseDiceFormula('2d6 x 2')).toMatchObject({ min: 4, max: 24 });
@@ -110,5 +127,10 @@ describe('rollDiceFormula', () => {
 
     it('refuse une formule dangereuse', () => {
         expect(rollDiceFormula('<script>')).toMatchObject({ isValid: false });
+    });
+
+    it('évalue une formule numérique de façon déterministe', () => {
+        expect(rollDiceFormula('50-17')).toMatchObject({ isValid: true, result: 33 });
+        expect(rollDiceFormula('1+4*7')).toMatchObject({ isValid: true, result: 29 });
     });
 });

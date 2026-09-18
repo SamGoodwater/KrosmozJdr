@@ -1,6 +1,6 @@
 # Dés / formules — IA
 
-> Parser sécurisé de formules tapées (dés, tranches, opérateurs). Pas d’`eval`.
+> Parser sécurisé de formules tapées (dés, tranches, opérateurs, nombres). Pas d’`eval`.
 
 ## Quand lire
 
@@ -15,5 +15,6 @@
 
 - PHP : `app/Services/Jdr/DiceFormulaService.php`, `DiceNotationService.php`
 - JS : `resources/js/Utils/dice/diceParser.js`
-- UI : `DiceFormulaStrip.vue` (Valeur + icône Lancer + historique session), `SearchInput.vue`, `DiceRollerModal.vue`
+- UI : `DiceFormulaStrip.vue` (Valeur + icône ghost Lancer + historique session), `SearchInput.vue`, `DiceRollerModal.vue`
+- Reconnu : dé, tranche **ou** opérateur (`50-17`). Un nombre seul (`12`) n’est pas une formule de recherche.
 - Historique : props `history` `{ formula, value }[]`, pas de localStorage / cookie.

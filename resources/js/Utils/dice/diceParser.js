@@ -14,6 +14,8 @@
  * // { min: 5, max: 15, average: 10, isValid: true, isRecognized: true, rangeEquivalents: [] }
  * parseDiceFormula('[2-6]')
  * // { min: 2, max: 6, average: 4, isRecognized: true, rangeEquivalents: ['[2-6] = 1d5+1'] }
+ * parseDiceFormula('50-17')
+ * // { min: 33, max: 33, average: 33, isValid: true, isRecognized: true }
  */
 
 export const DICE_FORMULA_LIMITS = {
@@ -433,12 +435,17 @@ function parseTokens(formula) {
         return { empty: false, error: seqError, tokens: [], recognized: false };
     }
 
-    const recognized = tokens.some((token) => token.type === 'dice' || token.type === 'range');
+    const recognized = tokens.some(
+        (token) => token.type === 'dice' || token.type === 'range' || token.type === 'op',
+    );
     return { empty: false, error: null, tokens, recognized };
 }
 
 /**
  * Parse une formule de dés et retourne min, max, moyenne.
+ *
+ * `isRecognized` est vrai si la formule est valide et contient un dé, une tranche
+ * ou un opérateur (`50-17`, `1+4*7`). Un nombre seul (`12`) reste une recherche.
  *
  * @param {string} formula
  * @returns {{

@@ -100,7 +100,9 @@ watch(formula, () => {
             <p class="text-sm text-base-content/70 leading-snug">
                 Écris une formule avec des <strong>dés</strong> (<code class="text-xs">d12</code>,
                 <code class="text-xs">3d8</code>), des <strong>tranches</strong>
-                (<code class="text-xs">[2-6]</code> → <code class="text-xs">1d5+1</code>)
+                (<code class="text-xs">[2-6]</code> → <code class="text-xs">1d5+1</code>),
+                des <strong>nombres</strong> (<code class="text-xs">50-17</code>,
+                <code class="text-xs">1+4×7</code>)
                 et des <strong>opérateurs</strong> <code class="text-xs">+</code>
                 <code class="text-xs">-</code> <code class="text-xs">×</code>
                 <code class="text-xs">/</code> (aussi <code class="text-xs">x</code> et
@@ -124,7 +126,7 @@ watch(formula, () => {
                 v-model="formula"
                 label="Formule"
                 default-label-position="top"
-                placeholder="2d6+3, [2-6], 3d8×2…"
+                placeholder="2d6+3, [2-6], 50-17…"
                 class="w-full"
                 :validation="formula.trim() && stats.error ? { state: 'error', message: stats.error } : undefined"
                 aria-label="Formule de dés (ex: 2d6+3 ou [2-6])"
