@@ -61,4 +61,13 @@ class DiceNotationServiceTest extends TestCase
         $withNull = $this->service->toDiceNotation(7, null);
         $this->assertSame($single, $withNull);
     }
+
+    public function test_inclusive_range_maps_to_exact_dice(): void
+    {
+        $this->assertSame('1d5+1', $this->service->fromInclusiveRange(2, 6));
+        $this->assertSame('1d6', $this->service->fromInclusiveRange(1, 6));
+        $this->assertSame('1d5-1', $this->service->fromInclusiveRange(0, 4));
+        $this->assertSame('10', $this->service->fromInclusiveRange(10, 10));
+        $this->assertSame('1d5+1', $this->service->fromInclusiveRange(6, 2));
+    }
 }

@@ -13,3 +13,4 @@
 | Permissions / Auth | [permissions/_ai.md](permissions/_ai.md) |
 | Notifications | [notifications/_ai.md](notifications/_ai.md) |
 | Feedback | [feedback/_ai.md](feedback/_ai.md) |
+| Dés / formules | [dice/_ai.md](dice/_ai.md) |

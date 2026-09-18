@@ -21,6 +21,8 @@ use App\Services\Characteristic\Limit\CharacteristicLimitService;
 use App\Services\GenerativeAi\GenerationConfigLoader;
 use App\Services\GenerativeAi\GenerationConfigStore;
 use App\Services\GenerativeAi\Specializations\SpecializationRegistry;
+use App\Services\Jdr\DiceFormulaService;
+use App\Services\Jdr\DiceNotationService;
 use App\Services\Media\EnsureDirectoryMediaFilesystem;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\CollectAliasResolver;
@@ -70,6 +72,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(GenerationConfigStore::class, static fn () => GenerationConfigStore::default());
         $this->app->singleton(GenerationConfigLoader::class, static fn () => GenerationConfigLoader::default());
         $this->app->singleton(SpecializationRegistry::class);
+        $this->app->singleton(DiceNotationService::class);
+        $this->app->singleton(DiceFormulaService::class);
 
         // Filesystem Media Library : crée les dossiers avant écriture (scrapping, etc.)
         $this->app->singleton(MediaLibraryFilesystem::class, EnsureDirectoryMediaFilesystem::class);

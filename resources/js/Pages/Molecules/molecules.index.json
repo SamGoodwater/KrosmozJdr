@@ -2668,6 +2668,19 @@
     "file": "data-display/ImageViewer.vue"
   },
   {
+    "name": "DiceFormulaStrip",
+    "description": "Bande min / moyenne / max d’une formule de dés, avec équivalents de tranches et bouton de lancer.",
+    "props": [
+      {
+        "name": "density",
+        "type": "String",
+        "desc": "- compact (recherche) ou comfortable (outil)"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/DiceFormulaStrip.vue"
+  },
+  {
     "name": "CharacteristicPropertyTooltip",
     "description": "Tooltip caractéristique — présentation « fiche de jeu » (peu technique). Affiche : icône, nom, valeur, description, formule lisible, résolution, et la liste des termes (libellés joueur, pas les clés BDD).",
     "props": [

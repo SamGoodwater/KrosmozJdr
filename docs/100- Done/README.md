@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Formules de dés dans la recherche et l’outil
+
+On peut taper une formule de dés dans la **barre de recherche** (`d12`, `3d8+2`, `[2-6]`) : une fine bande affiche min / moyenne / max, l’équivalent en dés des tranches, et un bouton pour simuler un lancer. L’outil **Lanceur de dés** reprend la même bande, avec une courte explication et les raccourcis d4–d100. Les tranches se convertissent exactement (`[2-6]` → `1d5+1`).
+
 ## Septembre 2026 — Skeletons de chargement et case de sélection minimale
 
 En attendant les fiches, on voit **plusieurs cartes** (image + titre), plus un seul pavé gris. Les sections de page ont aussi un skeleton qui ressemble au contenu (texte, tableau, galerie…). Sur une carte **minimale**, la case à cocher n’apparaît **que déployée** (ou si elle est déjà cochée).

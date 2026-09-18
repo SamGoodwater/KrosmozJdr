@@ -15,3 +15,4 @@ Les fonctionnalités traversent souvent backend, frontend et base de données.
 | [permissions](permissions/README.md) | Auth, rôles, policies, projection front. |
 | [notifications](notifications/README.md) | Notifications DB/email et toasts. |
 | [feedback](feedback/README.md) | Retours utilisateurs. |
+| [dice](dice/README.md) | Formules de dés, tranches, lancer (recherche + outil). |

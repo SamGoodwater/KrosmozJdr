@@ -14,6 +14,7 @@
 - Footer desktop (`Layouts/Footer.vue`) : 2 lignes, logo centré ; padding via le layout, pas la molécule.
 - Dashboard `/admin/content` : cartes Atelier DofusDB (3 modes) + Génération IA ; camemberts inchangés.
 - Modal **Sources** : deux onglets (DofusDB algo + IA). Après écriture, tableau avant/après avec choix par cellule ; Enregistrer / Rétablir.
+- Formules de dés : bande min/moy/max sous la recherche globale et dans `DiceRollerModal` (`diceParser.js`, `DiceFormulaStrip`).
 - `vite.config.js` `manualChunks` : uniquement `node_modules` (`vendor` / `cally` / `utils`). Ne pas extraire `Main.vue` ni `Utils/Formatters` : cycle de chunks au boot.
 
 ## Descendre

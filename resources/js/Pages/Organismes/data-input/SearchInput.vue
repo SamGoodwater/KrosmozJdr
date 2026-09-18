@@ -6,6 +6,7 @@
  * Au focus : assombrissement + flou de la page, champ élargi, filtres type DaisyUI (EntityLabel),
  * résultats groupés par type avec extrait (titre + subtitle). API `api.global-search`.
  * Overlay via `<dialog showModal>` (top layer) pour rester au-dessus des modals ouverts.
+ * Si la saisie est une formule de dés (dé, tranche, combinaison), une bande min/moy/max s’affiche sous le champ.
  *
  * @props {String} placeholder - Placeholder du champ (défaut: 'Rechercher')
  * @props {String} shortcut - Raccourci clavier pour focus (défaut: 'alt+k')
@@ -27,6 +28,8 @@ import {
 } from "@/Composables/entity/useGlobalEntitySearch";
 import { globalSearchEntityLabelKey } from "@/Utils/entity/globalSearchEntityLabel";
 import { router } from "@inertiajs/vue3";
+import DiceFormulaStrip from "@/Pages/Molecules/data-display/DiceFormulaStrip.vue";
+import { parseDiceFormula, rollDiceFormula } from "@/Utils/dice/diceParser.js";
 
 /** @typedef {InstanceType<typeof InputField> & { focus?: () => void }} SearchInputFieldRef */
 
@@ -83,6 +86,18 @@ const shortcutLabel = computed(() => {
 });
 
 const showClearButton = computed(() => query.value.trim().length > 0);
+
+const formulaStats = computed(() => parseDiceFormula(query.value));
+const formulaRoll = ref(null);
+
+watch(query, () => {
+    formulaRoll.value = null;
+});
+
+function rollSearchFormula() {
+    const result = rollDiceFormula(query.value);
+    formulaRoll.value = result.isValid ? result.result : null;
+}
 
 /** @type {boolean} Clic backdrop : pointerdown et pointerup sur le dialog (pas sur le panneau). */
 let backdropPointerDown = false;
@@ -144,6 +159,7 @@ const blurSearch = () => {
     lastSearchInputAt = 0;
     isFocused.value = false;
     close();
+    formulaRoll.value = null;
 };
 
 const onSearchInputFocus = () => {
@@ -306,30 +322,43 @@ watch([loading, groupedResults], () => {
                 @click.stop
             >
                 <div class="global-search-panel global-search-panel--expanded flex flex-col gap-2">
-                    <div class="flex items-center gap-2">
-                        <InputField
-                            ref="searchInputRef"
-                            :id="searchBarId"
-                            :model-value="query"
-                            :placeholder="props.placeholder"
-                            class="global-search-input w-full"
-                            autofocus
-                            @update:model-value="handleInput"
-                            @focus="onSearchInputFocus"
-                        >
-                            <template #overEnd>
-                                <button
-                                    v-if="showClearButton"
-                                    type="button"
-                                    class="btn btn-ghost btn-xs btn-circle opacity-70 hover:opacity-100"
-                                    aria-label="Effacer la recherche"
-                                    @mousedown.prevent
-                                    @click="clearSearch"
-                                >
-                                    <Icon source="fa-xmark" pack="solid" size="sm" alt="" />
-                                </button>
-                            </template>
-                        </InputField>
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex items-center gap-2">
+                            <InputField
+                                ref="searchInputRef"
+                                :id="searchBarId"
+                                :model-value="query"
+                                :placeholder="props.placeholder"
+                                class="global-search-input w-full"
+                                autofocus
+                                @update:model-value="handleInput"
+                                @focus="onSearchInputFocus"
+                            >
+                                <template #overEnd>
+                                    <button
+                                        v-if="showClearButton"
+                                        type="button"
+                                        class="btn btn-ghost btn-xs btn-circle opacity-70 hover:opacity-100"
+                                        aria-label="Effacer la recherche"
+                                        @mousedown.prevent
+                                        @click="clearSearch"
+                                    >
+                                        <Icon source="fa-xmark" pack="solid" size="sm" alt="" />
+                                    </button>
+                                </template>
+                            </InputField>
+                        </div>
+
+                        <DiceFormulaStrip
+                            v-if="formulaStats.isRecognized"
+                            density="compact"
+                            :min="formulaStats.min"
+                            :max="formulaStats.max"
+                            :average="formulaStats.average"
+                            :range-equivalents="formulaStats.rangeEquivalents"
+                            :roll-result="formulaRoll"
+                            @roll="rollSearchFormula"
+                        />
                     </div>
 
                     <div class="flex flex-col gap-3">

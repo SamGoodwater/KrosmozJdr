@@ -100,6 +100,16 @@
     "description": "Le CMS maison gère le contenu éditorial du site (accueil, règles, bibliothèques, pages légales). Une **page** est un nœud d'un arbre hiérarchique exposé dans le menu ; elle contient des **sections** ordonnées, chacune d'un **template** typé."
   },
   {
+    "path": "features/dice/_ai.md",
+    "title": "Dés / formules — IA",
+    "description": "Parser sécurisé de formules tapées (dés, tranches, opérateurs). Pas d’`eval`."
+  },
+  {
+    "path": "features/dice/README.md",
+    "title": "Dés et formules",
+    "description": "Le moteur de formules de dés sert la barre de recherche et l’outil **Lanceur de dés**. Il restera le point d’entrée pour d’autres calculs JDR (stats de créatures, plus tard)."
+  },
+  {
     "path": "features/effects/_ai.md",
     "title": "Effets — IA",
     "description": "`app/Models/Effect*.php`, `app/Models/ObjectEffect.php`"

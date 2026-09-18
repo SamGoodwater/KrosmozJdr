@@ -7,6 +7,11 @@ namespace App\Services\Jdr;
 /**
  * Convertit des valeurs numériques (une valeur ou une plage min–max) en notation de dés JDR : ndX ou ndX+y.
  *
+ * - {@see self::toDiceNotation()} : approximation avec dés classiques (d4…d20), pour le scrapping.
+ * - {@see self::fromInclusiveRange()} : conversion exacte d’une fourchette entière (`[2-6]` → `1d5+1`).
+ *
+ * Le parseur de formules tapées par l’utilisateur est {@see DiceFormulaService}.
+ *
  * Utilisable partout où l'on doit afficher ou stocker un tirage de dés à partir de valeurs brutes
  * (ex. conversion Dofus → Krosmoz, affichage barèmes, génération de fiches).
  *
@@ -36,6 +41,38 @@ final class DiceNotationService
 
     /** Nombre max de dés pour coller à une cible (ex. 10d8). */
     private const MAX_DICE_COUNT = 12;
+
+    /**
+     * Convertit une fourchette entière inclusive en notation exacte 1dN+k.
+     *
+     * Chaque valeur de [min, max] est équiprobable : [2, 6] → 1d5+1 (pas 1d4+2,
+     * qui produirait 3–6). Constante si min = max.
+     *
+     * @param  int  $min  Borne inclusive.
+     * @param  int  $max  Borne inclusive.
+     * @return string Notation "1dN", "1dN+k", "1dN-k" ou un entier.
+     */
+    public function fromInclusiveRange(int $min, int $max): string
+    {
+        if ($max < $min) {
+            [$min, $max] = [$max, $min];
+        }
+        if ($min === $max) {
+            return (string) $min;
+        }
+
+        $faces = $max - $min + 1;
+        $modifier = $min - 1;
+        $dice = '1d'.$faces;
+
+        if ($modifier === 0) {
+            return $dice;
+        }
+
+        return $modifier > 0
+            ? $dice.'+'.$modifier
+            : $dice.$modifier;
+    }
 
     /**
      * Convertit une valeur unique ou une plage min–max en notation ndX ou ndX+y.

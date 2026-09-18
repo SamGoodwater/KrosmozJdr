@@ -3,11 +3,8 @@
  * DiceRollerModal Organism
  *
  * @description
- * Modal lanceur de dés avec formule ndX (ex: 2d6+3).
- * - Input pour la formule avec affichage min/max/moyenne en temps réel
- * - Raccourcis d4, d6, d8, d10, d12, d20, d100
- * - Lancer via bouton ou touche Entrée
- * - Design glass, conforme à la charte KrosmozJDR
+ * Modal lanceur de dés : formule (dés, tranches, opérateurs), raccourcis ndX,
+ * bande unique min / moy / max / équivalent / lancer.
  *
  * @props {Boolean} open - Contrôle l'ouverture du modal
  * @emits close - Fermeture du modal
@@ -17,6 +14,7 @@ import Modal from '@/Pages/Molecules/action/Modal.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
+import DiceFormulaStrip from '@/Pages/Molecules/data-display/DiceFormulaStrip.vue';
 import { parseDiceFormula, rollDiceFormula } from '@/Utils/dice/diceParser.js';
 
 const props = defineProps({
@@ -29,10 +27,7 @@ const formula = ref('');
 const lastResult = ref(null);
 const lastError = ref(null);
 
-const stats = computed(() => {
-    const parsed = parseDiceFormula(formula.value);
-    return parsed;
-});
+const stats = computed(() => parseDiceFormula(formula.value));
 
 const DICE_SHORTCUTS = [
     { label: 'd4', value: 4 },
@@ -51,7 +46,7 @@ function setShortcut(faces) {
 function roll() {
     const result = rollDiceFormula(formula.value);
     if (result.isValid) {
-        lastResult.value = result;
+        lastResult.value = result.result;
         lastError.value = null;
     } else {
         lastError.value = result.error;
@@ -70,12 +65,17 @@ watch(() => props.open, (isOpen) => {
         lastError.value = null;
     }
 });
+
+watch(formula, () => {
+    lastResult.value = null;
+    lastError.value = null;
+});
 </script>
 
 <template>
     <Modal
         :open="open"
-        size="sm"
+        size="md"
         variant="glass"
         placement="middle-center"
         close-on-esc
@@ -88,8 +88,17 @@ watch(() => props.open, (isOpen) => {
             </h3>
         </template>
 
-        <form class="space-y-4" @submit.prevent="roll">
-            <!-- Raccourcis (badges discrets, clic = remplir l'input) -->
+        <form class="space-y-3" @submit.prevent="roll">
+            <p class="text-sm text-base-content/70 leading-snug">
+                Écris une formule avec des <strong>dés</strong> (<code class="text-xs">d12</code>,
+                <code class="text-xs">3d8</code>), des <strong>tranches</strong>
+                (<code class="text-xs">[2-6]</code> → <code class="text-xs">1d5+1</code>)
+                et des <strong>opérateurs</strong> <code class="text-xs">+</code>
+                <code class="text-xs">-</code> <code class="text-xs">×</code>
+                <code class="text-xs">/</code> (aussi <code class="text-xs">x</code> et
+                <code class="text-xs">÷</code>). Les nombres à virgule sont acceptés.
+            </p>
+
             <div class="flex flex-wrap gap-1">
                 <button
                     v-for="d in DICE_SHORTCUTS"
@@ -103,48 +112,27 @@ watch(() => props.open, (isOpen) => {
                 </button>
             </div>
 
-            <!-- Input formule -->
             <InputField
                 v-model="formula"
                 label="Formule"
                 default-label-position="top"
-                placeholder="2d6+3, 3d10-1, 4d6/2…"
+                placeholder="2d6+3, [2-6], 3d8×2…"
                 class="w-full"
-                :validation="stats.error ? { state: 'error', message: stats.error } : undefined"
-                aria-label="Formule de dés (ex: 2d6+3)"
+                :validation="formula.trim() && stats.error ? { state: 'error', message: stats.error } : undefined"
+                aria-label="Formule de dés (ex: 2d6+3 ou [2-6])"
             />
 
-            <!-- Stats temps réel : min, max, moyenne -->
-            <div
-                v-if="formula.trim()"
-                class="flex flex-wrap gap-2 items-center"
-            >
-                <span class="text-sm text-base-content/70">Résultat :</span>
-                <span
-                    v-if="stats.isValid"
-                    class="flex gap-3 text-sm"
-                >
-                    <span class="badge badge-sm badge-ghost">Min {{ stats.min }}</span>
-                    <span class="badge badge-sm badge-ghost">Max {{ stats.max }}</span>
-                    <span class="badge badge-sm badge-ghost">Moy. {{ stats.average }}</span>
-                </span>
-            </div>
+            <DiceFormulaStrip
+                v-if="stats.isValid"
+                density="comfortable"
+                :min="stats.min"
+                :max="stats.max"
+                :average="stats.average"
+                :range-equivalents="stats.rangeEquivalents"
+                :roll-result="lastResult"
+                @roll="roll"
+            />
 
-            <!-- Résultat du lancer -->
-            <div
-                v-if="lastResult"
-                class="rounded-box box-glass-sm p-3"
-            >
-                <p class="text-2xl font-bold text-primary">
-                    {{ lastResult.result }}
-                </p>
-                <p
-                    v-if="lastResult.breakdown?.length"
-                    class="text-xs text-base-content/70 mt-1"
-                >
-                    {{ lastResult.breakdown.join(' ') }}
-                </p>
-            </div>
             <p
                 v-else-if="lastError"
                 class="text-sm text-error"
@@ -155,15 +143,6 @@ watch(() => props.open, (isOpen) => {
 
         <template #actions>
             <div class="flex gap-2 justify-end w-full">
-                <Btn
-                    color="primary"
-                    :disabled="!stats.isValid"
-                    aria-label="Lancer les dés"
-                    @click="roll"
-                >
-                    <Icon source="fa-dice" pack="solid" alt="" size="sm" class="mr-2" />
-                    Lancer
-                </Btn>
                 <Btn
                     color="neutral"
                     variant="ghost"
