@@ -64,7 +64,7 @@ watch(
         if (open) {
             updateContent.value = true;
             includeImage.value = true;
-            force.value = false;
+            force.value = Boolean(props.playable);
             pane.value = props.showDofusdb ? "dofusdb" : "ia";
             localUsage.value = null;
             localEstimate.value = null;
@@ -248,8 +248,13 @@ function submitAi() {
                 </p>
 
                 <div v-if="loading" class="text-sm text-base-content/60">Chargement de l’aperçu…</div>
-                <p v-else-if="error" class="text-sm text-error">{{ error }}</p>
-                <div v-else class="space-y-3">
+                <p
+                    v-else-if="error"
+                    class="rounded-box border border-error/40 bg-error/10 px-3 py-2 text-sm text-error"
+                >
+                    {{ error }}
+                </p>
+                <div v-if="!loading" class="space-y-3">
                     <p v-if="convertedName" class="text-sm">
                         Nom converti : <span class="font-medium">{{ convertedName }}</span>
                     </p>
@@ -295,7 +300,7 @@ function submitAi() {
                     <Btn variant="ghost" :disabled="applying" @click="emit('close')">Annuler</Btn>
                     <Btn
                         color="primary"
-                        :disabled="loading || applying || Boolean(error) || (playable && !isAdmin) || !canSubmitDofusdb"
+                        :disabled="loading || applying || (playable && !isAdmin) || !canSubmitDofusdb"
                         @click="submitDofusdb"
                     >
                         <Icon source="fa-arrow-rotate-right" pack="solid" alt="" class="mr-2" />

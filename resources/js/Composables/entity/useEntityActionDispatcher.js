@@ -341,11 +341,13 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
     function openDiffFromResponse(pending, data) {
         const diff = data?.diff && typeof data.diff === "object" ? data.diff : null;
         if (!diff) {
+            const message = String(data?.message || "La mise à jour n’a renvoyé aucun comparatif.");
             refreshConfirm.value = {
                 ...refreshConfirm.value,
                 applying: false,
                 aiSubmitting: false,
-                aiError: data?.message || "La mise à jour n’a renvoyé aucun comparatif.",
+                error: message,
+                aiError: message,
             };
             return false;
         }
@@ -426,7 +428,11 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
             includeImage: options.includeImage !== false,
         });
         if (!result?.success) {
-            refreshConfirm.value = { ...refreshConfirm.value, applying: false };
+            refreshConfirm.value = {
+                ...refreshConfirm.value,
+                applying: false,
+                error: String(result?.body?.message || "Erreur lors de la mise à jour DofusDB."),
+            };
             return false;
         }
         return openDiffFromResponse(pending, result.body);

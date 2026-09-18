@@ -8,6 +8,10 @@ On peut taper une formule de dés dans la **barre de recherche** (`d12`, `3d8+2`
 
 En attendant les fiches, on voit **plusieurs cartes** (image + titre), plus un seul pavé gris. Les sections de page ont aussi un skeleton qui ressemble au contenu (texte, tableau, galerie…). Sur une carte **minimale**, la case à cocher n’apparaît **que déployée** (ou si elle est déjà cochée).
 
+## Septembre 2026 — Sources : scrap d’une fiche existante
+
+**Sources** peut scrap une fiche qui a déjà un id DofusDB, même si son type n’est pas coché pour l’import de masse. Sur une fiche **jouable**, « forcer » est coché comme pour l’IA.
+
 ## Septembre 2026 — Sources : deux onglets, image, mix avant/après
 
 Sur une carte minimale, **Sources** rouvre les deux onglets : conversion **DofusDB** (algo) et conversion **IA**. On coche si on veut **récupérer l’image**. Après l’écriture, le tableau compare ancien et nouveau : un clic sur une cellule (ou sur l’en-tête de colonne) choisit ce qu’on garde. **Enregistrer** applique ce mix ; **Rétablir** (ou fermer) annule toute la conversion.

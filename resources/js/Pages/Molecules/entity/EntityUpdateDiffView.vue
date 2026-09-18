@@ -130,15 +130,15 @@ function isSelected(row, side) {
             Aucun champ modifié. Les champs gelés n’ont pas bougé.
         </p>
 
-        <div v-if="visibleFields.length" class="overflow-x-auto rounded-box border border-base-300">
+        <div v-if="visibleFields.length" class="overflow-x-auto rounded-box border border-base-300 bg-base-100/30 p-2 pr-3">
             <table class="table table-sm">
                 <thead>
                     <tr>
-                        <th>Champ</th>
+                        <th class="w-36">Champ</th>
                         <th>
                             <button
                                 type="button"
-                                class="link link-hover font-semibold"
+                                class="btn btn-ghost btn-xs font-semibold"
                                 data-testid="entity-update-diff-pick-before"
                                 title="Garder toutes les anciennes valeurs"
                                 @click="pickAll('before')"
@@ -149,7 +149,7 @@ function isSelected(row, side) {
                         <th>
                             <button
                                 type="button"
-                                class="link link-hover font-semibold"
+                                class="btn btn-ghost btn-xs font-semibold"
                                 data-testid="entity-update-diff-pick-after"
                                 title="Garder toutes les nouvelles valeurs"
                                 @click="pickAll('after')"
@@ -163,20 +163,20 @@ function isSelected(row, side) {
                     <tr
                         v-for="row in visibleFields"
                         :key="row.key"
-                        :class="row.changed ? 'bg-warning/10' : ''"
+                        :class="row.changed ? 'bg-warning/5' : ''"
                         :data-changed="row.changed ? '1' : '0'"
                     >
-                        <td class="align-top font-medium whitespace-nowrap">{{ row.label }}</td>
-                        <td class="align-top p-0">
+                        <td class="align-top font-medium whitespace-nowrap py-2">{{ row.label }}</td>
+                        <td class="align-top p-1">
                             <button
                                 type="button"
-                                class="w-full h-full text-left align-top whitespace-pre-wrap px-3 py-2 rounded-field"
+                                class="w-full min-h-12 text-left align-top whitespace-pre-wrap px-3 py-2 rounded-box border-2"
                                 :class="
                                     isSelected(row, 'before')
-                                        ? 'bg-base-200 ring-2 ring-primary/70'
+                                        ? 'border-primary bg-base-200'
                                         : row.changed
-                                          ? 'cursor-pointer opacity-50 hover:opacity-100'
-                                          : ''
+                                          ? 'border-base-300 bg-transparent cursor-pointer opacity-60 hover:opacity-100'
+                                          : 'border-transparent'
                                 "
                                 :disabled="!row.changed || busy"
                                 :data-testid="`entity-update-diff-cell-${row.key}-before`"
@@ -186,16 +186,16 @@ function isSelected(row, side) {
                                 {{ row.before }}
                             </button>
                         </td>
-                        <td class="align-top p-0">
+                        <td class="align-top p-1">
                             <button
                                 type="button"
-                                class="w-full h-full text-left align-top whitespace-pre-wrap px-3 py-2 rounded-field font-medium"
+                                class="w-full min-h-12 text-left align-top whitespace-pre-wrap px-3 py-2 rounded-box border-2 font-medium"
                                 :class="
                                     isSelected(row, 'after')
-                                        ? 'bg-secondary/20 ring-2 ring-secondary/70'
+                                        ? 'border-secondary bg-secondary/20'
                                         : row.changed
-                                          ? 'cursor-pointer opacity-50 hover:opacity-100'
-                                          : ''
+                                          ? 'border-base-300 bg-transparent cursor-pointer opacity-60 hover:opacity-100'
+                                          : 'border-transparent'
                                 "
                                 :disabled="!row.changed || busy"
                                 :data-testid="`entity-update-diff-cell-${row.key}-after`"

@@ -112,6 +112,40 @@ describe("EntitySourceModal", () => {
         });
     });
 
+    it("coche forcer par défaut sur une fiche jouable", async () => {
+        const wrapper = mount(EntitySourceModal, {
+            props: {
+                open: true,
+                showDofusdb: true,
+                showAi: true,
+                playable: true,
+                entityLabel: "Pression",
+            },
+            global: { stubs },
+        });
+
+        const confirm = wrapper.findAll("button").filter((btn) => btn.text().includes("Confirmer DofusDB"));
+        await confirm[0].trigger("click");
+        expect(wrapper.emitted("confirm")[0][0].force).toBe(true);
+    });
+
+    it("laisse confirmer DofusDB même si l’aperçu a échoué", () => {
+        const wrapper = mount(EntitySourceModal, {
+            props: {
+                open: true,
+                showDofusdb: true,
+                showAi: true,
+                error: "Le type de cette fiche n’autorise pas la mise à jour depuis DofusDB.",
+                entityLabel: "Cape du Piou",
+            },
+            global: { stubs },
+        });
+
+        expect(wrapper.get("[data-testid='entity-source-include-image']").exists()).toBe(true);
+        const confirm = wrapper.findAll("button").filter((btn) => btn.text().includes("Confirmer DofusDB"));
+        expect(confirm[0].attributes("disabled")).toBeUndefined();
+    });
+
     it("ouvre directement le volet IA pour un PNJ sans DofusDB", () => {
         const wrapper = mount(EntitySourceModal, {
             props: {

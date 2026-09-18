@@ -128,7 +128,7 @@ class EntityDofusdbRefreshControllerTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_refresh_blocked_when_item_type_disallows_scrap(): void
+    public function test_unit_refresh_is_allowed_when_type_disallows_mass_scrap(): void
     {
         $type = ItemType::factory()->create([
             'name' => 'Costume',
@@ -143,11 +143,12 @@ class EntityDofusdbRefreshControllerTest extends TestCase
             'write_level' => User::ROLE_GAME_MASTER,
             'item_type_id' => $type->id,
         ]);
+        $this->mockOrchestratorPreview();
 
         $this->actingAs($this->gm)
             ->postJson("/api/entities/items/{$item->id}/dofusdb-refresh", ['mode' => 'preview'])
-            ->assertStatus(422)
-            ->assertJsonPath('success', false);
+            ->assertOk()
+            ->assertJsonPath('success', true);
     }
 
     public function test_game_master_cannot_update_item_they_cannot_edit(): void
