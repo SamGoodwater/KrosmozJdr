@@ -396,7 +396,7 @@ ui: false
 cron: false
 ```
 
-Importe `private/game/rules/TABLE_DES_MATIERES.md` vers les pages CMS. Appelé par `project:init` / `project:seed`.
+Importe `private/game/rules/TABLE_DES_MATIERES.md` vers les pages CMS. Appelé par `project:init` / `project:seed`. Le chapitre 5 (équilibrage des entités) est placé dans **Pour les MJ** (`read_level` MJ) ; la page **Ressources** reste dans Règles.
 
 ```bash
 php artisan pages:import-rules-toc --dry-run
@@ -556,7 +556,7 @@ cron: false
 admin: /admin/content
 ```
 
-Compile le livre de règles Markdown en PDF et ODT dans `storage/app/public/downloads/generated/`. Le PDF passe par Chromium en impression headless (A4 compact, saut de page par partie). Lancé après `project:init` / `project:seed`, via `pages:import-rules-toc --compile-downloads`, ou depuis le bouton de la gestion du contenu (admin+ ; file `rules-downloads`, worker ponctuel).
+Compile le livre de règles Markdown en PDF et ODT dans `storage/app/public/downloads/generated/`. Le PDF passe par Chromium en impression headless (A4 compact, saut de page par partie). Hors PDF : Sources / Contenu, chapitre 5 (équilibrage MJ), annexes 6.1.3–6.1.4. Lancé après `project:init` / `project:seed`, via `pages:import-rules-toc --compile-downloads`, ou depuis le bouton de la gestion du contenu (admin+ ; file `rules-downloads`, worker ponctuel).
 
 ```bash
 php artisan rules:compile-downloads

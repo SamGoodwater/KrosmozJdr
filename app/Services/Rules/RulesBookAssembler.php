@@ -15,7 +15,7 @@ use SplFileInfo;
  * Source : `private/game/rules/`. Les fichiers meta (table des matières, index,
  * guides de rédaction) sont exclus. Les shortcodes kref deviennent le libellé.
  * Pour le PDF : un saut de page par grande partie (pas par fiche), sans blocs
- * Sources / Contenu / liens internes.
+ * Sources / Contenu / liens internes, sans le chapitre 5 (équilibrage MJ).
  *
  * @example
  * $markdown = (new RulesBookAssembler())->assemble();
@@ -36,6 +36,11 @@ class RulesBookAssembler
     private const SKIP_PRINT_NUMBERS = [
         '6.1.3' => true,
         '6.1.4' => true,
+    ];
+
+    /** Grandes parties MJ (équilibrage des entités) : hors PDF joueur. */
+    private const SKIP_PRINT_MAJOR = [
+        '5' => true,
     ];
 
     public function __construct(
@@ -59,7 +64,7 @@ class RulesBookAssembler
             '',
             'Version '.$version.' · compilé le '.$date.'.',
             '',
-            'Ce document reprend les chapitres du livre. La version à jour se lit aussi en ligne.',
+            'Ce document reprend les chapitres joueur du livre. L’équilibrage des entités se lit en ligne, dans Pour les MJ.',
             '',
         ];
 
@@ -123,7 +128,7 @@ class RulesBookAssembler
             }
 
             $number = (string) $matches[1];
-            if (isset(self::SKIP_PRINT_NUMBERS[$number])) {
+            if ($this->shouldSkipPrint($number)) {
                 continue;
             }
 
@@ -138,6 +143,17 @@ class RulesBookAssembler
         });
 
         return $files;
+    }
+
+    private function shouldSkipPrint(string $number): bool
+    {
+        if (isset(self::SKIP_PRINT_NUMBERS[$number])) {
+            return true;
+        }
+
+        $major = explode('.', $number)[0];
+
+        return isset(self::SKIP_PRINT_MAJOR[$major]);
     }
 
     private function normalizeChapter(string $markdown): string

@@ -15,15 +15,15 @@ class PageSeederResourcesPageTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_nests_ressources_page_under_chapter_five_when_parent_exists(): void
+    public function test_keeps_ressources_page_at_rules_root_even_when_chapter_five_exists(): void
     {
-        $parent = Page::factory()->create([
+        Page::factory()->create([
             'title' => 'Ressources et équilibrage',
             'slug' => 'regles-5-ressources-et-equilibrage',
             'in_menu' => true,
             'state' => Page::STATE_PLAYABLE,
-            'read_level' => User::ROLE_GUEST,
-            'menu_group' => 'Règles',
+            'read_level' => User::ROLE_GAME_MASTER,
+            'menu_group' => 'Pour les MJ',
             'menu_order' => 5,
             'parent_id' => null,
         ]);
@@ -32,9 +32,10 @@ class PageSeederResourcesPageTest extends TestCase
 
         $page = Page::query()->where('slug', 'ressources-de-jeu')->first();
         $this->assertNotNull($page);
-        $this->assertSame($parent->id, $page->parent_id);
+        $this->assertNull($page->parent_id);
         $this->assertSame('Règles', $page->menu_group);
-        $this->assertSame(4, $page->menu_order);
+        $this->assertSame(User::ROLE_GUEST, $page->read_level);
+        $this->assertSame(90, $page->menu_order);
         $this->assertTrue($page->in_menu);
 
         $this->assertDatabaseHas('sections', [
@@ -44,7 +45,7 @@ class PageSeederResourcesPageTest extends TestCase
         ]);
     }
 
-    public function test_keeps_ressources_page_at_rules_root_when_parent_is_missing(): void
+    public function test_keeps_ressources_page_at_rules_root_when_chapter_five_is_missing(): void
     {
         $this->seed(PageSeeder::class);
 

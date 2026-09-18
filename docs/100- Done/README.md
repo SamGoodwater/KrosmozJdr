@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Équilibrage des entités dans Pour les MJ
+
+Les tables de calibrage (classes, sorts, objets, loot, économie…) ne sont plus dans le menu Règles : elles passent dans **Pour les MJ**, visibles seulement des meneurs. Les joueurs gardent les téléchargements (PDF, fiche, logo) sous **Règles → Ressources**. Le PDF du livre ne contient plus ce chapitre.
+
 ## Septembre 2026 — Livre de règles PDF plus court à l’impression
 
 Le PDF n’ouvre plus une page blanche à chaque petite fiche : une coupure par grande partie, format A4, police plus petite. Les listes de sources et deux annexes d’historique (choix de design, archives) restent sur le site / dans les fichiers, pas dans le livre à télécharger.

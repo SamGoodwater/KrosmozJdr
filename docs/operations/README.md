@@ -25,14 +25,14 @@ php artisan items:seeder-import
 
 ## Import des règles CMS
 
-`php artisan pages:import-rules-toc` importe `private/game/rules/TABLE_DES_MATIERES.md` vers les pages règles. Appelé par `project:init` / `project:seed`. `--compile-downloads` enchaîne la compilation PDF/ODT.
+`php artisan pages:import-rules-toc` importe `private/game/rules/TABLE_DES_MATIERES.md` vers les pages règles. Appelé par `project:init` / `project:seed`. Le chapitre 5 (équilibrage) va dans **Pour les MJ** (`read_level` MJ). `--compile-downloads` enchaîne la compilation PDF/ODT.
 
 ```bash
 php artisan pages:import-rules-toc --dry-run
 php artisan rules:compile-downloads
 ```
 
-Le livre compilé vit dans `storage/app/public/downloads/generated/` (non versionné). PDF A4, police resserrée, un saut de page par grande partie (pas par fiche). Les blocs Sources / Contenu et les annexes 6.1.3–6.1.4 n’y figurent pas. Téléchargement public : `/telechargements/{key}`. Page CMS **Ressources** (`ressources-de-jeu`) dans le menu Règles. Bouton admin : `/admin/content` (file dédiée `rules-downloads` ; un worker ponctuel est lancé avec le bouton, un `queue:listen` persistant n’est pas requis).
+Le livre compilé vit dans `storage/app/public/downloads/generated/` (non versionné). PDF A4, police resserrée, un saut de page par grande partie (pas par fiche). Les blocs Sources / Contenu, le chapitre 5 (équilibrage MJ) et les annexes 6.1.3–6.1.4 n’y figurent pas. Téléchargement public : `/telechargements/{key}`. Page CMS **Ressources** (`ressources-de-jeu`) à la racine du menu Règles. Bouton admin : `/admin/content` (file dédiée `rules-downloads` ; un worker ponctuel est lancé avec le bouton, un `queue:listen` persistant n’est pas requis).
 
 ## Nettoyage des fichiers orphelins
 

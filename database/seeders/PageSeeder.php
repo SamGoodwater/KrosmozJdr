@@ -466,7 +466,7 @@ HTML;
 
         if ($parentSlug !== '' && $parent === null && $this->command) {
             $this->command->warn(
-                "Page parente « {$parentSlug} » introuvable : « {$config['slug']} » reste à la racine du menu Règles jusqu’à l’import TOC."
+                "Page parente « {$parentSlug} » introuvable : « {$config['slug']} » reste à la racine du menu Règles."
             );
         }
 

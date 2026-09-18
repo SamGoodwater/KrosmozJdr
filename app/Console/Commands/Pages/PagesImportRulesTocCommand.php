@@ -7,11 +7,13 @@ use App\Enums\SectionType;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
+use App\Services\PageService;
 use App\Support\Cms\RulesHtmlSectionSplitter;
 use App\Support\Cms\RulesImportSlugHelper;
 use App\Support\Cms\RulesMarkdownCharacteristicKrefAutowrap;
 use App\Support\Cms\RulesMarkdownInternalRulesLinkToPageKref;
 use App\Support\Cms\RulesMarkdownPlainReferenceToKref;
+use App\Support\Cms\RulesTocPagePlacement;
 use App\Support\Cms\RulesTocParser;
 use App\Support\Cms\RulesTocSlugIndex;
 use Illuminate\Console\Command;
@@ -27,6 +29,7 @@ use RecursiveIteratorIterator;
  * - Niveau 1 (##) => page parente
  * - Niveau 2 (###) => sous-page (enfant du niveau 1)
  * - Niveau 3 (liste - x.x.x) => section texte de la page niveau 2
+ * - Chapitre 5 => menu Pour les MJ, lecture MJ ; autres chapitres => Règles, lecture invité
  */
 class PagesImportRulesTocCommand extends Command
 {
@@ -125,6 +128,8 @@ class PagesImportRulesTocCommand extends Command
                 }
             }
 
+            $this->keepPlayerDownloadsInRulesMenu();
+
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -133,6 +138,7 @@ class PagesImportRulesTocCommand extends Command
             return ArtisanExitCode::FAILURE;
         }
 
+        PageService::clearMenuCache();
         $this->info('Import terminé avec succès.');
         if (! $this->forceContent && $this->skippedExistingSectionBodyFromMarkdown > 0) {
             $this->warn(sprintf(
@@ -161,16 +167,17 @@ class PagesImportRulesTocCommand extends Command
     private function upsertLevel1Page(array $level1, ?int $creatorId): Page
     {
         $slug = RulesImportSlugHelper::buildPageSlug($level1['number'], $level1['title']);
+        $placement = RulesTocPagePlacement::forNumber($level1['number']);
 
         return $this->upsertPageBySlug($slug, [
             'title' => $level1['title'],
             'in_menu' => true,
             'state' => Page::STATE_PLAYABLE,
-            'read_level' => User::ROLE_GUEST,
+            'read_level' => $placement['read_level'],
             'write_level' => User::ROLE_ADMIN,
             'parent_id' => null,
             'menu_order' => $level1['menu_order'],
-            'menu_group' => 'Règles',
+            'menu_group' => $placement['menu_group'],
             'created_by' => $creatorId,
         ]);
     }
@@ -181,16 +188,17 @@ class PagesImportRulesTocCommand extends Command
     private function upsertLevel2Page(array $level2, int $parentId, ?int $creatorId): Page
     {
         $slug = RulesImportSlugHelper::buildPageSlug($level2['number'], $level2['title']);
+        $placement = RulesTocPagePlacement::forNumber($level2['number']);
 
         return $this->upsertPageBySlug($slug, [
             'title' => $level2['title'],
             'in_menu' => true,
             'state' => Page::STATE_PLAYABLE,
-            'read_level' => User::ROLE_GUEST,
+            'read_level' => $placement['read_level'],
             'write_level' => User::ROLE_ADMIN,
             'parent_id' => $parentId,
             'menu_order' => $level2['menu_order'],
-            'menu_group' => 'Règles',
+            'menu_group' => $placement['menu_group'],
             'created_by' => $creatorId,
         ]);
     }
@@ -263,6 +271,7 @@ class PagesImportRulesTocCommand extends Command
             'enableRichReferences' => true,
         ];
 
+        $placement = RulesTocPagePlacement::forNumber($level3Number);
         $attributes = [
             'page_id' => $pageId,
             'title' => $title,
@@ -272,7 +281,7 @@ class PagesImportRulesTocCommand extends Command
             'type' => SectionType::TEXT->value,
             'settings' => $textSettings,
             'state' => Section::STATE_PLAYABLE,
-            'read_level' => User::ROLE_GUEST,
+            'read_level' => $placement['read_level'],
             'write_level' => User::ROLE_ADMIN,
             'created_by' => $creatorId,
         ];
@@ -546,6 +555,41 @@ class PagesImportRulesTocCommand extends Command
     private function isKrefNavigable(string $type): bool
     {
         return in_array($type, ['entity', 'page', 'pageSection'], true);
+    }
+
+    /**
+     * La page téléchargements reste dans Règles (hors chapitre 5 MJ).
+     */
+    private function keepPlayerDownloadsInRulesMenu(): void
+    {
+        $path = database_path('seeders/data/ressources-page.php');
+        if (! is_file($path)) {
+            return;
+        }
+
+        $config = require $path;
+        if (! is_array($config) || ! isset($config['slug'])) {
+            return;
+        }
+
+        $page = Page::query()->where('slug', (string) $config['slug'])->first();
+        if ($page === null) {
+            return;
+        }
+
+        $parentSlug = (string) ($config['parent_slug'] ?? '');
+        $parent = $parentSlug !== ''
+            ? Page::query()->where('slug', $parentSlug)->first()
+            : null;
+
+        $page->parent_id = $parent?->id;
+        $page->menu_group = 'Règles';
+        $page->read_level = User::ROLE_GUEST;
+        $page->in_menu = true;
+        $page->menu_order = $parent !== null
+            ? (int) ($config['menu_order'] ?? 90)
+            : (int) ($config['fallback_menu_order'] ?? $config['menu_order'] ?? 90);
+        $page->save();
     }
 
     /**

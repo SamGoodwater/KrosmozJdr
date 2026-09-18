@@ -27,6 +27,7 @@ class RulesBookAssemblerTest extends TestCase
 
             $this->assertStringContainsString('Krosmoz JDR — Livre de règles', $markdown);
             $this->assertStringContainsString('# 1. Introduction', $markdown);
+            $this->assertStringContainsString('Pour les MJ', $markdown);
             $this->assertStringContainsString('## 1.1.1 Alpha', $markdown);
             $this->assertStringContainsString('Voir le chapitre', $markdown);
             $this->assertStringNotContainsString('[[kref:', $markdown);
@@ -52,6 +53,7 @@ class RulesBookAssemblerTest extends TestCase
         );
         file_put_contents($root.'/6.1.3-decisions-de-design.md', "# 6.1.3 Design\n\nTrop long.\n");
         file_put_contents($root.'/6.1.1-chrono.md', "# 6.1.1 Chrono\n\nReste.\n");
+        file_put_contents($root.'/5.2.3-sorts.md', "# 5.2.3 Sorts\n\nÉquilibrage MJ.\n");
 
         try {
             $assembler = new RulesBookAssembler($root);
@@ -67,6 +69,8 @@ class RulesBookAssemblerTest extends TestCase
             $this->assertStringNotContainsString('Pour plus de détails', $markdown);
             $this->assertStringContainsString('Corps.', $markdown);
             $this->assertStringNotContainsString('Trop long.', $markdown);
+            $this->assertStringNotContainsString('Équilibrage MJ.', $markdown);
+            $this->assertStringNotContainsString('# 5. Ressources et équilibrage', $markdown);
             $this->assertStringContainsString('Reste.', $markdown);
         } finally {
             $this->removeDirectory($root);
