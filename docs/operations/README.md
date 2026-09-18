@@ -32,7 +32,7 @@ php artisan pages:import-rules-toc --dry-run
 php artisan rules:compile-downloads
 ```
 
-Le livre compilé vit dans `storage/app/public/downloads/generated/` (non versionné). Téléchargement public : `/telechargements/{key}`. Page CMS **Ressources** (`ressources-de-jeu`) dans le menu Règles. Bouton admin : `/admin/content` (file dédiée `rules-downloads` ; un worker ponctuel est lancé avec le bouton, un `queue:listen` persistant n’est pas requis).
+Le livre compilé vit dans `storage/app/public/downloads/generated/` (non versionné). PDF A4, police resserrée, un saut de page par grande partie (pas par fiche). Les blocs Sources / Contenu et les annexes 6.1.3–6.1.4 n’y figurent pas. Téléchargement public : `/telechargements/{key}`. Page CMS **Ressources** (`ressources-de-jeu`) dans le menu Règles. Bouton admin : `/admin/content` (file dédiée `rules-downloads` ; un worker ponctuel est lancé avec le bouton, un `queue:listen` persistant n’est pas requis).
 
 ## Nettoyage des fichiers orphelins
 

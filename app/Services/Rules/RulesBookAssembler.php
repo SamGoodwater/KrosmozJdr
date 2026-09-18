@@ -14,12 +14,30 @@ use SplFileInfo;
  *
  * Source : `private/game/rules/`. Les fichiers meta (table des matières, index,
  * guides de rédaction) sont exclus. Les shortcodes kref deviennent le libellé.
+ * Pour le PDF : un saut de page par grande partie (pas par fiche), sans blocs
+ * Sources / Contenu / liens internes.
  *
  * @example
  * $markdown = (new RulesBookAssembler())->assemble();
  */
 class RulesBookAssembler
 {
+    /** @var array<string, string> */
+    private const PART_TITLES = [
+        '1' => 'Introduction',
+        '2' => 'Créer un personnage',
+        '3' => 'Jouer',
+        '4' => 'Le Monde des Douze',
+        '5' => 'Ressources et équilibrage',
+        '6' => 'Annexes',
+    ];
+
+    /** Historique de design / archives : utiles en repo, pas dans le livre imprimé. */
+    private const SKIP_PRINT_NUMBERS = [
+        '6.1.3' => true,
+        '6.1.4' => true,
+    ];
+
     public function __construct(
         private readonly string $rulesRoot = '',
     ) {}
@@ -45,10 +63,19 @@ class RulesBookAssembler
             '',
         ];
 
+        $currentPart = '';
         foreach ($this->chapterFiles() as $file) {
             $raw = file_get_contents($file['path']);
             if (! is_string($raw) || trim($raw) === '') {
                 continue;
+            }
+
+            $major = explode('.', $file['number'])[0];
+            if ($major !== $currentPart) {
+                $currentPart = $major;
+                $title = self::PART_TITLES[$major] ?? 'Partie '.$major;
+                $parts[] = '# '.$major.'. '.$title;
+                $parts[] = '';
             }
 
             $parts[] = $this->normalizeChapter($raw);
@@ -95,8 +122,13 @@ class RulesBookAssembler
                 continue;
             }
 
+            $number = (string) $matches[1];
+            if (isset(self::SKIP_PRINT_NUMBERS[$number])) {
+                continue;
+            }
+
             $files[] = [
-                'number' => (string) $matches[1],
+                'number' => $number,
                 'path' => (string) $fileInfo->getPathname(),
             ];
         }
@@ -112,8 +144,39 @@ class RulesBookAssembler
     {
         $markdown = $this->replaceKrefShortcodes($markdown);
         $markdown = $this->replaceInternalMarkdownLinks($markdown);
+        $markdown = $this->stripPrintOnlyNoise($markdown);
+        $markdown = $this->demoteHeadings($markdown);
 
         return trim($markdown);
+    }
+
+    /**
+     * Un `#` de moins : les fiches passent en h2 sous le titre de partie (h1).
+     */
+    private function demoteHeadings(string $markdown): string
+    {
+        return (string) preg_replace('/^(#{1,5})(\s)/m', '#$1$2', $markdown);
+    }
+
+    /**
+     * Blocs utiles en CMS / repo, redondants à l’impression.
+     */
+    private function stripPrintOnlyNoise(string $markdown): string
+    {
+        $markdown = (string) preg_replace('/\n## Sources?\b.*\z/us', "\n", $markdown);
+        $markdown = (string) preg_replace(
+            '/^## Contenu\s*\n(?:[-*].*\n|\s*\n)*---\s*\n/mu',
+            '',
+            $markdown
+        );
+        $markdown = (string) preg_replace(
+            '/\n\*\*Pour plus de détails\*\*[^\n]*\n(?:[ \t]*-[ \t].*\n)+/u',
+            "\n",
+            $markdown
+        );
+        $markdown = (string) preg_replace('/^\*\*Description\*\*\s*:\s*/mu', '', $markdown);
+
+        return $markdown;
     }
 
     /**

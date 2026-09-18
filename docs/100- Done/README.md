@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Livre de règles PDF plus court à l’impression
+
+Le PDF n’ouvre plus une page blanche à chaque petite fiche : une coupure par grande partie, format A4, police plus petite. Les listes de sources et deux annexes d’historique (choix de design, archives) restent sur le site / dans les fichiers, pas dans le livre à télécharger.
+
 ## Septembre 2026 — Couleurs d’état plus distinctes
 
 Les pastilles d’état ne se confondent plus : **Brut** reste rouge, **Jouable** vert, **Brouillon** passe en **umber**, **Auto** en **indigo**, **Archivé** reste cyan. Ce sont des variables `--color-state-raw`, `--color-state-draft`, etc., utilisées partout (recherche, tableaux, points, badges).

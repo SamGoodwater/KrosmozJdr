@@ -26,6 +26,8 @@ class RulesBookAssemblerTest extends TestCase
             $markdown = $assembler->assemble();
 
             $this->assertStringContainsString('Krosmoz JDR — Livre de règles', $markdown);
+            $this->assertStringContainsString('# 1. Introduction', $markdown);
+            $this->assertStringContainsString('## 1.1.1 Alpha', $markdown);
             $this->assertStringContainsString('Voir le chapitre', $markdown);
             $this->assertStringNotContainsString('[[kref:', $markdown);
             $this->assertStringNotContainsString('](../x.md)', $markdown);
@@ -35,6 +37,37 @@ class RulesBookAssemblerTest extends TestCase
                 strpos($markdown, 'Voir le chapitre')
             );
             $this->assertCount(2, $assembler->chapterFiles());
+        } finally {
+            $this->removeDirectory($root);
+        }
+    }
+
+    public function test_strips_print_noise_and_skips_design_annexes(): void
+    {
+        $root = sys_get_temp_dir().'/krosmoz-rules-'.uniqid('', true);
+        mkdir($root, 0775, true);
+        file_put_contents(
+            $root.'/1.1.1-intro.md',
+            "# 1.1.1 Intro\n\n**Description** : Phrase utile.\n\n## Contenu\n- a\n- b\n\n---\n\nCorps.\n\n**Pour plus de détails** :\n- [Section 2](../x.md)\n\n---\n\n## Sources\n\n## Source : Archive\n**Provenance** : foo.\n"
+        );
+        file_put_contents($root.'/6.1.3-decisions-de-design.md', "# 6.1.3 Design\n\nTrop long.\n");
+        file_put_contents($root.'/6.1.1-chrono.md', "# 6.1.1 Chrono\n\nReste.\n");
+
+        try {
+            $assembler = new RulesBookAssembler($root);
+            $numbers = array_column($assembler->chapterFiles(), 'number');
+            $this->assertSame(['1.1.1', '6.1.1'], $numbers);
+
+            $markdown = $assembler->assemble();
+            $this->assertStringContainsString('Phrase utile.', $markdown);
+            $this->assertStringNotContainsString('**Description**', $markdown);
+            $this->assertStringNotContainsString('## Contenu', $markdown);
+            $this->assertStringNotContainsString('## Sources', $markdown);
+            $this->assertStringNotContainsString('Provenance', $markdown);
+            $this->assertStringNotContainsString('Pour plus de détails', $markdown);
+            $this->assertStringContainsString('Corps.', $markdown);
+            $this->assertStringNotContainsString('Trop long.', $markdown);
+            $this->assertStringContainsString('Reste.', $markdown);
         } finally {
             $this->removeDirectory($root);
         }
