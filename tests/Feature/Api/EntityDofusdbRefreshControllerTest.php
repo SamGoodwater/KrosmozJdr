@@ -177,6 +177,16 @@ class EntityDofusdbRefreshControllerTest extends TestCase
         $this->assertTrue($options['download_images']);
     }
 
+    public function test_full_refresh_can_skip_image_download(): void
+    {
+        $options = (new \ReflectionMethod(EntityDofusdbRefreshService::class, 'orchestratorOptions'))
+            ->invoke(app(EntityDofusdbRefreshService::class), 'full', false, false);
+
+        $this->assertFalse($options['images_only']);
+        $this->assertFalse($options['download_images']);
+        $this->assertTrue($options['integrate']);
+    }
+
     private function mockOrchestratorPreview(): void
     {
         $service = Mockery::mock(EntityDofusdbRefreshService::class);

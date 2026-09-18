@@ -1,11 +1,13 @@
 <script setup>
 /**
  * Tableau avant / après d’une maj DofusDB ou d’une conversion IA.
+ * Chaque cellule changée se choisit (ancienne ou nouvelle) ; les en-têtes
+ * « Avant » / « Après » sélectionnent toute la colonne.
  *
  * @example
  * <EntityUpdateDiffView :diff="payload" @save="onSave" @restore="onRestore" />
  */
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 
@@ -17,6 +19,8 @@ const props = defineProps({
 const emit = defineEmits(["save", "restore"]);
 
 const onlyChanged = ref(true);
+/** @type {import('vue').Ref<Record<string, 'before'|'after'>>} */
+const choice = ref({});
 
 const sourceLabel = computed(() => {
     const source = props.diff?.source;
@@ -38,12 +42,70 @@ const beforeName = computed(() => props.diff?.before?.preview?.name || "Version 
 const afterName = computed(() => props.diff?.after?.preview?.name || "Nouvelle version");
 const beforeState = computed(() => props.diff?.before?.preview?.state || "");
 const afterState = computed(() => props.diff?.after?.preview?.state || "");
+
+watch(
+    () => props.diff?.snapshot_id,
+    () => {
+        const next = {};
+        for (const row of fields.value) {
+            if (row?.key) {
+                next[row.key] = "after";
+            }
+        }
+        choice.value = next;
+    },
+    { immediate: true },
+);
+
+/**
+ * @param {string} key
+ * @param {'before'|'after'} side
+ */
+function pick(key, side) {
+    const row = fields.value.find((item) => item?.key === key);
+    if (!row?.changed) return;
+    choice.value = { ...choice.value, [key]: side };
+}
+
+/**
+ * @param {'before'|'after'} side
+ */
+function pickAll(side) {
+    const next = { ...choice.value };
+    for (const row of fields.value) {
+        if (row?.changed && row.key) {
+            next[row.key] = side;
+        }
+    }
+    choice.value = next;
+}
+
+function restoreKeys() {
+    return fields.value
+        .filter((row) => row?.changed && row.key && choice.value[row.key] === "before")
+        .map((row) => row.key);
+}
+
+function onSave() {
+    emit("save", { restore_keys: restoreKeys() });
+}
+
+/**
+ * @param {{ key: string, changed?: boolean }} row
+ * @param {'before'|'after'} side
+ */
+function isSelected(row, side) {
+    return Boolean(row?.changed) && choice.value[row.key] === side;
+}
 </script>
 
 <template>
     <div class="space-y-4" data-testid="entity-update-diff">
         <p class="text-sm text-base-content/80">
-            {{ sourceLabel }} — gauche : version initiale, droite : nouvelle version.
+            {{ sourceLabel }} — clique une cellule pour garder l’ancienne ou la nouvelle valeur.
+            Les en-têtes <span class="font-medium">Avant</span> et
+            <span class="font-medium">Après</span> sélectionnent toute la colonne. Enregistrer
+            applique le mix ; Rétablir annule toute la conversion.
         </p>
 
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -73,20 +135,76 @@ const afterState = computed(() => props.diff?.after?.preview?.state || "");
                 <thead>
                     <tr>
                         <th>Champ</th>
-                        <th>Avant</th>
-                        <th>Après</th>
+                        <th>
+                            <button
+                                type="button"
+                                class="link link-hover font-semibold"
+                                data-testid="entity-update-diff-pick-before"
+                                title="Garder toutes les anciennes valeurs"
+                                @click="pickAll('before')"
+                            >
+                                Avant
+                            </button>
+                        </th>
+                        <th>
+                            <button
+                                type="button"
+                                class="link link-hover font-semibold"
+                                data-testid="entity-update-diff-pick-after"
+                                title="Garder toutes les nouvelles valeurs"
+                                @click="pickAll('after')"
+                            >
+                                Après
+                            </button>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr
                         v-for="row in visibleFields"
                         :key="row.key"
-                        :class="row.changed ? 'bg-warning/20' : ''"
+                        :class="row.changed ? 'bg-warning/10' : ''"
                         :data-changed="row.changed ? '1' : '0'"
                     >
                         <td class="align-top font-medium whitespace-nowrap">{{ row.label }}</td>
-                        <td class="align-top whitespace-pre-wrap">{{ row.before }}</td>
-                        <td class="align-top whitespace-pre-wrap font-medium">{{ row.after }}</td>
+                        <td class="align-top p-0">
+                            <button
+                                type="button"
+                                class="w-full h-full text-left align-top whitespace-pre-wrap px-3 py-2 rounded-field"
+                                :class="
+                                    isSelected(row, 'before')
+                                        ? 'bg-base-200 ring-2 ring-primary/70'
+                                        : row.changed
+                                          ? 'cursor-pointer opacity-50 hover:opacity-100'
+                                          : ''
+                                "
+                                :disabled="!row.changed || busy"
+                                :data-testid="`entity-update-diff-cell-${row.key}-before`"
+                                :aria-pressed="isSelected(row, 'before') ? 'true' : 'false'"
+                                @click="pick(row.key, 'before')"
+                            >
+                                {{ row.before }}
+                            </button>
+                        </td>
+                        <td class="align-top p-0">
+                            <button
+                                type="button"
+                                class="w-full h-full text-left align-top whitespace-pre-wrap px-3 py-2 rounded-field font-medium"
+                                :class="
+                                    isSelected(row, 'after')
+                                        ? 'bg-secondary/20 ring-2 ring-secondary/70'
+                                        : row.changed
+                                          ? 'cursor-pointer opacity-50 hover:opacity-100'
+                                          : ''
+                                "
+                                :disabled="!row.changed || busy"
+                                :data-testid="`entity-update-diff-cell-${row.key}-after`"
+                                :aria-pressed="isSelected(row, 'after') ? 'true' : 'false'"
+                                @click="pick(row.key, 'after')"
+                            >
+                                {{ row.after }}
+                            </button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -101,7 +219,7 @@ const afterState = computed(() => props.diff?.after?.preview?.state || "");
                 <Icon source="fa-rotate-left" pack="solid" alt="" class="mr-2" />
                 Rétablir
             </Btn>
-            <Btn color="primary" :disabled="busy" data-testid="entity-update-diff-save" @click="emit('save')">
+            <Btn color="primary" :disabled="busy" data-testid="entity-update-diff-save" @click="onSave">
                 <Icon source="fa-floppy-disk" pack="solid" alt="" class="mr-2" />
                 {{ busy ? "Enregistrement…" : "Enregistrer" }}
             </Btn>

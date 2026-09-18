@@ -23,6 +23,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  *
  * @example
  * $service->run($spell, $gm, 'preview', false);
+ * $service->run($spell, $gm, 'full', false, includeImage: false);
  */
 class EntityDofusdbRefreshService
 {
@@ -34,7 +35,7 @@ class EntityDofusdbRefreshService
     /**
      * @return array{success: bool, message: string, data: array<string, mixed>, diagnostics?: list<array<string, mixed>>}
      */
-    public function run(Model $entity, User $actor, string $mode, bool $force): array
+    public function run(Model $entity, User $actor, string $mode, bool $force, bool $includeImage = true): array
     {
         $dofusdbId = $this->resolveDofusdbId($entity);
         $this->assertTypeAllowsScrap($entity);
@@ -54,7 +55,7 @@ class EntityDofusdbRefreshService
             throw new HttpException(422, 'Seul un administrateur peut forcer la mise à jour d’une fiche.');
         }
 
-        $options = $this->orchestratorOptions($mode, $isProtected && $force && $actor->isAdmin());
+        $options = $this->orchestratorOptions($mode, $isProtected && $force && $actor->isAdmin(), $includeImage);
         $result = $this->orchestrator->runOne($resolved['source'], $resolved['entity'], $dofusdbId, $options);
 
         return $this->formatResult($result, $mode, $dofusdbId);
@@ -79,10 +80,11 @@ class EntityDofusdbRefreshService
     /**
      * @return array<string, mixed>
      */
-    private function orchestratorOptions(string $mode, bool $adminForce): array
+    private function orchestratorOptions(string $mode, bool $adminForce, bool $includeImage = true): array
     {
         $imagesOnly = $mode === 'images_only';
         $preview = $mode === 'preview';
+        $downloadImages = $imagesOnly || ($includeImage && ($mode === 'full' || $preview));
 
         return [
             'convert' => true,
@@ -105,7 +107,7 @@ class EntityDofusdbRefreshService
                     'image_full_female',
                 ],
             ))),
-            'download_images' => $imagesOnly || $mode === 'full' || $preview,
+            'download_images' => $downloadImages,
             'lang' => 'fr',
         ];
     }

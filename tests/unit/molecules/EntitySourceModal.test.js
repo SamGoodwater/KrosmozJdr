@@ -76,6 +76,8 @@ describe("EntitySourceModal", () => {
 
         const tabs = wrapper.findAll("button.tab");
         expect(tabs).toHaveLength(2);
+        expect(tabs[0].text()).toContain("Conversion DofusDB");
+        expect(wrapper.get("[data-testid='entity-source-include-image']").element.checked).toBe(true);
         await tabs[1].trigger("click");
         expect(wrapper.text()).toContain("Sort (effets)");
         expect(wrapper.text()).toContain("auto");
@@ -87,6 +89,27 @@ describe("EntitySourceModal", () => {
         expect(primaryButtons.length).toBe(1);
         await primaryButtons[0].trigger("click");
         expect(wrapper.emitted("convert")).toBeTruthy();
+    });
+
+    it("émet confirm DofusDB avec récupération d’image par défaut", async () => {
+        const wrapper = mount(EntitySourceModal, {
+            props: {
+                open: true,
+                showDofusdb: true,
+                showAi: true,
+                entityLabel: "Cape du Piou",
+            },
+            global: { stubs },
+        });
+
+        const confirm = wrapper.findAll("button").filter((btn) => btn.text().includes("Confirmer DofusDB"));
+        expect(confirm.length).toBe(1);
+        await confirm[0].trigger("click");
+        expect(wrapper.emitted("confirm")[0][0]).toEqual({
+            mode: "full",
+            includeImage: true,
+            force: false,
+        });
     });
 
     it("ouvre directement le volet IA pour un PNJ sans DofusDB", () => {

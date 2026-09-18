@@ -109,7 +109,7 @@ Un JSON « dans les normes » mais idiot (deux capes, PV hors palier) **échoue*
 - Specs : `app/Services/GenerativeAi/Specializations/` (`spell`, `encounter`, `npc`, `item`, `consumable`).
 - HTTP : `POST /api/entities/{type}/{id}/ia-convert` (`role:admin`, `password.confirm`, throttle 12/min). Types : `monsters`, `spells`, `npcs`, `items`, `consumables`. L’`action` doit correspondre au type d’URL (`encounter` pour un monstre, etc.) — sinon 422, aucune écriture sur une autre table. Fiche `playable` / `archived` (ou créature liée) : `force=true` obligatoire, comme le refresh DofusDB. Exécution **synchrone** (`dispatchSync`) pour l’UI ; réponse `queued` n’est plus un succès. Statut : `GET /api/ia/status` (même gates). Instantané : `POST /api/entities/{type}/{id}/update-diff/restore`.
 - CLI : `php artisan ia:convert {spell|encounter|npc|item|consumable}` (`ia:convert-encounter` reste un alias). `--user` admin obligatoire. `--force` pour écraser une fiche jouable / archivée.
-- UI : une icône « Sources » → `EntitySourceModal` (DofusDB | Conversion IA). Après écriture : tableau avant/après, Enregistrer / Rétablir. Volet IA si admin **et** session déverrouillée (`password.confirm`, même fenêtre d’inactivité que la gestion admin).
+- UI : une icône « Sources » → `EntitySourceModal` (onglets Conversion DofusDB | Conversion IA). Après écriture : tableau avant/après, choix par cellule, Enregistrer / Rétablir. Volet DofusDB : case **Récupérer l’image**. Volet IA si admin **et** session déverrouillée (`password.confirm`, même fenêtre d’inactivité que la gestion admin).
 - Tests : `Http::fake` — aucun appel LLM réel en CI (`ANTHROPIC_API_KEY` vide dans `phpunit.xml`).
 
 ## Code et docs existants à réutiliser

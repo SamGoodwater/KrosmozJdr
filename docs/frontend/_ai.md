@@ -12,7 +12,7 @@
 - `Container fluid` : `w-full min-w-0` (évite le shrink-to-fit dans un parent flex).
 - Footer desktop (`Layouts/Footer.vue`) : 2 lignes, logo centré ; padding via le layout, pas la molécule.
 - Dashboard `/admin/content` : cartes Atelier DofusDB (3 modes) + Génération IA ; camemberts inchangés.
-- Modal **Sources** : après scrap DofusDB ou conversion IA, tableau avant/après (pas un toast + refresh seuls).
+- Modal **Sources** : deux onglets (DofusDB algo + IA). Après écriture, tableau avant/après avec choix par cellule ; Enregistrer / Rétablir.
 - `vite.config.js` `manualChunks` : uniquement `node_modules` (`vendor` / `cally` / `utils`). Ne pas extraire `Main.vue` ni `Utils/Formatters` : cycle de chunks au boot.
 
 ## Descendre

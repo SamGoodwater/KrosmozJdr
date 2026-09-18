@@ -56,7 +56,7 @@ Presets (`ENTITY_ACTION_CONTEXT_PRESETS` dans `entity-actions-config.js`) :
 
 | Preset | Ordre (extrait) |
 | --- | --- |
-| `minimalLine` | state → pin → quick-view → view-dofusdb → favorite → copy-link → edit |
+| `minimalLine` | state → pin → quick-view → view-dofusdb → refresh → favorite → copy-link → edit |
 | `modalDetail` | state → favorite → copy-link → view (agrandir) → view-dofusdb → edit → refresh → delete |
 | `pageDetail` | state → favorite → copy-link → view-dofusdb → edit → refresh → delete |
 
@@ -67,10 +67,12 @@ L’action `view-dofusdb` (icône `/images/logos/dofus.png`) apparaît si l’en
 `dofusDbReference` ; le panneau `DofusDbReferencePanel` (monté dans `Main`) affiche le deep-link
 et un bouton `window.open` (pas d’iframe).
 
-L’action `refresh` (**Sources**, une icône) ouvre `EntitySourceModal` : volet DofusDB
-(`POST /api/entities/{type}/{id}/dofusdb-refresh`, scrapable + `update`) et volet
-conversion IA (`POST /api/entities/{type}/{id}/ia-convert`, admin + `password.confirm`). Surfaces : page,
-modal, minimal, menu tableau.
+L’action `refresh` (**Sources**, une icône) ouvre `EntitySourceModal` à **deux onglets** dès que les deux sont possibles :
+
+- **Conversion DofusDB** : pipeline algo (`POST /api/entities/{type}/{id}/dofusdb-refresh`). Cases **contenu** et **Récupérer l’image** (indépendantes). Scrapable + droit `update`.
+- **Conversion IA** : `POST /api/entities/{type}/{id}/ia-convert`, admin + `password.confirm`.
+
+Après écriture, le tableau avant/après (`EntityUpdateDiffView`) laisse **choisir cellule par cellule** (ou toute la colonne via l’en-tête Avant / Après). **Enregistrer** envoie les champs à rétablir (`POST …/update-diff/apply`) ; **Rétablir** ou fermer le modal annule toute la conversion (`restore`). Surfaces : page, modal, carte minimale, menu tableau.
 
 ## Caractéristiques
 

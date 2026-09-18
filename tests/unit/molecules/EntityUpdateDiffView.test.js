@@ -36,7 +36,27 @@ describe("EntityUpdateDiffView", () => {
         await wrapper.get("[data-testid='entity-update-diff-save']").trigger("click");
         await wrapper.get("[data-testid='entity-update-diff-restore']").trigger("click");
         expect(wrapper.emitted("save")).toBeTruthy();
+        expect(wrapper.emitted("save")[0][0]).toEqual({ restore_keys: [] });
         expect(wrapper.emitted("restore")).toBeTruthy();
+    });
+
+    it("permet de garder l’ancienne valeur d’une cellule puis toute la colonne Avant", async () => {
+        const wrapper = mount(EntityUpdateDiffView, {
+            props: { diff },
+            global: { stubs },
+        });
+
+        await wrapper.get("[data-testid='entity-update-diff-cell-state-before']").trigger("click");
+        await wrapper.get("[data-testid='entity-update-diff-save']").trigger("click");
+        expect(wrapper.emitted("save")[0][0]).toEqual({ restore_keys: ["state"] });
+
+        await wrapper.get("[data-testid='entity-update-diff-pick-before']").trigger("click");
+        await wrapper.get("[data-testid='entity-update-diff-save']").trigger("click");
+        expect(wrapper.emitted("save")[1][0]).toEqual({ restore_keys: ["state"] });
+
+        await wrapper.get("[data-testid='entity-update-diff-pick-after']").trigger("click");
+        await wrapper.get("[data-testid='entity-update-diff-save']").trigger("click");
+        expect(wrapper.emitted("save")[2][0]).toEqual({ restore_keys: [] });
     });
 
     it("affiche aucun champ modifié quand le compteur est à zéro", () => {

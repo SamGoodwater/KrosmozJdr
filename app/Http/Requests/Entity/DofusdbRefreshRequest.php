@@ -29,6 +29,7 @@ class DofusdbRefreshRequest extends FormRequest
         return [
             'mode' => ['required', 'string', Rule::in(['preview', 'full', 'images_only'])],
             'force' => ['sometimes', 'boolean'],
+            'include_image' => ['sometimes', 'boolean'],
         ];
     }
 
@@ -40,5 +41,17 @@ class DofusdbRefreshRequest extends FormRequest
     public function force(): bool
     {
         return $this->boolean('force');
+    }
+
+    /**
+     * Télécharger / remplacer l’illustration. Défaut : oui (contenu + image).
+     */
+    public function includeImage(): bool
+    {
+        if (! $this->exists('include_image')) {
+            return true;
+        }
+
+        return $this->boolean('include_image');
     }
 }

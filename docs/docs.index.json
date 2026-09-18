@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Une conversion PNJ refuse deux objets sur le même emplacement et complète les stats manquantes avec le gabarit. Une rencontre reçoit le gabarit 5.1.2 dans le prompt. Les objets Dofus scrapés restent hors scope."
+    "description": "Sur une carte minimale, Sources rouvre les deux onglets : conversion DofusDB (algo) et conversion IA. On coche si on veut récupérer l’image. Après l’écriture, le tableau compare ancien et nouveau : un clic sur une cellule (ou sur l’en-tête de colonne) choisit ce qu’on garde."
   },
   {
     "path": "backend/_ai.md",

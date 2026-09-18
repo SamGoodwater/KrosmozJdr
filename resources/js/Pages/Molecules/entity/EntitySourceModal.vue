@@ -51,7 +51,8 @@ const {
     onPasswordModalCancel,
 } = useProtectedAdminAction();
 const iaUnlocked = computed(() => Boolean(isAdminUnlocked?.value));
-const mode = ref("full");
+const updateContent = ref(true);
+const includeImage = ref(true);
 const force = ref(false);
 const pane = ref(!props.showDofusdb && props.showAi ? "ia" : "dofusdb");
 const localUsage = ref(null);
@@ -61,7 +62,8 @@ watch(
     () => props.open,
     (open) => {
         if (open) {
-            mode.value = "full";
+            updateContent.value = true;
+            includeImage.value = true;
             force.value = false;
             pane.value = props.showDofusdb ? "dofusdb" : "ia";
             localUsage.value = null;
@@ -134,8 +136,14 @@ const remainingUsageLabel = computed(() => {
 });
 
 function submitDofusdb() {
-    emit("confirm", { mode: mode.value, force: force.value });
+    if (!updateContent.value && !includeImage.value) {
+        return;
+    }
+    const mode = updateContent.value ? "full" : "images_only";
+    emit("confirm", { mode, includeImage: includeImage.value, force: force.value });
 }
+
+const canSubmitDofusdb = computed(() => updateContent.value || includeImage.value);
 
 const iaUnlockTitle = "Déverrouiller l’IA";
 const iaUnlockMessage =
@@ -183,7 +191,7 @@ function submitAi() {
         :size="hasDiff ? 'xl' : 'lg'"
         placement="middle-center"
         close-on-esc
-        @close="hasDiff ? emit('save-diff') : emit('close')"
+        @close="hasDiff ? emit('restore-diff') : emit('close')"
     >
         <template #header>
             <div class="flex items-center justify-between gap-3 w-full">
@@ -199,27 +207,44 @@ function submitAi() {
                 v-if="hasDiff"
                 :diff="diff"
                 :busy="diffBusy"
-                @save="emit('save-diff')"
+                @save="(payload) => emit('save-diff', payload)"
                 @restore="emit('restore-diff')"
             />
 
-            <div v-else-if="showDofusdb && showAi" class="tabs tabs-boxed bg-base-200/60 p-1 w-fit">
+            <div
+                v-else-if="showDofusdb && showAi"
+                role="tablist"
+                class="tabs tabs-box tabs-sm bg-base-200/60 p-1 w-fit"
+                data-testid="entity-source-tabs"
+            >
                 <button
                     type="button"
+                    role="tab"
                     class="tab"
                     :class="{ 'tab-active': pane === 'dofusdb' }"
+                    :aria-selected="pane === 'dofusdb' ? 'true' : 'false'"
+                    data-testid="entity-source-tab-dofusdb"
                     @click="pane = 'dofusdb'"
                 >
-                    DofusDB
+                    Conversion DofusDB
                 </button>
-                <button type="button" class="tab" :class="{ 'tab-active': pane === 'ia' }" @click="selectIaPane">
+                <button
+                    type="button"
+                    role="tab"
+                    class="tab"
+                    :class="{ 'tab-active': pane === 'ia' }"
+                    :aria-selected="pane === 'ia' ? 'true' : 'false'"
+                    data-testid="entity-source-tab-ia"
+                    @click="selectIaPane"
+                >
                     Conversion IA
                 </button>
             </div>
 
             <div v-if="!hasDiff && pane === 'dofusdb' && showDofusdb" class="space-y-4">
                 <p class="text-sm text-base-content/80">
-                    Mettre à jour « {{ entityLabel }} » depuis DofusDB (aperçu puis écriture).
+                    Conversion algorithmique de « {{ entityLabel }} » depuis DofusDB (aperçu puis
+                    écriture). Tu choisis le contenu, l’image, ou les deux.
                 </p>
 
                 <div v-if="loading" class="text-sm text-base-content/60">Chargement de l’aperçu…</div>
@@ -241,14 +266,19 @@ function submitAi() {
                     </ul>
 
                     <fieldset class="space-y-2">
-                        <legend class="text-sm font-medium">Mode</legend>
+                        <legend class="text-sm font-medium">Quoi récupérer</legend>
                         <label class="flex items-center gap-2 text-sm">
-                            <input v-model="mode" type="radio" class="radio radio-sm" value="full" />
-                            Contenu + images
+                            <input v-model="updateContent" type="checkbox" class="checkbox checkbox-sm" />
+                            Contenu (conversion algorithmique)
                         </label>
                         <label class="flex items-center gap-2 text-sm">
-                            <input v-model="mode" type="radio" class="radio radio-sm" value="images_only" />
-                            Images seules
+                            <input
+                                v-model="includeImage"
+                                type="checkbox"
+                                class="checkbox checkbox-sm"
+                                data-testid="entity-source-include-image"
+                            />
+                            Récupérer l’image
                         </label>
                     </fieldset>
 
@@ -265,7 +295,7 @@ function submitAi() {
                     <Btn variant="ghost" :disabled="applying" @click="emit('close')">Annuler</Btn>
                     <Btn
                         color="primary"
-                        :disabled="loading || applying || Boolean(error) || (playable && !isAdmin)"
+                        :disabled="loading || applying || Boolean(error) || (playable && !isAdmin) || !canSubmitDofusdb"
                         @click="submitDofusdb"
                     >
                         <Icon source="fa-arrow-rotate-right" pack="solid" alt="" class="mr-2" />

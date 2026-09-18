@@ -38,7 +38,7 @@ function getEntityLabel(entity) {
 export function useEntityActionDispatcher(entityType, handlers = {}) {
     const { copyToClipboard } = useCopyToClipboard();
     const { previewRefresh, applyRefresh } = useEntityDofusdbRefresh();
-    const { isAdmin, canUpdateAny } = usePermissions();
+    const { isAdmin, canUpdateAny, authUser } = usePermissions();
     const notificationStore = useNotificationStore();
 
     const normalizedType = computed(() => normalizeActionEntityType(entityType?.value ?? entityType));
@@ -194,6 +194,20 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         };
     }
 
+    function entityOwnerId(entity) {
+        const raw = entity?._data ?? entity;
+        const candidate = raw?.createdBy?.id ?? raw?.created_by?.id ?? raw?.created_by ?? null;
+        const id = Number(candidate);
+        return Number.isFinite(id) && id > 0 ? id : null;
+    }
+
+    function canUpdateEntity(entity, plural) {
+        if (canUpdateAny(plural)) return true;
+        const ownerId = entityOwnerId(entity);
+        const userId = Number(authUser.value?.id ?? 0);
+        return Boolean(userId && ownerId && userId === ownerId);
+    }
+
     function actionForType(plural) {
         const map = {
             monsters: "encounter",
@@ -260,7 +274,7 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
     async function openRefreshPanel(entity, meta = {}) {
         const entityId = getEntityId(entity);
         const plural = normalizedType.value;
-        const showDofusdb = Boolean(entityId && isScrappableEntityType(plural) && canUpdateAny(plural));
+        const showDofusdb = Boolean(entityId && isScrappableEntityType(plural) && canUpdateEntity(entity, plural));
         const aiAction = actionForType(plural);
         const showAi = Boolean(entityId && isAdmin.value && isAiConvertibleEntityType(plural) && aiAction);
         if (!entityId || (!showDofusdb && !showAi)) return false;
@@ -409,6 +423,7 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         const result = await applyRefresh(plural, entityId, {
             mode: options.mode === "images_only" ? "images_only" : "full",
             force: Boolean(options.force),
+            includeImage: options.includeImage !== false,
         });
         if (!result?.success) {
             refreshConfirm.value = { ...refreshConfirm.value, applying: false };
@@ -419,18 +434,41 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
 
     function cancelPendingRefresh() {
         if (refreshConfirm.value.diff) {
-            confirmUpdateDiffSave();
+            confirmUpdateDiffRestore();
             return;
         }
         resetRefreshConfirm();
     }
 
-    function confirmUpdateDiffSave() {
+    async function confirmUpdateDiffSave(payload = {}) {
         const pending = refreshConfirm.value;
-        notificationStore.success("Nouvelle version conservée.");
-        handlers.onRefresh?.(pending.entity, pending.meta);
-        resetRefreshConfirm();
-        return true;
+        const entity = pending.entity;
+        const entityId = getEntityId(entity);
+        const plural = normalizedType.value;
+        const snapshotId = pending.diff?.snapshot_id;
+        const restoreKeys = Array.isArray(payload?.restore_keys) ? payload.restore_keys : [];
+        if (!entityId || !plural || !snapshotId || pending.diffBusy) return false;
+
+        refreshConfirm.value = { ...pending, diffBusy: true };
+        try {
+            const { data } = await axios.post(
+                `/api/entities/${encodeURIComponent(plural)}/${entityId}/update-diff/apply`,
+                { snapshot_id: snapshotId, restore_keys: restoreKeys },
+                { headers: { Accept: "application/json" } },
+            );
+            notificationStore.success(data?.message || "Nouvelle version conservée.");
+            handlers.onRefresh?.(entity, pending.meta);
+            resetRefreshConfirm();
+            return true;
+        } catch (error) {
+            const message =
+                error?.response?.data?.message
+                || Object.values(error?.response?.data?.errors || {})?.flat()?.[0]
+                || "Impossible d’enregistrer le comparatif.";
+            notificationStore.error(String(message));
+            refreshConfirm.value = { ...refreshConfirm.value, diffBusy: false };
+            return false;
+        }
     }
 
     async function confirmUpdateDiffRestore() {

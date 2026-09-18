@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Sources : deux onglets, image, mix avant/après
+
+Sur une carte minimale, **Sources** rouvre les deux onglets : conversion **DofusDB** (algo) et conversion **IA**. On coche si on veut **récupérer l’image**. Après l’écriture, le tableau compare ancien et nouveau : un clic sur une cellule (ou sur l’en-tête de colonne) choisit ce qu’on garde. **Enregistrer** applique ce mix ; **Rétablir** (ou fermer) annule toute la conversion.
+
 ## Septembre 2026 — Largeur des pages et des sections
 
 Les blocs de page ne se collent plus au contenu : texte et images occupent les **deux tiers** de la zone (centrés), les **tableaux** prennent toute la largeur dès l’affichage (plus de carte étroite qui s’élargit au chargement). Si un tableau dépasse, on **défile horizontalement** dans la section.

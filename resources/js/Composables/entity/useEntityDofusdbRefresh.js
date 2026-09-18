@@ -68,13 +68,14 @@ export function useEntityDofusdbRefresh() {
     /**
      * @param {string} entityType
      * @param {number|string} entityId
-     * @param {{ mode?: 'full'|'images_only', force?: boolean }} options
+     * @param {{ mode?: 'full'|'images_only', force?: boolean, includeImage?: boolean }} options
      */
     const applyRefresh = async (entityType, entityId, options = {}) => {
         const mode = options.mode === "images_only" ? "images_only" : "full";
         const result = await postRefresh(entityType, entityId, {
             mode,
             force: Boolean(options.force),
+            include_image: options.includeImage !== false,
         });
         if (result.ok && result.body.success !== false) {
             return { success: true, body: result.body };

@@ -210,6 +210,100 @@ final class EntityUpdateDiffService
     }
 
     /**
+     * Conserve la nouvelle version sauf les clés listées, rétablies depuis l’instantané.
+     *
+     * @param  list<string>  $restoreKeys
+     */
+    public function apply(User $actor, string $entityType, int $entityId, string $snapshotId, array $restoreKeys): Model
+    {
+        $payload = Cache::get($this->cacheKey((int) $actor->id, $snapshotId));
+        if (! is_array($payload)) {
+            throw new HttpException(422, 'Instantané expiré ou introuvable. La version actuelle est conservée.');
+        }
+
+        $plural = EntityModelRegistry::normalizeType($entityType);
+        if (($payload['user_id'] ?? null) !== $actor->id
+            || ($payload['entity_type'] ?? null) !== $plural
+            || (int) ($payload['entity_id'] ?? 0) !== $entityId
+        ) {
+            throw new HttpException(403, 'Cet instantané ne correspond pas à cette fiche.');
+        }
+
+        $entity = EntityModelRegistry::resolveModel($plural, $entityId);
+        if (! $entity instanceof Model) {
+            throw new HttpException(404, 'Entité introuvable.');
+        }
+
+        $keys = [];
+        foreach ($restoreKeys as $key) {
+            if (is_string($key) && trim($key) !== '') {
+                $keys[] = trim($key);
+            }
+        }
+        $keys = array_values(array_unique($keys));
+
+        if ($keys === []) {
+            Cache::forget($this->cacheKey((int) $actor->id, $snapshotId));
+
+            return $entity->fresh() ?? $entity;
+        }
+
+        $before = is_array($payload['before'] ?? null) ? $payload['before'] : [];
+        $beforeAttrs = is_array($before['attributes'] ?? null) ? $before['attributes'] : [];
+        $attrSubset = [];
+        $creatureKeys = [];
+        $restoreSpells = false;
+        $restoreItems = false;
+        foreach ($keys as $key) {
+            if ($key === 'spells') {
+                $restoreSpells = true;
+
+                continue;
+            }
+            if ($key === 'items') {
+                $restoreItems = true;
+
+                continue;
+            }
+            if (str_starts_with($key, 'creature.')) {
+                $creatureKeys[] = substr($key, 9);
+
+                continue;
+            }
+            if (array_key_exists($key, $beforeAttrs)) {
+                $attrSubset[$key] = $beforeAttrs[$key];
+            }
+        }
+
+        if ($attrSubset !== []) {
+            $this->applyAttributes($entity, $attrSubset);
+            $entity->save();
+        }
+
+        $creatureSnap = is_array($before['creature'] ?? null) ? $before['creature'] : null;
+        if ($creatureSnap !== null && ($creatureKeys !== [] || $restoreSpells || $restoreItems)) {
+            $this->restoreCreaturePartial($entity, $creatureSnap, $creatureKeys, $restoreSpells, $restoreItems);
+        }
+
+        if ($restoreSpells) {
+            $createdSpellIds = $payload['created_spell_ids'] ?? [];
+            if (is_array($createdSpellIds) && $createdSpellIds !== []) {
+                Spell::query()
+                    ->whereIn('id', array_map('intval', $createdSpellIds))
+                    ->where('official_id', 'like', 'ia:encounter:%')
+                    ->get()
+                    ->each(static function (Spell $spell): void {
+                        $spell->delete();
+                    });
+            }
+        }
+
+        Cache::forget($this->cacheKey((int) $actor->id, $snapshotId));
+
+        return $entity->fresh() ?? $entity;
+    }
+
+    /**
      * @param  array{
      *     attributes: array<string, mixed>,
      *     creature: array<string, mixed>|null,
@@ -395,6 +489,62 @@ final class EntityUpdateDiffService
             $sync[$itemId] = ['quantity' => max(1, (int) $qty)];
         }
         if (method_exists($creature, 'items')) {
+            $creature->items()->sync($sync);
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $creatureSnap
+     * @param  list<string>  $attributeKeys
+     */
+    private function restoreCreaturePartial(
+        Model $entity,
+        array $creatureSnap,
+        array $attributeKeys,
+        bool $restoreSpells,
+        bool $restoreItems,
+    ): void {
+        $creatureId = (int) ($creatureSnap['id'] ?? 0);
+        $creature = $this->creatureOf($entity);
+        if ($creature === null && $creatureId > 0) {
+            $creature = Creature::query()->find($creatureId);
+        }
+        if (! $creature instanceof Creature) {
+            return;
+        }
+
+        if ($attributeKeys !== []) {
+            $source = is_array($creatureSnap['attributes'] ?? null) ? $creatureSnap['attributes'] : [];
+            $subset = [];
+            foreach ($attributeKeys as $key) {
+                if (array_key_exists($key, $source)) {
+                    $subset[$key] = $source[$key];
+                }
+            }
+            if ($subset !== []) {
+                $this->applyAttributes($creature, $subset);
+                $creature->save();
+            }
+        }
+
+        if ($restoreSpells) {
+            $spellIds = array_values(array_filter(
+                array_map('intval', is_array($creatureSnap['spell_ids'] ?? null) ? $creatureSnap['spell_ids'] : []),
+                static fn (int $id): bool => $id > 0
+            ));
+            $creature->spells()->sync($spellIds);
+        }
+
+        if ($restoreItems && method_exists($creature, 'items')) {
+            $itemIds = is_array($creatureSnap['item_ids'] ?? null) ? $creatureSnap['item_ids'] : [];
+            $sync = [];
+            foreach ($itemIds as $id => $qty) {
+                $itemId = (int) $id;
+                if ($itemId < 1) {
+                    continue;
+                }
+                $sync[$itemId] = ['quantity' => max(1, (int) $qty)];
+            }
             $creature->items()->sync($sync);
         }
     }

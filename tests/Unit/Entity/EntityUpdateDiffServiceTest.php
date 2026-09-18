@@ -42,6 +42,49 @@ final class EntityUpdateDiffServiceTest extends TestCase
         $this->assertSame('avant', $item->description);
     }
 
+    public function test_apply_restores_only_selected_keys(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $item = Item::factory()->create([
+            'name' => 'Cape initiale',
+            'description' => 'avant',
+            'state' => EntityState::Draft->value,
+        ]);
+        $svc = app(EntityUpdateDiffService::class);
+        $before = $svc->capture($item);
+
+        $item->update([
+            'name' => 'Cape nouvelle',
+            'description' => 'après',
+        ]);
+
+        $diff = $svc->remember($user, 'items', (int) $item->id, 'dofusdb', $before, $item->fresh());
+        $svc->apply($user, 'items', (int) $item->id, $diff['snapshot_id'], ['name']);
+
+        $item->refresh();
+        $this->assertSame('Cape initiale', $item->name);
+        $this->assertSame('après', $item->description);
+    }
+
+    public function test_apply_without_keys_keeps_new_values(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $item = Item::factory()->create([
+            'name' => 'Cape initiale',
+            'description' => 'avant',
+        ]);
+        $svc = app(EntityUpdateDiffService::class);
+        $before = $svc->capture($item);
+        $item->update(['name' => 'Cape nouvelle', 'description' => 'après']);
+        $diff = $svc->remember($user, 'items', (int) $item->id, 'ia', $before, $item->fresh());
+
+        $svc->apply($user, 'items', (int) $item->id, $diff['snapshot_id'], []);
+
+        $item->refresh();
+        $this->assertSame('Cape nouvelle', $item->name);
+        $this->assertSame('après', $item->description);
+    }
+
     public function test_identical_snapshots_report_zero_changes(): void
     {
         $user = User::factory()->create(['role' => User::ROLE_ADMIN]);

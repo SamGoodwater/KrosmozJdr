@@ -43,6 +43,7 @@ class EntityDofusdbRefreshController extends Controller
                 $request->user(),
                 $mode,
                 $request->force(),
+                $request->includeImage(),
             );
         } catch (HttpException $e) {
             return response()->json([

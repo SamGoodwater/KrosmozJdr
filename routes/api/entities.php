@@ -55,6 +55,11 @@ Route::middleware(['web', 'auth'])->prefix('entities')->group(function () {
         ->where('entityType', '[a-z-]+')
         ->whereNumber('id')
         ->name('api.entities.update-diff.restore');
+    Route::post('/{entityType}/{id}/update-diff/apply', [EntityUpdateDiffController::class, 'apply'])
+        ->middleware(['role:game_master', 'throttle:12,1'])
+        ->where('entityType', '[a-z-]+')
+        ->whereNumber('id')
+        ->name('api.entities.update-diff.apply');
     Route::get('/{entityType}/{id}/delete-impact', [EntityDeletionController::class, 'impact'])
         ->where('entityType', '[a-z-]+')
         ->whereNumber('id')
