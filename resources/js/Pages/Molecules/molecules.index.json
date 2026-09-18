@@ -2669,7 +2669,7 @@
   },
   {
     "name": "DiceFormulaStrip",
-    "description": "Bande min / moyenne / max d’une formule de dés, avec équivalents de tranches et bouton de lancer.",
+    "description": "Bande min / moyenne / max d’une formule de dés, valeur du lancer, bouton icône (tooltip Lancer) et historique de session.",
     "props": [
       {
         "name": "density",

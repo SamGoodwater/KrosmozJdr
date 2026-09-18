@@ -15,4 +15,5 @@
 
 - PHP : `app/Services/Jdr/DiceFormulaService.php`, `DiceNotationService.php`
 - JS : `resources/js/Utils/dice/diceParser.js`
-- UI : `DiceFormulaStrip.vue`, `SearchInput.vue`, `DiceRollerModal.vue`
+- UI : `DiceFormulaStrip.vue` (Valeur + icône Lancer + historique session), `SearchInput.vue`, `DiceRollerModal.vue`
+- Historique : props `history` `{ formula, value }[]`, pas de localStorage / cookie.

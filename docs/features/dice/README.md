@@ -30,6 +30,7 @@ Miroir JS : `resources/js/Utils/dice/diceParser.js` (`parseDiceFormula`, `rollDi
 
 - Recherche globale : bande `DiceFormulaStrip` sous le champ si un dé ou une tranche est reconnu.
 - Outil footer : `DiceRollerModal` — raccourcis ndX, texte d’aide, même bande.
+- Lancer : libellé **Valeur :** + résultat + icône (tooltip « Lancer »). Historique en mémoire seulement (`formule = valeur`, une opération après l’autre) ; fermer la recherche ou le modal l’efface.
 
 ## Tests
 

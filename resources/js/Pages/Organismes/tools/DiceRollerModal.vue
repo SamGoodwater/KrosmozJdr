@@ -4,7 +4,7 @@
  *
  * @description
  * Modal lanceur de dés : formule (dés, tranches, opérateurs), raccourcis ndX,
- * bande unique min / moy / max / équivalent / lancer.
+ * bande unique min / moy / max / équivalent / valeur / lancer + historique.
  *
  * @props {Boolean} open - Contrôle l'ouverture du modal
  * @emits close - Fermeture du modal
@@ -26,6 +26,9 @@ const emit = defineEmits(['close']);
 const formula = ref('');
 const lastResult = ref(null);
 const lastError = ref(null);
+/** Historique de session (vidé à la fermeture, pas de localStorage / cookie). */
+const history = ref([]);
+const HISTORY_MAX = 30;
 
 const stats = computed(() => parseDiceFormula(formula.value));
 
@@ -48,6 +51,10 @@ function roll() {
     if (result.isValid) {
         lastResult.value = result.result;
         lastError.value = null;
+        history.value = [
+            ...history.value,
+            { formula: formula.value.trim(), value: result.result },
+        ].slice(-HISTORY_MAX);
     } else {
         lastError.value = result.error;
         lastResult.value = null;
@@ -63,6 +70,7 @@ watch(() => props.open, (isOpen) => {
         formula.value = '';
         lastResult.value = null;
         lastError.value = null;
+        history.value = [];
     }
 });
 
@@ -130,6 +138,7 @@ watch(formula, () => {
                 :average="stats.average"
                 :range-equivalents="stats.rangeEquivalents"
                 :roll-result="lastResult"
+                :history="history"
                 @roll="roll"
             />
 

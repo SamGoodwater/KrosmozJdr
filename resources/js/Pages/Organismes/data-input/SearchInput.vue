@@ -89,6 +89,9 @@ const showClearButton = computed(() => query.value.trim().length > 0);
 
 const formulaStats = computed(() => parseDiceFormula(query.value));
 const formulaRoll = ref(null);
+/** Historique de session (pas de localStorage / cookie). */
+const formulaHistory = ref([]);
+const FORMULA_HISTORY_MAX = 30;
 
 watch(query, () => {
     formulaRoll.value = null;
@@ -96,7 +99,15 @@ watch(query, () => {
 
 function rollSearchFormula() {
     const result = rollDiceFormula(query.value);
-    formulaRoll.value = result.isValid ? result.result : null;
+    if (!result.isValid) {
+        formulaRoll.value = null;
+        return;
+    }
+    formulaRoll.value = result.result;
+    formulaHistory.value = [
+        ...formulaHistory.value,
+        { formula: query.value.trim(), value: result.result },
+    ].slice(-FORMULA_HISTORY_MAX);
 }
 
 /** @type {boolean} Clic backdrop : pointerdown et pointerup sur le dialog (pas sur le panneau). */
@@ -160,6 +171,7 @@ const blurSearch = () => {
     isFocused.value = false;
     close();
     formulaRoll.value = null;
+    formulaHistory.value = [];
 };
 
 const onSearchInputFocus = () => {
@@ -357,6 +369,7 @@ watch([loading, groupedResults], () => {
                             :average="formulaStats.average"
                             :range-equivalents="formulaStats.rangeEquivalents"
                             :roll-result="formulaRoll"
+                            :history="formulaHistory"
                             @roll="rollSearchFormula"
                         />
                     </div>
