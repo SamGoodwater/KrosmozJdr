@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Couleurs d’état plus distinctes
+
+Les pastilles d’état ne se confondent plus : **Brut** reste rouge, **Jouable** vert, **Brouillon** passe en **umber**, **Auto** en **indigo**, **Archivé** reste cyan. Ce sont des variables `--color-state-raw`, `--color-state-draft`, etc., utilisées partout (recherche, tableaux, points, badges).
+
 ## Septembre 2026 — Couleurs d’état dans la recherche globale
 
 Les pastilles **Jouable / Brouillon / Brut / Auto / Archivé** (barre de recherche et filtres des tableaux) ont un fond **foncé** si elles ne sont pas cochées, et la **couleur de l’état** (plus claire que le point) si elles le sont.

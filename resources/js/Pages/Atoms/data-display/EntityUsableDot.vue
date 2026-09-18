@@ -3,7 +3,7 @@
  * EntityUsableDot — Indicateur discret d'état (`state`)
  *
  * @description
- * Petit point coloré (success/warning/neutral) avec tooltip.
+ * Petit point coloré (`--color-state-*`) avec tooltip.
  * Utilisable dans les tableaux, headers de vues, listes, etc.
  *
  * @props {string|null} state - raw|draft|auto|playable|archived (ou null)
@@ -21,6 +21,7 @@
  */
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { computed } from "vue";
+import { getEntityStateDotClass } from "@/Utils/Entity/SharedConstants.js";
 
 const props = defineProps({
   state: { type: [String, null], default: null },
@@ -48,22 +49,7 @@ const tooltip = computed(() => {
   }
 });
 
-const dotClass = computed(() => {
-  switch (props.state) {
-    case "playable":
-      return "bg-success";
-    case "draft":
-      return "bg-warning";
-    case "raw":
-      return "bg-error";
-    case "auto":
-      return "bg-secondary";
-    case "archived":
-      return "bg-info";
-    default:
-      return "bg-base-300";
-  }
-});
+const dotClass = computed(() => getEntityStateDotClass(props.state));
 </script>
 
 <template>

@@ -14,9 +14,9 @@ import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import { focusTableRowById } from "@/Composables/table/useTableRowFocusRestore.js";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import {
-    getEntityStateBadgeColor,
     getEntityStateDisplayLabel,
     getEntityStateDotClass,
+    getEntityStateTooltipColor,
 } from "@/Utils/Entity/SharedConstants.js";
 
 /** Colonnes à contenu riche : max-width pour forcer le wrap et éviter scroll cellule */
@@ -228,7 +228,7 @@ const dotTooltip = computed(() => {
     return getEntityStateDisplayLabel(stateValue.value);
 });
 
-const dotColor = computed(() => getEntityStateBadgeColor(stateValue.value));
+const dotColor = computed(() => getEntityStateTooltipColor(stateValue.value));
 
 const handleAction = (actionKey, entity) => {
     closeContextMenu();

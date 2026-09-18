@@ -19,14 +19,19 @@ describe("entity state options", () => {
             "archived",
         ]);
         expect(getEntityStateDisplayLabel("auto")).toBe("Auto");
-        expect(getEntityStateDotClass("auto")).toBe("bg-secondary");
+        expect(getEntityStateDotClass("auto")).toBe("bg-state-auto");
+        expect(getEntityStateDotClass("draft")).toBe("bg-state-draft");
+        expect(getEntityStateDotClass("playable")).toBe("bg-state-playable");
         expect(getEntityStateChipClass("playable", false)).toContain("bg-base-300/55");
-        expect(getEntityStateChipClass("playable", true)).toContain("bg-success/35");
-        expect(getEntityStateChipClass("draft", true)).toContain("bg-warning/35");
-        expect(getEntityStateChipClass("raw", true)).toContain("bg-error/35");
-        expect(getEntityStateChipClass("auto", true)).toContain("bg-secondary/35");
-        expect(getEntityStateChipClass("archived", true)).toContain("bg-info/35");
-        expect(getEntityStateBadgeColor("auto")).toBe("secondary");
+        expect(getEntityStateChipClass("playable", true)).toContain("bg-state-playable/35");
+        expect(getEntityStateChipClass("draft", true)).toContain("bg-state-draft/35");
+        expect(getEntityStateChipClass("raw", true)).toContain("bg-state-raw/35");
+        expect(getEntityStateChipClass("auto", true)).toContain("bg-state-auto/35");
+        expect(getEntityStateChipClass("archived", true)).toContain("bg-state-archived/35");
+        expect(getEntityStateBadgeColor("auto")).toBe("indigo-500");
+        expect(getEntityStateBadgeColor("draft")).toBe("umber-500");
+        expect(getEntityStateBadgeColor("raw")).toBe("error");
+        expect(getEntityStateBadgeColor("playable")).toBe("success");
         expect(getEntityStateDisplayLabel("playable")).toBe("Jouable");
         expect(getEntityStateActionLabel("playable")).toBe("Jouable");
     });

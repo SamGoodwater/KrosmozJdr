@@ -395,7 +395,7 @@ export function getEntityStateOptions() {
 
 /**
  * Classes Tailwind pour un point de couleur d'état (raw/draft/auto/playable/archived).
- * Aligné sur {@link EntityUsableDot} pour cohérence filtres / cartes.
+ * Jetons `--color-state-*` (voir `_app.save.css` / `_theme-states.scss`).
  *
  * @param {string|null|undefined} state
  * @returns {string}
@@ -403,15 +403,15 @@ export function getEntityStateOptions() {
 export function getEntityStateDotClass(state) {
   switch (String(state ?? "")) {
     case "playable":
-      return "bg-success";
+      return "bg-state-playable";
     case "draft":
-      return "bg-warning";
+      return "bg-state-draft";
     case "raw":
-      return "bg-error";
+      return "bg-state-raw";
     case "auto":
-      return "bg-secondary";
+      return "bg-state-auto";
     case "archived":
-      return "bg-info";
+      return "bg-state-archived";
     default:
       return "bg-base-300";
   }
@@ -419,7 +419,7 @@ export function getEntityStateDotClass(state) {
 
 /**
  * Fond des pastilles de filtre d’état (recherche globale, tableaux).
- * Décoché : foncé. Coché : teinte claire de la couleur du point (le point reste plus saturé).
+ * Décoché : foncé. Coché : teinte claire de `--color-state-*` (le point reste plus saturé).
  *
  * @param {string|null|undefined} state
  * @param {boolean} selected
@@ -432,31 +432,31 @@ export function getEntityStateChipClass(state, selected) {
 
   switch (String(state ?? "")) {
     case "playable":
-      return "bg-success/35 text-base-content";
+      return "bg-state-playable/35 text-base-content";
     case "draft":
-      return "bg-warning/35 text-base-content";
+      return "bg-state-draft/35 text-base-content";
     case "raw":
-      return "bg-error/35 text-base-content";
+      return "bg-state-raw/35 text-base-content";
     case "auto":
-      return "bg-secondary/35 text-base-content";
+      return "bg-state-auto/35 text-base-content";
     case "archived":
-      return "bg-info/35 text-base-content";
+      return "bg-state-archived/35 text-base-content";
     default:
       return "bg-base-content/20 text-base-content";
   }
 }
 
-/** Couleurs DaisyUI des badges d'état (aligné {@link EntityUsableDot} / vues Item). */
+/** Couleurs Badge : DaisyUI pour brut/jouable/archivé ; tokens Tailwind pour brouillon (umber) et auto (indigo). */
 export const ENTITY_STATE_BADGE_COLORS = Object.freeze({
   raw: "error",
-  draft: "warning",
-  auto: "secondary",
+  draft: "umber-500",
+  auto: "indigo-500",
   playable: "success",
   archived: "info",
 });
 
 /**
- * Couleur badge DaisyUI pour un état d'entité.
+ * Couleur badge pour un état d'entité.
  *
  * @param {string|null|undefined} state
  * @returns {string}
@@ -464,6 +464,29 @@ export const ENTITY_STATE_BADGE_COLORS = Object.freeze({
 export function getEntityStateBadgeColor(state) {
   const k = String(state ?? "");
   return ENTITY_STATE_BADGE_COLORS[k] ?? "neutral";
+}
+
+const DAISY_TOOLTIP_COLORS = new Set([
+  "",
+  "neutral",
+  "primary",
+  "secondary",
+  "accent",
+  "info",
+  "success",
+  "warning",
+  "error",
+]);
+
+/**
+ * Couleur Tooltip DaisyUI (jetons DaisyUI seulement ; umber/indigo → neutre).
+ *
+ * @param {string|null|undefined} state
+ * @returns {string}
+ */
+export function getEntityStateTooltipColor(state) {
+  const c = getEntityStateBadgeColor(state);
+  return DAISY_TOOLTIP_COLORS.has(c) ? c : "";
 }
 
 /**

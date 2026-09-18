@@ -18,6 +18,7 @@ import EditPageModal from '@/Pages/Organismes/section/modals/EditPageModal.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
+import EntityStateBadge from '@/Pages/Atoms/data-display/EntityStateBadge.vue';
 import { getRoleLabel } from '@/Utils/Entity/SharedConstants';
 
 const props = defineProps({
@@ -111,19 +112,6 @@ const handleDelete = (pageId, pageTitle) => {
     }
 };
 
-// Formatage de l'état
-const formatState = (state) => {
-    const states = {
-        raw: { label: 'Brut', color: 'badge-ghost' },
-        draft: { label: 'Brouillon', color: 'badge-warning' },
-        auto: { label: 'Auto', color: 'badge-secondary' },
-        playable: { label: 'Jouable', color: 'badge-success' },
-        archived: { label: 'Archivé', color: 'badge-ghost' },
-    };
-    return states[state] || { label: state, color: 'badge-ghost' };
-};
-
-// Formatage de la visibilité
 const formatVisibility = (visibility) => {
     return getRoleLabel(visibility);
 };
@@ -294,11 +282,7 @@ function saveOrder() {
                                     <code class="text-xs bg-base-200 px-2 py-1 rounded">{{ pageItem.slug }}</code>
                                 </td>
                                 <td>
-                                    <span 
-                                        :class="['badge', formatState(pageItem.state).color]"
-                                    >
-                                        {{ formatState(pageItem.state).label }}
-                                    </span>
+                                    <EntityStateBadge :state="pageItem.state" size="xs" />
                                 </td>
                                 <td>{{ formatVisibility(pageItem.read_level) }}</td>
                                 <td>

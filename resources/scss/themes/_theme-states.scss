@@ -1,0 +1,9 @@
+// Alias d’état de publication → palette Tailwind / umber (jetons --color-state-*).
+// Brut = red, jouable = emerald : inchangés par rapport à error / success.
+$theme-states: (
+  "state-raw": "red",
+  "state-draft": "umber",
+  "state-auto": "indigo",
+  "state-playable": "emerald",
+  "state-archived": "cyan",
+);

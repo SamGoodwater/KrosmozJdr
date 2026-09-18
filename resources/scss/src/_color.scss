@@ -1,5 +1,6 @@
 @use '../themes/_theme-global.scss' as *;
 @use '../themes/_theme-entities.scss' as *;
+@use '../themes/_theme-states.scss' as *;
 // Couleurs par clé caractéristique : uniquement public/css/characteristic-colors.css (généré depuis la BDD, voir CharacteristicColorCssGenerator).
 
 $intensities: (
@@ -41,3 +42,4 @@ $intensities: (
 
 @include colorTheme($theme-global);
 @include colorTheme($theme-entities);
+@include colorTheme($theme-states);
