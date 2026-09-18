@@ -4,6 +4,7 @@
  *
  * @description
  * Au focus : assombrissement + flou de la page, champ élargi, filtres type DaisyUI (EntityLabel),
+ * pastilles d’état via `getEntityStateDotClass` (même palette que les filtres tableau),
  * résultats groupés par type avec extrait (titre + subtitle). API `api.global-search`.
  * Overlay via `<dialog showModal>` (top layer) pour rester au-dessus des modals ouverts.
  * Si la saisie est une formule de dés (dé, tranche, combinaison), une bande min/moy/max s’affiche sous le champ.
@@ -12,7 +13,7 @@
  * @props {String} shortcut - Raccourci clavier pour focus (défaut: 'alt+k')
  * @emits update:modelValue
  *
- * @see useGlobalEntitySearch, EntityLabel, InputField
+ * @see useGlobalEntitySearch, EntityLabel, InputField, getEntityStateDotClass
  */
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { getCommonProps } from "@/Utils/atomic-design/uiHelper";
@@ -27,6 +28,7 @@ import {
     GLOBAL_SEARCH_STATE_FILTERS,
 } from "@/Composables/entity/useGlobalEntitySearch";
 import { globalSearchEntityLabelKey } from "@/Utils/entity/globalSearchEntityLabel";
+import { getEntityStateDotClass } from "@/Utils/Entity/SharedConstants.js";
 import { router } from "@inertiajs/vue3";
 import DiceFormulaStrip from "@/Pages/Molecules/data-display/DiceFormulaStrip.vue";
 import { parseDiceFormula, rollDiceFormula } from "@/Utils/dice/diceParser.js";
@@ -400,23 +402,33 @@ watch([loading, groupedResults], () => {
                                 </button>
                             </div>
 
-                            <div class="filter flex flex-wrap gap-1">
+                            <div
+                                class="flex flex-wrap items-center gap-1"
+                                role="group"
+                                aria-label="États de publication"
+                            >
                             <button
                                 v-for="opt in GLOBAL_SEARCH_STATE_FILTERS"
                                 :key="opt.value"
                                 type="button"
                                 data-global-search-filter
-                                class="btn btn-xs"
+                                class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium transition-colors"
                                 :class="
                                     isStateActive(opt.value)
-                                        ? 'btn-primary'
-                                        : 'btn-ghost border border-base-300/80 opacity-60'
+                                        ? 'bg-primary/25 text-base-content'
+                                        : 'bg-transparent text-base-content/80 hover:bg-base-content/10'
                                 "
                                 :aria-pressed="isStateActive(opt.value)"
+                                :title="opt.label"
                                 @mousedown.prevent
                                 @click="toggleState(opt.value)"
                             >
-                                {{ opt.label }}
+                                <span
+                                    class="inline-block h-2 w-2 shrink-0 rounded-full"
+                                    :class="getEntityStateDotClass(opt.value)"
+                                    aria-hidden="true"
+                                />
+                                <span>{{ opt.label }}</span>
                             </button>
                         </div>
 
