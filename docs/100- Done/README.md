@@ -2,7 +2,7 @@
 
 ## Septembre 2026 — Couleurs d’état dans la recherche globale
 
-Les pastilles **Jouable / Brouillon / Brut / Auto / Archivé** de la barre de recherche ont les **mêmes couleurs** que les filtres des tableaux (point vert, jaune, rouge, violet, bleu), au lieu d’un bouton tout en primaire.
+Les pastilles **Jouable / Brouillon / Brut / Auto / Archivé** (barre de recherche et filtres des tableaux) ont un fond **foncé** si elles ne sont pas cochées, et la **couleur de l’état** (plus claire que le point) si elles le sont.
 
 ## Septembre 2026 — Formules de dés dans la recherche et l’outil
 

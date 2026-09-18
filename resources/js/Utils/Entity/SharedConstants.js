@@ -417,6 +417,35 @@ export function getEntityStateDotClass(state) {
   }
 }
 
+/**
+ * Fond des pastilles de filtre d’état (recherche globale, tableaux).
+ * Décoché : foncé. Coché : teinte claire de la couleur du point (le point reste plus saturé).
+ *
+ * @param {string|null|undefined} state
+ * @param {boolean} selected
+ * @returns {string}
+ */
+export function getEntityStateChipClass(state, selected) {
+  if (!selected) {
+    return "bg-base-300/55 text-base-content/75 hover:bg-base-300/80";
+  }
+
+  switch (String(state ?? "")) {
+    case "playable":
+      return "bg-success/35 text-base-content";
+    case "draft":
+      return "bg-warning/35 text-base-content";
+    case "raw":
+      return "bg-error/35 text-base-content";
+    case "auto":
+      return "bg-secondary/35 text-base-content";
+    case "archived":
+      return "bg-info/35 text-base-content";
+    default:
+      return "bg-base-content/20 text-base-content";
+  }
+}
+
 /** Couleurs DaisyUI des badges d'état (aligné {@link EntityUsableDot} / vues Item). */
 export const ENTITY_STATE_BADGE_COLORS = Object.freeze({
   raw: "error",

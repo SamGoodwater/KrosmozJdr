@@ -4,7 +4,7 @@
  *
  * @description
  * Au focus : assombrissement + flou de la page, champ élargi, filtres type DaisyUI (EntityLabel),
- * pastilles d’état via `getEntityStateDotClass` (même palette que les filtres tableau),
+ * pastilles d’état via `getEntityStateChipClass` / `getEntityStateDotClass` (même palette que les filtres tableau),
  * résultats groupés par type avec extrait (titre + subtitle). API `api.global-search`.
  * Overlay via `<dialog showModal>` (top layer) pour rester au-dessus des modals ouverts.
  * Si la saisie est une formule de dés (dé, tranche, combinaison), une bande min/moy/max s’affiche sous le champ.
@@ -13,7 +13,7 @@
  * @props {String} shortcut - Raccourci clavier pour focus (défaut: 'alt+k')
  * @emits update:modelValue
  *
- * @see useGlobalEntitySearch, EntityLabel, InputField, getEntityStateDotClass
+ * @see useGlobalEntitySearch, EntityLabel, InputField, getEntityStateChipClass
  */
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { getCommonProps } from "@/Utils/atomic-design/uiHelper";
@@ -28,7 +28,7 @@ import {
     GLOBAL_SEARCH_STATE_FILTERS,
 } from "@/Composables/entity/useGlobalEntitySearch";
 import { globalSearchEntityLabelKey } from "@/Utils/entity/globalSearchEntityLabel";
-import { getEntityStateDotClass } from "@/Utils/Entity/SharedConstants.js";
+import { getEntityStateChipClass, getEntityStateDotClass } from "@/Utils/Entity/SharedConstants.js";
 import { router } from "@inertiajs/vue3";
 import DiceFormulaStrip from "@/Pages/Molecules/data-display/DiceFormulaStrip.vue";
 import { parseDiceFormula, rollDiceFormula } from "@/Utils/dice/diceParser.js";
@@ -413,11 +413,7 @@ watch([loading, groupedResults], () => {
                                 type="button"
                                 data-global-search-filter
                                 class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium transition-colors"
-                                :class="
-                                    isStateActive(opt.value)
-                                        ? 'bg-primary/25 text-base-content'
-                                        : 'bg-transparent text-base-content/80 hover:bg-base-content/10'
-                                "
+                                :class="getEntityStateChipClass(opt.value, isStateActive(opt.value))"
                                 :aria-pressed="isStateActive(opt.value)"
                                 :title="opt.label"
                                 @mousedown.prevent

@@ -20,7 +20,7 @@ import SpellTypeBadge from "@/Pages/Molecules/entity/spell/SpellTypeBadge.vue";
 import InputCore from "@/Pages/Atoms/data-input/InputCore.vue";
 import { computed, unref, ref, watch } from "vue";
 import { buildSelectOptionBadgeProps } from "@/Utils/Entity/selectOptionBadge.js";
-import { getEntityStateDotClass } from "@/Utils/Entity/SharedConstants.js";
+import { getEntityStateChipClass, getEntityStateDotClass } from "@/Utils/Entity/SharedConstants.js";
 import { resolveTableFilterLayout } from "@/Utils/table/resolveTableFilterLayout.js";
 import {
     isTableRangeActive,
@@ -662,9 +662,10 @@ const clearAllActiveFilters = () => {
                     type="button"
                     class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium transition-colors"
                     :class="
-                        isMultiValueOn(stateFilterColumn(), opt)
-                            ? 'bg-primary/25 text-base-content'
-                            : 'bg-transparent text-base-content/80 hover:bg-base-content/10'
+                        getEntityStateChipClass(
+                            opt.value,
+                            isMultiValueOn(stateFilterColumn(), opt),
+                        )
                     "
                     :aria-pressed="isMultiValueOn(stateFilterColumn(), opt)"
                     :title="String(opt.label ?? opt.value)"
