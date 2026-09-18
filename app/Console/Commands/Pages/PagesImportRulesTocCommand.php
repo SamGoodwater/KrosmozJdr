@@ -129,6 +129,7 @@ class PagesImportRulesTocCommand extends Command
             }
 
             $this->keepPlayerDownloadsInRulesMenu();
+            $this->hideRetiredRulesAnnexes();
 
             DB::commit();
         } catch (\Throwable $e) {
@@ -590,6 +591,21 @@ class PagesImportRulesTocCommand extends Command
             ? (int) ($config['menu_order'] ?? 90)
             : (int) ($config['fallback_menu_order'] ?? $config['menu_order'] ?? 90);
         $page->save();
+    }
+
+    /**
+     * Le changelog n’appartient plus au livre de règles.
+     */
+    private function hideRetiredRulesAnnexes(): void
+    {
+        Page::query()
+            ->where('slug', 'like', 'regles-6-%')
+            ->each(function (Page $page): void {
+                $page->in_menu = false;
+                $page->menu_group = null;
+                $page->state = Page::STATE_ARCHIVED;
+                $page->save();
+            });
     }
 
     /**

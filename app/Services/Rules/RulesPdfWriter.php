@@ -26,10 +26,10 @@ class RulesPdfWriter
     /**
      * @return string Chemin relatif sur le disque public
      */
-    public function write(string $html, string $relativePath): string
+    public function write(string $html, string $relativePath, string $title = 'Krosmoz JDR — Livre de règles'): string
     {
         $rendered = view('pdf.rules-book', [
-            'title' => 'Krosmoz JDR — Livre de règles',
+            'title' => $title,
             'html' => $html,
         ])->render();
 

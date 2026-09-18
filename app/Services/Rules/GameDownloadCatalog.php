@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services\Rules;
 
+use App\Models\User;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 /**
  * Liste les fichiers du catalogue `config/game_downloads.php` avec taille et URL.
  *
  * Un fichier généré absent n’est pas une erreur : il apparaîtra après
- * `rules:compile-downloads`.
+ * `rules:compile-downloads`. Les entrées `read_level` sont filtrées selon le rôle.
  *
  * @example
  * $files = app(GameDownloadCatalog::class)->list();
@@ -34,11 +36,15 @@ class GameDownloadCatalog
      *   download_url: string
      * }>
      */
-    public function list(): array
+    public function list(?User $user = null): array
     {
+        $user ??= Auth::user();
         $items = [];
         foreach (config('game_downloads.items', []) as $item) {
             if (! is_array($item) || ! isset($item['key'])) {
+                continue;
+            }
+            if (! $this->userCanAccess($item, $user)) {
                 continue;
             }
             $relative = $this->relativePath($item);
@@ -63,6 +69,34 @@ class GameDownloadCatalog
         }
 
         return $items;
+    }
+
+    /**
+     * Entrée brute de `config/game_downloads.php`, sans filtre de rôle.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function configItem(string $key): ?array
+    {
+        foreach (config('game_downloads.items', []) as $item) {
+            if (is_array($item) && (string) ($item['key'] ?? '') === $key) {
+                return $item;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  array<string, mixed>  $item
+     */
+    public function userCanAccess(array $item, ?User $user = null): bool
+    {
+        $user ??= Auth::user();
+        $required = (int) ($item['read_level'] ?? User::ROLE_GUEST);
+        $role = $user !== null ? (int) $user->role : User::ROLE_GUEST;
+
+        return $role >= $required;
     }
 
     /**

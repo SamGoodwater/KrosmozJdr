@@ -100,4 +100,40 @@ MD);
             @rmdir($dir);
         }
     }
+
+    public function test_retired_chapter_six_pages_leave_the_menu(): void
+    {
+        User::factory()->create([
+            'email' => User::SYSTEM_USER_EMAIL,
+            'role' => User::ROLE_SUPER_ADMIN,
+        ]);
+        Page::factory()->create([
+            'title' => 'Annexes',
+            'slug' => 'regles-6-annexes',
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'menu_group' => 'Règles',
+            'menu_order' => 6,
+            'parent_id' => null,
+        ]);
+
+        $dir = sys_get_temp_dir().'/krosmoz-toc-'.uniqid('', true);
+        mkdir($dir, 0775, true);
+        file_put_contents($dir.'/TABLE_DES_MATIERES.md', "## 1. Introduction\n\n### 1.1 Présentation du jeu\n\n- **1.1.1** Concept général\n");
+
+        try {
+            $this->artisan('pages:import-rules-toc', ['path' => $dir.'/TABLE_DES_MATIERES.md'])
+                ->assertSuccessful();
+
+            $annex = Page::query()->where('slug', 'regles-6-annexes')->first();
+            $this->assertNotNull($annex);
+            $this->assertFalse((bool) $annex->in_menu);
+            $this->assertNull($annex->menu_group);
+            $this->assertSame(Page::STATE_ARCHIVED, $annex->state);
+        } finally {
+            @unlink($dir.'/TABLE_DES_MATIERES.md');
+            @rmdir($dir);
+        }
+    }
 }

@@ -20,19 +20,21 @@ final class RulesLeftoverCleanupTest extends TestCase
         $this->assertLessThan(200, count($lines), 'INDEX.md doit rester un index de jeu, pas un dump de titres');
         $this->assertStringContainsString('Index de **jeu**', $text);
         $this->assertStringContainsString('+4', $text);
-        $this->assertStringContainsString('annexe 6.1', $text);
+        $this->assertStringContainsString('Changelog', $text);
+        $this->assertStringNotContainsString('annexe 6.1', $text);
         $this->assertStringNotContainsString('1. Choisir une classe', $text);
     }
 
-    public function test_changelog_lives_in_annex_six(): void
+    public function test_changelog_is_not_in_the_rules_book(): void
     {
         $rules = dirname(__DIR__, 3).'/private/game/rules';
-        $this->assertFileExists($rules.'/6-Annexes/6.1-changelog-et-historique/6.1.1-chronologie-des-versions.md');
+        $this->assertDirectoryDoesNotExist($rules.'/6-Annexes');
         $this->assertDirectoryDoesNotExist($rules.'/1-Introduction/1.3-changelog-et-historique');
 
         $toc = (string) file_get_contents($rules.'/TABLE_DES_MATIERES.md');
-        $this->assertStringContainsString('## 6. Annexes', $toc);
+        $this->assertStringNotContainsString('## 6. Annexes', $toc);
         $this->assertStringNotContainsString('### 1.3 Changelog', $toc);
+        $this->assertStringContainsString('## 5. Ressources et équilibrage', $toc);
     }
 
     public function test_playable_item_main_stat_bonuses_stay_at_plus_four(): void

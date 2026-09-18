@@ -12,16 +12,19 @@ use SplFileInfo;
 /**
  * Concatène les chapitres Markdown du livre de règles, dans l’ordre numérique.
  *
- * Source : `private/game/rules/`. Les fichiers meta (table des matières, index,
- * guides de rédaction) sont exclus. Les shortcodes kref deviennent le libellé.
- * Pour le PDF : un saut de page par grande partie (pas par fiche), sans blocs
- * Sources / Contenu / liens internes, sans le chapitre 5 (équilibrage MJ).
+ * Deux audiences : joueur (ch. 1–4) et MJ (ch. 5). Le changelog n’est plus dans le livre.
+ * Blocs Sources / Contenu / liens internes retirés à l’impression.
  *
  * @example
  * $markdown = (new RulesBookAssembler())->assemble();
+ * $mj = (new RulesBookAssembler())->forAudience(RulesBookAssembler::AUDIENCE_MJ)->assemble();
  */
 class RulesBookAssembler
 {
+    public const AUDIENCE_PLAYER = 'player';
+
+    public const AUDIENCE_MJ = 'mj';
+
     /** @var array<string, string> */
     private const PART_TITLES = [
         '1' => 'Introduction',
@@ -29,23 +32,17 @@ class RulesBookAssembler
         '3' => 'Jouer',
         '4' => 'Le Monde des Douze',
         '5' => 'Ressources et équilibrage',
-        '6' => 'Annexes',
-    ];
-
-    /** Historique de design / archives : utiles en repo, pas dans le livre imprimé. */
-    private const SKIP_PRINT_NUMBERS = [
-        '6.1.3' => true,
-        '6.1.4' => true,
-    ];
-
-    /** Grandes parties MJ (équilibrage des entités) : hors PDF joueur. */
-    private const SKIP_PRINT_MAJOR = [
-        '5' => true,
     ];
 
     public function __construct(
         private readonly string $rulesRoot = '',
+        private string $audience = self::AUDIENCE_PLAYER,
     ) {}
+
+    public function forAudience(string $audience): self
+    {
+        return new self($this->rulesRoot, $audience);
+    }
 
     public function root(): string
     {
@@ -57,19 +54,33 @@ class RulesBookAssembler
      */
     public function assemble(): string
     {
+        $files = $this->chapterFiles();
+        if ($files === []) {
+            return '';
+        }
+
         $version = (string) env('APP_VERSION', 'dev');
         $date = now()->timezone(config('app.timezone'))->format('d/m/Y');
-        $parts = [
-            '# Krosmoz JDR — Livre de règles',
-            '',
-            'Version '.$version.' · compilé le '.$date.'.',
-            '',
-            'Ce document reprend les chapitres joueur du livre. L’équilibrage des entités se lit en ligne, dans Pour les MJ.',
-            '',
-        ];
+        $parts = $this->audience === self::AUDIENCE_MJ
+            ? [
+                '# Krosmoz JDR — Atelier MJ',
+                '',
+                'Version '.$version.' · compilé le '.$date.'.',
+                '',
+                'Calibrage des entités (classes, sorts, objets, rencontres). Les fiches se consultent dans les Bibliothèques ; la création de contenu se fait en ligne, dans Pour les MJ → Création.',
+                '',
+            ]
+            : [
+                '# Krosmoz JDR — Livre de règles',
+                '',
+                'Version '.$version.' · compilé le '.$date.'.',
+                '',
+                'Chapitres joueur. Les catalogues (classes, sorts, objets, créatures…) sont dans les Bibliothèques du site. L’atelier MJ a son propre PDF.',
+                '',
+            ];
 
         $currentPart = '';
-        foreach ($this->chapterFiles() as $file) {
+        foreach ($files as $file) {
             $raw = file_get_contents($file['path']);
             if (! is_string($raw) || trim($raw) === '') {
                 continue;
@@ -147,13 +158,13 @@ class RulesBookAssembler
 
     private function shouldSkipPrint(string $number): bool
     {
-        if (isset(self::SKIP_PRINT_NUMBERS[$number])) {
-            return true;
-        }
-
         $major = explode('.', $number)[0];
 
-        return isset(self::SKIP_PRINT_MAJOR[$major]);
+        if ($this->audience === self::AUDIENCE_MJ) {
+            return $major !== '5';
+        }
+
+        return $major === '5' || $major === '6';
     }
 
     private function normalizeChapter(string $markdown): string

@@ -78,6 +78,7 @@ class PageSeeder extends Seeder
         $this->seedLibrariesPages($creatorId);
         $this->seedJobsPage($creatorId);
         $this->seedResourcesPage($creatorId);
+        $this->seedMjResourcesPage($creatorId);
 
         PageService::clearMenuCache();
     }
@@ -525,6 +526,74 @@ HTML;
     }
 
     /**
+     * Page « Ressources MJ » : PDF d’atelier, menu Pour les MJ.
+     */
+    private function seedMjResourcesPage(?int $creatorId): void
+    {
+        $path = database_path('seeders/data/ressources-mj-page.php');
+        if (! is_file($path)) {
+            return;
+        }
+
+        $config = require $path;
+        if (! is_array($config) || ! isset($config['slug'], $config['sections'])) {
+            return;
+        }
+
+        $page = $this->createOrRestorePage([
+            'title' => (string) $config['title'],
+            'slug' => (string) $config['slug'],
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GAME_MASTER,
+            'write_level' => User::ROLE_ADMIN,
+            'menu_order' => (int) ($config['menu_order'] ?? 860),
+            'menu_group' => 'Pour les MJ',
+            'parent_id' => null,
+            'icon' => $config['icon'] ?? null,
+            'created_by' => $creatorId,
+        ]);
+
+        $krefReplacer = KrefShortcodeReplacer::forEssentialPages();
+        $expectedSlugs = [];
+        $order = 0;
+
+        foreach ($config['sections'] as $section) {
+            $slug = (string) $config['slug'].'-'.$section['slug'];
+            $expectedSlugs[] = $slug;
+
+            if (($section['template'] ?? 'text') === SectionType::DOWNLOAD_CATALOG->value) {
+                $this->ensureDownloadCatalogSection(
+                    $page,
+                    $slug,
+                    (string) $section['title'],
+                    is_array($section['settings'] ?? null) ? $section['settings'] : [],
+                    $order++,
+                    $creatorId,
+                    User::ROLE_GAME_MASTER
+                );
+
+                continue;
+            }
+
+            $this->ensureTextSection(
+                $page,
+                $slug,
+                (string) $section['title'],
+                $krefReplacer->replace((string) $section['html']),
+                $order++,
+                $creatorId,
+                true
+            );
+        }
+
+        Section::query()
+            ->where('page_id', $page->id)
+            ->whereNotIn('slug', $expectedSlugs)
+            ->each(fn (Section $section) => $section->delete());
+    }
+
+    /**
      * @param  array<string, mixed>  $settings
      */
     private function ensureDownloadCatalogSection(
@@ -533,7 +602,8 @@ HTML;
         string $title,
         array $settings,
         int $order,
-        ?int $creatorId
+        ?int $creatorId,
+        int $readLevel = User::ROLE_GUEST
     ): Section {
         $settings = array_merge(
             config('section_templates.download_catalog.settings', []),
@@ -549,7 +619,7 @@ HTML;
             'data' => [],
             'params' => $settings,
             'state' => Section::STATE_PLAYABLE,
-            'read_level' => User::ROLE_GUEST,
+            'read_level' => $readLevel,
             'write_level' => User::ROLE_ADMIN,
             'created_by' => $creatorId,
         ]);

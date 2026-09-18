@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Services\Rules;
 
 use Illuminate\Support\Facades\Storage;
+use RuntimeException;
 
 /**
- * Compile le livre de règles en PDF et ODT sur le disque public.
+ * Compile les livres de règles en PDF et ODT sur le disque public.
  *
+ * Livre joueur (ch. 1–4) et atelier MJ (ch. 5), selon `audience` du catalogue.
  * N’est lancé que par la commande Artisan (import / init) ou le bouton admin :
  * jamais à la volée sur une page publique.
  *
@@ -35,35 +37,73 @@ class RulesDownloadCompiler
             }
         };
 
-        $report('Assemblage des chapitres Markdown…', 5);
-        $html = $this->assembler->toHtml();
-        if ($html === '') {
-            throw new \RuntimeException('Aucun chapitre de règles à compiler.');
-        }
-
         $directory = trim((string) config('game_downloads.generated_directory', 'downloads/generated'), '/');
         $disk = Storage::disk((string) config('game_downloads.disk', 'public'));
         if (! $disk->exists($directory)) {
             $disk->makeDirectory($directory);
         }
 
-        $written = [];
         $items = collect(config('game_downloads.items', []))
             ->filter(fn (array $item): bool => (bool) ($item['generated'] ?? false))
-            ->keyBy('key');
+            ->filter(function (array $item) use ($pdf, $odt): bool {
+                $mime = (string) ($item['mime'] ?? '');
+                if ($mime === 'application/pdf') {
+                    return $pdf;
+                }
+                if (str_contains($mime, 'opendocument')) {
+                    return $odt;
+                }
 
-        if ($pdf && $items->has('rules-pdf')) {
-            $report('Génération du PDF…', 40);
-            $relative = $directory.'/'.(string) $items['rules-pdf']['filename'];
-            $this->pdfWriter->write($html, $relative);
-            $written[] = $this->describe('rules-pdf', $relative);
+                return true;
+            })
+            ->values();
+
+        $report('Assemblage des chapitres Markdown…', 5);
+        $htmlByAudience = [];
+        foreach ($items as $item) {
+            $audience = (string) ($item['audience'] ?? RulesBookAssembler::AUDIENCE_PLAYER);
+            if (! array_key_exists($audience, $htmlByAudience)) {
+                $htmlByAudience[$audience] = $this->assembler->forAudience($audience)->toHtml();
+            }
         }
 
-        if ($odt && $items->has('rules-odt')) {
-            $report('Génération de l’OpenDocument…', 75);
-            $relative = $directory.'/'.(string) $items['rules-odt']['filename'];
-            $this->odtWriter->write($html, $relative);
-            $written[] = $this->describe('rules-odt', $relative);
+        if (trim(implode('', $htmlByAudience)) === '') {
+            throw new RuntimeException('Aucun chapitre de règles à compiler.');
+        }
+
+        $written = [];
+        $total = max(1, $items->count());
+        foreach ($items as $index => $item) {
+            $audience = (string) ($item['audience'] ?? RulesBookAssembler::AUDIENCE_PLAYER);
+            $html = trim($htmlByAudience[$audience] ?? '');
+            if ($html === '') {
+                continue;
+            }
+
+            $filename = (string) ($item['filename'] ?? '');
+            if ($filename === '') {
+                continue;
+            }
+
+            $percent = 20 + (int) floor((($index + 1) / $total) * 75);
+            $report('Génération de '.$filename.'…', $percent);
+
+            $relative = $directory.'/'.$filename;
+            $title = $audience === RulesBookAssembler::AUDIENCE_MJ
+                ? 'Krosmoz JDR — Atelier MJ'
+                : 'Krosmoz JDR — Livre de règles';
+            $mime = (string) ($item['mime'] ?? '');
+            if ($mime === 'application/pdf') {
+                $this->pdfWriter->write($html, $relative, $title);
+            } else {
+                $this->odtWriter->write($html, $relative, $title);
+            }
+
+            $written[] = $this->describe((string) $item['key'], $relative);
+        }
+
+        if ($written === []) {
+            throw new RuntimeException('Aucun chapitre de règles à compiler.');
         }
 
         $report('Compilation terminée.', 100);

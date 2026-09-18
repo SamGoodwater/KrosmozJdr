@@ -257,7 +257,7 @@ Cette table des matières présente la structure complète du livre de règles K
 
 ## 5. Ressources et équilibrage
 
-Calibrage MJ (classes, sorts, objets) : menu **Pour les MJ**, hors PDF joueur. Les fichiers à télécharger restent dans **Règles → Ressources**.
+Calibrage MJ (classes, sorts, objets) : menu **Pour les MJ**, hors PDF joueur. Les catalogues d’entités sont dans les Bibliothèques ; l’atelier de création a son propre PDF.
 
 ### 5.1 Ressources MJ
 
@@ -303,22 +303,6 @@ Calibrage MJ (classes, sorts, objets) : menu **Pour les MJ**, hors PDF joueur. L
 - **5.3.5** Prix et économie
 
 
-
-
-
-## 6. Annexes
-
-
-### 6.1 Changelog et historique
-
-
-- **6.1.1** Chronologie des versions
-
-- **6.1.2** Changements majeurs
-
-- **6.1.3** Décisions de design
-
-- **6.1.4** Archives et ressources
 
 
 

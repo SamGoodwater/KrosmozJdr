@@ -30,7 +30,7 @@ Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interact
 ## Chemins importants
 
 - Disque public versionné : `storage/app/public/` sauf `images/entity/`, `images/users/` et `downloads/generated/`. Lien web : `php artisan storage:link` (`public/storage` non versionné). Fichier public manquant sous `/storage/…` → route `storage.local` (disque `private`, `serve: true`) → **403**, pas 404.
-- Source règles CMS : `private/game/rules/TABLE_DES_MATIERES.md`. Chapitre 5 → menu **Pour les MJ** (`read_level` MJ). Livre PDF/ODT : `php artisan rules:compile-downloads` (A4 compact, saut de page par partie ; sans Sources / chap. 5 / 6.1.3–6.1.4). Bouton admin `/admin/content` : file `rules-downloads` + worker ponctuel.
+- Source règles CMS : `private/game/rules/TABLE_DES_MATIERES.md`. Chapitre 5 → menu **Pour les MJ** (`read_level` MJ). `rules:compile-downloads` : PDF/ODT joueur (ch. 1–4) + atelier MJ (ch. 5, `read_level` MJ). Changelog hors livre (page Informations). Bouton admin `/admin/content` : file `rules-downloads` + worker ponctuel.
 - UI orphelins : `/admin/orphan-files` (super_admin).
 - UI nettoyage caches : `/admin/project-clear` (super_admin).
 - UI atelier DofusDB : `/admin/content/dofusdb` (admin, 3 modes Récupérer / Mettre à jour / Compléter, `?mode=`). Cartes + IA sur `/admin/content`. Cron `project_data_sync` inchangé.

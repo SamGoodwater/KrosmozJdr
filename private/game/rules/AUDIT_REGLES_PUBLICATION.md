@@ -114,7 +114,7 @@ Les sections ci-dessous gardent l’historique de l’audit (certaines « incoh�
 
 ## 5. Liens entre les différentes parties
 
-- Index de jeu (`INDEX.md`) : termes de table, pas un dump de titres. Changelog : **annexe 6.1**.
+- Index de jeu (`INDEX.md`) : termes de table, pas un dump de titres. Changelog : [[kref:page:changelog|Changelog]] (Informations), hors livre de règles.
 - **TABLE_DES_MATIERES.md** : format redondant (ex. « - **1.1.1** 1.1.1. Concept général »). Préférer : « - **1.1.1** Concept général » pour alléger.
 
 ---

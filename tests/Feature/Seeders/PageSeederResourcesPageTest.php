@@ -55,4 +55,22 @@ class PageSeederResourcesPageTest extends TestCase
         $this->assertSame('Règles', $page->menu_group);
         $this->assertSame(90, $page->menu_order);
     }
+
+    public function test_seeds_mj_resources_page_in_gm_menu(): void
+    {
+        $this->seed(PageSeeder::class);
+
+        $page = Page::query()->where('slug', 'ressources-mj')->first();
+        $this->assertNotNull($page);
+        $this->assertSame('Pour les MJ', $page->menu_group);
+        $this->assertSame(User::ROLE_GAME_MASTER, $page->read_level);
+        $this->assertNull($page->parent_id);
+        $this->assertTrue($page->in_menu);
+
+        $this->assertDatabaseHas('sections', [
+            'page_id' => $page->id,
+            'slug' => 'ressources-mj-fichiers',
+            'template' => SectionType::DOWNLOAD_CATALOG->value,
+        ]);
+    }
 }

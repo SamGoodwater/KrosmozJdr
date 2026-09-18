@@ -25,7 +25,7 @@ class RulesOdtWriter
     /**
      * @return string Chemin relatif sur le disque public
      */
-    public function write(string $html, string $relativePath): string
+    public function write(string $html, string $relativePath, string $title = 'Krosmoz JDR — Livre de règles'): string
     {
         $disk = Storage::disk((string) config('game_downloads.disk', 'public'));
         $absolute = $disk->path($relativePath);
@@ -42,7 +42,7 @@ class RulesOdtWriter
         $zip->addFromString('mimetype', 'application/vnd.oasis.opendocument.text');
         $zip->setCompressionName('mimetype', ZipArchive::CM_STORE);
         $zip->addFromString('META-INF/manifest.xml', $this->manifestXml());
-        $zip->addFromString('meta.xml', $this->metaXml());
+        $zip->addFromString('meta.xml', $this->metaXml($title));
         $zip->addFromString('styles.xml', $this->stylesXml());
         $zip->addFromString('content.xml', $this->contentXml($html));
         $zip->close();
@@ -215,9 +215,9 @@ class RulesOdtWriter
             .'</manifest:manifest>';
     }
 
-    private function metaXml(): string
+    private function metaXml(string $title = 'Krosmoz JDR — Livre de règles'): string
     {
-        $title = self::xml('Krosmoz JDR — Livre de règles');
+        $title = self::xml($title);
         $date = now()->toAtomString();
 
         return '<?xml version="1.0" encoding="UTF-8"?>'

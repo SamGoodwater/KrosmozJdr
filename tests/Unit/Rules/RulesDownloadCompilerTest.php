@@ -43,4 +43,34 @@ class RulesDownloadCompilerTest extends TestCase
             @rmdir($root);
         }
     }
+
+    public function test_writes_mj_book_when_chapter_five_exists(): void
+    {
+        Storage::fake('public');
+        $root = sys_get_temp_dir().'/krosmoz-rules-'.uniqid('', true);
+        mkdir($root, 0775, true);
+        file_put_contents($root.'/1.1.1-intro.md', "# 1.1.1 Intro\n\nJoueur.\n");
+        file_put_contents($root.'/5.2.3-sorts.md', "# 5.2.3 Sorts\n\nÉquilibrage MJ.\n");
+
+        try {
+            $this->app->instance(RulesBookAssembler::class, new RulesBookAssembler($root));
+            $written = app(RulesDownloadCompiler::class)->compile();
+
+            $this->assertCount(4, $written);
+            Storage::disk('public')->assertExists('downloads/generated/krosmoz-jdr-atelier-mj.pdf');
+            Storage::disk('public')->assertExists('downloads/generated/krosmoz-jdr-atelier-mj.odt');
+
+            $odtAbsolute = Storage::disk('public')->path('downloads/generated/krosmoz-jdr-atelier-mj.odt');
+            $zip = new ZipArchive;
+            $this->assertTrue($zip->open($odtAbsolute) === true);
+            $content = (string) $zip->getFromName('content.xml');
+            $zip->close();
+            $this->assertStringContainsString('Équilibrage MJ', $content);
+            $this->assertStringNotContainsString('Joueur.', $content);
+        } finally {
+            @unlink($root.'/1.1.1-intro.md');
+            @unlink($root.'/5.2.3-sorts.md');
+            @rmdir($root);
+        }
+    }
 }

@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Règles sans catalogues, changelog hors livre, PDF MJ
+
+Le livre joueur ne recopie plus les fiches (classes, sorts, monstres…) : il renvoie aux **Bibliothèques**. Le **changelog** n’est plus une annexe de règles : il reste la page Informations. Les meneurs ont un **PDF d’atelier** à part (**Pour les MJ → Ressources MJ**), avec le calibrage ; la création de fiches se fait sur le site (Création).
+
 ## Septembre 2026 — Catalogue JDR en relecture (`auto`)
 
 Les sorts de classe, monstres du bestiaire, invocations, équipements étalons, consommables JDR et PNJ Incarnam ne sont plus marqués **jouables** au seed : ils arrivent en **auto**, à relire. Un `project:seed` ne les republie plus tout seuls.
@@ -98,7 +102,7 @@ On peut lancer une **conversion IA** depuis la fiche (même icône **Sources** q
 
 ## Septembre 2026 — Leftover règles : équipement +4, index, annexe
 
-Les seeders d’objets (Vitalité, Force, Intelligence, Chance, Agilité, Sagesse) plafonnent à **+4** par pièce, forgemagie **+2**, comme le livre. L’index n’est plus un dump de titres. Le changelog (ex-1.3) est une **annexe 6.1**. Aptitudes : listes en 2.4, activation en 3.4, sans recopier les mêmes tableaux.
+Les seeders d’objets (Vitalité, Force, Intelligence, Chance, Agilité, Sagesse) plafonnent à **+4** par pièce, forgemagie **+2**, comme le livre. L’index n’est plus un dump de titres. Le changelog (ex-1.3, un temps annexe 6.1) est la page **Informations**. Aptitudes : listes en 2.4, activation en 3.4, sans recopier les mêmes tableaux.
 
 ## Septembre 2026 — Fiches Création (conversion)
 

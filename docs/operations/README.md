@@ -32,7 +32,7 @@ php artisan pages:import-rules-toc --dry-run
 php artisan rules:compile-downloads
 ```
 
-Le livre compilé vit dans `storage/app/public/downloads/generated/` (non versionné). PDF A4, police resserrée, un saut de page par grande partie (pas par fiche). Les blocs Sources / Contenu, le chapitre 5 (équilibrage MJ) et les annexes 6.1.3–6.1.4 n’y figurent pas. Téléchargement public : `/telechargements/{key}`. Page CMS **Ressources** (`ressources-de-jeu`) à la racine du menu Règles. Bouton admin : `/admin/content` (file dédiée `rules-downloads` ; un worker ponctuel est lancé avec le bouton, un `queue:listen` persistant n’est pas requis).
+Le livre compilé vit dans `storage/app/public/downloads/generated/` (non versionné). PDF A4, police resserrée, un saut de page par grande partie (pas par fiche). Deux livres : **joueur** (ch. 1–4, public) et **atelier MJ** (ch. 5, rôle MJ). Blocs Sources / Contenu et changelog exclus. Téléchargement : `/telechargements/{key}`. Pages CMS **Ressources** (`ressources-de-jeu`, menu Règles) et **Ressources MJ** (`ressources-mj`, Pour les MJ). Bouton admin : `/admin/content` (file dédiée `rules-downloads` ; un worker ponctuel est lancé avec le bouton, un `queue:listen` persistant n’est pas requis).
 
 ## Nettoyage des fichiers orphelins
 

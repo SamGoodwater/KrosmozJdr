@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class GameDownloadCatalogControllerTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_guest_receives_catalog_groups(): void
     {
         Storage::fake('public');
@@ -31,6 +35,8 @@ class GameDownloadCatalogControllerTest extends TestCase
         $this->assertContains('rules-pdf', $keys);
         $this->assertContains('character-sheet-pdf', $keys);
         $this->assertContains('logo-png', $keys);
+        $this->assertNotContains('mj-pdf', $keys);
+        $this->assertNotContains('mj-odt', $keys);
 
         $pdf = collect($response->json('groups'))
             ->pluck('items')
@@ -38,5 +44,23 @@ class GameDownloadCatalogControllerTest extends TestCase
             ->firstWhere('key', 'rules-pdf');
         $this->assertTrue($pdf['available']);
         $this->assertSame('/telechargements/rules-pdf', parse_url((string) $pdf['download_url'], PHP_URL_PATH));
+    }
+
+    public function test_game_master_sees_mj_book(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('downloads/generated/krosmoz-jdr-atelier-mj.pdf', '%PDF-fake');
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+
+        $response = $this->actingAs($gm)->getJson('/api/game-downloads');
+
+        $response->assertOk();
+        $keys = collect($response->json('groups'))
+            ->pluck('items')
+            ->flatten(1)
+            ->pluck('key')
+            ->all();
+        $this->assertContains('mj-pdf', $keys);
+        $this->assertContains('rules-pdf', $keys);
     }
 }

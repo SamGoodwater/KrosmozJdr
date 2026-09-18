@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Services\Rules\GameDownloadCatalog;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Catalogue public des fichiers téléchargeables (page Ressources).
@@ -15,7 +16,7 @@ class GameDownloadCatalogController extends Controller
 {
     public function index(GameDownloadCatalog $catalog): JsonResponse
     {
-        $items = $catalog->list();
+        $items = $catalog->list(Auth::user());
         $groups = [];
         foreach ($items as $item) {
             $groupKey = $item['group'];

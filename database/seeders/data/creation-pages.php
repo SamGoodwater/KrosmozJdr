@@ -90,7 +90,7 @@ return [
         .'</ol>'
         .'<p>Très faible → faible → neutre → fort → très fort. Un boss, un unique ou un sort à 5 '.$pa.' peut monter d’une ligne ; un sbire, un commun ou un sort en large zone doit descendre.</p>'
         .'<h3>États d’une fiche</h3>'
-        .'<p><strong>Brut</strong> (import) → <strong>Brouillon</strong> (tu travailles) → <strong>Auto</strong> (proposition à relire) → <strong>Jouable</strong> → <strong>Archivé</strong>. Les joueurs ne voient que le jouable. Publie seulement quand identité + chiffres tiennent. Livre : '.$kEquil.'.</p>',
+        .'<p><strong>Brut</strong> (import) → <strong>Brouillon</strong> (tu travailles) → <strong>Auto</strong> (proposition à relire) → <strong>Jouable</strong> → <strong>Archivé</strong>. Les joueurs ne voient que le jouable. Publie seulement quand identité + chiffres tiennent. Livre : '.$kEquil.'. PDF d’atelier : [[kref:page:ressources-mj|Ressources MJ]].</p>',
 
     'pages' => [
         [

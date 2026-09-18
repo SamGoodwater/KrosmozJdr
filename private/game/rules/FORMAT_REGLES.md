@@ -62,7 +62,7 @@ Chaque fichier Markdown doit suivre cette structure :
 - Utiliser `##` pour les sous-sections, `###` pour les sous-sous-sections.
 - Terminer par `---` puis la liste des sources (repo / CMS). Le PDF compilé **retire** les blocs `## Sources`, le mini-sommaire `## Contenu` et les listes « Pour plus de détails ».
 - Ajouter des liens vers d'autres sections lorsque pertinent (voir section 4).
-- Un saut de page PDF a lieu **par grande partie** (ch. 1 à 6), pas à chaque fiche 1.1.1. Les annexes 6.1.3 (décisions de design) et 6.1.4 (archives) sont omises du livre imprimé.
+- Un saut de page PDF a lieu **par grande partie** (ch. 1 à 5), pas à chaque fiche 1.1.1. L’historique du livre ([[kref:page:changelog|Changelog]], menu Informations) n’entre pas dans le PDF joueur.
 
 ---
 

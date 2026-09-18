@@ -4,7 +4,7 @@ Index de **jeu** : où trouver une règle à la table. Ce n’est pas une table 
 
 **Navigation** : [Table des matières](TABLE_DES_MATIERES.md) · [Clés caractéristiques](REFERENCE_CLES_CARACTERISTIQUES.md) · [Progression (table unique)](2-Creer-un-personnage/2.3-choisir-sa-classe/2.3.2-systeme-de-progression.md) · [Récap](RECAP.md)
 
-Les numéros renvoient aux fichiers du livre. Changelog et historique : [annexe 6.1](6-Annexes/6.1-changelog-et-historique/6.1.1-chronologie-des-versions.md).
+Les numéros renvoient aux fichiers du livre. Changelog et historique : [[kref:page:changelog|Changelog]] (Informations).
 
 ---
 

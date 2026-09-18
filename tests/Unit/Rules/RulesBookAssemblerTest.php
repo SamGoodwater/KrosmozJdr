@@ -27,7 +27,7 @@ class RulesBookAssemblerTest extends TestCase
 
             $this->assertStringContainsString('Krosmoz JDR — Livre de règles', $markdown);
             $this->assertStringContainsString('# 1. Introduction', $markdown);
-            $this->assertStringContainsString('Pour les MJ', $markdown);
+            $this->assertStringContainsString('Bibliothèques', $markdown);
             $this->assertStringContainsString('## 1.1.1 Alpha', $markdown);
             $this->assertStringContainsString('Voir le chapitre', $markdown);
             $this->assertStringNotContainsString('[[kref:', $markdown);
@@ -58,7 +58,7 @@ class RulesBookAssemblerTest extends TestCase
         try {
             $assembler = new RulesBookAssembler($root);
             $numbers = array_column($assembler->chapterFiles(), 'number');
-            $this->assertSame(['1.1.1', '6.1.1'], $numbers);
+            $this->assertSame(['1.1.1'], $numbers);
 
             $markdown = $assembler->assemble();
             $this->assertStringContainsString('Phrase utile.', $markdown);
@@ -71,7 +71,13 @@ class RulesBookAssemblerTest extends TestCase
             $this->assertStringNotContainsString('Trop long.', $markdown);
             $this->assertStringNotContainsString('Équilibrage MJ.', $markdown);
             $this->assertStringNotContainsString('# 5. Ressources et équilibrage', $markdown);
-            $this->assertStringContainsString('Reste.', $markdown);
+            $this->assertStringNotContainsString('Reste.', $markdown);
+
+            $mj = $assembler->forAudience(RulesBookAssembler::AUDIENCE_MJ);
+            $this->assertSame(['5.2.3'], array_column($mj->chapterFiles(), 'number'));
+            $mjMarkdown = $mj->assemble();
+            $this->assertStringContainsString('Krosmoz JDR — Atelier MJ', $mjMarkdown);
+            $this->assertStringContainsString('Équilibrage MJ.', $mjMarkdown);
         } finally {
             $this->removeDirectory($root);
         }

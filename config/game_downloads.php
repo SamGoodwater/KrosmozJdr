@@ -23,10 +23,12 @@ declare(strict_types=1);
  *     group_label: string,
  *     icon: string,
  *     mime: string,
- *     generated?: bool,
- *     filename?: string,
- *     path?: string
- *   }>
+     *     generated?: bool,
+     *     audience?: string,
+     *     read_level?: int,
+     *     filename?: string,
+     *     path?: string
+     *   }>
  * }
  */
 return [
@@ -36,24 +38,52 @@ return [
         [
             'key' => 'rules-pdf',
             'label' => 'Livre de règles (PDF)',
-            'description' => 'Le livre complet, compilé depuis les chapitres Markdown. Prêt à imprimer.',
+            'description' => 'Chapitres joueur (1–4), sans catalogues d’entités. Prêt à imprimer.',
             'group' => 'regles',
             'group_label' => 'Livre de règles',
             'icon' => 'fa-file-pdf',
             'mime' => 'application/pdf',
             'generated' => true,
+            'audience' => 'player',
             'filename' => 'krosmoz-jdr-regles.pdf',
         ],
         [
             'key' => 'rules-odt',
             'label' => 'Livre de règles (OpenDocument)',
-            'description' => 'Le même livre au format ODT, ouvrable dans LibreOffice ou Word.',
+            'description' => 'Le même livre joueur au format ODT, ouvrable dans LibreOffice ou Word.',
             'group' => 'regles',
             'group_label' => 'Livre de règles',
             'icon' => 'fa-file-lines',
             'mime' => 'application/vnd.oasis.opendocument.text',
             'generated' => true,
+            'audience' => 'player',
             'filename' => 'krosmoz-jdr-regles.odt',
+        ],
+        [
+            'key' => 'mj-pdf',
+            'label' => 'Atelier MJ (PDF)',
+            'description' => 'Calibrage des entités (classes, sorts, objets, rencontres). Réservé aux meneurs.',
+            'group' => 'mj',
+            'group_label' => 'Atelier MJ',
+            'icon' => 'fa-file-pdf',
+            'mime' => 'application/pdf',
+            'generated' => true,
+            'audience' => 'mj',
+            'read_level' => 3,
+            'filename' => 'krosmoz-jdr-atelier-mj.pdf',
+        ],
+        [
+            'key' => 'mj-odt',
+            'label' => 'Atelier MJ (OpenDocument)',
+            'description' => 'Le même atelier MJ au format ODT.',
+            'group' => 'mj',
+            'group_label' => 'Atelier MJ',
+            'icon' => 'fa-file-lines',
+            'mime' => 'application/vnd.oasis.opendocument.text',
+            'generated' => true,
+            'audience' => 'mj',
+            'read_level' => 3,
+            'filename' => 'krosmoz-jdr-atelier-mj.odt',
         ],
         [
             'key' => 'character-sheet-pdf',

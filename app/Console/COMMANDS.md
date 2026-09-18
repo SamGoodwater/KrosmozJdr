@@ -556,7 +556,7 @@ cron: false
 admin: /admin/content
 ```
 
-Compile le livre de règles Markdown en PDF et ODT dans `storage/app/public/downloads/generated/`. Le PDF passe par Chromium en impression headless (A4 compact, saut de page par partie). Hors PDF : Sources / Contenu, chapitre 5 (équilibrage MJ), annexes 6.1.3–6.1.4. Lancé après `project:init` / `project:seed`, via `pages:import-rules-toc --compile-downloads`, ou depuis le bouton de la gestion du contenu (admin+ ; file `rules-downloads`, worker ponctuel).
+Compile le livre de règles Markdown en PDF et ODT dans `storage/app/public/downloads/generated/`. Produit le **livre joueur** (ch. 1–4) et l’**atelier MJ** (ch. 5). Hors livres : Sources / Contenu, changelog. Lancé après `project:init` / `project:seed`, via `pages:import-rules-toc --compile-downloads`, ou depuis le bouton de la gestion du contenu (admin+ ; file `rules-downloads`, worker ponctuel).
 
 ```bash
 php artisan rules:compile-downloads

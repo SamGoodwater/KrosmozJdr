@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
- * Téléchargement public des fichiers du catalogue (livre, fiches, logo).
+ * Téléchargement des fichiers du catalogue (livre joueur, atelier MJ, fiches, logo).
  *
  * @example GET /telechargements/rules-pdf
  */
@@ -17,17 +17,20 @@ class GameDownloadController extends Controller
 {
     public function show(string $key, GameDownloadCatalog $catalog): StreamedResponse
     {
-        $item = $catalog->find($key);
+        $item = $catalog->configItem($key);
         if ($item === null) {
             abort(404);
         }
-        if (! $item['available']) {
+        if (! $catalog->userCanAccess($item)) {
+            abort(403, 'Tu n’as pas accès à ce fichier.');
+        }
+
+        $listed = $catalog->find($key);
+        if ($listed === null || ! $listed['available']) {
             abort(404, 'Ce fichier n’est pas encore disponible.');
         }
 
-        $configItem = collect(config('game_downloads.items', []))
-            ->firstWhere('key', $key);
-        $relative = is_array($configItem) ? $catalog->relativePath($configItem) : null;
+        $relative = $catalog->relativePath($item);
         if ($relative === null) {
             abort(404);
         }
@@ -36,7 +39,7 @@ class GameDownloadController extends Controller
         $downloadName = basename($relative);
 
         return $disk->download($relative, $downloadName, [
-            'Content-Type' => (string) $item['mime'],
+            'Content-Type' => (string) ($listed['mime'] ?? 'application/octet-stream'),
         ]);
     }
 }
