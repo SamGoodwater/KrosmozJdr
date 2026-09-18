@@ -10,7 +10,7 @@
         "description": "Ce terrible marteau vous permettra enfin de prouver que les personnes pensant que le muscle prime sur le cerveau ont tort! (Ceci n'est valable uniquement sur des personnes moins fortes, les autres, n'oubliez pas, ont TOUJOURS raison)",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

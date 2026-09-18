@@ -35,7 +35,7 @@ final class BestiarySeederImporterTest extends TestCase
 
         $tofu = Monster::query()->where('official_id', 'jdr:bestiary:tofu-chimerique')->first();
         $this->assertNotNull($tofu);
-        $this->assertSame('playable', $tofu->state);
+        $this->assertSame('auto', $tofu->state);
         $this->assertFalse($tofu->auto_update);
         $this->assertNull($tofu->dofusdb_id);
         $this->assertFalse((bool) $tofu->is_boss);
@@ -50,7 +50,7 @@ final class BestiarySeederImporterTest extends TestCase
         $this->assertSame(3, $creature->hostility);
         $this->assertSame('Incarnam', $creature->location);
         $this->assertSame('https://api.dofusdb.fr/img/monsters/540.png', $creature->image);
-        $this->assertSame(Creature::STATE_PLAYABLE, $creature->state);
+        $this->assertSame(Creature::STATE_AUTO, $creature->state);
         $this->assertSame(1, $creature->spells()->count());
         $this->assertTrue($creature->creatureTraits()->where('name', 'Petite taille')->exists());
         $this->assertTrue($creature->creatureTraits()->where('name', 'Vif / Vive')->exists());
@@ -59,7 +59,7 @@ final class BestiarySeederImporterTest extends TestCase
         $this->assertSame(Spell::CATEGORY_CREATURE, $beco?->category);
         $this->assertSame('jdr:bestiary:tofu-chimerique:beco', $beco?->official_id);
         $this->assertSame('3', $beco?->pa);
-        $this->assertSame(Spell::STATE_PLAYABLE, $beco?->state);
+        $this->assertSame(Spell::STATE_AUTO, $beco?->state);
 
         $arakne = Monster::query()->where('official_id', 'jdr:bestiary:arakne')->with([
             'creature.spells.effects.degrees.effectSubEffects.subEffect',
@@ -115,7 +115,7 @@ final class BestiarySeederImporterTest extends TestCase
 
         $tofu = Monster::query()->where('official_id', 'jdr:bestiary:tofu')->with('creature.spells')->first();
         $this->assertNotNull($tofu);
-        $this->assertSame('playable', $tofu->state);
+        $this->assertSame('auto', $tofu->state);
         $this->assertNull($tofu->dofusdb_id);
         $this->assertSame('Tofu', $tofu->creature?->name);
         $this->assertSame('4', $tofu->creature?->pa);

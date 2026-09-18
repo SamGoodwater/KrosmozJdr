@@ -10,7 +10,7 @@
         "description": "Si vous êtes suffisamment petit, cette cape confectionnée à partir de quelques plumes de Piou, cachera vos fesses. Une protection assez modeste, mais qui a le mérite d'attirer l'attention des passants sur autre chose que vos cheveux gras ou vos grosses verrues.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Ce bouclier en véritables poils de prespic se hérisse en présence d'ennemis. C'est bien pratique pour dissuader les plus hardis : qui s'approche trop près s'y pique !",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

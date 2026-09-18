@@ -10,7 +10,7 @@
         "description": "Cette peau de Mulou constitue une excellente protection contre le froid, mais également contre les aventuriers aux sens olfactifs un peu trop développés.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

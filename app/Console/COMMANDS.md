@@ -514,11 +514,11 @@ cron: false
 admin: /admin/content/ia-generation
 ```
 
-Base → seeder : écrit les équipements dans `database/seeders/data/entities/items/` (un fichier JSON par item, `effect` / `bonus` en objet éditable). Par défaut, seuls les items `playable`. Réservé au développement : la commande écrit dans le dépôt. `image` n’est jamais exporté (URL liée à l’environnement).
+Base → seeder : écrit les équipements dans `database/seeders/data/entities/items/` (un fichier JSON par item, `effect` / `bonus` en objet éditable). Par défaut, seuls les items `auto`. Réservé au développement : la commande écrit dans le dépôt. `image` n’est jamais exporté (URL liée à l’environnement).
 
 ```bash
 php artisan items:seeder-export
-php artisan items:seeder-export --state=playable --state=draft --prune
+php artisan items:seeder-export --state=auto --state=draft --prune
 php artisan items:seeder-export --all --prune
 php artisan items:seeder-export --id=1958 --id=882
 ```

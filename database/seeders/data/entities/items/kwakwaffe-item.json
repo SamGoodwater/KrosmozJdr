@@ -10,7 +10,7 @@
         "description": "Cette coiffe, en plus de couvrir votre crâne d'œuf, vous donnera fière allure et fera peut-être même oublier votre tête de piaf. Que demander de plus ?",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

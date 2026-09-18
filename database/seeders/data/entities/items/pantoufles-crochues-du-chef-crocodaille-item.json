@@ -10,7 +10,7 @@
         "description": "Ces magnifiques pantoufles en peau et en écailles de Chef Crocodaille sont munies de dents acérées à leurs extrémités. Méfiez-vous lorsque vous ferez du pied à votre dulcinée, vous pourriez lui déchirer ses petits bas en laine de Tabi.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

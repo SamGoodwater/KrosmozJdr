@@ -10,7 +10,7 @@
         "description": "Ces bottines recouvertes de poils de Mulou, sont très pratiques pour nettoyer les parquets poussiéreux, ou tout simplement pour nettoyer la tête de vos adversaires lorsqu'ils sont au sol en train d'agoniser.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

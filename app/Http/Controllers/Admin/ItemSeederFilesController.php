@@ -26,10 +26,10 @@ class ItemSeederFilesController extends Controller
             return $this->back('error', 'L’export vers le dépôt n’est disponible qu’en développement.');
         }
 
-        $result = $exporter->export(states: ['playable'], prune: true);
+        $result = $exporter->export(states: ['auto'], prune: true);
 
         $message = sprintf(
-            '%d objet(s) jouable(s) écrit(s) dans %s.',
+            '%d objet(s) auto écrit(s) dans %s.',
             count($result['written']),
             ItemSeederFileRepository::RELATIVE_ROOT
         );

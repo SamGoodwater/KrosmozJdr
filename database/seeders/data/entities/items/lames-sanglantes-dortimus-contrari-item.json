@@ -10,7 +10,7 @@
         "description": "Ortimus Contrari est une légende parmi les assassins. Il exécute toujours ses contrats d'une manière totalement opposée aux méthodes traditionnelles. N'en demandez pas plus, vous pourriez mourir dans l'instant.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Contrairement à ce que certains aventuriers peuvent croire, cette baguette n'est pas utilisée par les Tofus (bien trop stupides pour savoir se servir d'une telle arme), mais contre les Tofus. En effet, les plumes de Tofu qui la composent permettent aux chasseurs de simuler la parade nuptiale des Tofus pour ensuite mieux les attraper. Mais jusqu'où iront ces terribles chasseurs pour satisfaire leurs pulsions meurtrières ?",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

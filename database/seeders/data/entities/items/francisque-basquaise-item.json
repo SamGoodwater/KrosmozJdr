@@ -10,7 +10,7 @@
         "description": "Cette hache fait souvent le tour du monde en commençant par le bas. Et pour cause c'est dans le sud d'Amakna que ce type de hache est forgée, par une petite guilde de chasseurs de trésors réputée pour leur efficacité.",
         "recipe": null,
         "rarity": 1,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

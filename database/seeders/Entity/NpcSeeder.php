@@ -8,7 +8,7 @@ use App\Services\Seeder\Npc\NpcSeederImporter;
 use Illuminate\Database\Seeder;
 
 /**
- * PNJ JDR jouables (JSON `entities/npcs/incarnam.json`).
+ * PNJ JDR en `auto` (JSON `entities/npcs/incarnam.json`).
  *
  * À jouer **après** items, classes, sorts et spécialisations (`project:seed`).
  */

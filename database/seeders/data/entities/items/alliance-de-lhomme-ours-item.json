@@ -10,7 +10,7 @@
         "description": "L'Homme Ours n'a jamais quitté cette alliance, bien que sa femme fût dévorée sous ses yeux, par un des ours qu'il venait d'invoquer, et cela pour impressionner sa dulcinée. Elle a effectivement été très impressionnée.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Cet anneau est si léger qu'il vous permettra de réaliser n'importe quelle acrobatie avec vos doigts. Très pratique pour humilier un adversaire dix fois plus petit que vous, en lui écrasant la tête avec le pouce.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

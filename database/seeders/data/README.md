@@ -27,10 +27,10 @@ Pour les notions liées aux éléments Dofus et aux caracs associées, utiliser 
 
 ## Équipements (`entities/items/`)
 
-Un fichier JSON par équipement relu à la main, pour pouvoir recréer le socle d’objets jouables sur n’importe quelle base (notamment avant de faire tourner l’IA). Le gros du catalogue reste produit par le scrapping DofusDB : ces fichiers ne portent que les items validés.
+Un fichier JSON par équipement relu à la main, pour pouvoir recréer le socle d’objets `auto` (à relire) sur n’importe quelle base (notamment avant de faire tourner l’IA). Le gros du catalogue reste produit par le scrapping DofusDB : ces fichiers ne portent que les items validés.
 
 - **Seed** : `Database\Seeders\Entity\ItemSeeder`, appelé par `DatabaseSeeder`, `project:seed` et `project:init`.
-- **Base → fichiers** : `php artisan items:seeder-export` (défaut : items `playable` ; `--prune` nettoie les fichiers obsolètes).
+- **Base → fichiers** : `php artisan items:seeder-export` (défaut : items `auto` ; `--prune` nettoie les fichiers obsolètes).
 - **Fichiers → base** : `php artisan items:seeder-import` (`--dry-run` pour simuler).
 - **Boutons admin** : `/admin/content/ia-generation`, section « Étalons d’équipement » (super administrateur).
 
@@ -52,7 +52,7 @@ Un JSON unique `healing-out-of-combat.json` décrit 11 paliers × 4 types (pain,
 
 - **Seed** : `Database\Seeders\Entity\ConsumableSeeder`, après `ResourceSeeder` (`project:seed` / `project:init`).
 - Upsert sur `dofusdb_id` (identités Dofus conservées, images incluses) ou `official_id` `jdr:heal:potion:N` pour les potions sans fiche Dofus.
-- Les ressources d’ingrédients passent en `playable` avec `auto_update = false` pour geler le prix JDR.
+- Fiches consommable en `auto`. Les ressources d’ingrédients passent en `playable` avec `auto_update = false` pour geler le prix JDR.
 - Sans ressource scrapée, le consommable est tout de même créé avec `price_custom` au barème.
 
 ## Parchemins de caractéristique (`entities/consumables/`)
@@ -87,7 +87,7 @@ Un JSON unique `class-passives.json` : 19 capacités passives (une par classe), 
 
 ## Sorts de classe (`entities/spells/`)
 
-`iop-level-1.json` … `forgelance-level-1.json` : 6 sorts (3 emplacements × 2 variantes) au **niveau 1**. `*-progression.json` : 18 sorts (9 emplacements × 2 variantes) aux niveaux **3, 4, 5, 7, 8, 10, 11, 13, 14**. **19 classes**, 24 sorts chacune. Upsert sur `dofusdb_id` ou `official_id`. `auto_update = false`, état `playable`. `target_type` optionnel (`direct`, `trap`, `glyph`). Les catalogues d’une même classe sont fusionnés avant le sync des emplacements ; les autres sorts liés à la classe passent hors grille (`character_level` 0, `slot_index` 1).
+`iop-level-1.json` … `forgelance-level-1.json` : 6 sorts (3 emplacements × 2 variantes) au **niveau 1**. `*-progression.json` : 18 sorts (9 emplacements × 2 variantes) aux niveaux **3, 4, 5, 7, 8, 10, 11, 13, 14**. **19 classes**, 24 sorts chacune. Upsert sur `dofusdb_id` ou `official_id`. `auto_update = false`, état `auto`. `target_type` optionnel (`direct`, `trap`, `glyph`). Les catalogues d’une même classe sont fusionnés avant le sync des emplacements ; les autres sorts liés à la classe passent hors grille (`character_level` 0, `slot_index` 1).
 
 - **Seed** : `Database\Seeders\Entity\SpellSeeder` (`project:seed` / `project:init` / `DatabaseSeeder`), **après** `MonsterSeeder`.
 - Budget : attaque simple 3 PA ; sort fort 4–5 PA ; identité 3 PA. Dés selon le palier (§5.2.3.2 / §5.2.3.6).
@@ -95,7 +95,7 @@ Un JSON unique `class-passives.json` : 19 capacités passives (une par classe), 
 
 ## Invocations de classe (`entities/monsters/`)
 
-Un JSON unique `class-summons.json` : 19 fiches monstres `playable` (kit 1 Osa / Sadida / Steamer, puis Double, Bouftou, poupées 7, tourelles 7, Repaire, Griffe Joueuse, Arbre, Synchro, Malle Animée, Sacrifiée, Sulfénix). Chaque fiche = Creature (8/12/16 PV selon palier, 1 PM, 3 PA, CA 10–12) + 1 sort-créature (frapper 1d4/1d6/2d4 ou soigner 1d4). Champ `image` : URL DofusDB (`/img/monsters/{gfxId}.png`) ; posée au seed si la créature n’a pas déjà un média local. Upsert sur `official_id` `jdr:summon:{clé}`. `auto_update = false`. Le Coffre Enutrof n’est **pas** une invocation.
+Un JSON unique `class-summons.json` : 19 fiches monstres `auto` (kit 1 Osa / Sadida / Steamer, puis Double, Bouftou, poupées 7, tourelles 7, Repaire, Griffe Joueuse, Arbre, Synchro, Malle Animée, Sacrifiée, Sulfénix). Chaque fiche = Creature (8/12/16 PV selon palier, 1 PM, 3 PA, CA 10–12) + 1 sort-créature (frapper 1d4/1d6/2d4 ou soigner 1d4). Champ `image` : URL DofusDB (`/img/monsters/{gfxId}.png`) ; posée au seed si la créature n’a pas déjà un média local. Upsert sur `official_id` `jdr:summon:{clé}`. `auto_update = false`. Le Coffre Enutrof n’est **pas** une invocation.
 
 - **Seed** : `Database\Seeders\Entity\MonsterSeeder`, **après** `SubEffectSeeder` / `CapabilitySeeder`, **avant** `SpellSeeder`.
 
@@ -106,7 +106,7 @@ Un JSON par zone, tous lus par `BestiaryCatalog::loadAll()` (sauf `class-summons
 - `incarnam.json` : 14 fiches (Piou Vert, Tofu Chimérique, Boufton Pâlichon, Bouftou Nuageux, Larves bleue/orange/verte, Arakne, Champ Champ, Aminite, Moskito, Pissenlit Miroitant, Rose Vaporeuse, Tournesol Nébuleux).
 - `amakna.json` : 14 fiches (Piou Rouge / Bleu / Jaune, Tofu, Boufton Blanc, Bouftou, Gelée Bleuet / Menthe, Crabe, Pichon Orange, Chafer, Sanglier, Cochon de Lait, Pissenlit Diabolique).
 
-Coquille `Monster` + `Creature` (PV 18–45, PA/PM Dofus, 1 à 2 sorts-créature aux coûts Dofus). Hostilité 3 (Hostile) ou 4 (Agressif). Traits existants (`Petite taille`, `Vif / Vive`, `Agile`). Pas de boss / PA légendaires. Upsert sur `official_id` `jdr:bestiary:{clé}`. `auto_update = false`. Pas de `dofusdb_id` (les dumps scrap restent distincts). Champ `image` : URL DofusDB indexée par `gfxId` (pas l’id de fiche). Distinct des invocations `jdr:summon:…` (Tofu, Bouftou).
+Coquille `Monster` + `Creature` (PV 18–45, PA/PM Dofus, 1 à 2 sorts-créature aux coûts Dofus). Hostilité 3 (Hostile) ou 4 (Agressif). Traits existants (`Petite taille`, `Vif / Vive`, `Agile`). Pas de boss / PA légendaires. Upsert sur `official_id` `jdr:bestiary:{clé}`. État `auto`, `auto_update = false`. Pas de `dofusdb_id` (les dumps scrap restent distincts). Champ `image` : URL DofusDB indexée par `gfxId` (pas l’id de fiche). Distinct des invocations `jdr:summon:…` (Tofu, Bouftou).
 
 - **Seed** : même `MonsterSeeder` / `BestiarySeederImporter`, après les invocations.
 

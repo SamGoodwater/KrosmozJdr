@@ -10,7 +10,7 @@
         "description": "Pour séduire les Kwakeres, le Kwakwa effectue sa parade nuptiale, qui consiste à faire la roue avec les plumes de sa queue. Il se rend alors profondément ridicule puisqu'il n'en a que cinq. Une parfaite illustration de l'adage \"femme qui rit, à moitié dans ton lit\".",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

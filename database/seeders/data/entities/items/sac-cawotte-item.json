@@ -10,7 +10,7 @@
         "description": "Avec ce sac sur les épaules, vous pouvez partir à l'aventure sans vous soucier des problèmes alimentaires. En effet, même si la Cawotte est vide comme un crâne de Iop, les feuilles du dessus repoussent toutes seules, de quoi se faire de bonnes tisanes.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

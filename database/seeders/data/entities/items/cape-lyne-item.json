@@ -10,7 +10,7 @@
         "description": "Cette douce cape est parfois employée par les Osamodettes coquettes en guise de couvre-chef aux larges bords. Les Osamodas mâles ne s'en servent que comme pèlerine. Grâce au dessin qui orne cet habit, cette classe de personnages a hérité d'une réputation de grande franchise. On ne les voit jamais rire sous cape car le rire est cousu dessus.",
         "recipe": null,
         "rarity": 1,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

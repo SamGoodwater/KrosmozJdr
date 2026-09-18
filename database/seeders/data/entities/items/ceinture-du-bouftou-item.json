@@ -10,7 +10,7 @@
         "description": "Rapide à équiper, cette ceinture s'avère tout de même assez légère pour sa taille. La laine donne l'impression d'être neuve. Normal, il a fallu selon la légende, dépecer une centaine de bouftons pour avoir cet aspect lisse et soyeux.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Pour parer les coups de bourre ou les coups tordus, ce bouclier issu du village de Terrdala devrait faire l'affaire.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

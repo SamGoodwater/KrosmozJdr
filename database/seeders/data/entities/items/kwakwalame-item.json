@@ -10,7 +10,7 @@
         "description": "À l'instar de ses sujets les Kwaks, le Kwakwa a une lame à son nom. Même si on ne sait toujours pas pourquoi ni en quel honneur un oiseau aurait une épée, celle-ci semble plus légère et plus maniable que les Kwaklames. Vous allez peut-être enfin pouvoir déplumer vos ennemis avec.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

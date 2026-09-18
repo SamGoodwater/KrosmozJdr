@@ -10,7 +10,7 @@
         "description": "Cet anneau provient du fameux Bouze le Clerc, sauveur des temps modernes. Sa phrase culte parlait d'un fin Eni et d'au-delà.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

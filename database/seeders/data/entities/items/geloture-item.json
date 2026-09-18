@@ -10,7 +10,7 @@
         "description": "Le plus dur avec cette Geloture, c'est qu'en cas de fringale, on est vite tenté de croquer dedans.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

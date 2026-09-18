@@ -10,7 +10,7 @@
         "description": "Ce magnifique anneau est porté par les Koalaks les plus téméraires, ceux qui ont été assez courageux pour le voler aux aventuriers d'Astrub à la sortie de la banque.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

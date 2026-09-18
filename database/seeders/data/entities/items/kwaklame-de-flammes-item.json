@@ -10,7 +10,7 @@
         "description": "La Kwaklame de Flammes est une arme vraiment stylée. A défaut de faire peur à votre adversaire, elle vous servira à l'impressionner, pour ensuite mieux le surprendre par une vieille ruse de fourbe.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

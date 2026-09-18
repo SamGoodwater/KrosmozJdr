@@ -10,7 +10,7 @@
         "description": "Chaudes à l'intérieur et froides à l'extérieur, ces bottes vous permettront de botter les fesses des bonshommes de neige sans leur faire fondre le postérieur.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

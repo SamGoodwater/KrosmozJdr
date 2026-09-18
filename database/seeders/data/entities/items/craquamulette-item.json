@@ -10,7 +10,7 @@
         "description": "Cette amulette est aussi lourde qu'un Blop boulimique, voilà qui devrait décourager les aventuriers un peu trop fragiles de la porter. En revanche, une fois son poids supporté, il faut reconnaître qu'elle vous donne fière allure.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

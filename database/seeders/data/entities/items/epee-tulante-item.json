@@ -10,7 +10,7 @@
         "description": "Sortie de son fourreau, cette épée peut couper le jambon, les Enutrofs, les unijambistes, les danseurs et les Enutrofs unijambistes enroulés dans une tranche de jambon qui dansent un soir de pleine lune. En revanche pour trancher les monstres, elle est plutôt inefficace.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Moins efficace et moins prisée que la célèbre Araknamu, cette petite amulette a pourtant beaucoup de charme lorsqu'elle est portée toute seule, sur un corps très poilu.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

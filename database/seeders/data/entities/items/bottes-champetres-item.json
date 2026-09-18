@@ -10,7 +10,7 @@
         "description": "Rien de mieux que d'utiliser des bottes confectionnées à partir de restes de fleurs champêtres, pour écraser ces misérables fleurs qui poussent dans vos champs. De plus, ces bottes permettront à vos pieds de dégager une délicieuse odeur de fleur. Dommage qu'il n'existe pas un équivalent à ces bottes pour les caleçons.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

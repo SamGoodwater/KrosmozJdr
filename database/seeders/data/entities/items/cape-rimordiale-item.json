@@ -10,7 +10,7 @@
         "description": "Traditionnellement revêtue lors de cérémonies et de voyages, cette cape est imprégnée d'une puissante magie qui donne à son porteur un charisme incroyable, une attitude héroïque, et une protection à toute épreuve contre la pluie et les éclats de boue.",
         "recipe": null,
         "rarity": 3,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

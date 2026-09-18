@@ -10,7 +10,7 @@
         "description": "Muni de ces ergots de Kwak de Feu, il ne vous reste plus qu'à marcher sur des œufs pour ne pas vous les faire voler par un Sram mal intentionné.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

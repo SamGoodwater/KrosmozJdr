@@ -10,7 +10,7 @@
         "description": "La Cape Sulhit se met délicatement sur les épaules afin de protéger son porteur des tendinites et de l'enraidissement des articulations. Vêtement aux vertus médicales, il est regardé avec envie par les Pandawas, qui passent beaucoup de temps à porter leur adversaire comme leur allié. Eux-aussi, ils aimeraient avoir un vêtement de ce type.",
         "recipe": null,
         "rarity": 3,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

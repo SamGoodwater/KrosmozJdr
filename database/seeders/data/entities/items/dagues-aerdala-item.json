@@ -10,7 +10,7 @@
         "description": "Aiguisées comme des griffes de Meulou, ces dagues feront de vous un excellent apprenti assassin.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

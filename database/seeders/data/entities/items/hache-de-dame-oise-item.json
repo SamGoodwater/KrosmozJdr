@@ -10,7 +10,7 @@
         "description": "La Dame Oise était une ravissante princesse qui respirait la candeur et la fraîcheur. Tout le monde fut bien surpris lorsque, lors d'un raid Bwork sur sa cité, elle sortit cette hache et fracassa à elle seule la moitié de l'armée adverse.",
         "recipe": null,
         "rarity": 3,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

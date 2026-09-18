@@ -10,7 +10,7 @@
         "description": "Si vous n'avez pas les moyens de vous acheter une Corbacape Mastralis, mais que vous aimez faire peur aux Araknes en vous habillant en noir, c'est la cape qu'il vous faut.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

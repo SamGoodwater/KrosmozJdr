@@ -10,7 +10,7 @@
         "description": "On ne connaît que le diminutif de son créateur, un certain Fantal, mais on sait qu'il avait très mauvais goût. En effet, il appréciait s'enduire de Gelée Royale pour ensuite se recouvrir de plumes de Tofu Royal. Et oui en plus, il avait des goûts de luxe.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

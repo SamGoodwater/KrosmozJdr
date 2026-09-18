@@ -10,7 +10,7 @@
         "description": "Ce bouclier en pierre est en fait une tête de Craqueleur écrasée par le pied d'un Minotoror. Une façon comme une autre de combiner grosse tête et odeurs de pieds.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

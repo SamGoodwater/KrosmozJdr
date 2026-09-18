@@ -10,7 +10,7 @@
         "description": "Cette coiffe doit son nom surprenant à l'excentricité du premier Enutrof qui l'a découverte en dépouillant un vieux Moskito malade. Très utile pour les aventuriers qui débutent, elle permet avant tout, de rendre folles de vous les Araknes affamées.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

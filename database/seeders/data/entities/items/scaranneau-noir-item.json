@@ -10,7 +10,7 @@
         "description": "Cet anneau magnifique peut être porté autour du gros orteil. Idéal pour cacher vos verrues et vos ongles incarnés.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

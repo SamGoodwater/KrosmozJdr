@@ -10,7 +10,7 @@
         "description": "Cette cape est si légère et si fine qu'elle s'envole à la moindre brise de vent, de n'importe quel vent. Pas toujours très pratique, surtout lorsque l'on veut se faire discret, après un repas composé de légumineuses et de diverses boissons fermentées.",
         "recipe": null,
         "rarity": 1,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

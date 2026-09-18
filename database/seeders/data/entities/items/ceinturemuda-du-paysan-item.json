@@ -10,7 +10,7 @@
         "description": "Cette ceinture est franchement exceptionnelle, puisqu'un bermuda en fibre de lin y est attaché. C'est la ceinture idéale pour ceux qui aiment se délester de leurs vêtements rapidement, et passer à l'action sur le champ. Attention cependant, pour des raisons d'hygiène, cette ceinture est interdite dans les piscines municipales.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

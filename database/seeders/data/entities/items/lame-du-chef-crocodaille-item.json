@@ -10,7 +10,7 @@
         "description": "Fabriquée à partir de débris trouvés sur un Chef Crocodaille, cette arme saura se révéler très efficace si vous êtes assez beau, habile, intelligent et fort pour la manier. Avec un peu de chance, vous finirez par trouver quelqu'un qui acceptera de vous l'échanger contre une épée de boisaille.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

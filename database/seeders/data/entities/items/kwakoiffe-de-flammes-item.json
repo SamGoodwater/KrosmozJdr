@@ -10,7 +10,7 @@
         "description": "La Kwakoiffe de Flammes vous donne réellement une allure de tombeur, ce qui est très pratique pour mettre à terre vos adversaires, lorsque ceux-ci n'arrivent plus à tenir debout tellement ils rigolent, en vous voyant affublé de cette coiffe.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

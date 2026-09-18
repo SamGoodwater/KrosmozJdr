@@ -10,7 +10,7 @@
         "description": "Lorsque le Champ Champ se marie, il offre cette alliance à sa dulcinée. Cette dernière étant dépourvue de bras, l'alliance est déposée soigneusement sur une de ses épines. En vous équipant de cette alliance, vous briserez les liens du mariage qui unissaient ces deux créatures, et dans le meilleur des cas, le Champ Champ vous prendra pour sa dulcinée.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

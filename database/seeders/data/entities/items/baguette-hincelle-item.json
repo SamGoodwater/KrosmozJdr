@@ -10,7 +10,7 @@
         "description": "Idéale pour allumer le feu, ou animer les mariages ennuyeux, cette baguette vous permettra peut-être une fois dans votre vie, de faire des étincelles. Une occasion à saisir.",
         "recipe": null,
         "rarity": 1,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

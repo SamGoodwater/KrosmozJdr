@@ -10,7 +10,7 @@
         "description": "Ce bâton a été sculpté à partir d'un Abraknyde d'un certain âge : on le reconnaît à sa forme agressive, mais il n'a pas conservé l'odeur de bois moisi qui caractérise souvent les vieilles branches.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

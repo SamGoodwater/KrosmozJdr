@@ -10,7 +10,7 @@
         "description": "Ce ridicule petit anneau vous permettra de combattre plus facilement votre phobie des Araknes.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

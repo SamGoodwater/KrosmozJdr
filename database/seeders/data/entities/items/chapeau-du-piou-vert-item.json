@@ -10,7 +10,7 @@
         "description": "Muni de ce petit chapeau sur la tête, vous aurez l'air bien ridicule, mais aussi terriblement irrésistible. La vie est une question de choix.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

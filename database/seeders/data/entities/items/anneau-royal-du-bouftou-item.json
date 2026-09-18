@@ -10,7 +10,7 @@
         "description": "Cet anneau augmente la vie de son porteur, tout comme l'odeur de la femelle du Bouftou Royal augmente son charme.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

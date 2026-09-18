@@ -107,7 +107,7 @@ final class NpcSeederImporter
             'location' => $entry['location'],
             'hostility' => $entry['hostility'],
             'level' => (string) $entry['level'],
-            'state' => Creature::STATE_PLAYABLE,
+            'state' => Creature::STATE_AUTO,
             'read_level' => User::ROLE_GUEST,
             'write_level' => User::ROLE_GAME_MASTER,
             'created_by' => $this->createdById(),
@@ -153,7 +153,7 @@ final class NpcSeederImporter
             'historical' => $entry['historical'],
             'breed_id' => $breedId,
             'specialization_id' => $speId,
-            'state' => Npc::STATE_PLAYABLE,
+            'state' => Npc::STATE_AUTO,
             'read_level' => User::ROLE_GUEST,
             'write_level' => User::ROLE_GAME_MASTER,
         ];
@@ -214,7 +214,7 @@ final class NpcSeederImporter
             $item = Item::query()
                 ->with('itemType')
                 ->where('name', $name)
-                ->where('state', EntityState::Playable->value)
+                ->whereIn('state', $this->kitEntityStates())
                 ->first();
             if ($item === null) {
                 $skipped[] = $npcName.' : objet « '.$name.' » introuvable';
@@ -249,7 +249,7 @@ final class NpcSeederImporter
         foreach ($names as $name) {
             $id = Spell::query()
                 ->where('name', $name)
-                ->where('state', EntityState::Playable->value)
+                ->whereIn('state', $this->kitEntityStates())
                 ->value('id');
             if ($id === null) {
                 $skipped[] = $npcName.' : sort « '.$name.' » introuvable';
@@ -259,6 +259,16 @@ final class NpcSeederImporter
             $ids[] = (int) $id;
         }
         $creature->spells()->sync($ids);
+    }
+
+    /**
+     * Sorts et objets du kit : étalons seeder (`auto`) ou déjà publiés (`playable`).
+     *
+     * @return list<string>
+     */
+    private function kitEntityStates(): array
+    {
+        return [EntityState::Auto->value, EntityState::Playable->value];
     }
 
     /**

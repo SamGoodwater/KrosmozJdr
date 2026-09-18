@@ -10,7 +10,7 @@
         "description": "La couleur sombre de cette cape lui permet d'être en harmonie avec n'importe quel vêtement, quel que soit son coloris. Comme elle est très ample, elle permet aussi de protéger la tête et le bout du nez.",
         "recipe": null,
         "rarity": 1,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

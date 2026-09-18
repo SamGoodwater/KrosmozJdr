@@ -55,7 +55,7 @@ final class CharacteristicRespecScrollSeederImporter
                 'effect' => CharacteristicRespecScrollCatalog::effectText($entry['points'], $entry['of']),
                 'recipe' => null,
                 'rarity' => $entry['rarity'],
-                'state' => Consumable::STATE_PLAYABLE,
+                'state' => Consumable::STATE_AUTO,
                 'read_level' => 0,
                 'write_level' => 3,
                 'dofus_version' => '3',

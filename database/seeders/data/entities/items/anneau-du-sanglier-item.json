@@ -10,7 +10,7 @@
         "description": "Cet anneau était placé sur les pattes des sangliers en rut, pour que les éleveurs puissent facilement les reconnaître. Aujourd'hui, c'est vous qui portez cet anneau. Toutes les interprétations sont possibles.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

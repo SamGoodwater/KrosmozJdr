@@ -10,7 +10,7 @@
         "description": "Cette Kwakoiffe de Glace vous permettra de toujours avoir des idées fraîches, même lorsque vous serez à court d'idées. Elle n'est cependant pas assez puissante pour un Iop.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

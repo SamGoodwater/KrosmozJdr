@@ -10,7 +10,7 @@
         "description": "Ce petit anneau était jadis très convoité par les Enutrofettes qui préféraient s'en servir pour décorer leurs orteils. Une excellente façon de cacher leurs verrues.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

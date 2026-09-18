@@ -10,7 +10,7 @@
         "description": "Cette petite amulette fleurit au printemps, mais se dessèche en été, se fane en automne, et pourrit en hiver.\nL'occasion rêvée pour changer de look au fil des saisons.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

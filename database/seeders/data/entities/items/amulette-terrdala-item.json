@@ -10,7 +10,7 @@
         "description": "Seuls les habitants du village de Terrdala avaient l'autorisation de porter cette amulette, qui est censée être un des éléments les plus importants de leur costume traditionnel. En y regardant de plus près, on se demande bien pourquoi.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

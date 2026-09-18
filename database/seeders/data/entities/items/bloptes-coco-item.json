@@ -10,7 +10,7 @@
         "description": "Inutile de râler parce que le nom de ces bottes est imprononçable, cette particularité vous sauvera la vie, quand un brigand de grand chemin vous demandera : \"Donne-moi tes Blopetes, non tes Blotpes, non tes Plobtes, non...\". Vous aurez alors tout le temps nécessaire pour vous enfuir en courant.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Cette cape qui vient du village de Terrdala, peut servir de paillasson, ou même de serpillière si vous venez de sortir de l'eau.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Si vous faites une halte au zaap d'Astrub pour la première fois, méfiez-vous des rumeurs colportées par certains aventuriers facétieux : il n'y pas de technique spéciale qui permette de gagner des kamas par magie... Quelle terrible révélation ! Vous avez du mal à respirer ? Ce bouclier tombe à pic, il vous servira d'éventail.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Cette racine a des formes pures, que certains artisans n'hésiteront pas à qualifier de parfaites. C'est peut-être pour cela que certains aventuriers y attachent plus d'importance qu'à leur dulcinée.",
         "recipe": null,
         "rarity": 3,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Ces geta en bois ont été confectionnées par les meilleurs cordonniers du village d'Akwadala. Très aérées, elles permettront à vos verrues de prendre l'air et de profiter du paysage.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Cette étrange cape semble avoir été coupée en deux. Mais pourquoi aurait-elle était coupée en deux ? Personne ne le sait, même si tout le monde a son avis sur la question.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

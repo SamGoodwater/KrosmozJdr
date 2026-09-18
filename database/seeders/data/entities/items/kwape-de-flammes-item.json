@@ -10,7 +10,7 @@
         "description": "Très peu irritante, mais un peu quand même il faut l'avouer, cette cape ne pourra pas hélas vous faire voler, ni même planer. Même en y cousant un grand \"M\" dessus, ça ne marchera pas, certains y croyaient pourtant dur comme fer. Dommage.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

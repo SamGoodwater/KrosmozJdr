@@ -10,7 +10,7 @@
         "description": "Ce casque directement taillé dans la pierre vaut son pesant d'or. Il saura vous protéger des attaques d'un Craqueboule tout en vous permettant d'enchaîner des coups de boules dignes du Désiroboule. De quoi faire perdre la boule à tous vos adversaires.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

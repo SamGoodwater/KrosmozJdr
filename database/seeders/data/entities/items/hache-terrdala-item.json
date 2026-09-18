@@ -10,7 +10,7 @@
         "description": "Cette hache a été dès le début, pensée pour couper des êtres vivants. Attention, une seule erreur de manipulation de votre part, et vous pourriez vous retrouver diminué de moitié.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -24,7 +24,7 @@ final class CharacteristicRespecScrollSeederImporterTest extends TestCase
         $this->assertCount(24, $first['created']);
         $this->assertSame([], $first['updated']);
         $this->assertSame([], $first['skipped']);
-        $this->assertSame(24, Consumable::query()->where('state', Consumable::STATE_PLAYABLE)->count());
+        $this->assertSame(24, Consumable::query()->where('state', Consumable::STATE_AUTO)->count());
 
         $petitChance = Consumable::query()->where('dofusdb_id', '809')->first();
         $this->assertNotNull($petitChance);
@@ -55,7 +55,7 @@ final class CharacteristicRespecScrollSeederImporterTest extends TestCase
         $second = $importer->import($catalog);
         $this->assertSame([], $second['created']);
         $this->assertCount(24, $second['updated']);
-        $this->assertSame(24, Consumable::query()->where('state', Consumable::STATE_PLAYABLE)->count());
+        $this->assertSame(24, Consumable::query()->where('state', Consumable::STATE_AUTO)->count());
         $this->assertSame(1000, $petitChance->fresh()->totalPriceKamas());
     }
 
@@ -77,7 +77,7 @@ final class CharacteristicRespecScrollSeederImporterTest extends TestCase
         app(CharacteristicRespecScrollSeederImporter::class)->import($catalog);
 
         $existing->refresh();
-        $this->assertSame(Consumable::STATE_PLAYABLE, $existing->state);
+        $this->assertSame(Consumable::STATE_AUTO, $existing->state);
         $this->assertFalse((bool) $existing->auto_update);
         $this->assertSame(0, $existing->resources()->count());
         $this->assertSame(1000, $existing->totalPriceKamas());

@@ -10,7 +10,7 @@
         "description": "Idéale pour le jardin, la Brouteuse peut aussi servir de paillasson pour votre entrée de maison. Conçue à la base pour les Sadidas, elle n'abîme pas les poils, même les plus fragiles. Certains vont même jusqu'à dire qu'elle ralentit leur chute.",
         "recipe": null,
         "rarity": 3,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Les Pandawas se servent de cette cape comme protection contre les intempéries et comme accessoire de danse. Ils la posent à terre, au centre d'un cercle de danseurs éméchés. Puis, ils commencent leur chorégraphie improvisée sans que le pied touche le sol en dehors de la zone délimitée par ce vêtement.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

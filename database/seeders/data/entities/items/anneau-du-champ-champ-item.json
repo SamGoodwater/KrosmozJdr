@@ -10,7 +10,7 @@
         "description": "Le Champ Champ n'a jamais été connu pour être une créature très sympathique. Il vous empoisonne la vie dès qu'il peut, il mord assez fort, et a très mauvais caractère. C'est étonnant comme ces vilaines petites créatures peuvent parfois vous faire penser à un conjoint.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

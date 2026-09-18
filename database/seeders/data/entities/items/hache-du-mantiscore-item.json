@@ -10,7 +10,7 @@
         "description": "L'objectif ici n'est pas de trancher, une simple piqûre est déjà suffisamment dangereuse.",
         "recipe": null,
         "rarity": 3,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

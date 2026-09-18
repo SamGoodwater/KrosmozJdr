@@ -10,7 +10,7 @@
         "description": "Cet anneau est si léger, qu'il pourrait s'envoler au premier coup de vent. Mais ne rêvez pas, si cela se produit, vous ne vous envolerez pas avec lui. On se moquera de vous dans le meilleur des cas.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

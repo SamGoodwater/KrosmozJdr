@@ -10,7 +10,7 @@
         "description": "Alors qu'il n'a pas de maître, le Kwakwa a lui aussi un anneau matricule. Il se sert de celui des Kwaks pour les identifier et les retrouver lorsqu'ils se perdent pour les ramener au nid. Il se sert du sien pour qu'on puisse venir le chercher quand il se perd en cherchant les Kwaks perdus. À tourner ainsi en rond, ils ne sont jamais sortis de la montagne des Craqueleurs.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

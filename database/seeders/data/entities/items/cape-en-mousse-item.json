@@ -10,7 +10,7 @@
         "description": "Cette cape est idéale pour le camouflage en milieu naturel, mais uniquement s'il n'y a personne pour vous voir.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

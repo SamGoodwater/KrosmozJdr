@@ -10,7 +10,7 @@
         "description": "Cette épée servait autrefois à découper des blocs de granit pour confectionner les murailles des cités prestigieuses telles que Bonta ou Brâkmar. Aujourd'hui, cette arme est avant tout recherchée pour sa capacité à écraser toutes sortes de créatures vivantes, consentantes ou pas.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

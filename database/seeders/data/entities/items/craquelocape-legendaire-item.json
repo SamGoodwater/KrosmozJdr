@@ -10,7 +10,7 @@
         "description": "Cette cape épaisse en pierre brute fera de vous une brute épaisse en pierre.",
         "recipe": null,
         "rarity": 2,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

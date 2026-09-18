@@ -14,14 +14,14 @@ use Illuminate\Console\Command;
  * Base → seeder : écrit les équipements de la base dans les fichiers JSON versionnés.
  *
  * @example php artisan items:seeder-export
- * @example php artisan items:seeder-export --state=playable --state=draft --prune
+ * @example php artisan items:seeder-export --state=auto --state=draft --prune
  */
 final class ItemsSeederExportCommand extends Command
 {
     use GuardsProductionEnvironment;
 
     protected $signature = 'items:seeder-export
-        {--state=* : États retenus (défaut : playable). Vide + --all = tous}
+        {--state=* : États retenus (défaut : auto). Vide + --all = tous}
         {--all : Exporte tous les états}
         {--id=* : Restreint à des identifiants d’items}
         {--prune : Supprime les fichiers qui ne correspondent plus à la sélection}';
@@ -76,6 +76,6 @@ final class ItemsSeederExportCommand extends Command
             (array) $this->option('state')
         )));
 
-        return $raw === [] ? ['playable'] : $raw;
+        return $raw === [] ? ['auto'] : $raw;
     }
 }

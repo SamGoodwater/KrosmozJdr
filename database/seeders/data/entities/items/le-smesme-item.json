@@ -10,7 +10,7 @@
         "description": "Après plusieurs nuits de dur labeur pour réaliser cette amulette, le plus grand bijoutier d'Astrub, connu pour avoir été élevé par les Bworks s'exclama devant une foule ébahie : \"C 1 pur amu tro bi1\". Même l'illustre historien Champo Gnon ne parvint pas à déchiffrer ce que le bijoutier avait voulu dire.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

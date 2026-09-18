@@ -10,7 +10,7 @@
         "description": "Ces bottes sont d'un confort inégalé, l'intérieur a l'air d'être doublé en laine de Bouftou, mais on peut ressentir également comme un liquide circulant entre les orteils. Reste à savoir si c'est de la bave ou du sang de Bouftou. Peu importe.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

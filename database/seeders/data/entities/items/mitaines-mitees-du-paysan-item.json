@@ -10,7 +10,7 @@
         "description": "Ces mitaines mitées sont de véritables bijoux. On raconte qu'elles sont recouvertes de poussière de diamant, ce qui leur confère une résistance extraordinaire. Elles disposent d'une face abrasive, idéale pour frotter le derrière des Bouftous, ou celui de votre épouse.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

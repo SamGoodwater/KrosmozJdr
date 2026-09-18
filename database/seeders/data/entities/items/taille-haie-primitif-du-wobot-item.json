@@ -10,7 +10,7 @@
         "description": "L'écart entre les deux pointes de ce taille-haie correspond à celui des yeux des Lenalds... Mais jusqu'où iront ces howwibles Wabbits ?",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

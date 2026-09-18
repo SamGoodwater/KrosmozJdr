@@ -10,7 +10,7 @@
         "description": "Idéales comme patins à glace sur les lacs gelés, ces bottes sont également très utiles pour garder les pieds au frais, ou pour y stocker votre goûter durant les journées de forte chaleur. Il est cependant déconseillé de les faire sécher au coin du feu, sous peine de ne plus jamais les revoir.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

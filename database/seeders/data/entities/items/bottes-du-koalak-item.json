@@ -10,7 +10,7 @@
         "description": "Ces bottes sont en réalité des pieds de Koalaks, sauvagement arrachés à leur propriétaire, puis vidés de leur contenu avant d'être rembourrés avec des poils de Koalaks. À la fois terrifiantes et séduisantes, ces bottes feront de vous la terreur d'Astrub.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

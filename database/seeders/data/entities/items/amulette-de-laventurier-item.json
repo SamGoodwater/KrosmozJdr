@@ -10,7 +10,7 @@
         "description": "Pas très classe, pas très efficace, mais sympathique lorsque l'on possède la panoplie.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

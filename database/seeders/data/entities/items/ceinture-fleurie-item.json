@@ -10,7 +10,7 @@
         "description": "Avec cette ceinture décorée de petits pétales autour de la taille, vous pourrez sans problème vous faire passer pour une danseuse étoile au milieu d'un combat perdu d'avance. De quoi décontenancer une armée de Chafers, pour retourner la situation à votre avantage.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

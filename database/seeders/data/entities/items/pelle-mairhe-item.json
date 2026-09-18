@@ -10,7 +10,7 @@
         "description": "Cette pelle est vraiment antipathique. Personne ne sait réellement pourquoi, mais les Pelles Mairhes sont toujours insupportables. Heureusement, qu'elles ont tout de même des bons côtés, même si on les cherche encore à l'heure actuelle.",
         "recipe": null,
         "rarity": 2,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

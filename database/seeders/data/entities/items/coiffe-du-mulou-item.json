@@ -10,7 +10,7 @@
         "description": "Avec cette tête de Mulou sur le crâne, vous ressemblez à Bernaize Mainarht, illustre ménestrel en avance sur son temps, dont la tête fut retrouvée coincée dans la gueule d'un Mulou agonisant, n'ayant pas supporté les chansons que le ménestrel avait tenté de lui infliger.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

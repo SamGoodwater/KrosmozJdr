@@ -10,7 +10,7 @@
         "description": "Une cape pratique et résistante, qui ne fera pas de vous une célébrité, mais comme vous n'en étiez pas une jusqu'à maintenant, où est le problème ?",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

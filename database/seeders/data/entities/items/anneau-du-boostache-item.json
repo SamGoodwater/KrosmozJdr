@@ -10,7 +10,7 @@
         "description": "Peu importe au Boostache d'avoir perdu son anneau, puisqu'il n'a pas de doigts. D'ailleurs la seule chose qui lui importe c'est sa moustache. C'est un bien petit trophée que vous tenez là.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

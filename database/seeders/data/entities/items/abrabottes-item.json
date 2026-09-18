@@ -10,7 +10,7 @@
         "description": "Les effets de cette paire de Bottes peuvent aussi parfaitement être retrouvés en se rendant dans une taverne. Il faut ensuite consommer un peu, voire beaucoup pour un effet optimum. Le lendemain vous aurez des jambes aussi lourdes que ces bottes.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

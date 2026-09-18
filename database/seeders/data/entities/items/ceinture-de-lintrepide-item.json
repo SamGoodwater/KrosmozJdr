@@ -10,7 +10,7 @@
         "description": "Vous n'arriviez pas à cacher votre épée ? Pas de problème, vous pourrez la coincer entre vos poignées d'amour et cette ceinture.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

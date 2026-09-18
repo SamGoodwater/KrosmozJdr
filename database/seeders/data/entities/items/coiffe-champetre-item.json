@@ -10,7 +10,7 @@
         "description": "Si vous avez toujours rêvé d'être fleuriste et d'avoir une haleine parfumée à l'eau de rose, c'est le moment d'adopter cette étrange coiffe.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

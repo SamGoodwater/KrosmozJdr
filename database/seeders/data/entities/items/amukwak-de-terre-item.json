@@ -10,7 +10,7 @@
         "description": "Jadis portée par Oto Mustam, chef des guerriers de Brâkmar, cette petite amulette ne lui servait qu'à se faire beau lors des orgies organisées à Brâkmar. Tout un programme.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

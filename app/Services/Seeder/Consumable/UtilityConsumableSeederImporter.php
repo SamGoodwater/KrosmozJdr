@@ -50,7 +50,7 @@ final class UtilityConsumableSeederImporter
                 'effect' => $entry['effect'],
                 'recipe' => null,
                 'rarity' => $entry['rarity'],
-                'state' => Consumable::STATE_PLAYABLE,
+                'state' => Consumable::STATE_AUTO,
                 'read_level' => 0,
                 'write_level' => 3,
                 'dofus_version' => '3',

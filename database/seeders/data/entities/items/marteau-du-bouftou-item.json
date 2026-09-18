@@ -10,7 +10,7 @@
         "description": "Le manuel de l'utilisateur explique que ce surprenant marteau est capable de libérer une énergie colossale lorsqu'il est correctement manié. Encore un manuel Osamodas traduit en Sadida...",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Une bonne Corne de Bouftou, c'est une Corne qui procure calme et sagesse. Un Bon pendentif de Bouftou vous procurera donc sagesse et calme. Ou l'inverse. Ou autre chose. Ou alors rien.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

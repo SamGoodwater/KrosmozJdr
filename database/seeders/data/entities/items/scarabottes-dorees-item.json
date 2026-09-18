@@ -10,7 +10,7 @@
         "description": "Ces bottes crochues permettent d'escalader facilement les falaises les plus abruptes, ou de labourer les champs sans charrue.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

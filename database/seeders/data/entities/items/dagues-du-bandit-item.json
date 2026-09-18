@@ -10,7 +10,7 @@
         "description": "Ces dagues aiguisées sont populaires auprès des bandits et impopulaires auprès des jeunes aventuriers pour les mêmes raisons, elles disposent d'un enchantement leur permettant de voler les kamas de ses adversaires. Une forme d'impôt assez originale.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

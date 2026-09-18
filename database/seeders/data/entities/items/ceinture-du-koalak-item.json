@@ -10,7 +10,7 @@
         "description": "Cette ceinture en feuilles de Kaliptus diffuse une délicieuse odeur, capable d'en masquer d'autres. Elle est en outre parfaite pour masquer vos rondeurs.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

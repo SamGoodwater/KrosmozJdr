@@ -10,7 +10,7 @@
         "description": "Cette amulette a jadis appartenu au grand bandit \"Thisme\", réputé pour sa cruauté sans limite et sa mort idiote. Sa vie fût digne d'un conte d'Eniripsa, il mourût noyé et écrasé dans un pressoir à huile alors qu'il venait tout juste de purger une peine de prison de plus d'une centaine d'années, pour avoir volé une noix de cajou.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

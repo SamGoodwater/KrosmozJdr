@@ -10,7 +10,7 @@
         "description": "Ce petit anneau ne sert à rien, sinon à être très voyant, histoire de montrer aux gens que vous existez.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Dépourvue de fils et de poils, cette Cape reste un mystère pour les têtes pensantes d'Amakna, ce qui ne doit pas représenter plus d'une dizaine de personnes.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Ce marteau réduit si facilement les crânes en bouillie qu'il a pris une élégante teinte rouge tomate.",
         "recipe": null,
         "rarity": 2,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

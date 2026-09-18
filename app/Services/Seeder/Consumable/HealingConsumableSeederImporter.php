@@ -59,7 +59,7 @@ final class HealingConsumableSeederImporter
                 'effect' => HealingConsumableCatalog::effectText($entry['heal']),
                 'recipe' => null,
                 'rarity' => 0,
-                'state' => Consumable::STATE_PLAYABLE,
+                'state' => Consumable::STATE_AUTO,
                 'read_level' => 0,
                 'write_level' => 3,
                 'dofus_version' => '3',

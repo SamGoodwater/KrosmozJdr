@@ -10,7 +10,7 @@
         "description": "La plupart des aventuriers trouvent cette amulette particulièrement difficile à porter : non pas à cause de son poids trop élevé, de ses prérequis trop hauts ou de sa puissance trop faible, mais à cause de la moustache qui l'orne. C'est d'ailleurs probablement parce qu'il assume entièrement la sienne que le Boostache est un monstre aussi respecté.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

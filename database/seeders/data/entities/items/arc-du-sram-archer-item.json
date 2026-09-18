@@ -10,7 +10,7 @@
         "description": "Quand les dagues ne suffisent plus, que les dieux se moquent de vous, à vous de rechercher votre propre style de combat. Certains Srams l'ont bien compris, d'autres espèrent que les dieux leur viennent en aide.",
         "recipe": null,
         "rarity": 3,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

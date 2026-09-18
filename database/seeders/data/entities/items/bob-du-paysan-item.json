@@ -10,7 +10,7 @@
         "description": "Pour se protéger du soleil lorsque vous travaillez dans les champs, rien de mieux qu'un Ploukosse. Pour se protéger du soleil lorsque vous travaillez dans les champs et que vous êtes pauvre, rien de mieux que le célèbre Bob du Paysan.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

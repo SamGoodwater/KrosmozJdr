@@ -10,7 +10,7 @@
         "description": "Incroyablement lourdes, mais néanmoins assez efficaces, ces bottes en pierre vous permettront enfin d'avoir une excuse, lorsque vous traînez des pieds pour défendre votre percepteur dans un combat perdu d'avance.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

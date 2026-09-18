@@ -10,7 +10,7 @@
         "description": "Ces bottes sont rembourrées avec de la fourrure d'ours. De quoi garder les pieds au chaud même pour ceux qui ont le sang froid.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

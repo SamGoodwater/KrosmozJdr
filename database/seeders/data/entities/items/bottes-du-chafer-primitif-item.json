@@ -10,7 +10,7 @@
         "description": "Le cordonnier qui a créé ces bottes s'est trompé et les a faites à l'image de celles du Chafer Rōnin. Il a sûrement pensé que vous aviez suffisamment l'air primitif sans ça.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

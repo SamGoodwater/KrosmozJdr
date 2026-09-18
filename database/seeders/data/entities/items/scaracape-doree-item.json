@@ -10,7 +10,7 @@
         "description": "Plus dorée qu'une Scaracape classique et moins noire qu'une Scaracape Noire, cette cape est parfaite pour cacher vos excroissances. Elle servait autrefois au Scarabosse Doré qui l'utilisait pour cacher son horrible bosse. De nos jours, cette cape est avant tout utilisée pour cacher les horribles postérieurs. Autant dire que cette cape est populaire.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

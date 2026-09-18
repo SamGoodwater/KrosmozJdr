@@ -10,7 +10,7 @@
         "description": "Utilisé comme fouet, ce string peut se révéler plus efficace qu'il n'y paraît, pour remotiver vos compagnons de route, lorsque l'amour du risque commence à leur faire défaut.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

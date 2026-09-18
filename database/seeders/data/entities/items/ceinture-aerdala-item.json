@@ -10,7 +10,7 @@
         "description": "Les Pandawas du village d'Aerdala ont toujours voulu garder la taille fine. En serrant au maximum cette ceinture, vous devriez arriver au même résultat.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

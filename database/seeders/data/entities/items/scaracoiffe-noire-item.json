@@ -10,7 +10,7 @@
         "description": "C'est la coiffe parfaite pour ceux qui veulent avoir des idées noires.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

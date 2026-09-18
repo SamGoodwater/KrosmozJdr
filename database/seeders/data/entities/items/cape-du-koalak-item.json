@@ -10,7 +10,7 @@
         "description": "Cette cape vous protégera de la majorité des attaques, mais pas du ridicule.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

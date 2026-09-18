@@ -10,7 +10,7 @@
         "description": "Cette cape a tout pour plaire : sa résistance, son confort, sa couleur, sa rareté... En revanche son odeur est redoutable pour les parois nasales. Mais bon, on ne peut pas tout avoir non plus.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

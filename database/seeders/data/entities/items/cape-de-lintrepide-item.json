@@ -10,7 +10,7 @@
         "description": "Cette cape permet de voler, il suffit de fermer les yeux, serrer les poings, ouvrir la bouche et sauter d'une falaise en écartant les bras tout en criant \"je vole\". Quelques instants plus tard, vous vous réveillerez avec deux jambes cassées.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Cette magnifique ceinture augmente la vitalité de son porteur et lui permet de porter plus facilement ses objets. Elle est si douce qu'elle permet même de ligoter sa dulcinée lorsque celle-ci refuse de rester à la maison.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

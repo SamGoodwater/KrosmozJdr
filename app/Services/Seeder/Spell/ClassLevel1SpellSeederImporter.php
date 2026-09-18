@@ -15,7 +15,7 @@ use App\Support\ElementBitmask;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Importe les sorts de classe (kit niveau 1 + progression) en `playable`.
+ * Importe les sorts de classe (kit niveau 1 + progression) en `auto`.
  *
  * Idempotent. Upsert sur `dofusdb_id` ou `official_id`. Les catalogues d’une même
  * classe sont fusionnés avant le sync des emplacements. Les autres sorts de la
@@ -185,7 +185,7 @@ final class ClassLevel1SpellSeederImporter
             'auto_success_if_willing_target' => $entry['auto_success_if_willing_target'],
             'allows_reaction' => false,
             'duration' => $entry['duration'],
-            'state' => Spell::STATE_PLAYABLE,
+            'state' => Spell::STATE_AUTO,
             'read_level' => 0,
             'write_level' => 3,
             'auto_update' => false,

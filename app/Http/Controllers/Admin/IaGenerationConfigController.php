@@ -63,14 +63,14 @@ class IaGenerationConfigController extends Controller
     /**
      * État de l'aller-retour étalons d'équipement (base ↔ fichiers du dépôt).
      *
-     * @return array{relative_root: string, file_count: int, playable_count: int, can_export: bool, can_import: bool, allowed: bool}
+     * @return array{relative_root: string, file_count: int, auto_count: int, can_export: bool, can_import: bool, allowed: bool}
      */
     private function itemsSeederState(): array
     {
         return [
             'relative_root' => ItemSeederFileRepository::RELATIVE_ROOT,
             'file_count' => count(app(ItemSeederFileRepository::class)->paths()),
-            'playable_count' => Item::query()->where('state', Item::STATE_PLAYABLE)->count(),
+            'auto_count' => Item::query()->where('state', Item::STATE_AUTO)->count(),
             'can_export' => app()->environment(['local', 'testing']),
             'can_import' => ! app()->environment('production'),
             'allowed' => request()->user()?->isInteractiveSuperAdmin() === true,

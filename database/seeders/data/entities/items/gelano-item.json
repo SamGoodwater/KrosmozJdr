@@ -10,7 +10,7 @@
         "description": "Inutile de vous ronger les ongles avec cet anneau, léchez-vous les doigts !",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

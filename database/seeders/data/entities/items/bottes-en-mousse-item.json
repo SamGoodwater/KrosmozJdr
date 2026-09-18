@@ -10,7 +10,7 @@
         "description": "Avec ces bottes, un Eniripsa peut marcher sur l'eau, ce qui ne sert à rien puisqu'il peut voler, mais ça impressionne toujours les foules. Les autres pourront toujours se servir de ces bottes pour se gratter les pieds en marchant, ou tout simplement pour les nettoyer.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

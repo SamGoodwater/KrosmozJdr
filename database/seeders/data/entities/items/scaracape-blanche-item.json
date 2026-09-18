@@ -10,7 +10,7 @@
         "description": "Qui n'a jamais rêvé de revêtir une cape en coquille de Scarafeuilles ? Une fois équipée, vous devriez réussir à vous prendre pour un véritable Scarafeuille, et peut-être arriverez-vous à vous déplacer en glissant et en dérapant. De quoi décontenancer une horde de Trools.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

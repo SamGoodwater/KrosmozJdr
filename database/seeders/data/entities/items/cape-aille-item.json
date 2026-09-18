@@ -10,7 +10,7 @@
         "description": "Faite dans un tissu doux et résistant, cette cape donne aux Ecaflips l'impression qu'ils sont toujours des as, quoi qu'il arrive. Lorsqu'ils remportent la victoire, ils adorent se draper dans ce vêtement avant de réclamer leur récompense : « Et maintenant, t'as qu'à payer ! »",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Cet arc surprenant permet de voler la vie de ses adversaires, et parfois même, de voler vos adversaires à la vie, ce qui ne signifie rien en soi, mais reste tout de même très impressionnant.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Ce petit anneau du Kitsou devrait vous protéger des petits tracas de la vie de tous les jours.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "On raconte que le Captain Chafer a tenté de voler cette cape pour remplacer ses célèbres sous-vêtements en cuir. Mais elle ne lui allait pas, elle n'incarnait pas assez la perversité et la perfidie pour lui.",
         "recipe": null,
         "rarity": 2,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

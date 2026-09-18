@@ -10,7 +10,7 @@
         "description": "Ces oreilles ne vous permettront pas de mieux entendre, mais permettront à vos amis de mieux vous retrouver dans la foule, et à vos ennemis, de mourir de rire. Une paire d'oreilles qui s'avère avec le temps vraiment indispensable.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

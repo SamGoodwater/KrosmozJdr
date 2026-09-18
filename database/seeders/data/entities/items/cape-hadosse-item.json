@@ -10,7 +10,7 @@
         "description": "Les couleurs chaudes et réconfortantes de cette cape peuvent entraîner son porteur dans un voyage imaginaire, dans des contrées ensoleillées, pleines de canyons creusés par l'érosion, et de décors rupestres taillées dans les roches et les falaises. C'est extrêmement utile pour oublier le froid et la grisaille par temps de pluie.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

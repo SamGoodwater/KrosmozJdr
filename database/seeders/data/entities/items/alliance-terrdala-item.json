@@ -10,7 +10,7 @@
         "description": "Cette alliance provient du village de Terrdala. Plus proche du porte-bonheur que de la relique magique, elle vous permettra tout de même de faire croire à vos amis que vous avez trouvé l'âme sœur.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Si vous voulez être la plus belle ce soir pour aller danser, c'est la cape qu'il vous faut.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

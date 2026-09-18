@@ -10,7 +10,7 @@
         "description": "Fait très étrange, l'Arakne, n'a que quatre pattes velues, ce qui signifie qu'avec seulement quatre coups de haches, vous pourrez la transformer en Arakne Tronc.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

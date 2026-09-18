@@ -10,7 +10,7 @@
         "description": "Pour garder les cheveux au vent même une fois équipé d'une coiffe, rien ne vaut cette sympathique Kwakoiffe du Vent, qui vous permettra sans aucun doute de laisser libre court à votre expression capillaire dans la plupart des circonstances. C'est suffisant pour réussir à interloquer le plus blasé des Chafers.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

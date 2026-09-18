@@ -10,7 +10,7 @@
         "description": "Cette terrifiante baguette est en fait un boyau de larve desséché puis enchanté, et enfin réhydraté. Il ne ressemble plus à rien désormais, un peu comme vous en fait, sauf que vous n'êtes même pas enchanté.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

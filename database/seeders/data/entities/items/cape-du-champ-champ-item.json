@@ -10,7 +10,7 @@
         "description": "La seule chose qui soit plus impressionnante qu'un Champ Champ enragé, c'est un Champ Champ enragé avec une cape. En effet, cette cape incarne une certaine forme de sur-puissance vestimentaire, bien qu'elle soit avouons-le, assez laide.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

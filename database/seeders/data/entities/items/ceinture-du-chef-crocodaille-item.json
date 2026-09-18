@@ -10,7 +10,7 @@
         "description": "Trop rigide pour servir de fouet, cette ceinture recouverte de minuscules pierres précieuses peut néanmoins être utilisée de manière plus conventionnelle, pour éviter que vos guêtres ne tombent sur vos genoux par exemple.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

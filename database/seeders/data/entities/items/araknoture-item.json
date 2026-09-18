@@ -10,7 +10,7 @@
         "description": "Confectionnée à partir de vieux restes d'Araknes en décomposition, cette ceinture a tout pour plaire. Elle reprendra parfois vie et prendra un malin plaisir à vous mordre les hanches. Sales bêtes !",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

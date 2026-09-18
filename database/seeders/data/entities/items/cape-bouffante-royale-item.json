@@ -10,7 +10,7 @@
         "description": "Cette cape portée par le grand Bouftou Royal confère, en plus d'un style fabuleux, une force hors du commun.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

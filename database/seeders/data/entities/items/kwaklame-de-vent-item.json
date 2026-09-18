@@ -10,7 +10,7 @@
         "description": "Idéale pour couper les nuages, cette lame pourra également vous servir à faire du vent si vous l'agitez comme un éventail. Une excellente technique pour décimer les Moskitos ou défigurer vos amis.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

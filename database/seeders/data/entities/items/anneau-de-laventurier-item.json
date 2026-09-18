@@ -10,7 +10,7 @@
         "description": "Un petit anneau sympathique pour les débutants, et qui amusera les jeunes enfants, ou les Ecaflips.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

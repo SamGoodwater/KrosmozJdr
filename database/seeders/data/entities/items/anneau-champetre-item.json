@@ -10,7 +10,7 @@
         "description": "Avec ce petit anneau autour du doigt, vous pourrez presque essayer de passer inaperçu au milieu des champs.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

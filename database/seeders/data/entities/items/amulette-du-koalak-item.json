@@ -10,7 +10,7 @@
         "description": "Cette amulette ne ressemble à aucune autre amulette, tout simplement car aucune amulette ne lui ressemble.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -12,10 +12,10 @@ Commandes métier hors recettes CLI quotidiennes. Vocabulaire Artisan : [app/Con
 
 ## Étalons d’équipement versionnés
 
-Les objets relus à la main vivent en JSON sous `database/seeders/data/entities/items/` (un fichier par item), pour pouvoir reconstruire le socle jouable sur n’importe quelle base.
+Les objets relus à la main vivent en JSON sous `database/seeders/data/entities/items/` (un fichier par item), pour pouvoir reconstruire le socle `auto` sur n’importe quelle base.
 
 ```bash
-php artisan items:seeder-export            # base → fichiers (playable, dev uniquement)
+php artisan items:seeder-export            # base → fichiers (auto, dev uniquement)
 php artisan items:seeder-export --all --prune
 php artisan items:seeder-import --dry-run  # fichiers → base
 php artisan items:seeder-import

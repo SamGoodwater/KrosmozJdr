@@ -10,7 +10,7 @@
         "description": "Ces Getas sont si légères qu'elles poussent leur propriétaire à courir dans tous les sens et à sauter partout lorsqu'un combat commence. Les aventuriers expérimentés détestent ces getas, qui permettent aux premiers venus de prendre part à un combat auquel ils n'ont pas été invités.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

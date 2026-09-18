@@ -10,7 +10,7 @@
         "description": "Cette amulette semble avoir été confectionnée à partir d'une petite tête de Piou desséchée. La coquetterie n'a aucune limite.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

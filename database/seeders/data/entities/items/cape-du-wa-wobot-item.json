@@ -10,7 +10,7 @@
         "description": "Cette cape pèse bien lourd sur vos épaules. Est-ce le poids de la culpabilité du Wa Wabbit ou plutôt de la vôtre ?",
         "recipe": null,
         "rarity": 2,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

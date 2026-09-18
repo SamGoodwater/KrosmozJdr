@@ -10,7 +10,7 @@
         "description": "Ce bracelet ressemble étrangement à un gant et pourtant ce n'est pas un gant mais bien un bracelet. Les apparences sont parfois trompeuses.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

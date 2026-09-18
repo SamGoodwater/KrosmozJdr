@@ -10,7 +10,7 @@
         "description": "Travailler la Branche d'Abraknyde n'est pas chose aisée. Mais avec de la persévérance, on peut finir par obtenir un anneau à la fois sobre, élégant et raffiné. Tout le contraire d'un Sadida dans une taverne.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

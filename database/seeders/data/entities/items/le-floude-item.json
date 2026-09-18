@@ -10,7 +10,7 @@
         "description": "Le Floude n'est pas réellement un chapeau mais un parasite se développant sur le crâne des personnes trop volubiles, excessivement bruyantes, ou simplement verbalement agressives. Son aspect repoussant fait fuir les gens, ce qui pousse son porteur à crier encore plus fort pour se faire entendre, sans succès évidement, puisqu'il n'a rien à dire de toute façon.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

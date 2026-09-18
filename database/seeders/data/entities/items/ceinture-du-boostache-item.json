@@ -10,7 +10,7 @@
         "description": "Enfant, le Boostache ne cessait de jouer à 1, 2, 3, soleil. Encore aujourd'hui, il adore se faufiler dans le dos des aventuriers, s'arrêter net s'ils se retournent, l'air de rien, pour les attaquer sauvagement une fois qu'il a fini par les atteindre. C'est puéril et exaspérant, mais cette technique a fait ses preuves.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

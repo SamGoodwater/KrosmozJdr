@@ -10,7 +10,7 @@
         "description": "Cette petite ceinture mettra vos hanches en valeur l'espace d'un combat. Elle servira ensuite à contenir vos tripes lorsqu'un sanglier des plaines un peu énervé vous aura éventré au fin fond des bois.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

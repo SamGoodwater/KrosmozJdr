@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Catalogue JDR en relecture (`auto`)
+
+Les sorts de classe, monstres du bestiaire, invocations, équipements étalons, consommables JDR et PNJ Incarnam ne sont plus marqués **jouables** au seed : ils arrivent en **auto**, à relire. Un `project:seed` ne les republie plus tout seuls.
+
 ## Septembre 2026 — Équilibrage des entités dans Pour les MJ
 
 Les tables de calibrage (classes, sorts, objets, loot, économie…) ne sont plus dans le menu Règles : elles passent dans **Pour les MJ**, visibles seulement des meneurs. Les joueurs gardent les téléchargements (PDF, fiche, logo) sous **Règles → Ressources**. Le PDF du livre ne contient plus ce chapitre.

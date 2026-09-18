@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
  * Écrit les équipements de la base vers les fichiers JSON versionnés (base → seeder).
  *
  * @example
- * $result = $exporter->export(states: ['playable'], prune: true);
+ * $result = $exporter->export(states: ['auto'], prune: true);
  */
 final class ItemSeederExporter
 {

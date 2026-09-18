@@ -10,7 +10,7 @@
         "description": "Cette terrible hache a permis de décapiter plus d'un aventurier imprudent. Et pourtant, elle coupe assez mal, il faut parfois une dizaine de tentatives pour parvenir à couper un cou un peu résistant.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -51,7 +51,7 @@ final class ItemsSeederRoundTripTest extends TestCase
         $this->assertNotNull($restored);
         $this->assertSame('Cape du Wa Wobot', $restored->name);
         $this->assertSame(2, $restored->rarity);
-        $this->assertSame(Item::STATE_PLAYABLE, $restored->state);
+        $this->assertSame(Item::STATE_AUTO, $restored->state);
         $this->assertSame($type->id, $restored->item_type_id);
         $this->assertFalse((bool) $restored->auto_update);
         $this->assertSame(
@@ -78,7 +78,7 @@ final class ItemsSeederRoundTripTest extends TestCase
         Item::factory()->create([
             'name' => 'Cape sans clé',
             'level' => '8',
-            'state' => Item::STATE_PLAYABLE,
+            'state' => Item::STATE_AUTO,
             'dofusdb_id' => null,
             'official_id' => null,
             'item_type_id' => $type->id,
@@ -125,7 +125,7 @@ final class ItemsSeederRoundTripTest extends TestCase
         return Item::factory()->create([
             'name' => 'Cape du Wa Wobot',
             'level' => '8',
-            'state' => Item::STATE_PLAYABLE,
+            'state' => Item::STATE_AUTO,
             'rarity' => 2,
             'dofusdb_id' => '14492',
             'official_id' => null,

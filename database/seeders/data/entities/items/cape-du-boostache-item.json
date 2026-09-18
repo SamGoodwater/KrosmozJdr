@@ -10,7 +10,7 @@
         "description": "Avec cette cape qui, comme le Boostache, brille dans le noir, vous vous ferez repérer systématiquement lors de vos infiltrations, n'arriverez plus à dormir, et exaspérerez vos proches en soirée. Idéal pour se pimenter l'existence ou se faire passer pour une lumière.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

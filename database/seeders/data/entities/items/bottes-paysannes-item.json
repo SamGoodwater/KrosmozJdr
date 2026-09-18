@@ -10,7 +10,7 @@
         "description": "Ces bottes sont rembourrées avec de la paille de blé, ce qui permet d'absorber la transpiration et de cultiver des champignons toxiques à moindre frais. Grâce à leur semelle molle, ces bottes sont recommandées par les arbitres de la fédération de Boufball.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

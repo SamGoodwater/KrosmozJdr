@@ -10,7 +10,7 @@
         "description": "La cape Hulco tire son origine du nom d'un Crâ atypique. Celui-ci possédait un sens de l'orientation très particulier. Il était capable de se perdre chez lui. Et pourtant ce n'était pas bien grand ! Son problème résidait dans une déformation des fonctions du cerveau : pour lui, tous les lieux ressemblent une vaste plage, entourée de cocotiers, baignée par la lumière chaude d'un soleil couchant.",
         "recipe": null,
         "rarity": 3,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

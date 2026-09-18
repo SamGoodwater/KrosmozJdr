@@ -10,7 +10,7 @@
         "description": "Lame froide et tranchante, elle réveillera les instincts les plus primitifs de ceux qui l'utilisent.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

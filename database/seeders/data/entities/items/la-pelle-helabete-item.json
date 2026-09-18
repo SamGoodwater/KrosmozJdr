@@ -10,7 +10,7 @@
         "description": "On raconte que celui qui a forgé cette pelle ressemblait à une véritable bête. Une sorte de croisement entre un Sadida et un Mulou. Sa pelle serait tombée amoureuse de lui. Vraiment une histoire débile.",
         "recipe": null,
         "rarity": 1,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

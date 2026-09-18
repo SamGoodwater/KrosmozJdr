@@ -10,7 +10,7 @@
         "description": "L'Homme Ours utilisait ce bâton pour dresser ses invocations d'ours, et parfois pour frapper les doigts de ses enfants, lorsque ces derniers ne faisaient pas leurs devoirs en revenant de l'école. Voilà un homme qui avait tout compris à l'éducation des enfants.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

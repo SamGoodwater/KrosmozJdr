@@ -10,7 +10,7 @@
         "description": "Si le Captain Chafer a disparu, sa dague elle, est bien entre vos mains. Si son manche est passé entre les mains du célèbre Captain Chafer, imaginez où la lame a pu passer...",
         "recipe": null,
         "rarity": 2,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

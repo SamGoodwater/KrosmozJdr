@@ -53,7 +53,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $pression = Spell::query()->where('dofusdb_id', '13106')->first();
         $this->assertNotNull($pression);
         $this->assertSame('Pression', $pression->name);
-        $this->assertSame(Spell::STATE_PLAYABLE, $pression->state);
+        $this->assertSame(Spell::STATE_AUTO, $pression->state);
         $this->assertFalse($pression->auto_update);
         $this->assertSame('3', $pression->pa);
         $this->assertSame('2', $pression->cast_per_turn);
@@ -87,7 +87,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertStringContainsString('+2 aux jets d’attaque', (string) $concentration->effect);
         $this->assertStringNotContainsString('1d4', (string) $concentration->effect);
 
-        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
+        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_AUTO)->count());
         $this->assertGreaterThan(0, $pression->effects()->count());
         $this->assertTrue($pression->spellTypes()->where('name', 'Offensif')->exists());
 
@@ -116,7 +116,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $second = $importer->import($catalog);
         $this->assertSame([], $second['created']);
         $this->assertCount(6, $second['updated']);
-        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
+        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_AUTO)->count());
         $this->assertSame('3', $pression->fresh()->pa);
     }
 
@@ -155,7 +155,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $cinglante = Spell::query()->where('dofusdb_id', '32427')->first();
         $this->assertNotNull($cinglante);
         $this->assertSame('Flèche Cinglante', $cinglante->name);
-        $this->assertSame(Spell::STATE_PLAYABLE, $cinglante->state);
+        $this->assertSame(Spell::STATE_AUTO, $cinglante->state);
         $this->assertFalse($cinglante->auto_update);
         $this->assertSame('3', $cinglante->pa);
         $this->assertSame('2', $cinglante->po_min);
@@ -187,7 +187,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame(Spell::RESOLUTION_ATTACK_ROLL, $recul?->resolution_mode);
         $this->assertFalse($recul?->is_magic);
 
-        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
+        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_AUTO)->count());
 
         $cra->refresh();
         $cinglantePivot = $cra->spells()->where('spells.id', $cinglante->id)->first()?->pivot;
@@ -245,7 +245,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $vivifiant = Spell::query()->where('dofusdb_id', '28572')->first();
         $this->assertNotNull($vivifiant);
         $this->assertSame('Mot Vivifiant', $vivifiant->name);
-        $this->assertSame(Spell::STATE_PLAYABLE, $vivifiant->state);
+        $this->assertSame(Spell::STATE_AUTO, $vivifiant->state);
         $this->assertFalse($vivifiant->auto_update);
         $this->assertSame('3', $vivifiant->pa);
         $this->assertSame('2', $vivifiant->cast_per_turn);
@@ -262,7 +262,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame(Spell::RESOLUTION_ATTACK_ROLL, $frayeur?->resolution_mode);
         $this->assertSame('agi', $frayeur?->attack_characteristic_key);
 
-        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
+        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_AUTO)->count());
 
         $eni->refresh();
         $vivifiantPivot = $eni->spells()->where('spells.id', $vivifiant->id)->first()?->pivot;
@@ -330,7 +330,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame('5', $invis?->pa);
         $this->assertSame(Spell::RESOLUTION_AUTO_SUCCESS, $invis?->resolution_mode);
 
-        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
+        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_AUTO)->count());
 
         $sram->refresh();
         $piegePivot = $sram->spells()->where('spells.id', $piege->id)->first()?->pivot;
@@ -393,7 +393,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame('5', $flou?->pa);
         $this->assertSame('sagesse', $flou?->save_characteristic_key);
 
-        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
+        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_AUTO)->count());
 
         $xelor->refresh();
         $aiguillePivot = $xelor->spells()->where('spells.id', $aiguille->id)->first()?->pivot;
@@ -455,7 +455,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame(Spell::RESOLUTION_AUTO_SUCCESS, $bouclier?->resolution_mode);
         $this->assertTrue($bouclier?->spellTypes()->where('name', 'Défensif')->exists());
 
-        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
+        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_AUTO)->count());
 
         $feca->refresh();
         $attaquePivot = $feca->spells()->where('spells.id', $attaque->id)->first()?->pivot;
@@ -521,7 +521,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame('invoquer', $sub?->subEffect?->slug);
         $this->assertSame($summon->id, (int) ($sub?->params['monster_id'] ?? 0));
 
-        $this->assertSame(6, Spell::query()->where('category', Spell::CATEGORY_CLASS)->where('state', Spell::STATE_PLAYABLE)->count());
+        $this->assertSame(6, Spell::query()->where('category', Spell::CATEGORY_CLASS)->where('state', Spell::STATE_AUTO)->count());
 
         $osa->refresh();
         $tofuPivot = $osa->spells()->where('spells.id', $tofu->id)->first()?->pivot;
@@ -582,7 +582,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame(Spell::RESOLUTION_SAVING_THROW, $maladresse?->resolution_mode);
         $this->assertSame('sagesse', $maladresse?->save_characteristic_key);
 
-        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
+        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_AUTO)->count());
 
         $enu->refresh();
         $piecesPivot = $enu->spells()->where('spells.id', $pieces->id)->first()?->pivot;
@@ -817,7 +817,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
             $this->assertSame([], $result['skipped'], $name);
             $spell = Spell::query()->where('dofusdb_id', $dofusId)->first();
             $this->assertSame($spellName, $spell?->name, $name);
-            $this->assertSame(Spell::STATE_PLAYABLE, $spell?->state, $name);
+            $this->assertSame(Spell::STATE_AUTO, $spell?->state, $name);
             $this->assertSame(6, $breed->fresh()->spells()->count(), $name);
         }
 
@@ -866,7 +866,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $colere = Spell::query()->where('dofusdb_id', '15661')->first();
         $this->assertNotNull($colere);
         $this->assertSame('Colère de Iop', $colere->name);
-        $this->assertSame(Spell::STATE_PLAYABLE, $colere->state);
+        $this->assertSame(Spell::STATE_AUTO, $colere->state);
         $this->assertSame('5', $colere->pa);
         $this->assertSame('10', $colere->level);
         $this->assertSame(Spell::RESOLUTION_SAVING_THROW, $colere->resolution_mode);

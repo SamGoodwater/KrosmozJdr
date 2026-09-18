@@ -10,7 +10,7 @@
         "description": "Le Scarabosse est une étrange créature. Bossue et laide depuis sa naissance, elle s'est retrouvée être la risée des autres Scarafeuilles. C'est peut-être pour cela que vous vous sentez si proche de cette créature.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

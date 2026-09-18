@@ -9,7 +9,7 @@ use App\Services\Seeder\Monster\ClassSummonSeederImporter;
 use Illuminate\Database\Seeder;
 
 /**
- * Invocations de classe + bestiaire JDR (`playable`).
+ * Invocations de classe + bestiaire JDR (`auto`).
  *
  * À jouer **avant** `SpellSeeder` pour que `invoquer` résolve `monster_id`.
  */

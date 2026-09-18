@@ -10,7 +10,7 @@
         "description": "Vêtu de Feuilles d'Abraknydes, vous pourrez vous pavaner au beau milieu de la forêt sans que l'on vous reconnaisse vraiment. Attention toutefois aux Abraknydes en quête de bourgeonnements printaniers.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

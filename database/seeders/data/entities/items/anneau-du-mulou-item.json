@@ -10,7 +10,7 @@
         "description": "Attention, cet anneau rendra votre doigt particulièrement malodorant. Une odeur qui risque d'en couvrir une autre. C'est peut-être pour votre doigt et votre entourage une très bonne chose...",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

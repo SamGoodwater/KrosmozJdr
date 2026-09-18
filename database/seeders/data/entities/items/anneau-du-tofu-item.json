@@ -10,7 +10,7 @@
         "description": "Cet anneau vraiment insignifiant tant il est ridicule, peut tout de même se révéler indispensable. En effet, vos ennemis risquent d'avoir tellement pitié de vous, qu'ils vous achèveront, plutôt que de vous laisser souffrir atrocement. Il faut toujours voir le bon côté des choses.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

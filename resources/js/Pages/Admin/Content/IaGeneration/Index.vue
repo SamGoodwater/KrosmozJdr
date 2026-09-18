@@ -31,7 +31,7 @@ const props = defineProps({
         default: () => ({
             relative_root: "",
             file_count: 0,
-            playable_count: 0,
+            auto_count: 0,
             can_export: false,
             can_import: false,
             allowed: false,
@@ -204,8 +204,8 @@ const seederForm = useForm({});
 
 function exportItemsToFiles() {
     requirePassword(
-        "Écrire les objets jouables dans le dépôt",
-        `Les objets à l’état jouable remplaceront le contenu de ${props.items_seeder.relative_root}. Les fichiers qui ne correspondent plus seront supprimés.`,
+        "Écrire les objets auto dans le dépôt",
+        `Les objets à l’état auto remplaceront le contenu de ${props.items_seeder.relative_root}. Les fichiers qui ne correspondent plus seront supprimés.`,
         "Écrire les fichiers",
         () => {
             seederForm.post(route("admin.content.ia-generation.items-seeder.export"), {
@@ -411,8 +411,8 @@ function importItemsFromFiles() {
                 <p class="mt-2 text-sm text-base-content/70">
                     <span class="font-medium">{{ items_seeder.file_count }}</span> fichier(s) dans
                     <code class="text-xs">{{ items_seeder.relative_root }}</code> ·
-                    <span class="font-medium">{{ items_seeder.playable_count }}</span> objet(s)
-                    jouable(s) en base.
+                    <span class="font-medium">{{ items_seeder.auto_count }}</span> objet(s)
+                    auto en base.
                 </p>
             </div>
 

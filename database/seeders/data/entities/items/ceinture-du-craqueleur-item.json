@@ -10,7 +10,7 @@
         "description": "Porter cette ceinture autour des hanches fera de vous un aventurier respecté. La porter sur la tête en guise de bandeau fera de vous la risée du village d'Astrub.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

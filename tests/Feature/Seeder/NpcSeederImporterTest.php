@@ -49,7 +49,7 @@ final class NpcSeederImporterTest extends TestCase
             'specialization',
         ])->first();
         $this->assertNotNull($milicien);
-        $this->assertSame(Npc::STATE_PLAYABLE, $milicien->state);
+        $this->assertSame(Npc::STATE_AUTO, $milicien->state);
         $this->assertFalse($milicien->auto_update);
         $this->assertSame('Iop', $milicien->breed?->name);
         $this->assertSame('Milicien·ne', $milicien->specialization?->name);

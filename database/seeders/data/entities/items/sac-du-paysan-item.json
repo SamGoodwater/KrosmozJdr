@@ -10,7 +10,7 @@
         "description": "Ce sac très en vogue chez les jeunes écoliers, est idéal pour entreposer des farines animales et végétales. Une fois ouvert, puis déplié et déchiré le long des coutures, il pourra vous servir de jupe si vous n'avez pas peur de montrer vos cuisses velues.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

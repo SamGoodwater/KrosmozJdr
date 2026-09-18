@@ -10,7 +10,7 @@
         "description": "Grâce à cette épée, vous êtes désormais un véritable boune accompli ! Vous en tirez une grande fierté et c'est exactement ce qu'un boune ferait, d'ailleurs.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

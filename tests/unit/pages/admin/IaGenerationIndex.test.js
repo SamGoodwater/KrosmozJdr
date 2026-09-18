@@ -40,7 +40,7 @@ const defaultProps = {
     items_seeder: {
         relative_root: "database/seeders/data/entities/items",
         file_count: 0,
-        playable_count: 0,
+        auto_count: 0,
         can_export: false,
         can_import: false,
         allowed: false,

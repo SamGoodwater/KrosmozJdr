@@ -10,7 +10,7 @@
         "description": "Lorsque le vent souffle dans ses plumes, le Kwak du Vent se sent libre comme l'air, et se laisse planer tel une vieille feuille morte emportée par une bourrasque. Contrairement aux idées reçues, c'est assez impressionnant.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

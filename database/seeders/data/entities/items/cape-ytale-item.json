@@ -10,7 +10,7 @@
         "description": "Ce vêtement joue un rôle primordial dans la prestance des Sacrieurs. Ils s'en servent comme bandage pour panser les plaies, comme serpillière pour essuyer le sang, comme descente de lit pour ne pas avoir froid aux pieds. On ne dira jamais à quel point les personnages de cette classe redoutent les sols gelés !",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

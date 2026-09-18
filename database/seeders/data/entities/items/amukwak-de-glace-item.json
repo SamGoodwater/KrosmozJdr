@@ -10,7 +10,7 @@
         "description": "Avec cette amulette autour du cou, vous pourriez tenter de faire croire à votre entourage que vous avez une haleine fraîche. Laissez tomber, c'est peine perdue.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

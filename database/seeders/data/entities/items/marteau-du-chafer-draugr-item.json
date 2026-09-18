@@ -10,7 +10,7 @@
         "description": "Se fiant à une obscure légende entendue sur les Chafers Draugr, certains aventuriers s'imaginent que si ils lancent ce marteau sur leurs ennemis, il leur reviendra dans la main tel un boomerang. On n'a jamais su si c'était vrai, personne n'ayant jamais réussi à le lancer plus loin que sur ses propres orteils.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

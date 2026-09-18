@@ -10,7 +10,7 @@
         "description": "Affublé de cette coiffe, vous ressemblerez à une Arakne sauvage. Dans le meilleur des cas, vous effraierez les Moskitos un peu naïfs.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

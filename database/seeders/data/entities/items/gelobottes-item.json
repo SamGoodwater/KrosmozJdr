@@ -10,7 +10,7 @@
         "description": "Ces bottes sont très confortables en été, car elles libèrent une odeur de fraise des bois, couvrant facilement l'odeur de transpiration qui pourrait se dégager des orteils d'un vieux Sadida aux pieds poilus.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Cet arc est léger, fin, élégant et sent bon la fleur de cerisier. Il est également meurtrier si l'on s'en sert pour autre chose que se pavaner.",
         "recipe": null,
         "rarity": 1,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

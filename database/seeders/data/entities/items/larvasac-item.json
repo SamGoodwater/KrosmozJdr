@@ -10,7 +10,7 @@
         "description": "Ce sac original mais sans fioritures était très en vogue il y a bien longtemps. Un exemple typique du mauvais goût de vos ancêtres.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

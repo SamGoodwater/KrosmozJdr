@@ -10,7 +10,7 @@
         "description": "Cette surprenante amulette a en fait été confectionnée à partir d'un Bouclier Reptilien dont on a détaché les multiples pierres précieuses. C'est donc un bijou particulièrement lourd à porter mais vraiment très résistant. Votre cou sera parfaitement protégé des vampires, mais aussi des suçons des villageoises un peu trop entreprenantes.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

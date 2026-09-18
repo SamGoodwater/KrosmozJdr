@@ -10,7 +10,7 @@
         "description": "Ce bâton servait à corriger les jeunes Pandawas un peu trop turbulents. Trois coups sur les doigts, quinze sur le derrière, soixante sur la tête, deux dans les yeux, et le tour était joué.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

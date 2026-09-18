@@ -10,7 +10,7 @@
         "description": "À la fois souples et légères, ces pantoufles restent chaudes l'hiver et fraîches l'été. Malheureusement, elles ne supportent pas les lavages en machine.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

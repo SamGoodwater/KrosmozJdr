@@ -10,7 +10,7 @@
         "description": "Ce sac en peau et en ailes de Moskitos faisait jadis fureur à la sortie des écoles. Aujourd'hui, il est totalement démodé, et a été remplacé dans le cœur des enfants par le Petit sac d'écolier du Chef Crocodaille. Du grand n'importe quoi, quand on voit que ce dernier est largement plus cher, et surtout beaucoup plus laid. Une sombre histoire de mode.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

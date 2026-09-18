@@ -10,7 +10,7 @@
         "description": "Une cape conçue spécialement pour ceux qui préfèrent cacher leur cape ? On aura tout vu... ou plutôt rien vu, en l'occurrence.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -23,7 +23,7 @@ final class UtilityConsumableSeederImporterTest extends TestCase
         $this->assertCount(10, $first['created']);
         $this->assertSame([], $first['updated']);
         $this->assertSame([], $first['skipped']);
-        $this->assertSame(10, Consumable::query()->where('state', Consumable::STATE_PLAYABLE)->count());
+        $this->assertSame(10, Consumable::query()->where('state', Consumable::STATE_AUTO)->count());
 
         $rappel = Consumable::query()->where('dofusdb_id', '548')->first();
         $this->assertNotNull($rappel);

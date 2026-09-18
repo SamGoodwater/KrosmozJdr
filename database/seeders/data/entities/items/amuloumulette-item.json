@@ -10,7 +10,7 @@
         "description": "Derrière ce surnom stupide, se cache en réalité une amulette relativement puissante, confectionnée à partir de crocs, de dents et d'ossements de Mulous, ce qui explique la terrible odeur qui s'en dégage. A défaut d'être assortie à votre cou, elle sera assortie à votre haleine.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

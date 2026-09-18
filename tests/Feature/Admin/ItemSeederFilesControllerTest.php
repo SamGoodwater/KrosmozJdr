@@ -55,7 +55,7 @@ class ItemSeederFilesControllerTest extends TestCase
             ->assertStatus(423);
     }
 
-    public function test_super_admin_exports_playable_items_then_replays_them(): void
+    public function test_super_admin_exports_auto_items_then_replays_them(): void
     {
         $superAdmin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
         $type = ItemType::query()->create([
@@ -70,7 +70,7 @@ class ItemSeederFilesControllerTest extends TestCase
         Item::factory()->create([
             'name' => 'Cape du Wa Wobot',
             'level' => '8',
-            'state' => Item::STATE_PLAYABLE,
+            'state' => Item::STATE_AUTO,
             'rarity' => 2,
             'dofusdb_id' => '14492',
             'official_id' => null,
@@ -108,6 +108,7 @@ class ItemSeederFilesControllerTest extends TestCase
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->where('items_seeder.file_count', 0)
+                ->where('items_seeder.auto_count', 0)
                 ->where('items_seeder.allowed', true)
                 ->where('items_seeder.relative_root', ItemSeederFileRepository::RELATIVE_ROOT));
     }

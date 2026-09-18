@@ -10,7 +10,7 @@
         "description": "Ce chapeau cache admirablement votre calvitie. Malheureusement, il n'en n'existe pas d'assez grand pour cacher votre fausse modestie.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

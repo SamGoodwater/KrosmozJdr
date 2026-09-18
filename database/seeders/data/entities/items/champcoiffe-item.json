@@ -10,7 +10,7 @@
         "description": "Autrefois utilisée en infusion et parfois même fumée, cette coiffe de Champ Champ a tout pour plaire.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

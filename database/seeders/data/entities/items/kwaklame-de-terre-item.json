@@ -10,7 +10,7 @@
         "description": "\"Cette lame aiguisée mais pas déguisée, conviendra parfaitement aux aventuriers déjà expérimentés en quête de nouvelles sensations\". Voici ce que l'on peut lire sur le manuel de cette épée. Les manuels ne sont plus ce qu'ils étaient décidément.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

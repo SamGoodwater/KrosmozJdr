@@ -10,7 +10,7 @@
         "description": "Sur la notice de cette coiffe, on peut lire :\"Offrez cette coiffe à votre mari, accrochez-la solidement sur sa tête et traînez-le par les pieds dans votre cuisine. Voilà le sol est propre désormais\". Cela résume un peu la conception moderne du ménage et de la répartition des tâches ménagères au sein des couples épanouïs et qui s'assument.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

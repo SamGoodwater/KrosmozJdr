@@ -25,7 +25,7 @@ final class HealingConsumableSeederImporterTest extends TestCase
         $this->assertCount(44, $first['created']);
         $this->assertSame([], $first['updated']);
         $this->assertSame([], $first['skipped']);
-        $this->assertSame(44, Consumable::query()->where('state', Consumable::STATE_PLAYABLE)->count());
+        $this->assertSame(44, Consumable::query()->where('state', Consumable::STATE_AUTO)->count());
 
         $pain = Consumable::query()->where('dofusdb_id', '468')->first();
         $this->assertNotNull($pain);
@@ -50,7 +50,7 @@ final class HealingConsumableSeederImporterTest extends TestCase
         $second = $importer->import($catalog);
         $this->assertSame([], $second['created']);
         $this->assertCount(44, $second['updated']);
-        $this->assertSame(44, Consumable::query()->where('state', Consumable::STATE_PLAYABLE)->count());
+        $this->assertSame(44, Consumable::query()->where('state', Consumable::STATE_AUTO)->count());
         $this->assertSame(20, $pain->fresh(['resources'])->totalPriceKamas());
     }
 

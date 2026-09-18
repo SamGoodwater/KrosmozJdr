@@ -10,7 +10,7 @@
         "description": "Le Chafer Rōnin, dépourvu de toute chair, ne porte pas de sous-vêtements sous son pagne, ouvert sur l'avant : la vue de son coccyx n'a jamais choqué personne. La vue du vôtre, en revanche...",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Cette cuirasse royale vous donnera autorité sur les bouftous de Tainéla. Attention cependant, car la couronne est convoitée, et ce bouclier vous protégera bien des poutchs, mais certainement pas des putschs.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

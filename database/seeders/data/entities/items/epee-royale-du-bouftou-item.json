@@ -10,7 +10,7 @@
         "description": "Cette épée ne sait pas trop sur quel sabot danser... Elle inflige des dégâts de chaque élément.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

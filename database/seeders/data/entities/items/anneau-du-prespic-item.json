@@ -10,7 +10,7 @@
         "description": "À la fois sobre et tout de même original, cet anneau saura séduire les aventuriers avides d'apparat de luxes mais complètement fauchés, au point d'aller dépouiller de ridicules petites créatures sauvages pour s'orner de bijoux. La mesquinerie ne connaît aucune limite.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

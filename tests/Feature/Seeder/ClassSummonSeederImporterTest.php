@@ -29,7 +29,7 @@ final class ClassSummonSeederImporterTest extends TestCase
 
         $tofu = Monster::query()->where('official_id', 'jdr:summon:tofu')->first();
         $this->assertNotNull($tofu);
-        $this->assertSame('playable', $tofu->state);
+        $this->assertSame('auto', $tofu->state);
         $this->assertFalse($tofu->auto_update);
         $this->assertSame(1, $tofu->size);
         $creature = $tofu->creature;
@@ -40,13 +40,13 @@ final class ClassSummonSeederImporterTest extends TestCase
         $this->assertSame('3', $creature->pa);
         $this->assertSame(0, $creature->hostility);
         $this->assertSame('https://api.dofusdb.fr/img/monsters/9.png', $creature->image);
-        $this->assertSame(Creature::STATE_PLAYABLE, $creature->state);
+        $this->assertSame(Creature::STATE_AUTO, $creature->state);
         $this->assertSame(1, $creature->spells()->count());
 
         $bec = $creature->spells()->first();
         $this->assertSame(Spell::CATEGORY_CREATURE, $bec?->category);
         $this->assertSame('jdr:summon:tofu:action', $bec?->official_id);
-        $this->assertSame(Spell::STATE_PLAYABLE, $bec?->state);
+        $this->assertSame(Spell::STATE_AUTO, $bec?->state);
         $this->assertTrue($bec?->spellTypes()->where('name', 'Offensif')->exists());
 
         $gardienne = Monster::query()->where('official_id', 'jdr:summon:gardienne')->with([
@@ -68,7 +68,7 @@ final class ClassSummonSeederImporterTest extends TestCase
         );
         $this->assertSame(
             19,
-            Spell::query()->where('category', Spell::CATEGORY_CREATURE)->where('state', Spell::STATE_PLAYABLE)->count()
+            Spell::query()->where('category', Spell::CATEGORY_CREATURE)->where('state', Spell::STATE_AUTO)->count()
         );
         $this->assertSame('8', $tofu->creature?->fresh()->life);
         $this->assertCount(19, ClassSummonCatalog::load()->entries());

@@ -10,7 +10,7 @@
         "description": "Ce bâton en forme de fleur a été confectionné à partir des restes de fleurs champêtres ayant succombé durant d'horribles et cruels combats. Toute la rage et la haine de ces pauvres plantes est contenue dans ce ridicule petit bâton. Cette arme est utilisée par les Srams les plus fourbes, qui tentent de persuader les ignorantes qu'ils comptent leur offrir un bouquet de fleurs. Une fois à portée, l'imprudente se retrouve souvent assénée de coups sur la tête bien mérités.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

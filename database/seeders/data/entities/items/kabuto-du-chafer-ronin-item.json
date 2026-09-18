@@ -10,7 +10,7 @@
         "description": "Si les os du Chafer Rōnin sont noircis, c'est à cause de centaines d'années de vagabondage sans maître, uniquement guidés par de sombres desseins. Si vous l'êtes, c'est uniquement parce que vous ne vous êtes pas lavé depuis des lustres.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

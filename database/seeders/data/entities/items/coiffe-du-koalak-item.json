@@ -10,7 +10,7 @@
         "description": "Cette coiffe est ornée d'énormes oreilles de Koalak, qui permettent d'amplifier les sons émis par les créatures qui vous entourent. Attention, elle peut détruire vos tympans si vos amis sont adeptes des vents de panique.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

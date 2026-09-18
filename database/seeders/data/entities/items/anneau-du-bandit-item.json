@@ -10,7 +10,7 @@
         "description": "Cet anneau est aussi populaire auprès des dentistes que des bandits, qui s'en servent pour casser une à une les dents des imprudents. Une forme de prévention comme une autre contre l'apparition des caries.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

@@ -10,7 +10,7 @@
         "description": "Les dents de cette amulette ont rongé plus de Cawottes que Brouce Boulgoure n'a déraciné d'arbres, ne vous étonnez donc pas si vous sentez la Cawotte, et si les Tiwabbits cherchent à vous faire des bisous dans le cou.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,

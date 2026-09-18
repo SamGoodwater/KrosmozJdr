@@ -10,7 +10,7 @@
         "description": "Cette arme terriblement puissante contre les mottes de terre, a marqué plus d'un aventurier débutant. Une fois mouillée, elle devient molle et peut être roulée, mais il faut généralement être à deux pour y arriver.",
         "recipe": null,
         "rarity": 0,
-        "state": "playable",
+        "state": "auto",
         "dofus_version": "3",
         "read_level": 0,
         "write_level": 3,
