@@ -106,4 +106,30 @@ final class NpcEquipmentSlotValidator
             }
         }
     }
+
+    /**
+     * Même contrôle que `assertWornKit`, en liste d’erreurs (pipeline IA).
+     *
+     * @param  Collection<int, Item>|\Illuminate\Database\Eloquent\Collection<int, Item>  $items
+     * @return list<string>
+     */
+    public function errorsForWornKit($items): array
+    {
+        try {
+            $this->assertWornKit($items);
+        } catch (ValidationException $exception) {
+            $out = [];
+            foreach ($exception->errors() as $messages) {
+                foreach ($messages as $message) {
+                    if (is_string($message) && $message !== '') {
+                        $out[] = $message;
+                    }
+                }
+            }
+
+            return $out;
+        }
+
+        return [];
+    }
 }

@@ -52,4 +52,17 @@ class NpcEquipmentSlotValidatorTest extends TestCase
         $this->expectException(ValidationException::class);
         (new NpcEquipmentSlotValidator)->assertWornKit($items);
     }
+
+    public function test_errors_for_worn_kit_returns_messages_instead_of_throwing(): void
+    {
+        $type = ItemType::factory()->create(['dofusdb_type_id' => 16]);
+        $items = collect([
+            Item::factory()->create(['item_type_id' => $type->id])->load('itemType'),
+            Item::factory()->create(['item_type_id' => $type->id])->load('itemType'),
+        ]);
+
+        $errors = (new NpcEquipmentSlotValidator)->errorsForWornKit($items);
+        $this->assertNotSame([], $errors);
+        $this->assertStringContainsString('chapeau', $errors[0]);
+    }
 }

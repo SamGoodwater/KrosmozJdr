@@ -80,6 +80,46 @@ final class NpcStatGabarit
     }
 
     /**
+     * Écarts d’un jet de stats par rapport au palier 5.1.2 (PV dans la bande, PA ±1).
+     *
+     * @param  array<string, mixed>  $proposed
+     * @return list<string>
+     */
+    public function validateStats(array $proposed, int $level, string $role): array
+    {
+        $errors = [];
+        $expected = $this->forLevelAndRole($level, $role);
+        $band = $this->band(max(1, min(20, $level)));
+
+        if (array_key_exists('life', $proposed) && is_numeric($proposed['life'])) {
+            $life = (int) $proposed['life'];
+            if ($life < $band['min_life'] || $life > $band['max_life']) {
+                $errors[] = "PV hors gabarit {$band['key']} ({$band['min_life']}–{$band['max_life']}, reçu {$life}).";
+            }
+        }
+
+        if (array_key_exists('pa', $proposed) && is_numeric($proposed['pa'])) {
+            $pa = (int) $proposed['pa'];
+            $want = (int) $expected['pa'];
+            if (abs($pa - $want) > 1) {
+                $errors[] = "PA hors gabarit (attendu {$want} ±1, reçu {$pa}).";
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
+     * Clés de créature à poser si le LLM les omet.
+     *
+     * @return list<string>
+     */
+    public function creatureStatKeys(): array
+    {
+        return ['life', 'pa', 'pm', 'po', 'ca', 'ini', 'touch', 'vitality', 'sagesse', 'strong', 'intel', 'agi', 'chance'];
+    }
+
+    /**
      * @return array{key: string, from: int, to: int, min_life: int, max_life: int, dice: list<string>}
      */
     private function band(int $level): array

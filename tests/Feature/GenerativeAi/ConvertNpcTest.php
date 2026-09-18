@@ -94,8 +94,68 @@ final class ConvertNpcTest extends TestCase
         $this->assertSame('Garde d’Astrub', $creature?->name);
         $this->assertSame('Il tient la porte.', $npc->story);
         $this->assertSame('22', $creature?->life);
+        $this->assertSame('12', $creature?->vitality);
         $this->assertTrue($creature?->items->contains('id', $cape->id));
         $this->assertTrue($creature?->spells->contains('id', $spell->id));
+    }
+
+    public function test_two_items_on_same_slot_are_rejected(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $this->seedPlayableNpcEtalon();
+        $capeType = ItemType::factory()->create([
+            'name' => 'Cape',
+            'dofusdb_type_id' => 17,
+            'state' => ItemType::STATE_PLAYABLE,
+        ]);
+        $capeA = Item::factory()->create([
+            'name' => 'Cape A',
+            'level' => '4',
+            'state' => Item::STATE_PLAYABLE,
+            'item_type_id' => $capeType->id,
+            'effect' => json_encode(['strength' => 2], JSON_THROW_ON_ERROR),
+            'bonus' => null,
+            'dofusdb_id' => null,
+        ]);
+        $capeB = Item::factory()->create([
+            'name' => 'Cape B',
+            'level' => '4',
+            'state' => Item::STATE_PLAYABLE,
+            'item_type_id' => $capeType->id,
+            'effect' => json_encode(['strength' => 1], JSON_THROW_ON_ERROR),
+            'bonus' => null,
+            'dofusdb_id' => null,
+        ]);
+        $npc = Npc::factory()->create([
+            'official_id' => 'jdr:npc:test:two-capes',
+            'state' => EntityState::Draft->value,
+            'npc_role' => 'guard',
+        ]);
+        $npc->creature?->update([
+            'name' => 'Garde double cape',
+            'level' => '4',
+            'state' => EntityState::Draft->value,
+        ]);
+
+        $this->fakeAnthropicJson([
+            'npc' => [
+                'name' => 'Garde double cape',
+                'level' => 4,
+                'npc_role' => 'guard',
+            ],
+            'stats' => ['life' => '22', 'pa' => '6'],
+            'item_ids' => [(int) $capeA->id, (int) $capeB->id],
+            'spell_ids' => [],
+        ]);
+
+        $response = $this->actingAsConfirmed($admin)
+            ->postJson(route('api.entities.ia-convert', ['entityType' => 'npcs', 'id' => $npc->id]), [
+                'action' => 'npc',
+            ]);
+
+        $response->assertStatus(422);
+        $this->assertStringContainsString('cape', strtolower((string) $response->json('message')));
+        $this->assertSame(EntityState::Draft->value, $npc->fresh()->state);
     }
 
     public function test_artisan_convert_npc_uses_generic_command(): void
@@ -120,7 +180,7 @@ final class ConvertNpcTest extends TestCase
                 'story' => 'Boulanger.',
                 'npc_role' => 'other',
             ],
-            'stats' => ['life' => '18'],
+            'stats' => ['life' => '22', 'pa' => '6'],
             'item_ids' => [],
             'spell_ids' => [],
         ]);

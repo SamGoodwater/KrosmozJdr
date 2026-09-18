@@ -23,7 +23,7 @@ Les sorts doivent coller aux caracs déjà présentes (Terre ↔ Force, peu de s
 
 Flux :
 
-1. Brief MJ (« chef Bouftou niveau 10 ») → Laravel : fiche source + gabarit 5.1.2 (stats **hors** LLM par défaut) + `example_ids`.
+1. Brief MJ (« chef Bouftou niveau 10 ») → Laravel : fiche source + **gabarit 5.1.2** (`NpcStatGabarit`, rôle ennemi, injecté dans `extraContext`) + stats figées de la créature + `example_ids`.
 2. Un JSON `{ monster, spells: [ … ] }` : le monstre ne porte que les clés `writable` ; les sorts-créature sont le delta.
 3. Créer les `Spell` et poser le `Monster` / `Creature` en `auto` (`auto_update=false`), lier le pivot.
 4. Relire **le paquet**, pas quatre fiches orphelines.
@@ -49,7 +49,7 @@ Réécriture JDR d’un sort Dofus `raw` :
 
 ## PNJ
 
-Le modèle est en place : coquille `Npc` + corps `Creature` + `breed_id` / `specialization_id`, langues, panoplies, boutique. Le **kit de jeu** (sorts connus, stuff porté 1/slot sauf 2 anneaux, sync d’état coquille → créature) est du **code applicatif** (`NpcController`, `NpcEquipmentSlotValidator`) — pas de génération LLM.
+Le modèle est en place : coquille `Npc` + corps `Creature` + `breed_id` / `specialization_id`, langues, panoplies, boutique. Le **kit de jeu** (sorts connus, stuff porté 1/slot sauf 2 anneaux, sync d’état coquille → créature) est du **code applicatif** (`NpcController`, `NpcEquipmentSlotValidator`) — le pipeline IA **réutilise** le même validateur au `validate` / `persist` (`NpcSpecialization`).
 
 Contrairement aux objets / sorts / monstres Dofus, **il n’y a rien à figer** : l’IA crée nom, histoire, rôle, stats et kit. Option : partir d’une **page de site** (encyclopédie, wiki, DofusDB) — Laravel en extrait nom / portrait / lore, le modèle complète la fiche JDR. Pas de scrap de masse. `Npc.official_id` sert au seeder (`jdr:npc:incarnam:…`), pas à DofusDB.
 
@@ -70,7 +70,7 @@ Paquet :
 
 - **Objets** : toujours des `id` du pré-filtre `playable`, presque jamais d’invention.
 - **Sorts de classe** : piocher dans le `playable` si la liste est assez riche ; sinon réécrire 1–2 sorts dans le même paquet (comme pour un monstre).
-- Validateur : Force haute si voie Terre, stuff Force, sorts de la classe, niveau d’équipement, un item par slot.
+- Validateur : Force haute si voie Terre (catalogue), stuff Force, sorts de la classe, niveau d’équipement, **un item par slot** (`NpcEquipmentSlotValidator`), PV/PA dans le gabarit 5.1.2. Les stats omises par le modèle sont **complétées** par `NpcStatGabarit` à l’écriture.
 
 Sans grille d’objets `playable`, ne pas lancer la génération de PNJ.
 

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\GenerativeAi;
 
+use App\Enums\EntityState;
+use App\Models\Entity\Monster;
 use App\Services\GenerativeAi\ConversionRequest;
 use App\Services\GenerativeAi\EntityGenerationProfile;
 use App\Services\GenerativeAi\Specializations\MonsterSpecialization;
@@ -37,6 +39,26 @@ final class MonsterSpecializationTest extends TestCase
         $this->assertArrayHasKey('description', $schema['properties']['monster']['properties']);
         $this->assertArrayNotHasKey('name', $schema['properties']['monster']['properties']);
         $this->assertFalse($schema['additionalProperties']);
+    }
+
+    public function test_extra_context_injects_gabarit_and_creature_stats(): void
+    {
+        $monster = Monster::factory()->create(['state' => EntityState::Raw->value]);
+        $monster->creature?->update([
+            'level' => '4',
+            'pa' => '6',
+            'agi' => '8',
+            'state' => EntityState::Raw->value,
+        ]);
+
+        $extra = app(MonsterSpecialization::class)->extraContext(
+            new ConversionRequest(action: 'encounter', entityType: 'monster', entityId: (int) $monster->id),
+            $this->profile(),
+        );
+
+        $this->assertSame('1-5', $extra['gabarit_5_1_2']['band'] ?? null);
+        $this->assertSame('6', $extra['creature_stats']['pa'] ?? null);
+        $this->assertStringContainsString('gabarit 5.1.2', (string) ($extra['consigne'] ?? ''));
     }
 
     /**

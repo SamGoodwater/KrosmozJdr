@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Une conversion IA ne peut plus viser un autre type que la fiche ouverte. Une fiche jouable ou archivée exige force/--force."
+    "description": "Une conversion PNJ refuse deux objets sur le même emplacement et complète les stats manquantes avec le gabarit. Une rencontre reçoit le gabarit 5.1.2 dans le prompt. Les objets Dofus scrapés restent hors scope."
   },
   {
     "path": "backend/_ai.md",

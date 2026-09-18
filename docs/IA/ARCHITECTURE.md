@@ -87,17 +87,18 @@ L’IA n’invente pas de types d’effets hors whitelist, ni d’ids d’objets
 
 Sur une fiche **sourcée Dofus**, le schéma n’expose que les clés `writable` du JSON. Laravel recopie le reste. Sur un **PNJ** (et un objet unique sans source), le schéma inclut l’identité. Contrat : [CHAMPS.md](./CHAMPS.md).
 
-## Validateurs (à étendre, déjà amorcés)
+## Validateurs
 
-| Déjà là | À ajouter pour l’IA |
+| Déjà là | Rôle |
 | --- | --- |
-| `CharacteristicLimitService` (min/max) | Cohérence élément ↔ caractéristique d’attaque / build |
-| `NormsResolver`, `NormAwareEntityProcessor` | Budget PA du kit de sorts |
-| `CharacteristicCompatibilityService` (`allowed_item_type_ids`) | 1 objet par slot ; stuff dans la voie |
-| `DuplicateEquipmentSignatureChecker` | Ids du catalogue uniquement ; sorts d’une classe donnée |
-| Gabarits règles 5.1.2 / 5.2.4 | Max 3 effets par sort JDR ; trop de sorts sur un monstre |
+| `CharacteristicLimitService` (min/max) | Bornes numériques |
+| `NormsResolver`, `NormAwareEntityProcessor` | Normes objets (algo, hors LLM) |
+| `NpcEquipmentSlotValidator` | Kit PNJ : 1 objet / slot, 2 anneaux ; `validate` + `persist` IA |
+| `NpcStatGabarit` | Palier 5.1.2 : prompt (PNJ + rencontre) ; PV dans la bande et PA ±1 au persist PNJ |
+| `MonsterSpecialization` | Élément ↔ carac d’attaque ; budget PA ≤ 2× PA créature ; 2–3 sorts ; max 3 effets / sort |
+| `NpcKitCatalog` | Ids `playable` uniquement ; sorts de la classe si `breed_id` |
 
-Un JSON « dans les normes » mais idiot (sorts Terre, Force 0) doit **échouer**. Les bornes numériques ne suffisent pas.
+Un JSON « dans les normes » mais idiot (deux capes, PV hors palier) **échoue** et part en retry. Les bornes numériques ne suffisent pas.
 
 ## Code branché
 

@@ -1,6 +1,6 @@
 # Champs figés vs champs générés
 
-Source de vérité **effective** : une ligne en base (`ia_generation_settings`) si un admin a enregistré la page **Gestion du contenu → IA métier** (`/admin/content/ia-generation`). Sinon le fichier **`resources/ia/generation.json`**.
+Source de vérité **effective** : une ligne en base (`ia_generation_settings`) si un admin a enregistré la page **Gestion du contenu → IA métier** (`/admin/content/ia-generation`). Sinon le fichier **`resources/ia/generation.json`**. Un enregistrement **remplace** tout le fichier (étalons et writable compris) ; **Réinitialiser** efface la ligne et retombe sur le dépôt.
 
 L’UI n’écrit pas le JSON sur le disque (déploiement / git). Admin uniquement. **Lecture et enregistrement** de la page, ainsi que `POST /api/entities/{type}/{id}/ia-convert` et `GET /api/ia/status`, sont protégés par `password.confirm` (même fenêtre d’inactivité que la gestion admin). Chargeur : `GenerationConfigStore` + `GenerationConfigLoader`.
 

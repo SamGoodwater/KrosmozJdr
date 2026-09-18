@@ -14,8 +14,10 @@ use App\Services\GenerativeAi\ConversionRequest;
 use App\Services\GenerativeAi\CreationGuideCatalog;
 use App\Services\GenerativeAi\EntityGenerationProfile;
 use App\Services\GenerativeAi\GenerationConfigLoader;
+use App\Services\GenerativeAi\NpcStatGabarit;
 use App\Support\ElementBitmask;
 use App\Support\Entity\EntityStateGate;
+use App\Support\Npc\NpcRole;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -79,7 +81,33 @@ final class MonsterSpecialization implements Specialization
 
     public function extraContext(ConversionRequest $request, EntityGenerationProfile $profile): array
     {
-        return [];
+        $creature = $this->creatureFor($request);
+        $level = is_numeric($creature?->level) ? (int) $creature->level : 1;
+        $gabarit = app(NpcStatGabarit::class)->forLevelAndRole($level, NpcRole::ENEMY);
+
+        $stats = null;
+        if ($creature !== null) {
+            $stats = [
+                'name' => $creature->name,
+                'level' => $creature->level,
+                'life' => $creature->life,
+                'pa' => $creature->pa,
+                'pm' => $creature->pm,
+                'ca' => $creature->ca,
+                'strong' => $creature->strong,
+                'intel' => $creature->intel,
+                'agi' => $creature->agi,
+                'chance' => $creature->chance,
+            ];
+        }
+
+        return [
+            'gabarit_5_1_2' => $gabarit,
+            'creature_stats' => $stats,
+            'consigne' => 'Les stats du monstre sont figées (gabarit 5.1.2 indicatif). '
+                .'Les sorts collent à l’élément de la carac dominante. '
+                .'2 ou 3 sorts-créature, budget PA ≤ 2× PA de la créature.',
+        ];
     }
 
     public function preflight(ConversionRequest $request, EntityGenerationProfile $profile): array

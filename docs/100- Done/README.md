@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Conversion IA : kit PNJ et gabarit monstres
+
+Une conversion **PNJ** refuse deux objets sur le même emplacement (deux capes, etc.) et complète les stats manquantes avec le gabarit de niveau. Une conversion **rencontre** reçoit le même gabarit dans le prompt, pour coller les sorts aux PV / PA de la fiche. Les objets Dofus scrapés restent hors scope : l’IA ne retravaille que les uniques. Sur **IA métier**, un enregistrement incomplet écrasait les étalons du dépôt : on peut **réinitialiser** pour retomber sur le fichier.
+
 ## Septembre 2026 — Conversion IA : pas d’écrasement silencieux
 
 Une conversion IA ne peut plus viser **un autre type** que la fiche ouverte (l’action doit coller à l’URL). Une fiche **jouable ou archivée** exige une confirmation (`force` / `--force`), comme DofusDB : les exemples de commandes sur Ganymède ou le Piou Vert ne les écrasent plus par accident.

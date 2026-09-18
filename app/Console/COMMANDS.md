@@ -439,11 +439,13 @@ Conversion IA générique d’une fiche (sort `effect`, rencontre, PNJ kit `NpcK
 
 ```bash
 php artisan ia:convert spell --id=12 --brief="effet lisible à table"
-php artisan ia:convert npc --official-id=jdr:npc:incarnam:ganymede --user=1 --force
+php artisan ia:convert npc --id=88 --user=1
+php artisan ia:convert encounter --id=12 --brief="chef Bouftou niveau 10"
 php artisan ia:convert item --id=44
 php artisan ia:convert consumable --id=8
-php artisan ia:convert encounter --id=12 --brief="chef Bouftou niveau 10"
 ```
+
+Les fiches **jouables** d’étalons (Ganymède, Piou Vert, etc.) exigent `--force` : sans ça, rien n’est écrit. Ne pas les convertir « pour tester ».
 
 ---
 

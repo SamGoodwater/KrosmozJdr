@@ -35,4 +35,27 @@ final class NpcStatGabaritTest extends TestCase
         $this->assertSame('14', $guard['strong']);
         $this->assertSame('2d6', $guard['damage_dice']);
     }
+
+    public function test_validate_stats_rejects_life_outside_band(): void
+    {
+        $errors = (new NpcStatGabarit)->validateStats(
+            ['life' => '999', 'pa' => '6'],
+            4,
+            NpcRole::GUARD
+        );
+
+        $this->assertNotSame([], $errors);
+        $this->assertStringContainsString('PV hors gabarit', $errors[0]);
+    }
+
+    public function test_validate_stats_accepts_band_and_pa(): void
+    {
+        $errors = (new NpcStatGabarit)->validateStats(
+            ['life' => '22', 'pa' => '6'],
+            4,
+            NpcRole::GUARD
+        );
+
+        $this->assertSame([], $errors);
+    }
 }

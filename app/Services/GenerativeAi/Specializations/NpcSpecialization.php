@@ -6,6 +6,7 @@ namespace App\Services\GenerativeAi\Specializations;
 
 use App\Enums\EntityState;
 use App\Models\Entity\Creature;
+use App\Models\Entity\Item;
 use App\Models\Entity\Npc;
 use App\Models\User;
 use App\Services\GenerativeAi\AllowlistWriter;
@@ -13,6 +14,8 @@ use App\Services\GenerativeAi\ConversionRequest;
 use App\Services\GenerativeAi\EntityGenerationProfile;
 use App\Services\GenerativeAi\GenerationConfigLoader;
 use App\Services\GenerativeAi\NpcKitCatalog;
+use App\Services\GenerativeAi\NpcStatGabarit;
+use App\Services\Npc\NpcEquipmentSlotValidator;
 use App\Support\Entity\EntityStateGate;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -121,8 +124,11 @@ final class NpcSpecialization implements Specialization
 
         $itemIds = is_array($payload['item_ids'] ?? null) ? $payload['item_ids'] : [];
         $spellIds = is_array($payload['spell_ids'] ?? null) ? $payload['spell_ids'] : [];
+        $intItemIds = [];
         foreach ($itemIds as $id) {
-            if (! in_array((int) $id, $allowedItems, true)) {
+            $intId = (int) $id;
+            $intItemIds[] = $intId;
+            if (! in_array($intId, $allowedItems, true)) {
                 $errors[] = "Objet #{$id} hors pré-filtre playable.";
             }
         }
@@ -130,6 +136,20 @@ final class NpcSpecialization implements Specialization
             if (! in_array((int) $id, $allowedSpells, true)) {
                 $errors[] = "Sort #{$id} hors pré-filtre de classe.";
             }
+        }
+
+        $role = is_string($npc['npc_role'] ?? null) && $npc['npc_role'] !== ''
+            ? (string) $npc['npc_role']
+            : 'other';
+        $stats = is_array($payload['stats'] ?? null) ? $payload['stats'] : [];
+        $errors = array_merge(
+            $errors,
+            app(NpcStatGabarit::class)->validateStats($stats, max(1, $level), $role)
+        );
+
+        if ($intItemIds !== []) {
+            $items = Item::query()->with('itemType')->whereIn('id', array_values(array_unique($intItemIds)))->get();
+            $errors = array_merge($errors, app(NpcEquipmentSlotValidator::class)->errorsForWornKit($items));
         }
 
         return $errors;
@@ -155,10 +175,16 @@ final class NpcSpecialization implements Specialization
                 'read_level' => User::ROLE_GUEST,
                 'write_level' => User::ROLE_GAME_MASTER,
             ]);
-            $statKeys = ['life', 'pa', 'pm', 'ca', 'strong', 'intel', 'agi', 'chance', 'vitality', 'sagesse'];
-            foreach ($statKeys as $key) {
+            $gabarit = app(NpcStatGabarit::class);
+            $role = is_string($row['npc_role'] ?? null) && $row['npc_role'] !== ''
+                ? (string) $row['npc_role']
+                : (string) ($npc->npc_role ?: 'other');
+            $expected = $gabarit->forLevelAndRole((int) $level, $role);
+            foreach ($gabarit->creatureStatKeys() as $key) {
                 if (array_key_exists($key, $stats) && (is_string($stats[$key]) || is_numeric($stats[$key]))) {
                     $creature->setAttribute($key, (string) $stats[$key]);
+                } else {
+                    $creature->setAttribute($key, $expected[$key]);
                 }
             }
             $creature->save();
@@ -179,6 +205,8 @@ final class NpcSpecialization implements Specialization
                 array_map('intval', is_array($payload['spell_ids'] ?? null) ? $payload['spell_ids'] : []),
                 static fn (int $id): bool => $id > 0
             )));
+            $items = Item::query()->with('itemType')->whereIn('id', $itemIds)->get();
+            app(NpcEquipmentSlotValidator::class)->assertWornKit($items);
             $sync = [];
             foreach ($itemIds as $id) {
                 $sync[$id] = ['quantity' => 1];
