@@ -1,5 +1,19 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Refonte de la progression : moins de points, plus de choix
+
+La montée en niveau change de forme. **Les sorts sont tous acquis au niveau 12** : 3 au niveau 1, puis un de plus aux niveaux 2, 4, 5, 6, 7, 8, 10, 11 et 12, soit 12 sorts. Au-delà, ils ne font que s’intensifier — on joue rarement jusqu’au 20.
+
+Les **caractéristiques** partent toutes à 8 ; on répartit 10 points à la création (12 en descendant une carac à 6). Le plafond porte sur le score : **14 + niveau / 2**. Ensuite, seulement **6 points offerts** (niveaux 2, 4, 8, 10, 14 et 16) — et jusqu’à 6 de plus si on les prend à la place d’une capacité. Les **équipements** ne peuvent plus dépasser **+8 par caractéristique**, forgemagie comprise (max +2).
+
+Les **spécialisations** montent aux niveaux **1, 3, 6, 9, 12, 15 et 20**. À chaque palier : une capacité garantie, plus un **emplacement libre** à dépenser comme on veut — une deuxième capacité, +2 points de caractéristique, ou un **trait** à partir du niveau 12.
+
+Au passage, **aptitude et capacité échangent leur sens**. Une **capacité** est une action qui ressemble à un sort, choisie à chaque palier. Une **aptitude** est un bonus (souvent passif) que la spécialisation donne **sans choix**, aux niveaux 3, 9 et 15 — trois en tout, pas plus.
+
+## Septembre 2026 — Les onze spécialisations recalées sur les nouveaux paliers
+
+Les six spécialisations jouables (Artiste, Dévot, Érudit, Explorateur·rice, Milicien·ne, Voleur·euse) étaient écrites sur une vieille grille de dix paliers. Elles sont **redécoupées sur les sept paliers** actuels : les gains des niveaux 13 et 15 fusionnent, ceux des niveaux 18 et 20 aussi, et les expertises retombent sur les paliers 9, 15 et 20 comme le veut la règle. Chacune garde **trois aptitudes**, aux niveaux 3, 9 et 15 ; les autres bonus nommés redeviennent des capacités proposées à leur palier. Les cinq brouillons (Artisan·e, Négociant·e, Sylvain·e, Marin·e, Courtisan·e) sont réécrits sur la même trame.
+
 ## Septembre 2026 — Règles sans catalogues, changelog hors livre, PDF MJ
 
 Le livre joueur ne recopie plus les fiches (classes, sorts, monstres…) : il renvoie aux **Bibliothèques**. Le **changelog** n’est plus une annexe de règles : il reste la page Informations. Les meneurs ont un **PDF d’atelier** à part (**Pour les MJ → Ressources MJ**), avec le calibrage ; la création de fiches se fait sur le site (Création).

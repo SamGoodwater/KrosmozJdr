@@ -34,6 +34,25 @@ Note : la table des classes est `breeds` (et la FK `breed_id`) pour éviter le m
 
 Le scrap DofusDB crée les états en `raw` (jetons de sort, pas le catalogue JDR). Le seeder conserve un noyau `playable` (Pesanteur, Empoisonné, Étourdi, Ralenti, Affaibli). À l’import, le sort et `params.condition_id` pointent vers ce noyau quand le nom ou les flags correspondent (`ConditionCanonicalMapper`) ; le jeton Dofus reste en base (`canonical_condition_id`, `condition_dofusdb_id`). Sans équivalent JDR, pas de liaison sort. Le catalogue masque Brut par défaut. Les flags mécaniques s’affichent en chips. Recollement des données déjà importées : `php artisan conditions:remap-canonical`.
 
+### Spécialisations : paliers, capacités et aptitudes
+
+Une spécialisation progresse sur **7 paliers** : niveaux 1, 3, 6, 9, 12, 15 et 20 (règle §2.4.2). Chaque palier
+donne **1 capacité garantie + 1 emplacement libre** (2ᵉ capacité, +2 points de caractéristique, ou un trait à
+partir du niveau 12) et 1 à 2 compétences. Les **aptitudes** sont des bonus acquis **sans choix**, et il y en a
+exactement **trois**, aux paliers **3, 9 et 15**.
+
+En base, capacités et aptitudes sont toutes des `Capability` liées par `capability_specialization`, dont le
+`level` porte le palier ; l’aptitude se distingue par `is_passive`.
+
+Les six spécialisations importées depuis les exports HTML legacy (`database/seeders/data/legacy-specializations/`,
+hors dépôt) utilisaient l’ancienne grille 1/3/5/8/10/13/15/18/20 et le vocabulaire d’avant l’inversion. Le
+redécoupage est fait à l’import par `LegacySpecializationRealignService` : remap des paliers (13+15 → 15 et
+18+20 → 20, ce qui garde les expertises sur 9/15/20), renommage des blocs, remap des niveaux cités dans le texte,
+et sélection des 3 aptitudes. Quel bonus legacy devient une aptitude, et à quel palier, est décrit dans
+`database/seeders/data/legacy-specialization-realignment.php`. Les cinq brouillons vivent dans
+`database/seeders/data/draft-specializations.php` ; `SpecializationSeeder` les réécrit tant qu’ils sont à l’état
+brouillon et ne touche pas une fiche sortie du brouillon.
+
 ### Métadonnées globales des sorts
 
 Les fiches de sort stockent indépendamment des effets détaillés les contraintes globales de lancement :

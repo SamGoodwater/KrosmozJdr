@@ -9,6 +9,7 @@ use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
 use App\Services\Entity\LegacyEntitySectionImportService;
+use App\Services\Entity\LegacySpecializationRealignService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
 
@@ -100,7 +101,8 @@ class SpecializationSeeder extends Seeder
     /**
      * Pose les spécialisations encore en rédaction (absentes du HTML legacy).
      *
-     * N’écrase pas une fiche déjà présente (jouable ou retravaillée à la main).
+     * Rafraîchit les fiches restées à l’état brouillon, mais n’écrase jamais une
+     * fiche sortie du brouillon (passée jouable ou retravaillée à la main).
      */
     private function seedDraftSpecializations(LegacyEntitySectionImportService $importer): void
     {
@@ -134,14 +136,17 @@ class SpecializationSeeder extends Seeder
                 continue;
             }
 
-            if (Specialization::query()->where('name', $name)->exists()) {
+            $specialization = Specialization::query()->where('name', $name)->first();
+
+            if ($specialization !== null && $specialization->state !== Specialization::STATE_DRAFT) {
                 $skipped++;
-                $this->command?->info("Spécialisation {$name} déjà présente, brouillon ignoré.");
+                $this->command?->info("Spécialisation {$name} sortie du brouillon, mise à jour ignorée.");
 
                 continue;
             }
 
-            $specialization = Specialization::query()->create([
+            $specialization ??= new Specialization;
+            $specialization->fill([
                 'name' => $name,
                 'short_description' => (string) ($draft['shortDescription'] ?? ''),
                 'description' => (string) ($draft['description'] ?? ''),
@@ -149,7 +154,7 @@ class SpecializationSeeder extends Seeder
                 'read_level' => User::ROLE_GUEST,
                 'write_level' => User::ROLE_ADMIN,
                 'created_by' => $creatorId,
-            ]);
+            ])->save();
 
             $page = $importer->ensureImportPage(
                 (string) ($draft['importPageSlug'] ?? 'import-specialization-draft'),
@@ -158,7 +163,7 @@ class SpecializationSeeder extends Seeder
                 Page::STATE_DRAFT,
             );
 
-            $importer->importParsedSections(
+            $sync = $importer->importParsedSections(
                 $specialization,
                 $page,
                 (string) ($draft['sectionSlugPrefix'] ?? 'draft-specialization'),
@@ -168,11 +173,13 @@ class SpecializationSeeder extends Seeder
                 Section::STATE_DRAFT,
             );
 
+            $this->pruneImportPage($page, $sync);
+
             $created++;
         }
 
         $this->command?->info(sprintf(
-            'Brouillons de spécialisations : %d créée(s), %d déjà présente(s).',
+            'Brouillons de spécialisations : %d écrite(s), %d hors brouillon ignorée(s).',
             $created,
             $skipped,
         ));
@@ -212,16 +219,19 @@ class SpecializationSeeder extends Seeder
         );
 
         $page = $importer->ensureImportPage($importPageSlug, $importPageTitle, $creatorId);
-        $parsedSections = $importer->parseLegacySections($legacyHtml);
+        $parsedSections = app(LegacySpecializationRealignService::class)->realign(
+            $importer->parseLegacySections($legacyHtml),
+            $this->realignmentPlan($legacySlug),
+        );
         $specializationCapabilitySync = [];
 
-        $importer->importParsedSections(
+        $sync = $importer->importParsedSections(
             $specialization,
             $page,
             $sectionSlugPrefix,
             $parsedSections,
             $creatorId,
-            function (array $capabilityNames, int $legacyLevel) use (&$specializationCapabilitySync): void {
+            function (array $capabilityNames, int $palier) use (&$specializationCapabilitySync): void {
                 foreach ($capabilityNames as $capabilityName) {
                     $capabilityName = trim((string) $capabilityName);
                     if ($capabilityName === '') {
@@ -233,13 +243,54 @@ class SpecializationSeeder extends Seeder
                         continue;
                     }
 
-                    $specializationCapabilitySync[$capability->id] = ['level' => $legacyLevel];
+                    $specializationCapabilitySync[$capability->id] = ['level' => $palier];
                 }
             },
         );
 
+        $this->pruneImportPage($page, $sync);
+
         if ($specializationCapabilitySync !== []) {
-            $specialization->capabilities()->syncWithoutDetaching($specializationCapabilitySync);
+            $specialization->capabilities()->sync($specializationCapabilitySync);
         }
+    }
+
+    /**
+     * Supprime les sections de l’ancienne grille de paliers restées sur la page
+     * d’import après un redécoupage.
+     *
+     * @param  array<int, array{level: int}>  $sync
+     */
+    private function pruneImportPage(Page $page, array $sync): void
+    {
+        if ($sync === []) {
+            return;
+        }
+
+        Section::query()
+            ->where('page_id', $page->id)
+            ->whereNotIn('id', array_keys($sync))
+            ->delete();
+    }
+
+    /**
+     * Charge le plan de réalignement (quels bonus nommés deviennent des aptitudes).
+     *
+     * @return array{aptitudes?: array<string, int>, authored?: array<int, array{name: string, html: string}>}
+     */
+    private function realignmentPlan(string $legacySlug): array
+    {
+        static $plans = null;
+
+        if ($plans === null) {
+            $path = database_path('seeders/data/legacy-specialization-realignment.php');
+            /** @var mixed $loaded */
+            $loaded = is_file($path) ? require $path : [];
+            $plans = is_array($loaded) ? $loaded : [];
+        }
+
+        $plan = $plans[$legacySlug] ?? [];
+
+        return is_array($plan) ? $plan : [];
     }
 }

@@ -42,12 +42,30 @@ class SpecializationSeederTest extends TestCase
         );
     }
 
-    public function test_seeder_does_not_overwrite_an_existing_specialization(): void
+    public function test_seeder_refreshes_a_specialization_still_in_draft(): void
     {
         User::factory()->create(['role' => User::ROLE_ADMIN]);
         Specialization::factory()->create([
             'name' => 'Artisan·e',
             'state' => Specialization::STATE_DRAFT,
+            'short_description' => 'Version périmée',
+        ]);
+
+        $this->seed(SpecializationSeeder::class);
+
+        $this->assertNotSame(
+            'Version périmée',
+            Specialization::query()->where('name', 'Artisan·e')->value('short_description')
+        );
+        $this->assertSame(1, Specialization::query()->where('name', 'Artisan·e')->count());
+    }
+
+    public function test_seeder_does_not_overwrite_a_specialization_out_of_draft(): void
+    {
+        User::factory()->create(['role' => User::ROLE_ADMIN]);
+        Specialization::factory()->create([
+            'name' => 'Artisan·e',
+            'state' => Specialization::STATE_PLAYABLE,
             'short_description' => 'Ne pas écraser',
         ]);
 
@@ -58,5 +76,19 @@ class SpecializationSeederTest extends TestCase
             Specialization::query()->where('name', 'Artisan·e')->value('short_description')
         );
         $this->assertSame(1, Specialization::query()->where('name', 'Artisan·e')->count());
+    }
+
+    public function test_drafts_follow_the_seven_paliers(): void
+    {
+        User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $this->seed(SpecializationSeeder::class);
+
+        foreach (['Artisan·e', 'Négociant·e', 'Sylvain·e', 'Marin·e', 'Courtisan·e'] as $name) {
+            $specialization = Specialization::query()->where('name', $name)->firstOrFail();
+            $paliers = $specialization->sections()->pluck('level')->unique()->sort()->values()->all();
+
+            $this->assertSame([1, 3, 6, 9, 12, 15, 20], $paliers, "Paliers inattendus pour {$name}.");
+        }
     }
 }
