@@ -5,7 +5,9 @@ Ce document recense les points à vérifier ou corriger pour publier les règles
 **Aligné (sept. 2026)** — chiffres et canons tranchés dans le livre :
 
 - Round / tour = **6 secondes** (plus 10 s).
-- Maîtrise = **1 + ⌊niveau/4⌋** ; points de carac aux **niveaux pairs** ; mod max **+7**.
+- Maîtrise = **1 + ⌊niveau/4⌋** ; plafond de score = **14 + ⌊niveau/2⌋** (mod max **+7** au niv. 20).
+- Sorts : les **12 sont acquis au niveau 12** ; paliers de spé aux niveaux **1, 3, 6, 9, 12, 15, 20** ; aptitudes automatiques aux niveaux **3, 9, 15**.
+- Vocabulaire : **capacité** = active, type sort, donnée par la spé ; **aptitude** = passive, automatique, donnée par la spé.
 - Un **seul repos court** entre deux longs.
 - DD de sort = **8 + mod + maîtrise** ; invocations = contrôlées, jouent à ton tour, 1 h, ne laissent rien.
 - Réaction = **1 / round**, 2–3 PA (pas d’AO D&D) ; potion de combat = **1 PA**.

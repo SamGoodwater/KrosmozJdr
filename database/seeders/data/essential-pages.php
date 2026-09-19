@@ -38,7 +38,7 @@ return [
                     .'<li>[[kref:page:essentiels-actions-hors-combat|Hors combat]] — tests, surprise, temps</li>'
                     .'<li>[[kref:page:essentiels-combat|Combat]] — tour, tacle, réaction</li>'
                     .'<li>[[kref:page:essentiels-sante-etats|Santé, états, repos]] — PV, 0 PV, repos</li>'
-                    .'<li>[[kref:page:essentiels-sorts-aptitudes|Sorts, aptitudes, capacités]] — lancer + rappels de fiche</li>'
+                    .'<li>[[kref:page:essentiels-sorts-aptitudes|Sorts, capacités, aptitudes]] — lancer + rappels de fiche</li>'
                     .'<li>[[kref:page:essentiels-economie-progression|Équipement et progression]] — loot, XP, kamas</li>'
                     .'<li>[[kref:page:caracteristiques|Caractéristiques]] — bornes et formules</li>'
                     .'</ol>'
@@ -110,7 +110,7 @@ return [
                 'slug' => 'caracs',
                 'title' => 'Caractéristiques',
                 'html' => '<p>Mod. = ⌊(score − 10) / 2⌋. Six stats : [[kref:characteristic:vitality_creature|Vita]], [[kref:characteristic:strength_creature|For]], [[kref:characteristic:agility_creature|Agi]], [[kref:characteristic:intelligence_creature|Int]], [[kref:characteristic:wisdom_creature|Sag]], [[kref:characteristic:chance_creature|Cha]].</p>'
-                    .'<p>Niv. 1 : [[kref:characteristic:action_points_creature|PA]] 6, [[kref:characteristic:movement_points_creature|PM]] 3, [[kref:characteristic:range_creature|PO]] 0. +1 carac. aux <strong>niveaux pairs</strong> (10 pts jusqu’au 20). Plafond du mod. de base : <strong>min(⌊niv./2⌋+1, 7)</strong> (niv. 1 = +1).</p>'
+                    .'<p>Niv. 1 : [[kref:characteristic:action_points_creature|PA]] 6, [[kref:characteristic:movement_points_creature|PM]] 3, [[kref:characteristic:range_creature|PO]] 0. +1 carac. aux niveaux <strong>2, 4, 8, 10, 14, 16</strong> (6 pts), plus <strong>+2 par emplacement libre</strong> de spé converti — <strong>12 pts gagnés au maximum</strong>. Plafond du <strong>score</strong> : <strong>14 + ⌊niv./2⌋</strong> (score <strong>14</strong> au niv. 1, 24 au niv. 20). Équipement : <strong>+8</strong> au total par carac, forgemagie comprise.</p>'
                     .'<p>Table unique (sorts / carac / spé / maîtrise) : [[kref:page:regles-2-3-choisir-sa-classe|2.3.2]]. PV max = max du dé de classe + (mod. Vitalité × niveau) + ((niveau − 1) × round(dé/2)) + équipement.</p>'
                     .'<p>→ [[kref:page:caracteristiques|Tableau]] · [[kref:page:regles-2-2-les-caracteristiques|Règles caracs]]</p>',
             ],
@@ -118,7 +118,7 @@ return [
                 'slug' => 'classe-spe',
                 'title' => 'Classe et spé',
                 'html' => '<p><strong>Classe</strong> : identité, sorts auto, passifs — [[kref:page:regles-2-3-choisir-sa-classe|Choisir sa classe]].</p>'
-                    .'<p><strong>Spé</strong> : 6 jouables / 11 prévues ; aptitude ou capacité aux paliers 3, 6, 9, 12, 15, 18, 20 — [[kref:page:regles-2-4-choisir-sa-specialisation|Choisir sa spé]].</p>'
+                    .'<p><strong>Spé</strong> : 6 jouables / 11 prévues ; paliers 1, 3, 6, 9, 12, 15, 20 — à chacun 1 capacité + 1 emplacement libre (2ᵉ capacité, +2 points de carac, ou 1 trait dès le niv. 12) + 1 à 2 compétences. Aptitudes automatiques aux niv. 3, 9, 15 — [[kref:page:regles-2-4-choisir-sa-specialisation|Choisir sa spé]].</p>'
                     .'<p><strong>Compétences</strong> : Athlétisme, Acrobaties, Discrétion, Escamotage, Arcanes, Histoire, Investigation, Nature, Religion, Connaissance des créatures, Dressage, Médecine, Perception, Perspicacité, Survie, Herbaliste, Persuasion, Représentation, Supercherie, Intimidation (For ou Cha). → [[kref:page:regles-3-5-competences|3.5.1]]</p>',
             ],
             [
@@ -145,7 +145,7 @@ return [
                     .'<li><strong>Observer</strong> — [[kref:characteristic:perception_creature|Perception]] (passive = 10 + Sag + maîtrise si maîtrisée)</li>'
                     .'<li><strong>Marcher</strong> — 45 / 36 / 27 km/j (rapide / normal / lent)</li>'
                     .'<li><strong>Fouiller, crocheter, parler</strong> — le MJ fixe compétence + DD</li>'
-                    .'<li><strong>Sorts / aptitudes</strong> — ça puise dans la [[kref:characteristic:wakfu_reserve_creature|réserve de Wakfu]]</li>'
+                    .'<li><strong>Sorts / capacités</strong> — ça puise dans la [[kref:characteristic:wakfu_reserve_creature|réserve de Wakfu]]</li>'
                     .'<li><strong>Métiers</strong> — récolte / artisanat / forgemagie, max 6 métiers — [[kref:page:regles-4-3-les-metiers|4.3]]</li>'
                     .'<li><strong>Piège de donjon</strong> — Perception pour voir, save pour encaisser (ex. niv. 3 : DD 13, 2d6) — [[kref:page:regles-3-1-partir-a-laventure|3.1.3]]</li>'
                     .'</ul>',
@@ -282,23 +282,23 @@ return [
         ],
     ],
     'sorts-aptitudes' => [
-        'title' => 'Sorts, aptitudes, capacités',
+        'title' => 'Sorts, capacités, aptitudes',
         'slug' => 'essentiels-sorts-aptitudes',
         'icon' => null,
         'menu_order' => 50,
         'intro_title' => 'Pouvoirs',
         'intro_html' => '<p>Avant de lancer : [[kref:characteristic:action_points_creature|PA]], portée, ligne de vue, touche ou sauvegarde ?</p>'
-            .'<p>→ [[kref:page:regles-3-3-sorts|Sorts]] · [[kref:page:regles-3-4-aptitudes-et-capacites|Aptitudes]]</p>',
+            .'<p>→ [[kref:page:regles-3-3-sorts|Sorts]] · [[kref:page:regles-3-4-aptitudes-et-capacites|Aptitudes et capacités]]</p>',
         'sections' => [
             [
                 'slug' => 'typologie',
                 'title' => 'Ce que tu as',
                 'html' => '<ul>'
-                    .'<li><strong>Sorts de classe</strong> — 3 au départ, déblocages niv. 3–14</li>'
+                    .'<li><strong>Sorts de classe</strong> — 3 au départ, déblocages niv. 2–12 (les 12 sont acquis au niv. 12)</li>'
                     .'<li><strong>Appris</strong> — parchemin ou maître (2 j × niveau, ÷4 avec maître)</li>'
                     .'<li><strong>Parchemin jetable</strong> — une fois ; détruit si le sort réussit</li>'
-                    .'<li><strong>Aptitudes</strong> — surtout hors combat (Wakfu) ; parfois en combat ([[kref:characteristic:action_points_creature|PA]])</li>'
-                    .'<li><strong>Capacités</strong> — souvent passives / déclenchées</li>'
+                    .'<li><strong>Capacités</strong> — de la spé ; surtout hors combat (Wakfu), parfois en combat ([[kref:characteristic:action_points_creature|PA]])</li>'
+                    .'<li><strong>Aptitudes</strong> — de la spé ; passives / déclenchées, gratuites, automatiques aux niv. 3, 9, 15</li>'
                     .'</ul>'
                     .'<p>→ [[kref:page:bibliotheque-spell|Sorts]] · [[kref:page:bibliotheque-capability|Capacités]]</p>',
             ],

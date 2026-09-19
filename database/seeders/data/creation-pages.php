@@ -25,7 +25,7 @@ use Database\Seeders\CreationPagesSeeder;
 $kEquil = '[[kref:page:regles-5-2-principes-dequilibrage|Équilibrage]]';
 $kPnjMonstres = '[[kref:pageSection:regles-5-1-ressources-mj@regle-5-1-2-creation-de-pnj-et-monstres|Création de PNJ et monstres]]';
 $kClassesEq = '[[kref:pageSection:regles-5-2-principes-dequilibrage@regle-5-2-2-classes-et-specialisations|Classes et spécialisations]]';
-$kSortsEq = '[[kref:pageSection:regles-5-2-principes-dequilibrage@regle-5-2-3-sorts-et-aptitudes|Sorts et aptitudes]]';
+$kSortsEq = '[[kref:pageSection:regles-5-2-principes-dequilibrage@regle-5-2-3-sorts-et-capacites|Sorts et capacités]]';
 $kEquipEq = '[[kref:pageSection:regles-5-2-principes-dequilibrage@regle-5-2-4-equipements-et-panoplies|Équipements et panoplies]]';
 $kClassesLivre = '[[kref:page:regles-2-3-choisir-sa-classe|Choisir sa classe]]';
 $kSpeLivre = '[[kref:page:regles-2-4-choisir-sa-specialisation|Choisir sa spécialisation]]';
@@ -137,7 +137,8 @@ return [
                     'slug' => 'creation-specialisations-intro',
                     'title' => 'Philosophie',
                     'html' => '<h2>Spécialisations</h2>'
-                        .'<p>La spé <strong>oriente</strong> une [[kref:page:creation-classes|classe]] : elle ne la remplace pas. Aptitudes, capacités, parfois objets ou sorts liés. Un PJ « dans le rôle » de la spé est au maximum ; un PJ qui l’ignore reste jouable, juste plus faible dans ce registre. '.$kSpeLivre.' · '.$kClassesEq.'.</p>',
+                        .'<p>La spé <strong>oriente</strong> une [[kref:page:creation-classes|classe]] : elle ne la remplace pas. Capacités, aptitudes, compétences, parfois métiers ou objets liés. Un PJ « dans le rôle » de la spé est au maximum ; un PJ qui l’ignore reste jouable, juste plus faible dans ce registre. '.$kSpeLivre.' · '.$kClassesEq.'.</p>'
+                        .'<p><strong>Structure imposée</strong> : 7 paliers (niveaux 1, 3, 6, 9, 12, 15, 20). Chaque palier donne 1 capacité garantie, 1 emplacement libre (2ᵉ capacité proposée, +2 points de carac, ou 1 trait dès le palier 12) et 1 à 2 compétences — 3 au palier 1. Les paliers 3, 9 et 15 donnent en plus 1 aptitude automatique, soit 3 au total.</p>',
                 ],
                 [
                     'slug' => 'creation-specialisations-methode',
@@ -145,8 +146,9 @@ return [
                     'html' => '<h3>Marche à suivre</h3>'
                         .'<ol>'
                         .'<li>Nomme le fantasy (« tank sacré », « piégeur à distance ») en lien avec la classe parente.</li>'
-                        .'<li>Niveaux 1–5 : effets simples ; 6–10 modérés ; 11–15 puissants ; 16–20 exceptionnels — jamais un passif de palier 16 dès le niveau 3.</li>'
-                        .'<li>Chaque aptitude a un coût ('.$pa.', Wakfu, fréquence). Une capacité est plutôt passive / contextuelle (voir [[kref:page:creation-capacites|Capacités]]).</li>'
+                        .'<li>Paliers 1–3 : effets simples ; 6–9 modérés ; 12–15 puissants ; 20 exceptionnel — jamais un effet de palier 20 dès le palier 3.</li>'
+                        .'<li>Écris <strong>1 à 2 capacités par palier</strong> : la première est garantie, la seconde n’est proposée que si l’emplacement libre y est dépensé. Chaque capacité a un coût ('.$pa.', Wakfu, fréquence).</li>'
+                        .'<li>Écris exactement <strong>3 aptitudes</strong>, aux paliers 3, 9 et 15 : passives ou contextuelles, gratuites, sans choix (voir [[kref:page:creation-capacites|Capacités]]).</li>'
                         .'<li>Les bonus de caractéristiques restent sur la ligne neutre des chartes, éventuellement <em>fort</em> sur <strong>une</strong> stat du rôle, pas sur toutes.</li>'
                         .'<li>Catalogue : [[kref:page:bibliotheque-specialization|Spécialisations]]. En lecture, les liaisons brouillon ne fuient pas.</li>'
                         .'</ol>'

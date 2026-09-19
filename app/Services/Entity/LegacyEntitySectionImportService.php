@@ -90,7 +90,7 @@ class LegacyEntitySectionImportService
                 }
 
                 $results[] = [
-                    'title' => "Aptitudes (niveau {$currentLevel})",
+                    'title' => "Capacités (niveau {$currentLevel})",
                     'level' => $currentLevel,
                     'content' => $this->buildCapabilityKrefListHtml($capabilities),
                     'capabilities' => $capabilities,
@@ -225,7 +225,7 @@ class LegacyEntitySectionImportService
             }
         }
 
-        return '<p>Aptitudes disponibles pour ce palier :</p><ul>'.implode('', $items).'</ul>';
+        return '<p>Capacités disponibles pour ce palier :</p><ul>'.implode('', $items).'</ul>';
     }
 
     public function buildCharacteristicKrefParagraph(string $characteristicKey, string $label, string $suffix = ''): string
