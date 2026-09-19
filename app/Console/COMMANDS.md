@@ -556,7 +556,7 @@ cron: false
 admin: /admin/content
 ```
 
-Compile le livre de règles Markdown en PDF et ODT dans `storage/app/public/downloads/generated/`. Produit le **livre joueur** (ch. 1–4) et l’**atelier MJ** (ch. 5). Hors livres : Sources / Contenu, changelog. Lancé après `project:init` / `project:seed`, via `pages:import-rules-toc --compile-downloads`, ou depuis le bouton de la gestion du contenu (admin+ ; file `rules-downloads`, worker ponctuel).
+Compile le livre de règles Markdown en PDF et ODT. **Livre joueur** (ch. 1–4) → `storage/app/public/downloads/generated/`. **Atelier MJ** (ch. 5, `read_level` MJ) → disque privé `storage/app/private/downloads/generated/` (pas d’URL `/storage/…`). Hors livres : Sources / Contenu, changelog. Lancé après `project:init` / `project:seed`, via `pages:import-rules-toc --compile-downloads`, ou depuis le bouton de la gestion du contenu (admin+ ; file `rules-downloads`, worker ponctuel).
 
 ```bash
 php artisan rules:compile-downloads

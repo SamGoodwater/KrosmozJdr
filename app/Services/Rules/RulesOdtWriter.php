@@ -23,11 +23,11 @@ use ZipArchive;
 class RulesOdtWriter
 {
     /**
-     * @return string Chemin relatif sur le disque public
+     * @return string Chemin relatif sur le disque cible
      */
-    public function write(string $html, string $relativePath, string $title = 'Krosmoz JDR — Livre de règles'): string
+    public function write(string $html, string $relativePath, string $title = 'Krosmoz JDR — Livre de règles', ?string $diskName = null): string
     {
-        $disk = Storage::disk((string) config('game_downloads.disk', 'public'));
+        $disk = Storage::disk($diskName ?? (string) config('game_downloads.disk', 'public'));
         $absolute = $disk->path($relativePath);
         $directory = dirname($absolute);
         if (! is_dir($directory)) {

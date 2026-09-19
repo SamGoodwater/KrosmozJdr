@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Sur une carte minimale, Sources rouvre les deux onglets : conversion DofusDB (algo) et conversion IA. On coche si on veut récupérer l’image. Après l’écriture, le tableau compare ancien et nouveau : un clic sur une cellule (ou sur l’en-tête de colonne) choisit ce qu’on garde."
+    "description": "L’atelier MJ compilé n’est plus écrit sous storage/app/public : un joueur ne peut plus le récupérer via /storage/downloads/generated/."
   },
   {
     "path": "backend/_ai.md",

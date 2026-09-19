@@ -32,7 +32,7 @@ php artisan pages:import-rules-toc --dry-run
 php artisan rules:compile-downloads
 ```
 
-Le livre compilé vit dans `storage/app/public/downloads/generated/` (non versionné). PDF A4, police resserrée, un saut de page par grande partie (pas par fiche). Deux livres : **joueur** (ch. 1–4, public) et **atelier MJ** (ch. 5, rôle MJ). Blocs Sources / Contenu et changelog exclus. Téléchargement : `/telechargements/{key}`. Pages CMS **Ressources** (`ressources-de-jeu`, menu Règles) et **Ressources MJ** (`ressources-mj`, Pour les MJ). Bouton admin : `/admin/content` (file dédiée `rules-downloads` ; un worker ponctuel est lancé avec le bouton, un `queue:listen` persistant n’est pas requis).
+Le livre joueur compilé vit dans `storage/app/public/downloads/generated/` (non versionné). L’atelier MJ (`read_level` MJ) est sur le disque privé `storage/app/private/downloads/generated/` : `/storage/…` ne le sert pas. PDF A4, police resserrée, un saut de page par grande partie (pas par fiche). Deux livres : **joueur** (ch. 1–4, public) et **atelier MJ** (ch. 5, rôle MJ). Blocs Sources / Contenu et changelog exclus. Téléchargement : `/telechargements/{key}`. Pages CMS **Ressources** (`ressources-de-jeu`, menu Règles) et **Ressources MJ** (`ressources-mj`, Pour les MJ). Bouton admin : `/admin/content` (file dédiée `rules-downloads` ; un worker ponctuel est lancé avec le bouton, un `queue:listen` persistant n’est pas requis).
 
 ## Nettoyage des fichiers orphelins
 
@@ -54,7 +54,7 @@ Le contenu de `storage/app/public` est versionné (icônes, fonds, logos, légal
 
 - `images/entity/` — illustrations d’entités (scrapping, médias générés)
 - `images/users/` — fichiers utilisateur
-- `downloads/generated/` — PDF/ODT du livre de règles (régénérés par `rules:compile-downloads`)
+- `downloads/generated/` — PDF/ODT du **livre joueur** (régénérés par `rules:compile-downloads`). L’atelier MJ est sur le disque privé.
 
 Le lien web `public/storage` n’est pas versionné : le recréer avec `php artisan storage:link`.
 

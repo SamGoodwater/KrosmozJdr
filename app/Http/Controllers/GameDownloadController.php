@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Services\Rules\GameDownloadCatalog;
-use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -21,6 +20,7 @@ class GameDownloadController extends Controller
         if ($item === null) {
             abort(404);
         }
+        $catalog->purgePublicCopyIfRestricted($item);
         if (! $catalog->userCanAccess($item)) {
             abort(403, 'Tu n’as pas accès à ce fichier.');
         }
@@ -35,7 +35,7 @@ class GameDownloadController extends Controller
             abort(404);
         }
 
-        $disk = Storage::disk((string) config('game_downloads.disk', 'public'));
+        $disk = $catalog->diskFor($item);
         $downloadName = basename($relative);
 
         return $disk->download($relative, $downloadName, [

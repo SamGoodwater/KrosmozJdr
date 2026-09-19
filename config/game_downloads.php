@@ -5,9 +5,9 @@ declare(strict_types=1);
 /**
  * Catalogue des fichiers téléchargeables (livre de règles, fiches, logo).
  *
- * Les clés `generated` sont produites par `rules:compile-downloads` dans
- * `storage/app/public/{generated_directory}/`. Les autres pointent vers des
- * fichiers déjà versionnés sur le disque public.
+ * Les clés `generated` sont produites par `rules:compile-downloads`.
+ * `read_level` > invité → disque `local` (privé), pas sous `/storage/…`.
+ * Les autres fichiers restent sur le disque public.
  *
  * Pour ajouter un fichier plus tard : une entrée ici suffit ; la page
  * Ressources et l’API les affichent automatiquement.

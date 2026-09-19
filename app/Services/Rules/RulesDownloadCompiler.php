@@ -8,9 +8,10 @@ use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
 /**
- * Compile les livres de règles en PDF et ODT sur le disque public.
+ * Compile les livres de règles en PDF et ODT.
  *
- * Livre joueur (ch. 1–4) et atelier MJ (ch. 5), selon `audience` du catalogue.
+ * Livre joueur (ch. 1–4, disque public) et atelier MJ (ch. 5, disque privé) :
+ * un `read_level` MJ ne doit pas atterrir sous `/storage/…`.
  * N’est lancé que par la commande Artisan (import / init) ou le bouton admin :
  * jamais à la volée sur une page publique.
  *
@@ -23,6 +24,7 @@ class RulesDownloadCompiler
         private readonly RulesBookAssembler $assembler,
         private readonly RulesPdfWriter $pdfWriter,
         private readonly RulesOdtWriter $odtWriter,
+        private readonly GameDownloadCatalog $catalog,
     ) {}
 
     /**
@@ -38,10 +40,6 @@ class RulesDownloadCompiler
         };
 
         $directory = trim((string) config('game_downloads.generated_directory', 'downloads/generated'), '/');
-        $disk = Storage::disk((string) config('game_downloads.disk', 'public'));
-        if (! $disk->exists($directory)) {
-            $disk->makeDirectory($directory);
-        }
 
         $items = collect(config('game_downloads.items', []))
             ->filter(fn (array $item): bool => (bool) ($item['generated'] ?? false))
@@ -89,21 +87,33 @@ class RulesDownloadCompiler
             $report('Génération de '.$filename.'…', $percent);
 
             $relative = $directory.'/'.$filename;
+            $diskName = $this->catalog->diskName($item);
+            $disk = Storage::disk($diskName);
+            if (! $disk->exists($directory)) {
+                $disk->makeDirectory($directory);
+            }
             $title = $audience === RulesBookAssembler::AUDIENCE_MJ
                 ? 'Krosmoz JDR — Atelier MJ'
                 : 'Krosmoz JDR — Livre de règles';
             $mime = (string) ($item['mime'] ?? '');
             if ($mime === 'application/pdf') {
-                $this->pdfWriter->write($html, $relative, $title);
+                $this->pdfWriter->write($html, $relative, $title, $diskName);
             } else {
-                $this->odtWriter->write($html, $relative, $title);
+                $this->odtWriter->write($html, $relative, $title, $diskName);
             }
+            $this->catalog->purgePublicCopyIfRestricted($item);
 
-            $written[] = $this->describe((string) $item['key'], $relative);
+            $written[] = $this->describe((string) $item['key'], $relative, $diskName);
         }
 
         if ($written === []) {
             throw new RuntimeException('Aucun chapitre de règles à compiler.');
+        }
+
+        foreach (config('game_downloads.items', []) as $item) {
+            if (is_array($item)) {
+                $this->catalog->purgePublicCopyIfRestricted($item);
+            }
         }
 
         $report('Compilation terminée.', 100);
@@ -114,9 +124,9 @@ class RulesDownloadCompiler
     /**
      * @return array{key: string, path: string, bytes: int}
      */
-    private function describe(string $key, string $relativePath): array
+    private function describe(string $key, string $relativePath, string $diskName): array
     {
-        $disk = Storage::disk((string) config('game_downloads.disk', 'public'));
+        $disk = Storage::disk($diskName);
 
         return [
             'key' => $key,
