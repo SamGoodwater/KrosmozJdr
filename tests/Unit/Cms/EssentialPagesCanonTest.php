@@ -31,15 +31,25 @@ final class EssentialPagesCanonTest extends TestCase
         $this->assertArrayHasKey('sante-etats', $this->pages);
     }
 
-    public function test_creation_uses_even_levels_and_level_one_cap(): void
+    public function test_creation_uses_fixed_levels_and_level_one_cap(): void
     {
         $html = $this->flattenHtml($this->pages['creation']);
 
-        $this->assertStringContainsString('niveaux pairs', $html);
-        $this->assertStringContainsString('score <strong>13</strong>', $html);
+        $this->assertStringContainsString('<strong>2, 4, 8, 10, 14, 16</strong>', $html);
+        $this->assertStringContainsString('<strong>14 + ⌊niv./2⌋</strong>', $html);
+        $this->assertStringContainsString('score <strong>14</strong> au niv. 1', $html);
         $this->assertStringContainsString('19 classes', $html);
         $this->assertStringContainsString('6 jouables', $html);
         $this->assertStringNotContainsString('Force 16', $html);
+    }
+
+    public function test_creation_states_new_specialization_tiers(): void
+    {
+        $html = $this->flattenHtml($this->pages['creation']);
+
+        $this->assertStringContainsString('paliers 1, 3, 6, 9, 12, 15, 20', $html);
+        $this->assertStringContainsString('Aptitudes automatiques aux niv. 3, 9, 15', $html);
+        $this->assertStringNotContainsString('aptitude ou capacité aux paliers', $html);
     }
 
     public function test_combat_keeps_single_resolution_table_and_crit_canon(): void

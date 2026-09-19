@@ -56,7 +56,7 @@ class PagesImportRulesTocPlacementTest extends TestCase
 
 ### 5.2 Principes d'équilibrage
 
-- **5.2.3** Sorts et aptitudes
+- **5.2.3** Sorts et capacités
 MD);
 
         try {
@@ -84,7 +84,7 @@ MD);
 
             $section = Section::query()->where(
                 'slug',
-                RulesImportSlugHelper::buildSectionSlug('5.2.3', 'Sorts et aptitudes')
+                RulesImportSlugHelper::buildSectionSlug('5.2.3', 'Sorts et capacités')
             )->first();
             $this->assertNotNull($section);
             $this->assertSame(User::ROLE_GAME_MASTER, $section->read_level);

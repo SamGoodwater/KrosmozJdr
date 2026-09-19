@@ -281,7 +281,7 @@ Calibrage MJ (classes, sorts, objets) : menu **Pour les MJ**, hors PDF joueur. L
 
 - **5.2.2** Classes et spécialisations
 
-- **5.2.3** Sorts et aptitudes
+- **5.2.3** Sorts et capacités
 
 - **5.2.4** Équipements et panoplies
 

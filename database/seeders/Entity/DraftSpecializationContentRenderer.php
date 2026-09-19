@@ -10,7 +10,7 @@ namespace Database\Seeders\Entity;
  */
 final class DraftSpecializationContentRenderer
 {
-    public const DRAFT_BANNER = '<p><strong>Brouillon</strong> — proposition à retravailler (aptitudes, chiffres, liens vers les fiches capacités). Pas encore jouable.</p>';
+    public const DRAFT_BANNER = '<p><strong>Brouillon</strong> — proposition à retravailler (chiffres, coûts, liens vers les fiches capacités). Pas encore jouable.</p>';
 
     /**
      * @param  array<string, mixed>  $spec
@@ -117,14 +117,14 @@ final class DraftSpecializationContentRenderer
             $parts[] = '<h2>Maîtrises</h2><ul>'.$items.'</ul>';
         }
 
-        $aptitudes = $levelData['aptitudes'] ?? [];
-        if (is_array($aptitudes) && $aptitudes !== []) {
-            $parts[] = '<h2>Aptitudes (pistes)</h2>'.$this->namedEffectsList($aptitudes);
-        }
-
         $capacities = $levelData['capacities'] ?? [];
         if (is_array($capacities) && $capacities !== []) {
             $parts[] = '<h2>Capacités (pistes)</h2>'.$this->namedEffectsList($capacities);
+        }
+
+        $aptitudes = $levelData['aptitudes'] ?? [];
+        if (is_array($aptitudes) && $aptitudes !== []) {
+            $parts[] = '<h2>Aptitude (automatique)</h2>'.$this->namedEffectsList($aptitudes);
         }
 
         if ($level === 1 && $flavor === '' && $masteries === []) {

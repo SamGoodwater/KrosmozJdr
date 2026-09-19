@@ -10,7 +10,7 @@ declare(strict_types=1);
 return [
     'kEquil' => '[[kref:page:regles-5-2-principes-dequilibrage|Équilibrage]]',
     'kPnjMonstres' => '[[kref:pageSection:regles-5-1-ressources-mj@regle-5-1-2-creation-de-pnj-et-monstres|Création de PNJ et monstres]]',
-    'kSortsEq' => '[[kref:pageSection:regles-5-2-principes-dequilibrage@regle-5-2-3-sorts-et-aptitudes|Sorts et aptitudes]]',
+    'kSortsEq' => '[[kref:pageSection:regles-5-2-principes-dequilibrage@regle-5-2-3-sorts-et-capacites|Sorts et capacités]]',
     'kEquipEq' => '[[kref:pageSection:regles-5-2-principes-dequilibrage@regle-5-2-4-equipements-et-panoplies|Équipements et panoplies]]',
     'kCapaLivre' => '[[kref:pageSection:regles-2-4-choisir-sa-specialisation@regle-2-4-4-capacites|Capacités]]',
     'kSortsLivre' => '[[kref:page:regles-3-3-sorts|Sorts]]',

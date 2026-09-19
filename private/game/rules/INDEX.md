@@ -39,21 +39,22 @@ Les numéros renvoient aux fichiers du livre. Changelog et historique : [[kref:p
 
 ## Création et progression
 
-- **Aptitudes** (listes / choix) : 2.4.3 · activation : 3.4.1
-- **Capacités** (listes / choix) : 2.4.4 · jeu : 3.4.2
-- **Caractéristiques** (scores, mods, plafond niv. 1 = 13) : 2.2.1, 2.2.3
+- **Aptitudes** (passives, automatiques aux niv. 3 / 9 / 15) : 2.4.3 · jeu : 3.4.1
+- **Capacités** (actives, 1 garantie par palier + emplacement libre) : 2.4.4 · activation : 3.4.2
+- **Caractéristiques** (scores, mods, plafond = 14 + ⌊niv/2⌋) : 2.2.1, 2.2.3
 - **Classes** (19) : 2.3.1
-- **Compétences** (liste unique) : 3.5.1
-- **Expertise** (niv. 9 / 15 / 20) : 3.5.3
+- **Compétences** (liste unique ; 3 au niv. 1 puis 1 à 2 par palier) : 3.5.1, 2.4.5
+- **Emplacement libre** (capacité / +2 points de carac / trait au niv. 12+) : 2.4.2
+- **Expertise** (paliers 9 / 15 / 20, max 3) : 3.5.3, 2.4.5
 - **Maîtrise** (1 + ⌊niveau/4⌋) : 2.3.2, 3.5.3
 - **Passifs de classe** : 2.3.4
-- **Spécialisations** (6 jouables / 11 prévues) : 2.4.1
-- **Table de progression** (sorts / caracs pairs / 7 paliers de spé) : 2.3.2
+- **Spécialisations** (6 jouables / 11 prévues ; paliers 1, 3, 6, 9, 12, 15, 20) : 2.4.1, 2.4.2
+- **Table de progression** (12 sorts au niv. 12 / 6 points fixes / 7 paliers de spé) : 2.3.2
 - **Voies élémentaires** : 2.3.3
 
 ## Équipement
 
-- **Bonus par objet** (**+4** carac principale, forgemagie **+2**) : 2.2.3, 2.6.1
+- **Bonus d'équipement** (**+8** au total par carac principale, dont **+2** de forgemagie ; +4 par objet) : 2.2.3, 2.6.1
 - **Forgemagie** : 4.3.4, 2.6.1
 - **Panoplies** : 2.6.2, 5.2.4
 - **Prix kamas** : 2.6.1, 4.1.3, 5.3.5
