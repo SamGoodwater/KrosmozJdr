@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — PDF MJ hors disque public
+
+L’atelier MJ compilé n’est plus écrit sous `storage/app/public` : un joueur ne peut plus le récupérer via `/storage/downloads/generated/…`. Le téléchargement passe uniquement par `/telechargements/mj-pdf` (rôle MJ). Une copie publique déjà générée est migrée puis effacée.
+
 ## Septembre 2026 — Règles sans catalogues, changelog hors livre, PDF MJ
 
 Le livre joueur ne recopie plus les fiches (classes, sorts, monstres…) : il renvoie aux **Bibliothèques**. Le **changelog** n’est plus une annexe de règles : il reste la page Informations. Les meneurs ont un **PDF d’atelier** à part (**Pour les MJ → Ressources MJ**), avec le calibrage ; la création de fiches se fait sur le site (Création).

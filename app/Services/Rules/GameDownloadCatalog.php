@@ -44,13 +44,15 @@ class GameDownloadCatalog
             if (! is_array($item) || ! isset($item['key'])) {
                 continue;
             }
+            $this->purgePublicCopyIfRestricted($item);
             if (! $this->userCanAccess($item, $user)) {
                 continue;
             }
             $relative = $this->relativePath($item);
-            $available = $relative !== null && $this->disk()->exists($relative);
-            $size = $available ? (int) $this->disk()->size($relative) : null;
-            $mtime = $available ? $this->disk()->lastModified($relative) : null;
+            $disk = $this->diskFor($item);
+            $available = $relative !== null && $disk->exists($relative);
+            $size = $available ? (int) $disk->size($relative) : null;
+            $mtime = $available ? $disk->lastModified($relative) : null;
 
             $items[] = [
                 'key' => (string) $item['key'],
@@ -88,6 +90,71 @@ class GameDownloadCatalog
     }
 
     /**
+     * Fichier réservé (MJ+) : hors disque public, sinon `/storage/…` contourne le 403.
+     *
+     * @param  array<string, mixed>  $item
+     */
+    public function isRestricted(array $item): bool
+    {
+        return (int) ($item['read_level'] ?? User::ROLE_GUEST) > User::ROLE_GUEST;
+    }
+
+    /**
+     * Disque de stockage : `local` (privé) si `read_level` > invité, sinon le disque catalogue.
+     *
+     * @param  array<string, mixed>  $item
+     */
+    public function diskName(array $item): string
+    {
+        return $this->isRestricted($item)
+            ? 'local'
+            : (string) config('game_downloads.disk', 'public');
+    }
+
+    /**
+     * @param  array<string, mixed>  $item
+     */
+    public function diskFor(array $item): Filesystem
+    {
+        return Storage::disk($this->diskName($item));
+    }
+
+    /**
+     * Migre une copie publique oubliée vers le disque privé, puis l’efface.
+     *
+     * Sans ça, un atelier MJ déjà compilé resterait téléchargeable via
+     * `/storage/downloads/generated/krosmoz-jdr-atelier-mj.pdf`.
+     *
+     * @param  array<string, mixed>  $item
+     */
+    public function purgePublicCopyIfRestricted(array $item): void
+    {
+        if (! $this->isRestricted($item)) {
+            return;
+        }
+
+        $relative = $this->relativePath($item);
+        if ($relative === null) {
+            return;
+        }
+
+        $public = Storage::disk('public');
+        if (! $public->exists($relative)) {
+            return;
+        }
+
+        $private = Storage::disk('local');
+        if (! $private->exists($relative)) {
+            $contents = $public->get($relative);
+            if (is_string($contents) && $contents !== '') {
+                $private->put($relative, $contents);
+            }
+        }
+
+        $public->delete($relative);
+    }
+
+    /**
      * @param  array<string, mixed>  $item
      */
     public function userCanAccess(array $item, ?User $user = null): bool
@@ -114,7 +181,7 @@ class GameDownloadCatalog
     }
 
     /**
-     * Chemin relatif sur le disque public, ou null si l’entrée est mal configurée.
+     * Chemin relatif sur le disque de l’entrée, ou null si elle est mal configurée.
      *
      * @param  array<string, mixed>  $item
      */
@@ -153,8 +220,4 @@ class GameDownloadCatalog
         ];
     }
 
-    private function disk(): Filesystem
-    {
-        return Storage::disk((string) config('game_downloads.disk', 'public'));
-    }
 }
