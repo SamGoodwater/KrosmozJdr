@@ -5,10 +5,9 @@ declare(strict_types=1);
 /**
  * Brouillons des spécialisations prévues par les règles mais absentes de la bibliothèque.
  *
- * Structure imposée par 2.4.2 : 7 paliers (1, 3, 6, 9, 12, 15, 20). Chaque palier
- * porte 1 à 2 capacités — la première est garantie, la seconde n'existe que si le
- * joueur y dépense son emplacement libre. Exactement 3 aptitudes, aux paliers 3, 9
- * et 15, sans choix.
+ * Structure imposée par 2.4.2.6 : 7 paliers (1, 3, 6, 9, 12, 15, 20). Chaque palier
+ * porte 1 capacité garantie + 1 option (emplacement libre) et 1 compétence
+ * (3 au palier 1). Exactement 3 aptitudes, aux paliers 3, 9 et 15, sans choix.
  *
  * Ce contenu est une proposition : chiffres, DD, coûts Wakfu/PA et liens vers les
  * fiches capacités restent à écrire. Ne pas passer en jouable sans relecture.
@@ -20,12 +19,12 @@ $freeSlot = 'emplacement libre';
 
 $choices = [
     1 => '1 capacité garantie + 1 emplacement libre · 3 compétences',
-    3 => '1 aptitude (automatique) · 1 capacité garantie + 1 emplacement libre · 1 à 2 compétences',
-    6 => '1 capacité garantie + 1 emplacement libre · 1 à 2 compétences',
-    9 => '1 aptitude (automatique) · 1 capacité garantie + 1 emplacement libre · 1 à 2 compétences (expertise possible)',
-    12 => '1 capacité garantie + 1 emplacement libre (trait possible) · 1 à 2 compétences',
-    15 => '1 aptitude (automatique) · 1 capacité garantie + 1 emplacement libre (trait possible) · 1 à 2 compétences (expertise possible)',
-    20 => '1 capacité garantie + 1 emplacement libre (trait possible) · 1 à 2 compétences (expertise possible)',
+    3 => '1 aptitude (automatique) · 1 capacité garantie + 1 emplacement libre · 1 compétence',
+    6 => '1 capacité garantie + 1 emplacement libre · 1 compétence',
+    9 => '1 aptitude (automatique) · 1 capacité garantie + 1 emplacement libre · 1 compétence (expertise possible)',
+    12 => '1 capacité garantie + 1 emplacement libre (trait possible) · 1 compétence',
+    15 => '1 aptitude (automatique) · 1 capacité garantie + 1 emplacement libre (trait possible) · 1 compétence (expertise possible)',
+    20 => '1 capacité garantie + 1 emplacement libre (trait possible) · 1 compétence (expertise possible)',
 ];
 
 return [

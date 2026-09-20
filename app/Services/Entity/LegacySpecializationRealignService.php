@@ -43,12 +43,12 @@ class LegacySpecializationRealignService
     /** Ce que chaque palier accorde, d'après 2.4.2. */
     public const PALIER_SUMMARY = [
         1 => '1 capacité garantie + 1 emplacement libre · 3 compétences',
-        3 => '1 aptitude (automatique) · 1 capacité garantie + 1 emplacement libre · 1 à 2 compétences',
-        6 => '1 capacité garantie + 1 emplacement libre · 1 à 2 compétences',
-        9 => '1 aptitude (automatique) · 1 capacité garantie + 1 emplacement libre · 1 à 2 compétences (expertise possible)',
-        12 => '1 capacité garantie + 1 emplacement libre (trait possible) · 1 à 2 compétences',
-        15 => '1 aptitude (automatique) · 1 capacité garantie + 1 emplacement libre (trait possible) · 1 à 2 compétences (expertise possible)',
-        20 => '1 capacité garantie + 1 emplacement libre (trait possible) · 1 à 2 compétences (expertise possible)',
+        3 => '1 aptitude (automatique) · 1 capacité garantie + 1 emplacement libre · 1 compétence',
+        6 => '1 capacité garantie + 1 emplacement libre · 1 compétence',
+        9 => '1 aptitude (automatique) · 1 capacité garantie + 1 emplacement libre · 1 compétence (expertise possible)',
+        12 => '1 capacité garantie + 1 emplacement libre (trait possible) · 1 compétence',
+        15 => '1 aptitude (automatique) · 1 capacité garantie + 1 emplacement libre (trait possible) · 1 compétence (expertise possible)',
+        20 => '1 capacité garantie + 1 emplacement libre (trait possible) · 1 compétence (expertise possible)',
     ];
 
     /**

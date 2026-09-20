@@ -100,8 +100,8 @@ return [
                 'title' => 'Les cinq étapes',
                 'html' => '<ol>'
                     .'<li><strong>Classe</strong> — <strong>19 classes</strong>, 4 voies, 3 sorts parmi 6, dé de vie → [[kref:page:bibliotheque-breed|Classes]]</li>'
-                    .'<li><strong>Spé</strong> — <strong>6 jouables</strong> (11 prévues) ; paliers 3, 6, 9, 12, 15, 18, 20 → [[kref:page:bibliotheque-specialization|Spés]]</li>'
-                    .'<li><strong>Caracs</strong> — 6×8, <strong>10 pts</strong> (option : 1 score à 6 → +2 pts). Plafond niv. 1 : score <strong>13</strong> (mod +1)</li>'
+                    .'<li><strong>Spé</strong> — <strong>6 jouables</strong> (11 prévues) ; paliers 1, 3, 6, 9, 12, 15, 20 → [[kref:page:bibliotheque-specialization|Spés]]</li>'
+                    .'<li><strong>Caracs</strong> — 6×8, <strong>10 pts</strong> (option : 1 score à 6 → +2 pts). Plafond niv. 1 : score <strong>14</strong> (mod +2)</li>'
                     .'<li><strong>Perso</strong> — alignement, historique, quête</li>'
                     .'<li><strong>Matos</strong> — équipement de classe + kamas (indicatifs)</li>'
                     .'</ol>',
@@ -118,7 +118,7 @@ return [
                 'slug' => 'classe-spe',
                 'title' => 'Classe et spé',
                 'html' => '<p><strong>Classe</strong> : identité, sorts auto, passifs — [[kref:page:regles-2-3-choisir-sa-classe|Choisir sa classe]].</p>'
-                    .'<p><strong>Spé</strong> : 6 jouables / 11 prévues ; paliers 1, 3, 6, 9, 12, 15, 20 — à chacun 1 capacité + 1 emplacement libre (2ᵉ capacité, +2 points de carac, ou 1 trait dès le niv. 12) + 1 à 2 compétences. Aptitudes automatiques aux niv. 3, 9, 15 — [[kref:page:regles-2-4-choisir-sa-specialisation|Choisir sa spé]].</p>'
+                    .'<p><strong>Spé</strong> : 6 jouables / 11 prévues ; paliers 1, 3, 6, 9, 12, 15, 20 — à chacun 1 capacité + 1 emplacement libre (2ᵉ capacité, +2 points de carac, ou 1 trait dès le niv. 12) + 1 compétence (2 si la fiche le dit). Aptitudes automatiques aux niv. 3, 9, 15 — [[kref:page:regles-2-4-choisir-sa-specialisation|Choisir sa spé]].</p>'
                     .'<p><strong>Compétences</strong> : Athlétisme, Acrobaties, Discrétion, Escamotage, Arcanes, Histoire, Investigation, Nature, Religion, Connaissance des créatures, Dressage, Médecine, Perception, Perspicacité, Survie, Herbaliste, Persuasion, Représentation, Supercherie, Intimidation (For ou Cha). → [[kref:page:regles-3-5-competences|3.5.1]]</p>',
             ],
             [

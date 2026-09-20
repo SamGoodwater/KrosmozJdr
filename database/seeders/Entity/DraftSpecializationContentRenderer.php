@@ -7,6 +7,9 @@ namespace Database\Seeders\Entity;
 /**
  * Transforme les tableaux de `database/seeders/data/draft-specializations.php`
  * en sections HTML de fiche spécialisation.
+ *
+ * Gabarit imposé par 2.4.2.6 : 7 paliers, 1 capacité garantie + 1 option,
+ * 1 compétence (sauf palier 1 = 3), aptitudes uniquement aux paliers 3 / 9 / 15.
  */
 final class DraftSpecializationContentRenderer
 {

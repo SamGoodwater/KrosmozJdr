@@ -156,6 +156,8 @@ Cette table des matières présente la structure complète du livre de règles K
 
 - **3.3.5** Variantes et personnalisation
 
+- **3.3.6** Intensification
+
 
 
 ### 3.4 Aptitudes et capacités
