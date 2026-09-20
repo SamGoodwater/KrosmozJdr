@@ -42,5 +42,6 @@ final class IntensificationCanonTest extends TestCase
         $this->assertStringContainsString('## 2.4.2.6. Format de fiche', $md);
         $this->assertStringContainsString('Aptitude (automatique) : exactement 1', $md);
         $this->assertStringContainsString('2 seulement si la fiche', $md);
+        $this->assertStringContainsString('playable-specializations/erudit.php', $md);
     }
 }

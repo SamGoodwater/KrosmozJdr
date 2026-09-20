@@ -902,7 +902,36 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
             ->get();
         $this->assertCount(24, $slotted);
         $levels = $slotted->pluck('pivot.character_level')->unique()->sort()->values()->all();
-        $this->assertSame([1, 3, 4, 5, 7, 8, 10, 11, 13, 14], array_map('intval', $levels));
+        $this->assertSame([1, 2, 4, 5, 6, 7, 8, 10, 11, 12], array_map('intval', $levels));
+    }
+
+    public function test_imports_iop_intensification_degrees_on_pression(): void
+    {
+        $this->seed(SubEffectSeeder::class);
+        $this->seedSpellTypes();
+        Breed::factory()->create([
+            'name' => 'Iop',
+            'state' => Breed::STATE_DRAFT,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => null,
+        ]);
+
+        app(ClassLevel1SpellSeederImporter::class)->import(ClassLevel1SpellCatalog::load());
+
+        $pression = Spell::query()->where('dofusdb_id', '13106')->first();
+        $this->assertNotNull($pression);
+        $this->assertStringContainsString('1d6 + Force', (string) $pression->effect);
+
+        $pression->load(['effects.degrees.effectSubEffects']);
+        $degrees = $pression->effects->first()?->degrees->sortBy('degree')->values();
+        $this->assertNotNull($degrees);
+        $this->assertCount(4, $degrees);
+        $this->assertSame(1, (int) $degrees[0]->required_creature_level);
+        $this->assertSame(13, (int) $degrees[1]->required_creature_level);
+        $this->assertSame(16, (int) $degrees[2]->required_creature_level);
+        $this->assertSame(20, (int) $degrees[3]->required_creature_level);
+        $this->assertSame('2d6+[strong]', $degrees[1]->effectSubEffects->first()?->params['value_formula'] ?? null);
     }
 
     private function seedSpellTypes(): void

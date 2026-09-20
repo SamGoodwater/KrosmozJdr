@@ -73,7 +73,7 @@ return static function (array $k): array {
                     .'<li>Buff : durée courte ; pas de cumul du même bonus.</li>'
                     .'</ul>'
                     .'<h3>Kit de classe (rappel)</h3>'
-                    .'<p>24 sorts = 12 emplacements × 2 variantes, 12 appris. Niveau 1 : 3 emplacements (attaque 1d6+mod à 3 '.$pa.', fort 4–5 '.$pa.', identité 2–3 '.$pa.'). Puis 3, 4, 5, 7, 8, 10, 11, 13, 14. Soins en <strong>d4</strong>, dégâts en <strong>d6</strong>. Détail : '.$k['kSortsEq'].'.</p>'
+                    .'<p>24 sorts = 12 emplacements × 2 variantes, 12 appris. Niveau 1 : 3 emplacements (attaque 1d6+mod à 3 '.$pa.', fort 4–5 '.$pa.', identité 2–3 '.$pa.'). Puis 2, 4, 5, 6, 7, 8, 10, 11, 12. Intensification I/II/III aux niveaux perso 13, 16, 20. Soins en <strong>d4</strong>, dégâts en <strong>d6</strong>. Détail : '.$k['kSortsEq'].'.</p>'
                     .'<h3>Propriétés de fiche (conversion)</h3>'
                     .'<ul>'
                     .'<li><code>name</code>, <code>description</code>, image — identité, figée si source Dofus.</li>'

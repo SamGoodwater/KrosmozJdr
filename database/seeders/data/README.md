@@ -87,7 +87,7 @@ Un JSON unique `class-passives.json` : 19 capacités passives (une par classe), 
 
 ## Sorts de classe (`entities/spells/`)
 
-`iop-level-1.json` … `forgelance-level-1.json` : 6 sorts (3 emplacements × 2 variantes) au **niveau 1**. `*-progression.json` : 18 sorts (9 emplacements × 2 variantes) aux niveaux **3, 4, 5, 7, 8, 10, 11, 13, 14**. **19 classes**, 24 sorts chacune. Upsert sur `dofusdb_id` ou `official_id`. `auto_update = false`, état `auto`. `target_type` optionnel (`direct`, `trap`, `glyph`). Les catalogues d’une même classe sont fusionnés avant le sync des emplacements ; les autres sorts liés à la classe passent hors grille (`character_level` 0, `slot_index` 1).
+`iop-level-1.json` … `forgelance-level-1.json` : 6 sorts (3 emplacements × 2 variantes) au **niveau 1**. `*-progression.json` : 18 sorts (9 emplacements × 2 variantes). **Iop** : niveaux **2, 4, 5, 6, 7, 8, 10, 11, 12** + tableau `intensification` I/II/III (perso 13/16/20). Les autres classes portent encore l’ancien tag **3, 4, 5, 7, 8, 10, 11, 13, 14**. **19 classes**, 24 sorts chacune. Upsert sur `dofusdb_id` ou `official_id`. `auto_update = false`, état `auto`. `target_type` optionnel (`direct`, `trap`, `glyph`). Les catalogues d’une même classe sont fusionnés avant le sync des emplacements ; les autres sorts liés à la classe passent hors grille (`character_level` 0, `slot_index` 1). L’importeur pose les degrés d’intensification (`SpellIntensificationCran`) même sans tableau JSON.
 
 - **Seed** : `Database\Seeders\Entity\SpellSeeder` (`project:seed` / `project:init` / `DatabaseSeeder`), **après** `MonsterSeeder`.
 - Budget : attaque simple 3 PA ; sort fort 4–5 PA ; identité 3 PA. Dés selon le palier (§5.2.3.2 / §5.2.3.6).

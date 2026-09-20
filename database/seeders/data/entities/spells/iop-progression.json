@@ -7,7 +7,7 @@
             "name": "Puissance",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Buff"
             ],
@@ -41,14 +41,76 @@
             "dofusdb_id": "13118",
             "auto_success_if_willing_target": true,
             "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "max_stack": 1,
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "+2d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "dommages_spell",
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "self",
+                                "duration_formula": "1"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "+3d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "dommages_spell",
+                                "value": "3d4",
+                                "value_formula": "3d4",
+                                "dice_formula": "3d4",
+                                "effect_direction": "self",
+                                "duration_formula": "1"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "+4d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "dommages_spell",
+                                "value": "4d4",
+                                "value_formula": "4d4",
+                                "dice_formula": "4d4",
+                                "effect_direction": "self",
+                                "duration_formula": "1"
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
             "key": "iop-duel",
             "name": "Duel",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Offensif"
             ],
@@ -76,7 +138,57 @@
                 }
             ],
             "dofusdb_id": "13165",
-            "attack_characteristic_key": "agi"
+            "attack_characteristic_key": "agi",
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "Attirance de 3 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "3",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "Attirance de 4 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "4",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "Attirance de 5 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "5",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
             "key": "iop-epee-divine",
@@ -114,7 +226,66 @@
                 }
             ],
             "dofusdb_id": "13110",
-            "attack_characteristic_key": "agi"
+            "attack_characteristic_key": "agi",
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "2d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "value_formula_crit": "3d6+[agi]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "3d6+Agilité",
+                                "value_formula": "3d6+[agi]",
+                                "dice_formula": "3d6+[agi]",
+                                "value_formula_crit": "4d6+[agi]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "4d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "4d6+Agilité",
+                                "value_formula": "4d6+[agi]",
+                                "dice_formula": "4d6+[agi]",
+                                "value_formula_crit": "5d6+[agi]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
             "key": "iop-couperet",
@@ -152,7 +323,66 @@
                 }
             ],
             "dofusdb_id": "13115",
-            "attack_characteristic_key": "strong"
+            "attack_characteristic_key": "strong",
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "2d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "value_formula_crit": "3d6+[strong]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "3d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "3d6+Force",
+                                "value_formula": "3d6+[strong]",
+                                "dice_formula": "3d6+[strong]",
+                                "value_formula_crit": "4d6+[strong]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "4d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "4d6+Force",
+                                "value_formula": "4d6+[strong]",
+                                "dice_formula": "4d6+[strong]",
+                                "value_formula_crit": "5d6+[strong]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
             "key": "iop-epee-de-iop",
@@ -192,7 +422,66 @@
             "dofusdb_id": "13125",
             "save_characteristic_key": "sagesse",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "3d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "circle-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "3d6+Force",
+                                "value_formula": "3d6+[strong]",
+                                "dice_formula": "3d6+[strong]",
+                                "value_formula_crit": "4d6+[strong]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "4d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "circle-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "4d6+Force",
+                                "value_formula": "4d6+[strong]",
+                                "dice_formula": "4d6+[strong]",
+                                "value_formula_crit": "5d6+[strong]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "5d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "circle-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "5d6+Force",
+                                "value_formula": "5d6+[strong]",
+                                "dice_formula": "5d6+[strong]",
+                                "value_formula_crit": "5d6+[strong]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
             "key": "iop-epee-celeste",
@@ -232,7 +521,260 @@
             "dofusdb_id": "13122",
             "save_characteristic_key": "sagesse",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "3d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "circle-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "3d6+Agilité",
+                                "value_formula": "3d6+[agi]",
+                                "dice_formula": "3d6+[agi]",
+                                "value_formula_crit": "4d6+[agi]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "4d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "circle-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "4d6+Agilité",
+                                "value_formula": "4d6+[agi]",
+                                "dice_formula": "4d6+[agi]",
+                                "value_formula_crit": "5d6+[agi]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "5d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "circle-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "5d6+Agilité",
+                                "value_formula": "5d6+[agi]",
+                                "dice_formula": "5d6+[agi]",
+                                "value_formula_crit": "5d6+[agi]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "iop-epee-destructrice",
+            "name": "Épée Destructrice",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "2d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+            "description": "Épée Destructrice : attaque simple, même budget que le emplacement 6.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "2d6+Agilité",
+                        "value_formula": "2d6+[agi]",
+                        "dice_formula": "2d6+[agi]",
+                        "value_formula_crit": "3d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "13119",
+            "attack_characteristic_key": "agi",
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "3d6+Agilité",
+                                "value_formula": "3d6+[agi]",
+                                "dice_formula": "3d6+[agi]",
+                                "value_formula_crit": "4d6+[agi]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "4d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "4d6+Agilité",
+                                "value_formula": "4d6+[agi]",
+                                "dice_formula": "4d6+[agi]",
+                                "value_formula_crit": "5d6+[agi]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "5d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "5d6+Agilité",
+                                "value_formula": "5d6+[agi]",
+                                "dice_formula": "5d6+[agi]",
+                                "value_formula_crit": "5d6+[agi]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "iop-fracture",
+            "name": "Fracture",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "2d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Fracture : attaque simple, même budget que le emplacement 6.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
+                        "value_formula_crit": "3d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "13139",
+            "attack_characteristic_key": "strong",
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "3d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "3d6+Force",
+                                "value_formula": "3d6+[strong]",
+                                "dice_formula": "3d6+[strong]",
+                                "value_formula_crit": "4d6+[strong]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "4d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "4d6+Force",
+                                "value_formula": "4d6+[strong]",
+                                "dice_formula": "4d6+[strong]",
+                                "value_formula_crit": "5d6+[strong]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "5d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "5d6+Force",
+                                "value_formula": "5d6+[strong]",
+                                "dice_formula": "5d6+[strong]",
+                                "value_formula_crit": "5d6+[strong]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
             "key": "iop-vitalite",
@@ -271,7 +813,63 @@
             "dofusdb_id": "32702",
             "auto_success_if_willing_target": true,
             "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "max_stack": 1,
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "3d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "3d4+Sagesse",
+                                "value_formula": "3d4+[sagesse]",
+                                "effect_direction": "self",
+                                "duration_formula": "1"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "4d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "4d4+Sagesse",
+                                "value_formula": "4d4+[sagesse]",
+                                "effect_direction": "self",
+                                "duration_formula": "1"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "5d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "5d4+Sagesse",
+                                "value_formula": "5d4+[sagesse]",
+                                "effect_direction": "self",
+                                "duration_formula": "1"
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
             "key": "iop-determination",
@@ -309,7 +907,27 @@
             "dofusdb_id": "13132",
             "auto_success_if_willing_target": true,
             "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "max_stack": 1,
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "—",
+                    "sub_effects": []
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "—",
+                    "sub_effects": []
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "—",
+                    "sub_effects": []
+                }
+            ]
         },
         {
             "key": "iop-menace",
@@ -347,7 +965,66 @@
                 }
             ],
             "dofusdb_id": "13130",
-            "attack_characteristic_key": "intel"
+            "attack_characteristic_key": "intel",
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "3d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "3d6+Intelligence",
+                                "value_formula": "3d6+[intel]",
+                                "dice_formula": "3d6+[intel]",
+                                "value_formula_crit": "4d6+[intel]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "4d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "4d6+Intelligence",
+                                "value_formula": "4d6+[intel]",
+                                "dice_formula": "4d6+[intel]",
+                                "value_formula_crit": "5d6+[intel]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "5d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "5d6+Intelligence",
+                                "value_formula": "5d6+[intel]",
+                                "dice_formula": "5d6+[intel]",
+                                "value_formula_crit": "5d6+[intel]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
             "key": "iop-tannee",
@@ -385,7 +1062,66 @@
                 }
             ],
             "dofusdb_id": "13131",
-            "attack_characteristic_key": "agi"
+            "attack_characteristic_key": "agi",
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "3d6+Agilité",
+                                "value_formula": "3d6+[agi]",
+                                "dice_formula": "3d6+[agi]",
+                                "value_formula_crit": "4d6+[agi]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "4d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "4d6+Agilité",
+                                "value_formula": "4d6+[agi]",
+                                "dice_formula": "4d6+[agi]",
+                                "value_formula_crit": "5d6+[agi]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "5d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "5d6+Agilité",
+                                "value_formula": "5d6+[agi]",
+                                "dice_formula": "5d6+[agi]",
+                                "value_formula_crit": "5d6+[agi]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
             "key": "iop-colere-de-iop",
@@ -425,7 +1161,53 @@
             "dofusdb_id": "15661",
             "save_characteristic_key": "sagesse",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "4d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "circle-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "4d6+Force",
+                                "value_formula": "4d6+[strong]",
+                                "dice_formula": "4d6+[strong]",
+                                "value_formula_crit": "5d6+[strong]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "5d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "circle-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "5d6+Force",
+                                "value_formula": "5d6+[strong]",
+                                "dice_formula": "5d6+[strong]",
+                                "value_formula_crit": "5d6+[strong]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "—",
+                    "sub_effects": []
+                }
+            ]
         },
         {
             "key": "iop-souffle",
@@ -465,7 +1247,53 @@
             "dofusdb_id": "14062",
             "save_characteristic_key": "sagesse",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "4d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "circle-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "4d6+Agilité",
+                                "value_formula": "4d6+[agi]",
+                                "dice_formula": "4d6+[agi]",
+                                "value_formula_crit": "5d6+[agi]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "5d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "circle-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "5d6+Agilité",
+                                "value_formula": "5d6+[agi]",
+                                "dice_formula": "5d6+[agi]",
+                                "value_formula_crit": "5d6+[agi]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "—",
+                    "sub_effects": []
+                }
+            ]
         },
         {
             "key": "iop-precipitation",
@@ -506,7 +1334,55 @@
             "dofusdb_id": "13114",
             "auto_success_if_willing_target": true,
             "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "max_stack": 1,
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "+4d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "dommages_spell",
+                                "value": "4d4",
+                                "value_formula": "4d4",
+                                "dice_formula": "4d4",
+                                "effect_direction": "self",
+                                "duration_formula": "1"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "+5d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "dommages_spell",
+                                "value": "5d4",
+                                "value_formula": "5d4",
+                                "dice_formula": "5d4",
+                                "effect_direction": "self",
+                                "duration_formula": "1"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "—",
+                    "sub_effects": []
+                }
+            ]
         },
         {
             "key": "iop-accumulation",
@@ -547,90 +1423,62 @@
             "dofusdb_id": "30772",
             "auto_success_if_willing_target": true,
             "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
-        },
-        {
-            "key": "iop-epee-destructrice",
-            "name": "Épée Destructrice",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "air",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
-            "description": "Épée Destructrice : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
+            "max_stack": 1,
+            "intensification": [
                 {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "3d6+Agilité",
-                        "value_formula": "3d6+[agi]",
-                        "dice_formula": "3d6+[agi]",
-                        "value_formula_crit": "4d6+[agi]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "13119",
-            "attack_characteristic_key": "agi"
-        },
-        {
-            "key": "iop-fracture",
-            "name": "Fracture",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Fracture : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "+4d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "dommages_spell",
+                                "value": "4d4",
+                                "value_formula": "4d4",
+                                "dice_formula": "4d4",
+                                "effect_direction": "self",
+                                "duration_formula": "1"
+                            }
+                        }
+                    ]
+                },
                 {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "3d6+Force",
-                        "value_formula": "3d6+[strong]",
-                        "dice_formula": "3d6+[strong]",
-                        "value_formula_crit": "4d6+[strong]",
-                        "effect_direction": "action"
-                    }
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "+5d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "dommages_spell",
+                                "value": "5d4",
+                                "value_formula": "5d4",
+                                "dice_formula": "5d4",
+                                "effect_direction": "self",
+                                "duration_formula": "1"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "—",
+                    "sub_effects": []
                 }
-            ],
-            "dofusdb_id": "13139",
-            "attack_characteristic_key": "strong"
+            ]
         },
         {
             "key": "iop-tempete-de-puissance",
             "name": "Tempête de Puissance",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],
@@ -645,7 +1493,7 @@
             "is_magic": true,
             "powerful": 5,
             "effect": "4d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Tempête de Puissance : sort fort de palier 14.",
+            "description": "Tempête de Puissance : signature de l’emplacement 12.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -663,14 +1511,47 @@
             "dofusdb_id": "13121",
             "save_characteristic_key": "sagesse",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "5d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "circle-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "5d6+Agilité",
+                                "value_formula": "5d6+[agi]",
+                                "dice_formula": "5d6+[agi]",
+                                "value_formula_crit": "5d6+[agi]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "—",
+                    "sub_effects": []
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "—",
+                    "sub_effects": []
+                }
+            ]
         },
         {
             "key": "iop-zenith",
             "name": "Zénith",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],
@@ -685,7 +1566,7 @@
             "is_magic": true,
             "powerful": 5,
             "effect": "4d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Zénith : sort fort de palier 14.",
+            "description": "Zénith : signature de l’emplacement 12.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -703,7 +1584,40 @@
             "dofusdb_id": "13145",
             "save_characteristic_key": "sagesse",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "5d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "circle-0-1",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "5d6+Intelligence",
+                                "value_formula": "5d6+[intel]",
+                                "dice_formula": "5d6+[intel]",
+                                "value_formula_crit": "5d6+[intel]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "—",
+                    "sub_effects": []
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "—",
+                    "sub_effects": []
+                }
+            ]
         }
     ]
 }

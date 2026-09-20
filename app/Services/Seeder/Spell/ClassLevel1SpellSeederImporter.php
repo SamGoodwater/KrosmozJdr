@@ -255,20 +255,73 @@ final class ClassLevel1SpellSeederImporter
         ]);
         $effect->save();
 
-        $area = (string) ($subEffects[0]['area'] ?? 'point');
+        $this->syncDegree(
+            $effect,
+            $slug,
+            1,
+            $entry['character_level'],
+            (string) ($subEffects[0]['area'] ?? 'point'),
+            $subEffects,
+            $entry['name'],
+            $skipped,
+        );
+
+        $degreeNumber = 1;
+        foreach ((new SpellIntensificationCran)->tiersFor($entry) as $tier) {
+            if ($tier['required_creature_level'] <= $entry['character_level']) {
+                continue;
+            }
+            if ($tier['effect'] === '—' || $tier['sub_effects'] === []) {
+                continue;
+            }
+            $degreeNumber++;
+            $this->syncDegree(
+                $effect,
+                $slug,
+                $degreeNumber,
+                $tier['required_creature_level'],
+                (string) ($tier['sub_effects'][0]['area'] ?? $subEffects[0]['area'] ?? 'point'),
+                $tier['sub_effects'],
+                $entry['name'],
+                $skipped,
+            );
+        }
+
+        EffectDegree::query()
+            ->where('effect_id', $effect->id)
+            ->where('degree', '>', $degreeNumber)
+            ->delete();
+
+        $spell->effects()->sync([$effect->id]);
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $subEffects
+     * @param  list<string>  $skipped
+     */
+    private function syncDegree(
+        Effect $effect,
+        string $slug,
+        int $degreeNumber,
+        int $requiredLevel,
+        string $area,
+        array $subEffects,
+        string $spellName,
+        array &$skipped,
+    ): void {
         $degree = EffectDegree::query()->firstOrCreate(
             [
                 'effect_id' => $effect->id,
-                'degree' => 1,
+                'degree' => $degreeNumber,
             ],
             [
-                'required_creature_level' => $entry['character_level'],
+                'required_creature_level' => $requiredLevel,
                 'area' => $area,
-                'slug' => $slug.'-d1',
+                'slug' => $slug.'-d'.$degreeNumber,
             ]
         );
         $degree->update([
-            'required_creature_level' => $entry['character_level'],
+            'required_creature_level' => $requiredLevel,
             'area' => $area,
         ]);
         $degree->effectSubEffects()->delete();
@@ -276,13 +329,13 @@ final class ClassLevel1SpellSeederImporter
         foreach ($subEffects as $sub) {
             $subId = SubEffect::query()->where('slug', $sub['slug'])->value('id');
             if ($subId === null) {
-                $skipped[] = $entry['name'].' : sous-effet « '.$sub['slug'].' » introuvable';
+                $skipped[] = $spellName.' : sous-effet « '.$sub['slug'].' » introuvable';
 
                 continue;
             }
             $params = is_array($sub['params'] ?? null) ? $sub['params'] : [];
             if ($sub['slug'] === 'invoquer') {
-                $params = $this->resolveSummonParams($params, $entry['name'], $skipped);
+                $params = $this->resolveSummonParams($params, $spellName, $skipped);
             }
             $durationFormula = $sub['duration_formula']
                 ?? (isset($params['duration_formula']) ? trim((string) $params['duration_formula']) : null);
@@ -297,8 +350,6 @@ final class ClassLevel1SpellSeederImporter
                 'duration_formula' => $durationFormula,
             ]);
         }
-
-        $spell->effects()->sync([$effect->id]);
     }
 
     /**

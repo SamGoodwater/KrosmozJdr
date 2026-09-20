@@ -36,9 +36,18 @@ function tabKey(effectId) {
 }
 
 function degreeTitle(deg) {
-    const lvl = deg?.required_creature_level;
-    if (lvl != null && String(lvl).trim() !== '') {
-        return `Niveau créature ${lvl}`;
+    const lvl = Number(deg?.required_creature_level);
+    if (lvl === 13) {
+        return 'Palier I (perso 13)';
+    }
+    if (lvl === 16) {
+        return 'Palier II (perso 16)';
+    }
+    if (lvl === 20) {
+        return 'Palier III (perso 20)';
+    }
+    if (!Number.isNaN(lvl) && lvl > 0) {
+        return `Appris (niveau ${lvl})`;
     }
     const d = deg?.degree;
     if (d != null) {

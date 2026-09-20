@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Artisan;
  * Importe des spécialisations depuis des exports HTML statiques (sans réseau)
  * et pose les fiches brouillon manquantes (Artisan·e, Négociant·e, Sylvain·e, Marin·e, Courtisan·e).
  *
+ * Fiches jouables rédigées : {@code database/seeders/data/playable-specializations/{slug}.php}
+ * (prioritaires sur le HTML legacy).
  * Fichiers legacy : {@code database/seeders/data/legacy-specializations/{slug}.html}
  * (ignorés par Git, à placer en local).
  * Brouillons : {@code database/seeders/data/draft-specializations.php}.
@@ -29,15 +31,17 @@ class SpecializationSeeder extends Seeder
     {
         $importer = app(LegacyEntitySectionImportService::class);
 
-        $this->importLegacySpecialization(
-            $importer,
-            legacySlug: 'erudit',
-            specializationName: 'Érudit',
-            importPageSlug: 'import-specialization-erudit',
-            importPageTitle: 'Import legacy — Spécialisation Érudit',
-            sectionSlugPrefix: 'import-erudit',
-            shortDescription: "Spécialisation centrée sur le savoir, la magie et l'analyse."
-        );
+        if (! $this->seedAuthoredPlayable($importer, 'erudit')) {
+            $this->importLegacySpecialization(
+                $importer,
+                legacySlug: 'erudit',
+                specializationName: 'Érudit',
+                importPageSlug: 'import-specialization-erudit',
+                importPageTitle: 'Import legacy — Spécialisation Érudit',
+                sectionSlugPrefix: 'import-erudit',
+                shortDescription: "Spécialisation centrée sur le savoir, la magie et l'analyse."
+            );
+        }
 
         $this->importLegacySpecialization(
             $importer,
@@ -183,6 +187,89 @@ class SpecializationSeeder extends Seeder
             $created,
             $skipped,
         ));
+    }
+
+    /**
+     * Pose une fiche jouable rédigée (gabarit 2.4.2.6), prioritaire sur le HTML legacy.
+     *
+     * Toujours rafraîchie : le fichier PHP est la source de vérité de la fiche modèle.
+     */
+    private function seedAuthoredPlayable(LegacyEntitySectionImportService $importer, string $slug): bool
+    {
+        $path = database_path('seeders/data/playable-specializations/'.$slug.'.php');
+        if (! is_file($path)) {
+            return false;
+        }
+
+        /** @var mixed $spec */
+        $spec = require $path;
+        if (! is_array($spec)) {
+            $this->command?->error("Fiche jouable {$slug} ignorée : le fichier ne retourne pas un tableau.");
+
+            return false;
+        }
+
+        $name = trim((string) ($spec['name'] ?? ''));
+        if ($name === '') {
+            $this->command?->error("Fiche jouable {$slug} ignorée : nom manquant.");
+
+            return false;
+        }
+
+        $creatorId = $importer->resolveDefaultCreatorId();
+        $specialization = Specialization::query()->where('name', $name)->first() ?? new Specialization;
+        $specialization->fill([
+            'name' => $name,
+            'short_description' => (string) ($spec['shortDescription'] ?? ''),
+            'description' => (string) ($spec['description'] ?? ''),
+            'state' => Specialization::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'created_by' => $creatorId,
+        ])->save();
+
+        $page = $importer->ensureImportPage(
+            (string) ($spec['importPageSlug'] ?? 'import-specialization-'.$slug),
+            (string) ($spec['importPageTitle'] ?? 'Spécialisation '.$name),
+            $creatorId,
+            Page::STATE_PLAYABLE,
+        );
+
+        $renderer = new DraftSpecializationContentRenderer;
+        $specializationCapabilitySync = [];
+        $sync = $importer->importParsedSections(
+            $specialization,
+            $page,
+            (string) ($spec['sectionSlugPrefix'] ?? 'import-'.$slug),
+            $renderer->sections($spec),
+            $creatorId,
+            function (array $capabilityNames, int $palier) use (&$specializationCapabilitySync): void {
+                foreach ($capabilityNames as $capabilityName) {
+                    $capabilityName = trim((string) $capabilityName);
+                    if ($capabilityName === '') {
+                        continue;
+                    }
+
+                    $capability = Capability::query()->where('name', $capabilityName)->first();
+                    if (! $capability) {
+                        continue;
+                    }
+
+                    $specializationCapabilitySync[$capability->id] = ['level' => $palier];
+                }
+            },
+            Section::STATE_PLAYABLE,
+        );
+
+        $this->pruneImportPage($page, $sync);
+
+        if ($specializationCapabilitySync !== []) {
+            $specialization->capabilities()->sync($specializationCapabilitySync);
+        }
+
+        $this->command?->info("Fiche jouable {$name} écrite depuis playable-specializations/{$slug}.php.");
+
+        return true;
     }
 
     private function importLegacySpecialization(
