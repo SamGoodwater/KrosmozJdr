@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Quand on convertit un PNJ par IA, le modèle voit les classes et spécialisations (même en brouillon) et les sorts jouables par classe."
+    "description": "Sur les pages **Bibliothèques** (tableaux d’entités), un bouton **Créer** apparaît pour les admins. Il ouvre un petit formulaire : nom, description, et deux ou trois infos utiles — pas toute la fiche. On peut aussi lancer une **conversion IA** (même droit admin, mot de passe). Ensuite la fiche s’ouvre déjà en **Modifier**, pour compléter le reste."
   },
   {
     "path": "backend/_ai.md",
@@ -102,7 +102,7 @@
   {
     "path": "features/dice/_ai.md",
     "title": "Dés / formules — IA",
-    "description": "Parser sécurisé de formules tapées (dés, tranches, opérateurs). Pas d’`eval`."
+    "description": "Modifier min/max/moyenne, conversion `[min-max]` → dés, lancer simulé."
   },
   {
     "path": "features/dice/README.md",
@@ -232,7 +232,7 @@
   {
     "path": "IA/ARCHITECTURE.md",
     "title": "Architecture de la génération",
-    "description": "Cadrage. Config des champs figés : page admin `/admin/content/ia-generation`. Pipeline Anthropic (`GenerativeAiClient`). Statut : tokens locaux + estimés."
+    "description": "Cadrage. Config des champs figés : page admin `/admin/content/ia-generation` (table `ia_generation_settings`) avec repli `resources/ia/generation.json`. Grille objets : `ia:equipment-grid`. Pipeline LLM : `app/Services/GenerativeAi/` (Anthropic, défaut Haiku 4.5)."
   },
   {
     "path": "IA/CATALOGUE.md",
@@ -242,22 +242,22 @@
   {
     "path": "IA/CHAMPS.md",
     "title": "Champs figés vs champs générés",
-    "description": "Source de vérité **effective** : une ligne en base (`ia_generation_settings`) si un admin a enregistré la page **Gestion du contenu → IA métier** (`/admin/content/ia-generation`). Sinon le fichier **`resources/ia/generation.json`**."
-  },
-  {
-    "path": "IA/CREATION.md",
-    "title": "Fiches de création (prompt de conversion)",
-    "description": "Guides MJ et texte de prompt : `resources/ia/creation-guides/`. Injectés dans l’assembleur (`task_prompt` / `CreationGuideCatalog`)."
+    "description": "Source de vérité **effective** : une ligne en base (`ia_generation_settings`) si un admin a enregistré la page **Gestion du contenu → IA métier** (`/admin/content/ia-generation`). Sinon le fichier **`resources/ia/generation.json`**. Un enregistrement **remplace** tout le fichier (étalons et writable compris) ; **Réinitialiser** efface la ligne et retombe sur le dépôt."
   },
   {
     "path": "IA/COUTS.md",
     "title": "Coûts et choix de modèles",
-    "description": "Ordres de grandeur, tarifs publics **août 2026**. À revérifier sur les pages fournisseurs avant un run réel."
+    "description": "Ordres de grandeur, tarifs publics **septembre 2026**. À revérifier sur les pages fournisseurs avant un run réel."
+  },
+  {
+    "path": "IA/CREATION.md",
+    "title": "Fiches de création (prompt de conversion)",
+    "description": "Source unique des guides MJ **et** du texte à injecter dans l’IA de conversion : `resources/ia/creation-guides/`."
   },
   {
     "path": "IA/README.md",
     "title": "IA générative — cadrage",
-    "description": "Le **pipeline LLM** est branché (Anthropic Haiku 4.5 par défaut, liste dans IA métier, rencontre `auto`). La **grille d’objets** algorithmique : `php artisan ia:equipment-grid`. Intention : contenu jouable en JDR, pas recopier Dofus."
+    "description": "Le **pipeline LLM** est branché : noyau générique (`GenerativeAiClient`, assembleur, writer allowlist, job) + spécialisations persistées en `auto` (rencontre, sort `effect`, PNJ kit complet, objet unique, consommable `effect`). La **grille d’objets** algorithmique reste `php artisan ia:equipment-grid`. Pas de fine-tuning / RAG / agent à outils."
   },
   {
     "path": "IA/RENCONTRES.md",
