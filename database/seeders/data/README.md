@@ -77,7 +77,7 @@ Un JSON unique `healing-out-of-combat.json` décrit 11 paliers × 4 types (pain,
 
 Un JSON par classe (`feca.json` … `forgelance.json`, 19 fiches, ids Dofus 1–18 et 20) : nom, résumé Dofus, **4 voix** (Feu/Terre/Eau/Air) du tableau *Généralités Classes*. Foggernaut = Steamer (pas une 20ᵉ classe). Upsert sur `dofusdb_id`, `official_id` ou `name`. `auto_update = false`. L’état n’est posé qu’à la création (`draft`). Description tronquée à 255 caractères.
 
-- **Seed** : `Database\Seeders\Entity\ClassBreedSeeder`, **avant** `CapabilitySeeder` puis `MonsterSeeder` puis `SpellSeeder`.
+- **Seed** : `Database\Seeders\Entity\ClassBreedSeeder`, **avant** `CapabilitySeeder` puis `MonsterSeeder` puis `SpellSeeder`. `BreedSeeder` pose ensuite la section CMS « Texte » depuis `playable-breeds.php` (19 fiches d’identité, passif en kref).
 
 ## Passifs de classe (`entities/capabilities/`)
 
@@ -119,4 +119,6 @@ Un fichier JSON par set relu (bonus de palier + liste des `dofusdb_id` des pièc
 
 ## Autres fichiers
 
-Les autres données (types, mappings scrapping, etc.) restent sous forme de fichiers PHP ou JSON selon le seeder concerné ; voir les seeders dans `database/seeders/`.
+- **Spécialisations jouables** : `playable-specializations/{slug}.php` (11 fiches, gabarit 2.4.2.6). `SpecializationSeeder` les rafraîchit à chaque passage.
+- **Présentation des classes** : `playable-breeds.php` (19 fiches). `BreedSeeder` / `ClassSheetContentRenderer`.
+- Les autres données (types, mappings scrapping, etc.) restent sous forme de fichiers PHP ou JSON selon le seeder concerné ; voir les seeders dans `database/seeders/`.

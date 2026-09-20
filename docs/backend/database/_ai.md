@@ -6,7 +6,7 @@
 
 - `database/migrations/`
 - `database/seeders/`
-- `database/seeders/data/` — JSON versionnés (items, panoplies, consommables, 19 classes, 19 passifs, 24 sorts de classe, 19 invocations, 28 monstres JDR, 5 PNJ Incarnam)
+- `database/seeders/data/` — JSON versionnés (items, panoplies, consommables, 19 classes, 19 passifs, 24 sorts de classe, 19 invocations, 28 monstres JDR, 5 PNJ Incarnam) + PHP `playable-breeds.php` (présentation des 19 classes) et `playable-specializations/*.php` (11 fiches)
 - `npcs.official_id` / `auto_update` : upsert seeder `jdr:npc:incarnam:…`, `auto_update = false`.
 - Favoris user : table `user_favorites` (`user_id`, `entity_type`, `entity_id`)
 - Jobs console admin : table `project_console_jobs` (domaine, %, sortie filtrée)

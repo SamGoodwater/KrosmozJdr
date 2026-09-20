@@ -4,28 +4,38 @@ namespace Database\Seeders\Entity;
 
 use App\Models\Entity\Breed;
 use App\Models\Entity\Capability;
+use App\Models\Page;
+use App\Models\Section;
 use App\Services\Entity\LegacyEntitySectionImportService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 
 /**
- * Reconstruit les sections CMS des classes (breeds) depuis HTML legacy ou colonnes scrappées.
+ * Reconstruit les sections CMS des classes depuis les fiches rédigées
+ * ({@code database/seeders/data/playable-breeds.php}), sinon HTML legacy
+ * ou colonnes scrappées ({@code specificity}, {@code life_dice}, {@code evolution}).
  *
- * Fichiers optionnels : {@code database/seeders/data/legacy-breeds/{slug}.html}.
- * Sinon : sections générées depuis {@code specificity}, {@code life_dice}, {@code evolution} et capacités liées.
- *
- * À exécuter après le scrapping des classes ({@code project:init} phase 5b).
+ * Les fiches rédigées sont toujours rafraîchies (plus de dump « Capacités disponibles »).
  */
 class BreedSeeder extends Seeder
 {
     public function run(): void
     {
         $importer = app(LegacyEntitySectionImportService::class);
+        $authored = $this->loadAuthoredSheets();
         $synced = 0;
         $skipped = 0;
 
-        Breed::query()->orderBy('name')->each(function (Breed $breed) use ($importer, &$synced, &$skipped): void {
+        Breed::query()->orderBy('name')->each(function (Breed $breed) use ($importer, $authored, &$synced, &$skipped): void {
+            $sheet = $authored[$breed->name] ?? null;
+            if (is_array($sheet)) {
+                $this->seedAuthoredClassSheet($importer, $breed, $sheet);
+                $synced++;
+
+                return;
+            }
+
             if ($breed->sections()->exists()) {
                 $skipped++;
 
@@ -133,15 +143,6 @@ class BreedSeeder extends Seeder
             ];
         }
 
-        $capabilityNames = $breed->capabilities()->orderBy('name')->pluck('name')->all();
-        if ($capabilityNames !== []) {
-            $parsed[] = [
-                'title' => 'Capacités',
-                'level' => $level++,
-                'content' => $importer->buildCapabilityKrefListHtml($capabilityNames),
-            ];
-        }
-
         $evolution = trim((string) ($breed->evolution ?? ''));
         if ($evolution !== '' && ! $this->isVisuallyEmptyHtml($evolution)) {
             $content = $importer->wrapPlainTextSection('Évolution', $evolution);
@@ -170,6 +171,85 @@ class BreedSeeder extends Seeder
         if ($sync !== []) {
             $breed->sections()->sync($sync);
         }
+    }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private function loadAuthoredSheets(): array
+    {
+        $path = database_path('seeders/data/playable-breeds.php');
+        if (! is_file($path)) {
+            return [];
+        }
+
+        /** @var mixed $sheets */
+        $sheets = require $path;
+        if (! is_array($sheets)) {
+            return [];
+        }
+
+        $byName = [];
+        foreach ($sheets as $sheet) {
+            if (! is_array($sheet)) {
+                continue;
+            }
+            $name = trim((string) ($sheet['name'] ?? ''));
+            if ($name !== '') {
+                $byName[$name] = $sheet;
+            }
+        }
+
+        return $byName;
+    }
+
+    /**
+     * @param  array<string, mixed>  $sheet
+     */
+    private function seedAuthoredClassSheet(
+        LegacyEntitySectionImportService $importer,
+        Breed $breed,
+        array $sheet,
+    ): void {
+        $creatorId = $importer->resolveDefaultCreatorId();
+        $slug = $this->resolveLegacySlug($breed);
+        $page = $importer->ensureImportPage(
+            'import-breed-'.$slug,
+            'Classe '.$breed->name,
+            $creatorId,
+            Page::STATE_PLAYABLE,
+        );
+        $page->fill([
+            'title' => 'Classe '.$breed->name,
+            'state' => Page::STATE_PLAYABLE,
+        ])->save();
+
+        $sync = $importer->importParsedSections(
+            $breed,
+            $page,
+            'import-breed-'.$slug,
+            (new ClassSheetContentRenderer)->sections($sheet),
+            $creatorId,
+            null,
+            Section::STATE_PLAYABLE,
+        );
+
+        $this->pruneImportPage($page, $sync);
+    }
+
+    /**
+     * @param  array<int, array{level: int}>  $sync
+     */
+    private function pruneImportPage(Page $page, array $sync): void
+    {
+        if ($sync === []) {
+            return;
+        }
+
+        Section::query()
+            ->where('page_id', $page->id)
+            ->whereNotIn('id', array_keys($sync))
+            ->delete();
     }
 
     private function resolveLegacySlug(Breed $breed): string

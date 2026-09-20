@@ -1,5 +1,11 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Onze spécialisations jouables, dix-neuf classes présentées
+
+Les **cinq** spécialisations qui restaient en brouillon (**Artisan·e, Négociant·e, Sylvain·e, Marin·e, Courtisan·e**) sont écrites comme l’Érudit : sept paliers, choix entre garanties et options, trois aptitudes, vrais PA, plus de « à calibrer ». Les **onze** fiches tiennent dans le dépôt.
+
+Les **19 classes** ont une vraie présentation (comment on joue, passif cliquable, ce que la classe n’est pas) à la place de la liste « Capacités disponibles pour ce palier ». Passif, voies et sorts restent sur la fiche.
+
 ## Septembre 2026 — Capacités dans le texte : vraie fiche minimale
 
 Dans une section (palier de spécialisation, règles…), survoler une **capacité** (ou un sort, un objet…) ouvre la **même fiche minimale** que partout ailleurs — plus la petite carte nom + « Magie (Wakfu) ». Le clic continue d’ouvrir la page.
@@ -10,7 +16,7 @@ Les paliers de spécialisation n’écrivent plus « emplacement vide » : on li
 
 ## Septembre 2026 — Les six spécialisations jouables sur le gabarit Érudit
 
-**Milicien·ne, Dévot, Artiste, Explorateur·rice et Voleur·euse** sont écrites comme l’Érudit : sept paliers, une capacité garantie plus une option, trois aptitudes, plus de liste D&D à rallonge. Chaque fiche tient dans le dépôt. Les cinq brouillons (Artisan·e, Négociant·e, Sylvain·e, Marin·e, Courtisan·e) restent des propositions.
+**Milicien·ne, Dévot, Artiste, Explorateur·rice et Voleur·euse** sont écrites comme l’Érudit : sept paliers, une capacité garantie plus une option, trois aptitudes, plus de liste D&D à rallonge. Chaque fiche tient dans le dépôt.
 
 ## Septembre 2026 — Les 19 classes sur le gabarit Iop
 
