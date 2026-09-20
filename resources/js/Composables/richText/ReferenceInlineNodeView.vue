@@ -1,16 +1,20 @@
 <script setup>
 /**
  * Rendu Vue d’une référence inline TipTap (kref) : icône + libellé, infobulle riche selon le type.
+ * Les krefs d’entité catalogue (capacités, sorts, objets…) ouvrent la vue Minimal étendue.
  *
  * @description Le racine doit rester {@link NodeViewWrapper} pour TipTap.
  */
-import { computed, ref, watch } from "vue";
+import { computed, markRaw, ref, watch } from "vue";
 import { NodeViewWrapper, nodeViewProps } from "@tiptap/vue-3";
 import { parseKrefPayload, normalizeKrefType } from "@/Composables/richText/krefCodec";
 import { getReferencePresentation } from "@/Composables/richText/referenceRenderService";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import OverlayTrigger from "@/Pages/Molecules/overlay/OverlayTrigger.vue";
 import KrefEntityTooltipBody from "@/Pages/Molecules/data-display/KrefEntityTooltipBody.vue";
+import { loadKrefEntityMinimalOverlay } from "@/Composables/richText/krefEntityMinimalOverlay";
+import { OVERLAY_TRIGGER } from "@/Composables/overlay/overlayConstants";
 import { loadKrefCharacteristicReferenceMeta } from "@/Composables/richText/krefCharacteristicReferenceCache";
 import { parseCharacteristicFormulaRichText } from "@/Composables/characteristic/useCharacteristicFormulaRichText";
 import {
@@ -219,6 +223,33 @@ const wrapCharacteristicTooltip = computed(
 const wrapEntityTooltip = computed(
     () => krefType.value === "entity" && entityTypeStr.value !== "" && entityId.value != null,
 );
+
+/**
+ * Overlay kref entité : `*ViewMinimal` étendue (capacités, sorts, …) ;
+ * repli aperçu léger si le type n’a pas de vue catalogue.
+ *
+ * @returns {{ key: string, loader: Function }|string}
+ */
+const entityOverlayContent = computed(() => {
+    if (!wrapEntityTooltip.value) {
+        return "";
+    }
+    const entityType = entityTypeStr.value;
+    const id = entityId.value;
+    return {
+        key: `kref-entity-minimal:${entityType}:${id}`,
+        loader: async () => {
+            const overlay = await loadKrefEntityMinimalOverlay(entityType, id);
+            if (overlay) {
+                return overlay;
+            }
+            return {
+                component: markRaw(KrefEntityTooltipBody),
+                props: { entityType, id },
+            };
+        },
+    };
+});
 </script>
 
 <template>
@@ -291,21 +322,25 @@ const wrapEntityTooltip = computed(
             </span>
         </Tooltip>
 
-        <Tooltip
+        <OverlayTrigger
             v-else-if="wrapEntityTooltip"
-            placement="bottom"
-            glass
-            color="secondary"
+            :content="entityOverlayContent"
+            :trigger="OVERLAY_TRIGGER.HOVER"
+            placement="bottom-start"
+            max-width="auto"
+            :interactive="true"
+            :close-on-outside="true"
+            :close-on-escape="true"
+            :chromeless="true"
+            panel-class="max-w-[min(92vw,22rem)]"
+            :focus-trap="false"
             class="inline-flex max-w-full min-w-0 align-baseline"
         >
-            <template #content>
-                <KrefEntityTooltipBody :entity-type="entityTypeStr" :id="entityId" />
-            </template>
             <span class="inline-flex max-w-full min-w-0 items-center gap-0.5 align-baseline">
                 <i :class="[presentation.iconClass, 'kref__icon']" aria-hidden="true" />
                 <span class="kref__label">{{ presentation.displayLabel }}</span>
             </span>
-        </Tooltip>
+        </OverlayTrigger>
 
         <span v-else-if="showCharacteristicResolvedChip" class="inline-flex max-w-full min-w-0 items-center gap-0.5 align-baseline">
             <Icon

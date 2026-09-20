@@ -72,8 +72,8 @@ Les « kref » sont des références inline insérées dans le texte riche.
 - **Format import (Markdown/seed)** : shortcodes `[[kref:entity:spells:42|Boule de feu]]`, convertis par `app/Support/Cms/KrefShortcodeReplacer.php`.
 - **Édition** : `@` dans `RichTextEditorField` (prop `enableRichReferences`) → recherche (`useRichReferenceSearch`) → nœud Tiptap `referenceInline`.
 - **Sauvegarde** : `SectionService` passe le HTML dans Purifier (`section_text`) puis valide les références (`SectionRichReferencesValidator` : existence + droits Gate sur la cible).
-- **Lecture** : `RichTextReadonlyView` + `RichTextKrefInteractions` (popover au survol, navigation au clic). Codec partagé : `resources/js/Composables/richText/krefCodec.js`.
-- **API de support** : `app/Http/Controllers/Api/Cms*.php` (picker page/section, preview snippet, preview entité).
+- **Lecture** : `RichTextReadonlyView` + `RichTextKrefInteractions` (popover page/section au survol, navigation au clic). Les krefs **entité** catalogue (capacités, sorts, objets, etc.) sont rendus par `ReferenceInlineNodeView` : overlay chromeless `*ViewMinimal` (`displayMode: extended`, même contrat que `EntityViewTextLink` / recherche) via `loadKrefEntityMinimalOverlay` et `api.tables.*`. Types hors catalogue (ex. créatures) : aperçu léger `KrefEntityTooltipBody` / `api.cms.kref-entity-preview`. Codec : `resources/js/Composables/richText/krefCodec.js`.
+- **API de support** : `app/Http/Controllers/Api/Cms*.php` (picker page/section, preview snippet, preview entité hors catalogue).
 
 ## Menu dynamique
 

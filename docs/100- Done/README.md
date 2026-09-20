@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Capacités dans le texte : vraie fiche minimale
+
+Dans une section (palier de spécialisation, règles…), survoler une **capacité** (ou un sort, un objet…) ouvre la **même fiche minimale** que partout ailleurs — plus la petite carte nom + « Magie (Wakfu) ». Le clic continue d’ouvrir la page.
+
 ## Septembre 2026 — Choix entre X et Y, plus de points via la spé
 
 Les paliers de spécialisation n’écrivent plus « emplacement vide » : on lit **choix entre X et Y**, avec les vrais noms. On prend des **aptitudes**, des **capacités**, des **traits**, des **compétences** et des **métiers**. Plus de **+2 points** de caractéristique : c’était trop fort. Les points restent ceux de la création et des six niveaux fixes.

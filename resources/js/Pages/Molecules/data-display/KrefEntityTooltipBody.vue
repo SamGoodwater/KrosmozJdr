@@ -1,8 +1,12 @@
 <script setup>
 /**
- * Corps d’infobulle pour une référence kref « entité » (aperçu léger, chargé au survol puis mis en cache).
+ * Repli d’infobulle kref « entité » (aperçu léger) si le type n’a pas de vue Minimal catalogue.
  *
- * @props {string} entityType — ex. spells, items
+ * @description Les krefs catalogue (capacités, sorts, objets…) passent par
+ * {@link loadKrefEntityMinimalOverlay} → `*ViewMinimal`. Ce corps reste pour
+ * les types hors catalogue (ex. créatures) ou si l’hydratation échoue.
+ *
+ * @props {string} entityType — ex. creatures
  * @props {string|number} id — identifiant numérique
  */
 import { ref, watch, onMounted } from "vue";
@@ -74,7 +78,9 @@ watch(
 </script>
 
 <template>
-    <div class="kref-entity-tooltip kref-rich-preview-panel max-w-xs text-left text-sm">
+    <div
+        class="kref-entity-tooltip kref-rich-preview-panel max-w-xs rounded-box border border-base-300/70 bg-base-100/95 p-2 text-left text-sm shadow-lg"
+    >
         <div v-if="loading" class="text-base-content/60 italic">Chargement…</div>
         <p v-else-if="error" class="text-error text-xs">{{ error }}</p>
         <div v-else-if="payload" class="flex gap-2">
