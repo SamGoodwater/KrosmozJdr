@@ -44,11 +44,11 @@ exactement **trois**, aux paliers **3, 9 et 15**.
 En base, capacités et aptitudes sont toutes des `Capability` liées par `capability_specialization`, dont le
 `level` porte le palier ; l’aptitude se distingue par `is_passive`.
 
-Les six spécialisations importées depuis les exports HTML legacy (`database/seeders/data/legacy-specializations/`,
-hors dépôt) utilisaient l’ancienne grille 1/3/5/8/10/13/15/18/20 et le vocabulaire d’avant l’inversion. Le
-redécoupage est fait à l’import par `LegacySpecializationRealignService` : remap des paliers (13+15 → 15 et
-18+20 → 20, ce qui garde les expertises sur 9/15/20), renommage des blocs, remap des niveaux cités dans le texte,
-et sélection des 3 aptitudes. Quel bonus legacy devient une aptitude, et à quel palier, est décrit dans
+L’**Érudit** est la fiche modèle jouable (`database/seeders/data/playable-specializations/erudit.php`) : le seed
+la préfère au HTML legacy et la rafraîchit à chaque passage. Les cinq autres fiches jouables viennent encore
+des exports HTML (`database/seeders/data/legacy-specializations/`, hors dépôt). Elles utilisaient l’ancienne
+grille 1/3/5/8/10/13/15/18/20 : `LegacySpecializationRealignService` remappe les paliers (13+15 → 15 et
+18+20 → 20), renomme les blocs et ne retient que les 3 aptitudes de
 `database/seeders/data/legacy-specialization-realignment.php`. Les cinq brouillons vivent dans
 `database/seeders/data/draft-specializations.php` ; `SpecializationSeeder` les réécrit tant qu’ils sont à l’état
 brouillon et ne touche pas une fiche sortie du brouillon.

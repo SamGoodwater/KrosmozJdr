@@ -67,13 +67,16 @@ export function splitBreedSpellSlotGroups(breed) {
     return { variantGroups, alwaysAvailableGroups };
 }
 
+/** Emplacements de sorts de classe : 3 au niveau 1, puis 2–12 hors 3 et 9. */
+export const CLASS_SPELL_UNLOCK_LEVELS = Object.freeze([1, 2, 4, 5, 6, 7, 8, 10, 11, 12]);
+
 /**
- * Grille d’emplacements « officielle » : 3 au niveau 1, puis 1 par niveau impair ≥ 3.
+ * Grille d’emplacements officielle (§2.3.2 / §5.2.3) : 3 au niveau 1, puis un par palier 2–12.
  *
- * @param {number} maxOddLevel - Dernier niveau impair (ex. 21 pour jusqu’au niv. 21)
+ * @param {number} [_unused] - conservé pour les appels existants ; ignoré
  * @returns {Array<{ character_level: number, slot_index: number, label: string }>}
  */
-export function getStandardBreedSlotDefinitions(maxOddLevel = 21) {
+export function getStandardBreedSlotDefinitions(_unused = 12) {
     const slots = [];
     for (let slot_index = 1; slot_index <= 3; slot_index++) {
         slots.push({
@@ -82,7 +85,7 @@ export function getStandardBreedSlotDefinitions(maxOddLevel = 21) {
             label: `Niveau 1 · Choix ${slot_index}`,
         });
     }
-    for (let L = 3; L <= maxOddLevel; L += 2) {
+    for (const L of CLASS_SPELL_UNLOCK_LEVELS.slice(1)) {
         slots.push({
             character_level: L,
             slot_index: 1,

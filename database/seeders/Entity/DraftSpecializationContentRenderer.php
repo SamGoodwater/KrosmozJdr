@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Database\Seeders\Entity;
 
 /**
- * Transforme les tableaux de `database/seeders/data/draft-specializations.php`
- * en sections HTML de fiche spécialisation.
+ * Transforme les tableaux de spécialisations (brouillons ou fiche jouable)
+ * en sections HTML.
  *
  * Gabarit imposé par 2.4.2.6 : 7 paliers, 1 capacité garantie + 1 option,
  * 1 compétence (sauf palier 1 = 3), aptitudes uniquement aux paliers 3 / 9 / 15.
@@ -15,12 +15,16 @@ final class DraftSpecializationContentRenderer
 {
     public const DRAFT_BANNER = '<p><strong>Brouillon</strong> — proposition à retravailler (chiffres, coûts, liens vers les fiches capacités). Pas encore jouable.</p>';
 
+    private bool $playable = false;
+
     /**
      * @param  array<string, mixed>  $spec
      * @return list<array{title: string, level: int, content: string}>
      */
     public function sections(array $spec): array
     {
+        $this->playable = (bool) ($spec['playable'] ?? false);
+
         $sections = [
             [
                 'title' => 'Texte',
@@ -55,7 +59,10 @@ final class DraftSpecializationContentRenderer
      */
     private function presentationHtml(array $spec): string
     {
-        $parts = [self::DRAFT_BANNER];
+        $parts = [];
+        if (! $this->playable) {
+            $parts[] = self::DRAFT_BANNER;
+        }
 
         $identity = trim((string) ($spec['identity'] ?? ''));
         if ($identity !== '') {
@@ -79,11 +86,11 @@ final class DraftSpecializationContentRenderer
             foreach ($synergies as $label => $text) {
                 $items .= $this->li((string) $label, (string) $text);
             }
-            $parts[] = '<h2>Synergies (pistes)</h2><ul>'.$items.'</ul>';
+            $parts[] = ($this->playable ? '<h2>Synergies</h2><ul>' : '<h2>Synergies (pistes)</h2><ul>').$items.'</ul>';
         }
 
         $todo = $spec['todo'] ?? [];
-        if (is_array($todo) && $todo !== []) {
+        if (! $this->playable && is_array($todo) && $todo !== []) {
             $items = '';
             foreach ($todo as $line) {
                 $items .= '<li>'.e((string) $line).'</li>';
@@ -99,7 +106,10 @@ final class DraftSpecializationContentRenderer
      */
     private function levelHtml(int $level, array $levelData): string
     {
-        $parts = [self::DRAFT_BANNER];
+        $parts = [];
+        if (! $this->playable) {
+            $parts[] = self::DRAFT_BANNER;
+        }
 
         $flavor = trim((string) ($levelData['flavor'] ?? ''));
         if ($flavor !== '') {
@@ -122,7 +132,7 @@ final class DraftSpecializationContentRenderer
 
         $capacities = $levelData['capacities'] ?? [];
         if (is_array($capacities) && $capacities !== []) {
-            $parts[] = '<h2>Capacités (pistes)</h2>'.$this->namedEffectsList($capacities);
+            $parts[] = ($this->playable ? '<h2>Capacités</h2>' : '<h2>Capacités (pistes)</h2>').$this->namedEffectsList($capacities);
         }
 
         $aptitudes = $levelData['aptitudes'] ?? [];

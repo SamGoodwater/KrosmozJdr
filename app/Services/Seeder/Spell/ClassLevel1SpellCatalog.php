@@ -9,7 +9,7 @@ use JsonException;
 use RuntimeException;
 
 /**
- * Catalogue des sorts de classe (kit niveau 1 + progression 3–14).
+ * Catalogue des sorts de classe (kit niveau 1 + progression 2–12).
  *
  * @example $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::iopPath());
  */
@@ -197,7 +197,8 @@ final class ClassLevel1SpellCatalog
      *     target_type: string,
      *     effect: string,
      *     description: string,
-     *     sub_effects: list<array<string, mixed>>
+     *     sub_effects: list<array<string, mixed>>,
+     *     intensification: list<array<string, mixed>>
      * }>
      */
     public function entries(): array
@@ -272,10 +273,54 @@ final class ClassLevel1SpellCatalog
                 'effect' => (string) ($row['effect'] ?? ''),
                 'description' => (string) ($row['description'] ?? ''),
                 'sub_effects' => $subEffects,
+                'intensification' => $this->intensification($row['intensification'] ?? null),
             ];
         }
 
         return $entries;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function intensification(mixed $raw): array
+    {
+        if (! is_array($raw)) {
+            return [];
+        }
+
+        $tiers = [];
+        foreach ($raw as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $subs = [];
+            foreach (is_array($row['sub_effects'] ?? null) ? $row['sub_effects'] : [] as $sub) {
+                if (! is_array($sub)) {
+                    continue;
+                }
+                $slug = trim((string) ($sub['slug'] ?? ''));
+                if ($slug === '') {
+                    continue;
+                }
+                $params = is_array($sub['params'] ?? null) ? $sub['params'] : [];
+                $subs[] = [
+                    'slug' => $slug,
+                    'area' => $this->nullableString($sub['area'] ?? null) ?? 'point',
+                    'order' => max(0, (int) ($sub['order'] ?? 0)),
+                    'duration_formula' => $this->nullableString($sub['duration_formula'] ?? null),
+                    'params' => $params,
+                ];
+            }
+            $tiers[] = [
+                'tier' => trim((string) ($row['tier'] ?? '')),
+                'required_creature_level' => max(1, (int) ($row['required_creature_level'] ?? 13)),
+                'effect' => (string) ($row['effect'] ?? ''),
+                'sub_effects' => $subs,
+            ];
+        }
+
+        return $tiers;
     }
 
     private function nullableString(mixed $value): ?string

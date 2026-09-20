@@ -303,7 +303,8 @@ final class ClassLevel1SpellCatalogTest extends TestCase
 
     public function test_progression_catalogs_have_eighteen_spells_on_nine_levels(): void
     {
-        $levels = [3, 4, 5, 7, 8, 10, 11, 13, 14];
+        $iopLevels = [2, 4, 5, 6, 7, 8, 10, 11, 12];
+        $legacyLevels = [3, 4, 5, 7, 8, 10, 11, 13, 14];
         $files = glob(ClassLevel1SpellCatalog::directory().'/*-progression.json') ?: [];
         $this->assertCount(19, $files);
 
@@ -315,6 +316,7 @@ final class ClassLevel1SpellCatalogTest extends TestCase
             foreach ($entries as $entry) {
                 $got[] = [$entry['character_level'], $entry['choice_order']];
             }
+            $levels = str_contains($file, 'iop-progression') ? $iopLevels : $legacyLevels;
             $expected = [];
             foreach ($levels as $level) {
                 $expected[] = [$level, 0];
@@ -322,5 +324,31 @@ final class ClassLevel1SpellCatalogTest extends TestCase
             }
             $this->assertSame($expected, $got, $catalog->breedName());
         }
+    }
+
+    public function test_iop_spells_carry_three_intensification_tiers(): void
+    {
+        $catalog = ClassLevel1SpellCatalog::load();
+        $pression = $catalog->entries()[0];
+        $this->assertCount(3, $pression['intensification']);
+        $this->assertSame('I', $pression['intensification'][0]['tier']);
+        $this->assertSame(13, $pression['intensification'][0]['required_creature_level']);
+        $this->assertStringContainsString('2d6', $pression['intensification'][0]['effect']);
+
+        $progression = ClassLevel1SpellCatalog::load(
+            ClassLevel1SpellCatalog::directory().'/iop-progression.json'
+        );
+        $tempete = null;
+        foreach ($progression->entries() as $entry) {
+            if ($entry['name'] === 'Tempête de Puissance') {
+                $tempete = $entry;
+                break;
+            }
+        }
+        $this->assertNotNull($tempete);
+        $this->assertSame(12, $tempete['character_level']);
+        $this->assertSame('5d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.', $tempete['intensification'][0]['effect']);
+        $this->assertSame('—', $tempete['intensification'][1]['effect']);
+        $this->assertSame('—', $tempete['intensification'][2]['effect']);
     }
 }

@@ -43,8 +43,7 @@ const props = defineProps({
 
 const notificationStore = useNotificationStore();
 
-const STANDARD_MAX_ODD = 21;
-const standardSlots = getStandardBreedSlotDefinitions(STANDARD_MAX_ODD);
+const standardSlots = getStandardBreedSlotDefinitions();
 
 /** Sorts liés sans emplacement de progression (hors grille). */
 const extraSlotDef = Object.freeze({

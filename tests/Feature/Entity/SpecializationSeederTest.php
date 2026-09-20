@@ -91,4 +91,27 @@ class SpecializationSeederTest extends TestCase
             $this->assertSame([1, 3, 6, 9, 12, 15, 20], $paliers, "Paliers inattendus pour {$name}.");
         }
     }
+
+    public function test_seeder_writes_erudit_as_playable_model_sheet(): void
+    {
+        User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $this->seed(SpecializationSeeder::class);
+
+        $erudit = Specialization::query()->where('name', 'Érudit')->first();
+        $this->assertNotNull($erudit);
+        $this->assertSame(Specialization::STATE_PLAYABLE, $erudit->state);
+        $paliers = $erudit->sections()->pluck('level')->unique()->sort()->values()->all();
+        $this->assertSame([1, 3, 6, 9, 12, 15, 20], $paliers);
+
+        $html = $erudit->sections()->get()->pluck('data')->map(
+            static fn (mixed $data): string => is_array($data) ? (string) ($data['content'] ?? '') : ''
+        )->implode("\n");
+        $this->assertStringContainsString('Politicien', $html);
+        $this->assertStringContainsString('Façonneur de sorts', $html);
+        $this->assertStringContainsString('Expertise en Wakfu', $html);
+        $this->assertStringContainsString('Identification', $html);
+        $this->assertStringNotContainsString('Brouillon', $html);
+        $this->assertStringNotContainsString('5e-drs.fr', $html);
+    }
 }
