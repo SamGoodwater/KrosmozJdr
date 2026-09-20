@@ -1,5 +1,11 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Érudit modèle et sorts Iop jusqu’au niveau 12
+
+L’**Érudit** est la première spécialisation réécrite sur le gabarit verrouillé : sept paliers, une capacité garantie plus une option, trois aptitudes (Politicien, Façonneur de sorts, Expertise en Wakfu). Plus de liste D&D à rallonge.
+
+Les **sorts Iop** s’apprennent maintenant aux vrais emplacements (2, 4, 5, 6, 7, 8, 10, 11, 12). Chaque fiche porte ses lignes d’intensification : au niveau 13, 16 et 20, le même sort gagne un dé — ou une case, ou rien (« — ») s’il est déjà au plafond.
+
 ## Septembre 2026 — Conversion IA des PNJ : classes, spés et noms Dofus
 
 Quand on convertit un PNJ par IA, le modèle **voit** les classes et spécialisations (même en brouillon) et les sorts jouables **par classe**, même si la fiche n’avait pas encore de classe. Il invente un nom façon calembour Dofus et une courte description collée au kit. Les stats manquantes suivent encore le gabarit ; si la carac de voie n’est pas donnée, elle est déduite de l’élément des sorts. On n’exige pas qu’une spécialisation soit déjà jouable.
