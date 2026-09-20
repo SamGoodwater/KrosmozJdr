@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Les 19 classes sur le gabarit Iop
+
+Les **18 autres classes** ont le même découpage de sorts que l’Iop : au niveau 1, jusqu’à **quatre variantes** au choix 1 (dégâts ou soins élémentaires), puis **un primordial** au choix 2 et un au choix 3. Les 9 choix suivants tombent aux vrais emplacements (**2, 4, 5, 6, 7, 8, 10, 11, 12**). Plus de sorts tagués 13 ou 14 : à partir du 12, on intensifie. Sram garde Invisibilité dès le niveau 1 ; Zobal ouvre sur Cavalcade avant Plastron.
+
 ## Septembre 2026 — Voies, passifs et modèle Iop / Érudit
 
 Les **19 classes** ont leurs **quatre voies** (Feu, Terre, Eau, Air) calées sur le tableau *Généralités Classes* : l’Iop n’est plus « tout dégât », le Feu améliore, l’Eau protège, l’Air place. Chaque classe n’expose plus que son **passif** (Fureur pour l’Iop, visible sur la fiche). Les sorts de dégâts élémentaires de l’Iop sont au **même niveau** : quatre variantes au choix 1, Bond et Concentration chacun tout seuls. Les **12 choix** sont numérotés dans l’interface.

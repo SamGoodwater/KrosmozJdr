@@ -7,7 +7,7 @@
             "name": "Courant",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Offensif"
             ],
@@ -42,7 +42,7 @@
             "name": "Ancre",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Debuff"
             ],
@@ -76,30 +76,33 @@
             "save_success_note": "En cas de sauvegarde réussie, aucun retrait."
         },
         {
-            "key": "steamer-harpon",
-            "name": "Harpon",
+            "key": "sabotage",
+            "name": "Sabotage",
+            "dofusdb_id": "13858",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 4,
             "types": [
                 "Offensif"
             ],
             "element": "fire",
-            "pa": "3",
+            "pa": "5",
             "po_min": "1",
             "po_max": "4",
-            "po_editable": true,
+            "po_editable": false,
             "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
-            "description": "Harpon : attaque simple, même budget que le palier 4.",
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Intelligence (Feu). Magique, 5 PA, 1×/tour, PO 1–4.",
+            "description": "Ça explose autour. Ceux qui restent collés paient.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "point",
+                    "area": "circle-0-1",
                     "params": {
                         "characteristic": "fire",
                         "value": "1d6+Intelligence",
@@ -110,30 +113,32 @@
                     }
                 }
             ],
-            "official_id": "jdr:steamer-harpon",
-            "attack_characteristic_key": "intel"
+            "character_level": 4
         },
         {
-            "key": "steamer-salve-steamer",
-            "name": "Salve Aquatique",
+            "key": "aspiration",
+            "name": "Aspiration",
+            "dofusdb_id": "13838",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 4,
             "types": [
                 "Offensif"
             ],
             "element": "water",
-            "pa": "3",
+            "pa": "5",
             "po_min": "1",
             "po_max": "4",
-            "po_editable": true,
+            "po_editable": false,
             "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Salve Aquatique : attaque simple, même budget que le palier 4.",
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Chance (Eau) et attirance de 1 case. Magique, 5 PA, 1×/tour, PO 1–4.",
+            "description": "Tu humes, tu tires. L’ennemi se rapproche en prenant le choc.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -146,10 +151,18 @@
                         "value_formula_crit": "2d6+[chance]",
                         "effect_direction": "action"
                     }
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "pull",
+                        "effect_direction": "action"
+                    }
                 }
             ],
-            "official_id": "jdr:steamer-salve-steamer",
-            "attack_characteristic_key": "chance"
+            "character_level": 4
         },
         {
             "key": "steamer-evolution",
@@ -231,6 +244,82 @@
             "save_characteristic_key": "sagesse",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "steamer-harponneuse-majeure",
+            "name": "Embuscade",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+            "description": "Embuscade : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "3d6+Agilité",
+                        "value_formula": "3d6+[agi]",
+                        "dice_formula": "3d6+[agi]",
+                        "value_formula_crit": "4d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:steamer-harponneuse-majeure",
+            "attack_characteristic_key": "agi"
+        },
+        {
+            "key": "steamer-gardienne-majeure",
+            "name": "Onde",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 6,
+            "types": [
+                "Soin"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 8,
+            "effect": "3d4 + Sagesse. Magique, 3 PA, 2×/tour. Soin automatique sur une cible consentante.",
+            "description": "Onde : soin de palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "soigner",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "3d4+Sagesse",
+                        "value_formula": "3d4+[sagesse]",
+                        "dice_formula": "3d4+[sagesse]",
+                        "value_formula_crit": "4d4+[sagesse]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:steamer-gardienne-majeure",
+            "auto_success_if_willing_target": true
         },
         {
             "key": "steamer-tourelle-tactique",
@@ -535,87 +624,11 @@
             "max_stack": 1
         },
         {
-            "key": "steamer-harponneuse-majeure",
-            "name": "Embuscade",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "air",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
-            "description": "Embuscade : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "3d6+Agilité",
-                        "value_formula": "3d6+[agi]",
-                        "dice_formula": "3d6+[agi]",
-                        "value_formula_crit": "4d6+[agi]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:steamer-harponneuse-majeure",
-            "attack_characteristic_key": "agi"
-        },
-        {
-            "key": "steamer-gardienne-majeure",
-            "name": "Onde",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 13,
-            "types": [
-                "Soin"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "5",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "3d4 + Sagesse. Magique, 3 PA, 2×/tour. Soin automatique sur une cible consentante.",
-            "description": "Onde : soin de palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "soigner",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d4+Sagesse",
-                        "value_formula": "3d4+[sagesse]",
-                        "dice_formula": "3d4+[sagesse]",
-                        "value_formula_crit": "4d4+[sagesse]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:steamer-gardienne-majeure",
-            "auto_success_if_willing_target": true
-        },
-        {
             "key": "steamer-kraken",
             "name": "Kraken",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],
@@ -655,7 +668,7 @@
             "name": "Canon",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],

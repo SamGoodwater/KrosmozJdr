@@ -8,7 +8,9 @@
             "dofusdb_id": "32427",
             "slot_index": 1,
             "choice_order": 0,
-            "types": ["Offensif"],
+            "types": [
+                "Offensif"
+            ],
             "element": "air",
             "pa": "3",
             "po_min": "2",
@@ -43,7 +45,9 @@
             "dofusdb_id": "32435",
             "slot_index": 1,
             "choice_order": 1,
-            "types": ["Offensif"],
+            "types": [
+                "Offensif"
+            ],
             "element": "water",
             "pa": "3",
             "po_min": "2",
@@ -73,31 +77,29 @@
             ]
         },
         {
-            "key": "fleche-explosive",
-            "name": "Flèche Explosive",
-            "dofusdb_id": "32445",
-            "slot_index": 2,
-            "choice_order": 0,
-            "types": ["Offensif"],
+            "key": "cra-fleche-empoisonnee",
+            "name": "Flèche Empoisonnée",
+            "slot_index": 1,
+            "choice_order": 2,
+            "types": [
+                "Offensif"
+            ],
             "element": "fire",
-            "pa": "5",
-            "po_min": "3",
+            "pa": "3",
+            "po_min": "2",
             "po_max": "6",
             "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Intelligence (Feu) en petite zone autour de l’impact. Magique, 5 PA, 1×/tour, PO 3–6 adapté.",
-            "description": "La flèche éclate. Ceux qui restent collés prennent le souffle de feu.",
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Intelligence (Feu) et Empoisonné jusqu’à la fin du prochain tour. 3 PA, 2×/tour.",
+            "description": "Flèche Empoisonnée : ça s’accroche après le coup.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
                         "characteristic": "fire",
                         "value": "1d6+Intelligence",
@@ -106,33 +108,43 @@
                         "value_formula_crit": "2d6+[intel]",
                         "effect_direction": "action"
                     }
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Empoisonné jusqu’à la fin du prochain tour de la cible.",
+                        "effect_direction": "action"
+                    }
                 }
-            ]
+            ],
+            "dofusdb_id": "13060",
+            "attack_characteristic_key": "intel"
         },
         {
-            "key": "tir-perforant",
-            "name": "Tir Perforant",
-            "dofusdb_id": "13080",
-            "slot_index": 2,
-            "choice_order": 1,
-            "types": ["Offensif"],
+            "key": "cra-fleche-assaillante",
+            "name": "Flèche Assaillante",
+            "slot_index": 1,
+            "choice_order": 3,
+            "types": [
+                "Offensif"
+            ],
             "element": "air",
-            "pa": "4",
-            "po_min": "3",
+            "pa": "3",
+            "po_min": "2",
             "po_max": "6",
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "2",
             "resolution_mode": "attack_roll",
-            "attack_characteristic_key": "agi",
             "is_magic": false,
-            "powerful": 4,
-            "effect": "1d6 + Agilité (Air) en ligne de 3 cases. Physique, 4 PA, 2×/tour, PO 3–6 adapté.",
-            "description": "Le trait traverse. Ce qui se trouve dans l’axe prend le vent.",
+            "powerful": 3,
+            "effect": "1d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+            "description": "Flèche Assaillante : attaque simple, même budget que le palier 4.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "line-1x3",
+                    "area": "point",
                     "params": {
                         "characteristic": "air",
                         "value": "1d6+Agilité",
@@ -142,15 +154,19 @@
                         "effect_direction": "action"
                     }
                 }
-            ]
+            ],
+            "dofusdb_id": "32781",
+            "attack_characteristic_key": "agi"
         },
         {
             "key": "oeil-de-lynx",
             "name": "Œil de Lynx",
             "official_id": "jdr:oeil-de-lynx",
-            "slot_index": 3,
+            "slot_index": 2,
             "choice_order": 0,
-            "types": ["Buff"],
+            "types": [
+                "Buff"
+            ],
             "element": null,
             "pa": "3",
             "po_min": "0",
@@ -187,8 +203,10 @@
             "name": "Tir de Recul",
             "dofusdb_id": "13055",
             "slot_index": 3,
-            "choice_order": 1,
-            "types": ["Debuff"],
+            "choice_order": 0,
+            "types": [
+                "Debuff"
+            ],
             "element": "air",
             "pa": "3",
             "po_min": "1",

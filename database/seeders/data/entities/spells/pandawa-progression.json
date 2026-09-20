@@ -7,7 +7,7 @@
             "name": "Karcham",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Offensif"
             ],
@@ -42,7 +42,7 @@
             "name": "Stabilisation",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Buff"
             ],
@@ -79,30 +79,73 @@
             "max_stack": 1
         },
         {
-            "key": "pandawa-souffle-alcoolise",
-            "name": "Souffle Alcoolisé",
+            "key": "pandatak",
+            "name": "Pandatak",
+            "dofusdb_id": "24108",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 4,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Force (Terre) en petite zone autour de toi. Magique, 5 PA, 1×/tour.",
+            "description": "Tu tapes le sol. Ceux qui restent collés prennent le choc.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "value_formula_crit": "2d6+[strong]",
+                        "effect_direction": "self"
+                    }
+                }
+            ],
+            "character_level": 4
+        },
+        {
+            "key": "flasque-explosive",
+            "name": "Flasque Explosive",
+            "dofusdb_id": "24101",
+            "slot_index": 1,
+            "choice_order": 1,
             "types": [
                 "Offensif"
             ],
             "element": "fire",
-            "pa": "3",
+            "pa": "5",
             "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
+            "po_max": "4",
+            "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
-            "description": "Souffle Alcoolisé : attaque simple, même budget que le palier 4.",
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Intelligence (Feu) en petite zone autour de l’impact. Magique, 5 PA, 1×/tour, PO 1–4 adapté.",
+            "description": "La flasque éclate. Le feu prend ceux qui restent collés.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "point",
+                    "area": "circle-0-1",
                     "params": {
                         "characteristic": "fire",
                         "value": "1d6+Intelligence",
@@ -113,46 +156,7 @@
                     }
                 }
             ],
-            "official_id": "jdr:pandawa-souffle-alcoolise",
-            "attack_characteristic_key": "intel"
-        },
-        {
-            "key": "pandawa-vulnee",
-            "name": "Vulnérabilité",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 4,
-            "types": [
-                "Offensif"
-            ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Vulnérabilité : attaque simple, même budget que le palier 4.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:pandawa-vulnee",
-            "attack_characteristic_key": "strong"
+            "character_level": 4
         },
         {
             "key": "pandawa-souffle-du-pandawa",
@@ -233,6 +237,82 @@
             "save_characteristic_key": "sagesse",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "pandawa-picole-majeure",
+            "name": "Bière du Pandawa",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Bière du Pandawa : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "3d6+Chance",
+                        "value_formula": "3d6+[chance]",
+                        "dice_formula": "3d6+[chance]",
+                        "value_formula_crit": "4d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:pandawa-picole-majeure",
+            "attack_characteristic_key": "chance"
+        },
+        {
+            "key": "pandawa-alcoolisme",
+            "name": "Alcoolisme",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+            "description": "Alcoolisme : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "3d6+Intelligence",
+                        "value_formula": "3d6+[intel]",
+                        "dice_formula": "3d6+[intel]",
+                        "value_formula_crit": "4d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:pandawa-alcoolisme",
+            "attack_characteristic_key": "intel"
         },
         {
             "key": "pandawa-souillure",
@@ -534,87 +614,11 @@
             "official_id": "jdr:pandawa-bambou"
         },
         {
-            "key": "pandawa-picole-majeure",
-            "name": "Bière du Pandawa",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Bière du Pandawa : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:pandawa-picole-majeure",
-            "attack_characteristic_key": "chance"
-        },
-        {
-            "key": "pandawa-alcoolisme",
-            "name": "Alcoolisme",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
-            "description": "Alcoolisme : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "3d6+Intelligence",
-                        "value_formula": "3d6+[intel]",
-                        "dice_formula": "3d6+[intel]",
-                        "value_formula_crit": "4d6+[intel]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:pandawa-alcoolisme",
-            "attack_characteristic_key": "intel"
-        },
-        {
             "key": "pandawa-pandawa-colere",
             "name": "Colère de Pandawa",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],
@@ -654,7 +658,7 @@
             "name": "Esprit Festif",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],

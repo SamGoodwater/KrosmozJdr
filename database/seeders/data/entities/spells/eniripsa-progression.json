@@ -7,7 +7,7 @@
             "name": "Mot Stimulant",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Buff"
             ],
@@ -48,7 +48,7 @@
             "name": "Mot de Solidarité",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Défensif"
             ],
@@ -83,80 +83,80 @@
             "max_stack": 1
         },
         {
-            "key": "eniripsa-mot-de-jouvence",
-            "name": "Mot de Jouvence",
+            "key": "mot-interdit",
+            "name": "Mot Interdit",
+            "dofusdb_id": "25873",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 4,
             "types": [
                 "Soin"
             ],
             "element": "water",
-            "pa": "3",
+            "pa": "5",
             "po_min": "1",
             "po_max": "5",
             "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "2",
+            "cast_per_turn": "1",
             "resolution_mode": "auto_success",
+            "auto_success_if_willing_target": true,
             "is_magic": true,
-            "powerful": 3,
-            "effect": "1d4 + Sagesse. Magique, 3 PA, 2×/tour. Soin automatique sur une cible consentante.",
-            "description": "Mot de Jouvence : soin de palier 4.",
+            "powerful": 5,
+            "effect": "2d4 + Sagesse (Eau). Magique, 5 PA, 1×/tour, PO 1–5 adapté. Soin automatique sur une cible consentante.",
+            "description": "Le mot qu’on ne dit qu’une fois par tour. La cible se redresse d’un coup.",
             "sub_effects": [
                 {
                     "slug": "soigner",
                     "area": "point",
                     "params": {
                         "characteristic": "water",
-                        "value": "1d4+Sagesse",
-                        "value_formula": "1d4+[sagesse]",
-                        "dice_formula": "1d4+[sagesse]",
-                        "value_formula_crit": "2d4+[sagesse]",
+                        "value": "2d4+Sagesse",
+                        "value_formula": "2d4+[sagesse]",
+                        "dice_formula": "2d4+[sagesse]",
+                        "value_formula_crit": "3d4+[sagesse]",
                         "effect_direction": "action"
                     }
                 }
             ],
-            "dofusdb_id": "28573",
-            "auto_success_if_willing_target": true
+            "character_level": 4
         },
         {
-            "key": "eniripsa-mot-galvanisant",
-            "name": "Mot Galvanisant",
+            "key": "mot-tapageur",
+            "name": "Mot Tapageur",
+            "dofusdb_id": "25858",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 4,
             "types": [
                 "Soin"
             ],
-            "element": "air",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "5",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
+            "element": "fire",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
             "resolution_mode": "auto_success",
+            "auto_success_if_willing_target": true,
             "is_magic": true,
-            "powerful": 3,
-            "effect": "1d4 + Sagesse. Magique, 3 PA, 2×/tour. Soin automatique sur une cible consentante.",
-            "description": "Mot Galvanisant : soin de palier 4.",
+            "powerful": 5,
+            "effect": "1d4 + Sagesse (Feu) en petite zone autour de toi, alliés consentants. Magique, 5 PA, 1×/tour.",
+            "description": "Tu cries. Ceux qui restent collés à toi reprennent un peu de vie.",
             "sub_effects": [
                 {
                     "slug": "soigner",
-                    "area": "point",
+                    "area": "circle-0-1",
                     "params": {
-                        "characteristic": "air",
+                        "characteristic": "fire",
                         "value": "1d4+Sagesse",
                         "value_formula": "1d4+[sagesse]",
                         "dice_formula": "1d4+[sagesse]",
                         "value_formula_crit": "2d4+[sagesse]",
-                        "effect_direction": "action"
+                        "effect_direction": "self"
                     }
                 }
             ],
-            "dofusdb_id": "25764",
-            "auto_success_if_willing_target": true
+            "character_level": 4
         },
         {
             "key": "eniripsa-mot-de-reconstitution",
@@ -232,6 +232,82 @@
                 }
             ],
             "dofusdb_id": "25893",
+            "auto_success_if_willing_target": true
+        },
+        {
+            "key": "eniripsa-mot-exsangue",
+            "name": "Mot Exsangue",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Soin"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 8,
+            "effect": "3d4 + Sagesse. Magique, 3 PA, 2×/tour. Soin automatique sur une cible consentante.",
+            "description": "Mot Exsangue : soin de palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "soigner",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "3d4+Sagesse",
+                        "value_formula": "3d4+[sagesse]",
+                        "dice_formula": "3d4+[sagesse]",
+                        "value_formula_crit": "4d4+[sagesse]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "13217",
+            "auto_success_if_willing_target": true
+        },
+        {
+            "key": "eniripsa-mot-malicieux",
+            "name": "Mot Malicieux",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 6,
+            "types": [
+                "Soin"
+            ],
+            "element": "air",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 8,
+            "effect": "3d4 + Sagesse. Magique, 3 PA, 2×/tour. Soin automatique sur une cible consentante.",
+            "description": "Mot Malicieux : soin de palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "soigner",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "3d4+Sagesse",
+                        "value_formula": "3d4+[sagesse]",
+                        "dice_formula": "3d4+[sagesse]",
+                        "value_formula_crit": "4d4+[sagesse]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "25895",
             "auto_success_if_willing_target": true
         },
         {
@@ -540,87 +616,11 @@
             "auto_success_if_willing_target": true
         },
         {
-            "key": "eniripsa-mot-exsangue",
-            "name": "Mot Exsangue",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 13,
-            "types": [
-                "Soin"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "5",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "3d4 + Sagesse. Magique, 3 PA, 2×/tour. Soin automatique sur une cible consentante.",
-            "description": "Mot Exsangue : soin de palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "soigner",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d4+Sagesse",
-                        "value_formula": "3d4+[sagesse]",
-                        "dice_formula": "3d4+[sagesse]",
-                        "value_formula_crit": "4d4+[sagesse]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "13217",
-            "auto_success_if_willing_target": true
-        },
-        {
-            "key": "eniripsa-mot-malicieux",
-            "name": "Mot Malicieux",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 13,
-            "types": [
-                "Soin"
-            ],
-            "element": "air",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "5",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "3d4 + Sagesse. Magique, 3 PA, 2×/tour. Soin automatique sur une cible consentante.",
-            "description": "Mot Malicieux : soin de palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "soigner",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "3d4+Sagesse",
-                        "value_formula": "3d4+[sagesse]",
-                        "dice_formula": "3d4+[sagesse]",
-                        "value_formula_crit": "4d4+[sagesse]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "25895",
-            "auto_success_if_willing_target": true
-        },
-        {
             "key": "eniripsa-mot-fleuri",
             "name": "Mot Fleuri",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Soin"
             ],
@@ -658,7 +658,7 @@
             "name": "Lamentations",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Soin"
             ],

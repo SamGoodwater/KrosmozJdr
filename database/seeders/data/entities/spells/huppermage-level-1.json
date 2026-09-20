@@ -77,88 +77,84 @@
             ]
         },
         {
-            "key": "meteore",
-            "name": "Météore",
-            "dofusdb_id": "13675",
-            "slot_index": 2,
-            "choice_order": 0,
+            "key": "huppermage-glace",
+            "name": "Glaçon",
+            "slot_index": 1,
+            "choice_order": 2,
             "types": [
                 "Offensif"
             ],
-            "element": "fire",
-            "pa": "5",
+            "element": "water",
+            "pa": "3",
             "po_min": "1",
             "po_max": "4",
-            "po_editable": false,
+            "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Intelligence (Feu). Magique, 5 PA, 1×/tour, PO 1–4.",
-            "description": "Le ciel tombe. Ceux qui restent collés paient.",
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Glaçon : attaque simple, même budget que le palier 4.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
-                        "characteristic": "fire",
-                        "value": "1d6+Intelligence",
-                        "value_formula": "1d6+[intel]",
-                        "dice_formula": "1d6+[intel]",
-                        "value_formula_crit": "2d6+[intel]",
+                        "characteristic": "water",
+                        "value": "1d6+Chance",
+                        "value_formula": "1d6+[chance]",
+                        "dice_formula": "1d6+[chance]",
+                        "value_formula_crit": "2d6+[chance]",
                         "effect_direction": "action"
                     }
                 }
-            ]
+            ],
+            "official_id": "jdr:huppermage-glace",
+            "attack_characteristic_key": "chance"
         },
         {
-            "key": "onde-sismique",
-            "name": "Onde Sismique",
-            "dofusdb_id": "13668",
-            "slot_index": 2,
-            "choice_order": 1,
+            "key": "huppermage-bourrasque",
+            "name": "Bourrasque",
+            "slot_index": 1,
+            "choice_order": 3,
             "types": [
                 "Offensif"
             ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
+            "element": "air",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Force (Terre). Magique, 5 PA, 1×/tour.",
-            "description": "Le sol ondule autour de toi.",
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+            "description": "Bourrasque : attaque simple, même budget que le palier 4.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
-                        "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
+                        "characteristic": "air",
+                        "value": "1d6+Agilité",
+                        "value_formula": "1d6+[agi]",
+                        "dice_formula": "1d6+[agi]",
+                        "value_formula_crit": "2d6+[agi]",
                         "effect_direction": "action"
                     }
                 }
-            ]
+            ],
+            "official_id": "jdr:huppermage-bourrasque",
+            "attack_characteristic_key": "agi"
         },
         {
             "key": "ether",
             "name": "Éther",
             "dofusdb_id": "13669",
-            "slot_index": 3,
+            "slot_index": 2,
             "choice_order": 0,
             "types": [
                 "Téléportation"
@@ -193,7 +189,7 @@
             "name": "Runification",
             "dofusdb_id": "13670",
             "slot_index": 3,
-            "choice_order": 1,
+            "choice_order": 0,
             "types": [
                 "Buff"
             ],

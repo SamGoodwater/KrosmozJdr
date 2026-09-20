@@ -77,88 +77,84 @@
             ]
         },
         {
-            "key": "volee-d-airain",
-            "name": "Volée d'Airain",
-            "dofusdb_id": "23741",
-            "slot_index": 2,
-            "choice_order": 0,
+            "key": "forgelance-brulure-de-lance",
+            "name": "Brûlure de Lance",
+            "slot_index": 1,
+            "choice_order": 2,
             "types": [
                 "Offensif"
             ],
-            "element": "air",
-            "pa": "5",
+            "element": "fire",
+            "pa": "3",
             "po_min": "1",
             "po_max": "4",
-            "po_editable": false,
+            "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Agilité (Air). Magique, 5 PA, 1×/tour, PO 1–4.",
-            "description": "Tu lances. Ceux sur la volée encaissent.",
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+            "description": "Brûlure de Lance : attaque simple, même budget que le palier 4.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
-                        "characteristic": "air",
-                        "value": "1d6+Agilité",
-                        "value_formula": "1d6+[agi]",
-                        "dice_formula": "1d6+[agi]",
-                        "value_formula_crit": "2d6+[agi]",
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "value_formula_crit": "2d6+[intel]",
                         "effect_direction": "action"
                     }
                 }
-            ]
+            ],
+            "official_id": "jdr:forgelance-brulure-de-lance",
+            "attack_characteristic_key": "intel"
         },
         {
-            "key": "effondrement",
-            "name": "Effondrement",
-            "dofusdb_id": "23736",
-            "slot_index": 2,
-            "choice_order": 1,
+            "key": "forgelance-eclat-liquide",
+            "name": "Éclat Liquide",
+            "slot_index": 1,
+            "choice_order": 3,
             "types": [
                 "Offensif"
             ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Force (Terre). Magique, 5 PA, 1×/tour.",
-            "description": "La lance frappe le sol. Autour de toi, ça cède.",
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Éclat Liquide : attaque simple, même budget que le palier 4.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
-                        "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
+                        "characteristic": "water",
+                        "value": "1d6+Chance",
+                        "value_formula": "1d6+[chance]",
+                        "dice_formula": "1d6+[chance]",
+                        "value_formula_crit": "2d6+[chance]",
                         "effect_direction": "action"
                     }
                 }
-            ]
+            ],
+            "official_id": "jdr:forgelance-eclat-liquide",
+            "attack_characteristic_key": "chance"
         },
         {
             "key": "charge-heroique",
             "name": "Charge Héroïque",
             "dofusdb_id": "23824",
-            "slot_index": 3,
+            "slot_index": 2,
             "choice_order": 0,
             "types": [
                 "Téléportation"
@@ -193,7 +189,7 @@
             "name": "Phalange",
             "dofusdb_id": "23330",
             "slot_index": 3,
-            "choice_order": 1,
+            "choice_order": 0,
             "types": [
                 "Défensif"
             ],

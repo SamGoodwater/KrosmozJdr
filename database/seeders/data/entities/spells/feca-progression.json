@@ -7,7 +7,7 @@
             "name": "Immunité",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Défensif"
             ],
@@ -46,7 +46,7 @@
             "name": "Téléglyphe",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Téléportation"
             ],
@@ -77,84 +77,94 @@
             "official_id": "jdr:feca-teleglyphe"
         },
         {
-            "key": "feca-glyphe-agressif",
-            "name": "Glyphe Agressif",
+            "key": "glyphe-enflamme",
+            "name": "Glyphe Enflammé",
+            "dofusdb_id": "32384",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 4,
             "types": [
                 "Offensif"
             ],
             "element": "fire",
+            "target_type": "glyph",
             "pa": "5",
             "po_min": "1",
             "po_max": "4",
-            "po_editable": true,
+            "po_editable": false,
             "sight_line": true,
             "cast_per_turn": "1",
             "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
             "is_magic": true,
             "powerful": 5,
-            "effect": "Glyphe, 2d6 + Intelligence (Feu). Magique, 5 PA, 1×/tour. Au plus 2 glyphes à la fois.",
-            "description": "Glyphe Agressif : le sol se souvient.",
+            "effect": "Pose un glyphe. Qui y marche : 1d6 + Intelligence (Feu), sauvegarde. Magique, 5 PA, 1×/tour, PO 1–4. Au plus 2 glyphes à la fois au niveau 1.",
+            "description": "Tu traces le feu au sol. Qui s’y aventure le paie.",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "circle-0-1",
                     "params": {
                         "characteristic": "fire",
-                        "value": "2d6+Intelligence",
-                        "value_formula": "2d6+[intel]",
-                        "dice_formula": "2d6+[intel]",
-                        "value_formula_crit": "3d6+[intel]",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "value_formula_crit": "2d6+[intel]",
                         "effect_direction": "action"
                     }
                 }
             ],
-            "official_id": "jdr:feca-glyphe-agressif",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "max_stack": 2,
-            "target_type": "glyph"
+            "character_level": 4
         },
         {
-            "key": "feca-bouclier-elementaire",
-            "name": "Bouclier Élémentaire",
+            "key": "escapade",
+            "name": "Escapade",
+            "dofusdb_id": "29045",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 4,
             "types": [
                 "Offensif"
             ],
-            "element": "earth",
-            "pa": "3",
+            "element": "water",
+            "pa": "4",
             "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
+            "po_max": "1",
+            "po_editable": false,
             "sight_line": true,
             "cast_per_turn": "2",
             "resolution_mode": "attack_roll",
+            "attack_characteristic_key": "chance",
             "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Bouclier Élémentaire : attaque simple, même budget que le palier 4.",
+            "powerful": 4,
+            "effect": "1d6 + Chance (Eau) et poussée de 1 case. Physique, 4 PA, 2×/tour, PO 1.",
+            "description": "Un jet d’eau, un pas en arrière. Tu gardes la distance.",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
+                    "order": 0,
                     "params": {
-                        "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
+                        "characteristic": "water",
+                        "value": "1d6+Chance",
+                        "value_formula": "1d6+[chance]",
+                        "dice_formula": "1d6+[chance]",
+                        "value_formula_crit": "2d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "order": 1,
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "push",
                         "effect_direction": "action"
                     }
                 }
             ],
-            "official_id": "jdr:feca-bouclier-elementaire",
-            "attack_characteristic_key": "strong"
+            "character_level": 4
         },
         {
             "key": "feca-glyphe-aveuglement",
@@ -239,6 +249,82 @@
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
             "max_stack": 2,
             "target_type": "glyph"
+        },
+        {
+            "key": "feca-glyphe-orageux",
+            "name": "Glyphe Orageux",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+            "description": "Glyphe Orageux : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "3d6+Agilité",
+                        "value_formula": "3d6+[agi]",
+                        "dice_formula": "3d6+[agi]",
+                        "value_formula_crit": "4d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:feca-glyphe-orageux",
+            "attack_characteristic_key": "agi"
+        },
+        {
+            "key": "feca-attaque-nuageuse",
+            "name": "Attaque Nuageuse",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+            "description": "Attaque Nuageuse : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "3d6+Agilité",
+                        "value_formula": "3d6+[agi]",
+                        "dice_formula": "3d6+[agi]",
+                        "value_formula_crit": "4d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:feca-attaque-nuageuse",
+            "attack_characteristic_key": "agi"
         },
         {
             "key": "feca-armure-de-feu",
@@ -561,87 +647,11 @@
             "max_stack": 1
         },
         {
-            "key": "feca-glyphe-orageux",
-            "name": "Glyphe Orageux",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "air",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
-            "description": "Glyphe Orageux : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "3d6+Agilité",
-                        "value_formula": "3d6+[agi]",
-                        "dice_formula": "3d6+[agi]",
-                        "value_formula_crit": "4d6+[agi]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:feca-glyphe-orageux",
-            "attack_characteristic_key": "agi"
-        },
-        {
-            "key": "feca-attaque-nuageuse",
-            "name": "Attaque Nuageuse",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "air",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
-            "description": "Attaque Nuageuse : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "3d6+Agilité",
-                        "value_formula": "3d6+[agi]",
-                        "dice_formula": "3d6+[agi]",
-                        "value_formula_crit": "4d6+[agi]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:feca-attaque-nuageuse",
-            "attack_characteristic_key": "agi"
-        },
-        {
             "key": "feca-glyphe-de-protection",
             "name": "Glyphe de Protection",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],
@@ -683,7 +693,7 @@
             "name": "Invulnérabilité",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Défensif"
             ],

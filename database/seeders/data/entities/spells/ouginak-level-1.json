@@ -77,33 +77,29 @@
             ]
         },
         {
-            "key": "os-a-moelle",
-            "name": "Os à Moelle",
-            "dofusdb_id": "13762",
-            "slot_index": 2,
-            "choice_order": 0,
+            "key": "ouginak-croc",
+            "name": "Croc du Molosse",
+            "slot_index": 1,
+            "choice_order": 2,
             "types": [
                 "Offensif"
             ],
             "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
             "po_editable": false,
             "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Force (Terre). Magique, 5 PA, 1×/tour.",
-            "description": "Tu t’ouvres, les os volent. Ceux autour encaissent.",
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Croc du Molosse : attaque simple, même budget que le palier 4.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
                         "characteristic": "earth",
                         "value": "1d6+Force",
@@ -113,52 +109,52 @@
                         "effect_direction": "action"
                     }
                 }
-            ]
+            ],
+            "official_id": "jdr:ouginak-croc",
+            "attack_characteristic_key": "strong"
         },
         {
-            "key": "lance-roquet",
-            "name": "Lance-roquet",
-            "dofusdb_id": "13774",
-            "slot_index": 2,
-            "choice_order": 1,
+            "key": "ouginak-cerbere",
+            "name": "Cerbère",
+            "slot_index": 1,
+            "choice_order": 3,
             "types": [
                 "Offensif"
             ],
-            "element": "air",
-            "pa": "5",
+            "element": "fire",
+            "pa": "3",
             "po_min": "1",
-            "po_max": "4",
+            "po_max": "1",
             "po_editable": false,
             "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Agilité (Air). Magique, 5 PA, 1×/tour, PO 1–4.",
-            "description": "Le chien part. Ceux sur la ligne prennent le choc.",
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+            "description": "Cerbère : attaque simple, même budget que le palier 4.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
-                        "characteristic": "air",
-                        "value": "1d6+Agilité",
-                        "value_formula": "1d6+[agi]",
-                        "dice_formula": "1d6+[agi]",
-                        "value_formula_crit": "2d6+[agi]",
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "value_formula_crit": "2d6+[intel]",
                         "effect_direction": "action"
                     }
                 }
-            ]
+            ],
+            "official_id": "jdr:ouginak-cerbere",
+            "attack_characteristic_key": "intel"
         },
         {
             "key": "traque",
             "name": "Traque",
             "dofusdb_id": "13755",
-            "slot_index": 3,
+            "slot_index": 2,
             "choice_order": 0,
             "types": [
                 "Debuff"
@@ -193,7 +189,7 @@
             "name": "Amarok",
             "dofusdb_id": "13802",
             "slot_index": 3,
-            "choice_order": 1,
+            "choice_order": 0,
             "types": [
                 "Buff"
             ],

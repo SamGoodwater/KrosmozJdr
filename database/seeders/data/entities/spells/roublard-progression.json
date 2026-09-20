@@ -7,7 +7,7 @@
             "name": "Extraction",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Offensif"
             ],
@@ -42,7 +42,7 @@
             "name": "Magnétisme",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Offensif"
             ],
@@ -73,30 +73,33 @@
             "attack_characteristic_key": "agi"
         },
         {
-            "key": "roublard-grenado",
-            "name": "Grenado",
+            "key": "explobombe",
+            "name": "Explobombe",
+            "dofusdb_id": "13444",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 4,
             "types": [
                 "Offensif"
             ],
             "element": "fire",
-            "pa": "3",
+            "pa": "5",
             "po_min": "1",
             "po_max": "4",
-            "po_editable": true,
+            "po_editable": false,
             "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
-            "description": "Grenado : attaque simple, même budget que le palier 4.",
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Intelligence (Feu). Magique, 5 PA, 1×/tour, PO 1–4. Piège visible. Déclenché si une créature y marche. Au plus 1 piège à la fois au niveau 1",
+            "description": "Tu poses, tu t’écartes. Qui marche dessus paie.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "point",
+                    "area": "circle-0-1",
                     "params": {
                         "characteristic": "fire",
                         "value": "1d6+Intelligence",
@@ -107,46 +110,48 @@
                     }
                 }
             ],
-            "official_id": "jdr:roublard-grenado",
-            "attack_characteristic_key": "intel"
+            "target_type": "trap",
+            "character_level": 4
         },
         {
-            "key": "roublard-entrave-roublard",
-            "name": "Filet",
+            "key": "sismobombe",
+            "name": "Sismobombe",
+            "dofusdb_id": "13491",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 4,
             "types": [
-                "Debuff"
+                "Offensif"
             ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
+            "element": "earth",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
             "sight_line": true,
             "cast_per_turn": "1",
             "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
             "is_magic": true,
-            "powerful": 3,
-            "effect": "Retrait de 1 PM. Magique, 3 PA, 1×/tour. Sauvegarde Sagesse.",
-            "description": "Filet : les jambes pèsent.",
+            "powerful": 5,
+            "effect": "1d6 + Force (Terre). Magique, 5 PA, 1×/tour.",
+            "description": "Le sol saute autour de toi. Ceux qui restent collés prennent le choc.",
             "sub_effects": [
                 {
-                    "slug": "retirer",
-                    "area": "point",
+                    "slug": "frapper",
+                    "area": "circle-0-1",
                     "params": {
-                        "characteristic": "movement_points",
-                        "value": "1",
-                        "value_formula": "1",
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "value_formula_crit": "2d6+[strong]",
                         "effect_direction": "action"
                     }
                 }
             ],
-            "official_id": "jdr:roublard-entrave-roublard",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun retrait."
+            "character_level": 4
         },
         {
             "key": "roublard-bombe-a-eau",
@@ -231,6 +236,82 @@
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
             "max_stack": 2,
             "target_type": "trap"
+        },
+        {
+            "key": "roublard-explobombe-majeure",
+            "name": "Bombe Feu",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+            "description": "Bombe Feu : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "3d6+Intelligence",
+                        "value_formula": "3d6+[intel]",
+                        "dice_formula": "3d6+[intel]",
+                        "value_formula_crit": "4d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:roublard-explobombe-majeure",
+            "attack_characteristic_key": "intel"
+        },
+        {
+            "key": "roublard-roulette-roublard",
+            "name": "Triche",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Triche : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "3d6+Chance",
+                        "value_formula": "3d6+[chance]",
+                        "dice_formula": "3d6+[chance]",
+                        "value_formula_crit": "4d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:roublard-roulette-roublard",
+            "attack_characteristic_key": "chance"
         },
         {
             "key": "roublard-detonateur-majeur",
@@ -536,87 +617,11 @@
             "attack_characteristic_key": "agi"
         },
         {
-            "key": "roublard-explobombe-majeure",
-            "name": "Bombe Feu",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
-            "description": "Bombe Feu : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "3d6+Intelligence",
-                        "value_formula": "3d6+[intel]",
-                        "dice_formula": "3d6+[intel]",
-                        "value_formula_crit": "4d6+[intel]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:roublard-explobombe-majeure",
-            "attack_characteristic_key": "intel"
-        },
-        {
-            "key": "roublard-roulette-roublard",
-            "name": "Triche",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Triche : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:roublard-roulette-roublard",
-            "attack_characteristic_key": "chance"
-        },
-        {
             "key": "roublard-megabombe",
             "name": "Mégabombe",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],
@@ -658,7 +663,7 @@
             "name": "Rafale",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],

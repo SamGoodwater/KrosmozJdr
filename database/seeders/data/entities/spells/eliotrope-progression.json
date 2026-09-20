@@ -7,7 +7,7 @@
             "name": "Portail Distordu",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Téléportation"
             ],
@@ -42,7 +42,7 @@
             "name": "Prévention",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Défensif"
             ],
@@ -77,30 +77,33 @@
             "max_stack": 1
         },
         {
-            "key": "eliotrope-snub",
-            "name": "Snub",
+            "key": "commotion",
+            "name": "Commotion",
+            "dofusdb_id": "14583",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 4,
             "types": [
                 "Offensif"
             ],
             "element": "fire",
-            "pa": "3",
+            "pa": "5",
             "po_min": "1",
             "po_max": "4",
-            "po_editable": true,
+            "po_editable": false,
             "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
-            "description": "Snub : attaque simple, même budget que le palier 4.",
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Intelligence (Feu). Magique, 5 PA, 1×/tour, PO 1–4.",
+            "description": "Le Wakfu claque. Ceux qui restent collés prennent le choc.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "point",
+                    "area": "circle-0-1",
                     "params": {
                         "characteristic": "fire",
                         "value": "1d6+Intelligence",
@@ -111,46 +114,47 @@
                     }
                 }
             ],
-            "official_id": "jdr:eliotrope-snub",
-            "attack_characteristic_key": "intel"
+            "character_level": 4
         },
         {
-            "key": "eliotrope-larme-eliotrope",
-            "name": "Rosée",
+            "key": "rayon-de-wakfu",
+            "name": "Rayon de Wakfu",
+            "dofusdb_id": "14579",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 4,
             "types": [
-                "Soin"
+                "Offensif"
             ],
-            "element": "water",
-            "pa": "3",
+            "element": "air",
+            "pa": "5",
             "po_min": "1",
-            "po_max": "5",
-            "po_editable": true,
+            "po_max": "4",
+            "po_editable": false,
             "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "auto_success",
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
             "is_magic": true,
-            "powerful": 3,
-            "effect": "1d4 + Sagesse. Magique, 3 PA, 2×/tour. Soin automatique sur une cible consentante.",
-            "description": "Rosée : soin de palier 4.",
+            "powerful": 5,
+            "effect": "1d6 + Agilité (Air). Magique, 5 PA, 1×/tour, PO 1–4.",
+            "description": "Un rayon. La ligne tremble, ceux dessus encaissent.",
             "sub_effects": [
                 {
-                    "slug": "soigner",
-                    "area": "point",
+                    "slug": "frapper",
+                    "area": "circle-0-1",
                     "params": {
-                        "characteristic": "water",
-                        "value": "1d4+Sagesse",
-                        "value_formula": "1d4+[sagesse]",
-                        "dice_formula": "1d4+[sagesse]",
-                        "value_formula_crit": "2d4+[sagesse]",
+                        "characteristic": "air",
+                        "value": "1d6+Agilité",
+                        "value_formula": "1d6+[agi]",
+                        "dice_formula": "1d6+[agi]",
+                        "value_formula_crit": "2d6+[agi]",
                         "effect_direction": "action"
                     }
                 }
             ],
-            "official_id": "jdr:eliotrope-larme-eliotrope",
-            "auto_success_if_willing_target": true
+            "character_level": 4
         },
         {
             "key": "eliotrope-pulsation",
@@ -231,6 +235,82 @@
             "save_characteristic_key": "sagesse",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "eliotrope-parasite",
+            "name": "Parasite",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Parasite : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "3d6+Chance",
+                        "value_formula": "3d6+[chance]",
+                        "dice_formula": "3d6+[chance]",
+                        "value_formula_crit": "4d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:eliotrope-parasite",
+            "attack_characteristic_key": "chance"
+        },
+        {
+            "key": "eliotrope-snub-majeur",
+            "name": "Coup de Grâce",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+            "description": "Coup de Grâce : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "3d6+Intelligence",
+                        "value_formula": "3d6+[intel]",
+                        "dice_formula": "3d6+[intel]",
+                        "value_formula_crit": "4d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:eliotrope-snub-majeur",
+            "attack_characteristic_key": "intel"
         },
         {
             "key": "eliotrope-portalisme",
@@ -540,87 +620,11 @@
             "auto_success_if_willing_target": true
         },
         {
-            "key": "eliotrope-parasite",
-            "name": "Parasite",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Parasite : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:eliotrope-parasite",
-            "attack_characteristic_key": "chance"
-        },
-        {
-            "key": "eliotrope-snub-majeur",
-            "name": "Coup de Grâce",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
-            "description": "Coup de Grâce : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "3d6+Intelligence",
-                        "value_formula": "3d6+[intel]",
-                        "dice_formula": "3d6+[intel]",
-                        "value_formula_crit": "4d6+[intel]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:eliotrope-snub-majeur",
-            "attack_characteristic_key": "intel"
-        },
-        {
             "key": "eliotrope-tempête-eliotrope",
             "name": "Tempête de Wakfu",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],
@@ -660,7 +664,7 @@
             "name": "Interstice",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Soin"
             ],

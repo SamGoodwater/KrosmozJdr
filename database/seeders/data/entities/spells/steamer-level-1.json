@@ -77,33 +77,29 @@
             ]
         },
         {
-            "key": "sabotage",
-            "name": "Sabotage",
-            "dofusdb_id": "13858",
-            "slot_index": 2,
-            "choice_order": 0,
+            "key": "steamer-harpon",
+            "name": "Harpon",
+            "slot_index": 1,
+            "choice_order": 2,
             "types": [
                 "Offensif"
             ],
             "element": "fire",
-            "pa": "5",
+            "pa": "3",
             "po_min": "1",
             "po_max": "4",
-            "po_editable": false,
+            "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Intelligence (Feu). Magique, 5 PA, 1×/tour, PO 1–4.",
-            "description": "Ça explose autour. Ceux qui restent collés paient.",
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+            "description": "Harpon : attaque simple, même budget que le palier 4.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
                         "characteristic": "fire",
                         "value": "1d6+Intelligence",
@@ -113,32 +109,30 @@
                         "effect_direction": "action"
                     }
                 }
-            ]
+            ],
+            "official_id": "jdr:steamer-harpon",
+            "attack_characteristic_key": "intel"
         },
         {
-            "key": "aspiration",
-            "name": "Aspiration",
-            "dofusdb_id": "13838",
-            "slot_index": 2,
-            "choice_order": 1,
+            "key": "steamer-salve-steamer",
+            "name": "Salve Aquatique",
+            "slot_index": 1,
+            "choice_order": 3,
             "types": [
                 "Offensif"
             ],
             "element": "water",
-            "pa": "5",
+            "pa": "3",
             "po_min": "1",
             "po_max": "4",
-            "po_editable": false,
+            "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Chance (Eau) et attirance de 1 case. Magique, 5 PA, 1×/tour, PO 1–4.",
-            "description": "Tu humes, tu tires. L’ennemi se rapproche en prenant le choc.",
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Salve Aquatique : attaque simple, même budget que le palier 4.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -151,23 +145,16 @@
                         "value_formula_crit": "2d6+[chance]",
                         "effect_direction": "action"
                     }
-                },
-                {
-                    "slug": "déplacer",
-                    "area": "point",
-                    "params": {
-                        "cells_formula": "1",
-                        "movement_kind": "pull",
-                        "effect_direction": "action"
-                    }
                 }
-            ]
+            ],
+            "official_id": "jdr:steamer-salve-steamer",
+            "attack_characteristic_key": "chance"
         },
         {
             "key": "harponneuse",
             "name": "Harponneuse",
             "dofusdb_id": "13829",
-            "slot_index": 3,
+            "slot_index": 2,
             "choice_order": 0,
             "types": [
                 "Invocation"
@@ -200,7 +187,7 @@
             "name": "Gardienne",
             "dofusdb_id": "13830",
             "slot_index": 3,
-            "choice_order": 1,
+            "choice_order": 0,
             "types": [
                 "Invocation"
             ],

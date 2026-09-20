@@ -8,7 +8,7 @@ use App\Services\Seeder\Spell\ClassLevel1SpellSeederImporter;
 use Illuminate\Database\Seeder;
 
 /**
- * Sorts de classe JDR (kit niveau 1 + progression jusqu’au niveau 14).
+ * Sorts de classe JDR (kit niveau 1 + progression jusqu’au niveau 12).
  */
 class SpellSeeder extends Seeder
 {

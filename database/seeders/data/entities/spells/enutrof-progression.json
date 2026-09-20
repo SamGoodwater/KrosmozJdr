@@ -7,7 +7,7 @@
             "name": "Coffre Animé",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Buff"
             ],
@@ -41,7 +41,7 @@
             "name": "Accélération",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Buff"
             ],
@@ -78,68 +78,32 @@
             "max_stack": 1
         },
         {
-            "key": "enutrof-pelle-des-anciens",
-            "name": "Pelle des Anciens",
+            "key": "pelle-aurifere",
+            "name": "Pelle Aurifère",
+            "dofusdb_id": "13343",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 4,
-            "types": [
-                "Offensif"
-            ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Pelle des Anciens : attaque simple, même budget que le palier 4.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "13345",
-            "attack_characteristic_key": "strong"
-        },
-        {
-            "key": "enutrof-corruption",
-            "name": "Corruption",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 4,
             "types": [
                 "Offensif"
             ],
             "element": "water",
-            "pa": "3",
+            "pa": "5",
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "2",
+            "cast_per_turn": "1",
             "resolution_mode": "attack_roll",
+            "attack_characteristic_key": "chance",
             "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Corruption : attaque simple, même budget que le palier 4.",
+            "powerful": 5,
+            "effect": "1d6 + Chance (Eau) et retrait de 1 PM. Physique, 5 PA, 1×/tour, PO 1–4 adapté.",
+            "description": "La pelle pèse. Le coup porte, les jambes lâchent un pas.",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
+                    "order": 0,
                     "params": {
                         "characteristic": "water",
                         "value": "1d6+Chance",
@@ -148,10 +112,69 @@
                         "value_formula_crit": "2d6+[chance]",
                         "effect_direction": "action"
                     }
+                },
+                {
+                    "slug": "retirer",
+                    "area": "point",
+                    "order": 1,
+                    "params": {
+                        "characteristic": "movement_points_creature",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action"
+                    }
                 }
             ],
-            "dofusdb_id": "28391",
-            "attack_characteristic_key": "chance"
+            "character_level": 4
+        },
+        {
+            "key": "lancer-de-pelle",
+            "name": "Lancer de Pelle",
+            "dofusdb_id": "13330",
+            "slot_index": 1,
+            "choice_order": 1,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "5",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "1",
+            "resolution_mode": "attack_roll",
+            "attack_characteristic_key": "strong",
+            "is_magic": false,
+            "powerful": 5,
+            "effect": "1d6 + Force (Terre) et poussée de 1 case. Physique, 5 PA, 1×/tour, PO 1–4 adapté.",
+            "description": "Tu lances l’outil. Ça cogne, ça recule.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "order": 0,
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "value_formula_crit": "2d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "order": 1,
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "character_level": 4
         },
         {
             "key": "enutrof-coup-de-grisou",
@@ -232,6 +255,82 @@
             "save_characteristic_key": "sagesse",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "enutrof-pelle-de-fortune",
+            "name": "Pelle de Fortune",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Pelle de Fortune : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "3d6+Force",
+                        "value_formula": "3d6+[strong]",
+                        "dice_formula": "3d6+[strong]",
+                        "value_formula_crit": "4d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "30775",
+            "attack_characteristic_key": "strong"
+        },
+        {
+            "key": "enutrof-orpaillage",
+            "name": "Orpaillage",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Orpaillage : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "3d6+Chance",
+                        "value_formula": "3d6+[chance]",
+                        "dice_formula": "3d6+[chance]",
+                        "value_formula_crit": "4d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "29769",
+            "attack_characteristic_key": "chance"
         },
         {
             "key": "enutrof-cles-du-tresor",
@@ -532,87 +631,11 @@
             "max_stack": 1
         },
         {
-            "key": "enutrof-pelle-de-fortune",
-            "name": "Pelle de Fortune",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Pelle de Fortune : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "3d6+Force",
-                        "value_formula": "3d6+[strong]",
-                        "dice_formula": "3d6+[strong]",
-                        "value_formula_crit": "4d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "30775",
-            "attack_characteristic_key": "strong"
-        },
-        {
-            "key": "enutrof-orpaillage",
-            "name": "Orpaillage",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Orpaillage : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "29769",
-            "attack_characteristic_key": "chance"
-        },
-        {
             "key": "enutrof-age-d-or",
             "name": "Âge d'Or",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],
@@ -652,7 +675,7 @@
             "name": "Banqueroute",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],

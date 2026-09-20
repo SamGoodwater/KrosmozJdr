@@ -7,7 +7,7 @@
             "name": "Double",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Invocation"
             ],
@@ -40,7 +40,7 @@
             "name": "Brume",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Buff"
             ],
@@ -70,26 +70,30 @@
             "duration": "jusqu’à la fin de ton prochain tour"
         },
         {
-            "key": "sram-fourvoiement",
-            "name": "Fourvoiement",
+            "key": "piege-sournois",
+            "name": "Piège Sournois",
+            "dofusdb_id": "12929",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 4,
             "types": [
                 "Offensif"
             ],
             "element": "earth",
-            "pa": "3",
+            "target_type": "trap",
+            "pa": "5",
             "po_min": "1",
-            "po_max": "1",
+            "po_max": "4",
             "po_editable": false,
             "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Fourvoiement : attaque simple, même budget que le palier 4.",
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "Pose un piège. Au déclenchement : 1d6 + Force (Terre), sauvegarde. Magique, 5 PA, 1×/tour, PO 1–4. Au plus 2 pièges à la fois au niveau 1.",
+            "description": "Tu laisses une lame sous les pieds. Qui marche dessus le paie.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -104,46 +108,42 @@
                     }
                 }
             ],
-            "dofusdb_id": "12909",
-            "attack_characteristic_key": "strong"
+            "character_level": 4
         },
         {
-            "key": "sram-perfidie",
-            "name": "Perfidie",
+            "key": "peur",
+            "name": "Peur",
+            "dofusdb_id": "32369",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 4,
             "types": [
-                "Offensif"
+                "Debuff"
             ],
-            "element": "water",
+            "element": "air",
             "pa": "3",
             "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
+            "po_max": "4",
+            "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "2",
+            "cast_per_turn": "1",
             "resolution_mode": "attack_roll",
+            "attack_characteristic_key": "agi",
             "is_magic": false,
             "powerful": 3,
-            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Perfidie : attaque simple, même budget que le palier 4.",
+            "effect": "Poussée de 2 cases, pas de dégâts. Physique, 3 PA, 1×/tour, PO 1–4 adapté.",
+            "description": "Un geste, un recul. Tu ouvres la ligne ou tu te dégages.",
             "sub_effects": [
                 {
-                    "slug": "frapper",
+                    "slug": "déplacer",
                     "area": "point",
                     "params": {
-                        "characteristic": "water",
-                        "value": "1d6+Chance",
-                        "value_formula": "1d6+[chance]",
-                        "dice_formula": "1d6+[chance]",
-                        "value_formula_crit": "2d6+[chance]",
+                        "cells_formula": "2",
+                        "movement_kind": "push",
                         "effect_direction": "action"
                     }
                 }
             ],
-            "dofusdb_id": "25103",
-            "attack_characteristic_key": "chance"
+            "character_level": 4
         },
         {
             "key": "sram-piege-mortel",
@@ -228,6 +228,82 @@
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
             "max_stack": 2,
             "target_type": "trap"
+        },
+        {
+            "key": "sram-fourberie",
+            "name": "Fourberie",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Fourberie : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "3d6+Force",
+                        "value_formula": "3d6+[strong]",
+                        "dice_formula": "3d6+[strong]",
+                        "value_formula_crit": "4d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "12905",
+            "attack_characteristic_key": "strong"
+        },
+        {
+            "key": "sram-extorsion",
+            "name": "Extorsion",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Extorsion : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "3d6+Chance",
+                        "value_formula": "3d6+[chance]",
+                        "dice_formula": "3d6+[chance]",
+                        "value_formula_crit": "4d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "12938",
+            "attack_characteristic_key": "chance"
         },
         {
             "key": "sram-concentration-de-chakra",
@@ -542,87 +618,11 @@
             "dofusdb_id": "12960"
         },
         {
-            "key": "sram-fourberie",
-            "name": "Fourberie",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Fourberie : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "3d6+Force",
-                        "value_formula": "3d6+[strong]",
-                        "dice_formula": "3d6+[strong]",
-                        "value_formula_crit": "4d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "12905",
-            "attack_characteristic_key": "strong"
-        },
-        {
-            "key": "sram-extorsion",
-            "name": "Extorsion",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Extorsion : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "12938",
-            "attack_characteristic_key": "chance"
-        },
-        {
             "key": "sram-piege-effroyable",
             "name": "Piège Effroyable",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],
@@ -664,7 +664,7 @@
             "name": "Calamité",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],

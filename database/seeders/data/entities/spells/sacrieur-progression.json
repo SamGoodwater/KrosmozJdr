@@ -7,7 +7,7 @@
             "name": "Coopération",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Téléportation"
             ],
@@ -41,7 +41,7 @@
             "name": "Pied du Sacrieur",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Offensif"
             ],
@@ -72,80 +72,85 @@
             "attack_characteristic_key": "agi"
         },
         {
-            "key": "sacrieur-folie",
-            "name": "Folie",
+            "key": "folie-sanguinaire",
+            "name": "Folie Sanguinaire",
+            "dofusdb_id": "12740",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 4,
             "types": [
                 "Offensif"
             ],
             "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
             "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Folie : attaque simple, même budget que le palier 4.",
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Force (Terre) en petite zone autour de toi, vol de vie 1d4. Magique, 5 PA, 1×/tour.",
+            "description": "Tu t’ouvres, le sang frappe autour. Ceux qui restent collés paient.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "point",
+                    "area": "circle-0-1",
                     "params": {
                         "characteristic": "earth",
                         "value": "1d6+Force",
                         "value_formula": "1d6+[strong]",
                         "dice_formula": "1d6+[strong]",
                         "value_formula_crit": "2d6+[strong]",
-                        "effect_direction": "action"
+                        "life_steal_formula": "1d4",
+                        "effect_direction": "self"
                     }
                 }
             ],
-            "official_id": "jdr:sacrieur-folie",
-            "attack_characteristic_key": "strong"
+            "character_level": 4
         },
         {
-            "key": "sacrieur-epee-volante",
-            "name": "Épée Volante",
+            "key": "chatiment",
+            "name": "Châtiment",
+            "dofusdb_id": "12760",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 4,
             "types": [
                 "Offensif"
             ],
             "element": "air",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
             "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
-            "description": "Épée Volante : attaque simple, même budget que le palier 4.",
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Agilité (Air) en petite zone autour de toi. Magique, 5 PA, 1×/tour.",
+            "description": "Un éclat d’air. Moins de vol, même choc : ceux autour encaissent.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "point",
+                    "area": "circle-0-1",
                     "params": {
                         "characteristic": "air",
                         "value": "1d6+Agilité",
                         "value_formula": "1d6+[agi]",
                         "dice_formula": "1d6+[agi]",
                         "value_formula_crit": "2d6+[agi]",
-                        "effect_direction": "action"
+                        "effect_direction": "self"
                     }
                 }
             ],
-            "official_id": "jdr:sacrieur-epee-volante",
-            "attack_characteristic_key": "agi"
+            "character_level": 4
         },
         {
             "key": "sacrieur-punition-majeure",
@@ -226,6 +231,83 @@
             "save_characteristic_key": "sagesse",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "sacrieur-stase",
+            "name": "Stase",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Stase : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "3d6+Chance",
+                        "value_formula": "3d6+[chance]",
+                        "dice_formula": "3d6+[chance]",
+                        "value_formula_crit": "4d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:sacrieur-stase",
+            "attack_characteristic_key": "chance"
+        },
+        {
+            "key": "sacrieur-absorption-majeure",
+            "name": "Drain Vital",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Intelligence (Feu) et vol de vie 3d4. 3 PA, 2×/tour.",
+            "description": "Drain Vital : tu frappes, tu récupères.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "3d6+Intelligence",
+                        "value_formula": "3d6+[intel]",
+                        "dice_formula": "3d6+[intel]",
+                        "value_formula_crit": "4d6+[intel]",
+                        "effect_direction": "action",
+                        "life_steal_formula": "3d4"
+                    }
+                }
+            ],
+            "official_id": "jdr:sacrieur-absorption-majeure",
+            "attack_characteristic_key": "intel"
         },
         {
             "key": "sacrieur-transposition",
@@ -534,88 +616,11 @@
             "attack_characteristic_key": "agi"
         },
         {
-            "key": "sacrieur-stase",
-            "name": "Stase",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Stase : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:sacrieur-stase",
-            "attack_characteristic_key": "chance"
-        },
-        {
-            "key": "sacrieur-absorption-majeure",
-            "name": "Drain Vital",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Intelligence (Feu) et vol de vie 3d4. 3 PA, 2×/tour.",
-            "description": "Drain Vital : tu frappes, tu récupères.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "3d6+Intelligence",
-                        "value_formula": "3d6+[intel]",
-                        "dice_formula": "3d6+[intel]",
-                        "value_formula_crit": "4d6+[intel]",
-                        "effect_direction": "action",
-                        "life_steal_formula": "3d4"
-                    }
-                }
-            ],
-            "official_id": "jdr:sacrieur-absorption-majeure",
-            "attack_characteristic_key": "intel"
-        },
-        {
             "key": "sacrieur-punition-supreme",
             "name": "Berserk",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],
@@ -655,7 +660,7 @@
             "name": "Châtiment Osé",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],

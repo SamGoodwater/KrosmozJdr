@@ -7,7 +7,7 @@
             "name": "Horloge",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Debuff"
             ],
@@ -45,7 +45,7 @@
             "name": "Ralentissement",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Debuff"
             ],
@@ -79,80 +79,93 @@
             "save_success_note": "En cas de sauvegarde réussie, aucun retrait."
         },
         {
-            "key": "xelor-sablier-de-xelor",
-            "name": "Sablier de Xélor",
+            "key": "raulebaque",
+            "name": "Raulebaque",
+            "dofusdb_id": "31500",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 4,
             "types": [
-                "Offensif"
+                "Offensif",
+                "Téléportation"
             ],
-            "element": "water",
-            "pa": "3",
+            "element": "fire",
+            "pa": "5",
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Sablier de Xélor : attaque simple, même budget que le palier 4.",
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât et pas de téléportation.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Intelligence (Feu). À la fin de son tour, la cible revient à sa position de début de tour. Magique, 5 PA, 1×/tour, PO 1–4 adapté.",
+            "description": "Tu blesses, puis tu rembobines le pas. L’ennemi n’a pas bougé — trop tard.",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
+                    "order": 0,
                     "params": {
-                        "characteristic": "water",
-                        "value": "1d6+Chance",
-                        "value_formula": "1d6+[chance]",
-                        "dice_formula": "1d6+[chance]",
-                        "value_formula_crit": "2d6+[chance]",
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "value_formula_crit": "2d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "order": 1,
+                    "params": {
+                        "value": "À la fin de son tour, la cible est téléportée à sa position de début de tour.",
                         "effect_direction": "action"
                     }
                 }
             ],
-            "dofusdb_id": "30843",
-            "attack_characteristic_key": "chance"
+            "character_level": 4
         },
         {
-            "key": "xelor-poussiere",
-            "name": "Poussière",
+            "key": "flou-temporel",
+            "name": "Flou Temporel",
+            "dofusdb_id": "13246",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 4,
             "types": [
-                "Offensif"
+                "Debuff"
             ],
             "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Poussière : attaque simple, même budget que le palier 4.",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun retrait de PA.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "Retrait de 1 PA en petite zone autour de toi (sauvegarde). Magique, 5 PA, 1×/tour. Ne t’affecte pas.",
+            "description": "Le temps se fige autour de toi. Un PA de moins, assez pour casser un combo.",
             "sub_effects": [
                 {
-                    "slug": "frapper",
-                    "area": "point",
+                    "slug": "retirer",
+                    "area": "circle-0-1",
                     "params": {
-                        "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
+                        "characteristic": "action_points_creature",
+                        "value": "1",
+                        "value_formula": "1",
                         "effect_direction": "action"
                     }
                 }
             ],
-            "dofusdb_id": "13317",
-            "attack_characteristic_key": "strong"
+            "character_level": 4
         },
         {
             "key": "xelor-frappe-de-xelor",
@@ -233,6 +246,82 @@
             "save_characteristic_key": "sagesse",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "xelor-rayon-obscur",
+            "name": "Rayon Obscur",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+            "description": "Rayon Obscur : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "3d6+Intelligence",
+                        "value_formula": "3d6+[intel]",
+                        "dice_formula": "3d6+[intel]",
+                        "value_formula_crit": "4d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "30840",
+            "attack_characteristic_key": "intel"
+        },
+        {
+            "key": "xelor-fletrissement",
+            "name": "Flétrissement",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Flétrissement : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "3d6+Chance",
+                        "value_formula": "3d6+[chance]",
+                        "dice_formula": "3d6+[chance]",
+                        "value_formula_crit": "4d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "30838",
+            "attack_characteristic_key": "chance"
         },
         {
             "key": "xelor-momification",
@@ -530,87 +619,11 @@
             "auto_success_if_willing_target": true
         },
         {
-            "key": "xelor-rayon-obscur",
-            "name": "Rayon Obscur",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
-            "description": "Rayon Obscur : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "3d6+Intelligence",
-                        "value_formula": "3d6+[intel]",
-                        "dice_formula": "3d6+[intel]",
-                        "value_formula_crit": "4d6+[intel]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "30840",
-            "attack_characteristic_key": "intel"
-        },
-        {
-            "key": "xelor-fletrissement",
-            "name": "Flétrissement",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Flétrissement : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "30838",
-            "attack_characteristic_key": "chance"
-        },
-        {
             "key": "xelor-vingt-cinquieme-heure",
             "name": "Vingt-cinquième Heure",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],
@@ -650,7 +663,7 @@
             "name": "Paradoxe",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],

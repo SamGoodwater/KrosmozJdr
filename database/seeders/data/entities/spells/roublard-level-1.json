@@ -77,33 +77,29 @@
             ]
         },
         {
-            "key": "explobombe",
-            "name": "Explobombe",
-            "dofusdb_id": "13444",
-            "slot_index": 2,
-            "choice_order": 0,
+            "key": "roublard-grenado",
+            "name": "Grenado",
+            "slot_index": 1,
+            "choice_order": 2,
             "types": [
                 "Offensif"
             ],
             "element": "fire",
-            "pa": "5",
+            "pa": "3",
             "po_min": "1",
             "po_max": "4",
-            "po_editable": false,
+            "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Intelligence (Feu). Magique, 5 PA, 1×/tour, PO 1–4. Piège visible. Déclenché si une créature y marche. Au plus 1 piège à la fois au niveau 1",
-            "description": "Tu poses, tu t’écartes. Qui marche dessus paie.",
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+            "description": "Grenado : attaque simple, même budget que le palier 4.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
                         "characteristic": "fire",
                         "value": "1d6+Intelligence",
@@ -114,52 +110,51 @@
                     }
                 }
             ],
-            "target_type": "trap"
+            "official_id": "jdr:roublard-grenado",
+            "attack_characteristic_key": "intel"
         },
         {
-            "key": "sismobombe",
-            "name": "Sismobombe",
-            "dofusdb_id": "13491",
-            "slot_index": 2,
-            "choice_order": 1,
+            "key": "roublard-entrave-roublard",
+            "name": "Filet",
+            "slot_index": 1,
+            "choice_order": 3,
             "types": [
-                "Offensif"
+                "Debuff"
             ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "1",
             "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
             "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Force (Terre). Magique, 5 PA, 1×/tour.",
-            "description": "Le sol saute autour de toi. Ceux qui restent collés prennent le choc.",
+            "powerful": 3,
+            "effect": "Retrait de 1 PM. Magique, 3 PA, 1×/tour. Sauvegarde Sagesse.",
+            "description": "Filet : les jambes pèsent.",
             "sub_effects": [
                 {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
+                    "slug": "retirer",
+                    "area": "point",
                     "params": {
-                        "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
+                        "characteristic": "movement_points",
+                        "value": "1",
+                        "value_formula": "1",
                         "effect_direction": "action"
                     }
                 }
-            ]
+            ],
+            "official_id": "jdr:roublard-entrave-roublard",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun retrait."
         },
         {
             "key": "detonateur",
             "name": "Détonateur",
             "dofusdb_id": "13432",
-            "slot_index": 3,
+            "slot_index": 2,
             "choice_order": 0,
             "types": [
                 "Debuff"
@@ -194,7 +189,7 @@
             "name": "Botte",
             "dofusdb_id": "13434",
             "slot_index": 3,
-            "choice_order": 1,
+            "choice_order": 0,
             "types": [
                 "Debuff"
             ],

@@ -8,7 +8,9 @@
             "dofusdb_id": "13338",
             "slot_index": 1,
             "choice_order": 0,
-            "types": ["Offensif"],
+            "types": [
+                "Offensif"
+            ],
             "element": "water",
             "pa": "3",
             "po_min": "1",
@@ -43,7 +45,9 @@
             "dofusdb_id": "13331",
             "slot_index": 1,
             "choice_order": 1,
-            "types": ["Offensif"],
+            "types": [
+                "Offensif"
+            ],
             "element": "fire",
             "pa": "3",
             "po_min": "1",
@@ -73,77 +77,29 @@
             ]
         },
         {
-            "key": "pelle-aurifere",
-            "name": "Pelle Aurifère",
-            "dofusdb_id": "13343",
-            "slot_index": 2,
-            "choice_order": 0,
-            "types": ["Offensif"],
-            "element": "water",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "attack_roll",
-            "attack_characteristic_key": "chance",
-            "is_magic": false,
-            "powerful": 5,
-            "effect": "1d6 + Chance (Eau) et retrait de 1 PM. Physique, 5 PA, 1×/tour, PO 1–4 adapté.",
-            "description": "La pelle pèse. Le coup porte, les jambes lâchent un pas.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "order": 0,
-                    "params": {
-                        "characteristic": "water",
-                        "value": "1d6+Chance",
-                        "value_formula": "1d6+[chance]",
-                        "dice_formula": "1d6+[chance]",
-                        "value_formula_crit": "2d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                },
-                {
-                    "slug": "retirer",
-                    "area": "point",
-                    "order": 1,
-                    "params": {
-                        "characteristic": "movement_points_creature",
-                        "value": "1",
-                        "value_formula": "1",
-                        "effect_direction": "action"
-                    }
-                }
-            ]
-        },
-        {
-            "key": "lancer-de-pelle",
-            "name": "Lancer de Pelle",
-            "dofusdb_id": "13330",
-            "slot_index": 2,
-            "choice_order": 1,
-            "types": ["Offensif"],
+            "key": "enutrof-pelle-des-anciens",
+            "name": "Pelle des Anciens",
+            "slot_index": 1,
+            "choice_order": 2,
+            "types": [
+                "Offensif"
+            ],
             "element": "earth",
-            "pa": "5",
+            "pa": "3",
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "1",
+            "cast_per_turn": "2",
             "resolution_mode": "attack_roll",
-            "attack_characteristic_key": "strong",
             "is_magic": false,
-            "powerful": 5,
-            "effect": "1d6 + Force (Terre) et poussée de 1 case. Physique, 5 PA, 1×/tour, PO 1–4 adapté.",
-            "description": "Tu lances l’outil. Ça cogne, ça recule.",
+            "powerful": 3,
+            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Pelle des Anciens : attaque simple, même budget que le palier 4.",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
-                    "order": 0,
                     "params": {
                         "characteristic": "earth",
                         "value": "1d6+Force",
@@ -152,26 +108,57 @@
                         "value_formula_crit": "2d6+[strong]",
                         "effect_direction": "action"
                     }
-                },
+                }
+            ],
+            "dofusdb_id": "13345",
+            "attack_characteristic_key": "strong"
+        },
+        {
+            "key": "enutrof-corruption",
+            "name": "Corruption",
+            "slot_index": 1,
+            "choice_order": 3,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Corruption : attaque simple, même budget que le palier 4.",
+            "sub_effects": [
                 {
-                    "slug": "déplacer",
+                    "slug": "frapper",
                     "area": "point",
-                    "order": 1,
                     "params": {
-                        "cells_formula": "1",
-                        "movement_kind": "push",
+                        "characteristic": "water",
+                        "value": "1d6+Chance",
+                        "value_formula": "1d6+[chance]",
+                        "dice_formula": "1d6+[chance]",
+                        "value_formula_crit": "2d6+[chance]",
                         "effect_direction": "action"
                     }
                 }
-            ]
+            ],
+            "dofusdb_id": "28391",
+            "attack_characteristic_key": "chance"
         },
         {
             "key": "maladresse",
             "name": "Maladresse",
             "dofusdb_id": "13337",
-            "slot_index": 3,
+            "slot_index": 2,
             "choice_order": 0,
-            "types": ["Debuff"],
+            "types": [
+                "Debuff"
+            ],
             "element": "water",
             "pa": "3",
             "po_min": "1",
@@ -205,8 +192,10 @@
             "name": "Souterrain",
             "dofusdb_id": "13364",
             "slot_index": 3,
-            "choice_order": 1,
-            "types": ["Téléportation"],
+            "choice_order": 0,
+            "types": [
+                "Téléportation"
+            ],
             "element": null,
             "pa": "3",
             "po_min": "1",

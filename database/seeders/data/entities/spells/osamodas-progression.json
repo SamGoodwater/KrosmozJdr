@@ -7,7 +7,7 @@
             "name": "Fouet",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Buff"
             ],
@@ -48,7 +48,7 @@
             "name": "Cri de l'Ours",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Offensif"
             ],
@@ -79,68 +79,33 @@
             "attack_characteristic_key": "agi"
         },
         {
-            "key": "osamodas-crocs-du-mulou",
-            "name": "Crocs du Mulou",
+            "key": "deplumage",
+            "name": "Déplumage",
+            "dofusdb_id": "31137",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 4,
-            "types": [
-                "Offensif"
-            ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Crocs du Mulou : attaque simple, même budget que le palier 4.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "32380",
-            "attack_characteristic_key": "strong"
-        },
-        {
-            "key": "osamodas-piqûre-motivante",
-            "name": "Piqûre motivante",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 4,
             "types": [
                 "Offensif"
             ],
             "element": "air",
-            "pa": "3",
+            "pa": "5",
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
-            "description": "Piqûre motivante : attaque simple, même budget que le palier 4.",
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour, PO 1–4 adapté.",
+            "description": "Une bourrasque de plumes. Ceux qui restent collés prennent le vent.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "point",
+                    "area": "circle-0-1",
                     "params": {
                         "characteristic": "air",
                         "value": "1d6+Agilité",
@@ -151,8 +116,47 @@
                     }
                 }
             ],
-            "dofusdb_id": "32382",
-            "attack_characteristic_key": "agi"
+            "character_level": 4
+        },
+        {
+            "key": "frappe-du-craqueleur",
+            "name": "Frappe du Craqueleur",
+            "dofusdb_id": "31144",
+            "slot_index": 1,
+            "choice_order": 1,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Force (Terre) en petite zone autour de toi. Magique, 5 PA, 1×/tour. Ne t’affecte pas.",
+            "description": "Le sol cogne. Tes bêtes restent debout, les autres encaissent.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "value_formula_crit": "2d6+[strong]",
+                        "effect_direction": "self"
+                    }
+                }
+            ],
+            "character_level": 4
         },
         {
             "key": "osamodas-souffle-draconique",
@@ -233,6 +237,82 @@
             "save_characteristic_key": "sagesse",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "osamodas-crapaud",
+            "name": "Bave du Crapaud",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Bave du Crapaud : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "3d6+Chance",
+                        "value_formula": "3d6+[chance]",
+                        "dice_formula": "3d6+[chance]",
+                        "value_formula_crit": "4d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "31139",
+            "attack_characteristic_key": "chance"
+        },
+        {
+            "key": "osamodas-corbac",
+            "name": "Cri du Corbac",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+            "description": "Cri du Corbac : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "3d6+Agilité",
+                        "value_formula": "3d6+[agi]",
+                        "dice_formula": "3d6+[agi]",
+                        "value_formula_crit": "4d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "31110",
+            "attack_characteristic_key": "agi"
         },
         {
             "key": "osamodas-bouftou",
@@ -545,87 +625,11 @@
             "max_stack": 1
         },
         {
-            "key": "osamodas-crapaud",
-            "name": "Bave du Crapaud",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Bave du Crapaud : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "31139",
-            "attack_characteristic_key": "chance"
-        },
-        {
-            "key": "osamodas-corbac",
-            "name": "Cri du Corbac",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "air",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
-            "description": "Cri du Corbac : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "3d6+Agilité",
-                        "value_formula": "3d6+[agi]",
-                        "dice_formula": "3d6+[agi]",
-                        "value_formula_crit": "4d6+[agi]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "31110",
-            "attack_characteristic_key": "agi"
-        },
-        {
             "key": "osamodas-toison-d-or",
             "name": "Toison d'Or",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],
@@ -665,7 +669,7 @@
             "name": "Sulfénix",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Invocation"
             ],

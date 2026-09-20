@@ -7,7 +7,7 @@
             "name": "Garde au Fer",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Défensif"
             ],
@@ -46,7 +46,7 @@
             "name": "Percée",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Téléportation"
             ],
@@ -77,80 +77,84 @@
             "official_id": "jdr:forgelance-percee"
         },
         {
-            "key": "forgelance-brulure-de-lance",
-            "name": "Brûlure de Lance",
+            "key": "volee-d-airain",
+            "name": "Volée d'Airain",
+            "dofusdb_id": "23741",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 4,
             "types": [
                 "Offensif"
             ],
-            "element": "fire",
-            "pa": "3",
+            "element": "air",
+            "pa": "5",
             "po_min": "1",
             "po_max": "4",
-            "po_editable": true,
+            "po_editable": false,
             "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
-            "description": "Brûlure de Lance : attaque simple, même budget que le palier 4.",
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Agilité (Air). Magique, 5 PA, 1×/tour, PO 1–4.",
+            "description": "Tu lances. Ceux sur la volée encaissent.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "point",
+                    "area": "circle-0-1",
                     "params": {
-                        "characteristic": "fire",
-                        "value": "1d6+Intelligence",
-                        "value_formula": "1d6+[intel]",
-                        "dice_formula": "1d6+[intel]",
-                        "value_formula_crit": "2d6+[intel]",
+                        "characteristic": "air",
+                        "value": "1d6+Agilité",
+                        "value_formula": "1d6+[agi]",
+                        "dice_formula": "1d6+[agi]",
+                        "value_formula_crit": "2d6+[agi]",
                         "effect_direction": "action"
                     }
                 }
             ],
-            "official_id": "jdr:forgelance-brulure-de-lance",
-            "attack_characteristic_key": "intel"
+            "character_level": 4
         },
         {
-            "key": "forgelance-eclat-liquide",
-            "name": "Éclat Liquide",
+            "key": "effondrement",
+            "name": "Effondrement",
+            "dofusdb_id": "23736",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 4,
             "types": [
                 "Offensif"
             ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
+            "element": "earth",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
             "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Éclat Liquide : attaque simple, même budget que le palier 4.",
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Force (Terre). Magique, 5 PA, 1×/tour.",
+            "description": "La lance frappe le sol. Autour de toi, ça cède.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "point",
+                    "area": "circle-0-1",
                     "params": {
-                        "characteristic": "water",
-                        "value": "1d6+Chance",
-                        "value_formula": "1d6+[chance]",
-                        "dice_formula": "1d6+[chance]",
-                        "value_formula_crit": "2d6+[chance]",
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "value_formula_crit": "2d6+[strong]",
                         "effect_direction": "action"
                     }
                 }
             ],
-            "official_id": "jdr:forgelance-eclat-liquide",
-            "attack_characteristic_key": "chance"
+            "character_level": 4
         },
         {
             "key": "forgelance-pluie-de-lances",
@@ -231,6 +235,82 @@
             "save_characteristic_key": "sagesse",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "forgelance-javeline",
+            "name": "Javeline",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "air",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+            "description": "Javeline : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "3d6+Agilité",
+                        "value_formula": "3d6+[agi]",
+                        "dice_formula": "3d6+[agi]",
+                        "value_formula_crit": "4d6+[agi]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-javeline",
+            "attack_characteristic_key": "agi"
+        },
+        {
+            "key": "forgelance-trident",
+            "name": "Trident",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Trident : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "3d6+Chance",
+                        "value_formula": "3d6+[chance]",
+                        "dice_formula": "3d6+[chance]",
+                        "value_formula_crit": "4d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:forgelance-trident",
+            "attack_characteristic_key": "chance"
         },
         {
             "key": "forgelance-ligne-de-front",
@@ -540,87 +620,11 @@
             "max_stack": 1
         },
         {
-            "key": "forgelance-javeline",
-            "name": "Javeline",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "air",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
-            "description": "Javeline : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "3d6+Agilité",
-                        "value_formula": "3d6+[agi]",
-                        "dice_formula": "3d6+[agi]",
-                        "value_formula_crit": "4d6+[agi]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:forgelance-javeline",
-            "attack_characteristic_key": "agi"
-        },
-        {
-            "key": "forgelance-trident",
-            "name": "Trident",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Trident : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:forgelance-trident",
-            "attack_characteristic_key": "chance"
-        },
-        {
             "key": "forgelance-apotheose-forgelance",
             "name": "Apothéose",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],
@@ -660,7 +664,7 @@
             "name": "Orage d'Acier",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],

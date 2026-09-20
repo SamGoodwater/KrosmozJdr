@@ -77,78 +77,108 @@
             ]
         },
         {
-            "key": "catalepsie",
-            "name": "Catalepsie",
-            "dofusdb_id": "13420",
-            "slot_index": 2,
-            "choice_order": 0,
-            "types": [
-                "Offensif"
-            ],
-            "element": "water",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Chance (Eau). Magique, 5 PA, 1×/tour, PO 1–4.",
-            "description": "L’eau fige. Ceux qui restent collés prennent le choc.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "1d6+Chance",
-                        "value_formula": "1d6+[chance]",
-                        "dice_formula": "1d6+[chance]",
-                        "value_formula_crit": "2d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ]
-        },
-        {
-            "key": "appui",
-            "name": "Appui",
-            "dofusdb_id": "13403",
-            "slot_index": 2,
-            "choice_order": 1,
+            "key": "zobal-caire",
+            "name": "Caire",
+            "slot_index": 1,
+            "choice_order": 2,
             "types": [
                 "Offensif"
             ],
             "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
             "po_editable": false,
             "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Force (Terre). Magique, 5 PA, 1×/tour.",
-            "description": "Tu t’ancres. Autour de toi, ça encaisse.",
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Caire : attaque simple, même budget que le palier 4.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
                         "characteristic": "earth",
                         "value": "1d6+Force",
                         "value_formula": "1d6+[strong]",
                         "dice_formula": "1d6+[strong]",
                         "value_formula_crit": "2d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:zobal-caire",
+            "attack_characteristic_key": "strong"
+        },
+        {
+            "key": "zobal-distance",
+            "name": "Distance",
+            "slot_index": 1,
+            "choice_order": 3,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+            "description": "Distance : attaque simple, même budget que le palier 4.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "value_formula_crit": "2d6+[intel]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:zobal-distance",
+            "attack_characteristic_key": "intel"
+        },
+        {
+            "key": "cavalcade",
+            "name": "Cavalcade",
+            "dofusdb_id": "13415",
+            "slot_index": 2,
+            "choice_order": 0,
+            "types": [
+                "Téléportation"
+            ],
+            "element": null,
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": false,
+            "sight_line": false,
+            "cast_per_turn": "1",
+            "resolution_mode": "auto_success",
+            "is_magic": true,
+            "powerful": 3,
+            "effect": "Téléportation 1–4 cases, pas de ligne de vue. Action bonus, 3 PA, 1×/tour.",
+            "description": "Tu charges. Assez pour coller Parafuso dans le même tour.",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "4",
+                        "teleport": true,
+                        "movement_kind": "teleport",
                         "effect_direction": "action"
                     }
                 }
@@ -189,40 +219,6 @@
                         "dice_formula": "1d4+[sagesse]",
                         "effect_direction": "self",
                         "duration_formula": "1"
-                    }
-                }
-            ]
-        },
-        {
-            "key": "cavalcade",
-            "name": "Cavalcade",
-            "dofusdb_id": "13415",
-            "slot_index": 3,
-            "choice_order": 1,
-            "types": [
-                "Téléportation"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "Téléportation 1–4 cases, pas de ligne de vue. Action bonus, 3 PA, 1×/tour.",
-            "description": "Tu charges. Assez pour coller Parafuso dans le même tour.",
-            "sub_effects": [
-                {
-                    "slug": "déplacer",
-                    "area": "point",
-                    "params": {
-                        "cells_formula": "4",
-                        "teleport": true,
-                        "movement_kind": "teleport",
-                        "effect_direction": "action"
                     }
                 }
             ]

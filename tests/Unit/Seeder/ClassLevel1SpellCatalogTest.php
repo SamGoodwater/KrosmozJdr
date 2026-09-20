@@ -12,28 +12,10 @@ final class ClassLevel1SpellCatalogTest extends TestCase
     public function test_iop_catalog_has_six_spells_in_three_slots(): void
     {
         $catalog = ClassLevel1SpellCatalog::load();
-
-        $this->assertSame('Iop', $catalog->breedName());
-        $entries = $catalog->entries();
-        $this->assertCount(6, $entries);
-
-        $slots = [];
-        foreach ($entries as $entry) {
-            $slots[$entry['slot_index']][] = $entry['choice_order'];
-        }
-        ksort($slots);
-        $this->assertSame([1, 2, 3], array_keys($slots));
-        sort($slots[1]);
-        sort($slots[2]);
-        sort($slots[3]);
-        $this->assertSame([0, 1, 2, 3], $slots[1]);
-        $this->assertSame([0], $slots[2]);
-        $this->assertSame([0], $slots[3]);
-
-        $names = array_column($entries, 'name');
-        $this->assertSame(
-            ['Pression', 'Attaque Naturelle', 'Épée Divine', 'Épée de Givre', 'Bond', 'Concentration'],
-            $names
+        $entries = $this->assertIopStyleLevel1Slots(
+            $catalog,
+            'Iop',
+            ['Pression', 'Attaque Naturelle', 'Épée Divine', 'Épée de Givre', 'Bond', 'Concentration']
         );
         $this->assertSame('jdr:attaque-naturelle', $entries[1]['official_id']);
         $this->assertSame('water', $entries[3]['element']);
@@ -44,30 +26,14 @@ final class ClassLevel1SpellCatalogTest extends TestCase
     public function test_cra_catalog_has_six_spells_in_three_slots(): void
     {
         $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::craPath());
-
-        $this->assertSame('Crâ', $catalog->breedName());
-        $entries = $catalog->entries();
-        $this->assertCount(6, $entries);
-
-        $slots = [];
-        foreach ($entries as $entry) {
-            $slots[$entry['slot_index']][] = $entry['choice_order'];
-        }
-        ksort($slots);
-        $this->assertSame([1, 2, 3], array_keys($slots));
-        foreach ($slots as $orders) {
-            sort($orders);
-            $this->assertSame([0, 1], $orders);
-        }
-
-        $names = array_column($entries, 'name');
-        $this->assertSame(
-            ['Flèche Cinglante', 'Flèche Glacée', 'Flèche Explosive', 'Tir Perforant', 'Œil de Lynx', 'Tir de Recul'],
-            $names
+        $entries = $this->assertIopStyleLevel1Slots(
+            $catalog,
+            'Crâ',
+            ['Flèche Cinglante', 'Flèche Glacée', 'Flèche Empoisonnée', 'Flèche Assaillante', 'Œil de Lynx', 'Tir de Recul']
         );
         $this->assertSame('jdr:oeil-de-lynx', $entries[4]['official_id']);
         $this->assertSame('3', $entries[0]['pa']);
-        $this->assertSame('5', $entries[2]['pa']);
+        $this->assertSame('3', $entries[2]['pa']);
         $this->assertSame('2', $entries[0]['po_min']);
         $this->assertTrue($entries[0]['po_editable']);
     }
@@ -75,68 +41,42 @@ final class ClassLevel1SpellCatalogTest extends TestCase
     public function test_eniripsa_catalog_has_six_spells_in_three_slots(): void
     {
         $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::eniripsaPath());
-
-        $this->assertSame('Eniripsa', $catalog->breedName());
-        $entries = $catalog->entries();
-        $this->assertCount(6, $entries);
-
-        $slots = [];
-        foreach ($entries as $entry) {
-            $slots[$entry['slot_index']][] = $entry['choice_order'];
-        }
-        ksort($slots);
-        $this->assertSame([1, 2, 3], array_keys($slots));
-        foreach ($slots as $orders) {
-            sort($orders);
-            $this->assertSame([0, 1], $orders);
-        }
-
-        $names = array_column($entries, 'name');
-        $this->assertSame(
-            ['Mot Vivifiant', 'Mot d’Amitié', 'Mot Interdit', 'Mot Tapageur', 'Mot de Frayeur', 'Mot d’Envol'],
-            $names
+        $entries = $this->assertIopStyleLevel1Slots(
+            $catalog,
+            'Eniripsa',
+            ['Mot Vivifiant', 'Mot d’Amitié', 'Mot de Jouvence', 'Mot Galvanisant', 'Mot de Frayeur', 'Mot d’Envol']
         );
         $this->assertSame('3', $entries[0]['pa']);
-        $this->assertSame('5', $entries[2]['pa']);
+        $this->assertSame('3', $entries[2]['pa']);
         $this->assertSame('auto_success', $entries[0]['resolution_mode']);
         $this->assertSame('1d4+Sagesse', $entries[0]['sub_effects'][0]['params']['value']);
-        $this->assertSame('2d4+Sagesse', $entries[2]['sub_effects'][0]['params']['value']);
+        $this->assertSame('1d4+Sagesse', $entries[2]['sub_effects'][0]['params']['value']);
     }
 
     public function test_sram_catalog_has_six_spells_in_three_slots(): void
     {
         $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::sramPath());
-
-        $this->assertSame('Sram', $catalog->breedName());
-        $entries = $catalog->entries();
-        $this->assertCount(6, $entries);
-
-        $names = array_column($entries, 'name');
-        $this->assertSame(
-            ['Sournoiserie', 'Cruauté', 'Piège Sournois', 'Invisibilité', 'Dérobade', 'Peur'],
-            $names
+        $entries = $this->assertIopStyleLevel1Slots(
+            $catalog,
+            'Sram',
+            ['Sournoiserie', 'Cruauté', 'Fourvoiement', 'Perfidie', 'Dérobade', 'Invisibilité']
         );
-        $this->assertSame('trap', $entries[2]['target_type']);
-        $this->assertSame('5', $entries[2]['pa']);
-        $this->assertSame('5', $entries[3]['pa']);
+        $this->assertSame('3', $entries[2]['pa']);
+        $this->assertSame('earth', $entries[2]['element']);
+        $this->assertSame('5', $entries[5]['pa']);
         $this->assertSame('3', $entries[0]['pa']);
     }
 
     public function test_xelor_catalog_has_six_spells_in_three_slots(): void
     {
         $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::xelorPath());
-
-        $this->assertSame('Xélor', $catalog->breedName());
-        $entries = $catalog->entries();
-        $this->assertCount(6, $entries);
-
-        $names = array_column($entries, 'name');
-        $this->assertSame(
-            ['Aiguille', 'Gelure', 'Raulebaque', 'Flou Temporel', 'Téléportation', 'Permutation'],
-            $names
+        $entries = $this->assertIopStyleLevel1Slots(
+            $catalog,
+            'Xélor',
+            ['Aiguille', 'Gelure', 'Sablier de Xélor', 'Poussière', 'Téléportation', 'Permutation']
         );
         $this->assertSame('3', $entries[0]['pa']);
-        $this->assertSame('5', $entries[2]['pa']);
+        $this->assertSame('3', $entries[2]['pa']);
         $this->assertTrue($entries[0]['po_editable']);
         $this->assertSame('intel', $entries[0]['attack_characteristic_key']);
         $this->assertSame('chance', $entries[1]['attack_characteristic_key']);
@@ -145,15 +85,10 @@ final class ClassLevel1SpellCatalogTest extends TestCase
     public function test_feca_catalog_has_six_spells_in_three_slots(): void
     {
         $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::fecaPath());
-
-        $this->assertSame('Féca', $catalog->breedName());
-        $entries = $catalog->entries();
-        $this->assertCount(6, $entries);
-
-        $names = array_column($entries, 'name');
-        $this->assertSame(
-            ['Attaque Naturelle', 'Rempart', 'Glyphe Enflammé', 'Escapade', 'Bouclier Féca', 'Armure Aqueuse'],
-            $names
+        $entries = $this->assertIopStyleLevel1Slots(
+            $catalog,
+            'Féca',
+            ['Attaque Naturelle', 'Rempart', 'Glyphe Agressif', 'Bouclier Élémentaire', 'Bouclier Féca', 'Armure Aqueuse']
         );
         $this->assertSame('glyph', $entries[2]['target_type']);
         $this->assertSame('5', $entries[2]['pa']);
@@ -164,18 +99,13 @@ final class ClassLevel1SpellCatalogTest extends TestCase
     public function test_osamodas_catalog_has_six_spells_in_three_slots(): void
     {
         $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::osamodasPath());
-
-        $this->assertSame('Osamodas', $catalog->breedName());
-        $entries = $catalog->entries();
-        $this->assertCount(6, $entries);
-
-        $names = array_column($entries, 'name');
-        $this->assertSame(
-            ['Serres du Vautour', 'Griffes du Chtigre', 'Déplumage', 'Frappe du Craqueleur', 'Tofu', 'Dragoune'],
-            $names
+        $entries = $this->assertIopStyleLevel1Slots(
+            $catalog,
+            'Osamodas',
+            ['Serres du Vautour', 'Griffes du Chtigre', 'Crocs du Mulou', 'Piqûre motivante', 'Tofu', 'Dragoune']
         );
         $this->assertSame('3', $entries[0]['pa']);
-        $this->assertSame('5', $entries[2]['pa']);
+        $this->assertSame('3', $entries[2]['pa']);
         $this->assertSame('agi', $entries[0]['attack_characteristic_key']);
         $this->assertSame(['Invocation'], $entries[4]['types']);
         $this->assertSame('invoquer', $entries[4]['sub_effects'][0]['slug']);
@@ -185,18 +115,13 @@ final class ClassLevel1SpellCatalogTest extends TestCase
     public function test_enutrof_catalog_has_six_spells_in_three_slots(): void
     {
         $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::enutrofPath());
-
-        $this->assertSame('Enutrof', $catalog->breedName());
-        $entries = $catalog->entries();
-        $this->assertCount(6, $entries);
-
-        $names = array_column($entries, 'name');
-        $this->assertSame(
-            ['Lancer de Pièces', 'Roulage de Pelle', 'Pelle Aurifère', 'Lancer de Pelle', 'Maladresse', 'Souterrain'],
-            $names
+        $entries = $this->assertIopStyleLevel1Slots(
+            $catalog,
+            'Enutrof',
+            ['Lancer de Pièces', 'Roulage de Pelle', 'Pelle des Anciens', 'Corruption', 'Maladresse', 'Souterrain']
         );
         $this->assertSame('3', $entries[0]['pa']);
-        $this->assertSame('5', $entries[2]['pa']);
+        $this->assertSame('3', $entries[2]['pa']);
         $this->assertSame('chance', $entries[0]['attack_characteristic_key']);
         $this->assertSame('saving_throw', $entries[4]['resolution_mode']);
     }
@@ -204,16 +129,13 @@ final class ClassLevel1SpellCatalogTest extends TestCase
     public function test_sadida_catalog_has_six_spells_in_three_slots(): void
     {
         $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::sadidaPath());
-
-        $this->assertSame('Sadida', $catalog->breedName());
-        $entries = $catalog->entries();
-        $this->assertCount(6, $entries);
-        $this->assertSame(
-            ['Ronce', 'Larme de Sadida', 'Tremblement', 'Vent Empoisonné', 'Poupée Sadida', 'Ronce Apaisante'],
-            array_column($entries, 'name')
+        $entries = $this->assertIopStyleLevel1Slots(
+            $catalog,
+            'Sadida',
+            ['Ronce', 'Larme de Sadida', 'Ronce Insolente', 'Poison Paralysant', 'Poupée Sadida', 'Ronce Apaisante']
         );
         $this->assertSame('3', $entries[0]['pa']);
-        $this->assertSame('5', $entries[2]['pa']);
+        $this->assertSame('3', $entries[2]['pa']);
         $this->assertSame(['Invocation'], $entries[4]['types']);
         $this->assertSame('soigner', $entries[5]['sub_effects'][0]['slug']);
     }
@@ -221,13 +143,10 @@ final class ClassLevel1SpellCatalogTest extends TestCase
     public function test_sacrieur_catalog_has_six_spells_in_three_slots(): void
     {
         $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::sacrieurPath());
-
-        $this->assertSame('Sacrieur', $catalog->breedName());
-        $entries = $catalog->entries();
-        $this->assertCount(6, $entries);
-        $this->assertSame(
-            ['Punition', 'Absorption', 'Folie Sanguinaire', 'Châtiment', 'Attirance', 'Sacrifice'],
-            array_column($entries, 'name')
+        $entries = $this->assertIopStyleLevel1Slots(
+            $catalog,
+            'Sacrieur',
+            ['Punition', 'Absorption', 'Folie', 'Épée Volante', 'Attirance', 'Sacrifice']
         );
         $this->assertSame('1d4', $entries[1]['sub_effects'][0]['params']['life_steal_formula']);
         $this->assertSame('pull', $entries[4]['sub_effects'][0]['params']['movement_kind']);
@@ -236,15 +155,12 @@ final class ClassLevel1SpellCatalogTest extends TestCase
     public function test_pandawa_catalog_has_six_spells_in_three_slots(): void
     {
         $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::pandawaPath());
-
-        $this->assertSame('Pandawa', $catalog->breedName());
-        $entries = $catalog->entries();
-        $this->assertCount(6, $entries);
-        $this->assertSame(
-            ['Poing Enflammé', 'Vague à Lame', 'Pandatak', 'Flasque Explosive', 'Picole', 'Chamrak'],
-            array_column($entries, 'name')
+        $entries = $this->assertIopStyleLevel1Slots(
+            $catalog,
+            'Pandawa',
+            ['Poing Enflammé', 'Vague à Lame', 'Souffle Alcoolisé', 'Vulnérabilité', 'Picole', 'Chamrak']
         );
-        $this->assertSame('5', $entries[2]['pa']);
+        $this->assertSame('3', $entries[2]['pa']);
         $this->assertSame('booster', $entries[4]['sub_effects'][0]['slug']);
         $this->assertSame('push', $entries[5]['sub_effects'][0]['params']['movement_kind']);
     }
@@ -252,13 +168,10 @@ final class ClassLevel1SpellCatalogTest extends TestCase
     public function test_ecaflip_catalog_has_six_spells_in_three_slots(): void
     {
         $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::ecaflipPath());
-
-        $this->assertSame('Ecaflip', $catalog->breedName());
-        $entries = $catalog->entries();
-        $this->assertCount(6, $entries);
-        $this->assertSame(
-            ['Topkaj', 'Yams', 'Pelotage', 'Kraps', 'Bond du Félin', 'Entrechat'],
-            array_column($entries, 'name')
+        $entries = $this->assertIopStyleLevel1Slots(
+            $catalog,
+            'Ecaflip',
+            ['Topkaj', 'Yams', 'Griffe Invocatrice', 'Langue Râpeuse', 'Bond du Félin', 'Entrechat']
         );
         $this->assertSame('intel', $entries[0]['attack_characteristic_key']);
         $this->assertSame('chance', $entries[1]['attack_characteristic_key']);
@@ -268,23 +181,20 @@ final class ClassLevel1SpellCatalogTest extends TestCase
     public function test_added_class_catalogs_have_six_spells_in_three_slots(): void
     {
         $expected = [
-            [ClassLevel1SpellCatalog::roublardPath(), 'Roublard', ['Pulsar', 'Espingole', 'Explobombe', 'Sismobombe', 'Détonateur', 'Botte']],
-            [ClassLevel1SpellCatalog::zobalPath(), 'Zobal', ['Brincadeira', 'Parafuso', 'Catalepsie', 'Appui', 'Plastron', 'Cavalcade']],
-            [ClassLevel1SpellCatalog::steamerPath(), 'Steamer', ['Torpille', 'Longue-vue', 'Sabotage', 'Aspiration', 'Harponneuse', 'Gardienne']],
-            [ClassLevel1SpellCatalog::eliotropePath(), 'Eliotrope', ['Affront', 'Audace', 'Commotion', 'Rayon de Wakfu', 'Portail', 'Cicatrisation']],
-            [ClassLevel1SpellCatalog::huppermagePath(), 'Huppermage', ['Lance-flamme', 'Stalagmite', 'Météore', 'Onde Sismique', 'Éther', 'Runification']],
-            [ClassLevel1SpellCatalog::ouginakPath(), 'Ouginak', ['Molosse', 'Charogne', 'Os à Moelle', 'Lance-roquet', 'Traque', 'Amarok']],
-            [ClassLevel1SpellCatalog::forgelancePath(), 'Forgelance', ['Estoc Brûlant', 'Lance du Lac', "Volée d'Airain", 'Effondrement', 'Charge Héroïque', 'Phalange']],
+            [ClassLevel1SpellCatalog::roublardPath(), 'Roublard', ['Pulsar', 'Espingole', 'Grenado', 'Filet', 'Détonateur', 'Botte']],
+            [ClassLevel1SpellCatalog::zobalPath(), 'Zobal', ['Brincadeira', 'Parafuso', 'Caire', 'Distance', 'Cavalcade', 'Plastron']],
+            [ClassLevel1SpellCatalog::steamerPath(), 'Steamer', ['Torpille', 'Longue-vue', 'Harpon', 'Salve Aquatique', 'Harponneuse', 'Gardienne']],
+            [ClassLevel1SpellCatalog::eliotropePath(), 'Eliotrope', ['Affront', 'Audace', 'Snub', 'Rosée', 'Portail', 'Cicatrisation']],
+            [ClassLevel1SpellCatalog::huppermagePath(), 'Huppermage', ['Lance-flamme', 'Stalagmite', 'Glaçon', 'Bourrasque', 'Éther', 'Runification']],
+            [ClassLevel1SpellCatalog::ouginakPath(), 'Ouginak', ['Molosse', 'Charogne', 'Croc du Molosse', 'Cerbère', 'Traque', 'Amarok']],
+            [ClassLevel1SpellCatalog::forgelancePath(), 'Forgelance', ['Estoc Brûlant', 'Lance du Lac', 'Brûlure de Lance', 'Éclat Liquide', 'Charge Héroïque', 'Phalange']],
         ];
 
         foreach ($expected as [$path, $breed, $names]) {
             $catalog = ClassLevel1SpellCatalog::load($path);
-            $this->assertSame($breed, $catalog->breedName());
-            $entries = $catalog->entries();
-            $this->assertCount(6, $entries, $breed);
-            $this->assertSame($names, array_column($entries, 'name'), $breed);
+            $entries = $this->assertIopStyleLevel1Slots($catalog, $breed, $names);
             $this->assertSame('3', $entries[0]['pa'], $breed);
-            $this->assertSame('5', $entries[2]['pa'], $breed);
+            $this->assertSame('3', $entries[2]['pa'], $breed);
         }
     }
 
@@ -306,8 +216,7 @@ final class ClassLevel1SpellCatalogTest extends TestCase
 
     public function test_progression_catalogs_have_eighteen_spells_on_nine_levels(): void
     {
-        $iopLevels = [2, 4, 5, 6, 7, 8, 10, 11, 12];
-        $legacyLevels = [3, 4, 5, 7, 8, 10, 11, 13, 14];
+        $levels = [2, 4, 5, 6, 7, 8, 10, 11, 12];
         $files = glob(ClassLevel1SpellCatalog::directory().'/*-progression.json') ?: [];
         $this->assertCount(19, $files);
 
@@ -319,7 +228,6 @@ final class ClassLevel1SpellCatalogTest extends TestCase
             foreach ($entries as $entry) {
                 $got[] = [$entry['character_level'], $entry['choice_order']];
             }
-            $levels = str_contains($file, 'iop-progression') ? $iopLevels : $legacyLevels;
             $expected = [];
             foreach ($levels as $level) {
                 $expected[] = [$level, 0];
@@ -327,6 +235,33 @@ final class ClassLevel1SpellCatalogTest extends TestCase
             }
             $this->assertSame($expected, $got, $catalog->breedName());
         }
+    }
+
+    /**
+     * @param  list<string>  $names
+     * @return list<array<string, mixed>>
+     */
+    private function assertIopStyleLevel1Slots(ClassLevel1SpellCatalog $catalog, string $breed, array $names): array
+    {
+        $this->assertSame($breed, $catalog->breedName());
+        $entries = $catalog->entries();
+        $this->assertCount(6, $entries, $breed);
+
+        $slots = [];
+        foreach ($entries as $entry) {
+            $slots[$entry['slot_index']][] = $entry['choice_order'];
+        }
+        ksort($slots);
+        $this->assertSame([1, 2, 3], array_keys($slots), $breed);
+        sort($slots[1]);
+        sort($slots[2]);
+        sort($slots[3]);
+        $this->assertSame([0, 1, 2, 3], $slots[1], $breed);
+        $this->assertSame([0], $slots[2], $breed);
+        $this->assertSame([0], $slots[3], $breed);
+        $this->assertSame($names, array_column($entries, 'name'), $breed);
+
+        return $entries;
     }
 
     public function test_iop_spells_carry_three_intensification_tiers(): void

@@ -8,7 +8,9 @@
             "dofusdb_id": "12846",
             "slot_index": 1,
             "choice_order": 0,
-            "types": ["Offensif"],
+            "types": [
+                "Offensif"
+            ],
             "element": "fire",
             "pa": "3",
             "po_min": "1",
@@ -43,7 +45,9 @@
             "dofusdb_id": "29680",
             "slot_index": 1,
             "choice_order": 1,
-            "types": ["Offensif"],
+            "types": [
+                "Offensif"
+            ],
             "element": "water",
             "pa": "3",
             "po_min": "1",
@@ -73,68 +77,66 @@
             ]
         },
         {
-            "key": "pelotage",
-            "name": "Pelotage",
-            "dofusdb_id": "14310",
-            "slot_index": 2,
-            "choice_order": 0,
-            "types": ["Offensif"],
-            "element": "fire",
-            "pa": "5",
+            "key": "ecaflip-griffe-invocatrice",
+            "name": "Griffe Invocatrice",
+            "slot_index": 1,
+            "choice_order": 2,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "3",
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour, PO 1–4 adapté.",
-            "description": "Les coussinets brûlent autour. Ceux qui restent collés prennent le feu.",
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Griffe Invocatrice : attaque simple, même budget que le palier 4.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
-                        "characteristic": "fire",
-                        "value": "1d6+Intelligence",
-                        "value_formula": "1d6+[intel]",
-                        "dice_formula": "1d6+[intel]",
-                        "value_formula_crit": "2d6+[intel]",
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "value_formula_crit": "2d6+[strong]",
                         "effect_direction": "action"
                     }
                 }
-            ]
+            ],
+            "dofusdb_id": "12856",
+            "attack_characteristic_key": "strong"
         },
         {
-            "key": "kraps",
-            "name": "Kraps",
-            "dofusdb_id": "12883",
-            "slot_index": 2,
-            "choice_order": 1,
-            "types": ["Offensif"],
+            "key": "ecaflip-langue-rapeuse",
+            "name": "Langue Râpeuse",
+            "slot_index": 1,
+            "choice_order": 3,
+            "types": [
+                "Offensif"
+            ],
             "element": "water",
-            "pa": "5",
+            "pa": "3",
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Chance (Eau) en petite zone. Magique, 5 PA, 1×/tour, PO 1–4 adapté.",
-            "description": "Une gerbe de chance. L’eau claque en cercle.",
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Langue Râpeuse : attaque simple, même budget que le palier 4.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
                         "characteristic": "water",
                         "value": "1d6+Chance",
@@ -144,15 +146,19 @@
                         "effect_direction": "action"
                     }
                 }
-            ]
+            ],
+            "dofusdb_id": "14709",
+            "attack_characteristic_key": "chance"
         },
         {
             "key": "bond-du-felin",
             "name": "Bond du Félin",
             "dofusdb_id": "12844",
-            "slot_index": 3,
+            "slot_index": 2,
             "choice_order": 0,
-            "types": ["Téléportation"],
+            "types": [
+                "Téléportation"
+            ],
             "element": null,
             "pa": "3",
             "po_min": "1",
@@ -183,8 +189,10 @@
             "name": "Entrechat",
             "dofusdb_id": "12865",
             "slot_index": 3,
-            "choice_order": 1,
-            "types": ["Téléportation"],
+            "choice_order": 0,
+            "types": [
+                "Téléportation"
+            ],
             "element": "air",
             "pa": "3",
             "po_min": "1",

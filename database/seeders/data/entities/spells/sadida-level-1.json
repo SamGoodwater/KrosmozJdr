@@ -8,7 +8,9 @@
             "dofusdb_id": "13552",
             "slot_index": 1,
             "choice_order": 0,
-            "types": ["Offensif"],
+            "types": [
+                "Offensif"
+            ],
             "element": "earth",
             "pa": "3",
             "po_min": "1",
@@ -43,7 +45,9 @@
             "dofusdb_id": "13545",
             "slot_index": 1,
             "choice_order": 1,
-            "types": ["Offensif"],
+            "types": [
+                "Offensif"
+            ],
             "element": "water",
             "pa": "3",
             "po_min": "1",
@@ -73,67 +77,66 @@
             ]
         },
         {
-            "key": "tremblement",
-            "name": "Tremblement",
-            "dofusdb_id": "13537",
-            "slot_index": 2,
-            "choice_order": 0,
-            "types": ["Offensif"],
+            "key": "sadida-ronce-insolente",
+            "name": "Ronce Insolente",
+            "slot_index": 1,
+            "choice_order": 2,
+            "types": [
+                "Offensif"
+            ],
             "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Force (Terre) en petite zone autour de toi. Magique, 5 PA, 1×/tour.",
-            "description": "Le sol se soulève. Les racines frappent ceux qui restent collés.",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Ronce Insolente : attaque simple, même budget que le palier 4.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
                         "characteristic": "earth",
                         "value": "1d6+Force",
                         "value_formula": "1d6+[strong]",
                         "dice_formula": "1d6+[strong]",
                         "value_formula_crit": "2d6+[strong]",
-                        "effect_direction": "self"
+                        "effect_direction": "action"
                     }
                 }
-            ]
+            ],
+            "official_id": "jdr:sadida-ronce-insolente",
+            "attack_characteristic_key": "strong"
         },
         {
-            "key": "vent-empoisonne",
-            "name": "Vent Empoisonné",
-            "dofusdb_id": "13529",
-            "slot_index": 2,
-            "choice_order": 1,
-            "types": ["Offensif"],
+            "key": "sadida-poison-paralysant",
+            "name": "Poison Paralysant",
+            "slot_index": 1,
+            "choice_order": 3,
+            "types": [
+                "Offensif"
+            ],
             "element": "fire",
-            "pa": "5",
+            "pa": "3",
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "1",
+            "cast_per_turn": "2",
             "resolution_mode": "attack_roll",
-            "attack_characteristic_key": "intel",
             "is_magic": false,
-            "powerful": 5,
-            "effect": "1d6 + Intelligence (Feu) et Empoisonné jusqu’à la fin du prochain tour de la cible. Physique, 5 PA, 1×/tour, PO 1–4 adapté.",
-            "description": "Un souffle brûlant, puis le poison. Ça continue après le coup.",
+            "powerful": 3,
+            "effect": "1d6 + Intelligence (Feu) et Empoisonné jusqu’à la fin du prochain tour. 3 PA, 2×/tour.",
+            "description": "Poison Paralysant : ça s’accroche après le coup.",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
-                    "order": 0,
                     "params": {
                         "characteristic": "fire",
                         "value": "1d6+Intelligence",
@@ -146,23 +149,24 @@
                 {
                     "slug": "autre",
                     "area": "point",
-                    "order": 1,
-                    "duration_formula": "1",
                     "params": {
                         "value": "Empoisonné jusqu’à la fin du prochain tour de la cible.",
-                        "effect_direction": "action",
-                        "duration_formula": "1"
+                        "effect_direction": "action"
                     }
                 }
-            ]
+            ],
+            "official_id": "jdr:sadida-poison-paralysant",
+            "attack_characteristic_key": "intel"
         },
         {
             "key": "poupee-sadida",
             "name": "Poupée Sadida",
             "dofusdb_id": "29617",
-            "slot_index": 3,
+            "slot_index": 2,
             "choice_order": 0,
-            "types": ["Invocation"],
+            "types": [
+                "Invocation"
+            ],
             "element": "water",
             "pa": "3",
             "po_min": "1",
@@ -191,8 +195,10 @@
             "name": "Ronce Apaisante",
             "dofusdb_id": "13546",
             "slot_index": 3,
-            "choice_order": 1,
-            "types": ["Soin"],
+            "choice_order": 0,
+            "types": [
+                "Soin"
+            ],
             "element": "water",
             "pa": "3",
             "po_min": "1",

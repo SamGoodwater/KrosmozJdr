@@ -7,7 +7,7 @@
             "name": "Rage Bestiale",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Buff"
             ],
@@ -43,7 +43,7 @@
             "name": "Butin",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 3,
+            "character_level": 2,
             "types": [
                 "Offensif"
             ],
@@ -74,30 +74,33 @@
             "attack_characteristic_key": "agi"
         },
         {
-            "key": "ouginak-croc",
-            "name": "Croc du Molosse",
+            "key": "os-a-moelle",
+            "name": "Os à Moelle",
+            "dofusdb_id": "13762",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 4,
             "types": [
                 "Offensif"
             ],
             "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
+            "pa": "5",
+            "po_min": "0",
+            "po_max": "0",
             "po_editable": false,
             "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Croc du Molosse : attaque simple, même budget que le palier 4.",
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Force (Terre). Magique, 5 PA, 1×/tour.",
+            "description": "Tu t’ouvres, les os volent. Ceux autour encaissent.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "point",
+                    "area": "circle-0-1",
                     "params": {
                         "characteristic": "earth",
                         "value": "1d6+Force",
@@ -108,46 +111,47 @@
                     }
                 }
             ],
-            "official_id": "jdr:ouginak-croc",
-            "attack_characteristic_key": "strong"
+            "character_level": 4
         },
         {
-            "key": "ouginak-cerbere",
-            "name": "Cerbère",
+            "key": "lance-roquet",
+            "name": "Lance-roquet",
+            "dofusdb_id": "13774",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 4,
             "types": [
                 "Offensif"
             ],
-            "element": "fire",
-            "pa": "3",
+            "element": "air",
+            "pa": "5",
             "po_min": "1",
-            "po_max": "1",
+            "po_max": "4",
             "po_editable": false,
             "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
-            "description": "Cerbère : attaque simple, même budget que le palier 4.",
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
+            "is_magic": true,
+            "powerful": 5,
+            "effect": "1d6 + Agilité (Air). Magique, 5 PA, 1×/tour, PO 1–4.",
+            "description": "Le chien part. Ceux sur la ligne prennent le choc.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "point",
+                    "area": "circle-0-1",
                     "params": {
-                        "characteristic": "fire",
-                        "value": "1d6+Intelligence",
-                        "value_formula": "1d6+[intel]",
-                        "dice_formula": "1d6+[intel]",
-                        "value_formula_crit": "2d6+[intel]",
+                        "characteristic": "air",
+                        "value": "1d6+Agilité",
+                        "value_formula": "1d6+[agi]",
+                        "dice_formula": "1d6+[agi]",
+                        "value_formula_crit": "2d6+[agi]",
                         "effect_direction": "action"
                     }
                 }
             ],
-            "official_id": "jdr:ouginak-cerbere",
-            "attack_characteristic_key": "intel"
+            "character_level": 4
         },
         {
             "key": "ouginak-chasse",
@@ -228,6 +232,83 @@
             "save_characteristic_key": "sagesse",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+        },
+        {
+            "key": "ouginak-barbare",
+            "name": "Barbare",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "earth",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "description": "Barbare : attaque simple, même budget que le palier 13.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "3d6+Force",
+                        "value_formula": "3d6+[strong]",
+                        "dice_formula": "3d6+[strong]",
+                        "value_formula_crit": "4d6+[strong]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-barbare",
+            "attack_characteristic_key": "strong"
+        },
+        {
+            "key": "ouginak-sang",
+            "name": "Soif de Sang",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 6,
+            "types": [
+                "Offensif"
+            ],
+            "element": "fire",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 8,
+            "effect": "3d6 + Intelligence (Feu) et vol de vie 3d4. 3 PA, 2×/tour.",
+            "description": "Soif de Sang : tu frappes, tu récupères.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "3d6+Intelligence",
+                        "value_formula": "3d6+[intel]",
+                        "dice_formula": "3d6+[intel]",
+                        "value_formula_crit": "4d6+[intel]",
+                        "effect_direction": "action",
+                        "life_steal_formula": "3d4"
+                    }
+                }
+            ],
+            "official_id": "jdr:ouginak-sang",
+            "attack_characteristic_key": "intel"
         },
         {
             "key": "ouginak-repaire",
@@ -534,88 +615,11 @@
             "max_stack": 1
         },
         {
-            "key": "ouginak-barbare",
-            "name": "Barbare",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Barbare : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "3d6+Force",
-                        "value_formula": "3d6+[strong]",
-                        "dice_formula": "3d6+[strong]",
-                        "value_formula_crit": "4d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:ouginak-barbare",
-            "attack_characteristic_key": "strong"
-        },
-        {
-            "key": "ouginak-sang",
-            "name": "Soif de Sang",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 13,
-            "types": [
-                "Offensif"
-            ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Intelligence (Feu) et vol de vie 3d4. 3 PA, 2×/tour.",
-            "description": "Soif de Sang : tu frappes, tu récupères.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "3d6+Intelligence",
-                        "value_formula": "3d6+[intel]",
-                        "dice_formula": "3d6+[intel]",
-                        "value_formula_crit": "4d6+[intel]",
-                        "effect_direction": "action",
-                        "life_steal_formula": "3d4"
-                    }
-                }
-            ],
-            "official_id": "jdr:ouginak-sang",
-            "attack_characteristic_key": "intel"
-        },
-        {
             "key": "ouginak-hurlement",
             "name": "Hurlement",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],
@@ -655,7 +659,7 @@
             "name": "Bestial",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 14,
+            "character_level": 12,
             "types": [
                 "Offensif"
             ],

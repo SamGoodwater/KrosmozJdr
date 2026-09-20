@@ -170,11 +170,10 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame('chance', $glacee?->attack_characteristic_key);
         $this->assertSame(ElementBitmask::fromSlug('water'), $glacee?->element);
 
-        $explosive = Spell::query()->where('dofusdb_id', '32445')->first();
-        $this->assertSame('5', $explosive?->pa);
-        $this->assertSame(Spell::RESOLUTION_SAVING_THROW, $explosive?->resolution_mode);
-        $this->assertSame('sagesse', $explosive?->save_characteristic_key);
-        $this->assertTrue($explosive?->is_magic);
+        $empoisonnee = Spell::query()->where('dofusdb_id', '13060')->first();
+        $this->assertSame('Flèche Empoisonnée', $empoisonnee?->name);
+        $this->assertSame('3', $empoisonnee?->pa);
+        $this->assertSame(ElementBitmask::fromSlug('fire'), $empoisonnee?->element);
 
         $lynx = Spell::query()->where('official_id', 'jdr:oeil-de-lynx')->first();
         $this->assertNotNull($lynx);
@@ -196,7 +195,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame(0, (int) $cinglantePivot?->choice_order);
 
         $lynxPivot = $cra->spells()->where('spells.id', $lynx->id)->first()?->pivot;
-        $this->assertSame(3, (int) $lynxPivot?->slot_index);
+        $this->assertSame(2, (int) $lynxPivot?->slot_index);
         $this->assertSame(0, (int) $lynxPivot?->choice_order);
 
         $extraPivot = $cra->spells()->where('spells.id', $extra->id)->first()?->pivot;
@@ -254,9 +253,10 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame(ElementBitmask::fromSlug('water'), $vivifiant->element);
         $this->assertTrue($vivifiant->spellTypes()->where('name', 'Soin')->exists());
 
-        $interdit = Spell::query()->where('dofusdb_id', '25873')->first();
-        $this->assertSame('5', $interdit?->pa);
-        $this->assertSame(Spell::RESOLUTION_AUTO_SUCCESS, $interdit?->resolution_mode);
+        $jouvence = Spell::query()->where('dofusdb_id', '28573')->first();
+        $this->assertSame('Mot de Jouvence', $jouvence?->name);
+        $this->assertSame('3', $jouvence?->pa);
+        $this->assertSame(Spell::RESOLUTION_AUTO_SUCCESS, $jouvence?->resolution_mode);
 
         $frayeur = Spell::query()->where('dofusdb_id', '13175')->first();
         $this->assertSame(Spell::RESOLUTION_ATTACK_ROLL, $frayeur?->resolution_mode);
@@ -320,11 +320,10 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame('strong', $sournoiserie->attack_characteristic_key);
         $this->assertSame(ElementBitmask::fromSlug('earth'), $sournoiserie->element);
 
-        $piege = Spell::query()->where('dofusdb_id', '12929')->first();
-        $this->assertSame('5', $piege?->pa);
-        $this->assertSame('trap', $piege?->target_type);
-        $this->assertSame(Spell::RESOLUTION_SAVING_THROW, $piege?->resolution_mode);
-        $this->assertSame('sagesse', $piege?->save_characteristic_key);
+        $fourvoiement = Spell::query()->where('dofusdb_id', '12909')->first();
+        $this->assertSame('Fourvoiement', $fourvoiement?->name);
+        $this->assertSame('3', $fourvoiement?->pa);
+        $this->assertSame(ElementBitmask::fromSlug('earth'), $fourvoiement?->element);
 
         $invis = Spell::query()->where('dofusdb_id', '32367')->first();
         $this->assertSame('5', $invis?->pa);
@@ -333,9 +332,9 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame(6, Spell::query()->where('state', Spell::STATE_AUTO)->count());
 
         $sram->refresh();
-        $piegePivot = $sram->spells()->where('spells.id', $piege->id)->first()?->pivot;
-        $this->assertSame(2, (int) $piegePivot?->slot_index);
-        $this->assertSame(0, (int) $piegePivot?->choice_order);
+        $invisPivot = $sram->spells()->where('spells.id', $invis->id)->first()?->pivot;
+        $this->assertSame(3, (int) $invisPivot?->slot_index);
+        $this->assertSame(0, (int) $invisPivot?->choice_order);
 
         $extraPivot = $sram->spells()->where('spells.id', $extra->id)->first()?->pivot;
         $this->assertSame(
@@ -384,14 +383,14 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame(ElementBitmask::fromSlug('fire'), $aiguille->element);
         $this->assertTrue($aiguille->po_editable);
 
-        $raule = Spell::query()->where('dofusdb_id', '31500')->first();
-        $this->assertSame('5', $raule?->pa);
-        $this->assertSame(Spell::RESOLUTION_SAVING_THROW, $raule?->resolution_mode);
-        $this->assertTrue($raule?->is_magic);
+        $sablier = Spell::query()->where('dofusdb_id', '30843')->first();
+        $this->assertSame('Sablier de Xélor', $sablier?->name);
+        $this->assertSame('3', $sablier?->pa);
+        $this->assertSame(ElementBitmask::fromSlug('water'), $sablier?->element);
 
-        $flou = Spell::query()->where('dofusdb_id', '13246')->first();
-        $this->assertSame('5', $flou?->pa);
-        $this->assertSame('sagesse', $flou?->save_characteristic_key);
+        $poussiere = Spell::query()->where('dofusdb_id', '13317')->first();
+        $this->assertSame('Poussière', $poussiere?->name);
+        $this->assertSame('3', $poussiere?->pa);
 
         $this->assertSame(6, Spell::query()->where('state', Spell::STATE_AUTO)->count());
 
@@ -446,7 +445,8 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame('intel', $attaque->attack_characteristic_key);
         $this->assertSame(ElementBitmask::fromSlug('fire'), $attaque->element);
 
-        $glyphe = Spell::query()->where('dofusdb_id', '32384')->first();
+        $glyphe = Spell::query()->where('official_id', 'jdr:feca-glyphe-agressif')->first();
+        $this->assertSame('Glyphe Agressif', $glyphe?->name);
         $this->assertSame('5', $glyphe?->pa);
         $this->assertSame('glyph', $glyphe?->target_type);
         $this->assertSame(Spell::RESOLUTION_SAVING_THROW, $glyphe?->resolution_mode);
@@ -525,7 +525,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
 
         $osa->refresh();
         $tofuPivot = $osa->spells()->where('spells.id', $tofu->id)->first()?->pivot;
-        $this->assertSame(3, (int) $tofuPivot?->slot_index);
+        $this->assertSame(2, (int) $tofuPivot?->slot_index);
         $this->assertSame(0, (int) $tofuPivot?->choice_order);
 
         $extraPivot = $osa->spells()->where('spells.id', $extra->id)->first()?->pivot;
@@ -574,8 +574,9 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame('chance', $pieces->attack_characteristic_key);
         $this->assertSame(ElementBitmask::fromSlug('water'), $pieces->element);
 
-        $pelle = Spell::query()->where('dofusdb_id', '13343')->first();
-        $this->assertSame('5', $pelle?->pa);
+        $pelle = Spell::query()->where('dofusdb_id', '13345')->first();
+        $this->assertSame('Pelle des Anciens', $pelle?->name);
+        $this->assertSame('3', $pelle?->pa);
         $this->assertSame(Spell::RESOLUTION_ATTACK_ROLL, $pelle?->resolution_mode);
 
         $maladresse = Spell::query()->where('dofusdb_id', '13337')->first();
@@ -685,7 +686,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame('agi', $attirance?->attack_characteristic_key);
 
         $sacri->refresh();
-        $this->assertSame(3, (int) $sacri->spells()->where('spells.id', $attirance->id)->first()?->pivot->slot_index);
+        $this->assertSame(2, (int) $sacri->spells()->where('spells.id', $attirance->id)->first()?->pivot->slot_index);
         $this->assertSame(
             ClassLevel1SpellSeederImporter::EXTRA_CHARACTER_LEVEL,
             (int) $sacri->spells()->where('spells.id', $extra->id)->first()?->pivot->character_level
