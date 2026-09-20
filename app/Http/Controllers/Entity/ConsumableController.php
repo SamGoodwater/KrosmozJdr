@@ -17,6 +17,7 @@ use App\Services\Characteristic\Pricing\EntityPriceRecalculator;
 use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
 use App\Support\Entity\ObjectEffectEditOptions;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -92,7 +93,7 @@ class ConsumableController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreConsumableRequest $request, EntityPriceRecalculator $priceRecalculator): RedirectResponse
+    public function store(StoreConsumableRequest $request, EntityPriceRecalculator $priceRecalculator): RedirectResponse|JsonResponse
     {
         $this->authorize('create', Consumable::class);
 

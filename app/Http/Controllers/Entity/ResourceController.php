@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
 use App\Support\Entity\ObjectEffectEditOptions;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -123,7 +124,7 @@ class ResourceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreResourceRequest $request)
+    public function store(StoreResourceRequest $request): RedirectResponse|JsonResponse
     {
         $this->authorize('create', Resource::class);
 

@@ -32,6 +32,7 @@ use App\Models\Entity\Spell;
 use App\Models\User;
 use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -105,7 +106,7 @@ class SpecializationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSpecializationRequest $request): RedirectResponse
+    public function store(StoreSpecializationRequest $request): RedirectResponse|JsonResponse
     {
         $this->authorize('create', Specialization::class);
 

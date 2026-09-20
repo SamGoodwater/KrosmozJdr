@@ -810,7 +810,7 @@
   },
   {
     "name": "CreateEntityModal",
-    "description": "CreateEntityModal Organism",
+    "description": "Modal de création courte (champs principaux + onglet Conversion IA admin). Après store, ouvre la vue Modifier.",
     "props": [
       {
         "name": "open",

@@ -1,24 +1,29 @@
 <script setup>
 /**
  * CreateEntityModal Organism
- * 
+ *
  * @description
- * Modal générique pour créer une nouvelle entité.
- * Utilise EntityEditForm avec isUpdating: false pour la création.
- * 
- * @props {Boolean} open - Contrôle l'ouverture du modal
- * @props {String} entityType - Type d'entité (item, spell, monster, etc.)
- * @props {Object} fieldsConfig - Configuration des champs à afficher (optionnel)
- * @props {Object} defaultEntity - Entité par défaut avec valeurs initiales (optionnel)
- * @emit close - Événement émis lors de la fermeture
- * @emit created - Événement émis après création réussie
+ * Modal de création courte : à la main (champs principaux) ou via IA (admin, types convertibles).
+ * Après création, redirection vers la vue Modifier pour le reste de la fiche.
+ *
+ * @example
+ * <CreateEntityModal open entity-type="npc" @close="close" @created="onCreated" />
  */
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
+import axios from 'axios';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
+import InputField from '@/Pages/Molecules/data-input/InputField.vue';
+import TextareaField from '@/Pages/Molecules/data-input/TextareaField.vue';
+import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 import EntityEditForm from './EntityEditForm.vue';
 import { getEntityConfig as getRegistryEntityConfig, normalizeEntityType } from '@/Entities/entity-registry';
+import { isAiConvertibleEntityType } from '@/Entities/entity-actions-config';
 import { createDefaultEntityFromDescriptors, createFieldsConfigFromDescriptors } from '@/Utils/entity/descriptor-form';
+import { getEntityCreateCoreFieldKeys, getEntityCreateLabel } from '@/Utils/entity/entity-create-config';
+import { usePermissions } from '@/Composables/permissions/usePermissions';
+import { useProtectedAdminAction } from '@/Composables/auth/useProtectedAdminAction';
 
 const props = defineProps({
     open: {
@@ -37,10 +42,6 @@ const props = defineProps({
         type: Object,
         default: () => ({})
     },
-    /**
-     * Override optionnel des routes utilisées par EntityEditForm.
-     * Utile pour des entités dont les routes ne suivent pas le pattern `entities.{plural}.{store|update}`.
-     */
     routeNameBase: {
         type: String,
         default: null
@@ -49,32 +50,26 @@ const props = defineProps({
         type: String,
         default: null
     },
-    /** Même API que {@link EntityEditForm} — sections cartes. */
     fieldSections: {
         type: Array,
         default: null,
     },
-    /** Surcharge des champs masqués (ex. `['dofus_version']` pour afficher `auto_update`). */
     hiddenFieldKeys: {
         type: Array,
         default: null,
     },
     showStateToolbar: {
         type: Boolean,
-        default: true,
+        default: false,
     },
     showAccessLevelsInFooter: {
         type: Boolean,
-        default: true,
+        default: false,
     },
-    /**
-     * Clés autorisées à la création alors qu’elles sont masquées par défaut (ex. `dofusdb_id`, `auto_update`).
-     */
     createAllowFieldKeys: {
         type: Array,
         default: () => [],
     },
-    /** @see EntityEditForm — groupe Characteristics pour icônes / couleurs (ex. spell). */
     characteristicsGroup: {
         type: String,
         default: null,
@@ -84,9 +79,39 @@ const props = defineProps({
 const emit = defineEmits(['close', 'created']);
 
 const page = usePage();
+const { isAdmin } = usePermissions();
+const {
+    showPasswordModal,
+    passwordModalTitle,
+    passwordModalMessage,
+    passwordModalConfirmLabel,
+    requirePassword,
+    onPasswordConfirmed,
+    onPasswordModalCancel,
+} = useProtectedAdminAction();
+
+const pane = ref('manual');
+const aiName = ref('');
+const aiBrief = ref('');
+const aiBusy = ref(false);
+const aiError = ref('');
 
 const normalizedEntityType = computed(() => normalizeEntityType(props.entityType));
 const registryEntityConfig = computed(() => getRegistryEntityConfig(props.entityType));
+const showAiTab = computed(() => Boolean(isAdmin.value) && isAiConvertibleEntityType(normalizedEntityType.value));
+
+watch(
+    () => props.open,
+    (open) => {
+        if (open) {
+            pane.value = 'manual';
+            aiName.value = '';
+            aiBrief.value = '';
+            aiError.value = '';
+            aiBusy.value = false;
+        }
+    },
+);
 
 const descriptorContext = computed(() => {
     const capabilities = page.props?.auth?.user?.can || {};
@@ -114,83 +139,50 @@ const descriptorBackedDefaultEntity = computed(() => {
     return createDefaultEntityFromDescriptors(descriptors);
 });
 
-const createHiddenFieldKeys = new Set([
-    'id',
-    'slug',
-    'auto_update',
-    'dofus_version',
-    'dofusdb_id',
-    'dofusdb_type_id',
-    'source',
-    'source_url',
-    'source_ref',
-    'created_by',
-    'updated_by',
-    'created_at',
-    'updated_at',
-    'deleted_at',
-]);
-
-const effectiveCreateHiddenFieldKeys = computed(() => {
-    const s = new Set(createHiddenFieldKeys);
-    for (const k of props.createAllowFieldKeys || []) {
-        s.delete(k);
-    }
-    return s;
-});
+const NAME_FIELD = {
+    type: 'text',
+    label: 'Nom',
+    required: true,
+    group: 'Identité',
+};
 
 const mergedFieldsConfig = computed(() => {
     const custom = props.fieldsConfig || {};
-    if (Object.keys(custom).length > 0) {
-        return Object.fromEntries(
-            Object.entries(custom).filter(([fieldKey]) => !effectiveCreateHiddenFieldKeys.value.has(fieldKey))
-        );
+    const generated = Object.keys(custom).length > 0 ? custom : (descriptorBackedFieldsConfig.value || {});
+    const coreKeys = getEntityCreateCoreFieldKeys(props.entityType);
+    const picked = {};
+    for (const key of coreKeys) {
+        if (generated[key]) {
+            picked[key] = generated[key];
+        }
     }
-    const generated = descriptorBackedFieldsConfig.value || {};
-    if (Object.keys(generated).length > 0) {
-        return Object.fromEntries(
-            Object.entries(generated).filter(([fieldKey]) => !effectiveCreateHiddenFieldKeys.value.has(fieldKey))
-        );
+    if (!picked.name) {
+        picked.name = NAME_FIELD;
     }
-    return custom;
+    return picked;
 });
 
-const hasProvidedFieldsConfig = computed(() => Object.keys(props.fieldsConfig || {}).length > 0);
-const hasDescriptorFieldsConfig = computed(() => Object.keys(descriptorBackedFieldsConfig.value || {}).length > 0);
-
-const fieldConfigSourceLabel = computed(() => {
-    if (hasProvidedFieldsConfig.value) return 'Formulaire personnalisé';
-    if (hasDescriptorFieldsConfig.value) return 'Formulaire optimisé';
-    return 'Formulaire standard';
-});
-
-const showFieldConfigWarning = computed(() =>
-    !hasProvidedFieldsConfig.value && !hasDescriptorFieldsConfig.value
-);
-
-const entityTypeForUi = computed(() => {
+const entityColorVar = computed(() => {
     const map = {
-        resources: 'resource',
-        'resource-types': 'resource',
         items: 'item',
         spells: 'spell',
         monsters: 'monster',
         npcs: 'npc',
         breeds: 'breed',
         consumables: 'consumable',
-        campaigns: 'campaign',
-        scenarios: 'scenario',
-        conditions: 'condition',
-        'creature-traits': 'creature-trait',
-        panoplies: 'panoply',
+        resources: 'resource',
         capabilities: 'capability',
         specializations: 'specialization',
+        panoplies: 'panoply',
+        conditions: 'condition',
+        'creature-traits': 'creature-trait',
+        campaigns: 'campaign',
+        scenarios: 'scenario',
         shops: 'shop',
     };
-    return map[normalizedEntityType.value] || props.entityType;
+    const token = map[normalizedEntityType.value] || 'primary';
+    return `var(--color-${token}-700)`;
 });
-
-const entityColorVar = computed(() => `var(--color-${entityTypeForUi.value}-700)`);
 
 const modalBodyStyle = computed(() => ({
     backgroundColor: `color-mix(in srgb, ${entityColorVar.value} 5%, var(--color-base-100))`,
@@ -199,7 +191,6 @@ const modalBodyStyle = computed(() => ({
     '--create-entity-accent': entityColorVar.value,
 }));
 
-// Entité vide pour la création
 const emptyEntity = computed(() => {
     return {
         id: null,
@@ -208,88 +199,176 @@ const emptyEntity = computed(() => {
     };
 });
 
-// Nom de l'entité pour l'affichage
-const entityTypeLabel = computed(() => {
-    const labels = {
-        item: 'objet',
-        spell: 'sort',
-        monster: 'monstre',
-        npc: 'PNJ',
-        breed: 'Classe',
-        breeds: 'classe',
-        panoply: 'panoplie',
-        panoplies: 'panoplie',
-        campaign: 'campagne',
-        scenario: 'scénario',
-        creature: 'créature',
-        resource: 'ressource',
-        consumable: 'consommable',
-        condition: 'état',
-        'creature-trait': 'trait',
-        'creature-traits': 'trait',
-        capability: 'capacité',
-        capabilities: 'capacité',
-        specialization: 'spécialisation',
-        shop: 'hotel de vente'
-        ,resourceType: 'type de ressource'
-    };
-    return labels[props.entityType] || props.entityType;
+const entityCreateLabel = computed(() => getEntityCreateLabel(props.entityType));
+
+const storeRouteName = computed(() => {
+    if (props.routeNameBase) {
+        return `${props.routeNameBase}.store`;
+    }
+    return `entities.${normalizedEntityType.value}.store`;
 });
 
-// Gestion de la fermeture
+const iaAction = computed(() => {
+    const map = {
+        monsters: 'encounter',
+        spells: 'spell',
+        npcs: 'npc',
+        items: 'item',
+        consumables: 'consumable',
+    };
+    return map[normalizedEntityType.value] || '';
+});
+
 const handleClose = () => {
     emit('close');
 };
 
-// Gestion de la soumission (store + redirect edit gérés par EntityEditForm + backend Q9)
 const handleSubmit = () => {
     emit('created');
     handleClose();
 };
 
-// Gestion de l'annulation
 const handleCancel = () => {
     handleClose();
 };
 
+function stubNameFromBrief() {
+    const typed = String(aiName.value || '').trim();
+    if (typed !== '') {
+        return typed;
+    }
+    const brief = String(aiBrief.value || '').trim();
+    if (brief !== '') {
+        return brief.slice(0, 80);
+    }
+    return 'Brouillon IA';
+}
+
+async function runAiCreate() {
+    const brief = String(aiBrief.value || '').trim();
+    if (brief === '') {
+        aiError.value = 'Indique un brief pour l’IA (rôle, niveau, ton…).';
+        return;
+    }
+    aiBusy.value = true;
+    aiError.value = '';
+    try {
+        const created = await axios.post(
+            route(storeRouteName.value),
+            {
+                name: stubNameFromBrief(),
+                description: brief,
+                state: 'draft',
+            },
+            { headers: { Accept: 'application/json' } },
+        );
+        const id = Number(created?.data?.id);
+        const editUrl = created?.data?.edit_url;
+        if (!id) {
+            throw new Error('Création refusée : identifiant manquant.');
+        }
+        await axios.post(
+            route('api.entities.ia-convert', {
+                entityType: normalizedEntityType.value,
+                id,
+            }),
+            {
+                action: iaAction.value,
+                brief,
+                force: false,
+            },
+            { headers: { Accept: 'application/json' } },
+        );
+        emit('created', { id, via: 'ia' });
+        handleClose();
+        if (editUrl) {
+            router.visit(editUrl);
+        }
+    } catch (error) {
+        if (error?.response?.status === 423) {
+            aiBusy.value = false;
+            requirePassword(
+                'Confirmer la conversion IA',
+                'Entre ton mot de passe admin pour lancer la génération.',
+                'Continuer',
+                () => {
+                    runAiCreate();
+                },
+            );
+            return;
+        }
+        const message = error?.response?.data?.message
+            || error?.message
+            || 'La création IA a échoué.';
+        aiError.value = String(message);
+    } finally {
+        aiBusy.value = false;
+    }
+}
+
+function submitAi() {
+    requirePassword(
+        'Confirmer la conversion IA',
+        'Entre ton mot de passe admin pour lancer la génération.',
+        'Créer avec l’IA',
+        () => {
+            runAiCreate();
+        },
+    );
+}
 </script>
 
 <template>
-    <Modal 
-        :open="open" 
-        size="xl" 
+    <Modal
+        :open="open"
+        size="lg"
         placement="middle-center"
         close-on-esc
         @close="handleClose"
     >
         <template #header>
             <h3 class="text-xl font-bold text-primary-100">
-                {{ String(entityTypeLabel || '').toUpperCase() }} <span class="text-primary-300">- création</span>
+                Créer {{ entityCreateLabel }}
             </h3>
         </template>
 
         <div class="entity-create-theme rounded-(--radius-field) border p-3 space-y-3" :style="modalBodyStyle">
             <div
-                class="rounded-(--radius-field) border px-3 py-2 text-xs text-primary-200 flex flex-wrap items-center gap-2"
-                :style="{
-                    backgroundColor: `color-mix(in srgb, ${entityColorVar} 4%, var(--color-base-100))`,
-                    borderColor: `color-mix(in srgb, ${entityColorVar} 22%, var(--color-base-300))`
-                }"
+                v-if="showAiTab"
+                role="tablist"
+                class="tabs tabs-box tabs-sm bg-base-200/60 p-1 w-fit"
+                data-testid="entity-create-tabs"
             >
-                <span class="font-medium text-primary-100">{{ fieldConfigSourceLabel }}</span>
-                <span class="opacity-70">•</span>
-                <span>Champs adaptés automatiquement au type de contenu</span>
+                <button
+                    type="button"
+                    role="tab"
+                    class="tab"
+                    :class="{ 'tab-active': pane === 'manual' }"
+                    :aria-selected="pane === 'manual' ? 'true' : 'false'"
+                    data-testid="entity-create-tab-manual"
+                    @click="pane = 'manual'"
+                >
+                    À la main
+                </button>
+                <button
+                    type="button"
+                    role="tab"
+                    class="tab"
+                    :class="{ 'tab-active': pane === 'ia' }"
+                    :aria-selected="pane === 'ia' ? 'true' : 'false'"
+                    data-testid="entity-create-tab-ia"
+                    @click="pane = 'ia'"
+                >
+                    Conversion IA
+                </button>
             </div>
 
-            <div
-                v-if="showFieldConfigWarning"
-                class="rounded-(--radius-field) border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning-content"
-            >
-                Certains champs avancés ne sont pas encore personnalisés pour ce type.
-                Tu peux continuer, puis compléter les détails ensuite.
-            </div>
+            <p class="text-sm text-base-content/80">
+                Quelques champs pour démarrer. Ensuite la fiche s’ouvre en
+                <span class="font-medium">Modifier</span> pour le reste.
+            </p>
 
-            <div class="max-h-[70vh] overflow-y-auto pr-2">
+            <div v-if="pane === 'manual'" class="max-h-[70vh] overflow-y-auto pr-2">
                 <EntityEditForm
                     :entity="emptyEntity"
                     :entity-type="entityType"
@@ -298,10 +377,10 @@ const handleCancel = () => {
                     :route-param-key="routeParamKey"
                     :is-updating="false"
                     :hidden-field-keys="hiddenFieldKeys"
-                    :field-sections="fieldSections"
                     :show-state-toolbar="showStateToolbar"
                     :show-access-levels-in-footer="showAccessLevelsInFooter"
                     :characteristics-group="characteristicsGroup"
+                    :restrict-to-field-keys="Object.keys(mergedFieldsConfig)"
                     embedded-in-modal
                     redirect-after-create
                     :shortcuts-active="open"
@@ -309,12 +388,49 @@ const handleCancel = () => {
                     @cancel="handleCancel"
                 />
             </div>
-        </div>
 
-        <template #actions>
-            <!-- Les actions sont gérées par EntityEditForm -->
-        </template>
+            <div v-else class="space-y-3">
+                <InputField
+                    v-model="aiName"
+                    label="Nom (optionnel)"
+                    placeholder="Laissé vide : l’IA invente, ou « Brouillon IA »"
+                />
+                <TextareaField
+                    v-model="aiBrief"
+                    label="Brief pour l’IA"
+                    placeholder="Ex. garde Iop d’Astrub, niveau 8, brutal, pas un boss"
+                    :rows="4"
+                />
+                <p
+                    v-if="aiError"
+                    class="rounded-box border border-error/40 bg-error/10 px-3 py-2 text-sm text-error"
+                    data-testid="entity-create-ai-error"
+                >
+                    {{ aiError }}
+                </p>
+                <div class="flex justify-end gap-2">
+                    <Btn variant="ghost" :disabled="aiBusy" @click="handleCancel">Annuler</Btn>
+                    <Btn
+                        color="primary"
+                        :disabled="aiBusy"
+                        data-testid="entity-create-ai-submit"
+                        @click="submitAi"
+                    >
+                        {{ aiBusy ? 'Génération…' : 'Créer avec l’IA' }}
+                    </Btn>
+                </div>
+            </div>
+        </div>
     </Modal>
+
+    <ConfirmPasswordModal
+        v-model:open="showPasswordModal"
+        :title="passwordModalTitle"
+        :message="passwordModalMessage"
+        :confirm-label="passwordModalConfirmLabel"
+        @confirmed="onPasswordConfirmed"
+        @cancel="onPasswordModalCancel"
+    />
 </template>
 
 <style scoped lang="scss">
@@ -326,4 +442,3 @@ const handleCancel = () => {
     }
 }
 </style>
-

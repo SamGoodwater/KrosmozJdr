@@ -5,6 +5,7 @@
  * Rend un vrai TanStack Table d'entités via EntityTanStackTable.
  * Source: API Table v2 (`api.tables.{entity}`) au format `entities`,
  * en pagination serveur (évite le plafond historique `limit: 50` → 2 pages).
+ * Bouton Créer (admins) : CreateEntityModal puis vue Modifier.
  */
 import { computed, ref } from "vue";
 import { router } from "@inertiajs/vue3";
@@ -12,8 +13,12 @@ import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityConfig, getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getEntitySingularRouteKey } from "@/Composables/entity/entityRouteRegistry";
 import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { entitySupportsQuickCreate, getEntityCreateLabel } from "@/Utils/entity/entity-create-config";
 import EntityTanStackTable from "@/Pages/Organismes/table/EntityTanStackTable.vue";
 import EntityModal from "@/Pages/Organismes/entity/EntityModal.vue";
+import CreateEntityModal from "@/Pages/Organismes/entity/CreateEntityModal.vue";
+import Btn from "@/Pages/Atoms/action/Btn.vue";
 
 /**
  * Virtualisation client (TanStackTable) — activée uniquement dans les sections CMS.
@@ -48,6 +53,14 @@ const filters = computed(() => {
 const initialFilterValues = computed(() => normalizeIndexTableFilters(filters.value));
 
 const entityConfig = computed(() => getEntityConfig(entityType.value));
+
+const { canCreate: canCreatePermission } = usePermissions();
+const canCreate = computed(
+    () => entitySupportsQuickCreate(entityType.value) && canCreatePermission(entityType.value),
+);
+const createButtonLabel = computed(() => `Créer ${getEntityCreateLabel(entityType.value)}`);
+const createModalOpen = ref(false);
+const refreshToken = ref(0);
 
 const tableConfig = computed(() => {
     if (!entityConfig.value) return null;
@@ -175,6 +188,19 @@ const handleTableAction = (actionKey, entity, row) => {
 const handleRowDoubleClick = (row) => {
     openViewModal(row?.rowParams?.entity);
 };
+
+const handleCreate = () => {
+    createModalOpen.value = true;
+};
+
+const handleCloseCreateModal = () => {
+    createModalOpen.value = false;
+};
+
+const handleEntityCreated = () => {
+    createModalOpen.value = false;
+    refreshToken.value += 1;
+};
 </script>
 
 <template>
@@ -184,16 +210,36 @@ const handleRowDoubleClick = (row) => {
             <span>Type d'entité non supporté pour ce tableau.</span>
         </div>
 
-        <EntityTanStackTable
-            v-else
+        <template v-else>
+            <div v-if="canCreate" class="mb-3 flex justify-end">
+                <Btn
+                    color="primary"
+                    data-testid="library-create-entity"
+                    @click="handleCreate"
+                >
+                    <i class="fa-solid fa-plus mr-2"></i>
+                    {{ createButtonLabel }}
+                </Btn>
+            </div>
+
+            <EntityTanStackTable
+                :entity-type="entityType"
+                :config="tableConfig"
+                server-side
+                :server-base-url="serverBaseUrl"
+                :initial-filter-values="initialFilterValues"
+                :response-adapter="responseAdapter"
+                :refresh-token="refreshToken"
+                @action="handleTableAction"
+                @row-dblclick="handleRowDoubleClick"
+            />
+        </template>
+
+        <CreateEntityModal
+            :open="createModalOpen"
             :entity-type="entityType"
-            :config="tableConfig"
-            server-side
-            :server-base-url="serverBaseUrl"
-            :initial-filter-values="initialFilterValues"
-            :response-adapter="responseAdapter"
-            @action="handleTableAction"
-            @row-dblclick="handleRowDoubleClick"
+            @close="handleCloseCreateModal"
+            @created="handleEntityCreated"
         />
 
         <EntityModal

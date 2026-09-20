@@ -27,6 +27,7 @@ use App\Models\User;
 use App\Services\Entity\EntityDeletionService;
 use App\Services\Entity\SyncBreedElementOrientations;
 use App\Services\PdfService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -93,7 +94,7 @@ class BreedController extends Controller
         return redirect()->route('entities.breeds.index');
     }
 
-    public function store(StoreBreedRequest $request): RedirectResponse
+    public function store(StoreBreedRequest $request): RedirectResponse|JsonResponse
     {
         $this->authorize('create', Breed::class);
 
