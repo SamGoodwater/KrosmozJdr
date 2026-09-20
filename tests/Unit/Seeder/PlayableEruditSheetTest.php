@@ -43,6 +43,10 @@ final class PlayableEruditSheetTest extends TestCase
         $html = implode('', array_column((new DraftSpecializationContentRenderer)->sections($spec), 'content'));
 
         $this->assertStringNotContainsString('Brouillon', $html);
+        $this->assertStringContainsString('Comment lire un palier', $html);
+        $this->assertStringContainsString('ce n’est pas un trou vide, c’est <strong>un choix</strong>', $html);
+        $this->assertStringContainsString('2ᵉ capacité', $html);
+        $this->assertStringContainsString('1 choix (2ᵉ capacité ou +2 points)', $html);
         $this->assertStringContainsString('<h2>Capacités</h2>', $html);
         $this->assertStringContainsString('[[kref:entity:capabilities:Politicien|Politicien]]', $html);
         $this->assertStringContainsString('[[kref:entity:capabilities:Identification|Identification]]', $html);

@@ -80,6 +80,14 @@ final class DraftSpecializationContentRenderer
             .$this->li('Idéal pour', (string) ($spec['idealFor'] ?? ''))
             .'</ul>';
 
+        $parts[] = '<h2>Comment lire un palier</h2><p>'
+            .'À chaque palier tu prends <strong>une capacité garantie</strong> (une seule, même s’il y en a plusieurs dans la liste). '
+            .'Il te reste ensuite <strong>un emplacement</strong> : ce n’est pas un trou vide, c’est <strong>un choix</strong>. '
+            .'Tu le dépenses en <strong>2ᵉ capacité</strong> (celles marquées ainsi), en <strong>+2 points</strong> de caractéristique '
+            .'(trois fois dans toute ta carrière, pas plus), ou en <strong>trait</strong> à partir du niveau 12. '
+            .'Tu ne perds jamais cet emplacement : s’il ne reste rien d’autre, il devient une compétence de plus.'
+            .'</p>';
+
         $difference = trim((string) ($spec['difference'] ?? ''));
         if ($difference !== '') {
             $parts[] = '<h2>Ce que cette spécialisation n’est pas</h2><p>'.$this->richText($difference).'</p>';
@@ -123,7 +131,7 @@ final class DraftSpecializationContentRenderer
 
         $choice = trim((string) ($levelData['choice'] ?? ''));
         if ($choice !== '') {
-            $parts[] = '<p><strong>À ce palier</strong> : '.$this->richText($choice).'</p>';
+            $parts[] = '<p><strong>À ce palier</strong> : '.$this->richText($this->choiceLabel($choice)).'</p>';
         }
 
         $masteries = $levelData['masteries'] ?? [];
@@ -172,7 +180,7 @@ final class DraftSpecializationContentRenderer
 
             $label = $this->capabilityKref($name);
             if ($type !== '') {
-                $label .= ' <em>('.e($type).')</em>';
+                $label .= ' <em>('.e($this->capacityTypeLabel($type)).')</em>';
             }
 
             $items .= '<li><strong>'.$label.'</strong>';
@@ -214,6 +222,27 @@ final class DraftSpecializationContentRenderer
     private function capabilityKref(string $name): string
     {
         return '[[kref:entity:capabilities:'.$name.'|'.$name.']]';
+    }
+
+    /**
+     * Libellé joueur du type de capacité (le gabarit stocke encore « emplacement libre »).
+     */
+    private function capacityTypeLabel(string $type): string
+    {
+        return $type === 'emplacement libre' ? '2ᵉ capacité' : $type;
+    }
+
+    /**
+     * Remplace le jargon « emplacement libre » par le choix réel du palier.
+     */
+    private function choiceLabel(string $choice): string
+    {
+        $withTrait = '1 choix (2ᵉ capacité, +2 points, ou un trait)';
+        $withoutTrait = '1 choix (2ᵉ capacité ou +2 points)';
+
+        $choice = str_replace('1 emplacement libre (trait possible)', $withTrait, $choice);
+
+        return str_replace('1 emplacement libre', $withoutTrait, $choice);
     }
 
     private function richText(string $text): string

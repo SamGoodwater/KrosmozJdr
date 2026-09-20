@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — L’emplacement de spécialisation, ce n’est pas un trou vide
+
+Sur les fiches, **emplacement libre** voulait dire « un choix », pas une case vide. C’est maintenant écrit en tête de fiche : tu prends ta capacité garantie, puis tu dépenses le reste en **2ᵉ capacité**, en **+2 points**, ou en **trait** à partir du 12.
+
 ## Septembre 2026 — Les six spécialisations jouables sur le gabarit Érudit
 
 **Milicien·ne, Dévot, Artiste, Explorateur·rice et Voleur·euse** sont écrites comme l’Érudit : sept paliers, une capacité garantie plus une option, trois aptitudes, plus de liste D&D à rallonge. Chaque fiche tient dans le dépôt. Les cinq brouillons (Artisan·e, Négociant·e, Sylvain·e, Marin·e, Courtisan·e) restent des propositions.

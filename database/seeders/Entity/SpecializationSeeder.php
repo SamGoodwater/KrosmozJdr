@@ -369,10 +369,15 @@ class SpecializationSeeder extends Seeder
 
         $capability = Capability::query()->where('name', $name)->first() ?? new Capability;
         $wasNew = ! $capability->exists;
+        $type = trim((string) ($entry['type'] ?? ''));
+        if ($type === 'emplacement libre') {
+            $type = '2ᵉ capacité';
+        }
+
         $capability->fill([
             'name' => $name,
-            'description' => trim((string) ($entry['type'] ?? '')) !== ''
-                ? trim((string) $entry['type'])
+            'description' => $type !== ''
+                ? $type
                 : ($isPassive ? 'Aptitude de spécialisation' : 'Capacité de spécialisation'),
             'effect' => trim((string) ($entry['effect'] ?? '')),
             'level' => (string) max(1, $palier),
