@@ -7,7 +7,6 @@ import { computed, watch } from "vue";
 import PageRenderer from "@/Pages/Organismes/section/PageRenderer.vue";
 import BreedViewFull from "@/Pages/Molecules/entity/breed/BreedViewFull.vue";
 import SpecializationViewFull from "@/Pages/Molecules/entity/specialization/SpecializationViewFull.vue";
-import SpecializationRelationsByLevel from "@/Pages/Molecules/entity/specialization/SpecializationRelationsByLevel.vue";
 import EntitySectionsRenderer from "@/Pages/Organismes/entity/EntitySectionsRenderer.vue";
 import BreedWriteMetaPanel from "@/Pages/Molecules/entity/breed/BreedWriteMetaPanel.vue";
 import { Breed } from "@/Models/Entity/Breed";
@@ -65,8 +64,6 @@ const linkedEntitySections = computed(() => {
 
         <template v-else-if="specialization">
             <SpecializationViewFull :specialization="specialization" :show-actions="true" />
-
-            <SpecializationRelationsByLevel :specialization="specialization" />
         </template>
 
         <section v-if="linkedEntitySections.length" class="space-y-3">

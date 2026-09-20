@@ -50,19 +50,25 @@ final class ClassPassiveSeederImporterTest extends TestCase
         )->count());
     }
 
-    public function test_does_not_change_state_or_detach_unrelated_capabilities(): void
+    public function test_does_not_change_state_or_detach_other_passives(): void
     {
         $this->seed(ClassBreedSeeder::class);
         $iop = Breed::query()->where('name', 'Iop')->first();
         $this->assertNotNull($iop);
 
-        $extra = Capability::factory()->create([
+        $extraPassive = Capability::factory()->create([
             'name' => 'Discipline de fer',
             'is_passive' => true,
             'state' => Capability::STATE_DRAFT,
             'created_by' => null,
         ]);
-        $iop->capabilities()->attach($extra->id);
+        $extraActive = Capability::factory()->create([
+            'name' => 'Fendoir de classe',
+            'is_passive' => false,
+            'state' => Capability::STATE_DRAFT,
+            'created_by' => null,
+        ]);
+        $iop->capabilities()->attach([$extraPassive->id, $extraActive->id]);
 
         app(ClassPassiveSeederImporter::class)->import();
 
@@ -74,7 +80,8 @@ final class ClassPassiveSeederImporterTest extends TestCase
         app(ClassPassiveSeederImporter::class)->import();
         $fureur->refresh();
         $this->assertSame(Capability::STATE_DRAFT, $fureur->state);
-        $this->assertTrue($iop->capabilities()->where('capabilities.id', $extra->id)->exists());
+        $this->assertTrue($iop->capabilities()->where('capabilities.id', $extraPassive->id)->exists());
+        $this->assertFalse($iop->capabilities()->where('capabilities.id', $extraActive->id)->exists());
         $this->assertTrue($iop->capabilities()->where('name', 'Fureur')->exists());
         $this->assertSame(2, $iop->capabilities()->count());
     }

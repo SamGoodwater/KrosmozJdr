@@ -10,6 +10,7 @@
     "write_level": 3,
     "element_orientations": {
         "fire": "degats",
+        "earth": "amelioration",
         "water": "entrave",
         "air": "placement"
     }

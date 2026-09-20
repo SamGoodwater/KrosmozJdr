@@ -12,7 +12,8 @@ use App\Models\User;
  * Importe les 19 passifs de classe et les lie via `breed_capability`.
  *
  * Idempotent. Upsert sur `name` parmi les passifs de ce catalogue. `playable`,
- * `is_passive = true`. L’état n’est posé qu’à la création.
+ * `is_passive = true`. L’état n’est posé qu’à la création. Détache les
+ * capacités actives liées à la classe (on ne pose que le passif).
  *
  * @example $result = app(ClassPassiveSeederImporter::class)->import();
  */
@@ -63,8 +64,13 @@ final class ClassPassiveSeederImporter
                 ->where('capabilities.id', '!=', $capabilityId)
                 ->pluck('capabilities.id')
                 ->all();
-            if ($stale !== []) {
-                $breed->capabilities()->detach($stale);
+            $activeExtras = $breed->capabilities()
+                ->where('capabilities.is_passive', false)
+                ->pluck('capabilities.id')
+                ->all();
+            $toDetach = array_values(array_unique([...$stale, ...$activeExtras]));
+            if ($toDetach !== []) {
+                $breed->capabilities()->detach($toDetach);
             }
             $breed->capabilities()->syncWithoutDetaching([$capabilityId]);
         }

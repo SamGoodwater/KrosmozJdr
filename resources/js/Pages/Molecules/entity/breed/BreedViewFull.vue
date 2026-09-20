@@ -2,8 +2,8 @@
 /**
  * BreedViewFull — Vue Full pour Breed
  *
- * En-tête + blocs gameplay structuraux (orientations, traits, langues, variantes sorts).
- * Le contenu narratif (spécificité, dé de vie, évolution, capacités en prose) est dans les sections liées.
+ * En-tête + blocs gameplay structuraux (voix, passif, traits, langues, choix de sorts).
+ * Le contenu narratif (spécificité, dé de vie, évolution) est dans les sections liées.
  */
 import { computed, ref } from "vue";
 import { router } from "@inertiajs/vue3";
@@ -22,6 +22,7 @@ import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import BreedElementOrientationsDisplay from "@/Pages/Molecules/entity/breed/BreedElementOrientationsDisplay.vue";
+import BreedCapabilitiesDisplay from "@/Pages/Molecules/entity/breed/BreedCapabilitiesDisplay.vue";
 import BreedVariantsDisplay from "@/Pages/Molecules/entity/breed/BreedVariantsDisplay.vue";
 import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
 import EntityLanguagesInline from "@/Pages/Molecules/entity/language/EntityLanguagesInline.vue";
@@ -134,6 +135,12 @@ const descriptionFull = computed(() => {
 const orientationMap = computed(() => {
     const raw = props.breed?._data ?? props.breed;
     return normalizeElementOrientationMap(raw?.element_orientations);
+});
+
+const linkedCapabilities = computed(() => {
+    const raw = props.breed?._data ?? props.breed;
+    const list = raw?.capabilities;
+    return Array.isArray(list) ? list : [];
 });
 
 const canShowField = (fieldKey) => {
@@ -314,10 +321,18 @@ const handleAction = async (actionKey) => {
         <div class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-2">
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Voix élémentaires</h3>
             <p class="text-xs text-primary-400/90">
-                Chaque voix (air, terre, feu, eau) peut être associée à une orientation de jeu (icônes configurables).
+                Chaque voix (air, terre, feu, eau) porte un rôle : elles orientent les sorts à la création.
             </p>
             <BreedElementOrientationsDisplay :orientation-map="orientationMap" size="md" />
         </div>
+
+        <BreedCapabilitiesDisplay
+            v-if="linkedCapabilities.length"
+            :capabilities="linkedCapabilities"
+            density="full"
+            :show-other-section="false"
+            :characteristic-runtime="characteristicRuntime"
+        />
 
         <div
             v-if="hasLinkedCreatureTraits"

@@ -23,19 +23,22 @@ final class ClassLevel1SpellCatalogTest extends TestCase
         }
         ksort($slots);
         $this->assertSame([1, 2, 3], array_keys($slots));
-        foreach ($slots as $orders) {
-            sort($orders);
-            $this->assertSame([0, 1], $orders);
-        }
+        sort($slots[1]);
+        sort($slots[2]);
+        sort($slots[3]);
+        $this->assertSame([0, 1, 2, 3], $slots[1]);
+        $this->assertSame([0], $slots[2]);
+        $this->assertSame([0], $slots[3]);
 
         $names = array_column($entries, 'name');
         $this->assertSame(
-            ['Pression', 'Attaque Naturelle', 'Fendoir', 'Intimidation', 'Bond', 'Concentration'],
+            ['Pression', 'Attaque Naturelle', 'Épée Divine', 'Épée de Givre', 'Bond', 'Concentration'],
             $names
         );
         $this->assertSame('jdr:attaque-naturelle', $entries[1]['official_id']);
+        $this->assertSame('water', $entries[3]['element']);
         $this->assertSame('3', $entries[0]['pa']);
-        $this->assertSame('5', $entries[2]['pa']);
+        $this->assertSame('3', $entries[2]['pa']);
     }
 
     public function test_cra_catalog_has_six_spells_in_three_slots(): void

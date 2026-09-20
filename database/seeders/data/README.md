@@ -75,7 +75,7 @@ Un JSON unique `healing-out-of-combat.json` décrit 11 paliers × 4 types (pain,
 
 ## Classes (`entities/breeds/`)
 
-Un JSON par classe (`feca.json` … `forgelance.json`, 19 fiches, ids Dofus 1–18 et 20) : nom, résumé Dofus, voix élémentaires du §2.3.1. Foggernaut = Steamer (pas une 20ᵉ classe). Upsert sur `dofusdb_id`, `official_id` ou `name`. `auto_update = false`. L’état n’est posé qu’à la création (`draft`). Description tronquée à 255 caractères.
+Un JSON par classe (`feca.json` … `forgelance.json`, 19 fiches, ids Dofus 1–18 et 20) : nom, résumé Dofus, **4 voix** (Feu/Terre/Eau/Air) du tableau *Généralités Classes*. Foggernaut = Steamer (pas une 20ᵉ classe). Upsert sur `dofusdb_id`, `official_id` ou `name`. `auto_update = false`. L’état n’est posé qu’à la création (`draft`). Description tronquée à 255 caractères.
 
 - **Seed** : `Database\Seeders\Entity\ClassBreedSeeder`, **avant** `CapabilitySeeder` puis `MonsterSeeder` puis `SpellSeeder`.
 
@@ -87,7 +87,7 @@ Un JSON unique `class-passives.json` : 19 capacités passives (une par classe), 
 
 ## Sorts de classe (`entities/spells/`)
 
-`iop-level-1.json` … `forgelance-level-1.json` : 6 sorts (3 emplacements × 2 variantes) au **niveau 1**. `*-progression.json` : 18 sorts (9 emplacements × 2 variantes). **Iop** : niveaux **2, 4, 5, 6, 7, 8, 10, 11, 12** + tableau `intensification` I/II/III (perso 13/16/20). Les autres classes portent encore l’ancien tag **3, 4, 5, 7, 8, 10, 11, 13, 14**. **19 classes**, 24 sorts chacune. Upsert sur `dofusdb_id` ou `official_id`. `auto_update = false`, état `auto`. `target_type` optionnel (`direct`, `trap`, `glyph`). Les catalogues d’une même classe sont fusionnés avant le sync des emplacements ; les autres sorts liés à la classe passent hors grille (`character_level` 0, `slot_index` 1). L’importeur pose les degrés d’intensification (`SpellIntensificationCran`) même sans tableau JSON.
+`iop-level-1.json` … `forgelance-level-1.json` : kit de **niveau 1** (3 choix, 1 à 4 variantes). **Iop** : 4 sorts élémentaires au choix 1, Bond (choix 2) et Concentration (choix 3). `*-progression.json` : 9 choix suivants. **Iop** : niveaux **2, 4, 5, 6, 7, 8, 10, 11, 12** + tableau `intensification` I/II/III (perso 13/16/20). Les autres classes portent encore l’ancien tag **3, 4, 5, 7, 8, 10, 11, 13, 14**. Upsert sur `dofusdb_id` ou `official_id`. `auto_update = false`, état `auto`. `target_type` optionnel (`direct`, `trap`, `glyph`). Les catalogues d’une même classe sont fusionnés avant le sync des emplacements ; les autres sorts liés à la classe passent hors grille (`character_level` 0, `slot_index` 1). L’importeur pose les degrés d’intensification (`SpellIntensificationCran`) même sans tableau JSON.
 
 - **Seed** : `Database\Seeders\Entity\SpellSeeder` (`project:seed` / `project:init` / `DatabaseSeeder`), **après** `MonsterSeeder`.
 - Budget : attaque simple 3 PA ; sort fort 4–5 PA ; identité 3 PA. Dés selon le palier (§5.2.3.2 / §5.2.3.6).

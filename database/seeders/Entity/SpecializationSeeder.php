@@ -235,6 +235,8 @@ class SpecializationSeeder extends Seeder
             Page::STATE_PLAYABLE,
         );
 
+        $this->upsertAuthoredCapabilities($spec, $creatorId);
+
         $renderer = new DraftSpecializationContentRenderer;
         $specializationCapabilitySync = [];
         $sync = $importer->importParsedSections(
@@ -358,6 +360,77 @@ class SpecializationSeeder extends Seeder
             ->where('page_id', $page->id)
             ->whereNotIn('id', array_keys($sync))
             ->delete();
+    }
+
+    /**
+     * Crée ou met à jour les capacités / aptitudes d’une fiche rédigée
+     * pour que les kref `[[kref:entity:capabilities:…]]` se résolvent à l’import.
+     *
+     * @param  array<string, mixed>  $spec
+     */
+    private function upsertAuthoredCapabilities(array $spec, ?int $creatorId): void
+    {
+        $levels = $spec['levels'] ?? [];
+        if (! is_array($levels)) {
+            return;
+        }
+
+        foreach ($levels as $level => $levelData) {
+            if (! is_array($levelData)) {
+                continue;
+            }
+
+            $palier = (int) $level;
+            foreach ($levelData['capacities'] ?? [] as $entry) {
+                if (is_array($entry)) {
+                    $this->upsertSpecializationCapability($entry, false, $palier, $creatorId);
+                }
+            }
+            foreach ($levelData['aptitudes'] ?? [] as $entry) {
+                if (is_array($entry)) {
+                    $this->upsertSpecializationCapability($entry, true, $palier, $creatorId);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $entry
+     */
+    private function upsertSpecializationCapability(array $entry, bool $isPassive, int $palier, ?int $creatorId): void
+    {
+        $name = trim((string) ($entry['name'] ?? ''));
+        if ($name === '') {
+            return;
+        }
+
+        $capability = Capability::query()->where('name', $name)->first() ?? new Capability;
+        $wasNew = ! $capability->exists;
+        $capability->fill([
+            'name' => $name,
+            'description' => trim((string) ($entry['type'] ?? '')) !== ''
+                ? trim((string) $entry['type'])
+                : ($isPassive ? 'Aptitude de spécialisation' : 'Capacité de spécialisation'),
+            'effect' => trim((string) ($entry['effect'] ?? '')),
+            'level' => (string) max(1, $palier),
+            'pa' => $isPassive ? '0' : (string) ($entry['pa'] ?? '0'),
+            'po' => '0',
+            'po_editable' => false,
+            'time_before_use_again' => '0',
+            'casting_time' => '0',
+            'duration' => $isPassive ? 'permanent' : (string) ($entry['duration'] ?? '0'),
+            'element' => 0,
+            'is_magic' => (bool) ($entry['is_magic'] ?? true),
+            'ritual_available' => false,
+            'is_passive' => $isPassive,
+        ]);
+        if ($wasNew) {
+            $capability->state = Capability::STATE_PLAYABLE;
+            $capability->read_level = User::ROLE_GUEST;
+            $capability->write_level = User::ROLE_ADMIN;
+            $capability->created_by = $creatorId;
+        }
+        $capability->save();
     }
 
     /**

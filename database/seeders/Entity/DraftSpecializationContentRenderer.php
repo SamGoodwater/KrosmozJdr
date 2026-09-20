@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Database\Seeders\Entity;
 
+use App\Support\Cms\RulesCharacteristicKrefReplacementCatalog;
+
 /**
  * Transforme les tableaux de spécialisations (brouillons ou fiche jouable)
  * en sections HTML.
  *
  * Gabarit imposé par 2.4.2.6 : 7 paliers, 1 capacité garantie + 1 option,
  * 1 compétence (sauf palier 1 = 3), aptitudes uniquement aux paliers 3 / 9 / 15.
+ * Les noms de capacités, jets et compétences sont des shortcodes kref
+ * (cliquables une fois convertis à l’import).
  */
 final class DraftSpecializationContentRenderer
 {
@@ -19,7 +23,7 @@ final class DraftSpecializationContentRenderer
 
     /**
      * @param  array<string, mixed>  $spec
-     * @return list<array{title: string, level: int, content: string}>
+     * @return list<array{title: string, level: int, content: string, capabilities?: list<string>}>
      */
     public function sections(array $spec): array
     {
@@ -48,6 +52,7 @@ final class DraftSpecializationContentRenderer
                 'title' => 'Niveau '.$level,
                 'level' => max(1, $level),
                 'content' => $this->levelHtml($level, $levelData),
+                'capabilities' => $this->capabilityNames($levelData),
             ];
         }
 
@@ -66,7 +71,7 @@ final class DraftSpecializationContentRenderer
 
         $identity = trim((string) ($spec['identity'] ?? ''));
         if ($identity !== '') {
-            $parts[] = '<p>'.e($identity).'</p>';
+            $parts[] = '<p>'.$this->richText($identity).'</p>';
         }
 
         $parts[] = '<h2>Repères</h2><ul>'
@@ -77,7 +82,7 @@ final class DraftSpecializationContentRenderer
 
         $difference = trim((string) ($spec['difference'] ?? ''));
         if ($difference !== '') {
-            $parts[] = '<h2>Ce que cette spécialisation n’est pas</h2><p>'.e($difference).'</p>';
+            $parts[] = '<h2>Ce que cette spécialisation n’est pas</h2><p>'.$this->richText($difference).'</p>';
         }
 
         $synergies = $spec['synergies'] ?? [];
@@ -113,12 +118,12 @@ final class DraftSpecializationContentRenderer
 
         $flavor = trim((string) ($levelData['flavor'] ?? ''));
         if ($flavor !== '') {
-            $parts[] = '<p>'.e($flavor).'</p>';
+            $parts[] = '<p>'.$this->richText($flavor).'</p>';
         }
 
         $choice = trim((string) ($levelData['choice'] ?? ''));
         if ($choice !== '') {
-            $parts[] = '<p><strong>À ce palier</strong> : '.e($choice).'</p>';
+            $parts[] = '<p><strong>À ce palier</strong> : '.$this->richText($choice).'</p>';
         }
 
         $masteries = $levelData['masteries'] ?? [];
@@ -165,19 +170,55 @@ final class DraftSpecializationContentRenderer
                 continue;
             }
 
-            $label = e($name);
+            $label = $this->capabilityKref($name);
             if ($type !== '') {
                 $label .= ' <em>('.e($type).')</em>';
             }
 
             $items .= '<li><strong>'.$label.'</strong>';
             if ($effect !== '') {
-                $items .= ' — '.e($effect);
+                $items .= ' — '.$this->richText($effect);
             }
             $items .= '</li>';
         }
 
         return $items === '' ? '<p>Aucune piste pour l’instant.</p>' : '<ul>'.$items.'</ul>';
+    }
+
+    /**
+     * @param  array<string, mixed>  $levelData
+     * @return list<string>
+     */
+    private function capabilityNames(array $levelData): array
+    {
+        $names = [];
+        foreach (['capacities', 'aptitudes'] as $key) {
+            $entries = $levelData[$key] ?? [];
+            if (! is_array($entries)) {
+                continue;
+            }
+            foreach ($entries as $entry) {
+                if (! is_array($entry)) {
+                    continue;
+                }
+                $name = trim((string) ($entry['name'] ?? ''));
+                if ($name !== '') {
+                    $names[] = $name;
+                }
+            }
+        }
+
+        return array_values(array_unique($names));
+    }
+
+    private function capabilityKref(string $name): string
+    {
+        return '[[kref:entity:capabilities:'.$name.'|'.$name.']]';
+    }
+
+    private function richText(string $text): string
+    {
+        return RulesCharacteristicKrefReplacementCatalog::applyToMarkdown(e($text));
     }
 
     private function li(string $label, string $text): string
@@ -191,6 +232,6 @@ final class DraftSpecializationContentRenderer
             return '<li>'.e($label).'</li>';
         }
 
-        return '<li><strong>'.e($label).'</strong> : '.e($text).'</li>';
+        return '<li><strong>'.e($label).'</strong> : '.$this->richText($text).'</li>';
     }
 }

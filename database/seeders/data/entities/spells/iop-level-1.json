@@ -195,130 +195,29 @@
             ]
         },
         {
-            "key": "fendoir",
-            "name": "Fendoir",
-            "dofusdb_id": "13149",
-            "slot_index": 2,
-            "choice_order": 0,
-            "types": [
-                "Offensif"
-            ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Tu abats une lame de Wakfu autour de toi. Ceux qui ne s’écartent pas prennent le choc.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "intensification": [
-                {
-                    "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "2d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
-                    "sub_effects": [
-                        {
-                            "slug": "frapper",
-                            "area": "circle-0-1",
-                            "params": {
-                                "characteristic": "earth",
-                                "value": "2d6+Force",
-                                "value_formula": "2d6+[strong]",
-                                "dice_formula": "2d6+[strong]",
-                                "value_formula_crit": "3d6+[strong]",
-                                "effect_direction": "action"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "3d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
-                    "sub_effects": [
-                        {
-                            "slug": "frapper",
-                            "area": "circle-0-1",
-                            "params": {
-                                "characteristic": "earth",
-                                "value": "3d6+Force",
-                                "value_formula": "3d6+[strong]",
-                                "dice_formula": "3d6+[strong]",
-                                "value_formula_crit": "4d6+[strong]",
-                                "effect_direction": "action"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
-                    "effect": "4d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
-                    "sub_effects": [
-                        {
-                            "slug": "frapper",
-                            "area": "circle-0-1",
-                            "params": {
-                                "characteristic": "earth",
-                                "value": "4d6+Force",
-                                "value_formula": "4d6+[strong]",
-                                "dice_formula": "4d6+[strong]",
-                                "value_formula_crit": "5d6+[strong]",
-                                "effect_direction": "action"
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "key": "intimidation",
-            "name": "Intimidation",
-            "dofusdb_id": "13108",
-            "slot_index": 2,
-            "choice_order": 1,
+            "key": "epee-divine",
+            "name": "Épée Divine",
+            "slot_index": 1,
+            "choice_order": 2,
             "types": [
                 "Offensif"
             ],
             "element": "air",
-            "pa": "4",
+            "pa": "3",
             "po_min": "1",
             "po_max": "1",
             "po_editable": false,
             "sight_line": true,
             "cast_per_turn": "2",
             "resolution_mode": "attack_roll",
-            "attack_characteristic_key": "agi",
             "is_magic": false,
-            "powerful": 4,
-            "effect": "1d6 + Agilité (Air) et poussée de 1 case. Physique, 4 PA, 2×/tour, PO 1.",
-            "description": "Un coup sec qui fait reculer. L’air vibre, la cible cède le pas.",
+            "powerful": 3,
+            "effect": "1d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+            "description": "Tu lances une lame d’air, même budget que Pression : 1d6 + Agilité.",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
-                    "order": 0,
                     "params": {
                         "characteristic": "air",
                         "value": "1d6+Agilité",
@@ -327,28 +226,19 @@
                         "value_formula_crit": "2d6+[agi]",
                         "effect_direction": "action"
                     }
-                },
-                {
-                    "slug": "déplacer",
-                    "area": "point",
-                    "order": 1,
-                    "params": {
-                        "cells_formula": "1",
-                        "movement_kind": "push",
-                        "effect_direction": "action"
-                    }
                 }
             ],
+            "dofusdb_id": "13110",
+            "attack_characteristic_key": "agi",
             "intensification": [
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "2d6 + Agilité (Air) et poussée de 1 case. Physique, 4 PA, 2×/tour, PO 1.",
+                    "effect": "2d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
                     "sub_effects": [
                         {
                             "slug": "frapper",
                             "area": "point",
-                            "order": 0,
                             "params": {
                                 "characteristic": "air",
                                 "value": "2d6+Agilité",
@@ -357,28 +247,17 @@
                                 "value_formula_crit": "3d6+[agi]",
                                 "effect_direction": "action"
                             }
-                        },
-                        {
-                            "slug": "déplacer",
-                            "area": "point",
-                            "order": 1,
-                            "params": {
-                                "cells_formula": "1",
-                                "movement_kind": "push",
-                                "effect_direction": "action"
-                            }
                         }
                     ]
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "3d6 + Agilité (Air) et poussée de 1 case. Physique, 4 PA, 2×/tour, PO 1.",
+                    "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
                     "sub_effects": [
                         {
                             "slug": "frapper",
                             "area": "point",
-                            "order": 0,
                             "params": {
                                 "characteristic": "air",
                                 "value": "3d6+Agilité",
@@ -387,28 +266,17 @@
                                 "value_formula_crit": "4d6+[agi]",
                                 "effect_direction": "action"
                             }
-                        },
-                        {
-                            "slug": "déplacer",
-                            "area": "point",
-                            "order": 1,
-                            "params": {
-                                "cells_formula": "1",
-                                "movement_kind": "push",
-                                "effect_direction": "action"
-                            }
                         }
                     ]
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "4d6 + Agilité (Air) et poussée de 1 case. Physique, 4 PA, 2×/tour, PO 1.",
+                    "effect": "4d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
                     "sub_effects": [
                         {
                             "slug": "frapper",
                             "area": "point",
-                            "order": 0,
                             "params": {
                                 "characteristic": "air",
                                 "value": "4d6+Agilité",
@@ -417,26 +285,114 @@
                                 "value_formula_crit": "5d6+[agi]",
                                 "effect_direction": "action"
                             }
-                        },
+                        }
+                    ]
+                }
+            ],
+            "official_id": "jdr:epee-divine"
+        },
+        {
+            "key": "epee-de-givre",
+            "name": "Épée de Givre",
+            "slot_index": 1,
+            "choice_order": 3,
+            "types": [
+                "Offensif"
+            ],
+            "element": "water",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": false,
+            "sight_line": true,
+            "cast_per_turn": "2",
+            "resolution_mode": "attack_roll",
+            "is_magic": false,
+            "powerful": 3,
+            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "description": "Tu frappes d’une lame d’eau gelée, même budget que Pression : 1d6 + Chance.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "1d6+Chance",
+                        "value_formula": "1d6+[chance]",
+                        "dice_formula": "1d6+[chance]",
+                        "value_formula_crit": "2d6+[chance]",
+                        "effect_direction": "action"
+                    }
+                }
+            ],
+            "dofusdb_id": "13115",
+            "attack_characteristic_key": "chance",
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "2d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
                         {
-                            "slug": "déplacer",
+                            "slug": "frapper",
                             "area": "point",
-                            "order": 1,
                             "params": {
-                                "cells_formula": "1",
-                                "movement_kind": "push",
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "value_formula_crit": "3d6+[chance]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "3d6+Chance",
+                                "value_formula": "3d6+[chance]",
+                                "dice_formula": "3d6+[chance]",
+                                "value_formula_crit": "4d6+[chance]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "4d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "4d6+Chance",
+                                "value_formula": "4d6+[chance]",
+                                "dice_formula": "4d6+[chance]",
+                                "value_formula_crit": "5d6+[chance]",
                                 "effect_direction": "action"
                             }
                         }
                     ]
                 }
-            ]
+            ],
+            "official_id": "jdr:epee-de-givre"
         },
         {
             "key": "bond",
             "name": "Bond",
             "dofusdb_id": "15660",
-            "slot_index": 3,
+            "slot_index": 2,
             "choice_order": 0,
             "types": [
                 "Téléportation"
@@ -524,7 +480,7 @@
             "name": "Concentration",
             "dofusdb_id": "30767",
             "slot_index": 3,
-            "choice_order": 1,
+            "choice_order": 0,
             "types": [
                 "Buff"
             ],

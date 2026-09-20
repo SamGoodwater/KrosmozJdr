@@ -11,7 +11,7 @@ import SpellViewMinimal from "@/Pages/Molecules/entity/spell/SpellViewMinimal.vu
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import { Spell } from "@/Models/Entity/Spell";
-import { splitBreedSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
+import { breedVariantGroupTitle, splitBreedSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
 
 const props = defineProps({
     breed: {
@@ -71,16 +71,9 @@ const spellImage = (spell) => spell?.image || spell?._data?.image || "";
 const openSpell = (spell) => emit("open-spell", spell);
 
 /**
- * @param {{ character_level: number, slot_index: number }} g
+ * @param {{ character_level: number, slot_index: number, spells?: object[] }} g
  */
-const variantTitle = (g) => {
-    const L = Number(g.character_level);
-    const s = Number(g.slot_index);
-    if (L === 1) {
-        return `Niveau 1 · Choix ${s}`;
-    }
-    return `Niveau ${L} · Variante ${s}`;
-};
+const variantTitle = (g) => breedVariantGroupTitle(g);
 </script>
 
 <template>
@@ -99,9 +92,8 @@ const variantTitle = (g) => {
                     :key="`vg-${group.character_level}-${group.slot_index}-${gIdx}`"
                     class="space-y-2 border-l-2 border-primary-500/50 pl-3"
                 >
-                    <div class="text-xs font-semibold text-primary-200">
+                    <div class="text-sm font-bold tracking-wide text-primary-100">
                         {{ variantTitle(group) }}
-                        <span class="font-normal text-primary-400/80"> — choisir 1 parmi {{ group.spells?.length || 0 }}</span>
                     </div>
                     <ul class="flex flex-wrap items-start gap-x-2 gap-y-2">
                         <template v-for="(s, si) in group.spells || []" :key="`sg-${s.id}`">

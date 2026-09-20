@@ -22,28 +22,28 @@ final class ClassBreedCatalogTest extends TestCase
         $this->assertSame('iop', ClassBreedCatalog::load(ClassBreedCatalog::iopPath())->slug());
     }
 
-    public function test_each_base_class_has_three_voices_from_rules(): void
+    public function test_each_base_class_has_four_voices_from_rules(): void
     {
         $expected = [
-            'Féca' => ['fire' => 'protection', 'earth' => 'tank', 'water' => 'amelioration'],
-            'Osamodas' => ['fire' => 'invocation', 'earth' => 'protection', 'air' => 'degats'],
-            'Enutrof' => ['water' => 'entrave', 'fire' => 'degats', 'earth' => 'placement'],
-            'Sram' => ['earth' => 'entrave', 'air' => 'placement', 'water' => 'degats'],
-            'Xélor' => ['earth' => 'entrave', 'water' => 'entrave', 'fire' => 'degats'],
-            'Ecaflip' => ['fire' => 'degats', 'water' => 'degats', 'air' => 'degats'],
-            'Eniripsa' => ['water' => 'soin', 'air' => 'soin', 'fire' => 'soin'],
-            'Iop' => ['earth' => 'degats', 'fire' => 'degats', 'air' => 'degats'],
-            'Crâ' => ['air' => 'degats', 'water' => 'degats', 'fire' => 'degats'],
-            'Sadida' => ['water' => 'invocation', 'fire' => 'degats', 'earth' => 'entrave'],
-            'Sacrieur' => ['earth' => 'tank', 'air' => 'tank', 'water' => 'protection'],
-            'Pandawa' => ['earth' => 'tank', 'air' => 'placement', 'fire' => 'degats'],
-            'Roublard' => ['fire' => 'degats', 'water' => 'entrave', 'air' => 'placement'],
-            'Zobal' => ['earth' => 'tank', 'water' => 'protection', 'fire' => 'degats'],
-            'Steamer' => ['water' => 'soin', 'air' => 'placement', 'fire' => 'degats'],
-            'Eliotrope' => ['air' => 'placement', 'fire' => 'degats', 'water' => 'soin'],
-            'Huppermage' => ['fire' => 'degats', 'air' => 'placement', 'earth' => 'amelioration'],
-            'Ouginak' => ['earth' => 'degats', 'fire' => 'tank', 'air' => 'entrave'],
-            'Forgelance' => ['fire' => 'degats', 'air' => 'placement', 'water' => 'protection'],
+            'Féca' => ['fire' => 'degats', 'earth' => 'tank', 'water' => 'entrave', 'air' => 'protection'],
+            'Osamodas' => ['fire' => 'soin', 'earth' => 'entrave', 'water' => 'degats', 'air' => 'placement'],
+            'Enutrof' => ['fire' => 'soin', 'earth' => 'degats', 'water' => 'amelioration', 'air' => 'entrave'],
+            'Sram' => ['fire' => 'placement', 'earth' => 'degats', 'water' => 'amelioration', 'air' => 'entrave'],
+            'Xélor' => ['fire' => 'amelioration', 'earth' => 'degats', 'water' => 'entrave', 'air' => 'placement'],
+            'Ecaflip' => ['fire' => 'soin', 'earth' => 'amelioration', 'water' => 'degats', 'air' => 'placement'],
+            'Eniripsa' => ['fire' => 'soin', 'earth' => 'entrave', 'water' => 'protection', 'air' => 'amelioration'],
+            'Iop' => ['fire' => 'amelioration', 'earth' => 'degats', 'water' => 'protection', 'air' => 'placement'],
+            'Crâ' => ['fire' => 'amelioration', 'earth' => 'degats', 'water' => 'entrave', 'air' => 'placement'],
+            'Sadida' => ['fire' => 'entrave', 'earth' => 'tank', 'water' => 'soin', 'air' => 'degats'],
+            'Sacrieur' => ['fire' => 'entrave', 'earth' => 'tank', 'water' => 'degats', 'air' => 'placement'],
+            'Pandawa' => ['fire' => 'tank', 'earth' => 'degats', 'water' => 'entrave', 'air' => 'placement'],
+            'Roublard' => ['fire' => 'degats', 'earth' => 'amelioration', 'water' => 'entrave', 'air' => 'placement'],
+            'Zobal' => ['fire' => 'tank', 'earth' => 'entrave', 'water' => 'placement', 'air' => 'protection'],
+            'Steamer' => ['fire' => 'soin', 'earth' => 'degats', 'water' => 'amelioration', 'air' => 'placement'],
+            'Eliotrope' => ['fire' => 'soin', 'earth' => 'placement', 'water' => 'degats', 'air' => 'entrave'],
+            'Huppermage' => ['fire' => 'amelioration', 'earth' => 'entrave', 'water' => 'placement', 'air' => 'degats'],
+            'Ouginak' => ['fire' => 'entrave', 'earth' => 'tank', 'water' => 'amelioration', 'air' => 'degats'],
+            'Forgelance' => ['fire' => 'degats', 'earth' => 'placement', 'water' => 'protection', 'air' => 'entrave'],
         ];
 
         foreach (ClassBreedCatalog::loadAllInDirectory() as $catalog) {

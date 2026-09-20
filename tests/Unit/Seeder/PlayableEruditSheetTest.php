@@ -44,7 +44,11 @@ final class PlayableEruditSheetTest extends TestCase
 
         $this->assertStringNotContainsString('Brouillon', $html);
         $this->assertStringContainsString('<h2>Capacités</h2>', $html);
-        $this->assertStringContainsString('Politicien', $html);
+        $this->assertStringContainsString('[[kref:entity:capabilities:Politicien|Politicien]]', $html);
+        $this->assertStringContainsString('[[kref:entity:capabilities:Identification|Identification]]', $html);
+        $this->assertStringContainsString('[[kref:characteristic:wisdom_creature|Sagesse]]', $html);
+        $this->assertStringContainsString('[[kref:characteristic:intelligence_creature|Intelligence]]', $html);
+        $this->assertStringContainsString('[[kref:characteristic:arcana_creature|Arcanes]]', $html);
         $this->assertStringContainsString('Maîtrise des capacités', $html);
     }
 }

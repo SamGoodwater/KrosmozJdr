@@ -9,8 +9,9 @@
     "read_level": 0,
     "write_level": 3,
     "element_orientations": {
-        "air": "placement",
-        "fire": "degats",
-        "water": "soin"
+        "fire": "soin",
+        "earth": "placement",
+        "water": "degats",
+        "air": "entrave"
     }
 }

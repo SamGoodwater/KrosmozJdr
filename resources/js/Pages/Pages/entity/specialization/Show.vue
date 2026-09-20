@@ -7,7 +7,6 @@ import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import EntityViewFullWrapper from "@/Pages/Molecules/entity/shared/EntityViewFullWrapper.vue";
 import SpecializationViewFull from "@/Pages/Molecules/entity/specialization/SpecializationViewFull.vue";
-import SpecializationRelationsByLevel from "@/Pages/Molecules/entity/specialization/SpecializationRelationsByLevel.vue";
 import SpecializationWriteMetaPanel from "@/Pages/Molecules/entity/specialization/SpecializationWriteMetaPanel.vue";
 import EntitySectionsRenderer from "@/Pages/Organismes/entity/EntitySectionsRenderer.vue";
 
@@ -48,8 +47,6 @@ const goEdit = () => {
                 </div>
 
                 <SpecializationViewFull :specialization="specialization" :show-actions="true" />
-
-                <SpecializationRelationsByLevel :specialization="specialization" />
 
                 <section class="space-y-3">
                     <h2 class="text-lg font-semibold">Sections</h2>

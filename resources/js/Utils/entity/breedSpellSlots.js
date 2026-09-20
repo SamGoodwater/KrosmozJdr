@@ -72,27 +72,65 @@ export const CLASS_SPELL_UNLOCK_LEVELS = Object.freeze([1, 2, 4, 5, 6, 7, 8, 10,
 
 /**
  * Grille d’emplacements officielle (§2.3.2 / §5.2.3) : 3 au niveau 1, puis un par palier 2–12.
+ * Les 12 emplacements sont numérotés Choix 1–12 (1 à 4 variantes selon la classe).
  *
  * @param {number} [_unused] - conservé pour les appels existants ; ignoré
- * @returns {Array<{ character_level: number, slot_index: number, label: string }>}
+ * @returns {Array<{ character_level: number, slot_index: number, choice_number: number, label: string }>}
  */
 export function getStandardBreedSlotDefinitions(_unused = 12) {
     const slots = [];
+    let choice_number = 1;
     for (let slot_index = 1; slot_index <= 3; slot_index++) {
         slots.push({
             character_level: 1,
             slot_index,
-            label: `Niveau 1 · Choix ${slot_index}`,
+            choice_number,
+            label: `Choix ${choice_number} · Niveau 1`,
         });
+        choice_number += 1;
     }
     for (const L of CLASS_SPELL_UNLOCK_LEVELS.slice(1)) {
         slots.push({
             character_level: L,
             slot_index: 1,
-            label: `Niveau ${L} · Sort de classe`,
+            choice_number,
+            label: `Choix ${choice_number} · Niveau ${L}`,
         });
+        choice_number += 1;
     }
     return slots;
+}
+
+/**
+ * Numéro de choix 1–12 pour un emplacement de la grille, ou null hors grille.
+ *
+ * @param {number} characterLevel
+ * @param {number} slotIndex
+ * @returns {number|null}
+ */
+export function getBreedChoiceNumber(characterLevel, slotIndex) {
+    const found = getStandardBreedSlotDefinitions().find(
+        (s) => s.character_level === Number(characterLevel) && s.slot_index === Number(slotIndex)
+    );
+    return found ? found.choice_number : null;
+}
+
+/**
+ * Titre d’un groupe de variantes : « Choix 1 · Niveau 1 · 4 variantes ».
+ *
+ * @param {{ character_level: number, slot_index: number, spells?: object[] }} group
+ * @returns {string}
+ */
+export function breedVariantGroupTitle(group) {
+    const level = Number(group?.character_level);
+    const slot = Number(group?.slot_index);
+    const count = Array.isArray(group?.spells) ? group.spells.length : 0;
+    const variantLabel = count <= 1 ? "1 variante" : `${count} variantes`;
+    const choice = getBreedChoiceNumber(level, slot);
+    if (choice != null) {
+        return `Choix ${choice} · Niveau ${level} · ${variantLabel}`;
+    }
+    return `Niveau ${level} · ${variantLabel}`;
 }
 
 /**

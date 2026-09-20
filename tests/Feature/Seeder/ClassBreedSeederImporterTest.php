@@ -50,15 +50,15 @@ final class ClassBreedSeederImporterTest extends TestCase
         $this->assertSame('/storage/images/breeds/iop/symbol-bw.png', $iop->icon);
 
         $this->assertSame(
-            ['air' => 'tank', 'earth' => 'tank', 'water' => 'protection'],
+            ['air' => 'placement', 'earth' => 'tank', 'fire' => 'entrave', 'water' => 'degats'],
             $this->orientationsOf($sacrieur)
         );
         $this->assertSame(
-            ['air' => 'placement', 'earth' => 'tank', 'fire' => 'degats'],
+            ['air' => 'placement', 'earth' => 'degats', 'fire' => 'tank', 'water' => 'entrave'],
             $this->orientationsOf($panda)
         );
         $this->assertSame(
-            ['air' => 'degats', 'earth' => 'degats', 'fire' => 'degats'],
+            ['air' => 'placement', 'earth' => 'degats', 'fire' => 'amelioration', 'water' => 'protection'],
             $this->orientationsOf($iop)
         );
 
@@ -147,14 +147,14 @@ final class ClassBreedSeederImporterTest extends TestCase
         $this->assertFalse($feca->auto_update);
         $this->assertSame('Protecteur', $feca->description_fast);
         $this->assertSame(
-            ['earth' => 'tank', 'fire' => 'protection', 'water' => 'amelioration'],
+            ['air' => 'protection', 'earth' => 'tank', 'fire' => 'degats', 'water' => 'entrave'],
             $this->orientationsOf($feca)
         );
 
         $this->assertSame(Breed::STATE_RAW, $cra->state);
         $this->assertFalse($cra->auto_update);
         $this->assertSame(
-            ['air' => 'degats', 'fire' => 'degats', 'water' => 'degats'],
+            ['air' => 'placement', 'earth' => 'degats', 'fire' => 'amelioration', 'water' => 'entrave'],
             $this->orientationsOf($cra)
         );
     }

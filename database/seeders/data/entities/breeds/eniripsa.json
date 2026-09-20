@@ -9,8 +9,9 @@
     "read_level": 0,
     "write_level": 3,
     "element_orientations": {
-        "water": "soin",
-        "air": "soin",
-        "fire": "soin"
+        "fire": "soin",
+        "earth": "entrave",
+        "water": "protection",
+        "air": "amelioration"
     }
 }

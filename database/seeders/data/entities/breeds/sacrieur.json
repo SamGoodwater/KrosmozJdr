@@ -9,8 +9,9 @@
     "read_level": 0,
     "write_level": 3,
     "element_orientations": {
+        "fire": "entrave",
         "earth": "tank",
-        "air": "tank",
-        "water": "protection"
+        "water": "degats",
+        "air": "placement"
     }
 }

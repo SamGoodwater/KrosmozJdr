@@ -9,8 +9,9 @@
     "read_level": 0,
     "write_level": 3,
     "element_orientations": {
-        "water": "invocation",
-        "fire": "degats",
-        "earth": "entrave"
+        "fire": "entrave",
+        "earth": "tank",
+        "water": "soin",
+        "air": "degats"
     }
 }

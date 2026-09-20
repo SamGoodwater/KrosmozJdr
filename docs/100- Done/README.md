@@ -1,5 +1,11 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Voies, passifs et modèle Iop / Érudit
+
+Les **19 classes** ont leurs **quatre voies** (Feu, Terre, Eau, Air) calées sur le tableau *Généralités Classes* : l’Iop n’est plus « tout dégât », le Feu améliore, l’Eau protège, l’Air place. Chaque classe n’expose plus que son **passif** (Fureur pour l’Iop, visible sur la fiche). Les sorts de dégâts élémentaires de l’Iop sont au **même niveau** : quatre variantes au choix 1, Bond et Concentration chacun tout seuls. Les **12 choix** sont numérotés dans l’interface.
+
+Sur une **spécialisation**, une seule section par palier : les capacités s’ouvrent au clic dans le texte, comme les jets de sauvegarde et les compétences. Plus de doublon « Niveau 1 » / « Niveau 1 (Capacité) ».
+
 ## Septembre 2026 — Créer une fiche depuis les Bibliothèques
 
 Sur les pages **Bibliothèques** (tableaux d’entités), un bouton **Créer** apparaît pour les admins. Il ouvre un petit formulaire : nom, description, et deux ou trois infos utiles — pas toute la fiche. On peut aussi lancer une **conversion IA** (même droit admin, mot de passe). Ensuite la fiche s’ouvre déjà en **Modifier**, pour compléter le reste.

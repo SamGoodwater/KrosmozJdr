@@ -45,7 +45,9 @@ En base, capacités et aptitudes sont toutes des `Capability` liées par `capabi
 `level` porte le palier ; l’aptitude se distingue par `is_passive`.
 
 L’**Érudit** est la fiche modèle jouable (`database/seeders/data/playable-specializations/erudit.php`) : le seed
-la préfère au HTML legacy et la rafraîchit à chaque passage. Les cinq autres fiches jouables viennent encore
+la préfère au HTML legacy et la rafraîchit à chaque passage. Les sections de palier portent des **kref**
+(capacités cliquables, jets de sauvegarde, compétences). Une seule section par niveau : les listes de
+capacités legacy sont fusionnées dans le texte. Les cinq autres fiches jouables viennent encore
 des exports HTML (`database/seeders/data/legacy-specializations/`, hors dépôt). Elles utilisaient l’ancienne
 grille 1/3/5/8/10/13/15/18/20 : `LegacySpecializationRealignService` remappe les paliers (13+15 → 15 et
 18+20 → 20), renomme les blocs et ne retient que les 3 aptitudes de

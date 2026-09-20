@@ -69,12 +69,12 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertTrue($attaque->po_editable);
         $this->assertSame('4', $attaque->po_max);
 
-        $fendoir = Spell::query()->where('name', 'Fendoir')->first();
-        $this->assertNotNull($fendoir);
-        $this->assertSame('5', $fendoir->pa);
-        $this->assertSame(Spell::RESOLUTION_SAVING_THROW, $fendoir->resolution_mode);
-        $this->assertSame('sagesse', $fendoir->save_characteristic_key);
-        $this->assertTrue($fendoir->is_magic);
+        $givre = Spell::query()->where('official_id', 'jdr:epee-de-givre')->first();
+        $this->assertNotNull($givre);
+        $this->assertSame('Épée de Givre', $givre->name);
+        $this->assertSame('3', $givre->pa);
+        $this->assertSame('chance', $givre->attack_characteristic_key);
+        $this->assertSame(ElementBitmask::fromSlug('water'), $givre->element);
 
         $bond = Spell::query()->where('dofusdb_id', '15660')->first();
         $this->assertNotNull($bond);

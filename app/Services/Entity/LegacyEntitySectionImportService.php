@@ -9,6 +9,7 @@ use App\Models\Entity\Capability;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
+use App\Support\Cms\KrefShortcodeReplacer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -89,12 +90,29 @@ class LegacyEntitySectionImportService
                     continue;
                 }
 
-                $results[] = [
-                    'title' => "Capacités (niveau {$currentLevel})",
-                    'level' => $currentLevel,
-                    'content' => $this->buildCapabilityKrefListHtml($capabilities),
-                    'capabilities' => $capabilities,
-                ];
+                $merged = false;
+                for ($j = count($results) - 1; $j >= 0; $j--) {
+                    if ((int) ($results[$j]['level'] ?? 0) !== $currentLevel) {
+                        continue;
+                    }
+
+                    $results[$j]['content'] .= $this->buildCapabilityKrefListHtml($capabilities);
+                    $results[$j]['capabilities'] = array_values(array_unique(array_merge(
+                        $results[$j]['capabilities'] ?? [],
+                        $capabilities
+                    )));
+                    $merged = true;
+                    break;
+                }
+
+                if (! $merged) {
+                    $results[] = [
+                        'title' => 'Niveau '.$currentLevel,
+                        'level' => $currentLevel,
+                        'content' => $this->buildCapabilityKrefListHtml($capabilities),
+                        'capabilities' => $capabilities,
+                    ];
+                }
             }
         }
 
@@ -176,7 +194,7 @@ class LegacyEntitySectionImportService
                 'template' => SectionType::TEXT->value,
                 'type' => SectionType::TEXT->value,
                 'settings' => ['enableRichReferences' => true],
-                'data' => ['content' => $contentHtml],
+                'data' => ['content' => KrefShortcodeReplacer::forEssentialPages()->replace($contentHtml)],
                 'state' => $state,
                 'read_level' => User::ROLE_GUEST,
                 'write_level' => User::ROLE_ADMIN,
