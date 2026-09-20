@@ -145,6 +145,9 @@ class SpecializationSeederTest extends TestCase
             }
             $this->assertStringNotContainsString('Brouillon', $html, $name);
             $this->assertStringNotContainsString('5e-drs.fr', $html, $name);
+            $this->assertStringNotContainsString('emplacement libre', $html, $name);
+            $this->assertStringNotContainsString('+2 points', $html, $name);
+            $this->assertStringContainsString('Choix entre', $html, $name);
             $this->assertGreaterThanOrEqual(3, $spec->capabilities()->where('is_passive', true)->count(), $name);
         }
     }

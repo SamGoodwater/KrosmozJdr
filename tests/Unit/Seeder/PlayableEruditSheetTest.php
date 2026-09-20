@@ -23,7 +23,7 @@ final class PlayableEruditSheetTest extends TestCase
             $this->assertNotEmpty($caps, 'Palier '.$level.' sans capacité.');
             $types = array_column($caps, 'type');
             $this->assertContains('garantie', $types, 'Palier '.$level.' sans garantie.');
-            $this->assertContains('emplacement libre', $types, 'Palier '.$level.' sans option.');
+            $this->assertContains('choix', $types, 'Palier '.$level.' sans option.');
 
             foreach ($data['aptitudes'] ?? [] as $aptitude) {
                 $aptitudes[(int) $level] = $aptitude['name'];
@@ -44,12 +44,16 @@ final class PlayableEruditSheetTest extends TestCase
 
         $this->assertStringNotContainsString('Brouillon', $html);
         $this->assertStringContainsString('Comment lire un palier', $html);
-        $this->assertStringContainsString('ce n’est pas un trou vide, c’est <strong>un choix</strong>', $html);
-        $this->assertStringContainsString('2ᵉ capacité', $html);
-        $this->assertStringContainsString('1 choix (2ᵉ capacité ou +2 points)', $html);
+        $this->assertStringContainsString('choix entre X et Y', $html);
+        $this->assertStringContainsString('jamais</strong> de points de caractéristique', $html);
+        $this->assertStringNotContainsString('+2 points', $html);
+        $this->assertStringNotContainsString('emplacement libre', $html);
+        $this->assertStringNotContainsString('emplacement vide', $html);
+        $this->assertStringContainsString('Choix entre [[kref:entity:capabilities:Identification|Identification]] et [[kref:entity:capabilities:Recherche approfondie|Recherche approfondie]]', $html);
+        $this->assertStringContainsString('Choix entre [[kref:entity:capabilities:Compréhension des langues|Compréhension des langues]] et [[kref:entity:capabilities:Main du mage|Main du mage]]', $html);
+        $this->assertStringContainsString('Choix entre [[kref:entity:capabilities:Zaap de poche|Zaap de poche]], [[kref:entity:capabilities:Télékinésie|Télékinésie]] et un trait', $html);
         $this->assertStringContainsString('<h2>Capacités</h2>', $html);
         $this->assertStringContainsString('[[kref:entity:capabilities:Politicien|Politicien]]', $html);
-        $this->assertStringContainsString('[[kref:entity:capabilities:Identification|Identification]]', $html);
         $this->assertStringContainsString('[[kref:characteristic:wisdom_creature|Sagesse]]', $html);
         $this->assertStringContainsString('[[kref:characteristic:intelligence_creature|Intelligence]]', $html);
         $this->assertStringContainsString('[[kref:characteristic:arcana_creature|Arcanes]]', $html);

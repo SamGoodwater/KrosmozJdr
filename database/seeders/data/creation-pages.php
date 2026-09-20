@@ -138,7 +138,7 @@ return [
                     'title' => 'Philosophie',
                     'html' => '<h2>Spécialisations</h2>'
                         .'<p>La spé <strong>oriente</strong> une [[kref:page:creation-classes|classe]] : elle ne la remplace pas. Capacités, aptitudes, compétences, parfois métiers ou objets liés. Un PJ « dans le rôle » de la spé est au maximum ; un PJ qui l’ignore reste jouable, juste plus faible dans ce registre. '.$kSpeLivre.' · '.$kClassesEq.'.</p>'
-                        .'<p><strong>Structure imposée</strong> : 7 paliers (niveaux 1, 3, 6, 9, 12, 15, 20). Chaque palier donne 1 capacité garantie, 1 emplacement libre (2ᵉ capacité proposée, +2 points de carac, ou 1 trait dès le palier 12) et 1 compétence — 3 au palier 1, 2 seulement si la fiche l’écrit. Les paliers 3, 9 et 15 donnent en plus 1 aptitude automatique, soit 3 au total. Gabarit : [[kref:page:regles-2-4-choisir-sa-specialisation|2.4.2]]. Intensification des sorts : [[kref:page:regles-3-3-sorts|3.3.6]].</p>',
+                        .'<p><strong>Structure imposée</strong> : 7 paliers (niveaux 1, 3, 6, 9, 12, 15, 20). Chaque palier pose un choix entre les garanties, un choix entre les options (capacités, ou 1 trait dès le palier 12) et 1 compétence — 3 au palier 1, 2 seulement si la fiche l’écrit. Pas de points de caractéristique. Les paliers 3, 9 et 15 donnent en plus 1 aptitude automatique, soit 3 au total. Gabarit : [[kref:page:regles-2-4-choisir-sa-specialisation|2.4.2]]. Intensification des sorts : [[kref:page:regles-3-3-sorts|3.3.6]].</p>',
                 ],
                 [
                     'slug' => 'creation-specialisations-methode',
@@ -147,7 +147,7 @@ return [
                         .'<ol>'
                         .'<li>Nomme le fantasy (« tank sacré », « piégeur à distance ») en lien avec la classe parente.</li>'
                         .'<li>Paliers 1–3 : effets simples ; 6–9 modérés ; 12–15 puissants ; 20 exceptionnel — jamais un effet de palier 20 dès le palier 3.</li>'
-                        .'<li>Écris <strong>1 à 2 capacités par palier</strong> : la première est garantie, la seconde n’est proposée que si l’emplacement libre y est dépensé. Chaque capacité a un coût ('.$pa.', Wakfu, fréquence).</li>'
+                        .'<li>Écris <strong>1 à 2 capacités par palier</strong> : la première est une garantie, la seconde une option du choix. Chaque capacité a un coût ('.$pa.', Wakfu, fréquence).</li>'
                         .'<li>Écris exactement <strong>3 aptitudes</strong>, aux paliers 3, 9 et 15 : passives ou contextuelles, gratuites, sans choix (voir [[kref:page:creation-capacites|Capacités]]).</li>'
                         .'<li>Les bonus de caractéristiques restent sur la ligne neutre des chartes, éventuellement <em>fort</em> sur <strong>une</strong> stat du rôle, pas sur toutes.</li>'
                         .'<li>Catalogue : [[kref:page:bibliotheque-specialization|Spécialisations]]. En lecture, les liaisons brouillon ne fuient pas.</li>'

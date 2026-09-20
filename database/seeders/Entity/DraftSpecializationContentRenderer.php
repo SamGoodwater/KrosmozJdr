@@ -10,10 +10,11 @@ use App\Support\Cms\RulesCharacteristicKrefReplacementCatalog;
  * Transforme les tableaux de spécialisations (brouillons ou fiche jouable)
  * en sections HTML.
  *
- * Gabarit imposé par 2.4.2.6 : 7 paliers, 1 capacité garantie + 1 option,
+ * Gabarit imposé par 2.4.2.6 : 7 paliers, choix entre les capacités
+ * garanties puis choix entre les options (un trait dès le palier 12),
  * 1 compétence (sauf palier 1 = 3), aptitudes uniquement aux paliers 3 / 9 / 15.
- * Les noms de capacités, jets et compétences sont des shortcodes kref
- * (cliquables une fois convertis à l’import).
+ * Pas de points de caractéristique. Les noms de capacités, jets et
+ * compétences sont des shortcodes kref (cliquables une fois convertis).
  */
 final class DraftSpecializationContentRenderer
 {
@@ -81,11 +82,10 @@ final class DraftSpecializationContentRenderer
             .'</ul>';
 
         $parts[] = '<h2>Comment lire un palier</h2><p>'
-            .'À chaque palier tu prends <strong>une capacité garantie</strong> (une seule, même s’il y en a plusieurs dans la liste). '
-            .'Il te reste ensuite <strong>un emplacement</strong> : ce n’est pas un trou vide, c’est <strong>un choix</strong>. '
-            .'Tu le dépenses en <strong>2ᵉ capacité</strong> (celles marquées ainsi), en <strong>+2 points</strong> de caractéristique '
-            .'(trois fois dans toute ta carrière, pas plus), ou en <strong>trait</strong> à partir du niveau 12. '
-            .'Tu ne perds jamais cet emplacement : s’il ne reste rien d’autre, il devient une compétence de plus.'
+            .'À chaque palier, la fiche écrit <strong>choix entre X et Y</strong> : tu prends <strong>une</strong> des capacités garanties, '
+            .'puis <strong>une</strong> des autres options. Ce n’est pas une case vide, et ça ne donne <strong>jamais</strong> de points de caractéristique. '
+            .'Les options, ce sont des <strong>capacités</strong>, un <strong>trait</strong> à partir du niveau 12, plus les <strong>compétences</strong> '
+            .'et les <strong>métiers</strong> du bloc Maîtrises. Les <strong>aptitudes</strong> tombent toutes seules aux niveaux 3, 9 et 15.'
             .'</p>';
 
         $difference = trim((string) ($spec['difference'] ?? ''));
@@ -129,9 +129,9 @@ final class DraftSpecializationContentRenderer
             $parts[] = '<p>'.$this->richText($flavor).'</p>';
         }
 
-        $choice = trim((string) ($levelData['choice'] ?? ''));
+        $choice = $this->buildChoiceLine($level, $levelData);
         if ($choice !== '') {
-            $parts[] = '<p><strong>À ce palier</strong> : '.$this->richText($this->choiceLabel($choice)).'</p>';
+            $parts[] = '<p><strong>À ce palier</strong> : '.$this->richText($choice).'</p>';
         }
 
         $masteries = $levelData['masteries'] ?? [];
@@ -225,24 +225,144 @@ final class DraftSpecializationContentRenderer
     }
 
     /**
-     * Libellé joueur du type de capacité (le gabarit stocke encore « emplacement libre »).
+     * Construit « Choix entre X et Y » à partir des noms du palier.
+     *
+     * @param  array<string, mixed>  $levelData
      */
-    private function capacityTypeLabel(string $type): string
+    private function buildChoiceLine(int $level, array $levelData): string
     {
-        return $type === 'emplacement libre' ? '2ᵉ capacité' : $type;
+        $parts = [];
+
+        if ($this->namedEntries($levelData['aptitudes'] ?? []) !== []) {
+            $parts[] = '1 aptitude (automatique)';
+        }
+
+        $guaranteed = $this->capacityNamesByTypes($levelData, ['garantie']);
+        $first = $this->entrePhrase($guaranteed);
+        if ($first !== '') {
+            $parts[] = $first;
+        }
+
+        $options = $this->capacityNamesByTypes($levelData, ['choix', 'emplacement libre']);
+        if ($level >= 12) {
+            $options[] = 'un trait';
+        }
+        $second = $this->entrePhrase($options);
+        if ($second !== '') {
+            $parts[] = $second;
+        }
+
+        $parts[] = $this->skillPhrase($level, $levelData);
+
+        return implode(' · ', $parts);
     }
 
     /**
-     * Remplace le jargon « emplacement libre » par le choix réel du palier.
+     * @param  list<string>  $names
      */
-    private function choiceLabel(string $choice): string
+    private function entrePhrase(array $names): string
     {
-        $withTrait = '1 choix (2ᵉ capacité, +2 points, ou un trait)';
-        $withoutTrait = '1 choix (2ᵉ capacité ou +2 points)';
+        $labeled = [];
+        foreach ($names as $name) {
+            $name = trim($name);
+            if ($name === '') {
+                continue;
+            }
+            $labeled[] = $name === 'un trait' ? 'un trait' : $this->capabilityKref($name);
+        }
 
-        $choice = str_replace('1 emplacement libre (trait possible)', $withTrait, $choice);
+        $count = count($labeled);
+        if ($count === 0) {
+            return '';
+        }
+        if ($count === 1) {
+            return $labeled[0];
+        }
 
-        return str_replace('1 emplacement libre', $withoutTrait, $choice);
+        $last = array_pop($labeled);
+
+        return 'Choix entre '.implode(', ', $labeled).' et '.$last;
+    }
+
+    /**
+     * @param  array<string, mixed>  $levelData
+     * @param  list<string>  $types
+     * @return list<string>
+     */
+    private function capacityNamesByTypes(array $levelData, array $types): array
+    {
+        $names = [];
+        foreach ($this->namedEntries($levelData['capacities'] ?? []) as $entry) {
+            $type = trim((string) ($entry['type'] ?? ''));
+            if (in_array($type, $types, true)) {
+                $names[] = (string) $entry['name'];
+            }
+        }
+
+        return $names;
+    }
+
+    /**
+     * @param  mixed  $entries
+     * @return list<array<string, mixed>>
+     */
+    private function namedEntries(mixed $entries): array
+    {
+        if (! is_array($entries)) {
+            return [];
+        }
+
+        $named = [];
+        foreach ($entries as $entry) {
+            if (! is_array($entry)) {
+                continue;
+            }
+            $name = trim((string) ($entry['name'] ?? ''));
+            if ($name === '') {
+                continue;
+            }
+            $named[] = $entry;
+        }
+
+        return $named;
+    }
+
+    /**
+     * @param  array<string, mixed>  $levelData
+     */
+    private function skillPhrase(int $level, array $levelData): string
+    {
+        $count = $this->skillCount((string) ($levelData['choice'] ?? ''), $level);
+        $phrase = match ($count) {
+            3 => '3 compétences',
+            2 => '2 compétences',
+            default => '1 compétence',
+        };
+
+        if (in_array($level, [9, 15, 20], true)) {
+            $phrase .= ' (expertise possible)';
+        }
+
+        return $phrase;
+    }
+
+    private function skillCount(string $choice, int $level): int
+    {
+        if (preg_match('/(\d+)\s+compétences?/u', $choice, $matches) === 1) {
+            return (int) $matches[1];
+        }
+
+        return $level === 1 ? 3 : 1;
+    }
+
+    /**
+     * Libellé joueur du type de capacité.
+     */
+    private function capacityTypeLabel(string $type): string
+    {
+        return in_array($type, ['emplacement libre', '2ᵉ capacité', 'choix'], true)
+            ? 'choix'
+            : $type;
     }
 
     private function richText(string $text): string

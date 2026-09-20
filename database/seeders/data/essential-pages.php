@@ -110,7 +110,7 @@ return [
                 'slug' => 'caracs',
                 'title' => 'Caractéristiques',
                 'html' => '<p>Mod. = ⌊(score − 10) / 2⌋. Six stats : [[kref:characteristic:vitality_creature|Vita]], [[kref:characteristic:strength_creature|For]], [[kref:characteristic:agility_creature|Agi]], [[kref:characteristic:intelligence_creature|Int]], [[kref:characteristic:wisdom_creature|Sag]], [[kref:characteristic:chance_creature|Cha]].</p>'
-                    .'<p>Niv. 1 : [[kref:characteristic:action_points_creature|PA]] 6, [[kref:characteristic:movement_points_creature|PM]] 3, [[kref:characteristic:range_creature|PO]] 0. +1 carac. aux niveaux <strong>2, 4, 8, 10, 14, 16</strong> (6 pts), plus <strong>+2 par emplacement libre</strong> de spé converti — <strong>12 pts gagnés au maximum</strong>. Plafond du <strong>score</strong> : <strong>14 + ⌊niv./2⌋</strong> (score <strong>14</strong> au niv. 1, 24 au niv. 20). Équipement : <strong>+8</strong> au total par carac, forgemagie comprise.</p>'
+                    .'<p>Niv. 1 : [[kref:characteristic:action_points_creature|PA]] 6, [[kref:characteristic:movement_points_creature|PM]] 3, [[kref:characteristic:range_creature|PO]] 0. +1 carac. aux niveaux <strong>2, 4, 8, 10, 14, 16</strong> (6 pts). Les spécialisations n’en donnent pas. Plafond du <strong>score</strong> : <strong>14 + ⌊niv./2⌋</strong> (score <strong>14</strong> au niv. 1, 24 au niv. 20). Équipement : <strong>+8</strong> au total par carac, forgemagie comprise.</p>'
                     .'<p>Table unique (sorts / carac / spé / maîtrise) : [[kref:page:regles-2-3-choisir-sa-classe|2.3.2]]. PV max = max du dé de classe + (mod. Vitalité × niveau) + ((niveau − 1) × round(dé/2)) + équipement.</p>'
                     .'<p>→ [[kref:page:caracteristiques|Tableau]] · [[kref:page:regles-2-2-les-caracteristiques|Règles caracs]]</p>',
             ],
@@ -118,7 +118,7 @@ return [
                 'slug' => 'classe-spe',
                 'title' => 'Classe et spé',
                 'html' => '<p><strong>Classe</strong> : identité, sorts auto, passifs — [[kref:page:regles-2-3-choisir-sa-classe|Choisir sa classe]].</p>'
-                    .'<p><strong>Spé</strong> : 6 jouables / 11 prévues ; paliers 1, 3, 6, 9, 12, 15, 20 — à chacun 1 capacité + 1 emplacement libre (2ᵉ capacité, +2 points de carac, ou 1 trait dès le niv. 12) + 1 compétence (2 si la fiche le dit). Aptitudes automatiques aux niv. 3, 9, 15 — [[kref:page:regles-2-4-choisir-sa-specialisation|Choisir sa spé]].</p>'
+                    .'<p><strong>Spé</strong> : 6 jouables / 11 prévues ; paliers 1, 3, 6, 9, 12, 15, 20 — à chacun choix entre les garanties, choix entre les options (capacités, ou un trait dès le niv. 12) + 1 compétence (2 si la fiche le dit). Pas de points de carac. Aptitudes automatiques aux niv. 3, 9, 15 — [[kref:page:regles-2-4-choisir-sa-specialisation|Choisir sa spé]].</p>'
                     .'<p><strong>Compétences</strong> : Athlétisme, Acrobaties, Discrétion, Escamotage, Arcanes, Histoire, Investigation, Nature, Religion, Connaissance des créatures, Dressage, Médecine, Perception, Perspicacité, Survie, Herbaliste, Persuasion, Représentation, Supercherie, Intimidation (For ou Cha). → [[kref:page:regles-3-5-competences|3.5.1]]</p>',
             ],
             [

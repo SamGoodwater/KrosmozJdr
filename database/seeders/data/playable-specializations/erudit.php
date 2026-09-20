@@ -5,23 +5,23 @@ declare(strict_types=1);
 /**
  * Fiche modèle de spécialisation (gabarit 2.4.2.6) : l’Érudit, jouable.
  *
- * 7 paliers, 1 capacité garantie + 1 option, 1 compétence (3 au palier 1),
+ * 7 paliers, choix entre les garanties puis les options, 1 compétence (3 au palier 1),
  * exactement 3 aptitudes aux paliers 3 / 9 / 15. Les listes D&D héritées
  * sont ramenées à 2 ou 3 noms par type (garantie / option), pas à un grimoire.
  *
  * @return array<string, mixed>
  */
 $guaranteed = 'garantie';
-$freeSlot = 'emplacement libre';
+$freeSlot = 'choix';
 
 $choices = [
-    1 => '1 capacité garantie + 1 emplacement libre · 3 compétences',
-    3 => '1 aptitude (automatique) · 1 capacité garantie + 1 emplacement libre · 1 compétence',
-    6 => '1 capacité garantie + 1 emplacement libre · 1 compétence',
-    9 => '1 aptitude (automatique) · 1 capacité garantie + 1 emplacement libre · 1 compétence (expertise possible)',
-    12 => '1 capacité garantie + 1 emplacement libre (trait possible) · 1 compétence',
-    15 => '1 aptitude (automatique) · 1 capacité garantie + 1 emplacement libre (trait possible) · 1 compétence (expertise possible)',
-    20 => '1 capacité garantie + 1 emplacement libre (trait possible) · 1 compétence (expertise possible)',
+    1 => '3 compétences',
+    3 => '1 compétence',
+    6 => '1 compétence',
+    9 => '1 compétence (expertise possible)',
+    12 => '1 compétence',
+    15 => '1 compétence (expertise possible)',
+    20 => '1 compétence (expertise possible)',
 ];
 
 return [

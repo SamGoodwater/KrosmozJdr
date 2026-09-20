@@ -370,8 +370,8 @@ class SpecializationSeeder extends Seeder
         $capability = Capability::query()->where('name', $name)->first() ?? new Capability;
         $wasNew = ! $capability->exists;
         $type = trim((string) ($entry['type'] ?? ''));
-        if ($type === 'emplacement libre') {
-            $type = '2ᵉ capacité';
+        if (in_array($type, ['emplacement libre', '2ᵉ capacité'], true)) {
+            $type = 'choix';
         }
 
         $capability->fill([

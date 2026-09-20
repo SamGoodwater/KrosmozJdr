@@ -25,7 +25,7 @@ return static function (array $k): array {
                 'title' => 'Philosophie',
                 'html' => '<h2>Capacités</h2>'
                     .'<p>Cette entité couvre trois choses : les <strong>passifs de classe</strong>, les <strong>capacités</strong> de spécialisation (actives, type sort, coût en '.$pa.' ou en Wakfu) et les <strong>aptitudes</strong> de spécialisation (passives ou contextuelles, gratuites). Le champ <code>is_passive</code> fait la différence. '.$k['kCapaLivre'].'.</p>'
-                    .'<p>Une capacité, on la <em>lance</em> ; une aptitude, on l’<em>a</em>. Chaque palier de spé (niveaux 1, 3, 6, 9, 12, 15, 20) donne 1 capacité garantie plus un emplacement libre ; les aptitudes tombent automatiquement aux niveaux 3, 9 et 15.</p>'
+                    .'<p>Une capacité, on la <em>lance</em> ; une aptitude, on l’<em>a</em>. Chaque palier de spé (niveaux 1, 3, 6, 9, 12, 15, 20) pose un choix entre les garanties puis un choix entre les options ; les aptitudes tombent automatiquement aux niveaux 3, 9 et 15. Pas de points de caractéristique.</p>'
                     .'<p>Les 19 classes ont chacune un <strong>passif</strong> dès le niveau 1 (gratuit) et un moteur parmi cinq : zone, invocation, état perso, marque, tempo. Le moteur reste simple au 1 et s’ouvre au 7. Conversion Dofus : on ne recrée pas le kit MMO ; on écrit un passif lisible en trois paliers (1 / 7 / 11).</p>'
                     .'<p>Pas de grille de normes dédiée : pour des dégâts ou un coût, compare aux '.$k['kSortsPage'].', en restant plus faible qu’un sort actif du même niveau (c’est « toujours là »).</p>',
             ],

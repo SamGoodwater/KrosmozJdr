@@ -1,8 +1,8 @@
 # Ce qui a été fait
 
-## Septembre 2026 — L’emplacement de spécialisation, ce n’est pas un trou vide
+## Septembre 2026 — Choix entre X et Y, plus de points via la spé
 
-Sur les fiches, **emplacement libre** voulait dire « un choix », pas une case vide. C’est maintenant écrit en tête de fiche : tu prends ta capacité garantie, puis tu dépenses le reste en **2ᵉ capacité**, en **+2 points**, ou en **trait** à partir du 12.
+Les paliers de spécialisation n’écrivent plus « emplacement vide » : on lit **choix entre X et Y**, avec les vrais noms. On prend des **aptitudes**, des **capacités**, des **traits**, des **compétences** et des **métiers**. Plus de **+2 points** de caractéristique : c’était trop fort. Les points restent ceux de la création et des six niveaux fixes.
 
 ## Septembre 2026 — Les six spécialisations jouables sur le gabarit Érudit
 
@@ -40,9 +40,9 @@ Quand on convertit un PNJ par IA, le modèle **voit** les classes et spécialisa
 
 La montée en niveau change de forme. **Les sorts sont tous acquis au niveau 12** : 3 au niveau 1, puis un de plus aux niveaux 2, 4, 5, 6, 7, 8, 10, 11 et 12, soit 12 sorts. Au-delà, ils ne font que s’intensifier — on joue rarement jusqu’au 20.
 
-Les **caractéristiques** partent toutes à 8 ; on répartit 10 points à la création (12 en descendant une carac à 6). Le plafond porte sur le score : **14 + niveau / 2**. Ensuite, seulement **6 points offerts** (niveaux 2, 4, 8, 10, 14 et 16) — et jusqu’à 6 de plus si on les prend à la place d’une capacité. Les **équipements** ne peuvent plus dépasser **+8 par caractéristique**, forgemagie comprise (max +2).
+Les **caractéristiques** partent toutes à 8 ; on répartit 10 points à la création (12 en descendant une carac à 6). Le plafond porte sur le score : **14 + niveau / 2**. Ensuite, seulement **6 points offerts** (niveaux 2, 4, 8, 10, 14 et 16). Les **équipements** ne peuvent plus dépasser **+8 par caractéristique**, forgemagie comprise (max +2).
 
-Les **spécialisations** montent aux niveaux **1, 3, 6, 9, 12, 15 et 20**. À chaque palier : une capacité garantie, plus un **emplacement libre** à dépenser comme on veut — une deuxième capacité, +2 points de caractéristique, ou un **trait** à partir du niveau 12.
+Les **spécialisations** montent aux niveaux **1, 3, 6, 9, 12, 15 et 20**. À chaque palier : un **choix entre** les capacités garanties, un **choix entre** les options (capacités, ou un **trait** à partir du niveau 12), plus compétences et métiers. Pas de points de caractéristique.
 
 Au passage, **aptitude et capacité échangent leur sens**. Une **capacité** est une action qui ressemble à un sort, choisie à chaque palier. Une **aptitude** est un bonus (souvent passif) que la spécialisation donne **sans choix**, aux niveaux 3, 9 et 15 — trois en tout, pas plus.
 

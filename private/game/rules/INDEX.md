@@ -40,12 +40,12 @@ Les numéros renvoient aux fichiers du livre. Changelog et historique : [[kref:p
 ## Création et progression
 
 - **Aptitudes** (passives, automatiques aux niv. 3 / 9 / 15) : 2.4.3 · jeu : 3.4.1
-- **Capacités** (actives, 1 garantie par palier + emplacement libre) : 2.4.4 · activation : 3.4.2
+- **Capacités** (actives, choix entre les garanties puis les options) : 2.4.4 · activation : 3.4.2
 - **Caractéristiques** (scores, mods, plafond = 14 + ⌊niv/2⌋) : 2.2.1, 2.2.3
 - **Classes** (19) : 2.3.1
 - **Compétences** (liste unique ; 3 au niv. 1 puis 1 par palier, 2 si la fiche le dit) : 3.5.1, 2.4.5
 - **Intensification** (paliers 13 / 16 / 20) : 3.3.6
-- **Emplacement libre** (capacité / +2 points de carac / trait au niv. 12+) : 2.4.2
+- **Choix de palier** (capacités / trait au niv. 12+ ; jamais de points de carac) : 2.4.2
 - **Expertise** (paliers 9 / 15 / 20, max 3) : 3.5.3, 2.4.5
 - **Maîtrise** (1 + ⌊niveau/4⌋) : 2.3.2, 3.5.3
 - **Passifs de classe** : 2.3.4
