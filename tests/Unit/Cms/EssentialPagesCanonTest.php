@@ -49,6 +49,7 @@ final class EssentialPagesCanonTest extends TestCase
 
         $this->assertStringContainsString('paliers 1, 3, 6, 9, 12, 15, 20', $html);
         $this->assertStringContainsString('Aptitudes automatiques aux niv. 3, 9, 15', $html);
+        $this->assertStringContainsString('1 compétence (2 si la fiche le dit)', $html);
         $this->assertStringNotContainsString('aptitude ou capacité aux paliers', $html);
     }
 

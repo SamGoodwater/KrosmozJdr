@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Intensification des sorts et gabarit des fiches
+
+À partir du niveau 12, plus de nouveau sort de classe : les 12 déjà connus grandissent aux niveaux **13, 16 et 20**. On lit une nouvelle ligne sur la même fiche (plus de dés, de portée ou de durée), pas un 13ᵉ sort. Si la fiche n’a pas encore ces lignes, on ajoute un dé — plafonné à 5d6 (attaque) ou 5d4 (soin). Les spécialisations s’écrivent toutes sur le même gabarit à 7 paliers : 1 capacité garantie, 1 option, 1 compétence (2 seulement si c’est écrit), 3 aptitudes aux niveaux 3, 9 et 15.
+
 ## Septembre 2026 — Refonte de la progression : moins de points, plus de choix
 
 La montée en niveau change de forme. **Les sorts sont tous acquis au niveau 12** : 3 au niveau 1, puis un de plus aux niveaux 2, 4, 5, 6, 7, 8, 10, 11 et 12, soit 12 sorts. Au-delà, ils ne font que s’intensifier — on joue rarement jusqu’au 20.

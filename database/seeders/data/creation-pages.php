@@ -138,7 +138,7 @@ return [
                     'title' => 'Philosophie',
                     'html' => '<h2>Spécialisations</h2>'
                         .'<p>La spé <strong>oriente</strong> une [[kref:page:creation-classes|classe]] : elle ne la remplace pas. Capacités, aptitudes, compétences, parfois métiers ou objets liés. Un PJ « dans le rôle » de la spé est au maximum ; un PJ qui l’ignore reste jouable, juste plus faible dans ce registre. '.$kSpeLivre.' · '.$kClassesEq.'.</p>'
-                        .'<p><strong>Structure imposée</strong> : 7 paliers (niveaux 1, 3, 6, 9, 12, 15, 20). Chaque palier donne 1 capacité garantie, 1 emplacement libre (2ᵉ capacité proposée, +2 points de carac, ou 1 trait dès le palier 12) et 1 à 2 compétences — 3 au palier 1. Les paliers 3, 9 et 15 donnent en plus 1 aptitude automatique, soit 3 au total.</p>',
+                        .'<p><strong>Structure imposée</strong> : 7 paliers (niveaux 1, 3, 6, 9, 12, 15, 20). Chaque palier donne 1 capacité garantie, 1 emplacement libre (2ᵉ capacité proposée, +2 points de carac, ou 1 trait dès le palier 12) et 1 compétence — 3 au palier 1, 2 seulement si la fiche l’écrit. Les paliers 3, 9 et 15 donnent en plus 1 aptitude automatique, soit 3 au total. Gabarit : [[kref:page:regles-2-4-choisir-sa-specialisation|2.4.2]]. Intensification des sorts : [[kref:page:regles-3-3-sorts|3.3.6]].</p>',
                 ],
                 [
                     'slug' => 'creation-specialisations-methode',

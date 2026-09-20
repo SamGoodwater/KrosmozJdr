@@ -38,7 +38,7 @@ Le scrap DofusDB crée les états en `raw` (jetons de sort, pas le catalogue JDR
 
 Une spécialisation progresse sur **7 paliers** : niveaux 1, 3, 6, 9, 12, 15 et 20 (règle §2.4.2). Chaque palier
 donne **1 capacité garantie + 1 emplacement libre** (2ᵉ capacité, +2 points de caractéristique, ou un trait à
-partir du niveau 12) et 1 à 2 compétences. Les **aptitudes** sont des bonus acquis **sans choix**, et il y en a
+partir du niveau 12) et **1 compétence** (2 seulement si la fiche l'écrit). Les **aptitudes** sont des bonus acquis **sans choix**, et il y en a
 exactement **trois**, aux paliers **3, 9 et 15**.
 
 En base, capacités et aptitudes sont toutes des `Capability` liées par `capability_specialization`, dont le
