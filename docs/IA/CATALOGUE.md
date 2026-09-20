@@ -41,7 +41,7 @@ L’IA **ne réécrit pas** le nom, la description ni les caracs d’un item Dof
 
 ## Pré-filtre pour le LLM (pas d’API agent)
 
-Le modèle **ne reçoit pas** tout le catalogue. Laravel envoie une liste courte via `App\Services\GenerativeAi\NpcKitCatalog` (commande `php artisan ia:npc-kit-catalog`). Exemple : Iop Terre niveau 8 → `playable`, niveau 6–8, types portables, bonus Force / Vitalité / dégâts Terre.
+Le modèle **ne reçoit pas** tout le catalogue. Laravel envoie une liste courte via `App\Services\GenerativeAi\NpcKitCatalog` (commande `php artisan ia:npc-kit-catalog`). Exemple : Iop Terre niveau 8 → objets `playable`, niveau 6–8, types portables. Le pipeline PNJ passe **`voie = null`** (stuff multi-voies) ; la consigne demande de privilégier les bonus de la voie des sorts. Classes et spécialisations hors archive (`id`, `name`, `state`) sont dans le même payload, sans dump des capacités.
 
 Forme compacte (1–3 k tokens, 20–40 lignes) :
 
@@ -57,11 +57,11 @@ Forme compacte (1–3 k tokens, 20–40 lignes) :
 ]
 ```
 
-Consigne : *tu ne crées pas d’objet ; tu renvoies des `id` ; un item par slot ; cohérence Terre / Force.*
+Consigne : *tu ne crées pas d’objet ; tu renvoies des `id` ; un item par slot ; privilégier la voie des sorts.*
 
-Le validateur revérifie ids, niveau, slots, voie. Id inventé → retry.
+Le validateur revérifie les ids d’objets, les slots, le gabarit PV/PA, et l’existence de `breed_id` / `specialization_id`. Il **ne** rejette **pas** encore une incohérence voie / Force. Id inventé → retry.
 
-Même idée pour les **sorts de classe** d’un PNJ : `NpcKitCatalog::spells($breedId, $level)` (classe, `character_level` ≤ N, `playable`).
+Les **sorts de classe** d’un PNJ : `NpcKitCatalog::spells($breedId, $level)` (classe du JSON, `character_level` ≤ N, `playable`) et, dans le prompt, `spells_by_breed` (même filtre, plafonné par classe) pour pouvoir choisir une classe même si la fiche source n’en a pas.
 
 Gabarit 5.1.2 : `NpcStatGabarit` (PV / CA / dés selon palier et rôle). Few-shot PNJ : `NpcKitCatalog::exampleIds()` résout les `official_id` `jdr:npc:incarnam:%` playable (pas d’ids numériques dans `generation.json`).
 

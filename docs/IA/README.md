@@ -41,7 +41,7 @@ L’IA est pertinente là où il faut **du design** (simplifier, choisir, racont
 | **Objets** | Quasi rien ; uniques de scénario seulement | Conversion, 3–4 caracs par type, normes, dédoublonnage, grille | Tous champs + toutes caracs |
 | **Sorts de classe** | Réécriture du champ `effect` (1 principal + 0–2 secondaires) | Bornes PA/portée, mapping d’effets, element ↔ carac d’attaque | Tout sauf `effect` ; toutes caracs |
 | **Monstres** | 2–3 sorts-créature, à la demande | Gabarit niveau / PV / dégâts (règles 5.1.2) | Tous champs + toutes caracs |
-| **PNJ** | **Toute** la fiche (identité + build + choix dans les listes) | Pré-filtre stuff/sorts, validation ids, cohérence voie ↔ carac | Aucun |
+| **PNJ** | **Toute** la fiche (identité + build + choix dans les listes) | Pré-filtre stuff/sorts/classes/spés, validation ids et slots, gabarit PV/PA | Aucun |
 
 ## Ordre de livraison
 

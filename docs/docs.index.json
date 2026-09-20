@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Sur une carte minimale, Sources rouvre les deux onglets : conversion DofusDB (algo) et conversion IA. On coche si on veut récupérer l’image. Après l’écriture, le tableau compare ancien et nouveau : un clic sur une cellule (ou sur l’en-tête de colonne) choisit ce qu’on garde."
+    "description": "Quand on convertit un PNJ par IA, le modèle voit les classes et spécialisations (même en brouillon) et les sorts jouables par classe."
   },
   {
     "path": "backend/_ai.md",

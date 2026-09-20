@@ -8,6 +8,7 @@ use App\Enums\EntityState;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Item;
 use App\Models\Entity\Npc;
+use App\Models\Entity\Specialization;
 use App\Models\Entity\Spell;
 use App\Models\Type\ItemType;
 use App\Services\GenerativeAi\NpcKitCatalog;
@@ -131,6 +132,87 @@ final class NpcKitCatalogTest extends TestCase
         $this->assertContains('Pression test', $names);
         $this->assertNotContains('Colère test', $names);
         $this->assertSame('Terre', $spells[0]['element']);
+    }
+
+    public function test_breeds_and_specializations_exclude_archived_and_keep_draft(): void
+    {
+        $playable = Breed::factory()->create(['name' => 'Iop-kit-playable', 'state' => Breed::STATE_PLAYABLE]);
+        $draft = Breed::factory()->create(['name' => 'Cra-kit-draft', 'state' => Breed::STATE_DRAFT]);
+        Breed::factory()->create(['name' => 'Sram-kit-archived', 'state' => Breed::STATE_ARCHIVED]);
+        $specDraft = Specialization::factory()->create([
+            'name' => 'Milicien kit draft',
+            'state' => Specialization::STATE_DRAFT,
+            'short_description' => 'Garde de ville',
+        ]);
+        Specialization::factory()->create([
+            'name' => 'Archive kit spec',
+            'state' => Specialization::STATE_ARCHIVED,
+        ]);
+
+        Npc::factory()->create([
+            'official_id' => NpcKitCatalog::OFFICIAL_ID_PREFIX.'ganymede',
+            'state' => Npc::STATE_PLAYABLE,
+        ]);
+
+        $catalog = (new NpcKitCatalog)->assemble(4);
+        $breedIds = array_column($catalog['breeds'], 'id');
+        $specIds = array_column($catalog['specializations'], 'id');
+        $specById = [];
+        foreach ($catalog['specializations'] as $row) {
+            $specById[$row['id']] = $row;
+        }
+
+        $this->assertContains((int) $playable->id, $breedIds);
+        $this->assertContains((int) $draft->id, $breedIds);
+        $this->assertNotContains(
+            (int) Breed::query()->where('name', 'Sram-kit-archived')->value('id'),
+            $breedIds
+        );
+        $this->assertContains((int) $specDraft->id, $specIds);
+        $this->assertSame('Garde de ville', $specById[(int) $specDraft->id]['short_description'] ?? null);
+        $this->assertNotContains(
+            (int) Specialization::query()->where('name', 'Archive kit spec')->value('id'),
+            $specIds
+        );
+    }
+
+    public function test_spells_by_breed_groups_and_caps_without_source_class(): void
+    {
+        $breed = Breed::factory()->create(['name' => 'Iop-kit-spells', 'state' => Breed::STATE_PLAYABLE]);
+        Npc::factory()->create([
+            'official_id' => NpcKitCatalog::OFFICIAL_ID_PREFIX.'ganymede',
+            'state' => Npc::STATE_PLAYABLE,
+        ]);
+
+        for ($n = 1; $n <= 15; $n++) {
+            $spell = Spell::factory()->create([
+                'name' => sprintf('Sort kit %02d', $n),
+                'state' => Spell::STATE_PLAYABLE,
+                'element' => ElementBitmask::fromSlug('earth'),
+                'pa' => '3',
+            ]);
+            $spell->breeds()->attach($breed->id, [
+                'character_level' => 1,
+                'slot_index' => $n,
+                'choice_order' => 0,
+            ]);
+        }
+        $high = Spell::factory()->create([
+            'name' => 'Sort trop haut',
+            'state' => Spell::STATE_PLAYABLE,
+            'element' => ElementBitmask::fromSlug('earth'),
+            'pa' => '4',
+        ]);
+        $high->breeds()->attach($breed->id, ['character_level' => 8, 'slot_index' => 20, 'choice_order' => 0]);
+
+        $payload = (new NpcKitCatalog)->assemble(4);
+        $this->assertSame([], $payload['spells']);
+        $grouped = $payload['spells_by_breed'][(int) $breed->id] ?? [];
+        $this->assertCount(NpcKitCatalog::MAX_SPELLS_PER_BREED, $grouped);
+        $names = array_column($grouped, 'name');
+        $this->assertContains('Sort kit 01', $names);
+        $this->assertNotContains('Sort trop haut', $names);
+        $this->assertLessThanOrEqual(4, max(array_column($grouped, 'character_level')));
     }
 
     public function test_example_ids_resolve_incarnam_official_ids(): void

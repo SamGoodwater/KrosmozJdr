@@ -476,7 +476,7 @@ ui: false
 cron: false
 ```
 
-Pré-filtre compact `playable` pour un futur assembleur PNJ (équipement par slot/voie/niveau, sorts de classe, gabarit 5.1.2). Sans LLM. Few-shot : `official_id` `jdr:npc:incarnam:%`.
+Pré-filtre compact PNJ (équipement playable, classes/spés hors archive, sorts playable groupés par classe, gabarit 5.1.2). Sans LLM. Few-shot : `official_id` `jdr:npc:incarnam:%`.
 
 ```bash
 php artisan ia:npc-kit-catalog --level=4 --voie=terre --breed=Iop --role=guard

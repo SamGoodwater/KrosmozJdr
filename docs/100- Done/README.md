@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Conversion IA des PNJ : classes, spés et noms Dofus
+
+Quand on convertit un PNJ par IA, le modèle **voit** les classes et spécialisations (même en brouillon) et les sorts jouables **par classe**, même si la fiche n’avait pas encore de classe. Il invente un nom façon calembour Dofus et une courte description collée au kit. Les stats manquantes suivent encore le gabarit ; si la carac de voie n’est pas donnée, elle est déduite de l’élément des sorts. On n’exige pas qu’une spécialisation soit déjà jouable.
+
 ## Septembre 2026 — Intensification des sorts et gabarit des fiches
 
 À partir du niveau 12, plus de nouveau sort de classe : les 12 déjà connus grandissent aux niveaux **13, 16 et 20**. On lit une nouvelle ligne sur la même fiche (plus de dés, de portée ou de durée), pas un 13ᵉ sort. Si la fiche n’a pas encore ces lignes, on ajoute un dé — plafonné à 5d6 (attaque) ou 5d4 (soin). Les spécialisations s’écrivent toutes sur le même gabarit à 7 paliers : 1 capacité garantie, 1 option, 1 compétence (2 seulement si c’est écrit), 3 aptitudes aux niveaux 3, 9 et 15.

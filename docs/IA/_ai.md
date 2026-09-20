@@ -14,14 +14,14 @@
 - **Laravel assemble le contexte** ; l’IA ne « browse » pas l’API en batch.
 - L’IA **propose**, jamais `playable`. État `auto` (UI « Auto »). Ability `generate` = `isAdmin()` (rôle ≥ 4). HTTP + page admin : `password.confirm`. CLI : `--user` admin obligatoire. Publication `auto` → `playable` : ability `publish`. `example_ids` : fiches `playable` (`official_id` / nom) via le sélecteur admin (`api.tables.*`, défaut jouable) ; pool vide refusé (`FewShotExamplePool`).
 - **Noyau** : `GenerativeAiClient` (HTTP Anthropic, outil `submit_json`, cache prompt **explicite**), `ContextAssembler` (préfixe cacheable vs suffixe dynamique), `AllowlistWriter` (jamais d’unguard JSON), `ConvertPacketJob` en `dispatchSync` pour l’UI HTTP (retries `generation.max_retries`). Modèle : `generation.model` (défaut Haiku 4.5). Clé `ANTHROPIC_API_KEY`. Tests : `Http::fake`.
-- **Specs** : `spell`, `encounter` (monstre + gabarit 5.1.2 en `extraContext`), `npc` (`NpcKitCatalog` + `NpcEquipmentSlotValidator` + gabarit), `item`, `consumable`. Persistés en `auto` via le même pipeline.
+- **Specs** : `spell`, `encounter` (monstre + gabarit 5.1.2 en `extraContext`), `npc` (`NpcKitCatalog` : objets, classes/spés, `spells_by_breed` + `NpcEquipmentSlotValidator` + gabarit), `item`, `consumable`. Persistés en `auto` via le même pipeline.
 - **Objets** : grille algo `ia:equipment-grid`. Rapport ; `--write` = trous `draft`.
 - **Fiches Création** : `CreationGuideCatalog` injecté dans la couche tâche.
 - **UI** : un modal `EntitySourceModal` (onglets Conversion DofusDB | Conversion IA). Après scrap ou conversion : tableau **avant / après** — clic cellule ou en-tête pour garder l’ancienne ou la nouvelle valeur ; **Enregistrer** applique le mix (`update-diff/apply`) ; **Rétablir** / fermer annule (`restore`). Volet DofusDB : cases contenu + **Récupérer l’image**. Volet IA : admin+ **et** `password.confirm`. Solde : tokens du mois (`ai_generation_runs`) + crédit Anthropic s’il est connu, dans la page admin **et** le modal. HTTP `ia-convert` / `ia/status` = `role:admin` + `password.confirm`. Clé absente = 422 honnête, aucun run. `action` calée sur le type d’URL ; `playable`/`archived` exigent `force` (le modal l’envoie déjà).
 - **Admin** `/admin/content/ia-generation` : lecture et mutations derrière `password.confirm`. Superviseur, **modèle** (Haiku / Sonnet / Opus), **cache prompt** (défaut on), prompts de tâche, étalons (recherche de fiches playable), panoplies or (objets, recherche playable), gel, tokens du mois + solde Anthropic, estimés (`CostEstimator`). Types d’entité en **onglets colonne** (`SidebarNav`, comme caractéristiques) : un panneau visible. Carte d’entrée sur `/admin/content`.
 - **L’IA ne réécrit pas l’identité** ni, par défaut, les **caractéristiques** d’une fiche Dofus. Liste éditable admin / `resources/ia/generation.json`.
 - **Monstres** : génération **à la demande**, paquet `{ monster, spells: [2-3] }` → `auto`. Commande `ia:convert encounter` (`ia:convert-encounter` en alias).
-- **Sorts / PNJ / objets / conso** : même pipeline (`ia:convert {spell|npc|item|consumable}`). Sort = `effect` seulement ; PNJ = kit `NpcKitCatalog`.
+- **Sorts / PNJ / objets / conso** : même pipeline (`ia:convert {spell|npc|item|consumable}`). Sort = `effect` seulement ; PNJ = kit `NpcKitCatalog` (classes/spés, `spells_by_breed`).
 
 ## Fichiers
 

@@ -94,9 +94,9 @@ Sur une fiche **sourcée Dofus**, le schéma n’expose que les clés `writable`
 | `CharacteristicLimitService` (min/max) | Bornes numériques |
 | `NormsResolver`, `NormAwareEntityProcessor` | Normes objets (algo, hors LLM) |
 | `NpcEquipmentSlotValidator` | Kit PNJ : 1 objet / slot, 2 anneaux ; `validate` + `persist` IA |
-| `NpcStatGabarit` | Palier 5.1.2 : prompt (PNJ + rencontre) ; PV dans la bande et PA ±1 au persist PNJ |
+| `NpcStatGabarit` | Palier 5.1.2 : prompt (PNJ + rencontre) ; PV dans la bande et PA ±1 au persist PNJ ; carac de voie en repli si le JSON l’omet |
 | `MonsterSpecialization` | Élément ↔ carac d’attaque ; budget PA ≤ 2× PA créature ; 2–3 sorts ; max 3 effets / sort |
-| `NpcKitCatalog` | Ids `playable` uniquement ; sorts de la classe si `breed_id` |
+| `NpcKitCatalog` | Objets `playable` ; classes / spés hors archive ; sorts `playable` groupés par classe |
 
 Un JSON « dans les normes » mais idiot (deux capes, PV hors palier) **échoue** et part en retry. Les bornes numériques ne suffisent pas.
 

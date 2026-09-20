@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Services\GenerativeAi\Specializations;
 
 use App\Enums\EntityState;
+use App\Models\Entity\Breed;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
 use App\Models\Entity\Npc;
+use App\Models\Entity\Specialization as SpecializationModel;
+use App\Models\Entity\Spell;
 use App\Models\User;
 use App\Services\GenerativeAi\AllowlistWriter;
 use App\Services\GenerativeAi\ConversionRequest;
@@ -85,9 +88,12 @@ final class NpcSpecialization implements Specialization
             'kit_catalog' => [
                 'gabarit' => $catalog['gabarit'],
                 'items' => $catalog['items'],
+                'breeds' => $catalog['breeds'],
+                'specializations' => $catalog['specializations'],
                 'spells' => $catalog['spells'],
+                'spells_by_breed' => $catalog['spells_by_breed'],
             ],
-            'consigne' => 'item_ids et spell_ids : uniquement des id de kit_catalog. Un objet par slot (deux anneaux max).',
+            'consigne' => 'item_ids : ids de kit_catalog.items. spell_ids : ids de kit_catalog.spells_by_breed pour la classe choisie (playable). breed_id / specialization_id : ids de kit_catalog.breeds / specializations (draft et auto autorisés). Un objet par slot (deux anneaux max). Privilégier les bonus d’équipement de la voie des sorts.',
         ];
     }
 
@@ -112,7 +118,19 @@ final class NpcSpecialization implements Specialization
             $errors[] = 'Niveau PNJ entre 1 et 20.';
         }
 
-        $breedId = is_numeric($npc['breed_id'] ?? null) ? (int) $npc['breed_id'] : null;
+        $breedId = is_numeric($npc['breed_id'] ?? null) && (int) $npc['breed_id'] > 0
+            ? (int) $npc['breed_id']
+            : null;
+        if ($breedId !== null && ! $this->breedExists($breedId)) {
+            $errors[] = "Classe #{$breedId} inconnue.";
+        }
+        $specId = is_numeric($npc['specialization_id'] ?? null) && (int) $npc['specialization_id'] > 0
+            ? (int) $npc['specialization_id']
+            : null;
+        if ($specId !== null && ! $this->specializationExists($specId)) {
+            $errors[] = "Spécialisation #{$specId} inconnue.";
+        }
+
         $catalog = app(NpcKitCatalog::class)->assemble(
             max(1, $level),
             null,
@@ -167,6 +185,14 @@ final class NpcSpecialization implements Specialization
                 : new Npc;
             $creature = $npc->creature ?? new Creature;
             $level = (string) ($row['level'] ?? $creature->level ?? '4');
+            $itemIds = array_values(array_unique(array_filter(
+                array_map('intval', is_array($payload['item_ids'] ?? null) ? $payload['item_ids'] : []),
+                static fn (int $id): bool => $id > 0
+            )));
+            $spellIds = array_values(array_unique(array_filter(
+                array_map('intval', is_array($payload['spell_ids'] ?? null) ? $payload['spell_ids'] : []),
+                static fn (int $id): bool => $id > 0
+            )));
             $creature->fill([
                 'name' => (string) ($row['name'] ?? $creature->name ?? 'PNJ'),
                 'description' => (string) ($row['concept'] ?? $creature->description ?? ''),
@@ -180,6 +206,12 @@ final class NpcSpecialization implements Specialization
                 ? (string) $row['npc_role']
                 : (string) ($npc->npc_role ?: 'other');
             $expected = $gabarit->forLevelAndRole((int) $level, $role);
+            $spells = Spell::query()->whereIn('id', $spellIds)->get(['id', 'element']);
+            $expected = $gabarit->fillOmittedPrimaryFromElement(
+                $expected,
+                $stats,
+                $gabarit->dominantPrimaryStatKey($spells)
+            );
             foreach ($gabarit->creatureStatKeys() as $key) {
                 if (array_key_exists($key, $stats) && (is_string($stats[$key]) || is_numeric($stats[$key]))) {
                     $creature->setAttribute($key, (string) $stats[$key]);
@@ -197,14 +229,6 @@ final class NpcSpecialization implements Specialization
                 'specialization_id' => $row['specialization_id'] ?? $npc->specialization_id,
             ]);
 
-            $itemIds = array_values(array_unique(array_filter(
-                array_map('intval', is_array($payload['item_ids'] ?? null) ? $payload['item_ids'] : []),
-                static fn (int $id): bool => $id > 0
-            )));
-            $spellIds = array_values(array_unique(array_filter(
-                array_map('intval', is_array($payload['spell_ids'] ?? null) ? $payload['spell_ids'] : []),
-                static fn (int $id): bool => $id > 0
-            )));
             $items = Item::query()->with('itemType')->whereIn('id', $itemIds)->get();
             app(NpcEquipmentSlotValidator::class)->assertWornKit($items);
             $sync = [];
@@ -224,6 +248,9 @@ final class NpcSpecialization implements Specialization
     public function compactExample(Model $model): array
     {
         $npc = $model instanceof Npc ? $model : null;
+        if ($npc !== null) {
+            $npc->loadMissing(['creature.spells', 'specialization']);
+        }
         $creature = $npc?->creature;
 
         return [
@@ -232,7 +259,9 @@ final class NpcSpecialization implements Specialization
             'story' => $npc?->story,
             'level' => $creature?->level,
             'breed_id' => $npc?->breed_id,
+            'specialization_id' => $npc?->specialization_id,
             'npc_role' => $npc?->npc_role,
+            'spells' => $creature?->spells?->pluck('name')->filter()->values()->all() ?? [],
         ];
     }
 
@@ -243,9 +272,28 @@ final class NpcSpecialization implements Specialization
             return trim($fromConfig);
         }
 
-        return "Crée un PNJ JDR complet : nom, histoire, rôle, niveau, classe, kit.\n"
-            ."Objets et sorts : uniquement des ids des listes préfiltrées playable.\n"
-            .'Un objet par slot (deux anneaux max). Cohérence voie ↔ carac ↔ sorts.';
+        return "Crée un PNJ JDR complet : nom, histoire, rôle, niveau, classe, spécialisation, kit.\n"
+            ."Nom : invente un calembour ou jeu de mot façon Dofus (sonorité, métier, classe) ; n’emprunte pas un nom déjà connu du jeu.\n"
+            ."Concept : une ou deux phrases qui collent au rôle, à la classe et à la voie des sorts choisis.\n"
+            ."Objets et sorts : uniquement des ids des listes préfiltrées. Sorts playable de la classe choisie (spells_by_breed).\n"
+            ."breed_id et specialization_id : choisis dans les listes ; une spécialisation draft ou auto est acceptée. Ne crée ni sort, ni capacité, ni aptitude.\n"
+            .'Un objet par slot (deux anneaux max). Cohérence voie ↔ carac ↔ sorts. Privilégier le stuff de la même voie que les sorts.';
+    }
+
+    private function breedExists(int $breedId): bool
+    {
+        return Breed::query()
+            ->whereKey($breedId)
+            ->where('state', '!=', Breed::STATE_ARCHIVED)
+            ->exists();
+    }
+
+    private function specializationExists(int $specId): bool
+    {
+        return SpecializationModel::query()
+            ->whereKey($specId)
+            ->where('state', '!=', SpecializationModel::STATE_ARCHIVED)
+            ->exists();
     }
 
     private function sourceNpc(ConversionRequest $request): ?Npc

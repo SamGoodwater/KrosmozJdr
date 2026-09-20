@@ -55,13 +55,13 @@ Contrairement aux objets / sorts / monstres Dofus, **il n’y a rien à figer** 
 
 La génération IA s’appuie sur ce schéma déjà persisté. Pipeline : `NpcSpecialization` + pré-filtre `NpcKitCatalog` injecté dans le prompt (`extraContext`). POST `/api/entities/npcs/{id}/ia-convert`, `ia:convert npc`. Détail des champs : [CHAMPS.md](./CHAMPS.md).
 
-**Socle few-shot** : 5 PNJ `playable` d’Incarnam (`jdr:npc:incarnam:ganymede` … `fouduglen`) — classe + spe jouable + kit. Pré-filtre : `NpcKitCatalog` / `php artisan ia:npc-kit-catalog` (objets, sorts, gabarit 5.1.2). Ids few-shot résolus au runtime, pas dans `generation.json`.
+**Socle few-shot** : 5 PNJ `playable` d’Incarnam (`jdr:npc:incarnam:ganymede` … `fouduglen`) — classe + spe + kit. Pré-filtre : `NpcKitCatalog` / `php artisan ia:npc-kit-catalog` (objets playable, **classes et spés hors archive**, sorts playable groupés par classe `spells_by_breed`, gabarit 5.1.2). Ids few-shot résolus au runtime, pas dans `generation.json`.
 
 Paquet :
 
 ```json
 {
-  "npc": { "concept": "…", "breed_id": 1, "level": 8 },
+  "npc": { "concept": "…", "breed_id": 1, "specialization_id": 4, "level": 8 },
   "stats": { },
   "item_ids": [412, 880],
   "spell_ids": [55, 56, 90]
@@ -69,8 +69,10 @@ Paquet :
 ```
 
 - **Objets** : toujours des `id` du pré-filtre `playable`, presque jamais d’invention.
-- **Sorts de classe** : piocher dans le `playable` si la liste est assez riche ; sinon réécrire 1–2 sorts dans le même paquet (comme pour un monstre).
-- Validateur : Force haute si voie Terre (catalogue), stuff Force, sorts de la classe, niveau d’équipement, **un item par slot** (`NpcEquipmentSlotValidator`), PV/PA dans le gabarit 5.1.2. Les stats omises par le modèle sont **complétées** par `NpcStatGabarit` à l’écriture.
+- **Classe / spé** : ids des listes compactes (draft / auto acceptés). L’IA ne compose pas un kit de capacités ; elle choisit une fiche `specialization_id`.
+- **Sorts de classe** : ids `playable` de `spells_by_breed` pour la classe **choisie dans le JSON**, même si la fiche source n’avait pas de `breed_id`. Pas d’invention de sort. Le filtre `specialization_spell` n’est pas encore appliqué.
+- **Nom** : consigne calembour façon Dofus + `concept` collé au rôle / classe / voie ; pas de validateur texte.
+- Validateur : ids d’objets et de sorts dans le pré-filtre, **classe et spé existantes** (hors archive, pas forcément playable), **un item par slot** (`NpcEquipmentSlotValidator`), PV dans la bande et PA ±1 du gabarit 5.1.2. **Pas** (encore) de rejet voie ↔ Force. Les stats omises sont **complétées** par `NpcStatGabarit` ; si la carac de voie est omise, elle est déduite de l’élément dominant des sorts.
 
 Sans grille d’objets `playable`, ne pas lancer la génération de PNJ.
 
@@ -80,4 +82,4 @@ Un brief court suffit : rôle, niveau, ton, lieu optionnel.
 
 Exemples : « garde Iop d’Astrub, niveau 8, brutal, pas un boss » ; « chef Bouftou niveau 10 pour la fin de scène ».
 
-Laravel complète gabarit + listes (+ extrait de page si fourni). Le modèle **crée** nom / story / comportement et choisit dans les listes. Sur un monstre Dofus, le nom et la race restent ceux de la source.
+Laravel complète gabarit + listes de classes / spés / sorts / objets (+ extrait de page si fourni). Le modèle **crée** nom / story / comportement et choisit dans les listes. Sur un monstre Dofus, le nom et la race restent ceux de la source.

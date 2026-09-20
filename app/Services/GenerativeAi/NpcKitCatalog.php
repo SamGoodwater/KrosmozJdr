@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Services\GenerativeAi;
 
 use App\Enums\EntityState;
+use App\Models\Entity\Breed;
 use App\Models\Entity\Item;
 use App\Models\Entity\Npc;
+use App\Models\Entity\Specialization;
 use App\Models\Entity\Spell;
 use App\Services\GenerativeAi\EquipmentGrid\EquipmentBonusDecoder;
 use App\Services\GenerativeAi\EquipmentGrid\EquipmentGridDefinition;
@@ -15,9 +17,9 @@ use App\Services\Npc\NpcEquipmentSlotValidator;
 use App\Support\ElementBitmask;
 
 /**
- * Pré-filtre compact (équipement, sorts, gabarit) à envoyer plus tard à un LLM.
+ * Pré-filtre compact (équipement, classes, spés, sorts, gabarit) à envoyer à un LLM.
  *
- * Pas d’appel IA : liste courte `playable`, 1–2 options par slot, max 40 objets.
+ * Pas d’appel IA : objets `playable`, classes/spés hors archive, sorts `playable` plafonnés par classe.
  *
  * @example
  * $payload = app(NpcKitCatalog::class)->assemble(4, 'terre', $iopId, 'guard');
@@ -29,6 +31,8 @@ final class NpcKitCatalog
     public const LEVEL_BAND = 2;
 
     public const MAX_PER_SLOT = 5;
+
+    public const MAX_SPELLS_PER_BREED = 12;
 
     public const OFFICIAL_ID_PREFIX = 'jdr:npc:incarnam:';
 
@@ -42,6 +46,9 @@ final class NpcKitCatalog
      *     gabarit: array<string, string>,
      *     items: list<array<string, mixed>>,
      *     spells: list<array<string, mixed>>,
+     *     spells_by_breed: array<int, list<array<string, mixed>>>,
+     *     breeds: list<array{id: int, name: string, state: string}>,
+     *     specializations: list<array{id: int, name: string, state: string, short_description?: string}>,
      *     example_ids: list<int>
      * }
      */
@@ -51,8 +58,64 @@ final class NpcKitCatalog
             'gabarit' => $this->gabarit->forLevelAndRole($level, $role),
             'items' => $this->equipment($level, $voie),
             'spells' => $breedId !== null ? $this->spells($breedId, $level) : [],
+            'spells_by_breed' => $this->spellsByBreed($level),
+            'breeds' => $this->breeds(),
+            'specializations' => $this->specializations(),
             'example_ids' => $this->requiredExampleIds(),
         ];
+    }
+
+    /**
+     * Classes hors archive (draft / auto / playable) pour le choix d’ids.
+     *
+     * @return list<array{id: int, name: string, state: string}>
+     *
+     * @example $rows = (new NpcKitCatalog)->breeds();
+     */
+    public function breeds(): array
+    {
+        return Breed::query()
+            ->where('state', '!=', Breed::STATE_ARCHIVED)
+            ->orderBy('name')
+            ->get(['id', 'name', 'state'])
+            ->map(static fn (Breed $breed): array => [
+                'id' => (int) $breed->id,
+                'name' => (string) $breed->name,
+                'state' => (string) $breed->state,
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Spécialisations hors archive, sans dump des capacités / aptitudes.
+     *
+     * @return list<array{id: int, name: string, state: string, short_description?: string}>
+     *
+     * @example $rows = (new NpcKitCatalog)->specializations();
+     */
+    public function specializations(): array
+    {
+        $out = [];
+        $rows = Specialization::query()
+            ->where('state', '!=', Specialization::STATE_ARCHIVED)
+            ->orderBy('name')
+            ->get(['id', 'name', 'state', 'short_description']);
+
+        foreach ($rows as $spec) {
+            $row = [
+                'id' => (int) $spec->id,
+                'name' => (string) $spec->name,
+                'state' => (string) $spec->state,
+            ];
+            $short = is_string($spec->short_description) ? trim($spec->short_description) : '';
+            if ($short !== '') {
+                $row['short_description'] = $short;
+            }
+            $out[] = $row;
+        }
+
+        return $out;
     }
 
     /**
@@ -156,6 +219,59 @@ final class NpcKitCatalog
                 'pa' => (string) ($spell->pa ?? ''),
             ];
         }
+
+        return $out;
+    }
+
+    /**
+     * Sorts playable groupés par classe, plafonnés, même sans `breed_id` source.
+     *
+     * @return array<int, list<array{id: int, name: string, character_level: int, element: string, pa: string}>>
+     *
+     * @example $byBreed = (new NpcKitCatalog)->spellsByBreed(4);
+     */
+    public function spellsByBreed(int $maxLevel): array
+    {
+        $maxLevel = max(1, min(20, $maxLevel));
+
+        $spells = Spell::query()
+            ->where('state', EntityState::Playable->value)
+            ->whereHas('breeds', static function ($query) use ($maxLevel): void {
+                $query->where('breeds.state', '!=', Breed::STATE_ARCHIVED)
+                    ->where('breed_spell.character_level', '>', 0)
+                    ->where('breed_spell.character_level', '<=', $maxLevel);
+            })
+            ->with(['breeds' => static function ($query) use ($maxLevel): void {
+                $query->where('breeds.state', '!=', Breed::STATE_ARCHIVED)
+                    ->where('breed_spell.character_level', '>', 0)
+                    ->where('breed_spell.character_level', '<=', $maxLevel);
+            }])
+            ->orderBy('name')
+            ->get(['id', 'name', 'element', 'pa']);
+
+        $byBreed = [];
+        foreach ($spells as $spell) {
+            $element = is_numeric($spell->element) ? ElementBitmask::label((int) $spell->element) : '—';
+            $row = [
+                'id' => (int) $spell->id,
+                'name' => (string) $spell->name,
+                'element' => $element,
+                'pa' => (string) ($spell->pa ?? ''),
+            ];
+            foreach ($spell->breeds as $breed) {
+                $breedId = (int) $breed->id;
+                $byBreed[$breedId][] = array_merge($row, [
+                    'character_level' => (int) ($breed->pivot?->character_level ?? 1),
+                ]);
+            }
+        }
+
+        $out = [];
+        foreach ($byBreed as $breedId => $rows) {
+            usort($rows, static fn (array $a, array $b): int => [$a['character_level'], $a['name'], $a['id']] <=> [$b['character_level'], $b['name'], $b['id']]);
+            $out[$breedId] = array_values(array_slice($rows, 0, self::MAX_SPELLS_PER_BREED));
+        }
+        ksort($out);
 
         return $out;
     }

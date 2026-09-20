@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\GenerativeAi;
 
+use App\Support\ElementBitmask;
 use App\Support\Npc\NpcRole;
 
 /**
@@ -107,6 +108,79 @@ final class NpcStatGabarit
         }
 
         return $errors;
+    }
+
+    /**
+     * Carac d’attaque dominante d’une liste de sorts (Terre → Force, etc.).
+     *
+     * @param  iterable<int, object|array<string, mixed>>  $spells
+     *
+     * @example $key = (new NpcStatGabarit)->dominantPrimaryStatKey($spells);
+     */
+    public function dominantPrimaryStatKey(iterable $spells): ?string
+    {
+        $counts = [];
+        foreach ($spells as $spell) {
+            $raw = is_object($spell) ? ($spell->element ?? null) : ($spell['element'] ?? null);
+            if (! is_numeric($raw)) {
+                continue;
+            }
+            foreach (ElementBitmask::toPrimaries((int) $raw) as $primary) {
+                $key = match ($primary) {
+                    1 => 'strong',
+                    2 => 'intel',
+                    3 => 'agi',
+                    4 => 'chance',
+                    default => null,
+                };
+                if ($key === null) {
+                    continue;
+                }
+                $counts[$key] = ($counts[$key] ?? 0) + 1;
+            }
+        }
+        if ($counts === []) {
+            return null;
+        }
+        arsort($counts);
+        $first = array_key_first($counts);
+
+        return is_string($first) ? $first : null;
+    }
+
+    /**
+     * Si le LLM omet la carac de voie, la pose à la valeur haute du gabarit.
+     *
+     * Ne rejette pas une carac déjà fournie. Ne durcit pas la validation.
+     *
+     * @param  array<string, string>  $expected
+     * @param  array<string, mixed>  $proposed
+     * @return array<string, string>
+     *
+     * @example $stats = $gabarit->fillOmittedPrimaryFromElement($expected, [], 'strong');
+     */
+    public function fillOmittedPrimaryFromElement(array $expected, array $proposed, ?string $primaryKey): array
+    {
+        $caracs = ['strong', 'intel', 'agi', 'chance'];
+        if ($primaryKey === null || ! in_array($primaryKey, $caracs, true) || array_key_exists($primaryKey, $proposed)) {
+            return $expected;
+        }
+
+        $values = array_map(static fn (string $key): int => (int) ($expected[$key] ?? 8), $caracs);
+        $high = max($values);
+        $base = min($values);
+        foreach ($caracs as $key) {
+            if ($key === $primaryKey) {
+                $expected[$key] = (string) $high;
+
+                continue;
+            }
+            if (! array_key_exists($key, $proposed) && (int) ($expected[$key] ?? 0) === $high) {
+                $expected[$key] = (string) $base;
+            }
+        }
+
+        return $expected;
     }
 
     /**

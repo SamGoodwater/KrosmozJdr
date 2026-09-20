@@ -25,7 +25,7 @@ final class NpcKitCatalogCommand extends Command
         {--role=other : Rôle PNJ (social, merchant, guard, ally, enemy, other)}
         {--json= : Écrit le payload JSON (chemin fichier)}';
 
-    protected $description = 'Pré-filtre compact playable (équipement, sorts, gabarit 5.1.2) pour un PNJ — sans LLM';
+    protected $description = 'Pré-filtre compact PNJ (équipement, classes/spés, sorts par classe, gabarit 5.1.2) — sans LLM';
 
     public function handle(NpcKitCatalog $catalog): int
     {
@@ -61,14 +61,22 @@ final class NpcKitCatalogCommand extends Command
             $voie ?? 'toutes',
             is_string($breedName) && $breedName !== '' ? $breedName : '—'
         ));
+        $spellsByBreed = is_array($payload['spells_by_breed'] ?? null) ? $payload['spells_by_breed'] : [];
+        $spellByBreedCount = 0;
+        foreach ($spellsByBreed as $rows) {
+            $spellByBreedCount += is_array($rows) ? count($rows) : 0;
+        }
         $this->info(sprintf(
-            'Gabarits : %s PV, CA %s, %s, bande %s. Objets : %d. Sorts : %d. Étalons : %d.',
+            'Gabarits : %s PV, CA %s, %s, bande %s. Objets : %d. Sorts (classe) : %d. Sorts par classe : %d. Classes : %d. Spés : %d. Étalons : %d.',
             $payload['gabarit']['life'] ?? '—',
             $payload['gabarit']['ca'] ?? '—',
             $payload['gabarit']['damage_dice'] ?? '—',
             $payload['gabarit']['band'] ?? '—',
             count($payload['items']),
             count($payload['spells']),
+            $spellByBreedCount,
+            count($payload['breeds'] ?? []),
+            count($payload['specializations'] ?? []),
             count($payload['example_ids']),
         ));
 

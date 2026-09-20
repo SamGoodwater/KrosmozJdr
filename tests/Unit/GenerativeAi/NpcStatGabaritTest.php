@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\GenerativeAi;
 
 use App\Services\GenerativeAi\NpcStatGabarit;
+use App\Support\ElementBitmask;
 use App\Support\Npc\NpcRole;
 use PHPUnit\Framework\TestCase;
 
@@ -57,5 +58,27 @@ final class NpcStatGabaritTest extends TestCase
         );
 
         $this->assertSame([], $errors);
+    }
+
+    public function test_omitted_primary_follows_spell_element(): void
+    {
+        $gabarit = new NpcStatGabarit;
+        $expected = $gabarit->forLevelAndRole(4, NpcRole::SOCIAL);
+        $this->assertSame('12', $expected['chance']);
+        $this->assertSame('8', $expected['strong']);
+
+        $key = $gabarit->dominantPrimaryStatKey([
+            (object) ['element' => ElementBitmask::fromSlug('earth')],
+            (object) ['element' => ElementBitmask::fromSlug('earth')],
+        ]);
+        $this->assertSame('strong', $key);
+
+        $filled = $gabarit->fillOmittedPrimaryFromElement($expected, ['life' => '22'], $key);
+        $this->assertSame('12', $filled['strong']);
+        $this->assertSame('8', $filled['chance']);
+
+        $kept = $gabarit->fillOmittedPrimaryFromElement($expected, ['strong' => '10'], $key);
+        $this->assertSame('8', $kept['strong']);
+        $this->assertSame('12', $kept['chance']);
     }
 }
