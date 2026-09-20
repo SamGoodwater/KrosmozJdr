@@ -27,6 +27,7 @@ use App\Services\Entity\EntityDeletionService;
 use App\Services\Npc\NpcEquipmentSlotValidator;
 use App\Services\PdfService;
 use App\Support\Creature\CreatureSize;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -101,7 +102,7 @@ class NpcController extends Controller
         return redirect()->route('entities.npcs.index');
     }
 
-    public function store(StoreNpcRequest $request): RedirectResponse
+    public function store(StoreNpcRequest $request): RedirectResponse|JsonResponse
     {
         $this->authorize('create', Npc::class);
 

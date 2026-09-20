@@ -18,6 +18,7 @@ use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
 use App\Support\Entity\ItemPanoplyPayload;
 use App\Support\Entity\ObjectEffectEditOptions;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -98,7 +99,7 @@ class ItemController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreItemRequest $request, EntityPriceRecalculator $priceRecalculator): RedirectResponse
+    public function store(StoreItemRequest $request, EntityPriceRecalculator $priceRecalculator): RedirectResponse|JsonResponse
     {
         $this->authorize('create', Item::class);
 

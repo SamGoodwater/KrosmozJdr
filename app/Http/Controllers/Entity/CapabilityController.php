@@ -76,7 +76,7 @@ class CapabilityController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCapabilityRequest $request): RedirectResponse
+    public function store(StoreCapabilityRequest $request): RedirectResponse|JsonResponse
     {
         $this->authorize('create', Capability::class);
 

@@ -115,6 +115,13 @@ const props = defineProps({
         default: false,
     },
     /**
+     * Si fourni, seuls ces champs sont affichés (création courte).
+     */
+    restrictToFieldKeys: {
+        type: Array,
+        default: null,
+    },
+    /**
      * Envoyé au PATCH (ex. sort) pour la redirection Laravel : `index`, `show` ou `edit`.
      */
     redirectAfterUpdate: {
@@ -509,9 +516,16 @@ const isSecondaryField = (fieldKey, fieldConfig) => {
 };
 
 const visibleFields = computed(() => {
-    const entries = Object.entries(fieldsConfig.value).filter(([fieldKey]) => !resolvedHiddenFieldKeys.value.has(fieldKey));
+    const allowKeys = Array.isArray(props.restrictToFieldKeys) && props.restrictToFieldKeys.length > 0
+        ? new Set(props.restrictToFieldKeys)
+        : null;
+    const entries = Object.entries(fieldsConfig.value).filter(([fieldKey]) => {
+        if (resolvedHiddenFieldKeys.value.has(fieldKey)) return false;
+        if (allowKeys && !allowKeys.has(fieldKey)) return false;
+        return true;
+    });
 
-    if (props.fieldSections?.length) {
+    if (!allowKeys && props.fieldSections?.length) {
         const entryByKey = new Map(entries.map(([key, config]) => [key, { key, config }]));
         const ordered = [];
         const consumed = new Set();
@@ -596,12 +610,21 @@ const mainFields = computed(() => {
     return visibleFields.value.filter((field) => !exclude.includes(field?.key));
 });
 
+const resolveFormFieldKeys = () => {
+    const allKeys = Object.keys(fieldsConfig.value);
+    if (Array.isArray(props.restrictToFieldKeys) && props.restrictToFieldKeys.length > 0) {
+        const allow = new Set(props.restrictToFieldKeys);
+        return allKeys.filter((key) => allow.has(key));
+    }
+    return allKeys;
+};
+
 // Initialisation du formulaire avec les données de l'entité
 const initializeForm = () => {
     // Si c'est une création (pas d'ID), utiliser les valeurs par défaut
     if (!props.isUpdating || !props.entity?.id) {
         const formData = {};
-        Object.keys(fieldsConfig.value).forEach(key => {
+        resolveFormFieldKeys().forEach(key => {
             // En multi-edit: si le champ fait partie des champs différents, valeur neutre
             // => affiche "Valeurs différentes" et évite de pré-remplir une valeur arbitraire.
             if (isMultiEdit.value && props.differentFields.includes(key)) {
@@ -620,7 +643,7 @@ const initializeForm = () => {
     if (props.entity && typeof props.entity.toFormData === 'function') {
         const modelFormData = props.entity.toFormData();
         const formData = {};
-        Object.keys(fieldsConfig.value).forEach(key => {
+        resolveFormFieldKeys().forEach(key => {
             // Utiliser les données du modèle si disponibles, sinon valeur par défaut
             formData[key] = modelFormData[key] !== undefined 
                 ? modelFormData[key] 
@@ -632,7 +655,7 @@ const initializeForm = () => {
     // Sinon, utiliser l'accès direct aux propriétés (compatibilité avec objets bruts)
     // Pour l'édition multiple, l'entité peut être un objet simple avec les valeurs communes
     const formData = {};
-    Object.keys(fieldsConfig.value).forEach(key => {
+    resolveFormFieldKeys().forEach(key => {
         formData[key] = props.entity[key] !== undefined 
             ? props.entity[key] 
             : getDefaultValue(fieldsConfig.value[key].type);

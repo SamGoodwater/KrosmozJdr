@@ -31,6 +31,7 @@ minimal compact → survol : overlay déployé → double-clic / quick-view : mo
 
 - L’overlay (`EntityMinimalCard`) ne décale pas la grille. En popover (`displayMode="extended"`), une seule carte (slot expanded, hauteur du contenu) : pas de coquille compacte ni de chrome tooltip autour (`OverlayTrigger` `chromeless`). En mode `hover`, la carte reste déployée tant qu’un tooltip **ou un menu Dropdown** issu d’elle est ouvert (panneaux téléportés hors de la carte : changement d’état, actions « ⋮ »). Les tooltips et popovers d’entités n’ont **qu’une** boîte : `OverlayTrigger` n’ajoute `tooltip-floating-surface` que si le panneau n’a pas déjà de chrome (`chromeless`, contenu sort / chips, ou `panelClass` Popover).
 - Les bibliothèques (TanStack) s’ouvrent en **vue minimale**. Le mode ligne reste disponible ; le mode colonnes déjà choisi est conservé.
+- **Créer** (Index et pages CMS `entity_table`) : bouton si droit `create` → modal courte (`CreateEntityModal`) avec nom / description / quelques clés ; onglet Conversion IA pour les admins (types convertibles). Ensuite la fiche s’ouvre en **Modifier**.
 - En carte minimale **déployée**, la description des consommables, ressources et équipements n’est plus coupée.
 - Le menu d’options de la carte minimale n’a plus de fond : les icônes restent nues à droite du titre.
 - **Tous** les `*ViewMinimal` (hors `language`) passent par `EntityMinimalCard` : double-clic → modal, whitelist d’actions commune, pin flottant.

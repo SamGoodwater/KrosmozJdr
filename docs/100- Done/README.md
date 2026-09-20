@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Créer une fiche depuis les Bibliothèques
+
+Sur les pages **Bibliothèques** (tableaux d’entités), un bouton **Créer** apparaît pour les admins. Il ouvre un petit formulaire : nom, description, et deux ou trois infos utiles — pas toute la fiche. On peut aussi lancer une **conversion IA** (même droit admin, mot de passe). Ensuite la fiche s’ouvre déjà en **Modifier**, pour compléter le reste.
+
 ## Septembre 2026 — Érudit modèle et sorts Iop jusqu’au niveau 12
 
 L’**Érudit** est la première spécialisation réécrite sur le gabarit verrouillé : sept paliers, une capacité garantie plus une option, trois aptitudes (Politicien, Façonneur de sorts, Expertise en Wakfu). Plus de liste D&D à rallonge.

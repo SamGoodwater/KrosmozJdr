@@ -37,7 +37,7 @@ L'enum `app/Enums/SectionType.php` définit 12 types (defaults PHP dans `config/
 | --- | --- |
 | `text` | Texte riche (Tiptap) avec kref optionnels |
 | `image`, `gallery`, `video` | Médias |
-| `entity_table` | Tableau d'entités (legacy) |
+| `entity_table` | Tableau d'entités (legacy) ; bouton Créer (`CreateEntityModal`) si droit `create` |
 | `legal_markdown` | Document légal en Markdown |
 | `characteristic_norms`, `characteristic_norms_catalog`, `characteristic_reference_table` | Chartes/référentiels de caractéristiques |
 | `equipment_bonus_table` | Plafonds de bonus d’équipement (slot × carac × bandes 1–2…19–20, prix, FM) ; projection live de `characteristic_object.formula` |
