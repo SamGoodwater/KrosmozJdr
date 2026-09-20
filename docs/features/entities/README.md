@@ -44,14 +44,12 @@ exactement **trois**, aux paliers **3, 9 et 15**.
 En base, capacités et aptitudes sont toutes des `Capability` liées par `capability_specialization`, dont le
 `level` porte le palier ; l’aptitude se distingue par `is_passive`.
 
-L’**Érudit** est la fiche modèle jouable (`database/seeders/data/playable-specializations/erudit.php`) : le seed
-la préfère au HTML legacy et la rafraîchit à chaque passage. Les sections de palier portent des **kref**
-(capacités cliquables, jets de sauvegarde, compétences). Une seule section par niveau : les listes de
-capacités legacy sont fusionnées dans le texte. Les cinq autres fiches jouables viennent encore
-des exports HTML (`database/seeders/data/legacy-specializations/`, hors dépôt). Elles utilisaient l’ancienne
-grille 1/3/5/8/10/13/15/18/20 : `LegacySpecializationRealignService` remappe les paliers (13+15 → 15 et
-18+20 → 20), renomme les blocs et ne retient que les 3 aptitudes de
-`database/seeders/data/legacy-specialization-realignment.php`. Les cinq brouillons vivent dans
+Les **six fiches jouables** (Érudit, Milicien·ne, Dévot, Artiste, Explorateur·rice, Voleur·euse) sont
+rédigées dans `database/seeders/data/playable-specializations/*.php` : le seed les préfère au HTML legacy
+et les rafraîchit à chaque passage. Les sections de palier portent des **kref** (capacités cliquables,
+jets de sauvegarde, compétences). Une seule section par niveau. Le HTML
+`database/seeders/data/legacy-specializations/` (hors dépôt) reste un repli via
+`LegacySpecializationRealignService`. Les cinq brouillons vivent dans
 `database/seeders/data/draft-specializations.php` ; `SpecializationSeeder` les réécrit tant qu’ils sont à l’état
 brouillon et ne touche pas une fiche sortie du brouillon.
 

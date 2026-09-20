@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Artisan;
  * et pose les fiches brouillon manquantes (Artisan·e, Négociant·e, Sylvain·e, Marin·e, Courtisan·e).
  *
  * Fiches jouables rédigées : {@code database/seeders/data/playable-specializations/{slug}.php}
- * (prioritaires sur le HTML legacy).
+ * (Érudit, Milicien·ne, Dévot, Artiste, Explorateur·rice, Voleur·euse — prioritaires sur le HTML).
  * Fichiers legacy : {@code database/seeders/data/legacy-specializations/{slug}.html}
  * (ignorés par Git, à placer en local).
  * Brouillons : {@code database/seeders/data/draft-specializations.php}.
@@ -31,67 +31,30 @@ class SpecializationSeeder extends Seeder
     {
         $importer = app(LegacyEntitySectionImportService::class);
 
-        if (! $this->seedAuthoredPlayable($importer, 'erudit')) {
+        $playables = [
+            ['erudit', 'Érudit', 'erudit', 'import-specialization-erudit', 'Import legacy — Spécialisation Érudit', 'import-erudit', 'Spécialisation centrée sur le savoir, la magie et l’analyse.'],
+            ['milicien', 'Milicien·ne', 'milicien_ne', 'import-specialization-milicien-ne', 'Import legacy — Spécialisation Milicien·ne', 'import-milicien-ne', 'Spécialisation axée sur l’ordre, la protection et le combat structuré.'],
+            ['voleur', 'Voleur·euse', 'voleur_euse', 'import-specialization-voleur-euse', 'Import legacy — Spécialisation Voleur·euse', 'import-voleur-euse', 'Spécialisation tournée vers la discrétion, la ruse et la finesse.'],
+            ['devot', 'Dévot', 'devot', 'import-specialization-devot', 'Import legacy — Spécialisation Dévot', 'import-devot', 'Spécialisation liée à la foi, au soutien et aux pouvoirs sacrés.'],
+            ['artiste', 'Artiste', 'artiste', 'import-specialization-artiste', 'Import legacy — Spécialisation Artiste', 'import-artiste', 'Spécialisation axée sur la performance, le spectacle et la créativité.'],
+            ['explorateur', 'Explorateur·rice', 'explorateur_rice', 'import-specialization-explorateur-rice', 'Import legacy — Spécialisation Explorateur·rice', 'import-explorateur-rice', 'Spécialisation orientée découverte, terrain et autonomie.'],
+        ];
+
+        foreach ($playables as [$slug, $name, $legacySlug, $pageSlug, $pageTitle, $sectionPrefix, $short]) {
+            if ($this->seedAuthoredPlayable($importer, $slug)) {
+                continue;
+            }
+
             $this->importLegacySpecialization(
                 $importer,
-                legacySlug: 'erudit',
-                specializationName: 'Érudit',
-                importPageSlug: 'import-specialization-erudit',
-                importPageTitle: 'Import legacy — Spécialisation Érudit',
-                sectionSlugPrefix: 'import-erudit',
-                shortDescription: "Spécialisation centrée sur le savoir, la magie et l'analyse."
+                legacySlug: $legacySlug,
+                specializationName: $name,
+                importPageSlug: $pageSlug,
+                importPageTitle: $pageTitle,
+                sectionSlugPrefix: $sectionPrefix,
+                shortDescription: $short,
             );
         }
-
-        $this->importLegacySpecialization(
-            $importer,
-            legacySlug: 'milicien_ne',
-            specializationName: 'Milicien·ne',
-            importPageSlug: 'import-specialization-milicien-ne',
-            importPageTitle: 'Import legacy — Spécialisation Milicien·ne',
-            sectionSlugPrefix: 'import-milicien-ne',
-            shortDescription: 'Spécialisation axée sur l\'ordre, la protection et le combat structuré.'
-        );
-
-        $this->importLegacySpecialization(
-            $importer,
-            legacySlug: 'voleur_euse',
-            specializationName: 'Voleur·euse',
-            importPageSlug: 'import-specialization-voleur-euse',
-            importPageTitle: 'Import legacy — Spécialisation Voleur·euse',
-            sectionSlugPrefix: 'import-voleur-euse',
-            shortDescription: 'Spécialisation tournée vers la discrétion, la ruse et la finesse.'
-        );
-
-        $this->importLegacySpecialization(
-            $importer,
-            legacySlug: 'devot',
-            specializationName: 'Dévot',
-            importPageSlug: 'import-specialization-devot',
-            importPageTitle: 'Import legacy — Spécialisation Dévot',
-            sectionSlugPrefix: 'import-devot',
-            shortDescription: 'Spécialisation liée à la foi, au soutien et aux pouvoirs sacrés.'
-        );
-
-        $this->importLegacySpecialization(
-            $importer,
-            legacySlug: 'artiste',
-            specializationName: 'Artiste',
-            importPageSlug: 'import-specialization-artiste',
-            importPageTitle: 'Import legacy — Spécialisation Artiste',
-            sectionSlugPrefix: 'import-artiste',
-            shortDescription: 'Spécialisation axée sur la performance, le spectacle et la créativité.'
-        );
-
-        $this->importLegacySpecialization(
-            $importer,
-            legacySlug: 'explorateur_rice',
-            specializationName: 'Explorateur·rice',
-            importPageSlug: 'import-specialization-explorateur-rice',
-            importPageTitle: 'Import legacy — Spécialisation Explorateur·rice',
-            sectionSlugPrefix: 'import-explorateur-rice',
-            shortDescription: 'Spécialisation orientée découverte, terrain et autonomie.'
-        );
 
         $this->seedDraftSpecializations($importer);
 

@@ -114,4 +114,38 @@ class SpecializationSeederTest extends TestCase
         $this->assertStringNotContainsString('Brouillon', $html);
         $this->assertStringNotContainsString('5e-drs.fr', $html);
     }
+
+    public function test_seeder_writes_all_six_playable_specs_on_the_erudit_gabarit(): void
+    {
+        User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $this->seed(SpecializationSeeder::class);
+
+        $cases = [
+            'Érudit' => ['Politicien', 'Façonneur de sorts', 'Expertise en Wakfu'],
+            'Milicien·ne' => ['Frères d’armes', 'Position d’autorité', 'Général'],
+            'Dévot' => ['Refuge du pèlerin', 'Médecine de terrain', 'Haranguer les foules'],
+            'Artiste' => ['Spectacle ambulant', 'Touche-à-tout', 'Manipulateur subtil'],
+            'Explorateur·rice' => ['Jamais vraiment perdu', 'Rituel', 'Œil de l’éclaireur·euse'],
+            'Voleur·euse' => ['Argot des voleurs', 'Furtivité suprême', 'Insaisissable'],
+        ];
+
+        foreach ($cases as $name => $aptitudes) {
+            $spec = Specialization::query()->where('name', $name)->first();
+            $this->assertNotNull($spec, $name);
+            $this->assertSame(Specialization::STATE_PLAYABLE, $spec->state, $name);
+            $paliers = $spec->sections()->pluck('level')->unique()->sort()->values()->all();
+            $this->assertSame([1, 3, 6, 9, 12, 15, 20], $paliers, $name);
+
+            $html = $spec->sections()->get()->pluck('data')->map(
+                static fn (mixed $data): string => is_array($data) ? (string) ($data['content'] ?? '') : ''
+            )->implode("\n");
+            foreach ($aptitudes as $aptitude) {
+                $this->assertStringContainsString($aptitude, $html, $name);
+            }
+            $this->assertStringNotContainsString('Brouillon', $html, $name);
+            $this->assertStringNotContainsString('5e-drs.fr', $html, $name);
+            $this->assertGreaterThanOrEqual(3, $spec->capabilities()->where('is_passive', true)->count(), $name);
+        }
+    }
 }

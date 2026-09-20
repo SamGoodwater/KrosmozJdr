@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Les six spécialisations jouables sur le gabarit Érudit
+
+**Milicien·ne, Dévot, Artiste, Explorateur·rice et Voleur·euse** sont écrites comme l’Érudit : sept paliers, une capacité garantie plus une option, trois aptitudes, plus de liste D&D à rallonge. Chaque fiche tient dans le dépôt. Les cinq brouillons (Artisan·e, Négociant·e, Sylvain·e, Marin·e, Courtisan·e) restent des propositions.
+
 ## Septembre 2026 — Les 19 classes sur le gabarit Iop
 
 Les **18 autres classes** ont le même découpage de sorts que l’Iop : au niveau 1, jusqu’à **quatre variantes** au choix 1 (dégâts ou soins élémentaires), puis **un primordial** au choix 2 et un au choix 3. Les 9 choix suivants tombent aux vrais emplacements (**2, 4, 5, 6, 7, 8, 10, 11, 12**). Plus de sorts tagués 13 ou 14 : à partir du 12, on intensifie. Sram garde Invisibilité dès le niveau 1 ; Zobal ouvre sur Cavalcade avant Plastron.
