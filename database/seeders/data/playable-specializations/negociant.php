@@ -46,7 +46,7 @@ return [
             'masteries' => [
                 'Outils' => 'Matériel de marchand : balance, carnet, sceau.',
                 'Jets de sauvegarde' => 'Chance, Intelligence.',
-                'Compétences' => 'Choisis-en trois parmi : Persuasion, Supercherie, Perspicacité, Investigation.',
+                'Compétences' => 'Choisis-en trois parmi : Persuasion, Supercherie, Perspicacité, Investigation, Histoire.',
                 'Métiers' => 'Aucun métier d’artisanat offert. Tu peux en apprendre un comme n’importe qui (section 4.3).',
                 'Langues' => 'Une langue régionale ou commerciale au choix (section 4.1.4).',
             ],
@@ -87,6 +87,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'En arrivant dans une ville connue du Monde des Douze, tu nommes 1 contact (marchand, garde achetable, scribe). Le MJ peut le refuser s’il n’a aucun sens. 1×/ville.',
                 ],
+                [
+                    'name' => 'Arrhes',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu poses un acompte (10 % du prix, minimum 10 kamas). Le marchand te réserve l’objet jusqu’au lendemain. 1×/boutique/jour.',
+                ],
             ],
             'aptitudes' => [
                 [
@@ -110,6 +115,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'En 1 minute d’observation, tu cibles qui a de l’argent, qui ment sur le prix, qui n’est pas le vrai décideur. Test de Sagesse (Perspicacité), DD 12. Un fait, pas une fiche complète.',
                 ],
+                [
+                    'name' => 'Échantillon',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu obtiens un échantillon, un prix écrit ou une adresse. 10 minutes de discussion. Le MJ tranche s’il n’y a rien à montrer.',
+                ],
             ],
         ],
         9 => [
@@ -125,6 +135,11 @@ return [
                     'name' => 'Commission discrète',
                     'type' => $freeSlot,
                     'effect' => 'Tu achètes ou vends pour quelqu’un d’autre sans que ton nom apparaisse. 1 réserve de Wakfu, une scène de palabre. Un test de Supercherie si on cherche activement.',
+                ],
+                [
+                    'name' => 'Caution',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu te portes garant·e pour un allié : avantage à son test social en cours, mais c’est toi qui dois si ça tourne mal. 1×/scène.',
                 ],
             ],
             'aptitudes' => [
@@ -149,6 +164,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Social tendu : tu transformes une négociation en test d’Intimidation, ou l’inverse, selon le style. 1 PA en combat si ça se joue à voix haute. Pas un sort de charme.',
                 ],
+                [
+                    'name' => 'Entrepôt distant',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu fais arriver un objet Commun déjà payé, en 24 heures, dans une ville que tu as déjà visitée. 1×/semaine. Pas un artefact.',
+                ],
             ],
         ],
         15 => [
@@ -164,6 +184,11 @@ return [
                     'name' => 'Conseil des kamas',
                     'type' => $freeSlot,
                     'effect' => 'Tu pèses sur une décision de guilde, de milice marchande ou de noble fauché. Une fois par arc, avec le MJ. Échec possible, et ça se sait.',
+                ],
+                [
+                    'name' => 'Associé d’un jour',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu prends un PNJ marchand comme relais pour une scène : iel parle à ta place, tu as l’avantage au test. 1×/jour. Iel n’est pas ton employé.',
                 ],
             ],
             'aptitudes' => [
@@ -187,6 +212,11 @@ return [
                     'name' => 'Maison de commerce',
                     'type' => $freeSlot,
                     'effect' => 'Tu déplies un comptoir pour 8 heures : balance, coffre, silence des curieux. Rien de créé ne survit. 1 réserve de Wakfu, 1×/jour.',
+                ],
+                [
+                    'name' => 'Comptoir de poche',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu déplies un comptoir pour 8 heures : balance, coffre, deux chaises. On peut y conclure. 1 réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],

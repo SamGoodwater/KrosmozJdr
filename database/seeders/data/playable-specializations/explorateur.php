@@ -46,7 +46,7 @@ return [
             'masteries' => [
                 'Outils' => 'Boussole, corde, carnet de cartes. Selon tes routes : grappin, lanterne, filtre à eau.',
                 'Jets de sauvegarde' => 'Agilité, Sagesse.',
-                'Compétences' => 'Choisis-en trois parmi : Survie, Perception, Nature, Athlétisme.',
+                'Compétences' => 'Choisis-en trois parmi : Survie, Perception, Nature, Athlétisme, Investigation.',
                 'Métiers' => 'Aucun métier offert. Tu peux en apprendre un comme n’importe qui (section 4.3).',
                 'Langues' => 'Aucune langue bonus.',
             ],
@@ -87,6 +87,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Tu marques un lieu foulé (cairn, entaille, nœud). Pendant 24 heures tu sais dans quelle direction il se trouve dans un rayon d’un kilomètre. 1×/jour.',
                 ],
+                [
+                    'name' => 'Marque de sentier',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu laisses trois signes que seuls tes allié·e·s lisent sans jet. Ils restent jusqu’au prochain repos long, ou jusqu’à la pluie battante. 1 minute.',
+                ],
             ],
             'aptitudes' => [
                 [
@@ -110,6 +115,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Pendant une heure, le groupe (6) voyage sans laisser de traces évidentes. Vitesse réduite. Ça ne trompe pas un nez magique.',
                 ],
+                [
+                    'name' => 'Fil d’Ariane',
+                    'type' => $freeSlot,
+                    'effect' => 'Pendant une heure, tu retrouves le chemin déjà parcouru aujourd’hui, même dans le noir ou la brume. Magie qui brouille : le MJ tranche.',
+                ],
             ],
         ],
         9 => [
@@ -125,6 +135,11 @@ return [
                     'name' => 'Corde et grappin',
                     'type' => $freeSlot,
                     'effect' => 'Tu ouvres un passage vertical (falaise, mur, puits) pour le groupe. 10 minutes, test de Survie ou d’Athlétisme si c’est vilain. Une fois le passage posé, les autres n’ont pas à le refaire.',
+                ],
+                [
+                    'name' => 'Ration de marche',
+                    'type' => $freeSlot,
+                    'effect' => 'Avec 10 minutes et ce que le terrain offre, tu improvises un repas pour six. Ça calme la faim, pas un repos. 1×/jour.',
                 ],
             ],
             'aptitudes' => [
@@ -149,6 +164,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Tu montes la garde. Tant que tu es éveillé·e, le groupe ne peut pas être surpris par ce que tu pourrais voir ou entendre. Un repos, tu dors moins : pas d’autre bénéfice de veille.',
                 ],
+                [
+                    'name' => 'Abri de toile',
+                    'type' => $freeSlot,
+                    'effect' => 'En 10 minutes tu poses un abri contre pluie et vent pour six. Tient jusqu’au prochain repos. Pas un fortin.',
+                ],
             ],
         ],
         15 => [
@@ -164,6 +184,11 @@ return [
                     'name' => 'Traversée impossible',
                     'type' => $freeSlot,
                     'effect' => 'Une fois par semaine, tu fais passer le groupe (6) un obstacle qui devrait les arrêter : crête, marais, éboulis. Une heure, 1 réserve de Wakfu. Un mur de magie tient encore.',
+                ],
+                [
+                    'name' => 'Relais de piste',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu caches un sac (1 jour de rations, une corde, une lanterne) en un lieu déjà foulé. Tu le retrouves plus tard. 1 cache à la fois.',
                 ],
             ],
             'aptitudes' => [
@@ -187,6 +212,11 @@ return [
                     'name' => 'Refuge de fin de piste',
                     'type' => $freeSlot,
                     'effect' => 'Tu déplies un camp sûr pour 24 heures : toiles, feu, silence extérieur. Rien de créé ne survit. 1 réserve de Wakfu, 1×/jour.',
+                ],
+                [
+                    'name' => 'Bivouac de poche',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu déplies un camp sûr pour 8 heures : tentes, feu, silence extérieur. 1 réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],

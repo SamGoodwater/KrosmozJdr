@@ -46,7 +46,7 @@ return [
             'masteries' => [
                 'Outils' => 'Crochets, cape sombre, sac souple. Selon tes rues : fausse clé, craie, semelles feutrées.',
                 'Jets de sauvegarde' => 'Agilité, Chance.',
-                'Compétences' => 'Choisis-en trois parmi : Discrétion, Escamotage, Supercherie, Acrobaties.',
+                'Compétences' => 'Choisis-en trois parmi : Discrétion, Escamotage, Supercherie, Acrobaties, Investigation.',
                 'Métiers' => 'Aucun métier offert. Tu peux en apprendre un comme n’importe qui (section 4.3).',
                 'Langues' => 'Aucune langue bonus. L’argot vient avec l’aptitude, pas avec une liste.',
             ],
@@ -87,6 +87,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Un objet de poche (une main) devient introuvable sur toi sauf fouille magique ou déshabillage. Une scène, ou jusqu’à ce que tu le sors.',
                 ],
+                [
+                    'name' => 'Regard dans le dos',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu sais si on t’observe dans les 12 cases, sans savoir qui. Une scène. Ça ne perce pas l’invisibilité magique.',
+                ],
             ],
             'aptitudes' => [
                 [
@@ -110,6 +115,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'En ville, tu ouvres une sortie verticale : toit, corniche, gouttière. 1 PA en combat pour toi, 10 minutes pour faire passer le groupe. Test d’Acrobaties si c’est vilain.',
                 ],
+                [
+                    'name' => 'Bruit ailleurs',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu crées un bruit à 6 cases (voix, chute, verre). Les regards partent. 1 PA, 1×/scène.',
+                ],
             ],
         ],
         9 => [
@@ -125,6 +135,11 @@ return [
                     'name' => 'Dérobade urbaine',
                     'type' => $freeSlot,
                     'effect' => 'Quand on te voit, tu disparais dans la foule ou l’ombre adjacente. Réaction, 1×/scène. Tu te retrouves à 3 cases, hors vue banale. Un regard magique tient encore.',
+                ],
+                [
+                    'name' => 'Toit voisin',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu gagnes un accès évident (corniche, gouttière, fenêtre mal close) pour quitter un bâtiment. 1 minute. Le MJ tranche s’il n’y a vraiment rien.',
                 ],
             ],
             'aptitudes' => [
@@ -149,6 +164,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Tu poses une planque (coffre, trou, grenier) que le groupe retrouve. Elle tient une semaine, hors magie qui cherche. Une à la fois.',
                 ],
+                [
+                    'name' => 'Double fond',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu dissimules un objet de la taille d’un livre sur toi ou dans un meuble. Fouille banale : ratée. Fouille méthodique : jet opposé. Tient jusqu’à ce qu’on le trouve.',
+                ],
             ],
         ],
         15 => [
@@ -164,6 +184,11 @@ return [
                     'name' => 'Réseau de receleurs',
                     'type' => $freeSlot,
                     'effect' => 'En ville, tu trouves en une heure quelqu’un qui achète, cache ou échange un objet chaud. Avantage au test de Chance. Le MJ tranche le prix et le risque.',
+                ],
+                [
+                    'name' => 'Alibi prêt',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu poses un alibi simple (j’étais là, on m’a vu). Avantage au test de Supercherie pour cette version des faits. Une scène, 1×/jour.',
                 ],
             ],
             'aptitudes' => [
@@ -187,6 +212,11 @@ return [
                     'name' => 'Planque',
                     'type' => $freeSlot,
                     'effect' => 'Tu déplies un intérieur sûr pour 24 heures : portes, lits, silence, une sortie de plus. Rien de créé ne survit. 1 réserve de Wakfu, 1×/jour.',
+                ],
+                [
+                    'name' => 'Trou de souris',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu déplies une planque pour 8 heures : un réduit, deux couchages, une sortie. 1 réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],

@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Même gabarit pour les onze spécialisations
+
+Les **onze** fiches ont maintenant la même structure : **5 compétences** au niveau 1 (on en prend 3), et **2 options** de capacité à chaque palier. Les aptitudes ne bougent pas. L’équilibrage des effets viendra après.
+
 ## Septembre 2026 — Onze spécialisations jouables, dix-neuf classes présentées
 
 Les **cinq** spécialisations qui restaient en brouillon (**Artisan·e, Négociant·e, Sylvain·e, Marin·e, Courtisan·e**) sont écrites comme l’Érudit : sept paliers, choix entre garanties et options, trois aptitudes, vrais PA, plus de « à calibrer ». Les **onze** fiches tiennent dans le dépôt.

@@ -87,6 +87,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Après 10 minutes, tu sais si la zone est chassée, sacrée, malade, ou occupée par quelque chose de trop grand. Un fait, pas une carte complète.',
                 ],
+                [
+                    'name' => 'Toile lue',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu lis une trace animale ou végétale récente : qui, dans quelle direction, depuis quand. 1 minute. Magie qui brouille : le MJ tranche.',
+                ],
             ],
             'aptitudes' => [
                 [
@@ -110,6 +115,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Pendant un repos, tu prépares une dose (poison ou antidote naturel). Poison : 1d4, une blessure. Antidote : comme Soins de sous-bois contre Empoisonné. 1 dose, 1×/jour.',
                 ],
+                [
+                    'name' => 'Feuille pour la pluie',
+                    'type' => $freeSlot,
+                    'effect' => 'En 10 minutes tu improvises un abri contre pluie, soleil ou froid mou pour six. Tient jusqu’au prochain repos. Pas un sort de glace.',
+                ],
             ],
         ],
         9 => [
@@ -125,6 +135,11 @@ return [
                     'name' => 'Racines gênantes',
                     'type' => $freeSlot,
                     'effect' => 'En nature, 2 PA : une case devient terrain difficile jusqu’à la fin de ton prochain tour. 1×/tour. Pas un mur de Féca.',
+                ],
+                [
+                    'name' => 'Nid d’emprunt',
+                    'type' => $freeSlot,
+                    'effect' => 'Les bêtes non hostiles te laissent un gîte pour la nuit (terrier, branchage, anfractuosité). Six créatures, serrées. 1×/jour.',
                 ],
             ],
             'aptitudes' => [
@@ -149,6 +164,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Tu suis une créature à travers la nature même après la pluie, tant qu’elle n’a pas pris un zaap. 1 heure de piste, 1×/jour. Le MJ coupe si ça casse une quête.',
                 ],
+                [
+                    'name' => 'Sève qui ferme',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu fermes une plaie naturelle (pas un sort) : 1d4 PV, ou tu stoppes un saignement. 1 minute hors combat, 2 PA en combat. 1×/créature/jour.',
+                ],
             ],
         ],
         15 => [
@@ -164,6 +184,11 @@ return [
                     'name' => 'Seigneur·e d’un lieu',
                     'type' => $freeSlot,
                     'effect' => 'Tu te lies à un territoire (forêt, île, marais) en une nuit. Dedans : avantage aux tests de Sagesse et de Nature. Dehors : plus rien. Idéal campagne sédentaire ; à refuser en one-shot.',
+                ],
+                [
+                    'name' => 'Meute discrète',
+                    'type' => $freeSlot,
+                    'effect' => 'Jusqu’à trois bêtes simples déjà apprivoisées ou calmes t’accompagnent une heure et n’attaquent pas d’elles-mêmes. 1×/jour.',
                 ],
             ],
             'aptitudes' => [
@@ -187,6 +212,11 @@ return [
                     'name' => 'Canopée de poche',
                     'type' => $freeSlot,
                     'effect' => 'Tu déplies un abri vivant pour 8 heures : ombre, fruits, silence des prédateurs. Rien de créé ne survit. 1 réserve de Wakfu, 1×/jour.',
+                ],
+                [
+                    'name' => 'Clairière de poche',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu déplies une clairière pour 8 heures : mousse, eau, silence des arbres. 1 réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],

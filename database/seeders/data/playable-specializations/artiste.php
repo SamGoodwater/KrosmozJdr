@@ -46,7 +46,7 @@ return [
             'masteries' => [
                 'Outils' => 'Un instrument, un masque, des pigments ou un carnet. Selon ta forme : marionnettes, cartes, voix seule.',
                 'Jets de sauvegarde' => 'Chance, Sagesse.',
-                'Compétences' => 'Choisis-en trois parmi : Représentation, Persuasion, Supercherie, Escamotage.',
+                'Compétences' => 'Choisis-en trois parmi : Représentation, Persuasion, Supercherie, Escamotage, Perspicacité.',
                 'Métiers' => 'Aucun métier offert. Tu peux en apprendre un comme n’importe qui (section 4.3).',
                 'Langues' => 'Aucune langue bonus.',
             ],
@@ -87,6 +87,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Une créature qui t’entend et te voit : jet de Sagesse ou elle perd son action à rire. 2 PA, 1×/scène. Les bêtes et les morts-vivants s’en fichent.',
                 ],
+                [
+                    'name' => 'Fausse note utile',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu rates exprès : un public, une garde ou un hôte détourne le regard. Avantage au prochain test de Discrétion ou d’Escamotage d’un allié. 1 PA, 1×/scène.',
+                ],
             ],
             'aptitudes' => [
                 [
@@ -110,6 +115,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Une image ou un décor dans un cube de 4 cases, une scène. Ça ne blesse pas. Un examen attentif la perce. 1 réserve de Wakfu.',
                 ],
+                [
+                    'name' => 'Rappel de refrain',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu reprend une émotion déjà plantée dans la salle. Relance d’un test de Représentation ou de Persuasion raté, sauf un 1. 1×/scène.',
+                ],
             ],
         ],
         9 => [
@@ -125,6 +135,11 @@ return [
                     'name' => 'Rêvevin',
                     'type' => $freeSlot,
                     'effect' => 'Tu imprègnes une bouteille. Jusqu’à huit créatures qui boivent partagent un souvenir, un rêve ou un message d’une minute. Hors combat. 1×/jour.',
+                ],
+                [
+                    'name' => 'Costume qui tient',
+                    'type' => $freeSlot,
+                    'effect' => 'Un déguisement que tu poses tient 8 heures sans retouche, même sous la pluie. Un examen attentif peut encore te démasquer. 10 minutes pour l’habiller.',
                 ],
             ],
             'aptitudes' => [
@@ -149,6 +164,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Tu laisses une image de toi sur place et tu deviens discret (pas invisible magique : on te rate si on ne te cherche pas). 1 minute, 2 PA, 1×/scène.',
                 ],
+                [
+                    'name' => 'Ombres de coulisse',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu disparais dans un décor, une foule ou un rideau. Jusqu’à ton prochain tour, on t’a perdue de vue. 2 PA, 1×/scène. Tu n’es pas invisible en terrain nu.',
+                ],
             ],
         ],
         15 => [
@@ -164,6 +184,11 @@ return [
                     'name' => 'Salle entière',
                     'type' => $freeSlot,
                     'effect' => 'Jusqu’à six créatures qui t’entendent : même effet qu’Accroche, un seul jet pour le groupe (le plus haut). 3 PA, 1×/scène.',
+                ],
+                [
+                    'name' => 'Public conquis',
+                    'type' => $freeSlot,
+                    'effect' => 'Après une représentation d’au moins 10 minutes, jusqu’à six spectateur·rice·s ordinaires te doivent une faveur mineure (ouvrir, taire, raccompagner). Pas un noble, pas un contrat. 1×/jour.',
                 ],
             ],
             'aptitudes' => [
@@ -187,6 +212,11 @@ return [
                     'name' => 'Théâtre de poche',
                     'type' => $freeSlot,
                     'effect' => 'Tu déplies une salle pour 8 heures : planches, lumières, silence extérieur. Rien de créé ne survit. 1 réserve de Wakfu, 1×/jour.',
+                ],
+                [
+                    'name' => 'Loge de poche',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu déplies une loge pour 8 heures : miroir, costumes, silence. Rien de créé ne survit. 1 réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],

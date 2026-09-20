@@ -87,6 +87,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Tu improvises une raison d’être là (cousin, secrétaire, artiste invitée). Une fois par lieu et par jour. Échec = humiliation narrative, pas des dégâts.',
                 ],
+                [
+                    'name' => 'Salut qui range',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu places quelqu’un : iel s’assoit, s’écarte ou se tait le temps d’une phrase. Avantage au prochain test social dans la pièce. 1×/scène.',
+                ],
             ],
             'aptitudes' => [
                 [
@@ -110,6 +115,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Tu obtiens un rendez-vous, un sauf-conduit mondain, une place à une table. Pas les clés de la milice. Une fois par ville et par séjour.',
                 ],
+                [
+                    'name' => 'Place à table',
+                    'type' => $freeSlot,
+                    'effect' => 'En 10 minutes dans un salon, un temple riche ou une auberge de standing, tu obtiens deux couverts et qu’on te présente. Le MJ tranche si la maison est fermée.',
+                ],
             ],
         ],
         9 => [
@@ -125,6 +135,11 @@ return [
                     'name' => 'Silence de salon',
                     'type' => $freeSlot,
                     'effect' => 'Tu fais taire un sujet pour le reste de la scène : on change de conversation, on ne relance pas. Test de Chance (Persuasion) contre le plus haut Perspicacité de la pièce. 1×/scène.',
+                ],
+                [
+                    'name' => 'Mot qui ferme',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu coupes une rumeur ou une dispute d’un mot juste. La salle se tait une minute. Ça n’empêche pas de recommencer ensuite. 1×/scène.',
                 ],
             ],
             'aptitudes' => [
@@ -149,6 +164,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Tu places ou tu es un·e écouteur·euse (serviteur, musicien, garde). Tu apprends un secret de salon. Ici, pas de crochetage, que de la présence. 1×/scène.',
                 ],
+                [
+                    'name' => 'Danse des couloirs',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu te déplaces d’une pièce à l’autre d’un bâtiment officiel sans qu’on t’arrête, tant que tu es présentable. Une scène. Les portes gardées restent gardées.',
+                ],
             ],
         ],
         15 => [
@@ -164,6 +184,11 @@ return [
                     'name' => 'Changer de camp sans bouger',
                     'type' => $freeSlot,
                     'effect' => 'Tu survis à un retournement politique (purge, changement d’alignement de ville) en te recasant. Narratif de fin d’arc. Pas une téléportation.',
+                ],
+                [
+                    'name' => 'Grâce du souverain',
+                    'type' => $freeSlot,
+                    'effect' => 'Une fois par jour, tu fais relancer un test social raté dans une cour ou une capitale, sauf un 1. Ça se voit : on saura que tu as forcé.',
                 ],
             ],
             'aptitudes' => [
@@ -187,6 +212,11 @@ return [
                     'name' => 'Salon de poche',
                     'type' => $freeSlot,
                     'effect' => 'Tu déplies un salon pour 8 heures : sièges, lumière, silence extérieur. Rien de créé ne survit. 1 réserve de Wakfu, 1×/jour.',
+                ],
+                [
+                    'name' => 'Antichambre',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu déplies un salon pour 8 heures : sièges, thé, portes qui ferment. On peut y recevoir. 1 réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],

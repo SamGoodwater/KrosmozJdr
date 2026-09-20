@@ -10,9 +10,9 @@ use App\Support\Cms\RulesCharacteristicKrefReplacementCatalog;
  * Transforme les tableaux de spécialisations (brouillons ou fiche jouable)
  * en sections HTML.
  *
- * Gabarit imposé par 2.4.2.6 : 7 paliers, choix entre les capacités
- * garanties puis choix entre les options (un trait dès le palier 12),
- * 1 compétence (sauf palier 1 = 3), aptitudes uniquement aux paliers 3 / 9 / 15.
+ * Gabarit imposé par 2.4.2.6 : 7 paliers, 2 garanties au palier 1 puis 1,
+ * 2 options à chaque palier (un trait dès le palier 12), 5 compétences
+ * au palier 1 (en prendre 3), aptitudes uniquement aux paliers 3 / 9 / 15.
  * Pas de points de caractéristique. Les noms de capacités, jets et
  * compétences sont des shortcodes kref (cliquables une fois convertis).
  */

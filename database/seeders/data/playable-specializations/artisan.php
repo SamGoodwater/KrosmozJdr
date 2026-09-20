@@ -46,7 +46,7 @@ return [
             'masteries' => [
                 'Outils' => 'Outils d’un métier d’artisanat au choix (forge, bijouterie, couture, menuiserie…).',
                 'Jets de sauvegarde' => 'Intelligence, Force.',
-                'Compétences' => 'Choisis-en trois parmi : Investigation, Perception, Arcanes, Athlétisme.',
+                'Compétences' => 'Choisis-en trois parmi : Investigation, Perception, Arcanes, Athlétisme, Histoire.',
                 'Métiers' => 'Un métier d’artisanat au niveau 1 (Commun). La forgemagie n’est pas offerte.',
                 'Langues' => 'Aucune langue bonus. Le jargon des guildes, tu l’apprends en travaillant.',
             ],
@@ -87,6 +87,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Une fois par jour, tu relances un test de fabrication ou de réparation raté. Un 1 naturel reste un 1.',
                 ],
+                [
+                    'name' => 'Mesure juste',
+                    'type' => $freeSlot,
+                    'effect' => 'En 1 minute, tu estimes poids, volume, pièce manquante ou défaut d’assemblage d’un objet non magique. Un chiffre utile, pas une recette.',
+                ],
             ],
             'aptitudes' => [
                 [
@@ -110,6 +115,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Tu signes une pièce. On te reconnaît d’une ville à l’autre. Avantage social auprès des guildes qui respectent le geste ; les faussaires qui copient ta marque, tu les vois au premier coup d’œil (pas de jet).',
                 ],
+                [
+                    'name' => 'Coin et colle',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu improvises une réparation qui tient une scène (porte, roue, attache). Ensuite ça lâche. 10 minutes hors combat, 2 PA en combat. 1×/scène.',
+                ],
             ],
         ],
         9 => [
@@ -125,6 +135,11 @@ return [
                     'name' => 'Rien ne se perd',
                     'type' => $freeSlot,
                     'effect' => 'Quand tu fabriques, tu récupères la moitié des ressources communes d’un échec (arrondi inférieur). Les ingrédients rares et magiques, non.',
+                ],
+                [
+                    'name' => 'Recette lue à l’envers',
+                    'type' => $freeSlot,
+                    'effect' => 'Après 10 minutes sur un objet Commun, tu nommes les ressources évidentes de sa fabrication. Pas les runes, pas le secret d’un maître.',
                 ],
             ],
             'aptitudes' => [
@@ -149,6 +164,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Artefact fêlé, rune qui saute, mécanisme xélor : 8 heures, tes outils, un test d’Intelligence (DD 15). Succès : ça tient. Échec : tu n’aggrave pas. Le MJ tranche si c’est trop unique.',
                 ],
+                [
+                    'name' => 'Ajustement d’usage',
+                    'type' => $freeSlot,
+                    'effect' => '10 minutes, tes outils : un objet change d’usage mineur jusqu’au prochain repos (une sangle devient poignée, une lame devient levier). Pas de bonus de combat. 1×/jour.',
+                ],
             ],
         ],
         15 => [
@@ -164,6 +184,11 @@ return [
                     'name' => 'Œuvre unique',
                     'type' => $freeSlot,
                     'effect' => 'Avec le MJ, tu conçois un objet Unique (pas une recette catalogue). Long, cher, mémorable. Une fois par campagne. Ce n’est pas un souhait.',
+                ],
+                [
+                    'name' => 'Copie honnête',
+                    'type' => $freeSlot,
+                    'effect' => 'En une journée, tu copies l’apparence d’un objet Commun ou Peu commun que tu as sous les yeux. Ça n’a pas la magie de l’original. 1×/semaine.',
                 ],
             ],
             'aptitudes' => [
@@ -187,6 +212,11 @@ return [
                     'name' => 'Le geste enseigné',
                     'type' => $freeSlot,
                     'effect' => 'En une semaine, tu transmets une technique à un personnage consentant : iel gagne un métier d’artisanat au niveau 1, ou +1 niveau s’iel l’a déjà (plafond 5). 1×/année.',
+                ],
+                [
+                    'name' => 'Établi de poche',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu déplies un mini-atelier pour 8 heures. Tes tests d’outils n’ont plus le malus « pas d’établi ». 1 réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],

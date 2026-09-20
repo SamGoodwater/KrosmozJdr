@@ -5,9 +5,8 @@ declare(strict_types=1);
 /**
  * Fiche modèle de spécialisation (gabarit 2.4.2.6) : l’Érudit, jouable.
  *
- * 7 paliers, choix entre les garanties puis les options, 1 compétence (3 au palier 1),
- * exactement 3 aptitudes aux paliers 3 / 9 / 15. Les listes D&D héritées
- * sont ramenées à 2 ou 3 noms par type (garantie / option), pas à un grimoire.
+ * 7 paliers, 2 garanties au palier 1 puis 1, 2 options à chaque palier,
+ * 5 compétences au palier 1 (en prendre 3), exactement 3 aptitudes aux paliers 3 / 9 / 15.
  *
  * @return array<string, mixed>
  */
@@ -50,7 +49,7 @@ return [
             'masteries' => [
                 'Outils' => 'Une plume avec son encrier et un grimoire. Selon ton domaine : compas, lunette, coffret d’échantillons…',
                 'Jets de sauvegarde' => 'Sagesse, Intelligence.',
-                'Compétences' => 'Choisis-en trois parmi : Arcanes, Histoire, Investigation, Médecine, Perspicacité, Religion.',
+                'Compétences' => 'Choisis-en trois parmi : Arcanes, Histoire, Investigation, Perspicacité, Religion.',
                 'Métiers' => 'Aucun métier offert. Tu peux en apprendre un comme n’importe qui (section 4.3).',
                 'Langues' => 'Aucune langue bonus. Décryptage et Compréhension des langues couvrent le reste.',
             ],
@@ -118,6 +117,11 @@ return [
                     'name' => 'Langues',
                     'type' => $freeSlot,
                     'effect' => 'Pendant une scène, tu parles et tu comprends une langue que tu entends. Tu ne l’écris pas parfaitement ; les codes restent des codes.',
+                ],
+                [
+                    'name' => 'Lecture en diagonale',
+                    'type' => $freeSlot,
+                    'effect' => 'En 10 minutes sur un livre, un dossier ou une stèle, tu extrais un fait utile à la scène. Tu ne lis pas ce qui est chiffré ou volontairement caché. 1×/scène.',
                 ],
             ],
         ],
@@ -211,6 +215,11 @@ return [
                     'name' => 'Demi-plan',
                     'type' => $freeSlot,
                     'effect' => 'Tu ouvres une pièce hors du Monde, ancrée à toi, pour 24 heures. Ce qui y reste à la fermeture est perdu, sauf ce que tu tiens. Une fois par mois. Ce n’est pas un souhait.',
+                ],
+                [
+                    'name' => 'Cabinet de poche',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu déplies un bureau hors du Monde pour 8 heures : table, rayonnages de tes propres livres, silence. Rien de ce qui n’était pas à toi n’y survit. 1 réserve de Wakfu, 1×/semaine.',
                 ],
             ],
         ],

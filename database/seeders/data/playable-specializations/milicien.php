@@ -46,7 +46,7 @@ return [
             'masteries' => [
                 'Outils' => 'Insigne, menottes, corde. Selon ta ville : étendard de poche, sifflet, lanternon.',
                 'Jets de sauvegarde' => 'Force, Constitution.',
-                'Compétences' => 'Choisis-en trois parmi : Athlétisme, Intimidation, Perception, Perspicacité.',
+                'Compétences' => 'Choisis-en trois parmi : Athlétisme, Intimidation, Perception, Perspicacité, Persuasion.',
                 'Métiers' => 'Aucun métier offert. Tu peux en apprendre un comme n’importe qui (section 4.3).',
                 'Langues' => 'Aucune langue bonus.',
             ],
@@ -87,6 +87,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Toi et un allié adjacent : vous ne pouvez pas être déplacés de force tant que vous restez côte à côte. Une scène, ou 1 réserve de Wakfu en combat (1 PA).',
                 ],
+                [
+                    'name' => 'Épaule contre épaule',
+                    'type' => $freeSlot,
+                    'effect' => 'Un allié adjacent gagne +1 aux jets de sauvegarde tant qu’il reste collé à toi. Une scène, ou 1 PA en combat pour tenir jusqu’à ton prochain tour.',
+                ],
             ],
             'aptitudes' => [
                 [
@@ -110,6 +115,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Hors combat, en 10 minutes, tu lis une rue, une caserne ou un camp : une issue, une sentinelle, un détail qui cloche. Le MJ tranche si le lieu n’a rien à dire.',
                 ],
+                [
+                    'name' => 'Appel de la ronde',
+                    'type' => $freeSlot,
+                    'effect' => 'En 10 minutes en ville ou dans une caserne, tu fais venir une patrouille ou un garde s’il en existe. Le MJ tranche s’il n’y a personne à appeler. 1×/jour.',
+                ],
             ],
         ],
         9 => [
@@ -125,6 +135,11 @@ return [
                     'name' => 'Insigne levé',
                     'type' => $freeSlot,
                     'effect' => 'En ville ou face à une milice, une garde, une troupe : avantage aux tests de Chance (Persuasion) et de Force (Intimidation) pour faire ouvrir, céder ou patienter. Une scène.',
+                ],
+                [
+                    'name' => 'Cordon de rue',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu fermes un passage d’une case ou une porte. Les passant·e·s s’arrêtent. Forcer le cordon : jet d’Athlétisme contre toi. Une scène, 1 réserve de Wakfu.',
                 ],
             ],
             'aptitudes' => [
@@ -149,6 +164,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Tu interposes ton corps : les dégâts d’une attaque ou d’une zone qui touche un allié adjacent te sont transférés. 1 réaction. Tu peux encore tomber.',
                 ],
+                [
+                    'name' => 'Recul ordonné',
+                    'type' => $freeSlot,
+                    'effect' => 'Toi et jusqu’à deux allié·e·s adjacents reculez de 2 cases sans provoquer d’attaque. 2 PA, 1×/scène.',
+                ],
             ],
         ],
         15 => [
@@ -164,6 +184,11 @@ return [
                     'name' => 'Ralliement',
                     'type' => $freeSlot,
                     'effect' => 'Les allié·e·s à 6 cases qui t’entendent : fin de peur, de charme ou d’étourdissement mineur, et 1d4 PV. 1 réserve de Wakfu, 1×/scène.',
+                ],
+                [
+                    'name' => 'Veille partagée',
+                    'type' => $freeSlot,
+                    'effect' => 'Quand tu poses un camp, une veille est couverte sans fatigue. Le groupe ne peut pas être surpris tant que tu es éveillé·e. Jusqu’au prochain repos.',
                 ],
             ],
             'aptitudes' => [
@@ -187,6 +212,11 @@ return [
                     'name' => 'Bannière',
                     'type' => $freeSlot,
                     'effect' => 'Tu plantes un étendard (1 case). Tant qu’il tient (1 heure ou jusqu’à destruction), les allié·e·s dans 6 cases ont l’avantage contre la peur et +1 aux jets d’attaque. 1 réserve de Wakfu.',
+                ],
+                [
+                    'name' => 'Relève',
+                    'type' => $freeSlot,
+                    'effect' => 'Réaction : tu échanges ta case avec un allié à 6 cases. 1×/scène. L’allié arrive où tu étais, tu arrives où iel était.',
                 ],
             ],
         ],

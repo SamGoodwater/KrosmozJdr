@@ -147,7 +147,7 @@ return [
                         .'<ol>'
                         .'<li>Nomme le fantasy (« tank sacré », « piégeur à distance ») en lien avec la classe parente.</li>'
                         .'<li>Paliers 1–3 : effets simples ; 6–9 modérés ; 12–15 puissants ; 20 exceptionnel — jamais un effet de palier 20 dès le palier 3.</li>'
-                        .'<li>Écris <strong>1 à 2 capacités par palier</strong> : la première est une garantie, la seconde une option du choix. Chaque capacité a un coût ('.$pa.', Wakfu, fréquence).</li>'
+                        .'<li>Écris <strong>2 garanties au palier 1</strong> (le joueur en prend une), puis 1 garantie ; et <strong>2 options à chaque palier</strong>. Liste fermée de <strong>5 compétences</strong> au palier 1 (en prendre 3). Chaque capacité a un coût ('.$pa.', Wakfu, fréquence).</li>'
                         .'<li>Écris exactement <strong>3 aptitudes</strong>, aux paliers 3, 9 et 15 : passives ou contextuelles, gratuites, sans choix (voir [[kref:page:creation-capacites|Capacités]]).</li>'
                         .'<li>Les bonus de caractéristiques restent sur la ligne neutre des chartes, éventuellement <em>fort</em> sur <strong>une</strong> stat du rôle, pas sur toutes.</li>'
                         .'<li>Catalogue : [[kref:page:bibliotheque-specialization|Spécialisations]]. En lecture, les liaisons brouillon ne fuient pas.</li>'

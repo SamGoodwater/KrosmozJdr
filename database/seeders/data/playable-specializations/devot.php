@@ -46,7 +46,7 @@ return [
             'masteries' => [
                 'Outils' => 'Symbole sacré, flacon, bandelettes. Selon ton culte : encens, goupillon, petit livre.',
                 'Jets de sauvegarde' => 'Sagesse, Intelligence.',
-                'Compétences' => 'Choisis-en trois parmi : Médecine, Religion, Perspicacité, Persuasion.',
+                'Compétences' => 'Choisis-en trois parmi : Médecine, Religion, Perspicacité, Persuasion, Histoire.',
                 'Métiers' => 'Aucun métier offert. Tu peux en apprendre un comme n’importe qui (section 4.3).',
                 'Langues' => 'Aucune langue bonus. Les langues liturgiques s’apprennent, elles ne s’offrent pas.',
             ],
@@ -87,6 +87,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Tu marques une porte, une tente ou un lit. Pendant 8 heures, la première créature malveillante qui force l’entrée te réveille et subit désavantage à son premier jet. 1 réserve de Wakfu.',
                 ],
+                [
+                    'name' => 'Pain partagé',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu partages un repas simple. Jusqu’au prochain repos, jusqu’à six convives ont l’avantage au prochain jet contre la peur. 10 minutes, 1×/jour.',
+                ],
             ],
             'aptitudes' => [
                 [
@@ -110,6 +115,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Une lueur dans 3 cases autour de toi, une scène. Les invisibles non magiques apparaissent comme une brume. Les morts-vivants ont désavantage pour se cacher. 1 réserve de Wakfu.',
                 ],
+                [
+                    'name' => 'Absolution légère',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu poses la main : un allié se débarrasse d’une honte, d’un trouble mineur ou d’un cauchemar de la nuit. Ça ne soigne pas les PV. 1 réserve de Wakfu, 1×/scène.',
+                ],
             ],
         ],
         9 => [
@@ -125,6 +135,11 @@ return [
                     'name' => 'Sanctuaire',
                     'type' => $freeSlot,
                     'effect' => 'Tu scelles une pièce ou un campement pour 8 heures : les oreilles indiscrètes et les esprits banals glissent. Une créature qui force l’entrée te réveille. 1 réserve de Wakfu.',
+                ],
+                [
+                    'name' => 'Veillée',
+                    'type' => $freeSlot,
+                    'effect' => 'Autour de ton symbole, 8 heures : les vivant·e·s qui dorment ici se réveillent si une créature hostile entre. 1 réserve de Wakfu.',
                 ],
             ],
             'aptitudes' => [
@@ -149,6 +164,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Un allié à 6 cases qui tombe à 0 PV reste à 1. Réaction, 1×/scène. Ensuite, les comptes se règlent.',
                 ],
+                [
+                    'name' => 'Chemin de lanternes',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu éclaires un sentier de 12 cases pour une heure. Les allié·e·s dessus ignorent le terrain difficile dû à l’obscurité. 1 réserve de Wakfu, 1×/jour.',
+                ],
             ],
         ],
         15 => [
@@ -164,6 +184,11 @@ return [
                     'name' => 'Cercle consacré',
                     'type' => $freeSlot,
                     'effect' => 'Un cercle de 3 cases, 10 minutes. Les allié·e·s dedans ont avantage contre la peur et les effets maléfiques. 1 réserve de Wakfu, 1×/jour.',
+                ],
+                [
+                    'name' => 'Relique portée',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu charges un objet touché par ton culte. Le porteur a l’avantage au prochain jet de sauvegarde. Une scène, 1×/jour. L’objet n’est pas magique ensuite.',
                 ],
             ],
             'aptitudes' => [
@@ -187,6 +212,11 @@ return [
                     'name' => 'Temple de poche',
                     'type' => $freeSlot,
                     'effect' => 'Tu déplies un intérieur sûr pour 24 heures : lits, silence, eau, un autel. Rien de créé ne survit à la fin. 1 réserve de Wakfu, 1×/jour.',
+                ],
+                [
+                    'name' => 'Autel de poche',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu déplies un petit lieu de culte pour 8 heures : silence, eau, place pour prier. 1 réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],

@@ -46,7 +46,7 @@ return [
             'masteries' => [
                 'Outils' => 'Matériel de navigation : boussole, cartes marines, cordages.',
                 'Jets de sauvegarde' => 'Agilité, Chance.',
-                'Compétences' => 'Choisis-en trois parmi : Athlétisme, Acrobaties, Perception, Survie.',
+                'Compétences' => 'Choisis-en trois parmi : Athlétisme, Acrobaties, Perception, Survie, Supercherie.',
                 'Métiers' => 'Pêcheur ou Poissonnier au niveau 1. Pas d’artisanat d’armes offert.',
                 'Langues' => 'Aucune langue bonus. Le jargon des ports, tu l’as déjà dans la bouche.',
             ],
@@ -87,6 +87,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Tu nages longtemps (avantage à Athlétisme dans l’eau). Tu aides un·e allié·e à ne pas couler (1 PA en combat, tu partages ta case). Tu récupères un objet à faible profondeur hors combat (1 minute).',
                 ],
+                [
+                    'name' => 'Écope',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu vides, colmates ou tiens une voie d’eau le temps d’une scène. Bateau, cale, cave inondée. 1×/scène. Ça ne répare pas la coque.',
+                ],
             ],
             'aptitudes' => [
                 [
@@ -110,6 +115,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Tu estimes si une épave, une cale, une crique cache de l’air, du Wakfu pourri, ou un trou qui aspire. 10 minutes. Pas un sort de détection magique complet (Érudit).',
                 ],
+                [
+                    'name' => 'Voix de vigie',
+                    'type' => $freeSlot,
+                    'effect' => 'Un cri porte à 300 m sur l’eau, 60 m en ville. Tes allié·e·s qui l’entendent savent où tu es. 1×/scène.',
+                ],
             ],
         ],
         9 => [
@@ -125,6 +135,11 @@ return [
                     'name' => 'Grappin de fortune',
                     'type' => $freeSlot,
                     'effect' => 'Tu lances un grappin (6 cases). 2 PA. Accroche un rebord, un navire, une créature Grande ou plus (jet d’Athlétisme contre elle). 1×/tour.',
+                ],
+                [
+                    'name' => 'Filet lancé',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu entangles une créature à 3 cases (jet d’Athlétisme). Hors combat : tu ramènes un colis à la surface. 2 PA, 1×/scène.',
                 ],
             ],
             'aptitudes' => [
@@ -149,6 +164,11 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Tu répares un navire ou un gros engin (roue, gouvernail, pompe) en 8 heures, avec des ressources. Ici, c’est le bateau, pas l’épée (voir Artisan·e).',
                 ],
+                [
+                    'name' => 'Quille qui tient',
+                    'type' => $freeSlot,
+                    'effect' => '10 minutes : tu improvises une réparation de coque, de rames ou de cordage qui tient jusqu’au prochain port. Ensuite ça lâche.',
+                ],
             ],
         ],
         15 => [
@@ -164,6 +184,11 @@ return [
                     'name' => 'Capitaine d’occasion',
                     'type' => $freeSlot,
                     'effect' => 'Tu prends le commandement d’un équipage PNJ le temps d’une traversée. Moral, mutinerie, manœuvre : le MJ joue l’équipage, toi tu as les leviers. Avantage aux tests de Chance pour les faire tenir.',
+                ],
+                [
+                    'name' => 'Moussaillon d’un jour',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu donnes un ordre de pont à jusqu’à six personnes. Avantage à leur prochain test d’Athlétisme ou d’Acrobaties lié au navire. Une scène, 1×/jour.',
                 ],
             ],
             'aptitudes' => [
@@ -187,6 +212,11 @@ return [
                     'name' => 'Cale de poche',
                     'type' => $freeSlot,
                     'effect' => 'Tu déplies une cale sèche pour 8 heures : outils, pompe, silence de la houle. Rien de créé ne survit. 1 réserve de Wakfu, 1×/jour.',
+                ],
+                [
+                    'name' => 'Chaloupe de poche',
+                    'type' => $freeSlot,
+                    'effect' => 'Tu déplies une embarcation pour six, 8 heures, eau calme. Elle n’affronte pas la tempête. 1 réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],
