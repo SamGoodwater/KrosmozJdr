@@ -45,14 +45,18 @@ exactement **trois**, aux paliers **3, 9 et 15**.
 En base, capacités et aptitudes sont toutes des `Capability` liées par `capability_specialization`, dont le
 `level` porte le palier ; l’aptitude se distingue par `is_passive`.
 
-Les **six fiches jouables** (Érudit, Milicien·ne, Dévot, Artiste, Explorateur·rice, Voleur·euse) sont
+Les **onze fiches jouables** (Érudit, Milicien·ne, Dévot, Artiste, Explorateur·rice, Voleur·euse, Artisan·e, Négociant·e, Sylvain·e, Marin·e, Courtisan·e) sont
 rédigées dans `database/seeders/data/playable-specializations/*.php` : le seed les préfère au HTML legacy
 et les rafraîchit à chaque passage. Les sections de palier portent des **kref** (capacités cliquables,
 jets de sauvegarde, compétences). Une seule section par niveau. Le HTML
 `database/seeders/data/legacy-specializations/` (hors dépôt) reste un repli via
-`LegacySpecializationRealignService`. Les cinq brouillons vivent dans
-`database/seeders/data/draft-specializations.php` ; `SpecializationSeeder` les réécrit tant qu’ils sont à l’état
-brouillon et ne touche pas une fiche sortie du brouillon.
+`LegacySpecializationRealignService`. `draft-specializations.php` reste un point d’entrée vide pour
+d’éventuelles fiches encore en rédaction.
+
+Les **19 classes** ont une section CMS « Texte » rédigée dans `database/seeders/data/playable-breeds.php`
+(`ClassSheetContentRenderer`, `BreedSeeder`) : identité, passif en kref, repères, ce que la classe n’est pas,
+synergies. Le passif, les voies et les sorts restent sur `BreedViewFull`. Plus de dump « Capacités disponibles ».
+L’état de la fiche classe (`draft` / `playable`) reste celui du JSON `entities/breeds/*.json`.
 
 ### Métadonnées globales des sorts
 

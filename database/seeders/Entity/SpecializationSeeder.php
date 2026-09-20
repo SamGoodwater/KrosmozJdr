@@ -14,14 +14,13 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
 
 /**
- * Importe des spécialisations depuis des exports HTML statiques (sans réseau)
- * et pose les fiches brouillon manquantes (Artisan·e, Négociant·e, Sylvain·e, Marin·e, Courtisan·e).
+ * Importe les 11 spécialisations depuis les fiches rédigées
+ * ({@code database/seeders/data/playable-specializations/{slug}.php}),
+ * avec repli HTML legacy si un fichier PHP manque.
  *
- * Fiches jouables rédigées : {@code database/seeders/data/playable-specializations/{slug}.php}
- * (Érudit, Milicien·ne, Dévot, Artiste, Explorateur·rice, Voleur·euse — prioritaires sur le HTML).
  * Fichiers legacy : {@code database/seeders/data/legacy-specializations/{slug}.html}
  * (ignorés par Git, à placer en local).
- * Brouillons : {@code database/seeders/data/draft-specializations.php}.
+ * Brouillons optionnels : {@code database/seeders/data/draft-specializations.php}.
  */
 class SpecializationSeeder extends Seeder
 {
@@ -38,6 +37,11 @@ class SpecializationSeeder extends Seeder
             ['devot', 'Dévot', 'devot', 'import-specialization-devot', 'Import legacy — Spécialisation Dévot', 'import-devot', 'Spécialisation liée à la foi, au soutien et aux pouvoirs sacrés.'],
             ['artiste', 'Artiste', 'artiste', 'import-specialization-artiste', 'Import legacy — Spécialisation Artiste', 'import-artiste', 'Spécialisation axée sur la performance, le spectacle et la créativité.'],
             ['explorateur', 'Explorateur·rice', 'explorateur_rice', 'import-specialization-explorateur-rice', 'Import legacy — Spécialisation Explorateur·rice', 'import-explorateur-rice', 'Spécialisation orientée découverte, terrain et autonomie.'],
+            ['artisan', 'Artisan·e', 'artisan_e', 'import-specialization-artisan-e', 'Import legacy — Spécialisation Artisan·e', 'import-artisan-e', 'Spécialisation tournée vers la fabrication, la réparation et les métiers.'],
+            ['negociant', 'Négociant·e', 'negociant_e', 'import-specialization-negociant-e', 'Import legacy — Spécialisation Négociant·e', 'import-negociant-e', 'Spécialisation axée sur le commerce, la persuasion et les réseaux.'],
+            ['sylvain', 'Sylvain·e', 'sylvain_e', 'import-specialization-sylvain-e', 'Import legacy — Spécialisation Sylvain·e', 'import-sylvain-e', 'Spécialisation liée à la nature, aux animaux et aux milieux sauvages habités.'],
+            ['marin', 'Marin·e', 'marin_e', 'import-specialization-marin-e', 'Import legacy — Spécialisation Marin·e', 'import-marin-e', 'Spécialisation tournée vers la mer, les navires, l’équipage et Sufokia.'],
+            ['courtisan', 'Courtisan·e', 'courtisan_e', 'import-specialization-courtisan-e', 'Import legacy — Spécialisation Courtisan·e', 'import-courtisan-e', 'Spécialisation tournée vers les cours, l’étiquette et l’intrigue politique.'],
         ];
 
         foreach ($playables as [$slug, $name, $legacySlug, $pageSlug, $pageTitle, $sectionPrefix, $short]) {
@@ -197,6 +201,10 @@ class SpecializationSeeder extends Seeder
             $creatorId,
             Page::STATE_PLAYABLE,
         );
+        $page->fill([
+            'title' => (string) ($spec['importPageTitle'] ?? 'Spécialisation '.$name),
+            'state' => Page::STATE_PLAYABLE,
+        ])->save();
 
         $this->upsertAuthoredCapabilities($spec, $creatorId);
 

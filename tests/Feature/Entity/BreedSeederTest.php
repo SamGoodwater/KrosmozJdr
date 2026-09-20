@@ -47,7 +47,7 @@ class BreedSeederTest extends TestCase
         $titles = $breed->sections()->pluck('title')->all();
         $this->assertContains('Spécificité', $titles);
         $this->assertContains('Dé de vie', $titles);
-        $this->assertContains('Capacités', $titles);
+        $this->assertNotContains('Capacités', $titles);
         $this->assertContains('Évolution', $titles);
 
         $lifeSection = $breed->sections()->where('title', 'Dé de vie')->first();
@@ -61,6 +61,7 @@ class BreedSeederTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $breed = Breed::factory()->create([
+            'name' => 'Classe hors catalogue',
             'specificity' => 'Avant seed',
             'created_by' => $admin->id,
         ]);
@@ -73,5 +74,36 @@ class BreedSeederTest extends TestCase
         $this->seed(BreedSeeder::class);
 
         $this->assertSame($firstCount, $breed->fresh()->sections()->count());
+    }
+
+    public function test_authored_class_sheet_replaces_capability_dump_and_refreshes(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        Capability::factory()->create([
+            'name' => 'Fureur',
+            'is_passive' => true,
+            'created_by' => $admin->id,
+        ]);
+
+        $breed = Breed::factory()->create([
+            'name' => 'Iop',
+            'specificity' => 'Dump périmé',
+            'created_by' => $admin->id,
+        ]);
+
+        $this->seed(BreedSeeder::class);
+
+        $breed->refresh();
+        $titles = $breed->sections()->pluck('title')->all();
+        $this->assertSame(['Texte'], $titles);
+
+        $html = (string) ($breed->sections()->first()?->data['content'] ?? '');
+        $this->assertStringContainsString('Fureur', $html);
+        $this->assertStringContainsString('tu charges', $html);
+        $this->assertStringNotContainsString('Capacités disponibles', $html);
+        $this->assertStringNotContainsString('Dump périmé', $html);
+
+        $this->seed(BreedSeeder::class);
+        $this->assertSame(['Texte'], $breed->fresh()->sections()->pluck('title')->all());
     }
 }
