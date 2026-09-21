@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Icônes de classes toujours visibles dans le menu
+
+Dans le menu latéral, les symboles de classes restent **visibles au repos** (niveaux de gris) et **se colorisent au survol** (ou quand l’entrée est active). Avant, seuls les symboles N&B étaient utilisés : trop sombres, ils disparaissaient — sauf l’Osamodas, qui n’avait que le symbole couleur.
+
 ## Septembre 2026 — Aptitudes / capacités et plafonds de carac
 
 **Façonneur de sorts** (Érudit) devient capacité garantie du palier 9 ; l’aptitude du palier est **Mémoire des formules**. Les autres aptitudes contextuelles / réactives (ex. Insaisissable) restent si elles sont logiques sans coût. Les formules de **modificateurs** suivent enfin les règles : plafonnées à **⌊niv/4⌋+2** (absolu **+7**). Score absolu **24** (le **20** n’est que le plafond du niveau 12).

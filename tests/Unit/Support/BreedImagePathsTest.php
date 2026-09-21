@@ -39,4 +39,19 @@ final class BreedImagePathsTest extends TestCase
         $this->assertNotNull($values['symbol_full']);
         $this->assertSame($values['symbol_full'], $values['icon']);
     }
+
+    public function test_menu_icon_prefers_color_symbol_over_bw(): void
+    {
+        $breed = new \App\Models\Entity\Breed([
+            'symbol_bw' => '/storage/images/breeds/iop/symbol-bw.png',
+            'symbol_full' => '/storage/images/breeds/iop/symbol-full.png',
+            'icon' => '/storage/images/breeds/iop/symbol-bw.png',
+        ]);
+
+        $this->assertSame(
+            '/storage/images/breeds/iop/symbol-full.png',
+            BreedImagePaths::menuIcon($breed)
+        );
+        $this->assertNull(BreedImagePaths::menuIconHover($breed));
+    }
 }

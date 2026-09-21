@@ -121,29 +121,29 @@ final class BreedImagePaths
         return is_file(self::absoluteDir($slug).DIRECTORY_SEPARATOR.$file);
     }
 
+    /**
+     * Icône du menu latéral : symbole couleur (désaturé en CSS au repos).
+     *
+     * Les fichiers {@code symbol-bw} sont du trait sombre sur fond noir : invisibles
+     * dans le menu glass. On préfère donc {@code symbol_full}, grisé côté front.
+     */
     public static function menuIcon(Breed $breed): ?string
     {
         return self::firstNonEmpty([
-            $breed->symbol_bw,
-            $breed->icon,
             $breed->symbol_full,
+            $breed->icon,
+            $breed->symbol_bw,
             $breed->image,
         ]);
     }
 
+    /**
+     * Plus de swap d’image au survol : la colorisation est un filtre CSS
+     * ({@code iconColorizeOnHover} sur {@code GlassMenuItem}).
+     */
     public static function menuIconHover(Breed $breed): ?string
     {
-        $hover = self::firstNonEmpty([
-            $breed->symbol_full,
-            $breed->symbol_bw,
-            $breed->icon,
-        ]);
-        $base = self::menuIcon($breed);
-        if ($hover === null || $hover === $base) {
-            return null;
-        }
-
-        return $hover;
+        return null;
     }
 
     public static function asciiSlug(string $value): string

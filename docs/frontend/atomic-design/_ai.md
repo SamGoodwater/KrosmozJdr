@@ -9,6 +9,7 @@
 - `InputCore` : v-model via `vnode.props.onUpdate:modelValue` (pas `$attrs` — emits déclarés). `InputField` continue de passer `value` via `inputAttrs`.
 - Tooltips hover (`Tooltip` / `OverlayTrigger`) : le panneau capte le pointeur (pont CSS `overlay-hover-bridge` + délai de fermeture). Le survol du tooltip ne le ferme pas. Une seule surface : pas de `tooltip-floating-surface` empilé si `chromeless` / `glass=false` / `panelClass` déjà chromé.
 - `Dropdown` ouvert depuis `EntityMinimalCard` : `useEntityMinimalCardOverlayHold` + `[data-dropdown-open]` (menu téléporté sur `body`, sinon la carte se replie et démonte le raccourci d’état).
+- `GlassMenuItem` : `iconColorizeOnHover` = niveaux de gris au repos, couleurs au hover / actif (menu classes).
 
 ## Fichiers pivots
 

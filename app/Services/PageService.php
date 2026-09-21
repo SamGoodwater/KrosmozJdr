@@ -192,7 +192,7 @@ class PageService
     }
 
     /**
-     * Précharge les icônes menu des classes liées (symbol-bw + hover symbol-full).
+     * Précharge les icônes menu des classes liées (symbol-full ; colorisation CSS au hover).
      *
      * @param  Collection<Page>  $pages
      * @return array<int, array{icon: string|null, hover: string|null}>
@@ -269,7 +269,7 @@ class PageService
     }
 
     /**
-     * Icône menu d'une classe : symbol-bw, sinon icon, sinon symbol-full, puis image / Spatie.
+     * Icône menu d'une classe : symbol-full, sinon icon, sinon symbol-bw, puis image / Spatie.
      */
     public static function resolveBreedMenuIconForSync(Breed $breed): ?string
     {
