@@ -44,7 +44,7 @@ function sanitizeMenuIconSource(icon) {
 
 /**
  * Icône menu : webp entité sur le titre parent ou une entrée racine ;
- * sous-classes = menu_icon (BDD) ; spécialisations imbriquées = aucune.
+ * sous-classes = menu_icon (BDD, symbole couleur) ; spécialisations imbriquées = aucune.
  *
  * @param {{ entity_key?: string|null, menu_icon?: string|null }} item
  * @param {'parent-header'|'top-link'|'nested-link'} placement
@@ -67,11 +67,16 @@ function resolveMenuIcon(item, placement) {
     return getEntityIconPath(key);
 }
 
-function resolveMenuIconHover(item, placement) {
-    if (placement !== 'nested-link' || item?.entity_key !== 'breed') {
-        return '';
-    }
-    return sanitizeMenuIconSource(item?.menu_icon_hover);
+/**
+ * Les classes colorisent le symbole via CSS (niveaux de gris → couleur).
+ * On n’utilise plus le swap symbol-bw / symbol-full.
+ *
+ * @param {{ entity_key?: string|null }} item
+ * @param {'parent-header'|'top-link'|'nested-link'} placement
+ * @returns {boolean}
+ */
+function shouldColorizeMenuIconOnHover(item, placement) {
+    return placement === 'nested-link' && item?.entity_key === 'breed';
 }
 
 function isMenuGroupContainer(item) {
@@ -202,7 +207,7 @@ const groupedMenuItems = computed(() => {
                         :key="child.item.id"
                         :href="child.item.url"
                         :icon="resolveMenuIcon(child.item, 'nested-link')"
-                        :icon-hover="resolveMenuIconHover(child.item, 'nested-link')"
+                        :icon-colorize-on-hover="shouldColorizeMenuIconOnHover(child.item, 'nested-link')"
                         :class="[
                             'main-menu-item',
                             'main-menu-item-child',
@@ -256,7 +261,7 @@ const groupedMenuItems = computed(() => {
                                     :key="grandchild.item.id"
                                     :href="grandchild.item.url"
                                     :icon="resolveMenuIcon(grandchild.item, 'nested-link')"
-                                    :icon-hover="resolveMenuIconHover(grandchild.item, 'nested-link')"
+                                    :icon-colorize-on-hover="shouldColorizeMenuIconOnHover(grandchild.item, 'nested-link')"
                                     :class="[
                                         'main-menu-item',
                                         'main-menu-item-child',
@@ -316,7 +321,7 @@ const groupedMenuItems = computed(() => {
                                     :key="grandchild.item.id"
                                     :href="grandchild.item.url"
                                     :icon="resolveMenuIcon(grandchild.item, 'nested-link')"
-                                    :icon-hover="resolveMenuIconHover(grandchild.item, 'nested-link')"
+                                    :icon-colorize-on-hover="shouldColorizeMenuIconOnHover(grandchild.item, 'nested-link')"
                                     :class="[
                                         'main-menu-item',
                                         'main-menu-item-child',

@@ -14,7 +14,9 @@ defineOptions({ inheritAttrs: false });
  * <GlassMenuItem danger @click="logout">Se déconnecter</GlassMenuItem>
  *
  * @props {String} href - URL (optionnel)
- * @props {String} icon - Icône FontAwesome (optionnel)
+ * @props {String} icon - Icône FontAwesome ou URL (optionnel)
+ * @props {String} iconHover - Variante au survol (swap d’image, optionnel)
+ * @props {Boolean} iconColorizeOnHover - Niveaux de gris au repos, couleurs au survol / actif
  * @props {Boolean} active - Item actif
  * @props {Boolean} compact - Réduit hauteur et padding
  * @props {Boolean} danger - Variante danger
@@ -32,6 +34,7 @@ const props = defineProps({
     icon: { type: String, default: "" },
     iconHover: { type: String, default: "" },
     iconAlt: { type: String, default: "" },
+    iconColorizeOnHover: { type: Boolean, default: false },
     iconPack: {
         type: String,
         default: "solid",
@@ -95,7 +98,14 @@ function handleClick(event) {
         @click="handleClick"
     >
         <span :class="itemClasses">
-            <span v-if="icon" class="glass-menu-item-icon-wrap" :class="{ 'is-swappable': hasIconHover }">
+            <span
+                v-if="icon"
+                class="glass-menu-item-icon-wrap"
+                :class="{
+                    'is-swappable': hasIconHover,
+                    'is-colorize-on-hover': iconColorizeOnHover,
+                }"
+            >
                 <Icon
                     :source="icon"
                     :pack="iconPack"
@@ -125,7 +135,14 @@ function handleClick(event) {
         v-on="$attrs"
         @click="handleClick"
     >
-        <span v-if="icon" class="glass-menu-item-icon-wrap" :class="{ 'is-swappable': hasIconHover }">
+        <span
+            v-if="icon"
+            class="glass-menu-item-icon-wrap"
+            :class="{
+                'is-swappable': hasIconHover,
+                'is-colorize-on-hover': iconColorizeOnHover,
+            }"
+        >
             <Icon
                 :source="icon"
                 :pack="iconPack"
@@ -199,8 +216,14 @@ function handleClick(event) {
 
 .glass-menu-item-icon {
     flex-shrink: 0;
-    opacity: 0.82;
-    transition: opacity 0.18s ease;
+    opacity: 0.9;
+    transition:
+        opacity 0.18s ease,
+        filter 0.18s ease;
+}
+
+.glass-menu-item-icon-wrap.is-colorize-on-hover .glass-menu-item-icon {
+    filter: grayscale(1);
 }
 
 .glass-menu-item-icon-hover {
@@ -210,8 +233,15 @@ function handleClick(event) {
 }
 
 .glass-menu-item:hover .glass-menu-item-icon,
-.glass-menu-item:focus-visible .glass-menu-item-icon {
+.glass-menu-item:focus-visible .glass-menu-item-icon,
+.glass-menu-item-active .glass-menu-item-icon {
     opacity: 1;
+}
+
+.glass-menu-item:hover .glass-menu-item-icon-wrap.is-colorize-on-hover .glass-menu-item-icon,
+.glass-menu-item:focus-visible .glass-menu-item-icon-wrap.is-colorize-on-hover .glass-menu-item-icon,
+.glass-menu-item-active .glass-menu-item-icon-wrap.is-colorize-on-hover .glass-menu-item-icon {
+    filter: grayscale(0);
 }
 
 .glass-menu-item:hover .glass-menu-item-icon-hover,
