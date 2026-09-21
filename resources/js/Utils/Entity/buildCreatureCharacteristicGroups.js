@@ -219,7 +219,8 @@ function fallbackDbValue(creature, dbColumn, runtime) {
  */
 function computeStatModifier(creature, stat) {
     const level = parseInt(creature.level, 10) || 1;
-    const modMax = Math.min(Math.floor(level / 2) + 1, 7);
+    // Aligné sur le plafond de score 14+⌊niv/2⌋ → mod max = ⌊niv/4⌋+2, absolu +7.
+    const modMax = Math.min(Math.floor(level / 4) + 2, 7);
     const statVal = parseInt(creature[stat], 10) || 10;
     const rawMod = Math.floor((statVal - 10) / 2);
     return Math.max(Math.min(rawMod, modMax), -2);

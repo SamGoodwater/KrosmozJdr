@@ -32,7 +32,7 @@ final class PlayableEruditSheetTest extends TestCase
 
         $this->assertSame([
             3 => 'Politicien',
-            9 => 'Façonneur de sorts',
+            9 => 'Mémoire des formules',
             15 => 'Expertise en Wakfu',
         ], $aptitudes);
     }

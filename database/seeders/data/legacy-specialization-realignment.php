@@ -47,7 +47,7 @@ return [
     'erudit' => [
         'aptitudes' => [
             'Politicien' => 3,
-            'Façonneur de sorts' => 9,
+            'Mémoire des formules' => 9,
             'Expertise en wakfu' => 15,
         ],
     ],

@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Aptitudes / capacités et plafonds de carac
+
+**Façonneur de sorts** (Érudit) devient capacité garantie du palier 9 ; l’aptitude du palier est **Mémoire des formules**. Les autres aptitudes contextuelles / réactives (ex. Insaisissable) restent si elles sont logiques sans coût. Les formules de **modificateurs** suivent enfin les règles : plafonnées à **⌊niv/4⌋+2** (absolu **+7**). Score absolu **24** (le **20** n’est que le plafond du niveau 12).
+
 ## Septembre 2026 — Même gabarit pour les onze spécialisations
 
 Les **onze** fiches ont maintenant la même structure : **5 compétences** au niveau 1 (on en prend 3), et **2 options** de capacité à chaque palier. Les aptitudes ne bougent pas. L’équilibrage des effets viendra après.
@@ -38,7 +42,7 @@ Sur les pages **Bibliothèques** (tableaux d’entités), un bouton **Créer** a
 
 ## Septembre 2026 — Érudit modèle et sorts Iop jusqu’au niveau 12
 
-L’**Érudit** est la première spécialisation réécrite sur le gabarit verrouillé : sept paliers, une capacité garantie plus une option, trois aptitudes (Politicien, Façonneur de sorts, Expertise en Wakfu). Plus de liste D&D à rallonge.
+L’**Érudit** est la première spécialisation réécrite sur le gabarit verrouillé : sept paliers, une capacité garantie plus une option, trois aptitudes (Politicien, Mémoire des formules, Expertise en Wakfu). **Façonneur de sorts** est une capacité garantie du palier 9 (effet lié au lancement de zone), pas une aptitude. Plus de liste D&D à rallonge.
 
 Les **sorts Iop** s’apprennent maintenant aux vrais emplacements (2, 4, 5, 6, 7, 8, 10, 11, 12). Chaque fiche porte ses lignes d’intensification : au niveau 13, 16 et 20, le même sort gagne un dé — ou une case, ou rien (« — ») s’il est déjà au plafond.
 
@@ -54,7 +58,7 @@ Quand on convertit un PNJ par IA, le modèle **voit** les classes et spécialisa
 
 La montée en niveau change de forme. **Les sorts sont tous acquis au niveau 12** : 3 au niveau 1, puis un de plus aux niveaux 2, 4, 5, 6, 7, 8, 10, 11 et 12, soit 12 sorts. Au-delà, ils ne font que s’intensifier — on joue rarement jusqu’au 20.
 
-Les **caractéristiques** partent toutes à 8 ; on répartit 10 points à la création (12 en descendant une carac à 6). Le plafond porte sur le score : **14 + niveau / 2**. Ensuite, seulement **6 points offerts** (niveaux 2, 4, 8, 10, 14 et 16). Les **équipements** ne peuvent plus dépasser **+8 par caractéristique**, forgemagie comprise (max +2).
+Les **caractéristiques** partent toutes à 8 ; on répartit 10 points à la création (12 en descendant une carac à 6). Le plafond porte sur le score : **14 + ⌊niveau / 2⌋** (absolu **24** au niv. 20 — le **20** n’est que le plafond du niv. 12). Le modificateur est plafonné à **⌊niv/4⌋+2** (absolu **+7**). Ensuite, seulement **6 points offerts** (niveaux 2, 4, 8, 10, 14 et 16). Les **équipements** ne peuvent plus dépasser **+8 par caractéristique**, forgemagie comprise (max +2).
 
 Les **spécialisations** montent aux niveaux **1, 3, 6, 9, 12, 15 et 20**. À chaque palier : un **choix entre** les capacités garanties, un **choix entre** les options (capacités, ou un **trait** à partir du niveau 12), plus compétences et métiers. Pas de points de caractéristique.
 

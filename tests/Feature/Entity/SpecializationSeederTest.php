@@ -24,7 +24,7 @@ class SpecializationSeederTest extends TestCase
         $this->seed(SpecializationSeeder::class);
 
         $cases = [
-            'Érudit' => ['Politicien', 'Façonneur de sorts', 'Expertise en Wakfu'],
+            'Érudit' => ['Politicien', 'Mémoire des formules', 'Expertise en Wakfu'],
             'Milicien·ne' => ['Frères d’armes', 'Position d’autorité', 'Général'],
             'Dévot' => ['Refuge du pèlerin', 'Médecine de terrain', 'Haranguer les foules'],
             'Artiste' => ['Spectacle ambulant', 'Touche-à-tout', 'Manipulateur subtil'],

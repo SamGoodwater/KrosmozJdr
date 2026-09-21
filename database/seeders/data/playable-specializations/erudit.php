@@ -130,8 +130,13 @@ return [
             'flavor' => 'Tes sorts ont des poches. Tes textes ont des plis. Tu décides qui est dedans.',
             'capacities' => [
                 [
-                    'name' => 'Décryptage',
+                    'name' => 'Façonneur de sorts',
                     'type' => $guaranteed,
+                    'effect' => 'Quand tu lances un sort de zone, tu peux épargner des créatures choisies : elles ne subissent pas l’effet. 1 créature à ce palier, 2 au palier 15, 3 au palier 20. Gratuit, lié au lancement (pas de PA ni de Wakfu en plus).',
+                ],
+                [
+                    'name' => 'Décryptage',
+                    'type' => $freeSlot,
                     'effect' => 'Tu attaques un texte chiffré, un glyphe ou un contrat à double fond. 10 minutes, test d’Intelligence (Arcanes ou Investigation). Un succès livre le sens utile, pas forcément l’auteur.',
                 ],
                 [
@@ -139,17 +144,12 @@ return [
                     'type' => $freeSlot,
                     'effect' => 'Tu scelles une pièce ou un campement pour 8 heures : les oreilles indiscrètes et les scrutations banales glissent. Une créature qui force l’entrée te réveille. 1 réserve de Wakfu.',
                 ],
-                [
-                    'name' => 'Localiser une créature',
-                    'type' => $freeSlot,
-                    'effect' => 'Tu nommes une créature que tu as déjà vue. Pendant 10 minutes, tu sais dans quelle direction elle se trouve dans un rayon d’un kilomètre, sauf magie qui la dérobe.',
-                ],
             ],
             'aptitudes' => [
                 [
-                    'name' => 'Façonneur de sorts',
-                    'type' => 'Réactive (tes zones)',
-                    'effect' => 'Quand tu lances un sort de zone, tu peux épargner des créatures choisies : elles ne subissent pas l’effet. 1 créature à ce palier, 2 au palier 15, 3 au palier 20.',
+                    'name' => 'Mémoire des formules',
+                    'type' => 'Passive',
+                    'effect' => 'Avantage aux tests d’Intelligence (Arcanes) pour reconnaître un sort, un glyphe ou une capacité que tu as déjà vu·e au moins une fois.',
                 ],
             ],
         ],

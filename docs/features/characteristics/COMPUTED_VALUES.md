@@ -5,7 +5,9 @@ ou une **composition** de trois couches, pilotée par des formules qui dépenden
 
 ## Les trois couches
 
-`total = base + objets + contexte` (puis clamp min/max si défini).
+`total = base + objets + contexte`.
+
+Les champs pivot `min` / `max` **numériques** sont des **plafonds absolus** (métadonnée UI, validation à l’édition, clamp au scrapping). Ils **ne reclament pas** automatiquement le résultat d’une formule au runtime créature : si une formule doit respecter un plafond progressif *et* un plafond absolu, elle les embarque (`min(..., N)`). Un `max` pivot plus bas qu’une formule mal écrite ne « corrige » donc pas l’affichage résolu — il faut aligner la formule.
 
 | Couche | Source | Rôle |
 | --- | --- | --- |
