@@ -39,6 +39,10 @@ final class UtilityConsumableSeederImporterTest extends TestCase
         $this->assertSame(1500, $antidote->totalPriceKamas());
         $this->assertSame('8', $antidote->level);
 
+        $shield = Consumable::query()->where('official_id', 'jdr:shield-potion:5')->first();
+        $this->assertNotNull($shield);
+        $this->assertSame('{"shield_points":5}', $shield->bonus);
+
         $candy = Consumable::query()->where('dofusdb_id', '12196')->first();
         $this->assertNotNull($candy);
         $this->assertSame(10000, $candy->totalPriceKamas());

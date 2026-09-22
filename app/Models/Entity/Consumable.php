@@ -28,6 +28,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string $name
  * @property string|null $description
  * @property string|null $effect
+ * @property string|null $bonus
  * @property string|null $level
  * @property string|null $recipe
  * @property int|null $price_calculated
@@ -126,6 +127,7 @@ class Consumable extends Model implements HasMedia
         'name',
         'description',
         'effect',
+        'bonus',
         'level',
         'recipe',
         'price_calculated',

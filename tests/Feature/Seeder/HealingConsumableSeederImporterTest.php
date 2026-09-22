@@ -31,6 +31,7 @@ final class HealingConsumableSeederImporterTest extends TestCase
         $this->assertNotNull($pain);
         $this->assertSame('Pain d\'Incarnam', $pain->name);
         $this->assertSame(HealingConsumableCatalog::effectText(1), $pain->effect);
+        $this->assertSame(HealingConsumableCatalog::bonusJson(1), $pain->bonus);
         $this->assertFalse($pain->auto_update);
         $this->assertSame(20, $pain->totalPriceKamas());
         $this->assertSame(1, $pain->resources()->count());

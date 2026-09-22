@@ -115,8 +115,44 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       key: "effect",
       label: "Effet",
       icon: "fa-solid fa-sparkles",
+      helper: "Règles d’usage (durée, hors combat…). Les valeurs numériques sont dans Bonus.",
       table: {
         searchable: true,
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
+      },
+      edit: {
+        form: {
+          type: "textarea",
+          group: "Contenu",
+          required: false,
+          showInCompact: false,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+        },
+      },
+    },
+    bonus: {
+      key: "bonus",
+      label: "Bonus",
+      icon: "fa-solid fa-star",
+      helper: "Effets numériques (JSON). Filtrer : choisir une caractéristique, puis éventuellement min/max.",
+      table: {
+        searchable: true,
+        filterable: {
+          id: "bonus",
+          type: "picked-range",
+          defaultVisible: true,
+          label: "Bonus",
+        },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
       },

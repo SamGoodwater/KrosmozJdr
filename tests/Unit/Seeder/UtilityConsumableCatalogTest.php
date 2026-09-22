@@ -35,8 +35,16 @@ final class UtilityConsumableCatalogTest extends TestCase
         $this->assertSame('12', $byName['Bonbon de Renaissance du Chanceux']['level']);
         $this->assertSame(3, $byName['Bonbon de Renaissance du Chanceux']['rarity']);
         $this->assertSame(800, $byName['Potion de bouclier']['price']);
+        $this->assertSame('{"shield_points":5}', $byName['Potion de bouclier']['bonus']);
         $this->assertSame(2500, $byName['Potion de grand bouclier']['price']);
+        $this->assertSame('{"shield_points":10}', $byName['Potion de grand bouclier']['bonus']);
         $this->assertSame(800, $byName['Friandise de vitalité']['price']);
+        $this->assertSame('{"temporary_life_points":5}', $byName['Friandise de vitalité']['bonus']);
         $this->assertSame(2500, $byName['Élixir de vie temporaire']['price']);
+        $this->assertSame('{"temporary_life_points":10}', $byName['Élixir de vie temporaire']['bonus']);
+        $this->assertSame('{"deception":1}', $byName['Bière d\'Amakna']['bonus']);
+        $this->assertSame('{"investigation":1}', $byName['Café']['bonus']);
+        $this->assertSame('{"wakfu_recharge":2}', $byName['Élixir de réserve de Wakfu']['bonus']);
+        $this->assertNull($byName['Potion de Rappel']['bonus']);
     }
 }

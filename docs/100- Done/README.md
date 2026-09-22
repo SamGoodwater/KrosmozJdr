@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Filtres d’effets sur consommables et ressources
+
+Les consommables (et ressources) se filtrent maintenant comme les équipements : on choisit une caractéristique, puis une valeur min/max. Les soins, PV temporaires et points de bouclier sont enregistrés en chiffres (plus seulement dans le texte), avec le détail d’usage (hors combat, durée…) toujours lisible sur la fiche.
+
 ## Septembre 2026 — Icônes de classes toujours visibles dans le menu
 
 Dans le menu latéral, les symboles de classes restent **visibles au repos** (niveaux de gris) et **se colorisent au survol** (ou quand l’entrée est active). Avant, seuls les symboles N&B étaient utilisés : trop sombres, ils disparaissaient — sauf l’Osamodas, qui n’avait que le symbole couleur.

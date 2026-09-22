@@ -157,6 +157,19 @@ final class HealingConsumableCatalog
         return sprintf('Restaure %d PV. Hors combat uniquement.', $heal);
     }
 
+    /**
+     * Bonus JSON filtrable (restauration de PV).
+     *
+     * @example HealingConsumableCatalog::bonusJson(5) === '{"life_points_restore":5}'
+     */
+    public static function bonusJson(int $heal): string
+    {
+        return json_encode(
+            ['life_points_restore' => max(0, $heal)],
+            JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
+        );
+    }
+
     private function nullableString(mixed $value): ?string
     {
         if (! is_string($value)) {

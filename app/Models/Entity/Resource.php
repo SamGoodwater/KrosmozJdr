@@ -27,6 +27,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string $name
  * @property string|null $description
  * @property string|null $effect
+ * @property string|null $bonus
  * @property string $level
  * @property string|null $price
  * @property string|null $weight
@@ -142,6 +143,7 @@ class Resource extends Model implements HasMedia
         'name',
         'description',
         'effect',
+        'bonus',
         'level',
         'price',
         'weight',

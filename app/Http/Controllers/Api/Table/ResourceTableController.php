@@ -6,6 +6,7 @@ use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Resource;
 use App\Models\Type\ResourceType;
+use App\Support\Entity\ObjectBonusFilterCatalog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -58,7 +59,7 @@ class ResourceTableController extends Controller
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
 
         // Compat: accepter des filtres "flat" (rarity=2) en plus de filters[rarity]=2
-        foreach (['level', 'resource_type_id', 'rarity', 'auto_update', 'state', 'read_level', 'write_level'] as $k) {
+        foreach (['level', 'resource_type_id', 'rarity', 'auto_update', 'state', 'read_level', 'write_level', 'bonus'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -93,7 +94,8 @@ class ResourceTableController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhere('effect', 'like', "%{$search}%");
+                    ->orWhere('effect', 'like', "%{$search}%")
+                    ->orWhere('bonus', 'like', "%{$search}%");
             });
         }
 
@@ -120,6 +122,9 @@ class ResourceTableController extends Controller
         }
         if ($this->hasFilterValue($filters, 'id')) {
             $this->applyEqualityFilter($query, 'id', $filters['id'], 'int');
+        }
+        if ($this->hasFilterValue($filters, 'bonus')) {
+            $this->applyJsonBonusFilters($query, $filters['bonus'], 'bonus', false);
         }
 
         $this->applyEntityTableIdList($query, $request);
@@ -169,6 +174,7 @@ class ResourceTableController extends Controller
                 1,
                 200
             ),
+            'bonus' => ObjectBonusFilterCatalog::options(),
         ];
 
         // Option B: renvoyer des entités brutes (le front génère `cells`).
@@ -184,6 +190,7 @@ class ResourceTableController extends Controller
                     'name' => $r->name,
                     'description' => $r->description,
                     'effect' => $r->effect,
+                    'bonus' => $r->bonus,
                     'level' => $r->level,
                     'price' => $r->price,
                     'weight' => $r->weight,
@@ -300,8 +307,17 @@ class ResourceTableController extends Controller
                         'value' => $r->effect ?: '-',
                         'params' => [
                             'sortValue' => (string) ($r->effect ?? ''),
-                            'searchValue' => (string) ($r->effect ?? ''),
+                            'searchValue' => trim((string) (($r->effect ?? '').' '.($r->bonus ?? ''))),
                             'filterValue' => (string) ($r->effect ?? ''),
+                        ],
+                    ],
+                    'bonus' => [
+                        'type' => 'text',
+                        'value' => $r->bonus ?: '-',
+                        'params' => [
+                            'sortValue' => (string) ($r->bonus ?? ''),
+                            'searchValue' => (string) ($r->bonus ?? ''),
+                            'filterValue' => (string) ($r->bonus ?? ''),
                         ],
                     ],
                     'resource_type' => [
@@ -400,6 +416,7 @@ class ResourceTableController extends Controller
                         'name' => $r->name,
                         'description' => $r->description,
                         'effect' => $r->effect,
+                        'bonus' => $r->bonus,
                         'level' => $r->level,
                         'price' => $r->price,
                         'weight' => $r->weight,

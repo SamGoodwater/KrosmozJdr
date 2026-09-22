@@ -3,8 +3,8 @@
   "source": "dofusdb",
   "entity": "item",
   "label": "Objets (ressources / consommables / équipements)",
-  "meta": {
-    "description": "Items DofusDB. Un même mapping alimente resources, consumables et items selon le typeId. Champs communs : dofusdb_id, name, description, level, price, image, typeId, rarity. resources : + weight (realWeight). effect : effects[] converti en bonus Krosmoz pour resources/consumables/items ; bonus : effects[] brut JSON (items uniquement). _mappingUnusedDocumentation liste les champs DofusDB non mappés."
+    "meta": {
+    "description": "Items DofusDB. Un même mapping alimente resources, consumables et items selon le typeId. Champs communs : dofusdb_id, name, description, level, price, image, typeId, rarity. resources : + weight (realWeight). effect : effects[] converti en bonus Krosmoz (items) ; bonus : effects[] converti pour resources/consumables, brut JSON pour items. _mappingUnusedDocumentation liste les champs DofusDB non mappés."
   },
   "endpoints": {
     "fetchOne": { "pathTemplate": "/items/{id}", "method": "GET", "queryDefaults": { "lang": "fr", "$populate": false } },
@@ -44,11 +44,12 @@
     { "key": "weight", "from": { "path": "realWeight" }, "to": [{ "model": "resources", "field": "weight" }], "formatters": [{ "name": "nullableInt", "args": {} }] },
     { "key": "rarity", "from": { "path": "rarity" }, "to": [{ "model": "resources", "field": "rarity" }, { "model": "consumables", "field": "rarity" }, { "model": "items", "field": "rarity" }], "formatters": [{ "name": "defaultRarityByLevel", "args": {} }] },
     { "key": "recipe_ingredients", "from": { "path": "recipe" }, "to": [{ "model": "resources", "field": "recipe_ingredients" }, { "model": "consumables", "field": "recipe_ingredients" }, { "model": "items", "field": "recipe_ingredients" }], "formatters": [{ "name": "recipeToResourceRecipe", "args": {} }] },
-    { "key": "effect", "from": { "path": "effects" }, "to": [{ "model": "resources", "field": "effect" }, { "model": "consumables", "field": "effect" }, { "model": "items", "field": "effect" }], "formatters": [{ "name": "itemEffectsToKrosmozBonus", "args": {} }] },
-    { "key": "bonus", "from": { "path": "effects" }, "to": [{ "model": "items", "field": "bonus" }], "formatters": [{ "name": "toJson", "args": {} }] }
+    { "key": "effect", "from": { "path": "effects" }, "to": [{ "model": "items", "field": "effect" }], "formatters": [{ "name": "itemEffectsToKrosmozBonus", "args": {} }] },
+    { "key": "bonus", "from": { "path": "effects" }, "to": [{ "model": "items", "field": "bonus" }], "formatters": [{ "name": "toJson", "args": {} }] },
+    { "key": "bonus_krosmoz", "from": { "path": "effects" }, "to": [{ "model": "resources", "field": "bonus" }, { "model": "consumables", "field": "bonus" }], "formatters": [{ "name": "itemEffectsToKrosmozBonus", "args": {} }] }
   ],
   "_mappingUnusedDocumentation": [
-    { "dofusdbPath": "effects", "explanation": "Détail par effet : mappé globalement en effect (bonus Krosmoz) et bonus (JSON brut) ; pas de mapping champ par champ." },
+    { "dofusdbPath": "effects", "explanation": "Détail par effet : mappé en items.effect (bonus Krosmoz), items.bonus (JSON brut), resources/consumables.bonus (bonus Krosmoz) ; pas de mapping champ par champ." },
     { "dofusdbPath": "recipe", "explanation": "Structure complète de recette : mappée en recipe_ingredients pour resources/consumables/items ; champs secondaires non exposés." },
     { "dofusdbPath": "itemSetId", "explanation": "Set d’objets Dofus ; non utilisé dans Krosmoz." },
     { "dofusdbPath": "criteria", "explanation": "Critères d’obtention ; non utilisés." },

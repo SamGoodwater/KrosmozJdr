@@ -38,6 +38,10 @@ export class Consumable extends BaseModel {
         return this._data.effect || null;
     }
 
+    get bonus() {
+        return this._data.bonus || null;
+    }
+
     get level() {
         const v = this._data.level;
         if (v === null || v === undefined || v === '') {
@@ -177,7 +181,7 @@ export class Consumable extends BaseModel {
     toCell(fieldKey, options = {}) {
         // D'abord, essayer la méthode de base (gère les formatters automatiquement)
         const baseCell = super.toCell(fieldKey, options);
-        const overrideFields = new Set(['effect']);
+        const overrideFields = new Set(['effect', 'bonus']);
         
         // Si la méthode de base a trouvé quelque chose (formatter ou valeur par défaut valide), l'utiliser
         if (!overrideFields.has(fieldKey) && baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
@@ -194,6 +198,8 @@ export class Consumable extends BaseModel {
                 return this._toDescriptionCell(format, size, options);
             case 'effect':
                 return this._toEffectCell(format, size, options);
+            case 'bonus':
+                return this._toBonusCell(format, size, options);
             case 'recipe':
                 return this._toRecipeCell(format, size, options);
             case 'image':
@@ -264,8 +270,37 @@ export class Consumable extends BaseModel {
      * @private
      */
     _toEffectCell(format, size, options) {
+        const raw = this.effect;
+        const looksJson = typeof raw === 'string' && raw.trim().startsWith('{');
+        if (looksJson) {
+            return buildCharacteristicEffectCell({
+                rawValues: [raw],
+                options,
+                sourceGroups: ['consumable', 'item'],
+                format,
+                size,
+                chipsLayout: { maxRows: 3 },
+            });
+        }
+        const text = raw == null ? '' : String(raw).trim();
+        return {
+            type: 'text',
+            value: text || '-',
+            params: {
+                tooltip: text || '',
+                sortValue: text,
+                searchValue: text,
+            },
+        };
+    }
+
+    /**
+     * Génère une cellule pour le bonus numérique
+     * @private
+     */
+    _toBonusCell(format, size, options) {
         return buildCharacteristicEffectCell({
-            rawValues: [this.effect],
+            rawValues: [this.bonus, this.effect],
             options,
             sourceGroups: ['consumable', 'item'],
             format,
@@ -480,6 +515,7 @@ export class Consumable extends BaseModel {
             name: this.name,
             description: this.description,
             effect: this.effect,
+            bonus: this.bonus,
             level: this.level,
             recipe: this.recipe,
             price: this.price,

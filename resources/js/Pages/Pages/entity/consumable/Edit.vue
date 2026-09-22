@@ -78,9 +78,17 @@ const fieldsConfig = computed(() => ({
     },
     effect: {
         type: 'textarea',
-        label: 'Effet (texte libre)',
+        label: 'Effet (règles / durée)',
         required: false,
-        showInCompact: false
+        showInCompact: false,
+        help: 'Texte libre : hors combat, durée, usage unique, etc.'
+    },
+    bonus: {
+        type: 'textarea',
+        label: 'Bonus (JSON)',
+        required: false,
+        showInCompact: false,
+        help: 'Objet plat clé → entier, ex. {"life_points_restore":5,"shield_points":10}'
     },
     recipe: {
         type: 'textarea',

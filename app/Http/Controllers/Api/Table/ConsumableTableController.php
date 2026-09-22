@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Resource;
 use App\Models\Type\ConsumableType;
+use App\Support\Entity\ObjectBonusFilterCatalog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -34,7 +35,7 @@ class ConsumableTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['level', 'rarity', 'consumable_type_id'] as $k) {
+        foreach (['level', 'rarity', 'consumable_type_id', 'bonus'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -72,7 +73,8 @@ class ConsumableTableController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhere('effect', 'like', "%{$search}%");
+                    ->orWhere('effect', 'like', "%{$search}%")
+                    ->orWhere('bonus', 'like', "%{$search}%");
             });
         }
         if (array_key_exists('id', $filters) && $this->hasFilterValue($filters, 'id')) {
@@ -89,6 +91,9 @@ class ConsumableTableController extends Controller
         }
         if ($this->hasFilterValue($filters, 'consumable_type_id')) {
             $this->applyEqualityFilter($query, 'consumable_type_id', $filters['consumable_type_id'], 'int');
+        }
+        if ($this->hasFilterValue($filters, 'bonus')) {
+            $this->applyJsonBonusFilters($query, $filters['bonus'], 'bonus', false);
         }
 
         $this->applyEntityTableIdList($query, $request);
@@ -145,6 +150,7 @@ class ConsumableTableController extends Controller
                 1,
                 200
             ),
+            'bonus' => ObjectBonusFilterCatalog::options(),
         ];
 
         // Mode "entities" : retourner les entités brutes
@@ -242,8 +248,17 @@ class ConsumableTableController extends Controller
                         'value' => $c->effect ?: '-',
                         'params' => [
                             'sortValue' => (string) ($c->effect ?? ''),
-                            'searchValue' => (string) ($c->effect ?? ''),
+                            'searchValue' => trim((string) (($c->effect ?? '').' '.($c->bonus ?? ''))),
                             'filterValue' => (string) ($c->effect ?? ''),
+                        ],
+                    ],
+                    'bonus' => [
+                        'type' => 'text',
+                        'value' => $c->bonus ?: '-',
+                        'params' => [
+                            'sortValue' => (string) ($c->bonus ?? ''),
+                            'searchValue' => (string) ($c->bonus ?? ''),
+                            'filterValue' => (string) ($c->bonus ?? ''),
                         ],
                     ],
                     'rarity' => [

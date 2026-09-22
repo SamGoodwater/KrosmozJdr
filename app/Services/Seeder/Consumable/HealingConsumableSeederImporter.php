@@ -57,6 +57,7 @@ final class HealingConsumableSeederImporter
                 'name' => $entry['name'],
                 'level' => $entry['level'],
                 'effect' => HealingConsumableCatalog::effectText($entry['heal']),
+                'bonus' => HealingConsumableCatalog::bonusJson($entry['heal']),
                 'recipe' => null,
                 'rarity' => 0,
                 'state' => Consumable::STATE_AUTO,

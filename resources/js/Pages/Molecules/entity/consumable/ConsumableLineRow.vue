@@ -90,15 +90,33 @@ const typeCell = computed(() => getCell("consumable_type"));
 const descriptionFull = computed(() => entity.value?.description ?? entity.value?._data?.description ?? "");
 const ruleNotes = computed(() => consumableRuleNotes(entity.value));
 
+const bonusRaw = computed(() => entity.value?.bonus ?? entity.value?._data?.bonus ?? null);
+const effectRaw = computed(() => entity.value?.effect ?? entity.value?._data?.effect ?? null);
+
 const effectItems = computed(() => {
     const cell = buildCharacteristicEffectCell({
-        rawValues: [entity.value?.effect ?? entity.value?._data?.effect],
+        rawValues: [bonusRaw.value, effectRaw.value],
         options: {},
         sourceGroups: ["consumable", "item"],
         size: "md",
     });
     return cell?.type === "chips" ? cell.params?.items || [] : [];
 });
+
+/**
+ * Texte d'effet (règles) quand ce n'est pas un payload de caractéristiques.
+ * @returns {string}
+ */
+const effectText = computed(() => {
+    if (effectItems.value.length > 0 && !effectRaw.value) return "";
+    const raw = effectRaw.value;
+    if (raw == null) return "";
+    const s = typeof raw === "string" ? raw.trim() : String(raw).trim();
+    if (!s || s === "{}" || s === "[]" || s.startsWith("{")) return "";
+    return s;
+});
+
+const hasEffects = computed(() => effectItems.value.length > 0 || Boolean(effectText.value));
 
 const rarityConfig = computed(() => {
     const v = entity.value?.rarity ?? entity.value?._data?.rarity;
@@ -217,24 +235,30 @@ const ingredients = computed(
                     class="min-w-0"
                 />
             </div>
-            <!-- Ligne 3 : Description (complète, retour à la ligne) -->
-            <p
-                v-if="descriptionFull"
-                class="text-xs text-base-content/80 whitespace-normal wrap-break-word"
-                :title="descriptionFull"
-            >
-                {{ descriptionFull }}
-            </p>
+            <!-- Ligne 3 : notes de règles (description sous les effets) -->
             <EntityRuleNotes :notes="ruleNotes" />
         </div>
         </div>
-        <!-- Effets : pleine largeur sous le bloc Image/titre/propriétés -->
+        <!-- Effets : chips bonus + texte de règles -->
         <div
-            v-if="effectItems.length > 0"
-            class="w-full pt-2 mt-1 border-t border-base-300"
+            v-if="hasEffects"
+            class="w-full pt-2 mt-1 border-t border-base-300 space-y-1"
         >
-            <CharacteristicEffectsGrid :items="effectItems" />
+            <CharacteristicEffectsGrid v-if="effectItems.length > 0" :items="effectItems" />
+            <p
+                v-if="effectText"
+                class="text-xs text-primary-200/90 whitespace-pre-wrap break-words"
+            >
+                {{ effectText }}
+            </p>
         </div>
+        <p
+            v-if="descriptionFull"
+            class="w-full text-xs text-base-content/80 whitespace-normal wrap-break-word pt-2 mt-1 border-t border-base-300"
+            :title="descriptionFull"
+        >
+            {{ descriptionFull }}
+        </p>
         <!-- Ingrédients (ressources) : icône + nom, sous les effets -->
         <div
             v-if="ingredients.length > 0"

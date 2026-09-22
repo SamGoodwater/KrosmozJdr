@@ -96,14 +96,26 @@ const descriptionFull = computed(
 );
 
 const effectItems = computed(() => {
+    const bonus = entity.value?.bonus ?? entity.value?._data?.bonus ?? null;
+    const effect = entity.value?.effect ?? entity.value?._data?.effect ?? null;
     const cell = buildCharacteristicEffectCell({
-        rawValues: [entity.value?.effect ?? entity.value?._data?.effect],
+        rawValues: [bonus, effect],
         options: {},
         sourceGroups: ["consumable", "item"],
         size: "sm",
     });
     return cell?.type === "chips" ? cell.params?.items || [] : [];
 });
+
+const effectText = computed(() => {
+    const raw = entity.value?.effect ?? entity.value?._data?.effect ?? null;
+    if (raw == null) return "";
+    const s = typeof raw === "string" ? raw.trim() : String(raw).trim();
+    if (!s || s === "{}" || s === "[]" || s.startsWith("{")) return "";
+    return s;
+});
+
+const hasEffects = computed(() => effectItems.value.length > 0 || Boolean(effectText.value));
 
 const rarityConfig = computed(() => {
     const v = entity.value?.rarity ?? entity.value?._data?.rarity;
@@ -217,10 +229,16 @@ const handleAction = async (actionKey) => {
                     </div>
                 </div>
                 <div
-                    v-if="effectItems.length > 0"
-                    class="w-full pt-1.5 mt-1 border-t border-base-300"
+                    v-if="hasEffects"
+                    class="w-full pt-1.5 mt-1 border-t border-base-300 space-y-1"
                 >
-                    <CharacteristicEffectsGrid :items="effectItems" label-mode="icon-only" />
+                    <CharacteristicEffectsGrid v-if="effectItems.length > 0" :items="effectItems" label-mode="icon-only" />
+                    <p
+                        v-if="effectText"
+                        class="text-[0.7rem] leading-snug text-primary-200/90 whitespace-pre-wrap break-words"
+                    >
+                        {{ effectText }}
+                    </p>
                 </div>
             </div>
         </template>
@@ -311,10 +329,16 @@ const handleAction = async (actionKey) => {
                     </div>
                 </div>
                 <div
-                    v-if="effectItems.length > 0"
-                    class="w-full pt-1.5 mt-1 border-t border-base-300"
+                    v-if="hasEffects"
+                    class="w-full pt-1.5 mt-1 border-t border-base-300 space-y-1"
                 >
-                    <CharacteristicEffectsGrid :items="effectItems" label-mode="icon-only" />
+                    <CharacteristicEffectsGrid v-if="effectItems.length > 0" :items="effectItems" label-mode="icon-only" />
+                    <p
+                        v-if="effectText"
+                        class="text-[0.7rem] leading-snug text-primary-200/90 whitespace-pre-wrap break-words"
+                    >
+                        {{ effectText }}
+                    </p>
                 </div>
                 <ResourceIngredientsList
                     v-if="ingredients.length > 0"

@@ -35,6 +35,7 @@
             "level": "2",
             "rarity": 0,
             "price": 200,
+            "bonus": { "deception": 1 },
             "effect": "+1 Supercherie jusqu’au prochain repos long (8 h max). Hors combat pour boire. Usage unique.",
             "description": "La pinte du village : ça délie la langue plus que les muscles."
         },
@@ -45,6 +46,7 @@
             "level": "3",
             "rarity": 0,
             "price": 250,
+            "bonus": { "investigation": 1 },
             "effect": "+1 Investigation jusqu’au prochain repos long (8 h max). Hors combat pour boire. Usage unique.",
             "description": "Chaud, amer, et ça tient éveillé le temps d’une enquête."
         },
@@ -55,6 +57,7 @@
             "level": "10",
             "rarity": 2,
             "price": 3500,
+            "bonus": { "wakfu_recharge": 2 },
             "effect": "Restaure 2 points de réserve de Wakfu (sans dépasser le maximum). Hors combat. Usage unique.",
             "description": "Ça ne remplace pas une vraie nuit, mais ça redonne deux charges de magie personnelle."
         },
@@ -75,6 +78,7 @@
             "level": "5",
             "rarity": 0,
             "price": 800,
+            "bonus": { "shield_points": 5 },
             "effect": "+5 points de bouclier jusqu’au prochain repos long (8 h max) ou jusqu’à absorption. Usage unique.",
             "description": "Une couche de Wakfu liquide. Elle encaisse avant tes PV, puis disparaît."
         },
@@ -85,6 +89,7 @@
             "level": "10",
             "rarity": 1,
             "price": 2500,
+            "bonus": { "shield_points": 10 },
             "effect": "+10 points de bouclier jusqu’au prochain repos long (8 h max) ou jusqu’à absorption. Usage unique.",
             "description": "Même principe que la petite fiole, en plus dense. Toujours pas un vrai bouclier d’acier."
         },
@@ -95,6 +100,7 @@
             "level": "5",
             "rarity": 0,
             "price": 800,
+            "bonus": { "temporary_life_points": 5 },
             "effect": "+5 PV temporaires jusqu’au prochain repos long (8 h max) ou jusqu’à absorption. Usage unique.",
             "description": "Un sucre qui gonfle un peu la réserve de vie, sans soigner les vraies plaies."
         },
@@ -105,6 +111,7 @@
             "level": "10",
             "rarity": 1,
             "price": 2500,
+            "bonus": { "temporary_life_points": 10 },
             "effect": "+10 PV temporaires jusqu’au prochain repos long (8 h max) ou jusqu’à absorption. Usage unique.",
             "description": "Une réserve de vie d’emprunt : elle encaisse après le bouclier, avant tes PV réels."
         }

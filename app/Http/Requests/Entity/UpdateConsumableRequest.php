@@ -41,6 +41,7 @@ class UpdateConsumableRequest extends FormRequest
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'effect' => ['nullable', 'string'],
+            'bonus' => ['nullable', 'string'],
             'level' => ['nullable', 'string', 'max:255'],
             'recipe' => ['nullable', 'string'],
             'price_custom' => ['nullable', 'integer'],
@@ -53,7 +54,7 @@ class UpdateConsumableRequest extends FormRequest
             'auto_update' => ['nullable', 'boolean'],
             'official_id' => ['nullable', 'string', 'max:255'],
             'dofusdb_id' => ['nullable', 'string', 'max:255'],
-            'consumable_type_id' => ['nullable', 'integer', 'exists:type_consumable_types,id'],
+            'consumable_type_id' => ['nullable', 'integer', 'exists:consumable_types,id'],
         ];
     }
 

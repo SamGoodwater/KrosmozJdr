@@ -49,6 +49,10 @@ final class HealingConsumableCatalogTest extends TestCase
                 HealingConsumableCatalog::effectText($entry['heal']),
                 sprintf('Restaure %d PV. Hors combat uniquement.', $entry['heal'])
             );
+            $this->assertSame(
+                HealingConsumableCatalog::bonusJson($entry['heal']),
+                sprintf('{"life_points_restore":%d}', $entry['heal'])
+            );
         }
     }
 }

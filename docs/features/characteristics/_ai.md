@@ -21,6 +21,7 @@
 - **Bonus équipement (MJ)** : `EquipmentBonusTableService` projette `formula` JSON par bandes 1–2…19–20 + types d’item ; API `GET /api/characteristics/equipment-bonus-table` (rôle ≥ MJ).
 - **Runes de forgemagie (public)** : `ForgemagieRuneTableService` filtre `characteristic_object` sur `forgemagie_max > 0` + `rune_price_per_unit` non nul, joint `characteristic_object_item_type` (vide = tous les équipements) ; API `GET /api/characteristics/forgemagie-rune-table`. Source de vérité des prix : la base, pas les règles.
 - **Prix équipements / consommables** : `EquipmentPriceCalculator` (bonus × `base_price_per_unit` + 150×niveau + 200×rareté), `ConsumablePriceCalculator` (somme recette), `EntityPriceRecalculator`. Plus de multiplicateur puissance.
+- **Bonus objets (JSON)** : équipements / panoplies / **consommables / ressources** stockent un objet plat `clé → int` dans `bonus` (panoplie = paliers). Filtre catalogue `picked-range` via `ObjectBonusFilterCatalog` (toutes caracs `group=object` hors méta). Clés conso dédiées : `life_points_restore`, `temporary_life_points`, `shield_points` (helpers hors combat / non cumulable / distinct de la CA). Colonne `effect` = texte de règles (durée, usage). Backfill : `php artisan consumables:backfill-bonus-from-effect`.
 
 ## Fichiers pivots
 

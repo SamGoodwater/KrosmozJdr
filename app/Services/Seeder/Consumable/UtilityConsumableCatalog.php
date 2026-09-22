@@ -72,6 +72,7 @@ final class UtilityConsumableCatalog
      *     rarity: int,
      *     price: int,
      *     effect: string,
+     *     bonus: string|null,
      *     description: string|null
      * }>
      */
@@ -102,11 +103,34 @@ final class UtilityConsumableCatalog
                 'rarity' => max(0, min(5, (int) ($row['rarity'] ?? 0))),
                 'price' => max(0, (int) ($row['price'] ?? 0)),
                 'effect' => (string) ($row['effect'] ?? ''),
+                'bonus' => $this->encodeBonus($row['bonus'] ?? null),
                 'description' => $this->nullableString($row['description'] ?? null),
             ];
         }
 
         return $entries;
+    }
+
+    /**
+     * @param  mixed  $raw
+     */
+    private function encodeBonus(mixed $raw): ?string
+    {
+        if (! is_array($raw) || $raw === []) {
+            return null;
+        }
+        $flat = [];
+        foreach ($raw as $key => $value) {
+            if (! is_string($key) || ! is_numeric($value)) {
+                continue;
+            }
+            $flat[$key] = (int) $value;
+        }
+        if ($flat === []) {
+            return null;
+        }
+
+        return json_encode($flat, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
     }
 
     private function nullableString(mixed $value): ?string

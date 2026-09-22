@@ -282,7 +282,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
       general: {
         label: "Effet",
         icon: "fa-solid fa-sparkles",
-        tooltip: "Effets éventuels de la ressource",
+        tooltip: "Règles d’usage (texte). Les valeurs numériques sont dans Bonus.",
       },
       table: {
         order: 50,
@@ -292,16 +292,16 @@ export function getResourceFieldDescriptors(ctx = {}) {
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: {
           sizes: {
-            xs: { mode: "chips" },
-            sm: { mode: "chips" },
-            md: { mode: "chips" },
-            lg: { mode: "chips" },
-            xl: { mode: "chips" },
+            xs: { mode: "text" },
+            sm: { mode: "text" },
+            md: { mode: "text" },
+            lg: { mode: "text" },
+            xl: { mode: "text" },
           },
         },
       },
       display: {
-        tooltip: "Effets éventuels de la ressource",
+        tooltip: "Règles d’usage (texte).",
       },
       edition: {
         form: {
@@ -316,7 +316,52 @@ export function getResourceFieldDescriptors(ctx = {}) {
         },
       },
     },
-    
+
+    bonus: {
+      key: "bonus",
+      general: {
+        label: "Bonus",
+        icon: "fa-solid fa-star",
+        tooltip: "Effets numériques (JSON). Filtrer : caractéristique puis min/max.",
+      },
+      table: {
+        order: 51,
+        sortable: false,
+        searchable: true,
+        filterable: {
+          id: "bonus",
+          type: "picked-range",
+          defaultVisible: true,
+          label: "Bonus",
+        },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: {
+          sizes: {
+            xs: { mode: "chips" },
+            sm: { mode: "chips" },
+            md: { mode: "chips" },
+            lg: { mode: "chips" },
+            xl: { mode: "chips" },
+          },
+        },
+      },
+      display: {
+        tooltip: "Effets numériques de la ressource.",
+      },
+      edition: {
+        form: {
+          type: "textarea",
+          group: "Contenu",
+          required: false,
+          rows: 3,
+        },
+        bulk: {
+          enabled: true,
+          nullable: true,
+        },
+      },
+    },
+
     level: {
       key: "level",
       general: {

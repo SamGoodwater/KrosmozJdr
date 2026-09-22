@@ -48,6 +48,7 @@ final class UtilityConsumableSeederImporter
                 'name' => $entry['name'],
                 'level' => $entry['level'],
                 'effect' => $entry['effect'],
+                'bonus' => $entry['bonus'],
                 'recipe' => null,
                 'rarity' => $entry['rarity'],
                 'state' => Consumable::STATE_AUTO,

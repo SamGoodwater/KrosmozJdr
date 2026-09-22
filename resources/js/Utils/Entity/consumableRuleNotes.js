@@ -112,8 +112,12 @@ function hasConsumableDuration(entity) {
     }
     const data = entity._data && typeof entity._data === "object" ? entity._data : entity;
     const effect = normalizeTypeName(entity.effect ?? data.effect ?? "");
+    const bonus = entity.bonus ?? data.bonus ?? null;
 
-    return effect.includes("repos long") || effect.includes("8 h");
+    if (effect.includes("repos long") || effect.includes("8 h")) {
+        return true;
+    }
+    return hasBonusKey(bonus, ["temporary_life_points", "shield_points", "deception", "investigation"]);
 }
 
 /**
@@ -126,5 +130,28 @@ function isOutOfCombatHeal(entity) {
     }
     const data = entity._data && typeof entity._data === "object" ? entity._data : entity;
     const effect = String(entity.effect ?? data.effect ?? "");
-    return normalizeTypeName(effect).includes("hors combat");
+    if (normalizeTypeName(effect).includes("hors combat")) {
+        return true;
+    }
+    return hasBonusKey(entity.bonus ?? data.bonus ?? null, ["life_points_restore"]);
+}
+
+/**
+ * @param {unknown} bonus
+ * @param {string[]} keys
+ * @returns {boolean}
+ */
+function hasBonusKey(bonus, keys) {
+    let payload = bonus;
+    if (typeof bonus === "string" && bonus.trim() !== "") {
+        try {
+            payload = JSON.parse(bonus);
+        } catch {
+            return false;
+        }
+    }
+    if (payload == null || typeof payload !== "object" || Array.isArray(payload)) {
+        return false;
+    }
+    return keys.some((key) => Object.prototype.hasOwnProperty.call(payload, key));
 }

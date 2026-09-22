@@ -40,6 +40,8 @@ class UpdateResourceRequest extends FormRequest
         return [
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
+            'effect' => ['nullable', 'string'],
+            'bonus' => ['nullable', 'string'],
             'level' => ['nullable', 'string', 'max:255'],
             'price' => ['nullable', 'string', 'max:255'],
             'weight' => ['nullable', 'string', 'max:255'],

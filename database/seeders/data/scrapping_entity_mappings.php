@@ -651,19 +651,9 @@ return [
         'sort_order' => 15,
         'targets' => [
             0 => [
-                'target_model' => 'resources',
-                'target_field' => 'effect',
-                'sort_order' => 0,
-            ],
-            1 => [
-                'target_model' => 'consumables',
-                'target_field' => 'effect',
-                'sort_order' => 1,
-            ],
-            2 => [
                 'target_model' => 'items',
                 'target_field' => 'effect',
-                'sort_order' => 2,
+                'sort_order' => 0,
             ],
         ],
     ],
@@ -687,6 +677,34 @@ return [
                 'target_model' => 'items',
                 'target_field' => 'bonus',
                 'sort_order' => 0,
+            ],
+        ],
+    ],
+    77 => [
+        'source' => 'dofusdb',
+        'entity' => 'item',
+        'mapping_key' => 'bonus_krosmoz',
+        'from_path' => 'effects',
+        'from_lang_aware' => false,
+        'characteristic_key' => null,
+        'formatters' => [
+            0 => [
+                'name' => 'itemEffectsToKrosmozBonus',
+                'args' => [],
+            ],
+        ],
+        'spell_level_aggregation' => null,
+        'sort_order' => 17,
+        'targets' => [
+            0 => [
+                'target_model' => 'resources',
+                'target_field' => 'bonus',
+                'sort_order' => 0,
+            ],
+            1 => [
+                'target_model' => 'consumables',
+                'target_field' => 'bonus',
+                'sort_order' => 1,
             ],
         ],
     ],
