@@ -53,7 +53,7 @@ const props = defineProps({
 const consumableTypeOptions = computed(() =>
     (props.availableConsumableTypes || []).map((t) => ({
         value: t.id,
-        label: t.name || t.description || `Type #${t.id}`
+        label: t.name || `Type #${t.id}`
     }))
 );
 

@@ -155,9 +155,9 @@ class ConsumableController extends Controller
 
         $consumable->load(['createdBy', 'consumableType', 'resources', 'effectUsages.effectDegree.effect', 'objectEffects']);
 
-        $availableConsumableTypes = ConsumableType::select('id', 'name', 'description')
+        $availableConsumableTypes = ConsumableType::query()
             ->orderBy('name')
-            ->get();
+            ->get(['id', 'name', 'dofusdb_type_id', 'show_in_catalog']);
 
         $effectUsages = $consumable->effectUsages()->with(['effectDegree.effect'])->get()->sortBy(fn ($u) => $u->effectDegree?->required_creature_level ?? 0)->values()->map(fn ($u) => [
             'id' => $u->id,
