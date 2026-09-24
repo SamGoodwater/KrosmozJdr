@@ -1,17 +1,16 @@
 <script setup>
 /**
  * Item Edit Page
- * 
+ *
  * @description
- * Page d'édition d'un item via le formulaire d'entité générique.
- * 
+ * Édition dense d’un équipement : grille fieldSections + toolbar sticky (Liste / Fiche).
+ *
  * @props {Object} item - Données de l'item à éditer
  */
 import { computed } from 'vue';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Item } from '@/Models/Entity/Item';
-import { getRarityOptions } from '@/Utils/Entity/SharedConstants';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import EffectUsagesManager from '@/Pages/Organismes/entity/EffectUsagesManager.vue';
@@ -19,8 +18,12 @@ import ObjectEffectsManager from '@/Pages/Organismes/entity/ObjectEffectsManager
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import Route from '@/Pages/Atoms/action/Route.vue';
+import EntityListBackButton from '@/Pages/Atoms/action/EntityListBackButton.vue';
 import ItemPriceEditSection from '@/Pages/Molecules/entity/item/ItemPriceEditSection.vue';
+import {
+    buildItemFormFieldsConfig,
+    ITEM_FORM_FIELD_SECTIONS_EDIT,
+} from '@/Entities/item/item-form-config';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -28,11 +31,16 @@ const { setPageTitle } = usePageTitle();
 const props = defineProps({
     item: {
         type: Object,
-        required: true
+        required: true,
     },
     availableResources: {
         type: Array,
-        default: () => []
+        default: () => [],
+    },
+    /** Types d’équipement (optionnel — sinon champ ID numérique). */
+    itemTypes: {
+        type: Array,
+        default: () => [],
     },
     effectUsages: { type: Array, default: () => [] },
     availableEffects: { type: Array, default: () => [] },
@@ -42,66 +50,77 @@ const props = defineProps({
     objectEffectMonsters: { type: Array, default: () => [] },
 });
 
-// Configuration des champs pour les items
-const fieldsConfig = {
-    name: { 
-        type: 'text', 
-        label: 'Nom', 
-        required: true, 
-        showInCompact: true 
-    },
-    description: { 
-        type: 'textarea', 
-        label: 'Description', 
-        required: false, 
-        showInCompact: false 
-    },
-    level: { 
-        type: 'number', 
-        label: 'Niveau', 
-        required: false, 
-        showInCompact: true 
-    },
-    rarity: { 
-        type: 'select', 
-        label: 'Rareté', 
-        required: false, 
-        showInCompact: true,
-        options: getRarityOptions().map(({ value, label }) => ({ value, label })),
-    },
-    image: { 
-        type: 'file', 
-        label: 'Image', 
-        required: false, 
-        showInCompact: false 
-    }
-};
-
-// Créer une instance de modèle Item
 const item = computed(() => {
     const itemData = props.item || page.props.item || {};
     return new Item(itemData);
 });
 
+const fieldsConfig = computed(() =>
+    buildItemFormFieldsConfig({
+        includeReadonlyMeta: true,
+        itemTypes: props.itemTypes || [],
+    }),
+);
+
+const fieldSections = ITEM_FORM_FIELD_SECTIONS_EDIT;
+const fixedFooterInsetClass = 'left-0 right-0';
+
 setPageTitle(`Modifier l'item : ${item.value.name || 'Nouvel item'}`);
+
+function goToShow() {
+    const id = item.value?.id;
+    if (!id) return;
+    router.visit(route('entities.items.show', { item: id }));
+}
 </script>
 
 <template>
     <Head :title="`Modifier l'item : ${item?.name || 'Nouvel item'}`" />
-    
-    <Container class="space-y-6">
-        <Route route="entities.items.index">
-            <Btn color="neutral" variant="ghost" size="sm" class="gap-2">
-                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                Retour à la liste
-            </Btn>
-        </Route>
+
+    <Container class="space-y-4">
+        <div
+            class="sticky top-0 z-20 px-3 py-1 bg-glass-3xl backdrop-blur-md border-glass-b-md sm:px-4"
+            style="--bg-color: var(--color-base-100)"
+        >
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="min-w-0 flex-1">
+                    <h1 class="truncate text-md font-bold text-base-content sm:text-lg">
+                        {{ item.name || 'Équipement sans nom' }}
+                    </h1>
+                    <p class="text-xs text-base-content/60">
+                        Édition · ID {{ item.id }}
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <EntityListBackButton route-name="entities.items.index" />
+                    <Btn
+                        color="neutral"
+                        variant="outline"
+                        size="xs"
+                        type="button"
+                        class="gap-1.5"
+                        @click="goToShow"
+                    >
+                        <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+                        Fiche
+                    </Btn>
+                </div>
+            </div>
+        </div>
 
         <EntityEditForm
             :entity="item"
             entity-type="item"
             :fields-config="fieldsConfig"
             :is-updating="true"
+            :hidden-field-keys="['dofus_version']"
+            :field-sections="fieldSections"
+            :show-state-toolbar="true"
+            :show-access-levels-in-footer="false"
+            layout-profile="dense"
+            :fixed-footer-actions="true"
+            :fixed-footer-inset-class="fixedFooterInsetClass"
+            :compact-access-levels="true"
         />
 
         <ItemPriceEditSection
@@ -157,4 +176,3 @@ setPageTitle(`Modifier l'item : ${item.value.name || 'Nouvel item'}`);
         </Collapse>
     </Container>
 </template>
-

@@ -16,6 +16,7 @@ declare(strict_types=1);
  *   menu_order: int,
  *   intro_title: string,
  *   intro_html: string,
+ *   download_catalog?: array{slug: string, title: string, settings: array<string, mixed>},
  *   sections: list<array{slug: string, title: string, html: string}>,
  *   include_reference_table?: bool
  * }>
@@ -29,6 +30,13 @@ return [
         'intro_title' => 'À quoi ça sert',
         'intro_html' => '<p>Assez pour <strong>jouer une séance</strong> et pour <strong>MJ une campagne</strong> sans relire le tome. Un seul jeu de chiffres — le livre détaille. Livre : [[kref:page:regles-1-introduction|Règles]].</p>'
             .'<p>d20 · [[kref:characteristic:action_points_creature|PA]] · [[kref:characteristic:movement_points_creature|PM]] · [[kref:characteristic:range_creature|PO]] (portée) · round 6 s. Monde : le <strong>Krosmoz</strong>, les <strong>Douze</strong>, les <strong>kamas</strong>.</p>',
+        'download_catalog' => [
+            'slug' => 'telechargements',
+            'title' => 'Téléchargements',
+            'settings' => [
+                'groups' => ['essentiel'],
+            ],
+        ],
         'sections' => [
             [
                 'slug' => 'plan',

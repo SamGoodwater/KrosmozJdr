@@ -13,6 +13,7 @@ import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Card from "@/Pages/Atoms/data-display/Card.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
+import EntityListBackButton from "@/Pages/Atoms/action/EntityListBackButton.vue";
 
 const props = defineProps({
     resourceType: { type: Object, required: true },
@@ -39,10 +40,10 @@ const decisionLabel = computed(() => {
                 </p>
             </div>
             <div class="flex gap-2">
-                <Btn variant="ghost" @click="router.visit(route('admin.content.types.show', { kind: 'resource' }))">
-                    <i class="fa-solid fa-arrow-left mr-2"></i>
-                    Retour à la liste
-                </Btn>
+                <EntityListBackButton
+                    route-name="admin.content.types.show"
+                    :route-params="{ kind: 'resource' }"
+                />
                 <Btn variant="ghost" @click="router.visit(route('scrapping.index'))">
                     <i class="fa-solid fa-screwdriver-wrench mr-2"></i>
                     Scrapping

@@ -20,7 +20,7 @@
 - **Page « Les métiers »** (`les-metiers`, Bibliothèques) : page documentaire sans entité, seedée depuis `database/seeders/data/jobs-page.php`. Icônes dans `storage/app/public/images/jobs/`, tableau des runes en section `forgemagie_rune_table`.
 - **Chapitre 5 règles** (`regles-5-*`) : équilibrage des entités. Import TOC → `menu_group=Pour les MJ`, `read_level` MJ. PDF dédié `mj-pdf` (page `ressources-mj`, disque privé). Hors PDF joueur et hors `/storage/…`.
 - **Changelog** : page Informations `changelog` (`/changelog/feed/{semver}`). Plus dans le livre / TOC règles.
-- **Page « Ressources »** (`ressources-de-jeu`) : racine du menu Règles (groupes `regles`, `fiches`, `identite`). Compilation `rules:compile-downloads` (PDF joueur ch. 1–4 + PDF MJ ch. 5).
+- **Page « Ressources »** (`ressources-de-jeu`) : racine du menu Règles (groupes `regles`, `essentiel`, `fiches`, `identite`). Compilation `rules:compile-downloads` (PDF joueur ch. 1–4 + Essentiel + PDF MJ ch. 5). L’Essentiel (page `essentiels-bien-demarrer`) expose aussi le groupe `essentiel`.
 - **Sécurité contenu** : Mews\Purifier (profil `section_text`) sur le HTML de section.
 
 ## Fichiers pivots

@@ -3,19 +3,12 @@
  * Consumable Edit Page
  *
  * @description
- * Page d'édition d'un consommable avec formulaire principal et section Effets (usages).
- *
- * @props {Object} consumable - Données du consommable à éditer
- * @props {Array} availableConsumableTypes - Types de consommables pour le select
- * @props {Array} effectUsages - Usages d'effets liés
- * @props {Array} availableEffects - Effets disponibles
- * @props {String} effectEntityType - Type entité pour l'API effets ('consumable')
+ * Édition dense d’un consommable : grille fieldSections + toolbar sticky.
  */
 import { computed } from 'vue';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Consumable } from '@/Models/Entity/Consumable';
-import { getRarityOptions, getEntityStateOptions } from '@/Utils/Entity/SharedConstants';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import EffectUsagesManager from '@/Pages/Organismes/entity/EffectUsagesManager.vue';
@@ -23,8 +16,12 @@ import ObjectEffectsManager from '@/Pages/Organismes/entity/ObjectEffectsManager
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import Route from '@/Pages/Atoms/action/Route.vue';
+import EntityListBackButton from '@/Pages/Atoms/action/EntityListBackButton.vue';
 import ItemPriceEditSection from '@/Pages/Molecules/entity/item/ItemPriceEditSection.vue';
+import {
+    buildConsumableFormFieldsConfig,
+    CONSUMABLE_FORM_FIELD_SECTIONS_EDIT,
+} from '@/Entities/consumable/consumable-form-config';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -32,15 +29,15 @@ const { setPageTitle } = usePageTitle();
 const props = defineProps({
     consumable: {
         type: Object,
-        required: true
+        required: true,
     },
     availableConsumableTypes: {
         type: Array,
-        default: () => []
+        default: () => [],
     },
     availableResources: {
         type: Array,
-        default: () => []
+        default: () => [],
     },
     effectUsages: { type: Array, default: () => [] },
     availableEffects: { type: Array, default: () => [] },
@@ -50,105 +47,76 @@ const props = defineProps({
     objectEffectMonsters: { type: Array, default: () => [] },
 });
 
-const consumableTypeOptions = computed(() =>
-    (props.availableConsumableTypes || []).map((t) => ({
-        value: t.id,
-        label: t.name || `Type #${t.id}`
-    }))
-);
-
-const fieldsConfig = computed(() => ({
-    name: {
-        type: 'text',
-        label: 'Nom',
-        required: true,
-        showInCompact: true
-    },
-    description: {
-        type: 'textarea',
-        label: 'Description',
-        required: false,
-        showInCompact: false
-    },
-    level: {
-        type: 'number',
-        label: 'Niveau',
-        required: false,
-        showInCompact: true
-    },
-    effect: {
-        type: 'textarea',
-        label: 'Effet (règles / durée)',
-        required: false,
-        showInCompact: false,
-        help: 'Texte libre : hors combat, durée, usage unique, etc.'
-    },
-    bonus: {
-        type: 'textarea',
-        label: 'Bonus (JSON)',
-        required: false,
-        showInCompact: false,
-        help: 'Objet plat clé → entier, ex. {"life_points_restore":5,"shield_points":10}'
-    },
-    recipe: {
-        type: 'textarea',
-        label: 'Recette',
-        required: false,
-        showInCompact: false
-    },
-    rarity: {
-        type: 'select',
-        label: 'Rareté',
-        required: false,
-        showInCompact: true,
-        options: getRarityOptions().map(({ value, label }) => ({ value, label })),
-    },
-    state: {
-        type: 'select',
-        label: 'État',
-        required: false,
-        showInCompact: false,
-        options: getEntityStateOptions(),
-    },
-    consumable_type_id: {
-        type: 'select',
-        label: 'Type de consommable',
-        required: false,
-        showInCompact: true,
-        options: consumableTypeOptions.value
-    },
-    image: {
-        type: 'file',
-        label: 'Image',
-        required: false,
-        showInCompact: false
-    }
-}));
-
 const consumable = computed(() => {
     const data = props.consumable || page.props.consumable || {};
     return new Consumable(data);
 });
 
+const fieldsConfig = computed(() =>
+    buildConsumableFormFieldsConfig({
+        includeReadonlyMeta: true,
+        consumableTypes: props.availableConsumableTypes || [],
+    }),
+);
+
+const fieldSections = CONSUMABLE_FORM_FIELD_SECTIONS_EDIT;
+const fixedFooterInsetClass = 'left-0 right-0';
+
 setPageTitle(`Modifier le consommable : ${consumable.value.name || 'Sans nom'}`);
+
+function goToShow() {
+    const id = consumable.value?.id;
+    if (!id) return;
+    router.visit(route('entities.consumables.show', { consumable: id }));
+}
 </script>
 
 <template>
     <Head :title="`Modifier le consommable : ${consumable?.name || 'Sans nom'}`" />
 
-    <Container class="space-y-6">
-        <Route route="entities.consumables.index">
-            <Btn color="neutral" variant="ghost" size="sm" class="gap-2">
-                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                Retour à la liste
-            </Btn>
-        </Route>
+    <Container class="space-y-4">
+        <div
+            class="sticky top-0 z-20 px-3 py-1 bg-glass-3xl backdrop-blur-md border-glass-b-md sm:px-4"
+            style="--bg-color: var(--color-base-100)"
+        >
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="min-w-0 flex-1">
+                    <h1 class="truncate text-md font-bold text-base-content sm:text-lg">
+                        {{ consumable.name || 'Consommable sans nom' }}
+                    </h1>
+                    <p class="text-xs text-base-content/60">
+                        Édition · ID {{ consumable.id }}
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <EntityListBackButton route-name="entities.consumables.index" />
+                    <Btn
+                        color="neutral"
+                        variant="outline"
+                        size="xs"
+                        type="button"
+                        class="gap-1.5"
+                        @click="goToShow"
+                    >
+                        <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+                        Fiche
+                    </Btn>
+                </div>
+            </div>
+        </div>
 
         <EntityEditForm
             :entity="consumable"
             entity-type="consumable"
             :fields-config="fieldsConfig"
             :is-updating="true"
+            :field-sections="fieldSections"
+            :show-state-toolbar="true"
+            :show-access-levels-in-footer="false"
+            layout-profile="dense"
+            :fixed-footer-actions="true"
+            :fixed-footer-inset-class="fixedFooterInsetClass"
+            :compact-access-levels="true"
         />
 
         <ItemPriceEditSection
@@ -182,20 +150,25 @@ setPageTitle(`Modifier le consommable : ${consumable.value.name || 'Sans nom'}`)
             </template>
         </Collapse>
 
-        <!-- Gestion des usages d'effets (système unifié) -->
-        <EffectUsagesManager
-            :effect-usages="effectUsages"
-            :available-effects="availableEffects"
-            :entity-type="effectEntityType"
-            :entity-id="consumable.id"
-        />
-
-        <ObjectEffectsManager
-            :object-effects="objectEffects"
-            :object-effect-characteristics="objectEffectCharacteristics"
-            :object-effect-monsters="objectEffectMonsters"
-            :entity-type="effectEntityType"
-            :entity-id="consumable.id"
-        />
+        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
+            <template #title>Effets &amp; usages</template>
+            <template #content>
+                <div class="space-y-4">
+                    <EffectUsagesManager
+                        :effect-usages="effectUsages"
+                        :available-effects="availableEffects"
+                        :entity-type="effectEntityType"
+                        :entity-id="consumable.id"
+                    />
+                    <ObjectEffectsManager
+                        :object-effects="objectEffects"
+                        :object-effect-characteristics="objectEffectCharacteristics"
+                        :object-effect-monsters="objectEffectMonsters"
+                        :entity-type="effectEntityType"
+                        :entity-id="consumable.id"
+                    />
+                </div>
+            </template>
+        </Collapse>
     </Container>
 </template>

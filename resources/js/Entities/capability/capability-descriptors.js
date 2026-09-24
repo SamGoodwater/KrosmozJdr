@@ -15,7 +15,6 @@
  */
 
 import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
-import { getElementOptions } from "@/Utils/Entity/Elements";
 
 /**
  * @typedef {Object} CapabilityFieldDescriptor
@@ -259,13 +258,11 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       },
       edit: {
         form: {
-          type: "select",
+          type: "elementPrimaries",
           group: "Métier",
           required: false,
           showInCompact: true,
-          options: () => getElementOptions(),
-          defaultValue: 0,
-          bulk: { enabled: true, nullable: true },
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
         },
       },
     },

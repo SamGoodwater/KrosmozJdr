@@ -201,7 +201,21 @@ class RulesBookAssembler
             "\n",
             $markdown
         );
+        // Footers de navigation CMS (liens relatifs redondants à l'impression).
+        // Ne pas matcher « ### Navigation » : c'est parfois un titre de contenu (ex. orientation).
+        $markdown = (string) preg_replace(
+            '/\n### (?:Liens utiles|Voir aussi)\s*\n(?:[ \t]*[-*].*\n|\s*\n)*/u',
+            "\n",
+            $markdown
+        );
+        $markdown = (string) preg_replace(
+            '/\n\*\*Voir aussi\*\*[^\n]*\n(?:[ \t]*[-*].*\n)+/u',
+            "\n",
+            $markdown
+        );
         $markdown = (string) preg_replace('/^\*\*Description\*\*\s*:\s*/mu', '', $markdown);
+        // Séparateurs HR inutiles enchaînés après nettoyage.
+        $markdown = (string) preg_replace('/\n(?:---\s*\n){2,}/u', "\n---\n\n", $markdown);
 
         return $markdown;
     }

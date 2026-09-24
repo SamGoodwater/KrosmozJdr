@@ -49,7 +49,7 @@ class RulesBookAssemblerTest extends TestCase
         mkdir($root, 0775, true);
         file_put_contents(
             $root.'/1.1.1-intro.md',
-            "# 1.1.1 Intro\n\n**Description** : Phrase utile.\n\n## Contenu\n- a\n- b\n\n---\n\nCorps.\n\n**Pour plus de détails** :\n- [Section 2](../x.md)\n\n---\n\n## Sources\n\n## Source : Archive\n**Provenance** : foo.\n"
+            "# 1.1.1 Intro\n\n**Description** : Phrase utile.\n\n## Contenu\n- a\n- b\n\n---\n\nCorps.\n\n**Pour plus de détails** :\n- [Section 2](../x.md)\n\n### Liens utiles\n- [Autre](../y.md)\n\n**Voir aussi** :\n- [Encore](../z.md)\n\n---\n\n## Sources\n\n## Source : Archive\n**Provenance** : foo.\n"
         );
         file_put_contents($root.'/6.1.3-decisions-de-design.md', "# 6.1.3 Design\n\nTrop long.\n");
         file_put_contents($root.'/6.1.1-chrono.md', "# 6.1.1 Chrono\n\nReste.\n");
@@ -67,6 +67,8 @@ class RulesBookAssemblerTest extends TestCase
             $this->assertStringNotContainsString('## Sources', $markdown);
             $this->assertStringNotContainsString('Provenance', $markdown);
             $this->assertStringNotContainsString('Pour plus de détails', $markdown);
+            $this->assertStringNotContainsString('Liens utiles', $markdown);
+            $this->assertStringNotContainsString('Voir aussi', $markdown);
             $this->assertStringContainsString('Corps.', $markdown);
             $this->assertStringNotContainsString('Trop long.', $markdown);
             $this->assertStringNotContainsString('Équilibrage MJ.', $markdown);

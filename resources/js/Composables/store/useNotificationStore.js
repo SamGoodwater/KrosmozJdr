@@ -19,8 +19,11 @@ import { ref, computed } from "vue";
  * @property {Array|undefined} [actions] - Actions custom (boutons, etc.)
  * @property {Object} [extra] - Données additionnelles
  * @property {number} [createdAt] - Timestamp de création
- * @property {number} [fullDisplayTime] - Temps en mode full (40% de duration)
- * @property {number} [contractedDisplayTime] - Temps en mode contracted (60% de duration)
+ * @property {number} [fullDisplayTime] - Temps en mode full (50% de duration)
+ * @property {number} [contractedDisplayTime] - Temps en mode contracted (50% de duration)
+ * @property {boolean} [paused] - Compte à rebours en pause (survol / focus)
+ * @property {number} [elapsedAtPause] - Temps écoulé figé au moment de la pause
+ * @property {number} [pauseStartedAt] - Timestamp du début de pause
  * @property {number} [progress] - Progression personnalisée 0–100 (notifications dynamiques). Si défini, remplace la progression basée sur le temps.
  * @property {boolean} [dismissible] - Si false, cache le bouton de fermeture et bloque la fermeture manuelle.
  *
@@ -320,11 +323,6 @@ function getProgressPercentage(notification) {
 function getNotificationState(notification) {
     // Si duration = 0, la notification reste toujours en mode full
     if (notification.duration === 0) {
-        return 'full';
-    }
-
-    // Succès / erreur : garder le message lisible (évite le mode icône seule)
-    if (notification.type === 'success' || notification.type === 'error') {
         return 'full';
     }
 

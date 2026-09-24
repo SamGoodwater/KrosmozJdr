@@ -135,12 +135,14 @@ const props = defineProps({
         default: false,
     },
     /**
-     * Mise en page dense multi-colonnes (`spell` : 1 col mobile, 2×2 tablette, 3+pleine largeur laptop, 4 cols xl).
+     * Mise en page dense multi-colonnes (`spell` / `dense` / `capability`).
+     * `dense` = même grille que spell, pour les entités hors sort/capacité.
      */
     layoutProfile: {
         type: String,
         default: null,
-        validator: (v) => v == null || v === '' || v === 'spell' || v === 'capability',
+        validator: (v) =>
+            v == null || v === '' || v === 'spell' || v === 'capability' || v === 'dense',
     },
     /**
      * Pied d’actions collé en bas du viewport (sort / capacité : long formulaire).
@@ -188,8 +190,13 @@ const props = defineProps({
 
 const emit = defineEmits(['submit', 'cancel']);
 
-/** Grille dense multi-colonnes (fiches sort / capacité). */
-const isSpellLayout = computed(() => props.layoutProfile === 'spell' || props.layoutProfile === 'capability');
+/** Grille dense multi-colonnes (fiches sort / capacité / dense générique). */
+const isSpellLayout = computed(
+    () =>
+        props.layoutProfile === 'spell' ||
+        props.layoutProfile === 'capability' ||
+        props.layoutProfile === 'dense',
+);
 
 /** Fiche capacité : 1ʳᵉ ligne 3 panneaux égaux, 2ᵉ ligne effets 2/3 + métadonnées 1/3 (grille 6 cols ≥ md). */
 const isCapabilityLayout = computed(() => props.layoutProfile === 'capability');

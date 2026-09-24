@@ -2942,6 +2942,34 @@
     "file": "action/ResponsiveActionButton.vue"
   },
   {
+    "name": "EntityListBackButton",
+    "description": "EntityListBackButton — Bouton ghost xs « Liste » vers l’index d’une entité.",
+    "props": [
+      {
+        "name": "routeName",
+        "type": "String",
+        "desc": "- Nom de route Laravel / Ziggy"
+      },
+      {
+        "name": "routeParams",
+        "type": "Object|Array|Number|String",
+        "desc": "- Paramètres Ziggy (optionnel)"
+      },
+      {
+        "name": "href",
+        "type": "String",
+        "desc": "- URL directe (utilisée si pas de routeName, ou fallback)"
+      },
+      {
+        "name": "label",
+        "type": "String",
+        "desc": "- Libellé du bouton (défaut : « Liste »)"
+      }
+    ],
+    "slots": [],
+    "file": "action/EntityListBackButton.vue"
+  },
+  {
     "name": "EntityActionButton",
     "description": "EntityActionButton Atom",
     "props": [],

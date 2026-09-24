@@ -10,7 +10,7 @@
     box-sizing: border-box;
     /* Thème Daisy (--radius-box) ; sinon alias éventuel ; défaut maquette projet */
     border-radius: var(--radius-box, var(--rounded-box, 0.1rem));
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 0.75rem;
     margin: 0;
     max-width: min(24rem, calc(100vw - 1rem));
 
@@ -27,11 +27,23 @@
     color: oklch(0.97 0.01 265);
 
     /* Accent : thème sémantique ou surcharge inline */
-    border: 1px solid color-mix(in oklch, var(--color) 38%, transparent);
+    border: 1px solid color-mix(in oklch, var(--color) 22%, transparent);
     box-shadow:
         0 0 0 1px color-mix(in oklch, var(--color) 24%, transparent),
         0 22px 56px -14px color-mix(in oklch, var(--color) 42%, transparent),
         inset 0 1px 0 0 color-mix(in oklch, oklch(1 0 0) 14%, transparent);
+}
+
+/**
+ * Fond opaque (sans blur) : dialogs top-layer à fond transparent
+ * (ex. recherche globale) où le glass semi-transparent devient illisible.
+ */
+.tooltip-floating-surface--opaque,
+.global-search-dialog > .tooltip-floating-surface {
+    background-color: rgb(12, 14, 22);
+    background-color: oklch(0.18 0.03 265);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 /**

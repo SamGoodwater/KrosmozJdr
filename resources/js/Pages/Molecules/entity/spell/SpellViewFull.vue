@@ -341,10 +341,10 @@ const handleAction = async (actionKey) => {
 </script>
 
 <template>
-    <div class="space-y-8">
+    <div class="space-y-4">
         <EntityViewHeader :mode="headerMode">
             <template #media>
-                <div class="group relative w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72">
+                <div class="group relative w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56">
                     <div class="absolute top-2 right-2 z-20 transition-opacity duration-150 group-hover:opacity-0">
                         <Badge
                             :color="getBadgeColor('level')"

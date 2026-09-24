@@ -3,6 +3,7 @@
  * Panneau riche pour tooltips « usage sort » (icône BDD, teinte, libellé métier).
  *
  * @description
+ * Contenu seul : le chrome sombre vient de {@link Tooltip} (`glass` défaut).
  * Utilisé par {@link SpellMinimalUsageMetaRow} pour portée modifiable, ligne de vue,
  * magie/physique, incantation, rituel.
  */
@@ -10,7 +11,6 @@ import Image from "@/Pages/Atoms/data-display/Image.vue";
 import {
     spellUsageIconBackdropStyle,
     spellUsageTextColorStyle,
-    spellUsageTooltipPanelStyle,
 } from "@/Utils/Entity/spellUsageCharacteristicVisual";
 
 defineProps({
@@ -30,11 +30,7 @@ defineProps({
 </script>
 
 <template>
-    <div
-        class="max-w-xs rounded-md border-l-[3px] border-solid py-2 pl-2.5 pr-2 text-xs shadow-sm"
-        :class="visual.color?.startsWith('#') ? '' : 'border-base-content/20 bg-base-200/80'"
-        :style="visual.color?.startsWith('#') ? spellUsageTooltipPanelStyle(visual.color) : {}"
-    >
+    <div class="max-w-xs text-xs text-white/95">
         <div class="flex items-start gap-2">
             <span
                 v-if="visual.hasIcon"
@@ -63,8 +59,8 @@ defineProps({
                         class="inline-flex h-4 min-w-4 shrink-0 items-center justify-center rounded border px-1 text-[10px] font-black leading-none"
                         :class="
                             booleanOn
-                                ? 'border-emerald-600/20 bg-emerald-500/12 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300'
-                                : 'border-red-600/20 bg-red-500/12 text-red-700 dark:border-red-500/30 dark:bg-red-500/15 dark:text-red-300'
+                                ? 'border-emerald-400/35 bg-emerald-500/20 text-emerald-200'
+                                : 'border-red-400/35 bg-red-500/20 text-red-200'
                         "
                         aria-hidden="true"
                     >{{ booleanOn ? "V" : "X" }}</span>
@@ -75,30 +71,30 @@ defineProps({
                     >{{ visual.characteristicName }}</span>
                     <span
                         v-else-if="showBooleanGlyph && statusText"
-                        class="font-semibold text-base-content"
+                        class="font-semibold"
                     >{{ statusText }}</span>
                 </div>
                 <div
                     v-else-if="statusText"
-                    class="font-semibold leading-snug text-base-content"
+                    class="font-semibold leading-snug"
                 >
                     {{ statusText }}
                 </div>
                 <div
                     v-if="statusText && showCharacteristicName && visual.characteristicName"
-                    class="mt-0.5 font-semibold leading-snug text-base-content"
+                    class="mt-0.5 font-semibold leading-snug"
                 >
                     {{ statusText }}
                 </div>
                 <p
                     v-if="visual.characteristicSubtitle"
-                    class="mt-1 text-[11px] italic leading-snug text-base-content/80"
+                    class="mt-1 text-[11px] italic leading-snug text-white/80"
                 >
                     {{ visual.characteristicSubtitle }}
                 </p>
                 <p
                     v-if="visual.characteristicHelper"
-                    class="mt-1 text-[11px] leading-snug text-base-content/75 whitespace-pre-wrap"
+                    class="mt-1 text-[11px] leading-snug text-white/75 whitespace-pre-wrap"
                 >
                     {{ visual.characteristicHelper }}
                 </p>

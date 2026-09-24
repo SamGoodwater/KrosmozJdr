@@ -58,6 +58,14 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    /**
+     * Fond opaque (sans blur) : utile dans un `<dialog>` top-layer à fond transparent
+     * (ex. recherche globale) où le glass semi-transparent devient illisible.
+     */
+    opaque: {
+        type: Boolean,
+        default: false,
+    },
     responsive: {
         type: String,
         default: "",
@@ -127,7 +135,11 @@ const floatingPanelClasses = computed(() => {
     if (!props.glass) {
         return "tooltip-floating-chromeless";
     }
-    return mergeClasses("tooltip-floating-surface", tooltipAccentColorClass.value);
+    return mergeClasses(
+        "tooltip-floating-surface",
+        props.opaque && "tooltip-floating-surface--opaque",
+        tooltipAccentColorClass.value,
+    );
 });
 
 /** Trigger : pas de classes `tooltip-*` Daisy (évite le pseudo ::before clippé). */
@@ -156,6 +168,7 @@ const overlayContent = computed(() =>
         :close-on-escape="true"
         :chromeless="!glass"
         :panel-class="floatingPanelClasses"
+        :panel-style="accentStyle"
         @open="emit('open')"
         @close="emit('close')"
     >
