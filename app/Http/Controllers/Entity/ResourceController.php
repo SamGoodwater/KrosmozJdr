@@ -193,19 +193,15 @@ class ResourceController extends Controller
             'objectEffects',
         ]);
 
-        $availableResourcesForRecipe = Resource::query()
-            ->where('id', '!=', $resource->id)
-            ->select('id', 'name', 'description', 'level')
-            ->orderBy('name')
-            ->get();
+        $availableResourcesForRecipe = [];
 
         return Inertia::render('Pages/entity/resource/Edit', array_merge([
             'resource' => new ResourceResource($resource),
             'resourceTypes' => ResourceType::query()->select('id', 'name')->orderBy('name')->get(),
             'availableResourcesForRecipe' => $availableResourcesForRecipe,
-            'availableShops' => Shop::query()->select('id', 'name', 'description')->orderBy('name')->get(),
-            'availableScenarios' => Scenario::query()->select('id', 'name', 'description')->orderBy('name')->get(),
-            'availableCampaigns' => Campaign::query()->select('id', 'name', 'description')->orderBy('name')->get(),
+            'availableShops' => Shop::query()->select('id', 'name', 'description')->orderBy('name')->limit(200)->get(),
+            'availableScenarios' => Scenario::query()->select('id', 'name', 'description')->orderBy('name')->limit(200)->get(),
+            'availableCampaigns' => Campaign::query()->select('id', 'name', 'description')->orderBy('name')->limit(200)->get(),
         ], ObjectEffectEditOptions::inertiaPropsFor($resource)));
     }
 
