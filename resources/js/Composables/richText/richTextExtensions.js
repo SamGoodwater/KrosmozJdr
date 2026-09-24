@@ -6,7 +6,7 @@ import { TextStyle } from "@tiptap/extension-text-style";
 import { Color } from "@tiptap/extension-color";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
-import { Table, TableRow, TableCell, TableHeader } from "@tiptap/extension-table";
+import { TableKit } from "@tiptap/extension-table";
 import { TaskList, TaskItem } from "@tiptap/extension-list";
 import { Placeholder, CharacterCount, Focus } from "@tiptap/extensions";
 import { ReferenceInline } from "@/Composables/richText/ReferenceInlineExtension";
@@ -14,8 +14,8 @@ import { ReferenceInline } from "@/Composables/richText/ReferenceInlineExtension
 /**
  * Extensions TipTap communes (édition et lecture).
  *
- * TipTap 3 : StarterKit embarque Link + Underline ; tables/listes/utils
- * viennent des paquets consolidés `@tiptap/extension-table|list|extensions`.
+ * TipTap 3 : StarterKit embarque Link + Underline ; tables via `TableKit`
+ * (Table + Row + Header + Cell) ; listes/utils via `@tiptap/extension-list|extensions`.
  *
  * @param {Object} opts
  * @param {string} [opts.placeholder]
@@ -59,15 +59,14 @@ export function createRichTextExtensions(opts = {}) {
                 class: "max-w-full h-auto rounded",
             },
         }),
-        Table.configure({
-            resizable: true,
-            HTMLAttributes: {
-                class: "border-collapse border border-base-300",
+        TableKit.configure({
+            table: {
+                resizable: true,
+                HTMLAttributes: {
+                    class: "border-collapse border border-base-300",
+                },
             },
         }),
-        TableRow,
-        TableHeader,
-        TableCell,
         TaskList,
         TaskItem.configure({
             nested: true,
