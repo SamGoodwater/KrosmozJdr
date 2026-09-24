@@ -6,13 +6,21 @@ namespace Tests\Feature\GenerativeAi;
 
 use App\Enums\EntityState;
 use App\Models\AiGenerationRun;
+use App\Models\Entity\Breed;
+use App\Models\Entity\Consumable;
+use App\Models\Entity\Item;
+use App\Models\Entity\Monster;
+use App\Models\Entity\Npc;
 use App\Models\Entity\Spell;
 use App\Models\User;
+use App\Support\ElementBitmask;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 /**
  * Injection JSON manuelle (même validate + persist que l’IA, sans LLM).
+ *
+ * Couvre les 5 actions convertibles : spell, item, consumable, encounter, npc.
  */
 final class IaInjectJsonTest extends TestCase
 {
@@ -52,6 +60,195 @@ final class IaInjectJsonTest extends TestCase
             'model' => 'manual-json',
             'prompt_version' => 'manual-v1',
         ]);
+        Http::assertSentCount(0);
+    }
+
+    public function test_admin_injects_unique_item_writable_fields(): void
+    {
+        config(['services.anthropic.api_key' => null]);
+        Http::fake();
+        Http::preventStrayRequests();
+
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $item = Item::factory()->create([
+            'name' => 'Anneau brut',
+            'description' => 'brouillon',
+            'bonus' => null,
+            'effect' => null,
+            'dofusdb_id' => null,
+            'official_id' => 'jdr:item:inject-unique',
+            'state' => EntityState::Draft->value,
+            'auto_update' => true,
+        ]);
+
+        $this->actingAsConfirmed($admin)
+            ->postJson(route('api.entities.ia-inject', ['entityType' => 'items', 'id' => $item->id]), [
+                'action' => 'item',
+                'payload' => [
+                    'name' => 'Anneau injecté',
+                    'description' => 'Unique de quête.',
+                    'bonus' => '+2 Force',
+                    'effect' => '{"strength":2}',
+                ],
+            ])
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('status', AiGenerationRun::STATUS_SUCCESS);
+
+        $item->refresh();
+        $this->assertSame(EntityState::Auto->value, $item->state);
+        $this->assertFalse((bool) $item->auto_update);
+        $this->assertSame('Anneau injecté', $item->name);
+        $this->assertSame('+2 Force', $item->bonus);
+        Http::assertSentCount(0);
+    }
+
+    public function test_admin_injects_consumable_effect_only(): void
+    {
+        config(['services.anthropic.api_key' => null]);
+        Http::fake();
+        Http::preventStrayRequests();
+
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $consumable = Consumable::factory()->create([
+            'name' => 'Pain brut',
+            'effect' => 'soin opaque',
+            'dofusdb_id' => '468',
+            'state' => EntityState::Raw->value,
+            'auto_update' => true,
+        ]);
+
+        $this->actingAsConfirmed($admin)
+            ->postJson(route('api.entities.ia-inject', ['entityType' => 'consumables', 'id' => $consumable->id]), [
+                'action' => 'consumable',
+                'payload' => ['effect' => 'Soigne 5 PV hors combat.'],
+            ])
+            ->assertOk()
+            ->assertJsonPath('success', true);
+
+        $consumable->refresh();
+        $this->assertSame(EntityState::Auto->value, $consumable->state);
+        $this->assertSame('Pain brut', $consumable->name);
+        $this->assertSame('Soigne 5 PV hors combat.', $consumable->effect);
+        Http::assertSentCount(0);
+    }
+
+    public function test_admin_injects_encounter_packet(): void
+    {
+        config(['services.anthropic.api_key' => null]);
+        Http::fake();
+        Http::preventStrayRequests();
+
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $monster = Monster::factory()->create([
+            'official_id' => 'dofus:encounter-inject',
+            'state' => EntityState::Raw->value,
+            'auto_update' => true,
+        ]);
+        $monster->creature?->update([
+            'pa' => '6',
+            'agi' => '8',
+            'strong' => '2',
+            'state' => EntityState::Raw->value,
+        ]);
+        $monster = $monster->fresh(['creature']);
+
+        $this->actingAsConfirmed($admin)
+            ->postJson(route('api.entities.ia-inject', ['entityType' => 'monsters', 'id' => $monster->id]), [
+                'action' => 'encounter',
+                'payload' => [
+                    'monster' => [],
+                    'spells' => [
+                        ['name' => 'Bec', 'effect' => '1d6 Air', 'pa' => '3', 'element' => 'air'],
+                        ['name' => 'Picore', 'effect' => '1d4 Air', 'pa' => '2', 'element' => 'air'],
+                    ],
+                ],
+            ])
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('status', AiGenerationRun::STATUS_SUCCESS);
+
+        $monster->refresh();
+        $this->assertSame(EntityState::Auto->value, $monster->state);
+        $this->assertFalse((bool) $monster->auto_update);
+        $creature = $monster->creature()->first();
+        $this->assertNotNull($creature);
+        $this->assertSame(EntityState::Auto->value, $creature->state);
+        $this->assertCount(2, $creature->spells);
+        $this->assertDatabaseHas('ai_generation_runs', [
+            'action' => 'encounter',
+            'entity_id' => $monster->id,
+            'model' => 'manual-json',
+            'status' => AiGenerationRun::STATUS_SUCCESS,
+        ]);
+        Http::assertSentCount(0);
+    }
+
+    public function test_admin_injects_npc_kit(): void
+    {
+        config(['services.anthropic.api_key' => null]);
+        Http::fake();
+        Http::preventStrayRequests();
+
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        Npc::factory()->create([
+            'official_id' => 'jdr:npc:incarnam:ganymede',
+            'state' => Npc::STATE_PLAYABLE,
+            'npc_role' => 'social',
+        ]);
+        $breed = Breed::factory()->create([
+            'name' => 'Iop-inject',
+            'state' => Breed::STATE_PLAYABLE,
+        ]);
+        $spell = Spell::factory()->create([
+            'name' => 'Pression inject',
+            'state' => Spell::STATE_PLAYABLE,
+            'element' => ElementBitmask::fromSlug('earth'),
+            'pa' => '3',
+        ]);
+        $spell->breeds()->attach($breed->id, ['character_level' => 1, 'slot_index' => 1, 'choice_order' => 0]);
+
+        $npc = Npc::factory()->create([
+            'official_id' => 'jdr:npc:inject:source',
+            'state' => EntityState::Draft->value,
+            'npc_role' => 'guard',
+            'breed_id' => $breed->id,
+            'auto_update' => true,
+        ]);
+        $npc->creature?->update([
+            'name' => 'Garde brut',
+            'level' => '4',
+            'state' => EntityState::Draft->value,
+        ]);
+
+        $this->actingAsConfirmed($admin)
+            ->postJson(route('api.entities.ia-inject', ['entityType' => 'npcs', 'id' => $npc->id]), [
+                'action' => 'npc',
+                'payload' => [
+                    'npc' => [
+                        'name' => 'Garde injecté',
+                        'concept' => 'Factionnaire Iop',
+                        'story' => 'Il tient la porte.',
+                        'level' => 4,
+                        'breed_id' => (int) $breed->id,
+                        'npc_role' => 'guard',
+                    ],
+                    'stats' => ['life' => '22', 'pa' => '6', 'strong' => '8'],
+                    'item_ids' => [],
+                    'spell_ids' => [(int) $spell->id],
+                ],
+            ])
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('status', AiGenerationRun::STATUS_SUCCESS);
+
+        $npc->refresh();
+        $creature = $npc->creature()->first();
+        $this->assertSame(EntityState::Auto->value, $npc->state);
+        $this->assertFalse((bool) $npc->auto_update);
+        $this->assertSame('Garde injecté', $creature?->name);
+        $this->assertSame('Il tient la porte.', $npc->story);
+        $this->assertTrue($creature?->spells->contains('id', $spell->id));
         Http::assertSentCount(0);
     }
 
@@ -129,16 +326,24 @@ final class IaInjectJsonTest extends TestCase
         Http::assertSentCount(0);
     }
 
-    public function test_schema_endpoint_returns_example_for_spells(): void
+    public function test_schema_endpoint_returns_example_for_each_convertible_type(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $this->actingAsConfirmed($admin)
-            ->getJson(route('api.ia.schema', ['entityType' => 'spells']))
-            ->assertOk()
-            ->assertJsonPath('success', true)
-            ->assertJsonPath('action', 'spell')
-            ->assertJsonStructure(['schema', 'example']);
+        foreach ([
+            'spells' => 'spell',
+            'items' => 'item',
+            'consumables' => 'consumable',
+            'monsters' => 'encounter',
+            'npcs' => 'npc',
+        ] as $entityType => $action) {
+            $this->actingAsConfirmed($admin)
+                ->getJson(route('api.ia.schema', ['entityType' => $entityType]))
+                ->assertOk()
+                ->assertJsonPath('success', true)
+                ->assertJsonPath('action', $action)
+                ->assertJsonStructure(['schema', 'example']);
+        }
     }
 
     public function test_game_master_cannot_inject(): void

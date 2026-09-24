@@ -1,5 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { mount } from "@vue/test-utils";
+import { mount, flushPromises } from "@vue/test-utils";
+import axios from "axios";
 import EntitySourceModal from "@/Pages/Molecules/entity/EntitySourceModal.vue";
 
 const passwordMocks = vi.hoisted(() => ({
@@ -54,15 +55,18 @@ describe("EntitySourceModal", () => {
     beforeEach(() => {
         passwordMocks.unlocked.value = true;
         passwordMocks.requirePassword.mockClear();
+        axios.get.mockReset();
+        axios.get.mockResolvedValue({ data: { usage: null, estimates: [] } });
     });
 
-    it("affiche les volets DofusDB et Conversion IA puis émet convert", async () => {
+    it("affiche les volets DofusDB, Conversion IA et JSON puis émet convert", async () => {
         const wrapper = mount(EntitySourceModal, {
             props: {
                 open: true,
                 showDofusdb: true,
                 showAi: true,
                 entityLabel: "Pression",
+                entityType: "spells",
                 aiActionLabel: "Sort (effets)",
                 aiEstimate: { formatted: "~ 0,05 $" },
                 aiUsage: { remaining_credits_usd: 12, remaining_hint: "≈ 120 rencontres ou 34 PNJ" },
@@ -75,8 +79,9 @@ describe("EntitySourceModal", () => {
         expect(wrapper.text()).toContain("Pression");
 
         const tabs = wrapper.findAll("button.tab");
-        expect(tabs).toHaveLength(2);
+        expect(tabs).toHaveLength(3);
         expect(tabs[0].text()).toContain("Conversion DofusDB");
+        expect(tabs[2].text()).toContain("JSON");
         expect(wrapper.get("[data-testid='entity-source-include-image']").element.checked).toBe(true);
         await tabs[1].trigger("click");
         expect(wrapper.text()).toContain("Sort (effets)");
@@ -89,6 +94,65 @@ describe("EntitySourceModal", () => {
         expect(primaryButtons.length).toBe(1);
         await primaryButtons[0].trigger("click");
         expect(wrapper.emitted("convert")).toBeTruthy();
+    });
+
+    it("émet inject depuis l’onglet JSON avec un objet valide", async () => {
+        const wrapper = mount(EntitySourceModal, {
+            props: {
+                open: true,
+                showDofusdb: true,
+                showAi: true,
+                entityLabel: "Pression",
+                entityType: "spells",
+            },
+            global: { stubs },
+        });
+
+        await wrapper.get("[data-testid='entity-source-tab-json']").trigger("click");
+        expect(wrapper.get("[data-testid='entity-source-json-pane']").exists()).toBe(true);
+
+        await wrapper.find("textarea").setValue('{"effect":"1d6 Terre"}');
+        const injectBtn = wrapper.findAll("button").filter((btn) => btn.text().includes("Injecter le JSON"));
+        expect(injectBtn.length).toBe(1);
+        await injectBtn[0].trigger("click");
+
+        expect(wrapper.emitted("inject")).toBeTruthy();
+        expect(wrapper.emitted("inject")[0][0]).toEqual({ payload: { effect: "1d6 Terre" } });
+    });
+
+    it("refuse un JSON racine tableau et charge un exemple via l’API schéma", async () => {
+        axios.get.mockImplementation((url) => {
+            if (String(url).includes("/api/ia/schema/")) {
+                return Promise.resolve({ data: { success: true, example: { effect: "1d4" } } });
+            }
+            return Promise.resolve({ data: { usage: null, estimates: [] } });
+        });
+
+        const wrapper = mount(EntitySourceModal, {
+            props: {
+                open: true,
+                showDofusdb: false,
+                showAi: true,
+                entityLabel: "Sort",
+                entityType: "spells",
+            },
+            global: { stubs },
+        });
+
+        await wrapper.get("[data-testid='entity-source-tab-json']").trigger("click");
+        await wrapper.find("textarea").setValue("[1,2]");
+        const injectBtn = wrapper.findAll("button").filter((btn) => btn.text().includes("Injecter le JSON"));
+        await injectBtn[0].trigger("click");
+        expect(wrapper.emitted("inject")).toBeFalsy();
+        expect(wrapper.text()).toContain("objet");
+
+        await wrapper.get("[data-testid='entity-source-json-example']").trigger("click");
+        await flushPromises();
+        expect(axios.get).toHaveBeenCalledWith(
+            "/api/ia/schema/spells",
+            expect.objectContaining({ headers: { Accept: "application/json" } }),
+        );
+        expect(wrapper.find("textarea").element.value).toContain("1d4");
     });
 
     it("émet confirm DofusDB avec récupération d’image par défaut", async () => {

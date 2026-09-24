@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Couverture tests inject JSON (5 types)
+
+Les Feature PHPUnit d’injection couvrent sort, objet, consommable, rencontre et PNJ (sans appel Anthropic). Côté front : onglet JSON du modal Sources + `submitAiInject` du dispatcher.
+
 ## Septembre 2026 — Injecter un JSON comme paquet IA
 
 Sur **Sources**, un onglet **JSON** (à côté de DofusDB et Conversion IA) permet de coller ou déposer un fichier au format de réponse de l’IA. Même contrôles (admin, mot de passe), même validation, même écriture en **auto**, puis le tableau avant/après — **sans** appeler Anthropic. À la création d’une fiche, le même flux existe via l’onglet JSON du modal Créer.
