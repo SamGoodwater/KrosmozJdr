@@ -1,5 +1,6 @@
 <script setup>
 import { useCookieConsent } from '@/Composables/privacy/useCookieConsent';
+import { LAYOUT_FIXED_BANNER_BOTTOM_OFFSET_CLASS } from '@/Composables/layout/viewport-breakpoints';
 
 const {
   shouldRenderCookiePanel,
@@ -11,13 +12,18 @@ const {
   closeCookiePreferences,
   resetCookieConsentChoice,
 } = useCookieConsent();
+
+const bannerBottomOffsetClass = LAYOUT_FIXED_BANNER_BOTTOM_OFFSET_CLASS;
 </script>
 
 <template>
   <transition name="fade-slide">
     <aside
       v-if="shouldRenderCookiePanel"
-      class="fixed bottom-2 sm:bottom-4 left-1/2 z-70 w-[min(98vw,760px)] sm:w-[min(96vw,760px)] -translate-x-1/2 rounded-box border border-base-300 bg-base-100/95 p-2.5 sm:p-3 shadow-xl backdrop-blur"
+      :class="[
+        'fixed left-1/2 z-70 w-[min(98vw,760px)] md:w-[min(96vw,760px)] -translate-x-1/2 rounded-box border border-base-300 bg-base-100/95 p-2.5 md:p-3 shadow-xl backdrop-blur',
+        bannerBottomOffsetClass,
+      ]"
       aria-live="polite"
     >
       <p class="text-xs font-semibold uppercase tracking-wide text-base-content/60">

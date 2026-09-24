@@ -32,6 +32,8 @@ import EntityViewSkeleton from "@/Pages/Molecules/entity/shared/EntityViewSkelet
 import TanStackTableToolbar from "@/Pages/Molecules/table/TanStackTableToolbar.vue";
 import TanStackTableFilters from "@/Pages/Molecules/table/TanStackTableFilters.vue";
 import TanStackTablePagination from "@/Pages/Molecules/table/TanStackTablePagination.vue";
+import Drawer from "@/Pages/Molecules/layout/Drawer.vue";
+import { LAYOUT_FIXED_BANNER_BOTTOM_OFFSET_CLASS } from "@/Composables/layout/viewport-breakpoints";
 import { useTanStackTablePreferences } from "@/Composables/table/useTanStackTablePreferences";
 import { useTableFilterPresets } from "@/Composables/table/useTableFilterPresets";
 import { useTableSearch } from "@/Composables/table/useTableSearch";
@@ -1934,6 +1936,9 @@ const handleRowPointer = (row, event) => {
 
 const tableRootRef = ref(null);
 const shortcutsModalOpen = ref(false);
+/** Drawer filtres (conteneur étroit / mobile) */
+const filtersDrawerOpen = ref(false);
+const selectionBarBottomClass = LAYOUT_FIXED_BANNER_BOTTOM_OFFSET_CLASS;
 
 /**
  * Déplace le focus entre les blocs `[data-table-row-focus]` (ligne tableau ou carte ligne/minimal).
@@ -2232,7 +2237,7 @@ const handleExport = () => {
 <template>
     <div
         ref="tableRootRef"
-        class="space-y-2 outline-none"
+        class="@container/table space-y-2 outline-none"
         tabindex="-1"
         @keydown="handleTableKeydown"
     >
@@ -2262,51 +2267,85 @@ const handleExport = () => {
                 @refresh="handleRefresh"
                 @clear-selection="clearSelection"
             />
-            <div class="mt-2 flex flex-wrap items-center justify-end gap-4">
-                <div class="flex items-center gap-2">
-                    <span class="text-xs text-base-content/70">Vue</span>
+            <div class="mt-2 flex flex-wrap items-center justify-between gap-2 @md/table:justify-end @md/table:gap-4">
+                <div
+                    v-if="filtersEnabled && hasFilterableColumns"
+                    class="flex items-center gap-2 @lg/table:hidden"
+                >
+                    <Btn
+                        size="xs"
+                        variant="outline"
+                        :color="uiColor"
+                        class="gap-2"
+                        aria-label="Ouvrir les filtres"
+                        @click="filtersDrawerOpen = true"
+                    >
+                        <Icon source="fa-solid fa-filter" size="sm" alt="" />
+                        <span>Filtres</span>
+                        <span
+                            v-if="hasActiveFilters"
+                            class="badge badge-sm badge-primary"
+                            aria-hidden="true"
+                        >●</span>
+                    </Btn>
+                    <Btn
+                        v-if="hasActiveFilters"
+                        size="xs"
+                        variant="ghost"
+                        :color="uiColor"
+                        title="Réinitialiser les filtres"
+                        @click="resetFilters"
+                    >
+                        Réinit
+                    </Btn>
+                </div>
+                <div class="ml-auto flex items-center gap-2">
+                    <span class="hidden text-xs text-base-content/70 @md/table:inline">Vue</span>
                     <Btn
                         size="xs"
                         :variant="prefs.displayMode.value === 'line' ? 'glass' : 'ghost'"
                         :color="uiColor"
                         title="Vue ligne (liste dense verticale)"
+                        aria-label="Vue ligne"
                         @click="prefs.setDisplayMode('line')"
                     >
-                        <i class="fa-solid fa-list-ul mr-1" aria-hidden></i>
-                        Ligne
+                        <i class="fa-solid fa-list-ul @md/table:mr-1" aria-hidden></i>
+                        <span class="hidden @md/table:inline">Ligne</span>
                     </Btn>
                     <Btn
                         size="xs"
                         :variant="prefs.displayMode.value === 'minimal' ? 'glass' : 'ghost'"
                         :color="uiColor"
                         title="Vue minimal (grille de cartes)"
+                        aria-label="Vue minimal"
                         @click="prefs.setDisplayMode('minimal')"
                     >
-                        <i class="fa-solid fa-grip mr-1" aria-hidden></i>
-                        Minimal
+                        <i class="fa-solid fa-grip @md/table:mr-1" aria-hidden></i>
+                        <span class="hidden @md/table:inline">Minimal</span>
                     </Btn>
                     <Btn
                         size="xs"
                         :variant="prefs.displayMode.value === 'table' ? 'glass' : 'ghost'"
                         :color="uiColor"
                         title="Vue tableau (colonnes)"
+                        aria-label="Vue colonnes"
                         @click="prefs.setDisplayMode('table')"
                     >
-                        <i class="fa-solid fa-table-columns mr-1" aria-hidden></i>
-                        Colonne
+                        <i class="fa-solid fa-table-columns @md/table:mr-1" aria-hidden></i>
+                        <span class="hidden @md/table:inline">Colonne</span>
+                    </Btn>
+                    <Btn
+                        size="xs"
+                        variant="ghost"
+                        :color="uiColor"
+                        class="gap-1"
+                        title="Aide — raccourcis clavier et clics"
+                        aria-label="Aide raccourcis tableau"
+                        @click="shortcutsModalOpen = true"
+                    >
+                        <Icon source="fa-solid fa-keyboard" size="sm" alt="" />
                     </Btn>
                 </div>
-                <Btn
-                    size="xs"
-                    variant="ghost"
-                    :color="uiColor"
-                    class="gap-1"
-                    title="Aide — raccourcis clavier et clics"
-                    aria-label="Aide raccourcis tableau"
-                    @click="shortcutsModalOpen = true"
-                >
-                    <Icon source="fa-solid fa-keyboard" size="sm" alt="" />
-                </Btn>
             </div>
         </div>
 
@@ -2317,10 +2356,10 @@ const handleExport = () => {
             @close="shortcutsModalOpen = false"
         />
 
-        <!-- Filters -->
+        <!-- Filters inline (conteneur large ≥ @lg/table) -->
         <div
             v-if="filtersEnabled && hasFilterableColumns"
-            class="relative px-3 py-2"
+            class="relative hidden px-3 py-2 @lg/table:block"
             :class="[bgClass]"
         >
             <div v-if="presetsEnabled && showPresetPanel && activePreset" class="mb-2 flex items-center justify-between gap-2">
@@ -2470,10 +2509,104 @@ const handleExport = () => {
             />
         </div>
 
+        <!-- Drawer filtres (conteneur étroit) -->
+        <Drawer
+            v-if="filtersEnabled && hasFilterableColumns"
+            v-model="filtersDrawerOpen"
+            side="end"
+            portal
+            overlay-only
+            width="w-full max-w-sm"
+            aria-label="Filtres du tableau"
+        >
+            <template #sidebar>
+                <div class="flex h-full min-h-0 w-full max-w-sm flex-col bg-base-100">
+                    <div class="flex shrink-0 items-center justify-between gap-2 border-b border-base-300 px-3 py-2">
+                        <h2 class="text-sm font-semibold">Filtres</h2>
+                        <Btn
+                            size="xs"
+                            variant="ghost"
+                            square
+                            aria-label="Fermer les filtres"
+                            @click="filtersDrawerOpen = false"
+                        >
+                            <Icon source="fa-solid fa-xmark" size="sm" alt="" />
+                        </Btn>
+                    </div>
+                    <div class="min-h-0 flex-1 overflow-y-auto px-3 py-2 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
+                        <div v-if="presetsEnabled && showPresetPanel" class="mb-3 space-y-2">
+                            <div v-if="activePreset" class="flex flex-wrap items-center gap-2 text-xs">
+                                <span class="badge badge-soft badge-primary">
+                                    Preset: {{ activePreset.name }}
+                                </span>
+                                <span v-if="isActivePresetDirty" class="badge badge-soft badge-warning">
+                                    Non sauvegardé
+                                </span>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <Btn size="xs" variant="outline" :color="uiColor" @click="saveCurrentPreset">
+                                    Sauver
+                                </Btn>
+                                <select
+                                    class="select select-xs select-bordered min-w-0 flex-1"
+                                    :value="selectedPresetId"
+                                    aria-label="Sélectionner un preset"
+                                    @change="handlePresetSelectionChange"
+                                >
+                                    <option value="">Presets…</option>
+                                    <option
+                                        v-for="preset in filterPresets"
+                                        :key="`d-${preset.id}`"
+                                        :value="preset.id"
+                                    >
+                                        {{ preset.isDefault ? `★ ${preset.name}` : preset.name }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <TanStackTableFilters
+                            :columns="columnsWithoutActions"
+                            :filter-values="activeFilters"
+                            :filter-options="resolvedFilterOptions"
+                            :ui-color="uiColor"
+                            :entity-type="entityType"
+                            :presets-enabled="presetsEnabled"
+                            :show-preset-panel="showPresetPanel"
+                            :is-active-preset-dirty="isActivePresetDirty"
+                            @update:filters="setFilters"
+                            @apply="applyFilters"
+                            @reset="resetFilters"
+                            @toggle-presets="togglePresetPanel"
+                        />
+                    </div>
+                    <div class="flex shrink-0 gap-2 border-t border-base-300 px-3 py-2">
+                        <Btn
+                            size="sm"
+                            variant="ghost"
+                            class="flex-1"
+                            :color="uiColor"
+                            @click="resetFilters"
+                        >
+                            Réinitialiser
+                        </Btn>
+                        <Btn
+                            size="sm"
+                            variant="glass"
+                            class="flex-1"
+                            :color="uiColor"
+                            @click="filtersDrawerOpen = false"
+                        >
+                            Voir résultats
+                        </Btn>
+                    </div>
+                </div>
+            </template>
+        </Drawer>
+
         <div
             v-if="selectedCount > 0"
-            class="sticky bottom-2 z-20 rounded-box border border-base-300 px-3 py-2 shadow-md flex items-center justify-between gap-2"
-            :class="[bgClass]"
+            class="sticky z-20 rounded-box border border-base-300 px-3 py-2 shadow-md flex flex-wrap items-center justify-between gap-2"
+            :class="[bgClass, selectionBarBottomClass]"
         >
             <div class="text-sm font-medium">
                 {{ selectedCount }} élément(s) sélectionné(s)
@@ -2633,7 +2766,7 @@ const handleExport = () => {
                             data-table-row-focus
                             :data-row-id="String(row.id)"
                             tabindex="0"
-                            class="group/minrow relative z-0 flex-[1_1_280px] min-w-[280px] max-w-full rounded-box transition-shadow duration-200 hover:z-30 hover:shadow-md focus-within:z-30 outline-none [&:has(.entity-minimal-card--expanded)]:z-40"
+                            class="group/minrow relative z-0 flex-[1_1_100%] min-w-0 max-w-full rounded-box transition-shadow duration-200 hover:z-30 hover:shadow-md focus-within:z-30 outline-none [&:has(.entity-minimal-card--expanded)]:z-40 @sm/table:flex-[1_1_240px] @md/table:flex-[1_1_280px]"
                             :class="{ 'ring-2 ring-primary/50': isSelected(row) }"
                             @keydown="(e) => handleLineRowBlockKeydown(e, row)"
                         >

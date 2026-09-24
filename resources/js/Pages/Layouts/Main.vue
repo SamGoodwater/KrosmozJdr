@@ -39,7 +39,11 @@ import FeedbackFab from "@/Pages/Organismes/feedback/FeedbackFab.vue";
 import DofusDbReferencePanel from "@/Pages/Molecules/entity/DofusDbReferencePanel.vue";
 import PinnedEntitiesHost from "@/Pages/Organismes/entity/PinnedEntitiesHost.vue";
 import FavoritesModal from "@/Pages/Organismes/entity/FavoritesModal.vue";
-import { LAYOUT_APP_SIDEBAR_OFFSET_LEFT_CLASS } from "@/Composables/layout/viewport-breakpoints";
+import {
+    LAYOUT_APP_SIDEBAR_OFFSET_LEFT_CLASS,
+    LAYOUT_FLOATING_TOGGLE_HIDDEN_ON_MOBILE_CLASS,
+    LAYOUT_MAIN_CONTENT_MOBILE_BOTTOM_PAD_CLASS,
+} from "@/Composables/layout/viewport-breakpoints";
 import OverlayHostContainer from "@/Pages/Organismes/overlay/OverlayHostContainer.vue";
 
 // Centralisation des classes Tailwind pour le layout
@@ -47,6 +51,8 @@ const HEADER_HEIGHT_CLASS = 'h-18'    //
 const OFFSET_LEFT_CLASS = LAYOUT_APP_SIDEBAR_OFFSET_LEFT_CLASS
 const OFFSET_TOP_CLASS = 'top-18'
 const PADDING_TOP_CLASS = 'pt-18'
+const FLOATING_TOGGLE_HIDDEN_ON_MOBILE = LAYOUT_FLOATING_TOGGLE_HIDDEN_ON_MOBILE_CLASS
+const MAIN_CONTENT_MOBILE_BOTTOM_PAD = LAYOUT_MAIN_CONTENT_MOBILE_BOTTOM_PAD_CLASS
 
 const { isHeaderOpen, toggleHeader } = useHeader();
 const { isMobile, isTablet, isDesktop } = useDevice();
@@ -94,7 +100,8 @@ const headerClasses = computed(() => {
 });
 
 const toggleClasses = computed(() => {
-    const baseClasses = ['fixed top-6 z-50 max-sm:hidden'];
+    // Caché en mobile (&lt; md) : le dock bas expose déjà « Menu »
+    const baseClasses = ['fixed top-6 z-50', FLOATING_TOGGLE_HIDDEN_ON_MOBILE];
     
     if (isDesktopMode.value) {
         if (isSidebarOpen.value) {
@@ -103,13 +110,14 @@ const toggleClasses = computed(() => {
             return [...baseClasses, 'left-4 opacity-70'];
         }
     } else {
-        // Mobile/Tablette : toujours visible en haut à gauche
+        // Tablette : hamburger flottant (pas de dock)
         return [...baseClasses, 'left-4'];
     }
 });
 
 const headerToggleClasses = computed(() => {
-    const baseClasses = ['fixed top-5 right-4 z-50 max-sm:hidden'];
+    // Aligné sur Header (`v-if="!isMobile"`) : pas de toggle header en mobile
+    const baseClasses = ['fixed top-5 right-4 z-50', FLOATING_TOGGLE_HIDDEN_ON_MOBILE];
     
     if (isDesktopMode.value) {
         if (isHeaderOpen.value) {
@@ -118,7 +126,7 @@ const headerToggleClasses = computed(() => {
             return [...baseClasses, 'opacity-70'];
         }
     } else {
-        // Mobile/Tablette : toujours visible en haut à droite
+        // Tablette
         return [...baseClasses];
     }
 });
@@ -200,8 +208,11 @@ onUnmounted(() => {
         <main id="main-content" :class="mainClasses" class="main-animated z-20" tabindex="-1">
             <div class="min-h-full flex min-w-0 flex-col">
                 <!-- Contenu principal centré dans un cadre large -->
-                <div class="flex-1 w-full min-w-0 p-4 max-sm:p-2">
-                    <div class="main-content-frame w-full max-w-full min-w-0">
+                <div
+                    class="main-content-pad flex-1 w-full min-w-0 p-4 max-md:p-2"
+                    :class="MAIN_CONTENT_MOBILE_BOTTOM_PAD"
+                >
+                    <div class="main-content-frame w-full max-w-full min-w-0 @container/main">
                         <Container fluid>
                             <PendingErasureBanner />
                             <slot />

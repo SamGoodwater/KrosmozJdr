@@ -15,6 +15,9 @@ import { usePage, router } from '@inertiajs/vue3';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import { LAYOUT_FAB_BOTTOM_OFFSET_CLASS } from '@/Composables/layout/viewport-breakpoints';
+
+const fabBottomOffsetClass = LAYOUT_FAB_BOTTOM_OFFSET_CLASS;
 
 const page = usePage();
 const modalOpen = ref(false);
@@ -123,7 +126,7 @@ function submit() {
 </script>
 
 <template>
-    <div class="fixed bottom-4 right-4 z-40 sm:bottom-5 sm:right-5">
+    <div :class="['fixed right-4 z-40 md:right-5', fabBottomOffsetClass]">
         <button
             type="button"
             class="btn btn-lg btn-square rounded-2xl border border-base-content/15 bg-base-100/80 text-base-content shadow-[0_12px_32px_rgba(0,0,0,0.28)] backdrop-blur-md transition-[background-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:bg-base-200/90 hover:shadow-[0_16px_40px_rgba(0,0,0,0.34)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base-100"

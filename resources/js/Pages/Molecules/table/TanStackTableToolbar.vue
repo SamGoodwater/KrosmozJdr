@@ -98,8 +98,8 @@ const onSearchInput = (e) => {
 </script>
 
 <template>
-    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div class="flex-1">
+    <div class="flex flex-col gap-3 @md/table:flex-row @md/table:items-center @md/table:justify-between">
+        <div class="flex-1 min-w-0">
             <input
                 v-if="searchEnabled"
                 type="search"
@@ -111,7 +111,7 @@ const onSearchInput = (e) => {
             />
         </div>
 
-        <div class="flex w-full flex-wrap items-center justify-end gap-2 md:w-auto md:flex-nowrap">
+        <div class="flex w-full flex-wrap items-center justify-end gap-2 @md/table:w-auto @md/table:flex-nowrap">
             <Btn
                 v-if="selectionCount > 0"
                 :size="btnSize"
@@ -121,7 +121,7 @@ const onSearchInput = (e) => {
                 title="Vider la sélection"
             >
                 <Icon source="fa-solid fa-xmark" alt="Vider sélection" size="sm" />
-                <span class="hidden md:inline">Sélection ({{ selectionCount }})</span>
+                <span class="hidden @md/table:inline">Sélection ({{ selectionCount }})</span>
             </Btn>
 
             <ResponsiveActionButton
@@ -182,7 +182,7 @@ const onSearchInput = (e) => {
                                 @click="emit('reset-columns')"
                             >
                                 <Icon source="fa-solid fa-rotate-left" alt="Réinitialiser" size="sm" />
-                                <span class="hidden md:inline">Reset</span>
+                                <span class="hidden @md/table:inline">Reset</span>
                             </Btn>
                         </div>
                         <div class="space-y-2 max-h-64 overflow-y-auto pr-1">

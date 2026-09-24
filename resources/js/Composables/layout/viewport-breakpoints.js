@@ -3,6 +3,14 @@
  * Toute logique JS « mobile / tablette / desktop » pour les layouts doit réutiliser ces constantes
  * ou les `MEDIA_QUERY_*` associées pour rester cohérent avec les utilitaires `md:` / `lg:`.
  *
+ * ## Matrice chrome (shell app)
+ *
+ * | Mode | Largeur | Header | Dock bas | Toggle flottant | Sidebar |
+ * | --- | --- | --- | --- | --- | --- |
+ * | Mobile (`isMobile`) | &lt; md (768) | masqué | visible | masqué (menu dans le dock) | drawer overlay |
+ * | Tablette (`isTablet`) | md → &lt; lg | visible | masqué | visible | drawer overlay |
+ * | Desktop (`isDesktop`) | ≥ lg | visible | masqué | visible | panneau fixe |
+ *
  * **Attributs `data` navigation shell** (préfixe `kz-nav`, kebab-case dans le DOM) :
  * - `data-kz-nav-app-sidebar` : racine du panneau latéral principal (`Aside`)
  * - `data-kz-nav-toggle-sidebar` : contrôle d’ouverture / fermeture (hamburger, dock, etc.)
@@ -49,3 +57,43 @@ export const LAYOUT_APP_SIDEBAR_WIDTH_CLASS = 'w-64';
  * @type {string}
  */
 export const LAYOUT_APP_SIDEBAR_OFFSET_LEFT_CLASS = 'left-64';
+
+/**
+ * Classes Tailwind littérales — chrome mobile (&lt; md) vs tablette/desktop.
+ * Pas de construction dynamique (Tailwind purge).
+ */
+
+/** Affiche le dock bas uniquement en mobile (`max-md`) */
+export const LAYOUT_MOBILE_DOCK_VISIBLE_CLASS = 'fixed bottom-0 left-0 right-0 z-50 hidden max-md:block';
+
+/** Masque le footer desktop en mobile */
+export const LAYOUT_DESKTOP_FOOTER_HIDDEN_ON_MOBILE_CLASS = 'max-md:hidden';
+
+/** Masque les toggles flottants quand le dock mobile est visible */
+export const LAYOUT_FLOATING_TOGGLE_HIDDEN_ON_MOBILE_CLASS = 'max-md:hidden';
+
+/**
+ * Padding bas du contenu scrollable pour ne pas passer sous le dock
+ * (hauteur dock ~4.5rem + safe-area).
+ */
+export const LAYOUT_MAIN_CONTENT_MOBILE_BOTTOM_PAD_CLASS =
+    'max-md:pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))]';
+
+/**
+ * Offset bas pour FAB / overlays au-dessus du dock mobile.
+ * Desktop : `md:bottom-5` ; mobile : au-dessus du dock.
+ */
+export const LAYOUT_FAB_BOTTOM_OFFSET_CLASS =
+    'bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] md:bottom-5';
+
+/**
+ * Offset bas pour bandeaux fixes (cookies, sélection tableau) au-dessus du dock.
+ */
+export const LAYOUT_FIXED_BANNER_BOTTOM_OFFSET_CLASS =
+    'bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] md:bottom-4';
+
+/**
+ * Pied sticky (formulaires) au-dessus du dock mobile ; collé au bas dès md.
+ */
+export const LAYOUT_STICKY_ABOVE_MOBILE_DOCK_CLASS =
+    'bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] md:bottom-0';

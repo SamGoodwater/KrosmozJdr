@@ -5,7 +5,8 @@
  * @description
  * Bouton d’action responsive :
  * - En lg+ : bouton "classique" (texte à gauche, icône à droite)
- * - En <lg : bouton icône seule, et au hover/focus le bouton "s’étend" en overlay (sans reflow)
+ * - En &lt;lg : bouton icône seule ; le label s’étend en overlay uniquement
+ *   sur pointeur fin + hover (pas sur tactile) — accessibilité via aria-label / title.
  *
  * Contraintes:
  * - Un seul style (glass) via l’Atom `Btn`
@@ -94,6 +95,7 @@ function onClick(event) {
             variant="glass"
             animation="glass"
             class="relative gap-2"
+            :title="label || ariaLabel || undefined"
             @click="onClick"
         >
             <!-- Desktop (lg+) : texte à gauche -->
@@ -107,12 +109,16 @@ function onClick(event) {
                     <Icon :source="icon" :alt="label || ariaLabel || 'Action'" :size="size || 'md'" />
                 </slot>
             </span>
+            <!-- Fallback accessible sur tactile (&lt;lg) : label non affiché mais présent pour lecteurs d’écran -->
+            <span v-if="hasLabel" class="sr-only lg:hidden">
+                <slot>{{ label }}</slot>
+            </span>
         </Btn>
 
-        <!-- Overlay (uniquement <lg) : texte + icône, sans reflow -->
+        <!-- Overlay (&lt;lg, hover fin uniquement) : texte + icône, sans reflow ; désactivé sur tactile -->
         <span
             v-if="hasLabel && !disabled"
-            class="lg:hidden absolute right-0 top-1/2 -translate-y-1/2 z-50 opacity-0 pointer-events-none origin-right scale-90 translate-x-1 transition-[opacity,transform] duration-200 ease-out group-hover:opacity-100 group-hover:scale-100 group-hover:translate-x-0 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:scale-100 group-focus-within:translate-x-0 group-focus-within:pointer-events-auto"
+            class="pointer-events-none absolute right-0 top-1/2 z-50 origin-right -translate-y-1/2 translate-x-1 scale-90 opacity-0 transition-[opacity,transform] duration-200 ease-out lg:hidden [@media(hover:hover)_and_(pointer:fine)]:group-hover:pointer-events-auto [@media(hover:hover)_and_(pointer:fine)]:group-hover:translate-x-0 [@media(hover:hover)_and_(pointer:fine)]:group-hover:scale-100 [@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-x-0 group-focus-within:scale-100 group-focus-within:opacity-100"
         >
             <Btn
                 :id="id ? `${id}--overlay` : ''"
@@ -140,4 +146,3 @@ function onClick(event) {
         </span>
     </span>
 </template>
-

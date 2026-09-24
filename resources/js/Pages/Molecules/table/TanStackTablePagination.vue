@@ -73,14 +73,14 @@ const pageNumbers = computed(() => {
 </script>
 
 <template>
-    <div class="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+    <div class="flex flex-col gap-2 @lg/table:flex-row @lg/table:items-center @lg/table:justify-between">
         <div class="text-sm text-base-content/70">
             {{ totalRows }} lignes
         </div>
 
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
+        <div class="flex flex-col gap-2 @sm/table:flex-row @sm/table:items-center @sm/table:justify-end @sm/table:gap-3">
             <label class="flex items-center gap-2 text-sm text-base-content/70">
-                <span class="hidden sm:inline">Lignes</span>
+                <span class="hidden @sm/table:inline">Lignes</span>
                 <!-- Menu personnalisé (au lieu du select natif) pour un rendu lisible en thème sombre sur tous les navigateurs -->
                 <Dropdown
                     placement="bottom-start"

@@ -27,6 +27,7 @@ import { FORMULA_PLACEHOLDER } from '@/Utils/entity/formula-help';
 import { registerSaveShortcut } from '@/Composables/utils/saveShortcutRegistry';
 import { useEntityActionDispatcher } from '@/Composables/entity/useEntityActionDispatcher';
 import { getRarityOptions } from '@/Utils/Entity/SharedConstants';
+import { LAYOUT_STICKY_ABOVE_MOBILE_DOCK_CLASS } from '@/Composables/layout/viewport-breakpoints';
 import {
     invalidateKrefEntityPreviewCache,
     toKrefPreviewApiEntityType,
@@ -327,9 +328,9 @@ const formScrollPaddingClass = computed(() => {
         return 'pb-3 sm:pb-4';
     }
     if (useEditActionDock.value) {
-        return 'pb-6 md:pb-24 md:pb-28 lg:pb-32';
+        return 'pb-[calc(6.5rem+env(safe-area-inset-bottom,0px))] md:pb-24 lg:pb-32';
     }
-    return 'pb-24 sm:pb-28 md:pb-32';
+    return 'pb-[calc(6.5rem+env(safe-area-inset-bottom,0px))] sm:pb-28 md:pb-32';
 });
 
 const footerWrapperClass = computed(() => {
@@ -341,8 +342,9 @@ const footerWrapperClass = computed(() => {
          * `sticky` dans le `<main>` scrollable (`overflow-y-auto` dans Main.vue`) :
          * le pied reste visible en bas de la zone de contenu. Évite les `fixed` orphelins
          * et les doubles décalages `lg:left-64` (sidebar déjà appliquée sur `<main>`).
+         * Sur mobile : décalé au-dessus du dock bas (`LAYOUT_STICKY_ABOVE_MOBILE_DOCK_CLASS`).
          */
-        return ['sticky', 'bottom-0', 'z-50', 'w-full', ...horizontal];
+        return ['sticky', 'z-50', 'w-full', LAYOUT_STICKY_ABOVE_MOBILE_DOCK_CLASS, ...horizontal];
     }
     return ['relative', 'w-full', 'mt-6'];
 });

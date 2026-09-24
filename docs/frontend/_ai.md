@@ -12,8 +12,9 @@
 - Sélection vue minimale : checkbox haut-gauche visible seulement carte **déployée** (ou déjà cochée).
 - `Container fluid` : `w-full min-w-0` (évite le shrink-to-fit dans un parent flex).
 - Footer desktop (`Layouts/Footer.vue`) : 2 lignes, logo centré ; padding via le layout, pas la molécule.
-- Dashboard `/admin/content` : cartes Atelier DofusDB (3 modes) + Génération IA ; camemberts inchangés.
-- Modal **Sources** : deux onglets (DofusDB algo + IA). Après écriture, tableau avant/après avec choix par cellule ; Enregistrer / Rétablir.
+- Chrome responsive : mobile `&lt; md` = dock bas + pas de header ; tablette `md–lg` = header + hamburger ; desktop `≥ lg` = sidebar fixe. Constantes `LAYOUT_*` dans `viewport-breakpoints.js` (padding bas dock, FAB, cookies).
+- Tableaux : filtres / presets en Drawer `side="end"` sous conteneur étroit ; racine `@container` ; modes de vue icon-only en conteneur étroit.
+- Dashboard `/admin/content` : cartes Atelier DofusDB (3 modes) + Génération IA ; camemberts inchangés.- Modal **Sources** : deux onglets (DofusDB algo + IA). Après écriture, tableau avant/après avec choix par cellule ; Enregistrer / Rétablir.
 - Formules de dés : bande min/moy/max + **Valeur** / icône ghost Lancer + historique session ; reconnu si dé, tranche ou opérateur (`50-17`). `diceParser.js`, `DiceFormulaStrip`.
 - Recherche globale / filtres tableau : pastilles d’état via jetons `--color-state-*` (`getEntityStateChipClass`). Brut = error, jouable = success, brouillon = umber, auto = indigo, archivé = info.
 - `vite.config.js` `manualChunks` : uniquement `node_modules` (`vendor` / `cally` / `utils`). Ne pas extraire `Main.vue` ni `Utils/Formatters` : cycle de chunks au boot.

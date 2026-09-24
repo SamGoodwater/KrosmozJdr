@@ -12,7 +12,19 @@ Frontend Vue 3 en JavaScript, servi par Inertia.js. L'UI suit Atomic Design et u
 
 Le shell est `resources/js/Pages/Layouts/Main.vue` (header, sidebar, contenu, footer).
 
-Le pied de page desktop (`Layouts/Footer.vue`) tient sur deux lignes compactes : nom + version à gauche, logo centré, liens contact / Discord / GitHub à droite ; en dessous le texte de présentation et le bouton cookies. Sous `sm`, ce bandeau est remplacé par le dock mobile.
+### Matrice responsive (chrome)
+
+Alignée sur `useDevice` / `viewport-breakpoints.js` (**md = 768px**, **lg = 1024px**) :
+
+| Mode | Largeur | Header | Dock mobile | Toggle flottant | Sidebar |
+| --- | --- | --- | --- | --- | --- |
+| Mobile | &lt; md | masqué | visible (bas d’écran) | masqué | drawer |
+| Tablette | md → &lt; lg | visible | masqué | visible | drawer |
+| Desktop | ≥ lg | visible | masqué | visible | panneau fixe |
+
+Le contenu scrollable prévoit un padding bas en mobile pour ne pas passer sous le dock ; FAB et bandeau cookies sont décalés au-dessus. Classes centralisées dans `LAYOUT_*` de `viewport-breakpoints.js`.
+
+Le pied de page desktop (`Layouts/Footer.vue`) tient sur deux lignes compactes : nom + version à gauche, logo centré, liens contact / Discord / GitHub à droite ; en dessous le texte de présentation et le bouton cookies. Sous `md`, ce bandeau est remplacé par le dock mobile.
 
 ## Build Vite
 

@@ -6,48 +6,24 @@ defineOptions({ inheritAttrs: false });
  *
  * @description
  * Molécule Drawer stylée DaisyUI, conforme Atomic Design et KrosmozJDR.
- * - Props : modelValue (v-model), side ('start'|'end'), overlay (bool), id (string), width (string), closeOnOverlay (bool), ariaLabel, class, + customUtility
- * - Slots : default (drawer-content), sidebar (drawer-side), toggle (bouton d'ouverture)
- * - Events : update:modelValue, open, close
- * - Structure DaisyUI : .drawer, .drawer-toggle, .drawer-content, .drawer-side, .drawer-overlay, .drawer-end, .drawer-open
- * - mergeClasses pour les classes DaisyUI explicites + utilitaires custom
- * - Accessibilité (aria-label, role, tabindex)
+ * - Props : modelValue (v-model), side ('start'|'end'), overlay, id, width, closeOnOverlay, portal, overlayOnly
+ * - Mode `portal` + `overlayOnly` : panneau flottant téléporté sur `body` (filtres, sous-menus…)
+ *   sans envelopper le contenu de page dans `.drawer-content`.
  *
  * @see https://daisyui.com/components/drawer/
  *
  * @example
- * <Drawer v-model="drawerOpen" side="end" width="w-96">
- *   <template #toggle>
- *     <Btn @click="drawerOpen = true">Ouvrir le menu</Btn>
- *   </template>
+ * <Drawer v-model="open" side="end" portal overlay-only width="w-full max-w-sm">
  *   <template #sidebar>
- *     <ul class="menu p-4 w-80 bg-base-200">
- *       <li><a>Item 1</a></li>
- *       <li><a>Item 2</a></li>
- *     </ul>
- *   </template>
- *   <template #default>
- *     <div>Contenu principal de la page</div>
+ *     <div class="menu h-full bg-base-100 p-4">Filtres…</div>
  *   </template>
  * </Drawer>
  *
- * @props {Boolean} modelValue - Contrôle l'ouverture du drawer (v-model)
- * @props {String} side - Côté du drawer ('start'|'end'), défaut 'start'
- * @props {Boolean} overlay - Affiche l'overlay (défaut true)
- * @props {String} id - Identifiant unique (pour l'input/label)
- * @props {String} width - Largeur custom (ex: 'w-80', 'w-96')
- * @props {Boolean} closeOnOverlay - Ferme au clic sur l'overlay (défaut true)
- * @props {String} ariaLabel - Accessibilité
- * @props {String} class - Classes custom
- * @props {String} shadow, backdrop, opacity, rounded - utilitaires custom
- * @slot default - Contenu principal (drawer-content)
- * @slot sidebar - Contenu du drawer (menu, navigation, etc.)
+ * @slot default - Contenu principal (drawer-content) — ignoré si overlayOnly
+ * @slot sidebar - Contenu du panneau latéral
  * @slot toggle - Bouton d'ouverture custom
- * @event update:modelValue - v-model
- * @event open - Drawer ouvert
- * @event close - Drawer fermé
  */
-import { computed, ref, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 
 const emit = defineEmits(['update:modelValue', 'open', 'close']);
@@ -55,16 +31,24 @@ const props = defineProps({
     ...getCommonProps(),
     ...getCustomUtilityProps(),
     modelValue: { type: Boolean, default: false },
-    side: { type: String, default: 'start', validator: v => ['start', 'end'].includes(v) },
+    side: { type: String, default: 'start', validator: (v) => ['start', 'end'].includes(v) },
     overlay: { type: Boolean, default: true },
     width: { type: String, default: 'w-80' },
     closeOnOverlay: { type: Boolean, default: true },
+    /**
+     * Téléporte le drawer sur `body` (évite les overflow parents).
+     */
+    portal: { type: Boolean, default: false },
+    /**
+     * Panneau seul (pas de wrapper autour du contenu page). Idéal pour filtres / options.
+     */
+    overlayOnly: { type: Boolean, default: false },
 });
 
 const drawerId = computed(() => props.id || `drawer-${Math.random().toString(36).substr(2, 9)}`);
 const isOpen = computed({
     get: () => props.modelValue,
-    set: v => emit('update:modelValue', v),
+    set: (v) => emit('update:modelValue', v),
 });
 
 watch(() => props.modelValue, (val) => {
@@ -78,7 +62,9 @@ const moleculeClasses = computed(() =>
             'drawer',
             props.side === 'end' && 'drawer-end',
             props.modelValue && 'drawer-open',
-            props.class
+            props.overlayOnly && 'drawer-overlay-only',
+            props.portal && 'drawer-portal',
+            props.class,
         ],
         getCustomUtilityClasses(props)
     )
@@ -88,29 +74,78 @@ const attrs = computed(() => getCommonAttrs(props));
 const sidebarClasses = computed(() =>
     mergeClasses([
         'drawer-side',
+        props.overlayOnly && 'z-[80]',
         props.width,
     ])
 );
+
+function closeFromOverlay() {
+    if (props.closeOnOverlay) {
+        isOpen.value = false;
+    }
+}
 </script>
 
 <template>
-    <div :class="moleculeClasses" v-bind="attrs" v-on="$attrs">
-        <!-- Hidden checkbox pour DaisyUI (contrôle via v-model) -->
-        <input :id="drawerId" type="checkbox" class="drawer-toggle" :checked="isOpen" @change="isOpen = !isOpen"
-            style="display:none;" />
-        <!-- Toggle button (optionnel) -->
-        <slot name="toggle" />
-        <!-- Contenu principal -->
-        <div class="drawer-content">
-            <slot />
+    <Teleport to="body" :disabled="!portal">
+        <div
+            v-if="!overlayOnly || modelValue"
+            :class="moleculeClasses"
+            v-bind="attrs"
+            v-on="$attrs"
+        >
+            <input
+                :id="drawerId"
+                type="checkbox"
+                class="drawer-toggle"
+                :checked="isOpen"
+                @change="isOpen = !isOpen"
+                style="display: none"
+            />
+            <slot name="toggle" />
+            <div v-if="!overlayOnly" class="drawer-content">
+                <slot />
+            </div>
+            <div v-else class="drawer-content pointer-events-none !min-h-0 !h-0 overflow-hidden" aria-hidden="true" />
+            <div :class="sidebarClasses">
+                <label
+                    v-if="overlay"
+                    :for="drawerId"
+                    class="drawer-overlay"
+                    tabindex="-1"
+                    @click="closeFromOverlay"
+                />
+                <div
+                    class="drawer-panel flex h-full min-h-full max-h-dvh flex-col overflow-hidden bg-base-100 shadow-xl"
+                    :class="width"
+                >
+                    <slot name="sidebar" />
+                </div>
+            </div>
         </div>
-        <!-- Sidebar (drawer-side) -->
-        <div :class="sidebarClasses">
-            <label v-if="props.overlay" :for="drawerId" class="drawer-overlay" tabindex="-1"
-                @click="props.closeOnOverlay ? isOpen = false : null" />
-            <slot name="sidebar" />
-        </div>
-    </div>
+    </Teleport>
 </template>
 
-<style scoped></style>
+<style scoped>
+.drawer-portal.drawer-overlay-only {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.drawer-portal.drawer-overlay-only.drawer-open {
+    pointer-events: auto;
+}
+
+.drawer-portal.drawer-overlay-only :deep(.drawer-side) {
+    pointer-events: auto;
+}
+
+.drawer-panel {
+    position: relative;
+    z-index: 1;
+}
+</style>

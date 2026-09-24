@@ -175,11 +175,11 @@ const getFilterLayout = (col) =>
 const filterShellClass = (col) => {
     const layout = getFilterLayout(col);
     if (layout === "text") return "flex flex-col gap-1 w-full max-w-xs";
-    if (layout === "range") return "flex flex-col gap-1 w-full max-w-xs min-w-40";
-    if (layout === "picked-range") return "flex flex-col gap-1 w-auto min-w-56";
+    if (layout === "range") return "flex flex-col gap-1 w-full max-w-xs min-w-0 @sm/table:min-w-40";
+    if (layout === "picked-range") return "flex flex-col gap-1 w-full @sm/table:w-auto @sm/table:min-w-56";
     if (layout === "toggle") return "flex flex-col gap-1 w-auto";
     if (layout === "chips") return "flex flex-col gap-1 min-w-0 max-w-full";
-    return "flex flex-col gap-1 w-full sm:w-auto";
+    return "flex flex-col gap-1 w-full @sm/table:w-auto";
 };
 
 /**
@@ -859,7 +859,7 @@ const clearAllActiveFilters = () => {
                 <!-- select => dropdown single -->
                 <div
                     v-else-if="col.filter.type === 'select' && !isBooleanSelect(col)"
-                    class="inline-flex items-center gap-1 w-full sm:w-auto"
+                    class="inline-flex items-center gap-1 @sm/table:w-auto w-full"
                 >
                     <Dropdown placement="bottom-start" :close-on-content-click="false">
                         <template #trigger>
@@ -868,7 +868,7 @@ const clearAllActiveFilters = () => {
                                 variant="outline"
                                 :color="uiColor"
                                 opacity="lg"
-                                class="gap-2 w-full sm:w-auto max-w-full"
+                                class="gap-2 @sm/table:w-auto w-full max-w-full"
                                 title="Choisir une valeur"
                             >
                                 <Icon source="fa-solid fa-filter" alt="Filtre" size="sm" />
@@ -1062,7 +1062,7 @@ const clearAllActiveFilters = () => {
                 <!-- multi (dropdown + checkboxes) -->
                 <div
                     v-else-if="col.filter.type === 'multi'"
-                    class="inline-flex items-center gap-1 w-full sm:w-auto"
+                    class="inline-flex items-center gap-1 @sm/table:w-auto w-full"
                 >
                     <Dropdown
                         placement="bottom-start"
@@ -1074,7 +1074,7 @@ const clearAllActiveFilters = () => {
                                 variant="outline"
                                 :color="uiColor"
                                 opacity="lg"
-                                class="gap-2 w-full sm:w-auto max-w-full"
+                                class="gap-2 @sm/table:w-auto w-full max-w-full"
                                 title="Choisir plusieurs valeurs"
                             >
                                 <Icon source="fa-solid fa-filter" alt="Filtre" size="sm" />

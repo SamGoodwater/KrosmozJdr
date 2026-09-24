@@ -20,8 +20,15 @@ import DockItem from "@/Pages/Atoms/navigation/DockItem.vue";
 import { useSidebar } from "@/Composables/layout/useSidebar";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
 import CookieConsentTriggerButton from "@/Pages/Molecules/privacy/CookieConsentTriggerButton.vue";
+import {
+    LAYOUT_DESKTOP_FOOTER_HIDDEN_ON_MOBILE_CLASS,
+    LAYOUT_MOBILE_DOCK_VISIBLE_CLASS,
+} from "@/Composables/layout/viewport-breakpoints";
 
 const { toggleSidebar } = useSidebar();
+
+const desktopFooterClass = LAYOUT_DESKTOP_FOOTER_HIDDEN_ON_MOBILE_CLASS;
+const mobileDockClass = LAYOUT_MOBILE_DOCK_VISIBLE_CLASS;
 
 const convertStability = {
     alpha: "α",
@@ -66,7 +73,10 @@ const footerItems = [
 
 <template>
     <FooterMolecule
-        class="relative box-glass-t-xs w-full border-t border-base-content/10 bg-base-300/30 px-4 py-1.5 max-sm:hidden"
+        :class="[
+            'relative box-glass-t-xs w-full border-t border-base-content/10 bg-base-300/30 px-4 py-1.5',
+            desktopFooterClass,
+        ]"
         textColor="text-base-content"
         v-bind="$attrs"
     >
@@ -124,13 +134,13 @@ const footerItems = [
             </div>
         </div>
     </FooterMolecule>
-    <!-- Mobile : cookies dans le flux (au-dessus du dock), aligné à droite — non fixe -->
-    <div class="flex w-full justify-end px-3 py-2 sm:hidden">
+    <!-- Mobile (&lt; md) : cookies dans le flux (au-dessus du dock), aligné à droite — non fixe -->
+    <div class="flex w-full justify-end px-3 py-2 md:hidden">
         <CookieConsentTriggerButton />
     </div>
-    <!-- Mobile Footer (Dock) -->
-    <div class="fixed bottom-0 left-0 right-0 z-50 hidden max-sm:block">
-        <Dock size="md" class="px-1 py-2 flex justify-between box-glass-md">
+    <!-- Mobile Footer (Dock) — aligné useDevice.isMobile (&lt; md) -->
+    <div :class="mobileDockClass" data-kz-nav-mobile-dock>
+        <Dock size="md" class="px-1 py-2 flex justify-between box-glass-md pb-[max(0.5rem,env(safe-area-inset-bottom,0px))]">
             <!-- Bouton sidebar -->
             <DockItem
                 icon="fa-bars"
