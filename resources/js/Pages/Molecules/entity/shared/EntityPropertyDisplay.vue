@@ -21,6 +21,7 @@
  * @props {string} [characteristicLabelImageAlt] — alt de l’image libellé
  * @props {string} [characteristicValueTextClass] — classes sur la valeur (ex. text-red-600)
  * @props {Object} [toCellOptions] — fusionné dans les options passées à `entity.toCell` / cellOptions du composable
+ * @props {boolean} [wrapValue] — force le multiligne sur CharacteristicProperty (sinon auto : description / textarea)
  */
 import { computed, inject, unref } from "vue";
 import { CHARACTERISTIC_RUNTIME_INJECT_KEY } from "@/Composables/entity/characteristicRuntimeContext";
@@ -87,6 +88,32 @@ const props = defineProps({
     characteristicLabelImageAlt: { type: String, default: "" },
     characteristicValueTextClass: { type: String, default: "" },
     toCellOptions: { type: Object, default: () => ({}) },
+    /** Prioritaire sur la détection auto (description / textarea). */
+    wrapValue: { type: Boolean, default: undefined },
+});
+
+/** Champs texte longs : afficher la valeur en entier (pas de truncate). */
+const LONG_TEXT_FIELD_KEYS = new Set([
+    "description",
+    "story",
+    "historical",
+    "lore",
+    "notes",
+    "biography",
+    "content",
+    "summary",
+    "resume",
+]);
+
+const wrapCharacteristicValue = computed(() => {
+    if (props.wrapValue !== undefined) {
+        return Boolean(props.wrapValue);
+    }
+    if (LONG_TEXT_FIELD_KEYS.has(String(props.fieldKey || ""))) {
+        return true;
+    }
+    const formType = props.descriptors?.[props.fieldKey]?.edit?.form?.type;
+    return formType === "textarea" || formType === "wysiwyg" || formType === "richtext";
 });
 
 const injectedRuntime = inject(CHARACTERISTIC_RUNTIME_INJECT_KEY, null);
@@ -245,7 +272,10 @@ const statePropertyTextSizeClass = computed(() => {
 </script>
 
 <template>
-    <span class="entity-property-display inline-flex min-w-0 max-w-full items-center">
+    <span
+        class="entity-property-display inline-flex min-w-0 max-w-full"
+        :class="wrapCharacteristicValue ? 'w-full items-start' : 'items-center'"
+    >
     <ElementDisplay v-if="isElementField" :element="elementValue" :size="size" />
 
     <CharacteristicProperty
@@ -258,6 +288,7 @@ const statePropertyTextSizeClass = computed(() => {
         :show-label="!hideFieldLabel"
         :show-icon="!hideCharacteristicIcon"
         :size="size"
+        :wrap-value="wrapCharacteristicValue"
     />
 
     <template v-else-if="isStateField">
@@ -348,6 +379,7 @@ const statePropertyTextSizeClass = computed(() => {
         :label-image-source="characteristicLabelImageSource"
         :label-image-alt="characteristicLabelImageAlt"
         :value-text-class="characteristicValueTextClass"
+        :wrap-value="wrapCharacteristicValue"
     />
     </span>
 </template>

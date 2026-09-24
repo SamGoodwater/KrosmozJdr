@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Fiches entité mobile : tooltips et description
+
+Sur téléphone, les infos-bulles des propriétés d’une fiche ne restent plus bloquées à l’écran : un appui ouvre, un appui ailleurs ferme. La description s’affiche en entier (retour à la ligne), plus tronquée au milieu.
+
 ## Septembre 2026 — Dock mobile branché (menu, recherche, compte)
 
 Sur téléphone, les trois boutons du menu bas fonctionnent : **Menu** ouvre la navigation, **Recherche** lance la recherche globale, **Compte** ouvre le menu utilisateur (ou connexion / inscription).

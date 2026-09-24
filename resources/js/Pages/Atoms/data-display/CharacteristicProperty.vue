@@ -22,6 +22,7 @@
  * @props {boolean} [showValue] — Afficher la valeur dans le déclencheur (désactiver pour l’ancien variant `icon` de PropertyDisplay)
  * @props {boolean} [showLabel] — Afficher le libellé court / complet (Cat., Types, etc.)
  * @props {boolean} [showIcon] — Afficher l’icône caractéristique (désactiver si une icône externe la remplace)
+ * @props {boolean} [wrapValue] — Valeur multiligne (description, textarea) : pas de truncate
  * @props {string} size — xs | sm | md
  *
  * @example
@@ -83,6 +84,8 @@ const props = defineProps({
     showValue: { type: Boolean, default: true },
     showLabel: { type: Boolean, default: true },
     showIcon: { type: Boolean, default: true },
+    /** Si true, la valeur s’affiche en entier (retour à la ligne) au lieu d’être tronquée. */
+    wrapValue: { type: Boolean, default: false },
     size: {
         type: String,
         default: "sm",
@@ -252,6 +255,11 @@ const useDecompositionPopover = computed(() => {
     const m = model.value;
     return m != null && (m.source != null || m.base != null || m.context != null || m.object != null);
 });
+
+/** Classes valeur : truncate par défaut ; wrap pour textes longs (description…). */
+const valueOverflowClass = computed(() =>
+    props.wrapValue ? "min-w-0 whitespace-normal break-words" : "truncate",
+);
 </script>
 
 <template>
@@ -260,6 +268,7 @@ const useDecompositionPopover = computed(() => {
         :is="useDecompositionPopover ? Popover : Tooltip"
         :placement="useDecompositionPopover ? 'bottom-start' : 'top'"
         class="inline-flex max-w-full min-w-0"
+        :class="wrapValue && 'w-full'"
         :color="useDecompositionPopover ? undefined : characteristicTooltipColor"
         :accent-class="useDecompositionPopover ? undefined : characteristicTooltipAccentClass"
         :accent-style="useDecompositionPopover ? undefined : characteristicTooltipAccentStyle"
@@ -276,6 +285,7 @@ const useDecompositionPopover = computed(() => {
             :size="badgeSize"
             :variant="badgeVariant"
             class="inline-flex max-w-full min-w-0 items-center gap-1 text-base-content"
+            :truncate="!wrapValue"
         >
             <Icon
                 v-if="showIcon && model.icon"
@@ -286,8 +296,8 @@ const useDecompositionPopover = computed(() => {
             />
             <span
                 v-if="showValue"
-                class="truncate font-medium"
-                :class="valueTextClass"
+                class="font-medium"
+                :class="[valueOverflowClass, valueTextClass]"
                 :style="valueColorStyle"
             >{{ displayText }}</span>
         </Badge>
@@ -296,12 +306,13 @@ const useDecompositionPopover = computed(() => {
         <div
             v-else-if="isCard"
             class="characteristic-property text-base-content inline-block min-w-0 rounded-box border border-base-content/15 px-2.5 py-2 backdrop-blur-sm transition-shadow"
+            :class="wrapValue && 'w-full'"
             :style="containerStyle"
         >
-            <div class="flex items-center justify-between gap-2">
+            <div class="flex items-start justify-between gap-2">
                 <span
-                    class="min-w-0 truncate font-medium"
-                    :class="valueTextClass"
+                    class="font-medium"
+                    :class="[valueOverflowClass, valueTextClass]"
                     :style="valueColorStyle"
                 >{{ displayText }}</span>
                 <Icon
@@ -319,8 +330,8 @@ const useDecompositionPopover = computed(() => {
         <!-- Inline -->
         <span
             v-else
-            class="characteristic-property text-base-content inline-flex max-w-full min-w-0 items-center gap-1"
-            :class="textSizeClass"
+            class="characteristic-property text-base-content inline-flex max-w-full min-w-0 gap-1"
+            :class="[textSizeClass, wrapValue ? 'w-full flex-wrap items-start' : 'items-center']"
         >
             <Icon
                 v-if="showIcon && model.icon"
@@ -340,21 +351,21 @@ const useDecompositionPopover = computed(() => {
                     fit="contain"
                     class="inline-block shrink-0 opacity-95"
                 />
-                <span v-else-if="showLabel && model.shortName" class="truncate text-base-content/90">
+                <span v-else-if="showLabel && model.shortName" class="shrink-0 text-base-content/90">
                     {{ showValue ? `${model.shortName}:` : model.shortName }}
                 </span>
                 <span
                     v-if="showValue"
-                    class="truncate font-medium"
-                    :class="valueTextClass"
+                    class="font-medium"
+                    :class="[valueOverflowClass, valueTextClass]"
                     :style="valueColorStyle"
                 >{{ displayText }}</span>
             </template>
             <template v-else-if="isIconOnly">
                 <span
                     v-if="showValue"
-                    class="truncate font-medium"
-                    :class="valueTextClass"
+                    class="font-medium"
+                    :class="[valueOverflowClass, valueTextClass]"
                     :style="valueColorStyle"
                 >{{ displayText }}</span>
             </template>
@@ -368,13 +379,13 @@ const useDecompositionPopover = computed(() => {
                     fit="contain"
                     class="inline-block shrink-0 opacity-95"
                 />
-                <span v-else-if="showLabel && model.name" class="truncate text-base-content/90">
+                <span v-else-if="showLabel && model.name" class="shrink-0 text-base-content/90">
                     {{ showValue ? `${model.name}:` : model.name }}
                 </span>
                 <span
                     v-if="showValue"
-                    class="truncate font-medium"
-                    :class="valueTextClass"
+                    class="font-medium"
+                    :class="[valueOverflowClass, valueTextClass]"
                     :style="valueColorStyle"
                 >{{ displayText }}</span>
             </template>

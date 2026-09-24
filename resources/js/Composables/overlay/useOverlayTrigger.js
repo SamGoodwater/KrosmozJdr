@@ -1,4 +1,5 @@
 import { computed, onUnmounted, ref } from "vue";
+import { canUseHoverOverlay } from "@/Composables/overlay/canUseHoverOverlay";
 import { DEFAULT_OVERLAY_OPTIONS, OVERLAY_TRIGGER } from "@/Composables/overlay/overlayConstants";
 
 /**
@@ -16,12 +17,21 @@ export function useOverlayTrigger(options) {
 
     const computedTrigger = computed(() => {
         const requested = options.trigger || OVERLAY_TRIGGER.AUTO;
-        if (requested !== OVERLAY_TRIGGER.AUTO) return requested;
+        if (requested !== OVERLAY_TRIGGER.AUTO) {
+            // Hover forcé : sur tactile, bascule en clic pour éviter les panneaux collants.
+            if (requested === OVERLAY_TRIGGER.HOVER && !canUseHoverOverlay()) {
+                return OVERLAY_TRIGGER.CLICK;
+            }
+            return requested;
+        }
         const kind =
             typeof options.contentKind === "object" && options.contentKind?.value != null
                 ? options.contentKind.value
                 : String(options.contentKind || "");
-        return kind === "text" || kind === "html" ? OVERLAY_TRIGGER.HOVER : OVERLAY_TRIGGER.CLICK;
+        if (kind === "text" || kind === "html") {
+            return canUseHoverOverlay() ? OVERLAY_TRIGGER.HOVER : OVERLAY_TRIGGER.CLICK;
+        }
+        return OVERLAY_TRIGGER.CLICK;
     });
 
     function clearTimers() {
