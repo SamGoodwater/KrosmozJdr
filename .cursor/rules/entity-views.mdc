@@ -19,8 +19,8 @@ alwaysApply: false
 
 ## Header
 
-- **Page full** : `EntityViewHeader mode="full"` + `EntityActions format="buttons"`.
-- **Modal full** : `inModal` sur `ViewFull` → header `mode="compact"` (layout dense), actions en dropdown si besoin.
+- **Page full** : `EntityViewHeader mode="full"` + `EntityActions format="buttons"`. Sous `md` : titre → image → infos ; dès `md` : image à gauche.
+- **Modal full** : `inModal` sur `ViewFull` → header `mode="compact"` (même empilement mobile que full).
 - **Minimal** : `mode="minimal"` ; `displayMode` hover / compact / extended inchangé.
 
 ## Ouverture

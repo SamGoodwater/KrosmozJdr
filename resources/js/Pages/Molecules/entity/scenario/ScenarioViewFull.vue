@@ -157,10 +157,10 @@ const handleAction = async (actionKey) => {
 
 <template>
     <div class="space-y-6">
-        <!-- En-tête avec image, nom et actions -->
+        <!-- En-tête : mobile titre puis image ; md+ image | titre -->
         <div class="flex flex-col md:flex-row gap-4 items-start">
             <!-- Image -->
-            <div v-if="scenario.image" class="flex-shrink-0">
+            <div v-if="scenario.image" class="order-2 mx-auto w-fit shrink-0 md:order-1 md:mx-0">
                 <Image
                     :src="scenario.image"
                     :alt="scenario.name || 'Scenario'"
@@ -170,7 +170,7 @@ const handleAction = async (actionKey) => {
             </div>
             
             <!-- Informations principales -->
-            <div class="flex-1 w-full">
+            <div class="order-1 flex-1 w-full min-w-0 md:order-2">
                 <div class="flex w-full min-w-0 items-start gap-4">
                     <div class="min-w-0">
                         <h2 class="text-2xl font-bold text-primary-100 break-words">

@@ -158,17 +158,17 @@ const handleAction = async (actionKey) => {
 
 <template>
     <div class="space-y-6">
-        <!-- En-tête avec nom et actions -->
+        <!-- En-tête : mobile titre puis image ; md+ image | titre -->
         <div class="flex w-full min-w-0 items-start gap-4">
-            <div class="min-w-0">
-                <div class="flex items-center gap-3">
+            <div class="min-w-0 flex-1">
+                <div class="flex flex-col gap-3 md:flex-row md:items-center">
                     <Image
                         v-if="shop.image"
                         :src="shop.image"
                         :alt="shop.name || 'Shop'"
-                        class="w-16 h-16 entity-radius-box object-cover flex-shrink-0"
+                        class="order-2 mx-auto h-16 w-16 shrink-0 entity-radius-box object-cover md:order-1 md:mx-0"
                     />
-                    <h2 class="text-2xl font-bold text-primary-100 break-words">
+                    <h2 class="order-1 text-2xl font-bold text-primary-100 break-words md:order-2">
                         <CellRenderer
                             :cell="getCell('name')"
                             ui-color="primary"

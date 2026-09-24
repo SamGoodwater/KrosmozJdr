@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — En-tête fiche entité mobile (nom puis image)
+
+Sur téléphone, le nom de la fiche est au-dessus de l’image (plus collé à droite à côté d’une grosse vignette). Dès tablette, l’image revient à gauche.
+
 ## Septembre 2026 — Fiches entité mobile : tooltips et description
 
 Sur téléphone, les infos-bulles des propriétés d’une fiche ne restent plus bloquées à l’écran : un appui ouvre, un appui ailleurs ferme. La description s’affiche en entier (retour à la ligne), plus tronquée au milieu.
