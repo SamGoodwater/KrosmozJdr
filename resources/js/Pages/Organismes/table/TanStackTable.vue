@@ -2018,10 +2018,6 @@ const goPaginationPrev = () => {
     }
 };
 
-function isKeyboardTypingTarget(target) {
-    return isTableTypingTarget(target);
-}
-
 function findRowFromTableFocus() {
     let el = document.activeElement;
     const root = tableRootRef.value;

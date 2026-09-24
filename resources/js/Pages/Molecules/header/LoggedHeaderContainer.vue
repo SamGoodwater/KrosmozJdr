@@ -337,7 +337,7 @@ onUnmounted(() => {
 });
 
 // Vérifier si l'utilisateur est admin ou super_admin
-const { canAccess, isSuperAdmin, isAdmin } = usePermissions();
+const { canAccess, isSuperAdmin } = usePermissions();
 
 // Vérifier si l'utilisateur est game_master, admin ou super_admin
 const canManagePages = computed(() => canAccess('pagesManager'));

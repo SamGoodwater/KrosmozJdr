@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Finalisation technique avant reprise du contenu
+
+Audit sécu / simplicité / tests / ops / perf, correctifs appliqués et **tout mergé sur `main` GitHub** : droits (usages d’effets, création user, OAuth), scan secrets à chaque push, catalogues d’édition plus légers, policies admin factorisées. Disque MJ, collision scrap monstres et fiches perso aussi intégrés. Reste manuel : rotation du mot de passe MySQL (fuite historique), upgrade TipTap major plus tard.
+
 ## Septembre 2026 — Filtres d’effets sur consommables et ressources
 
 Les consommables (et ressources) se filtrent maintenant comme les équipements : on choisit une caractéristique, puis une valeur min/max. Les soins, PV temporaires et points de bouclier sont enregistrés en chiffres (plus seulement dans le texte), avec le détail d’usage (hors combat, durée…) toujours lisible sur la fiche.

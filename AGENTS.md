@@ -51,12 +51,18 @@ Commandes : liste dans `app/Console/COMMANDS.md`. Entrée officielle serveur : `
 Créés par `UserSeeder` (mot de passe : `password`) : `superadmin@test.fr` (rôle 5), `admin@test.fr` (4),
 `gm@test.fr` (3), `player@test.fr` (2), `test-user@test.fr` (1).
 
+### Node.js (obligatoire ≥ 22)
+
+- `package.json` `engines.node` : `>=22`. Fichiers pin : `.nvmrc` / `.node-version` (`22` / `22.23.3`).
+- Sous WSL/Cloud : `fnm use` (ou `nvm use`) avant `pnpm`. Node 18 casse ESLint (`util.styleText`) et Vitest/jsdom.
+- Ex. : `eval "$(fnm env)" && fnm use` puis `pnpm lint` / `pnpm test:run`.
+
 ### Lint / tests / build
 
 - Lint PHP : `./vendor/bin/pint` (le repo a des écarts de style **préexistants** ; `pint --test` sort en échec sur du
   code non modifié — ne pas « corriger » ces fichiers sans demande).
-- Lint JS : `pnpm lint` (ESLint, sous-ensemble ciblé de fichiers).
+- Lint JS : `pnpm lint` (ESLint, sous-ensemble ciblé de fichiers ; nécessite Node ≥ 22).
 - Tests back : `php artisan test` (utilise MariaDB `krosmoz_testing`). Suite complète Feature ≈ longue (~25 min).
-- Tests front : `pnpm test:run` (Vitest). Un test **préexistant** échoue (`tests/unit/composables/useEntityActions.test.js`,
-  ordre des actions) indépendamment de l'environnement.
+- Tests front : `pnpm test:run` (Vitest, Node ≥ 22).
 - Build front : `pnpm build`.
+- Dépendance connue non corrigée ici : TipTap 2.x (CVE moderate, patch en ≥ 3.30.4 = major dédié).
