@@ -1,6 +1,6 @@
 <script setup>
 /**
- * Modal unique DofusDB + conversion IA (une icône menu).
+ * Modal unique DofusDB + conversion IA + injection JSON (une icône menu).
  *
  * @example
  * <EntitySourceModal :open="source.open" :show-dofusdb="true" :show-ai="isAdmin" />
@@ -24,6 +24,7 @@ const props = defineProps({
     error: { type: String, default: "" },
     playable: { type: Boolean, default: false },
     entityLabel: { type: String, default: "cette fiche" },
+    entityType: { type: String, default: "" },
     showDofusdb: { type: Boolean, default: true },
     showAi: { type: Boolean, default: false },
     aiBrief: { type: String, default: "" },
@@ -37,7 +38,15 @@ const props = defineProps({
     diffBusy: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(["close", "confirm", "update:aiBrief", "convert", "save-diff", "restore-diff"]);
+const emit = defineEmits([
+    "close",
+    "confirm",
+    "update:aiBrief",
+    "convert",
+    "inject",
+    "save-diff",
+    "restore-diff",
+]);
 
 const { isAdmin } = usePermissions();
 const {
@@ -57,6 +66,11 @@ const force = ref(false);
 const pane = ref(!props.showDofusdb && props.showAi ? "ia" : "dofusdb");
 const localUsage = ref(null);
 const localEstimate = ref(null);
+const jsonText = ref("");
+const jsonLocalError = ref("");
+const jsonExampleLoading = ref(false);
+const jsonDropActive = ref(false);
+const jsonFileInput = ref(null);
 
 watch(
     () => props.open,
@@ -68,6 +82,9 @@ watch(
             pane.value = props.showDofusdb ? "dofusdb" : "ia";
             localUsage.value = null;
             localEstimate.value = null;
+            jsonText.value = "";
+            jsonLocalError.value = "";
+            jsonDropActive.value = false;
             if (!props.showDofusdb && props.showAi) {
                 promptIaUnlock();
             }
@@ -79,11 +96,13 @@ watch(
 watch(
     () => [props.showDofusdb, props.showAi],
     () => {
-        if (!props.showDofusdb && props.showAi) {
+        if (!props.showDofusdb && props.showAi && pane.value === "dofusdb") {
             pane.value = "ia";
         }
     }
 );
+
+const showSourceTabs = computed(() => Boolean(props.showAi));
 
 const convertedName = computed(() => {
     const converted = props.preview?.data?.converted;
@@ -178,10 +197,108 @@ function selectIaPane() {
     promptIaUnlock();
 }
 
+function selectJsonPane() {
+    pane.value = "json";
+    promptIaUnlock();
+}
+
 function submitAi() {
     requirePassword(iaUnlockTitle, iaUnlockMessage, "Déverrouiller", () => {
         emit("convert");
     });
+}
+
+function parseJsonText() {
+    const raw = String(jsonText.value || "").trim();
+    if (raw === "") {
+        jsonLocalError.value = "Colle ou dépose un JSON non vide.";
+        return null;
+    }
+    try {
+        const decoded = JSON.parse(raw);
+        if (!decoded || typeof decoded !== "object" || Array.isArray(decoded)) {
+            jsonLocalError.value = "Le JSON racine doit être un objet.";
+            return null;
+        }
+        jsonLocalError.value = "";
+        return decoded;
+    } catch (error) {
+        jsonLocalError.value = error?.message ? `JSON invalide : ${error.message}` : "JSON invalide.";
+        return null;
+    }
+}
+
+function submitJson() {
+    const payload = parseJsonText();
+    if (!payload) return;
+    requirePassword(iaUnlockTitle, iaUnlockMessage, "Déverrouiller", () => {
+        emit("inject", { payload });
+    });
+}
+
+async function loadJsonExample() {
+    const entityType = String(props.entityType || "").trim();
+    if (!entityType || jsonExampleLoading.value) return;
+    jsonExampleLoading.value = true;
+    jsonLocalError.value = "";
+    try {
+        const { data } = await axios.get(`/api/ia/schema/${encodeURIComponent(entityType)}`, {
+            headers: { Accept: "application/json" },
+        });
+        if (data?.example && typeof data.example === "object") {
+            jsonText.value = JSON.stringify(data.example, null, 2);
+        } else {
+            jsonLocalError.value = "Aucun exemple disponible pour ce type.";
+        }
+    } catch (error) {
+        if (error?.response?.status === 423) {
+            promptIaUnlock();
+            jsonLocalError.value = "Confirme ton mot de passe pour charger l’exemple.";
+        } else {
+            jsonLocalError.value = String(
+                error?.response?.data?.message || "Impossible de charger l’exemple de schéma."
+            );
+        }
+    } finally {
+        jsonExampleLoading.value = false;
+    }
+}
+
+function onJsonFileSelected(event) {
+    const file = event?.target?.files?.[0];
+    if (file) {
+        void readJsonFile(file);
+    }
+    if (event?.target) {
+        event.target.value = "";
+    }
+}
+
+function onJsonDrop(event) {
+    jsonDropActive.value = false;
+    const file = event?.dataTransfer?.files?.[0];
+    if (file) {
+        void readJsonFile(file);
+    }
+}
+
+async function readJsonFile(file) {
+    if (!file || typeof file.text !== "function") {
+        jsonLocalError.value = "Fichier illisible.";
+        return;
+    }
+    const name = String(file.name || "").toLowerCase();
+    if (name && !name.endsWith(".json") && file.type && !file.type.includes("json") && !file.type.includes("text")) {
+        jsonLocalError.value = "Utilise un fichier .json.";
+        return;
+    }
+    try {
+        const text = await file.text();
+        jsonText.value = text;
+        parseJsonText();
+    } catch {
+        jsonLocalError.value = "Impossible de lire le fichier.";
+    }
 }
 </script>
 
@@ -212,12 +329,13 @@ function submitAi() {
             />
 
             <div
-                v-else-if="showDofusdb && showAi"
+                v-else-if="showSourceTabs"
                 role="tablist"
                 class="tabs tabs-box tabs-sm bg-base-200/60 p-1 w-fit"
                 data-testid="entity-source-tabs"
             >
                 <button
+                    v-if="showDofusdb"
                     type="button"
                     role="tab"
                     class="tab"
@@ -238,6 +356,17 @@ function submitAi() {
                     @click="selectIaPane"
                 >
                     Conversion IA
+                </button>
+                <button
+                    type="button"
+                    role="tab"
+                    class="tab"
+                    :class="{ 'tab-active': pane === 'json' }"
+                    :aria-selected="pane === 'json' ? 'true' : 'false'"
+                    data-testid="entity-source-tab-json"
+                    @click="selectJsonPane"
+                >
+                    JSON
                 </button>
             </div>
 
@@ -356,6 +485,91 @@ function submitAi() {
                             {{ aiSubmitting ? "Conversion…" : "Lancer la conversion" }}
                         </Btn>
                     </div>
+                </template>
+            </div>
+
+            <div v-else-if="!hasDiff && pane === 'json' && showAi" class="space-y-4" data-testid="entity-source-json-pane">
+                <p class="text-sm text-base-content/80">
+                    Colle ou dépose un paquet JSON au format IA. Même validation et écriture
+                    <span class="font-medium">auto</span> que la conversion, sans appel LLM.
+                </p>
+                <template v-if="!iaUnlocked">
+                    <p class="text-sm text-base-content/70">
+                        Déverrouille avec ton mot de passe admin pour injecter un JSON.
+                    </p>
+                    <div class="flex justify-end gap-2">
+                        <Btn variant="ghost" @click="emit('close')">Annuler</Btn>
+                        <Btn color="primary" data-testid="json-unlock" @click="promptIaUnlock">
+                            <Icon source="fa-lock" pack="solid" alt="" class="mr-2" />
+                            Déverrouiller
+                        </Btn>
+                    </div>
+                </template>
+                <template v-else>
+                    <div
+                        class="rounded-box border border-dashed border-base-300 bg-base-200/40 px-3 py-4 text-center text-sm transition-colors"
+                        :class="{ 'border-primary bg-primary/10': jsonDropActive }"
+                        data-testid="entity-source-json-drop"
+                        @dragenter.prevent="jsonDropActive = true"
+                        @dragover.prevent="jsonDropActive = true"
+                        @dragleave.prevent="jsonDropActive = false"
+                        @drop.prevent="onJsonDrop"
+                    >
+                        <p class="text-base-content/80">Glisse un fichier .json ici</p>
+                        <Btn
+                            size="sm"
+                            variant="ghost"
+                            class="mt-2"
+                            data-testid="entity-source-json-file-btn"
+                            @click="jsonFileInput?.click()"
+                        >
+                            Choisir un fichier
+                        </Btn>
+                        <input
+                            ref="jsonFileInput"
+                            type="file"
+                            accept=".json,application/json,text/json,text/plain"
+                            class="hidden"
+                            data-testid="entity-source-json-file"
+                            @change="onJsonFileSelected"
+                        />
+                    </div>
+                    <TextareaField
+                        v-model="jsonText"
+                        label="Paquet JSON"
+                        helper="Même structure que la réponse submit_json de l’IA."
+                        rows="10"
+                        default-label-position="top"
+                        data-testid="entity-source-json-text"
+                    />
+                    <div class="flex flex-wrap justify-between gap-2">
+                        <Btn
+                            size="sm"
+                            variant="ghost"
+                            :disabled="jsonExampleLoading || !entityType"
+                            data-testid="entity-source-json-example"
+                            @click="loadJsonExample"
+                        >
+                            {{ jsonExampleLoading ? "Exemple…" : "Charger un exemple" }}
+                        </Btn>
+                        <div class="flex gap-2">
+                            <Btn variant="ghost" :disabled="aiSubmitting" @click="emit('close')">Annuler</Btn>
+                            <Btn
+                                color="primary"
+                                :disabled="aiSubmitting"
+                                data-testid="entity-source-json-submit"
+                                @click="submitJson"
+                            >
+                                <Icon source="fa-file-code" pack="solid" alt="" class="mr-2" />
+                                {{ aiSubmitting ? "Injection…" : "Injecter le JSON" }}
+                            </Btn>
+                        </div>
+                    </div>
+                    <p v-if="jsonLocalError" class="text-sm text-error" data-testid="entity-source-json-local-error">
+                        {{ jsonLocalError }}
+                    </p>
+                    <p v-if="aiError" class="text-sm text-error">{{ aiError }}</p>
+                    <p v-if="aiSuccess" class="text-sm text-success">{{ aiSuccess }}</p>
                 </template>
             </div>
         </div>

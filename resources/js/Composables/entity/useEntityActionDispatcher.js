@@ -153,6 +153,7 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         playable: false,
         entity: null,
         entityLabel: "cette fiche",
+        entityType: "",
         meta: {},
         showDofusdb: false,
         showAi: false,
@@ -178,6 +179,7 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
             playable: false,
             entity: null,
             entityLabel: "cette fiche",
+            entityType: "",
             meta: {},
             showDofusdb: false,
             showAi: false,
@@ -288,6 +290,7 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
             playable: isPlayableEntity(entity),
             entity,
             entityLabel: getEntityLabel(entity),
+            entityType: plural,
             meta,
             showDofusdb,
             showAi,
@@ -409,6 +412,56 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
                 error?.response?.data?.message
                 || Object.values(error?.response?.data?.errors || {})?.flat()?.[0]
                 || "Impossible de lancer la conversion IA.";
+            refreshConfirm.value = { ...refreshConfirm.value, aiSubmitting: false, aiError: String(message) };
+            return false;
+        }
+    }
+
+    async function submitAiInject(options = {}) {
+        const pending = refreshConfirm.value;
+        const entity = pending.entity;
+        const entityId = getEntityId(entity);
+        const plural = normalizedType.value;
+        const action = pending.aiAction || actionForType(plural);
+        const payload = options?.payload;
+        if (!entityId || !plural || pending.aiSubmitting || !action) return false;
+        if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+            refreshConfirm.value = {
+                ...pending,
+                aiError: "Payload JSON invalide.",
+            };
+            return false;
+        }
+
+        refreshConfirm.value = { ...pending, aiSubmitting: true, aiError: "", aiSuccess: "" };
+        try {
+            const { data } = await axios.post(
+                `/api/entities/${encodeURIComponent(plural)}/${entityId}/ia-inject`,
+                { action, payload, force: Boolean(pending.playable) },
+                { headers: { Accept: "application/json" }, timeout: 60000 },
+            );
+            if (data?.success === false) {
+                refreshConfirm.value = {
+                    ...refreshConfirm.value,
+                    aiSubmitting: false,
+                    aiError: data.message || "L’injection JSON a échoué.",
+                };
+                return false;
+            }
+            return openDiffFromResponse(pending, data);
+        } catch (error) {
+            if (error?.response?.status === 423) {
+                refreshConfirm.value = {
+                    ...refreshConfirm.value,
+                    aiSubmitting: false,
+                    aiError: "Confirme ton mot de passe pour injecter un JSON.",
+                };
+                return false;
+            }
+            const message =
+                error?.response?.data?.message
+                || Object.values(error?.response?.data?.errors || {})?.flat()?.[0]
+                || "Impossible d’injecter le JSON.";
             refreshConfirm.value = { ...refreshConfirm.value, aiSubmitting: false, aiError: String(message) };
             return false;
         }
@@ -575,6 +628,7 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         confirmPendingRefresh,
         cancelPendingRefresh,
         submitAiConvert,
+        submitAiInject,
         reloadAiStatus: loadAiStatus,
         confirmUpdateDiffSave,
         confirmUpdateDiffRestore,

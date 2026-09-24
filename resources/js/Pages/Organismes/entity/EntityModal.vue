@@ -103,7 +103,7 @@ const { downloadPdf } = useDownloadPdf(normalizedEntityType);
 /** Pluriel normalisé (ex. spells) — actions, reload Inertia */
 const entityTypePlural = computed(() => normalizeEntityType(props.entityType));
 
-const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPendingDelete, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh, submitAiConvert, confirmUpdateDiffSave, confirmUpdateDiffRestore } = useEntityActionDispatcher(entityTypePlural, {
+const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPendingDelete, refreshConfirm, confirmPendingRefresh, cancelPendingRefresh, submitAiConvert, submitAiInject, confirmUpdateDiffSave, confirmUpdateDiffRestore } = useEntityActionDispatcher(entityTypePlural, {
     onOpenPage: (entity) => {
         emit('expand', entity);
         handleClose();
@@ -357,6 +357,7 @@ const handleAction = async (actionKey, entity) => {
         :error="refreshConfirm.error"
         :playable="refreshConfirm.playable"
         :entity-label="refreshConfirm.entityLabel"
+        :entity-type="refreshConfirm.entityType"
         :show-dofusdb="refreshConfirm.showDofusdb"
         :show-ai="refreshConfirm.showAi"
         :ai-brief="refreshConfirm.aiBrief"
@@ -374,6 +375,7 @@ const handleAction = async (actionKey, entity) => {
         @close="cancelPendingRefresh"
         @update:ai-brief="(v) => (refreshConfirm.aiBrief = v)"
         @convert="submitAiConvert"
+        @inject="submitAiInject"
     />
 </template>
 
