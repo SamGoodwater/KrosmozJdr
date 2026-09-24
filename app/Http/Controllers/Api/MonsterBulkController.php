@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Monster;
 use App\Support\Entity\EntityStateGate;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\DB;
  *
  * @example
  * PATCH /api/entities/monsters/bulk
- * { "ids":[1,2,3], "size":3, "is_boss":true, "auto_update":false }
+ * { "ids":[1,2,3], "state":"playable", "size":3, "is_boss":true, "auto_update":false }
  */
 class MonsterBulkController extends Controller
 {
@@ -30,6 +31,9 @@ class MonsterBulkController extends Controller
             'ids.*' => ['integer', 'min:1', 'exists:monsters,id'],
 
             // Champs bulk (les clés absentes ne sont pas modifiées)
+            'state' => ['sometimes', 'string', EntityState::rule()],
+            'read_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
+            'write_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
             'size' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
             'is_boss' => ['sometimes', 'boolean'],
             'boss_pa' => ['sometimes', 'nullable', 'integer', 'min:0'],
@@ -49,6 +53,9 @@ class MonsterBulkController extends Controller
 
         $patch = [];
         foreach ([
+            'state',
+            'read_level',
+            'write_level',
             'size',
             'is_boss',
             'boss_pa',

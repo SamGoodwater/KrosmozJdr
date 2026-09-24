@@ -13,6 +13,7 @@ import Container from "@/Pages/Atoms/data-display/Container.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import EditActionDock from "@/Pages/Molecules/action/EditActionDock.vue";
 import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
+import EntityPickerCore from "@/Pages/Organismes/entity/EntityPickerCore.vue";
 import { mergeEntityOptionsById } from "@/Utils/entity/mergeEntityOptionsById";
 import { warnDev } from "@/Utils/dev-logger";
 
@@ -28,10 +29,13 @@ const props = defineProps({
         default: "Ajoute les traits permanents applicables à cette entité.",
     },
     withLevel: { type: Boolean, default: false },
+    /** Si défini (ex. `creature-traits`), recherche via EntityPicker / api.tables.*. */
+    searchApiEntityType: { type: String, default: null },
 });
 
 const notificationStore = useNotificationStore();
 const query = ref("");
+const pickerValue = ref(null);
 const localRows = ref(normalizeRelations(props.relations));
 const localAvailable = ref([...props.availableItems]);
 const creating = ref(false);
@@ -92,11 +96,22 @@ const originalSignature = computed(() =>
 const localSignature = computed(() => JSON.stringify([...localRows.value].sort((a, b) => a.id - b.id)));
 const hasUnsavedChanges = computed(() => originalSignature.value !== localSignature.value);
 
-function addTrait(id) {
+function addTrait(id, entity = null) {
     const n = Number(id);
     if (!Number.isFinite(n) || selectedIds.value.has(n)) return;
+    if (entity && typeof entity === "object") {
+        const data = entity._data && typeof entity._data === "object" ? { ...entity._data, ...entity } : entity;
+        localAvailable.value = [...localAvailable.value, { ...data, id: n }];
+    }
     localRows.value = [...localRows.value, { id: n, level: 1 }];
     query.value = "";
+    pickerValue.value = null;
+}
+
+function onPickerSelected(entities) {
+    const entity = Array.isArray(entities) ? entities[0] : null;
+    if (!entity) return;
+    addTrait(entity.id, entity);
 }
 
 function removeTrait(id) {
@@ -196,32 +211,66 @@ function save() {
         <p v-else class="text-sm text-base-content/50 italic">Aucun trait lié.</p>
 
         <div class="space-y-2">
-            <InputField v-model="query" label="Ajouter un trait" placeholder="Rechercher ou créer un trait…" size="sm" />
-            <div
-                v-if="query.trim()"
-                class="max-h-56 overflow-y-auto rounded border border-base-300/80 bg-glass-3xl text-[13px]"
-                style="--bg-color: var(--color-base-100)"
-            >
-                <button
-                    v-for="opt in filteredToAdd.slice(0, 20)"
-                    :key="opt.id"
-                    type="button"
-                    class="w-full text-left px-2.5 py-1.5 hover:bg-base-200 border-b border-base-200/80"
-                    @mousedown.prevent="addTrait(opt.id)"
+            <template v-if="searchApiEntityType">
+                <p class="text-sm font-medium">Ajouter un trait</p>
+                <EntityPickerCore
+                    :model-value="pickerValue"
+                    :entity-type="searchApiEntityType"
+                    :multiple="false"
+                    variant="extended"
+                    :blacklist="[...selectedIds]"
+                    placeholder="Rechercher un trait…"
+                    size="sm"
+                    @update:model-value="pickerValue = $event"
+                    @update:selected-entities="onPickerSelected"
+                />
+                <div class="flex flex-wrap items-end gap-2 pt-1">
+                    <InputField
+                        v-model="query"
+                        label="Ou créer un nouveau trait"
+                        placeholder="Nom du trait…"
+                        size="sm"
+                        class="flex-1 min-w-[12rem]"
+                    />
+                    <button
+                        type="button"
+                        class="btn btn-outline btn-sm"
+                        :disabled="creating || !query.trim()"
+                        @click="createFromQuery"
+                    >
+                        <span v-if="creating">Création…</span>
+                        <span v-else>Créer</span>
+                    </button>
+                </div>
+            </template>
+            <template v-else>
+                <InputField v-model="query" label="Ajouter un trait" placeholder="Rechercher ou créer un trait…" size="sm" />
+                <div
+                    v-if="query.trim()"
+                    class="max-h-56 overflow-y-auto rounded border border-base-300/80 bg-glass-3xl text-[13px]"
+                    style="--bg-color: var(--color-base-100)"
                 >
-                    <span class="font-medium">{{ opt.name || `#${opt.id}` }}</span>
-                    <span v-if="opt.description" class="text-base-content/55 text-xs ml-1.5">{{ opt.description }}</span>
-                </button>
-                <button
-                    type="button"
-                    class="w-full text-left px-2.5 py-2 hover:bg-base-200 text-primary font-medium"
-                    :disabled="creating"
-                    @mousedown.prevent="createFromQuery"
-                >
-                    <span v-if="creating">Création…</span>
-                    <span v-else>Créer « {{ query.trim() }} »</span>
-                </button>
-            </div>
+                    <button
+                        v-for="opt in filteredToAdd.slice(0, 20)"
+                        :key="opt.id"
+                        type="button"
+                        class="w-full text-left px-2.5 py-1.5 hover:bg-base-200 border-b border-base-200/80"
+                        @mousedown.prevent="addTrait(opt.id)"
+                    >
+                        <span class="font-medium">{{ opt.name || `#${opt.id}` }}</span>
+                        <span v-if="opt.description" class="text-base-content/55 text-xs ml-1.5">{{ opt.description }}</span>
+                    </button>
+                    <button
+                        type="button"
+                        class="w-full text-left px-2.5 py-2 hover:bg-base-200 text-primary font-medium"
+                        :disabled="creating"
+                        @mousedown.prevent="createFromQuery"
+                    >
+                        <span v-if="creating">Création…</span>
+                        <span v-else>Créer « {{ query.trim() }} »</span>
+                    </button>
+                </div>
+            </template>
         </div>
 
         <div class="flex justify-end border-t border-base-300 pt-2">

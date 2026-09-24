@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Http\Requests\Concerns\RestrictsAccessLevelMutation;
 use App\Enums\EntityState;
 use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Models\Entity\Npc;
@@ -15,6 +16,8 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class UpdateNpcRequest extends FormRequest
 {
+    use RestrictsAccessLevelMutation;
+
     use GuardsPlayableState;
 
     public function authorize(): bool
@@ -52,5 +55,10 @@ class UpdateNpcRequest extends FormRequest
     protected function playableModelClass(): string
     {
         return Npc::class;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->stripAccessLevelsUnlessAdmin();
     }
 }

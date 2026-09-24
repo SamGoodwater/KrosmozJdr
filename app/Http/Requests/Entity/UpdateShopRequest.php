@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Http\Requests\Concerns\RestrictsAccessLevelMutation;
 use App\Enums\EntityState;
 use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Models\Entity\Shop;
@@ -15,6 +16,8 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class UpdateShopRequest extends FormRequest
 {
+    use RestrictsAccessLevelMutation;
+
     use GuardsPlayableState;
 
     /**
@@ -50,5 +53,10 @@ class UpdateShopRequest extends FormRequest
     protected function playableModelClass(): string
     {
         return Shop::class;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->stripAccessLevelsUnlessAdmin();
     }
 }

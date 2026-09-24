@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Http\Requests\Concerns\RestrictsAccessLevelMutation;
 use App\Enums\EntityState;
 use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Models\Entity\CreatureTrait;
@@ -10,6 +11,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreCreatureTraitRequest extends FormRequest
 {
+    use RestrictsAccessLevelMutation;
+
     use GuardsPlayableState;
 
     /**
@@ -40,5 +43,10 @@ class StoreCreatureTraitRequest extends FormRequest
     protected function playableModelClass(): string
     {
         return CreatureTrait::class;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->stripAccessLevelsUnlessAdmin();
     }
 }

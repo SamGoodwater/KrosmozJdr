@@ -199,6 +199,11 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     const SYSTEM_USER_EMAIL = 'system@krosmozjdr.local'; // Email unique pour identifier l'utilisateur système
 
     /**
+     * Flag runtime (non persisté) pour autoriser `is_system` via forceFill.
+     */
+    private bool $allowsSystemFill = false;
+
+    /**
      * The conditions that are mass assignable.
      *
      * @var list<string>
@@ -213,9 +218,58 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         'notifications_enabled',
         'notification_channels',
         'notification_preferences',
-        'is_system',
         'last_login_at',
     ];
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
+    public static function create(array $attributes = [])
+    {
+        $hasSystem = array_key_exists('is_system', $attributes);
+        $isSystem = $hasSystem ? (bool) $attributes['is_system'] : null;
+        unset($attributes['is_system']);
+
+        /** @var static $model */
+        $model = static::query()->create($attributes);
+
+        if ($hasSystem) {
+            $model->forceFill(['is_system' => $isSystem])->save();
+        }
+
+        return $model;
+    }
+
+    /**
+     * Refuse le mass-assignment de `is_system` (même avec Model::unguard()).
+     * Utiliser {@see forceFill()} uniquement dans les seeders / commandes de confiance.
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    public function fill(array $attributes)
+    {
+        if (! $this->allowsSystemFill) {
+            unset($attributes['is_system']);
+        }
+
+        return parent::fill($attributes);
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     * @return $this
+     */
+    public function forceFill(array $attributes)
+    {
+        return static::unguarded(function () use ($attributes) {
+            $this->allowsSystemFill = true;
+            try {
+                return $this->fill($attributes);
+            } finally {
+                $this->allowsSystemFill = false;
+            }
+        });
+    }
 
     /**
      * The conditions that should be hidden for serialization.

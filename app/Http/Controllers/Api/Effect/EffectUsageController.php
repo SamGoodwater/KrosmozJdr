@@ -49,6 +49,9 @@ class EffectUsageController extends Controller
         if ($class === null) {
             return response()->json(['message' => 'Invalid entity_type'], 422);
         }
+        $parent = $class::query()->findOrFail((int) $request->input('entity_id'));
+        $this->authorize('update', $parent);
+
         $usage = EffectUsage::create([
             'entity_type' => $class,
             'entity_id' => (int) $request->input('entity_id'),
@@ -73,6 +76,13 @@ class EffectUsageController extends Controller
 
     public function update(UpdateEffectUsageRequest $request, EffectUsage $effectUsage): EffectUsageResource
     {
+        $effectUsage->loadMissing('entity');
+        $parent = $effectUsage->entity;
+        if (! $parent instanceof Model) {
+            abort(404);
+        }
+        $this->authorize('update', $parent);
+
         $effectUsage->update($request->validated());
         $effectUsage->load(['effectDegree.effect']);
 
@@ -81,6 +91,13 @@ class EffectUsageController extends Controller
 
     public function destroy(EffectUsage $effectUsage): JsonResponse
     {
+        $effectUsage->loadMissing('entity');
+        $parent = $effectUsage->entity;
+        if (! $parent instanceof Model) {
+            abort(404);
+        }
+        $this->authorize('update', $parent);
+
         $effectUsage->delete();
 
         return response()->json(null, 204);

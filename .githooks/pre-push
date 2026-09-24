@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Pre-push : refuse le push si des secrets sont détectés dans les commits à envoyer.
+# Activation (une fois par clone) :
+#   git config core.hooksPath .githooks
+set -euo pipefail
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+if command -v node >/dev/null 2>&1; then
+  # stdin git (local_ref local_sha remote_ref remote_sha) → transmis au scanner
+  exec node scripts/scan-secrets.mjs --mode=pre-push
+fi
+
+echo "[secrets] Node requis pour le scan pre-push." >&2
+exit 1

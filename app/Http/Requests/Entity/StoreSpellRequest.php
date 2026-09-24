@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Http\Requests\Concerns\RestrictsAccessLevelMutation;
 use App\Enums\EntityState;
 use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Http\Requests\Concerns\HasCharacteristicValidation;
@@ -18,6 +19,8 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class StoreSpellRequest extends FormRequest
 {
+    use RestrictsAccessLevelMutation;
+
     use GuardsPlayableState;
     use HasCharacteristicValidation;
 
@@ -98,5 +101,10 @@ class StoreSpellRequest extends FormRequest
     protected function playableModelClass(): string
     {
         return Spell::class;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->stripAccessLevelsUnlessAdmin();
     }
 }

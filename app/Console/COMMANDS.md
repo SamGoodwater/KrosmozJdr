@@ -268,6 +268,8 @@ php artisan project:backup --prune-only --dry-run
 
 Admin : `/admin/backup`. Cron : `project_backup`.
 
+Restauration manuelle (gunzip + mysql/mariadb, extract tar/zip storage) : [docs/operations/README.md — Sauvegardes](../../docs/operations/README.md#sauvegardes-projectbackup).
+
 ---
 
 ## `project:schedule:sync`

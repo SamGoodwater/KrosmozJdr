@@ -1,16 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies\Entity;
 
 use App\Models\Entity\Breed;
 use App\Models\User;
+use App\Policies\Entity\Concerns\AdminMutationsOnly;
 use App\Services\EntityDisplay\EntityDisplayVisibilityService;
 
 /**
  * Lecture des classes : jouable selon {@see Breed::$read_level}, brouillon réservé à l’auteur ou au niveau {@see Breed::$write_level}.
+ *
+ * Mutations (update / delete / publish / bulk) via {@see AdminMutationsOnly}.
  */
 class BreedPolicy
 {
+    use AdminMutationsOnly;
+
     /**
      * Determine whether the user can view any models.
      */
@@ -60,38 +67,6 @@ class BreedPolicy
      * Determine whether the user can create models.
      */
     public function create(User $user): bool
-    {
-        return $user->isAdmin();
-    }
-
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Breed $breed): bool
-    {
-        return $user->isAdmin();
-    }
-
-    /**
-     * Determine whether the user can update models in bulk.
-     */
-    public function updateAny(User $user): bool
-    {
-        return $user->isAdmin();
-    }
-
-    /**
-     * Publication `playable` : admin seulement (comme `updateAny`).
-     */
-    public function publish(User $user, ?Breed $breed = null): bool
-    {
-        return $user->isAdmin();
-    }
-
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Breed $breed): bool
     {
         return $user->isAdmin();
     }

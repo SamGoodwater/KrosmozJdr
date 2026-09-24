@@ -329,6 +329,51 @@ class UserControllerTest extends TestCase
     }
 
     /**
+     * SEC-03 : un admin ne peut pas créer un utilisateur déjà admin.
+     */
+    public function test_admin_cannot_create_user_with_admin_role(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $response = $this->actingAs($admin)
+            ->withSession($this->passwordConfirmedSession())
+            ->post(route('user.store'), [
+                'name' => 'New Admin',
+                'email' => 'new-admin@example.com',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+                'role' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertSessionHasErrors('role');
+        $this->assertDatabaseMissing('users', ['email' => 'new-admin@example.com']);
+    }
+
+    /**
+     * SEC-03 : un super_admin interactif peut créer un admin.
+     */
+    public function test_super_admin_can_create_user_with_admin_role(): void
+    {
+        $superAdmin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+
+        $response = $this->actingAs($superAdmin)
+            ->withSession($this->passwordConfirmedSession())
+            ->post(route('user.store'), [
+                'name' => 'New Admin',
+                'email' => 'new-admin@example.com',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+                'role' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('users', [
+            'email' => 'new-admin@example.com',
+            'role' => User::ROLE_ADMIN,
+        ]);
+    }
+
+    /**
      * Test : Personne ne peut promouvoir un utilisateur en super_admin
      */
     public function test_nobody_can_promote_user_to_super_admin(): void

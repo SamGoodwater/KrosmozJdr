@@ -30,7 +30,6 @@ use Illuminate\Support\Str;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User|null $user
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob query()
@@ -50,7 +49,6 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereTriggeredBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectConsoleJob whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 class ProjectConsoleJob extends Model

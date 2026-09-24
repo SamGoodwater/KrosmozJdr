@@ -14,23 +14,16 @@ use App\Http\Requests\Entity\UpdateBreedRequest;
 use App\Http\Requests\Entity\UpdateBreedSectionsRequest;
 use App\Http\Requests\Entity\UpdateBreedSpellsRequest;
 use App\Http\Resources\Entity\BreedResource;
-use App\Http\Resources\Entity\CapabilityResource;
-use App\Http\Resources\Entity\CreatureTraitResource;
-use App\Http\Resources\Entity\LanguageResource;
-use App\Http\Resources\Entity\SpellResource;
 use App\Models\Entity\Breed;
-use App\Models\Entity\Capability;
-use App\Models\Entity\CreatureTrait;
 use App\Models\Entity\Language;
-use App\Models\Entity\Spell;
 use App\Models\User;
 use App\Services\Entity\EntityDeletionService;
 use App\Services\Entity\SyncBreedElementOrientations;
 use App\Services\PdfService;
+use App\Support\Entity\RelationCatalogOptions;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -159,37 +152,19 @@ class BreedController extends Controller
             'sections' => Breed::orderedSectionsEagerLoadConstraint(),
         ]);
 
-        $spellTable = (new Spell)->getTable();
-        $levelOrder = Schema::getConnection()->getDriverName() === 'sqlite'
-            ? "CAST({$spellTable}.level AS INTEGER)"
-            : "CAST({$spellTable}.level AS UNSIGNED)";
-
-        $req = request();
-        $availableSpells = SpellResource::collection(
-            Spell::query()
-                ->orderByRaw("{$levelOrder} ASC")
-                ->orderBy("{$spellTable}.name")
-                ->limit(8000)
-                ->get()
-        )->toArray($req);
-
-        $availableCapabilities = CapabilityResource::collection(
-            Capability::query()->orderBy('name')->limit(5000)->get()
-        )->toArray($req);
-
-        $availableCreatureTraits = CreatureTraitResource::collection(
-            CreatureTrait::query()->orderBy('name')->limit(5000)->get()
-        )->toArray($req);
-
-        $availableLanguages = LanguageResource::collection(
-            Language::query()->orderBy('name')->limit(5000)->get()
-        )->toArray($req);
+        // Catalogues Inertia allégés : recherche via EntityPicker / api.tables.*
+        // (évite SpellResource|CapabilityResource|… × milliers de lignes + can[]).
+        $availableLanguages = RelationCatalogOptions::rows(
+            Language::query()->orderBy('name'),
+            ['id', 'name', 'description', 'color'],
+            500,
+        );
 
         return Inertia::render('Pages/entity/breed/Edit', [
             'breed' => new BreedResource($breed),
-            'availableSpells' => $availableSpells,
-            'availableCapabilities' => $availableCapabilities,
-            'availableCreatureTraits' => $availableCreatureTraits,
+            'availableSpells' => [],
+            'availableCapabilities' => [],
+            'availableCreatureTraits' => [],
             'availableLanguages' => $availableLanguages,
             'breedOrientationKeys' => config('breed_element_orientations.allowed_orientation_keys', []),
             'availableSections' => $this->availableSectionsPayload(),

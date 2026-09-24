@@ -76,7 +76,7 @@ const confirmDelete = () => {
             entity-type="specializations"
             relation-type="spells"
             relation-name="Sorts"
-            :config="{ itemLabel: 'sort', itemLabelPlural: 'sorts', displayFields: ['name'], searchFields: ['name'], routeName: 'entities.specializations.updateSpells', relatedEntityType: 'spells', pivotFields: ['level'] }"
+            :config="{ itemLabel: 'sort', itemLabelPlural: 'sorts', displayFields: ['name'], searchFields: ['name'], routeName: 'entities.specializations.updateSpells', relatedEntityType: 'spells', searchApiEntityType: 'spells', pivotFields: ['level'] }"
         />
 
         <EntityRelationsManager
@@ -87,7 +87,7 @@ const confirmDelete = () => {
             entity-type="specializations"
             relation-type="capabilities"
             relation-name="Capacités"
-            :config="{ itemLabel: 'capacité', itemLabelPlural: 'capacités', displayFields: ['name'], searchFields: ['name'], routeName: 'entities.specializations.updateCapabilities', relatedEntityType: 'capabilities', pivotFields: ['level'] }"
+            :config="{ itemLabel: 'capacité', itemLabelPlural: 'capacités', displayFields: ['name'], searchFields: ['name'], routeName: 'entities.specializations.updateCapabilities', relatedEntityType: 'capabilities', searchApiEntityType: 'capabilities', pivotFields: ['level'] }"
         />
 
         <CreatureTraitsEditor
@@ -100,6 +100,7 @@ const confirmDelete = () => {
             title="Traits de spécialisation"
             help="Traits permanents gagnés via cette spécialisation. Le niveau indique quand le trait devient actif."
             with-level
+            search-api-entity-type="creature-traits"
         />
 
         <EntityRelationsManager
@@ -110,7 +111,7 @@ const confirmDelete = () => {
             entity-type="specializations"
             relation-type="consumables"
             relation-name="Consommables"
-            :config="{ itemLabel: 'consommable', itemLabelPlural: 'consommables', displayFields: ['name'], searchFields: ['name'], routeName: 'entities.specializations.updateConsumables', relatedEntityType: 'consumables', pivotFields: ['level', 'quantity'] }"
+            :config="{ itemLabel: 'consommable', itemLabelPlural: 'consommables', displayFields: ['name'], searchFields: ['name'], routeName: 'entities.specializations.updateConsumables', relatedEntityType: 'consumables', searchApiEntityType: 'consumables', pivotFields: ['level', 'quantity'] }"
         />
 
         <EntityRelationsManager
@@ -121,7 +122,7 @@ const confirmDelete = () => {
             entity-type="specializations"
             relation-type="resources"
             relation-name="Ressources"
-            :config="{ itemLabel: 'ressource', itemLabelPlural: 'ressources', displayFields: ['name'], searchFields: ['name'], routeName: 'entities.specializations.updateResources', relatedEntityType: 'resources', pivotFields: ['level', 'quantity'] }"
+            :config="{ itemLabel: 'ressource', itemLabelPlural: 'ressources', displayFields: ['name'], searchFields: ['name'], routeName: 'entities.specializations.updateResources', relatedEntityType: 'resources', searchApiEntityType: 'resources', pivotFields: ['level', 'quantity'] }"
         />
 
         <EntityRelationsManager
@@ -132,7 +133,7 @@ const confirmDelete = () => {
             entity-type="specializations"
             relation-type="items"
             relation-name="Items"
-            :config="{ itemLabel: 'item', itemLabelPlural: 'items', displayFields: ['name'], searchFields: ['name'], routeName: 'entities.specializations.updateItems', relatedEntityType: 'items', pivotFields: ['level', 'quantity'] }"
+            :config="{ itemLabel: 'item', itemLabelPlural: 'items', displayFields: ['name'], searchFields: ['name'], routeName: 'entities.specializations.updateItems', relatedEntityType: 'items', searchApiEntityType: 'items', pivotFields: ['level', 'quantity'] }"
         />
 
         <EntityRelationsManager

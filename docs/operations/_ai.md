@@ -33,5 +33,6 @@ Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interact
 - Source règles CMS : `private/game/rules/TABLE_DES_MATIERES.md`. Chapitre 5 → menu **Pour les MJ** (`read_level` MJ). `rules:compile-downloads` : PDF/ODT joueur (ch. 1–4) + atelier MJ (ch. 5, `read_level` MJ). Changelog hors livre (page Informations). Bouton admin `/admin/content` : file `rules-downloads` + worker ponctuel.
 - UI orphelins : `/admin/orphan-files` (super_admin).
 - UI nettoyage caches : `/admin/project-clear` (super_admin).
-- UI atelier DofusDB : `/admin/content/dofusdb` (admin, 3 modes Récupérer / Mettre à jour / Compléter, `?mode=`). Cartes + IA sur `/admin/content`. Cron `project_data_sync` inchangé.
+- Backup : `project:backup` → `storage/app/backups` (rétention 30 j, cron `project_backup` off par défaut, UI `/admin/backup`) ; restore manuel dans [README.md](README.md#sauvegardes-projectbackup).
+- Secrets push : [SECRET_SCAN.md](SECRET_SCAN.md) — `.githooks/pre-push`, `pnpm run secrets:scan`, CI gitleaks.- UI atelier DofusDB : `/admin/content/dofusdb` (admin, 3 modes Récupérer / Mettre à jour / Compléter, `?mode=`). Cartes + IA sur `/admin/content`. Cron `project_data_sync` inchangé.
 - Jobs console admin : un actif max par domaine ; un `queued` sans démarrage > 15 min est abandonné ; poll `GET /admin/console-jobs/{uuid}` ; annulation `POST /admin/console-jobs/{uuid}/cancel` (file Laravel retirée si encore queued) ; toast fermable ; log filtré.

@@ -141,6 +141,7 @@ const confirmDelete = () => {
             title="Traits de classe"
             help="Traits permanents gagnés par les personnages de cette classe. Le niveau indique quand le trait devient actif."
             with-level
+            search-api-entity-type="creature-traits"
         />
 
         <EntityLanguagesEditor

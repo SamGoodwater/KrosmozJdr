@@ -100,6 +100,7 @@ class OAuthController extends Controller
                 return $redirect;
             }
             Auth::login($user, true);
+            $request->session()->regenerate();
             $user->update(['last_login_at' => now()]);
             try {
                 NotificationService::notifyLastConnection($user);
@@ -159,6 +160,7 @@ class OAuthController extends Controller
             return $redirect;
         }
         Auth::login($user, true);
+        $request->session()->regenerate();
         $user->update(['last_login_at' => now()]);
         try {
             NotificationService::notifyNewUserCreated($user);
@@ -267,27 +269,52 @@ class OAuthController extends Controller
             'provider' => $pending['provider'],
             'providerLabel' => $providerLabels[$pending['provider']] ?? $pending['provider'],
             'existingProviders' => array_map(fn ($p) => $providerLabels[$p] ?? $p, $linkedProviders),
+            'requiresPassword' => $user->hasPassword(),
         ]);
     }
 
     /**
      * Confirme la liaison du provider au compte existant.
+     *
+     * Exige le mot de passe du compte cible s’il en a un ; sinon la liaison
+     * email-match non authentifiée est refusée (lier depuis les paramètres après login).
      */
     public function confirmLink(Request $request): RedirectResponse
     {
-        $pending = $request->session()->pull('oauth.pending_link');
+        $pending = $request->session()->get('oauth.pending_link');
         if (! $pending || ! isset($pending['existing_user_id'])) {
             return redirect()->route('login')->with('error', 'Session expirée. Réessaie de te connecter.');
         }
 
         $user = User::query()->find($pending['existing_user_id']);
         if (! $user) {
+            $request->session()->forget('oauth.pending_link');
+
             return redirect()->route('login')->with('error', 'Compte introuvable.');
         }
 
         if ($redirect = $this->rejectNonInteractiveLogin($user)) {
             return $redirect;
         }
+
+        if ($user->hasPassword()) {
+            $request->validate([
+                'password' => ['required', 'string'],
+            ]);
+            if (! Auth::guard('web')->validate([
+                'email' => $user->email,
+                'password' => (string) $request->input('password'),
+            ])) {
+                return back()->withErrors(['password' => 'Mot de passe incorrect.']);
+            }
+        } elseif (! Auth::check() || Auth::id() !== $user->id) {
+            return redirect()->route('login')->with(
+                'error',
+                'Ce compte n’a pas de mot de passe. Connecte-toi d’abord avec ton fournisseur existant, puis lie le nouveau depuis les paramètres.'
+            );
+        }
+
+        $request->session()->forget('oauth.pending_link');
 
         OAuthAccount::create([
             'user_id' => $user->id,
@@ -300,6 +327,7 @@ class OAuthController extends Controller
         $user->update(['email_verified_at' => now()]);
         $this->maybeUpdateUserFromOAuth($user, $pending['provider_name'] ?? '', $pending['provider_email'] ?? null, $pending['avatar_url'] ?? null);
         Auth::login($user, true);
+        $request->session()->regenerate();
         $user->update(['last_login_at' => now()]);
         try {
             NotificationService::notifyLastConnection($user);

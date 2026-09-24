@@ -345,6 +345,23 @@ class ItemControllerTest extends TestCase
     }
 
     /**
+     * Payload allégé : pas de dump Effect::with(degrees) dans availableEffects.
+     */
+    public function test_edit_page_does_not_embed_full_effects_catalog(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $item = Item::factory()->create(['created_by' => $admin->id]);
+
+        $this->actingAs($admin)
+            ->get(route('entities.items.edit', $item))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Pages/entity/item/Edit')
+                ->where('availableEffects', [])
+                ->has('effectUsages'));
+    }
+
+    /**
      * Test : Les quantités zéro ou négatives sont ignorées
      */
     public function test_zero_or_negative_quantities_are_ignored(): void

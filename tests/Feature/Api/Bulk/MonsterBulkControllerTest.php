@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\Bulk;
 
+use App\Enums\EntityState;
 use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Monster;
 use App\Models\User;
@@ -200,6 +201,43 @@ class MonsterBulkControllerTest extends TestCase
         $this->assertDatabaseHas('monsters', [
             'id' => $monster->id,
             'boss_pa' => '4',
+        ]);
+    }
+
+    public function test_admin_can_bulk_publish_monsters(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $monster = Monster::factory()->create(['state' => EntityState::Auto->value]);
+
+        $this->actingAs($admin)
+            ->patchJson('/api/entities/monsters/bulk', [
+                'ids' => [$monster->id],
+                'state' => EntityState::Playable->value,
+            ])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('monsters', [
+            'id' => $monster->id,
+            'state' => EntityState::Playable->value,
+        ]);
+    }
+
+    public function test_game_master_cannot_bulk_publish_monsters(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $monster = Monster::factory()->create(['state' => EntityState::Draft->value]);
+
+        $this->actingAs($gm)
+            ->patchJson('/api/entities/monsters/bulk', [
+                'ids' => [$monster->id],
+                'state' => EntityState::Playable->value,
+            ])
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('monsters', [
+            'id' => $monster->id,
+            'state' => EntityState::Draft->value,
         ]);
     }
 }

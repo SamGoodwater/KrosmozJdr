@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Http\Requests\Concerns\RestrictsAccessLevelMutation;
 use App\Enums\EntityState;
 use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Http\Requests\Entity\Concerns\NormalizesCapabilityStringDefaults;
@@ -16,6 +17,8 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class UpdateCapabilityRequest extends FormRequest
 {
+    use RestrictsAccessLevelMutation;
+
     use GuardsPlayableState;
     use NormalizesCapabilityStringDefaults;
 
@@ -63,6 +66,7 @@ class UpdateCapabilityRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $this->stripAccessLevelsUnlessAdmin();
         $this->normalizeCapabilityNotNullDefaultsForDatabase();
     }
 

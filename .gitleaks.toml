@@ -1,0 +1,58 @@
+# Titre : règles gitleaks pour KrosmozJDR
+# Doc : https://github.com/gitleaks/gitleaks
+
+title = "krosmozjdr"
+
+[extend]
+# Règles par défaut gitleaks (clés API, JWT, private keys…)
+useDefault = true
+
+[allowlist]
+description = "Fichiers et motifs volontairement non secrets"
+paths = [
+  '''(.*?)(\.|/)(png|jpg|jpeg|gif|webp|ico|woff2?|ttf|eot)$''',
+  '''^pnpm-lock\.yaml$''',
+  '''^composer\.lock$''',
+  '''^package-lock\.json$''',
+  '''^docs/.*\.md$''',
+  '''^private/archive/.*$''',
+  '''^storage/app/dev-reports/.*$''',
+  '''^tests/Unit/Support/Console/ConsoleOutputSanitizerTest\.php$''',
+]
+
+[[rules]]
+id = "krosmoz-dotenv-file"
+description = "Fichier .env (hors .env.example) ne doit pas être versionné"
+path = '''(?i)(^|/)\.env(\..+)?$'''
+regex = '''(?s).'''
+[[rules.allowlist]]
+paths = [
+  '''\.env\.example$''',
+  '''\.env\.testing\.example$''',
+]
+
+[[rules]]
+id = "krosmoz-mysql-dsn-password"
+description = "DSN MySQL/MariaDB avec mot de passe inline"
+regex = '''(?i)mysql(?:i)?://[^:\s/'"]+:[^@\s/'"]+@'''
+
+[[rules]]
+id = "krosmoz-cursor-mcp-json"
+description = "Config MCP Cursor souvent porteuse de credentials locaux"
+path = '''(?i)\.cursor/mcp\.json$'''
+regex = '''(?s).'''
+
+[[rules]]
+id = "krosmoz-private-key"
+description = "Clé privée PEM"
+regex = '''-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----'''
+
+[[rules]]
+id = "krosmoz-anthropic-key"
+description = "Clé API Anthropic"
+regex = '''sk-ant-api\d{2}-[A-Za-z0-9_-]{20,}'''
+
+[[rules]]
+id = "krosmoz-app-key-laravel"
+description = "APP_KEY Laravel renseignée (hors placeholder)"
+regex = '''(?i)APP_KEY\s*=\s*base64:[A-Za-z0-9+/=]{20,}'''

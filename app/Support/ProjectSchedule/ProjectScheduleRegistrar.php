@@ -107,6 +107,11 @@ final class ProjectScheduleRegistrar
             $cron = (string) env('PROJECT_BACKUP_CRON', '0 4 * * *');
             $schedule->command('project:backup')->cron($cron);
         }
+
+        if ((bool) env('MEDIA_CLEAR_ORPHAN_FILES_ENABLED', false)) {
+            $cron = (string) env('MEDIA_CLEAR_ORPHAN_FILES_CRON', '15 4 * * 0');
+            $schedule->command('project:clear-orphan-files --delete')->cron($cron);
+        }
     }
 
     /**

@@ -86,7 +86,8 @@ trait PromptsPrimarySuperAdmin
                 continue;
             }
 
-            User::create([
+            $admin = new User;
+            $admin->forceFill([
                 'name' => $name,
                 'email' => $email,
                 'password' => Hash::make($password),
@@ -97,6 +98,7 @@ trait PromptsPrimarySuperAdmin
                 'notification_channels' => [User::NOTIFICATION_CHANNELS[0]],
                 'is_system' => false,
             ]);
+            $admin->save();
 
             $this->info('  Super_admin créé : '.$email);
             $this->newLine();

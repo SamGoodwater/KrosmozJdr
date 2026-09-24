@@ -236,7 +236,17 @@
       {
         "name": "icon",
         "type": "String",
-        "desc": "- Icône FontAwesome (optionnel)"
+        "desc": "- Icône FontAwesome ou URL (optionnel)"
+      },
+      {
+        "name": "iconHover",
+        "type": "String",
+        "desc": "- Variante au survol (swap d’image, optionnel)"
+      },
+      {
+        "name": "iconColorizeOnHover",
+        "type": "Boolean",
+        "desc": "- Niveaux de gris au repos, couleurs au survol / actif"
       },
       {
         "name": "active",

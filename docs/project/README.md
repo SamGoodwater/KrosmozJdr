@@ -4,7 +4,7 @@ KrosmozJDR est une application web pour jeu de rôle inspiré du Krosmoz. Le sit
 
 ## Stack
 
-- Backend : Laravel 12, PHP 8.4, MySQL, Composer, PHPUnit, Pint, PHPStan.
+- Backend : Laravel 13, PHP 8.4, MySQL, Composer, PHPUnit, Pint, PHPStan.
 - Frontend : Vue 3 en JavaScript, Inertia.js, Vite, Tailwind CSS, DaisyUI, Tiptap, TanStack Table, Pinia, Ziggy.
 - Données : entités Eloquent, CMS pages/sections, scrapping DofusDB, caractéristiques et effets configurables.
 

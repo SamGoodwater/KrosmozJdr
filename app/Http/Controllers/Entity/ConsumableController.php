@@ -174,22 +174,8 @@ class ConsumableController extends Controller
             'required_creature_level' => $u->effectDegree?->required_creature_level,
         ])->values()->all();
 
-        $availableEffects = Effect::with('degrees')
-            ->orderBy('name')
-            ->get()
-            ->flatMap(function (Effect $e) {
-                return $e->degrees->map(fn ($d) => [
-                    'id' => $d->id,
-                    'name' => ($e->name ?? $e->slug ?? 'Effet #'.$e->id).' · D'.$d->degree,
-                    'slug' => $d->slug,
-                    'degree' => $d->degree,
-                    'target_type' => $e->target_type ?? Effect::TARGET_DIRECT,
-                    'area' => $d->area,
-                    'effect_definition_id' => $e->id,
-                ]);
-            })
-            ->values()
-            ->all();
+        // Liste complète non embarquée : recherche via GET /api/effects/effects (EffectUsagesManager).
+        $availableEffects = [];
 
         return Inertia::render('Pages/entity/consumable/Edit', array_merge([
             'consumable' => new ConsumableResource($consumable),

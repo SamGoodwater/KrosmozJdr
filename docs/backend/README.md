@@ -1,6 +1,6 @@
 # Backend
 
-Le backend est un monolithe Laravel 12 sous `app/`, sans architecture `app/Modules`. Il expose les pages Inertia, les APIs sessionnées et les commandes de maintenance.
+Le backend est un monolithe Laravel 13 sous `app/`, sans architecture `app/Modules`. Il expose les pages Inertia, les APIs sessionnées et les commandes de maintenance.
 
 ## Sous-domaines
 

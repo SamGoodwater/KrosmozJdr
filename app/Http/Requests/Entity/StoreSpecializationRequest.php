@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Http\Requests\Concerns\RestrictsAccessLevelMutation;
 use App\Enums\EntityState;
 use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Models\Entity\Specialization;
@@ -15,6 +16,8 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class StoreSpecializationRequest extends FormRequest
 {
+    use RestrictsAccessLevelMutation;
+
     use GuardsPlayableState;
 
     /**
@@ -46,5 +49,10 @@ class StoreSpecializationRequest extends FormRequest
     protected function playableModelClass(): string
     {
         return Specialization::class;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->stripAccessLevelsUnlessAdmin();
     }
 }

@@ -106,7 +106,6 @@ final class IaConvertAuthorizationTest extends TestCase
     {
         $super = User::factory()->create([
             'role' => User::ROLE_SUPER_ADMIN,
-            'is_system' => false,
         ]);
 
         $this->actingAsConfirmed($super)

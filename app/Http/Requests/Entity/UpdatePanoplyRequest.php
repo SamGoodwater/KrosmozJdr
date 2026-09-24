@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Http\Requests\Concerns\RestrictsAccessLevelMutation;
 use App\Enums\EntityState;
 use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Models\Entity\Panoply;
@@ -10,6 +11,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePanoplyRequest extends FormRequest
 {
+    use RestrictsAccessLevelMutation;
+
     use GuardsPlayableState;
 
     /**
@@ -57,6 +60,7 @@ class UpdatePanoplyRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $this->stripAccessLevelsUnlessAdmin();
         $bonus = $this->input('bonus');
         if (is_array($bonus)) {
             $this->merge(['bonus' => json_encode($bonus, JSON_UNESCAPED_UNICODE)]);

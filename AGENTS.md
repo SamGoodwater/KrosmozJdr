@@ -4,6 +4,8 @@
 
 Une branche courte par sujet, puis commit, merge dans `main` et suppression. PR optionnelle en solo. Rule : `.cursor/rules/git-github.mdc`.
 
+Scan secrets avant push : `git config core.hooksPath .githooks` puis `pnpm run secrets:scan` (voir `docs/operations/SECRET_SCAN.md`). Ne jamais versionner `.env` ni `.cursor/mcp.json`.
+
 ## Cursor Cloud specific instructions
 
 Contexte : KrosmozJDR est une application web monolithique **Laravel 13 / PHP 8.4** (backend + API hybride Inertia)

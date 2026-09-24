@@ -63,13 +63,12 @@ class UserTest extends TestCase
 
     public function test_human_super_allowed_alongside_system_super_account(): void
     {
-        User::factory()->create([
+        User::factory()->systemAccount()->create([
             'role' => User::ROLE_SUPER_ADMIN,
-            'is_system' => true,
+            
         ]);
         $humanSuper = User::factory()->create([
             'role' => User::ROLE_SUPER_ADMIN,
-            'is_system' => false,
         ]);
         $this->assertTrue($humanSuper->isInteractiveSuperAdmin());
     }
