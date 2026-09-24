@@ -127,6 +127,9 @@ Les blocs de page ne se collent plus au contenu : texte et images occupent les *
 ## Septembre 2026 — Conversion IA : kit PNJ et gabarit monstres
 
 Une conversion **PNJ** refuse deux objets sur le même emplacement (deux capes, etc.) et complète les stats manquantes avec le gabarit de niveau. Une conversion **rencontre** reçoit le même gabarit dans le prompt, pour coller les sorts aux PV / PA de la fiche. Les objets Dofus scrapés restent hors scope : l’IA ne retravaille que les uniques. Sur **IA métier**, un enregistrement incomplet écrasait les étalons du dépôt : on peut **réinitialiser** pour retomber sur le fichier.
+## Septembre 2026 — Scrap monstre : ne plus écraser le bestiaire JDR
+
+Importer un monstre DofusDB qui porte le même nom qu’une fiche du **bestiaire** ou une **invocation** (Bouftou, Tofu, Chafer…) ne réécrit plus cette fiche jouable. Le scrap crée une **nouvelle** entrée Dofus (état raw), l’étalon JDR reste intact.
 
 ## Septembre 2026 — Conversion IA : pas d’écrasement silencieux
 

@@ -319,7 +319,9 @@ final class IntegrationService
         if (! empty($monsterData['dofusdb_id'])) {
             $existingMonsterByDofus = Monster::where('dofusdb_id', (string) $monsterData['dofusdb_id'])->first();
         }
-        $existingCreature = $existingMonsterByDofus?->creature ?? Creature::where('name', (string) ($creatureData['name'] ?? ''))->first();
+        // Identité Dofus uniquement : un homonyme JDR (bestiaire / invocation, sans dofusdb_id)
+        // ne doit ni être mis à jour ni bloquer la création de la fiche scrapée.
+        $existingCreature = $existingMonsterByDofus?->creature;
 
         $doReplace = $this->wouldReplaceExisting($forceUpdate, $replaceMode, $existingCreature, $existingMonsterByDofus, $respectAutoUpdate);
         if ($existingMonsterByDofus && ! $doReplace) {
