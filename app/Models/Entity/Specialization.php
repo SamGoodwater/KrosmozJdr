@@ -11,6 +11,9 @@ use Database\Factories\Entity\SpecializationFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
@@ -131,7 +134,7 @@ class Specialization extends Model implements HasMedia
     /**
      * Get the user that created the specialization.
      */
-    public function createdBy()
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
@@ -139,42 +142,42 @@ class Specialization extends Model implements HasMedia
     /**
      * Les capacités associées à cette spécialisation.
      */
-    public function capabilities()
+    public function capabilities(): BelongsToMany
     {
         return $this->belongsToMany(Capability::class, 'capability_specialization')
             ->withPivot('level')
             ->withTimestamps();
     }
 
-    public function spells()
+    public function spells(): BelongsToMany
     {
         return $this->belongsToMany(Spell::class, 'specialization_spell')
             ->withPivot('level')
             ->withTimestamps();
     }
 
-    public function creatureTraits()
+    public function creatureTraits(): BelongsToMany
     {
         return $this->belongsToMany(CreatureTrait::class, 'creature_trait_specialization')
             ->withPivot('level')
             ->withTimestamps();
     }
 
-    public function consumables()
+    public function consumables(): BelongsToMany
     {
         return $this->belongsToMany(Consumable::class, 'consumable_specialization')
             ->withPivot(['level', 'quantity'])
             ->withTimestamps();
     }
 
-    public function resources()
+    public function resources(): BelongsToMany
     {
         return $this->belongsToMany(Resource::class, 'resource_specialization')
             ->withPivot(['level', 'quantity'])
             ->withTimestamps();
     }
 
-    public function items()
+    public function items(): BelongsToMany
     {
         return $this->belongsToMany(Item::class, 'item_specialization')
             ->withPivot(['level', 'quantity'])
@@ -184,7 +187,7 @@ class Specialization extends Model implements HasMedia
     /**
      * Les PNJ de cette spécialisation.
      */
-    public function npcs()
+    public function npcs(): HasMany
     {
         return $this->hasMany(Npc::class, 'specialization_id');
     }

@@ -13,6 +13,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Spatie\Image\Enums\Fit;
@@ -219,7 +222,7 @@ class Breed extends Model implements HasMedia
     /**
      * Get the user that created the breed.
      */
-    public function createdBy()
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
@@ -227,7 +230,7 @@ class Breed extends Model implements HasMedia
     /**
      * Les PNJ associés à cette breed.
      */
-    public function npcs()
+    public function npcs(): HasMany
     {
         return $this->hasMany(Npc::class, 'breed_id');
     }
@@ -235,7 +238,7 @@ class Breed extends Model implements HasMedia
     /**
      * Les sorts associés à cette breed (pivot : niveau PJ, emplacement, ordre des choix).
      */
-    public function spells()
+    public function spells(): BelongsToMany
     {
         return $this->belongsToMany(Spell::class, 'breed_spell', 'breed_id', 'spell_id')
             ->using(BreedSpellPivot::class)
@@ -245,20 +248,20 @@ class Breed extends Model implements HasMedia
     /**
      * Capacités associées à la classe (liste plate, sans emplacement).
      */
-    public function capabilities()
+    public function capabilities(): BelongsToMany
     {
         return $this->belongsToMany(Capability::class, 'breed_capability', 'breed_id', 'capability_id')
             ->withTimestamps();
     }
 
-    public function creatureTraits()
+    public function creatureTraits(): BelongsToMany
     {
         return $this->belongsToMany(CreatureTrait::class, 'breed_creature_trait')
             ->withPivot('level')
             ->withTimestamps();
     }
 
-    public function languages()
+    public function languages(): BelongsToMany
     {
         return $this->belongsToMany(Language::class, 'breed_language')
             ->withPivot('sort_order')
@@ -269,7 +272,7 @@ class Breed extends Model implements HasMedia
     /**
      * Orientations par voix élémentaire (air, terre, feu, eau).
      */
-    public function elementOrientations()
+    public function elementOrientations(): HasMany
     {
         return $this->hasMany(BreedElementOrientation::class, 'breed_id');
     }
