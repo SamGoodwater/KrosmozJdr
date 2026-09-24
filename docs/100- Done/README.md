@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — TipTap 3 et Vitest 4
+
+L’éditeur riche passe en **TipTap 3** (extensions regroupées, signature `setContent` à jour). Les tests front tournent sous **Vitest 4.1.11** (pool forks). Les alertes de sécu TipTap / Vitest côté npm sont résolues.
+
 ## Septembre 2026 — Finalisation technique avant reprise du contenu
 
 Audit sécu / simplicité / tests / ops / perf, correctifs appliqués et **tout mergé sur `main` GitHub** : droits (usages d’effets, création user, OAuth), scan secrets à chaque push, catalogues d’édition plus légers, policies admin factorisées. Disque MJ, collision scrap monstres et fiches perso aussi intégrés. Reste manuel : rotation du mot de passe MySQL (fuite historique), upgrade TipTap major plus tard.

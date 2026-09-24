@@ -22,14 +22,15 @@ export default defineConfig({
     // Setup files
     setupFiles: ['./tests/setup.js'],
     
-    // Pool options pour éviter les problèmes avec jsdom
-    // Note: poolOptions a été supprimé dans Vitest 4, les options sont maintenant au niveau racine
-    pool: 'threads',
+    // Pool (Vitest 4) : limiter le parallélisme pour éviter les timeouts workers sous charge
+    pool: 'forks',
+    maxWorkers: 4,
     
-    // Coverage
+    // Coverage (Vitest 4 : include explicite, coverage.all retiré)
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
+      include: ['resources/js/**/*.{js,vue}'],
       exclude: [
         'node_modules/',
         'tests/',
@@ -45,7 +46,17 @@ export default defineConfig({
       'tests/unit/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
       'tests/a11y/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
     ],
-    exclude: ['node_modules', 'dist', '.idea', '.git', '.cache'],
+    // Vitest 4 n’exclut plus vendor/dist par défaut hors node_modules/.git
+    exclude: [
+      'node_modules',
+      'dist',
+      'vendor',
+      'public/build',
+      'storage',
+      '.idea',
+      '.git',
+      '.cache',
+    ],
     
     // Timeout pour les tests
     testTimeout: 10000,

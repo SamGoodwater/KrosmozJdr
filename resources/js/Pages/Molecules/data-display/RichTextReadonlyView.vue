@@ -38,7 +38,7 @@ watch(
         const next = String(h || "");
         const cur = editor.value.getHTML();
         if (next !== cur) {
-            editor.value.commands.setContent(next, false);
+            editor.value.commands.setContent(next, { emitUpdate: false });
         }
     },
 );

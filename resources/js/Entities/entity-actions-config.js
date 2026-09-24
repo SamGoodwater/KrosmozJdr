@@ -53,7 +53,7 @@ export const AI_CONVERTIBLE_ENTITY_TYPES = Object.freeze([
 
 /**
  * Ordre d’actions par surface (du plus pertinent au moins).
- * Minimal déployé : état → pin → modal → DofusDB → favoris → lien → édition page.
+ * Minimal déployé : état → pin → modal → DofusDB → refresh → favoris → lien → édition page.
  */
 export const ENTITY_ACTION_CONTEXT_PRESETS = Object.freeze({
   minimalLine: [

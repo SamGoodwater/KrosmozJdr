@@ -298,7 +298,7 @@ const editor = useEditor({
     const nextHtml = pendingExternalHtml.value
     pendingExternalHtml.value = null
     if (nextHtml !== editor.getHTML()) {
-      editor.commands.setContent(nextHtml || '', false)
+      editor.commands.setContent(nextHtml || '', { emitUpdate: false })
       lastEmittedHtml.value = nextHtml || ''
     }
   },
@@ -407,7 +407,7 @@ watch(
 
     const currentHtml = editor.value.getHTML()
     if (incomingHtml !== currentHtml) {
-      editor.value.commands.setContent(incomingHtml, false)
+      editor.value.commands.setContent(incomingHtml, { emitUpdate: false })
       lastEmittedHtml.value = incomingHtml
     }
   }

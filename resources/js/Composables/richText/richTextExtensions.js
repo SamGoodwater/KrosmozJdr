@@ -1,25 +1,21 @@
 import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
-import Color from "@tiptap/extension-color";
-import Underline from "@tiptap/extension-underline";
+import { TextStyle } from "@tiptap/extension-text-style";
+import { Color } from "@tiptap/extension-color";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
-import Table from "@tiptap/extension-table";
-import TableRow from "@tiptap/extension-table-row";
-import TableCell from "@tiptap/extension-table-cell";
-import TableHeader from "@tiptap/extension-table-header";
-import TaskList from "@tiptap/extension-task-list";
-import TaskItem from "@tiptap/extension-task-item";
-import Placeholder from "@tiptap/extension-placeholder";
-import CharacterCount from "@tiptap/extension-character-count";
-import Focus from "@tiptap/extension-focus";
+import { Table, TableRow, TableCell, TableHeader } from "@tiptap/extension-table";
+import { TaskList, TaskItem } from "@tiptap/extension-list";
+import { Placeholder, CharacterCount, Focus } from "@tiptap/extensions";
 import { ReferenceInline } from "@/Composables/richText/ReferenceInlineExtension";
 
 /**
  * Extensions TipTap communes (édition et lecture).
+ *
+ * TipTap 3 : StarterKit embarque Link + Underline ; tables/listes/utils
+ * viennent des paquets consolidés `@tiptap/extension-table|list|extensions`.
  *
  * @param {Object} opts
  * @param {string} [opts.placeholder]
@@ -37,8 +33,15 @@ export function createRichTextExtensions(opts = {}) {
             heading: {
                 levels: [1, 2, 3, 4, 5, 6],
             },
+            link: {
+                openOnClick: false,
+                linkOnPaste: true,
+                HTMLAttributes: {
+                    class: "text-primary underline",
+                },
+            },
         }),
-        Underline,
+        TextStyle,
         Subscript,
         Superscript,
         Color,
@@ -48,13 +51,6 @@ export function createRichTextExtensions(opts = {}) {
         TextAlign.configure({
             types: ["heading", "paragraph"],
             defaultAlignment: "left",
-        }),
-        Link.configure({
-            openOnClick: false,
-            linkOnPaste: true,
-            HTMLAttributes: {
-                class: "text-primary underline",
-            },
         }),
         Image.configure({
             inline: true,

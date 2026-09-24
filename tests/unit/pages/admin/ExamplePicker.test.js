@@ -43,6 +43,7 @@ function lastFetchUrl() {
 
 describe("ExamplePicker", () => {
     beforeEach(() => {
+        global.route?.mockClear?.();
         global.fetch = vi.fn(async () => ({
             ok: true,
             json: async () => ({
@@ -54,7 +55,8 @@ describe("ExamplePicker", () => {
 
     afterEach(() => {
         vi.useRealTimers();
-        vi.restoreAllMocks();
+        // Ne pas restoreAllMocks : ça casse le mock Ziggy `global.route` du setup Vitest.
+        global.fetch = undefined;
     });
 
     it("demande les fiches playable du type courant dès le chargement", async () => {
@@ -156,8 +158,8 @@ describe("ExamplePicker", () => {
         await flushPromises();
         await nextTick();
 
-        expect(global.route.mock.calls[0][0]).toBe("api.tables.panoplies");
-        expect(global.route.mock.calls[0][1]["filters[state]"]).toBe("playable");
+        expect(global.route.mock.calls.at(-1)[0]).toBe("api.tables.panoplies");
+        expect(global.route.mock.calls.at(-1)[1]["filters[state]"]).toBe("playable");
 
         await wrapper.get("[data-testid='ia-example-results']").find("button").trigger("click");
         expect(wrapper.emitted("update:modelValue")?.[0]).toEqual([["Panoplie du Bouftou"]]);

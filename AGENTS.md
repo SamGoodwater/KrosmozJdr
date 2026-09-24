@@ -65,4 +65,4 @@ Créés par `UserSeeder` (mot de passe : `password`) : `superadmin@test.fr` (rô
 - Tests back : `php artisan test` (utilise MariaDB `krosmoz_testing`). Suite complète Feature ≈ longue (~25 min).
 - Tests front : `pnpm test:run` (Vitest, Node ≥ 22).
 - Build front : `pnpm build`.
-- Dépendance connue non corrigée ici : TipTap 2.x (CVE moderate, patch en ≥ 3.30.4 = major dédié).
+- Stack éditeur / tests : TipTap **3.x**, Vitest **4.1.11+** (Node ≥ 22).

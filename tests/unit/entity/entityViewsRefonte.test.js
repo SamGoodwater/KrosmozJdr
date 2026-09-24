@@ -25,6 +25,7 @@ describe("ENTITY_ACTION_CONTEXT_PRESETS", () => {
             "pin",
             "quick-view",
             "view-dofusdb",
+            "refresh",
             "favorite",
             "copy-link",
             "edit",
