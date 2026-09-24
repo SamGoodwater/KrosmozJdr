@@ -181,8 +181,7 @@ class SpecializationController extends Controller
             $specialization->update($validated);
         }
 
-        return redirect()->route('entities.specializations.show', $specialization)
-            ->with('success', 'Spécialisation mise à jour avec succès.');
+        return back()->with('success', 'Spécialisation mise à jour avec succès.');
     }
 
     public function updateSpells(UpdateSpecializationSpellsRequest $request, Specialization $specialization): RedirectResponse

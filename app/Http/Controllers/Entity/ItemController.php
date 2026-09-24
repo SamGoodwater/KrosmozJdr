@@ -170,9 +170,8 @@ class ItemController extends Controller
             ...ItemPanoplyPayload::eagerLoad(request()->user()),
         ]);
 
-        $availableResources = \App\Models\Entity\Resource::select('id', 'name', 'description', 'level')
-            ->orderBy('name')
-            ->get();
+        // Liste complète non embarquée : EntityRelationsManager / api.tables.resources
+        $availableResources = [];
 
         $effectUsages = $item->effectUsages()->with(['effectDegree.effect'])->get()->sortBy(fn ($u) => $u->effectDegree?->required_creature_level ?? 0)->values()->map(fn ($u) => [
             'id' => $u->id,
@@ -211,8 +210,7 @@ class ItemController extends Controller
         $item->update($request->validated());
         $item->load(['itemType', 'createdBy']);
 
-        return redirect()->route('entities.items.show', $item)
-            ->with('success', 'Item mis à jour avec succès.');
+        return back()->with('success', 'Item mis à jour avec succès.');
     }
 
     /**

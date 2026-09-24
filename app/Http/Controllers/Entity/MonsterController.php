@@ -250,8 +250,7 @@ class MonsterController extends Controller
 
         $monster->load(['creature', 'monsterRace']);
 
-        return redirect()->route('entities.monsters.show', $monster)
-            ->with('success', 'Monstre mis à jour avec succès.');
+        return back()->with('success', 'Monstre mis à jour avec succès.');
     }
 
     public function updateCreatureTraits(UpdateMonsterCreatureTraitsRequest $request, Monster $monster): RedirectResponse

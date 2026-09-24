@@ -1,8 +1,8 @@
 import { ref } from "vue";
 
 const SESSION_DISMISS_KEY = "krosmoz-site-loading-dismissed";
-const MIN_VISIBLE_MS = 1400;
-const READY_HOLD_MS = 900;
+const MIN_VISIBLE_MS = 600;
+const READY_HOLD_MS = 200;
 const MAX_VISIBLE_MS = 22000;
 /** Durée de la sortie zoom-through (doit matcher l’anim CSS `--exiting`). */
 const EXIT_MS = 500;

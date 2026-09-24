@@ -20,6 +20,8 @@ Route::middleware(['web'])->prefix('cms')->group(function () {
         ->name('api.cms.sections.preview-snippet-query');
     Route::get('/sections/{section}/preview-snippet', [CmsSectionPreviewController::class, 'show'])
         ->name('api.cms.sections.preview-snippet');
+    Route::get('/sections/{section}/content', [\App\Http\Controllers\Api\CmsSectionContentController::class, 'show'])
+        ->name('api.cms.sections.content');
     Route::get('/kref-entity-preview', [CmsKrefEntityPreviewController::class, 'show'])
         ->name('api.cms.kref-entity-preview');
 });

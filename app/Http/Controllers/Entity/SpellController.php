@@ -187,13 +187,20 @@ class SpellController extends Controller
 
         $editorData = app(EffectGroupEditorDataService::class);
 
+        $partialHeader = (string) request()->header('X-Inertia-Partial-Data', '');
+        $partialProps = $partialHeader === ''
+            ? null
+            : array_filter(array_map('trim', explode(',', $partialHeader)));
+        $needsFormOptions = $partialProps === null || in_array('effectFormOptions', $partialProps, true);
+        $needsGroups = $partialProps === null || in_array('spellEffectGroups', $partialProps, true);
+
         return [
             'spell' => $spell,
             'availableSpellTypes' => $availableSpellTypes,
             'availableEffects' => $availableEffects,
             'effectEntityType' => 'spell',
-            'effectFormOptions' => $editorData->formOptions(),
-            'spellEffectGroups' => $editorData->distinctGroupsForSpell($spell),
+            'effectFormOptions' => $needsFormOptions ? $editorData->formOptions() : [],
+            'spellEffectGroups' => $needsGroups ? $editorData->distinctGroupsForSpell($spell) : [],
         ];
     }
 
@@ -278,7 +285,7 @@ class SpellController extends Controller
 
         $successMessage = 'Sort mis à jour avec succès.';
 
-        if ($redirectAfter === 'stay') {
+        if ($redirectAfter === 'stay' || $redirectAfter === null || $redirectAfter === '') {
             return back()->with('success', $successMessage);
         }
 
@@ -292,8 +299,12 @@ class SpellController extends Controller
                 ->with('success', $successMessage);
         }
 
-        return redirect()->route('entities.spells.show', $spell)
-            ->with('success', $successMessage);
+        if ($redirectAfter === 'show') {
+            return redirect()->route('entities.spells.show', $spell)
+                ->with('success', $successMessage);
+        }
+
+        return back()->with('success', $successMessage);
     }
 
     /**

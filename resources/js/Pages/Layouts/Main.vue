@@ -157,7 +157,15 @@ watch([isDesktop, isMobile, isTablet], () => {
 onMounted(() => {
     window.addEventListener('resize', handleResize)
 
-    useCharacteristicsPiniaStore().fetchOnce().catch((err) => warnDev('Characteristics fetch failed:', err))
+    // Hors chemin critique : après first paint / idle (payload ~600–800 Ko).
+    const scheduleCharacteristicsFetch = () => {
+        useCharacteristicsPiniaStore().fetchOnce().catch((err) => warnDev('Characteristics fetch failed:', err))
+    }
+    if (typeof window.requestIdleCallback === 'function') {
+        window.requestIdleCallback(scheduleCharacteristicsFetch, { timeout: 2500 })
+    } else {
+        window.setTimeout(scheduleCharacteristicsFetch, 400)
+    }
 
     void import('cally')
 

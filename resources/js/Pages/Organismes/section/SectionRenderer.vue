@@ -15,8 +15,9 @@
  * @example
  * <SectionRenderer :section="section" :user="user" />
  */
-import { computed, ref, watch, shallowRef, nextTick } from 'vue';
+import { computed, ref, watch, shallowRef, nextTick, onMounted } from 'vue';
 import { router } from '@inertiajs/vue3';
+import axios from 'axios';
 import SectionHeader from '@/Pages/Molecules/section/SectionHeader.vue';
 import SectionContentSkeleton from '@/Pages/Molecules/section/SectionContentSkeleton.vue';
 import SectionParamsModal from './modals/SectionParamsModal.vue';
@@ -45,6 +46,54 @@ const props = defineProps({
     }
 });
 
+/** Section locale (peut recevoir le HTML différé via API). */
+const hydratedSection = ref({ ...props.section });
+watch(
+    () => props.section,
+    (s) => {
+        hydratedSection.value = { ...s };
+    },
+    { deep: true },
+);
+
+const contentLoading = ref(false);
+
+/**
+ * Charge data/settings si le payload Inertia a différé le HTML.
+ *
+ * @returns {Promise<void>}
+ */
+async function ensureSectionContent() {
+    const current = hydratedSection.value;
+    const deferred =
+        Boolean(current?.content_deferred) ||
+        Boolean(current?.data?.content_deferred);
+    if (!deferred || !current?.id || contentLoading.value) {
+        return;
+    }
+    contentLoading.value = true;
+    try {
+        const { data } = await axios.get(route('api.cms.sections.content', current.id), {
+            headers: { Accept: 'application/json' },
+        });
+        hydratedSection.value = {
+            ...current,
+            data: data?.data ?? {},
+            settings: data?.settings ?? current.settings,
+            files: data?.files ?? current.files,
+            content_deferred: false,
+        };
+    } catch (err) {
+        console.error('[SectionRenderer] chargement contenu différé échoué', err);
+    } finally {
+        contentLoading.value = false;
+    }
+}
+
+onMounted(() => {
+    void ensureSectionContent();
+});
+
 // Utiliser le composable UI unifié
 const { 
     sectionModel, 
@@ -52,7 +101,7 @@ const {
     templateInfo,
     stateInfo,
     uiData 
-} = useSectionUI(() => props.section);
+} = useSectionUI(() => hydratedSection.value);
 
 // États
 const isHovered = ref(false);
@@ -79,8 +128,9 @@ const { updateSection, deleteSection } = useSectionAPI();
 const { copyToClipboard } = useCopyToClipboard();
 
 // Activer automatiquement le mode édition si autoEdit est true
-watch(() => props.autoEdit, (shouldEdit) => {
+watch(() => props.autoEdit, async (shouldEdit) => {
     if (shouldEdit && sectionId.value && canEdit.value) {
+        await ensureSectionContent();
         setEditMode(true);
     }
 }, { immediate: true });
@@ -109,14 +159,14 @@ const isTemplateValid = computed(() => {
  * Données de la section
  */
 const sectionData = computed(() => {
-  return props.section.data || {};
+  return hydratedSection.value?.data || {};
 });
 
 /**
  * Paramètres de la section
  */
 const sectionSettings = computed(() => {
-  return props.section.settings || {};
+  return hydratedSection.value?.settings || {};
 });
 
 /**
@@ -177,9 +227,11 @@ const loadTemplateComponent = async () => {
 loadTemplateComponent();
 
 // Recharger le template quand le mode change
-watch(isEditing, (newValue, oldValue) => {
-  // S'assurer que le mode a vraiment changé
+watch(isEditing, async (newValue, oldValue) => {
   if (newValue !== oldValue) {
+    if (newValue) {
+      await ensureSectionContent();
+    }
     loadTemplateComponent();
   }
 }, { immediate: false, flush: 'sync' });
@@ -341,7 +393,7 @@ const handleDeleteSection = async () => {
     />
     <!-- Header toujours visible -->
     <SectionHeader
-      :title="section.title || sectionModel?.title"
+      :title="hydratedSection.title || sectionModel?.title"
       :isEditing="isEditing"
       :canEdit="canEdit"
       :canDelete="canEdit"
@@ -355,10 +407,10 @@ const handleDeleteSection = async () => {
     
     <div class="section-renderer__body min-w-0 max-w-full overflow-x-auto">
     <!-- Contenu selon le mode -->
-    <div v-if="isLoadingTemplate" class="section-loading">
+    <div v-if="isLoadingTemplate || contentLoading" class="section-loading">
       <SectionContentSkeleton
         :template="templateValue"
-        :title="section.title || sectionModel?.title || ''"
+        :title="hydratedSection.title || sectionModel?.title || ''"
         :show-header="false"
       />
         </div>
@@ -366,7 +418,7 @@ const handleDeleteSection = async () => {
         <component
       v-else-if="templateComponent"
             :is="templateComponent"
-            :section="section"
+            :section="hydratedSection"
       :data="sectionData"
       :settings="sectionSettings"
       :editing="isEditing"

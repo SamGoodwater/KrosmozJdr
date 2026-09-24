@@ -8,8 +8,6 @@ use App\Models\Characteristic;
 use App\Models\Effect;
 use App\Models\EffectDegree;
 use App\Models\EffectSubEffect;
-use App\Models\Entity\Condition;
-use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
 use App\Models\SubEffect;
 use Illuminate\Support\Collection;
@@ -68,24 +66,8 @@ final class EffectGroupEditorDataService
             ->orderBy('type_slug')
             ->orderBy('slug')
             ->get(['id', 'slug', 'type_slug', 'template_text', 'variables_allowed', 'param_schema']);
-        $monsters = Monster::with('creature:id,name')->orderBy('id')->get()->map(fn ($m) => [
-            'value' => $m->id,
-            'label' => $m->creature?->name ?? (string) $m->id,
-        ])->values()->all();
 
-        $conditions = Condition::query()
-            ->where('state', '!=', Condition::STATE_RAW)
-            ->orderBy('name')
-            ->get(['id', 'dofusdb_id', 'name', 'icon'])
-            ->map(fn ($st) => [
-                'id' => $st->id,
-                'dofusdb_id' => $st->dofusdb_id,
-                'name' => $st->name,
-                'icon' => $st->icon,
-            ])
-            ->values()
-            ->all();
-
+        // Monsters / conditions : non embarqués (EntityPickerCore / recherche API côté EffectGroupEditorForm).
         return [
             'effect_groups' => [],
             'sub_effects' => $subEffects->map(fn ($s) => [
@@ -98,8 +80,8 @@ final class EffectGroupEditorDataService
             ])->values()->all(),
             'characteristics' => config('effect_sub_effects.characteristics', []),
             'characteristics_object' => $this->characteristicsObjectForEffectEditor(),
-            'monsters' => $monsters,
-            'conditions' => $conditions,
+            'monsters' => [],
+            'conditions' => [],
             'scopes' => [
                 ['value' => 'general', 'label' => 'Général'],
                 ['value' => 'combat', 'label' => 'Combat'],

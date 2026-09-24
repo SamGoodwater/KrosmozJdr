@@ -10,8 +10,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * Resource API/Frontend pour l'entité Section.
  *
- * Structure et expose les champs principaux, relations et droits d'accès pour le frontend/API.
- * Permet d'inclure dynamiquement les relations si chargées.
+ * Sur `pages.show`, l’attribut de requête `page_show_eager_section_ids` limite
+ * le HTML (`data.content`) aux premières sections ; le reste charge via
+ * `api.cms.sections.content`.
  */
 class SectionResource extends JsonResource
 {
@@ -27,14 +28,27 @@ class SectionResource extends JsonResource
         /** @var Section $section */
         $section = $this->resource;
 
-        // IMPORTANT : S'assurer que la page est chargée pour que canBeEditedBy() puisse vérifier les droits
-        // La méthode canBeEditedBy() de Section vérifie les droits sur la section ET sur la page
+        // canBeEditedBy() a besoin de la page ; éviter N+1 si déjà setRelation depuis PageController.
         if (! $section->relationLoaded('page') && $section->page_id) {
             try {
                 $section->load('page');
             } catch (\Exception $e) {
-                // Si la page ne peut pas être chargée, continuer quand même
+                // continuer sans page
             }
+        }
+
+        $canUpdate = $user ? $user->can('update', $section) : false;
+
+        $eagerIds = $request->attributes->get('page_show_eager_section_ids');
+        $includeBody = ! is_array($eagerIds)
+            || in_array((int) $section->id, array_map('intval', $eagerIds), true);
+
+        $data = $section->data;
+        if (! $includeBody && is_array($data)) {
+            $data = array_merge($data, [
+                'content' => null,
+                'content_deferred' => true,
+            ]);
         }
 
         return [
@@ -45,21 +59,26 @@ class SectionResource extends JsonResource
             'order' => $section->order,
             'pivot_level' => ($pivotLevel = data_get($section, 'pivot.level')) !== null ? (int) $pivotLevel : null,
             'template' => $section->template instanceof SectionType ? $section->template->value : $section->template,
-            // Legacy compatibility: expose aussi `type` pour les clients anciens.
             'type' => $section->type instanceof SectionType ? $section->type->value : $section->type,
             'settings' => $section->settings,
-            'data' => $section->data,
+            'data' => $data,
             'state' => $section->state,
             'read_level' => (int) ($section->read_level ?? 0),
             'write_level' => (int) ($section->write_level ?? 0),
             'created_by' => $section->created_by,
             'created_at' => $section->created_at?->toISOString(),
             'updated_at' => $section->updated_at?->toISOString(),
+            'content_deferred' => ! $includeBody,
 
-            // Relations (chargées uniquement si incluses)
-            'page' => $this->whenLoaded('page'),
+            'page' => $this->when($includeBody && $section->relationLoaded('page'), function () use ($section) {
+                return [
+                    'id' => $section->page?->id,
+                    'slug' => $section->page?->slug,
+                    'title' => $section->page?->title,
+                ];
+            }),
             'users' => $this->whenLoaded('users'),
-            'files' => $this->whenLoaded('media', fn () => $section->getMedia('files')->map(function ($media) {
+            'files' => $this->when($includeBody && $section->relationLoaded('media'), fn () => $section->getMedia('files')->map(function ($media) {
                 return [
                     'id' => $media->id,
                     'file' => $media->getUrl(),
@@ -72,14 +91,11 @@ class SectionResource extends JsonResource
             })->values()->all()),
             'createdBy' => $this->whenLoaded('createdBy'),
 
-            // Droits d'accès pour l'utilisateur courant
-            // Utilise SectionPolicy::update() qui appelle Section::canBeEditedBy()
-            // qui vérifie maintenant les droits sur la section ET sur la page
             'can' => [
-                'update' => $user ? $user->can('update', $section) : false,
-                'delete' => $user ? $user->can('delete', $section) : false,
-                'forceDelete' => $user ? $user->can('forceDelete', $section) : false,
-                'restore' => $user ? $user->can('restore', $section) : false,
+                'update' => $canUpdate,
+                'delete' => $canUpdate,
+                'forceDelete' => $canUpdate && $user && $user->can('forceDelete', $section),
+                'restore' => $canUpdate && $user && $user->can('restore', $section),
             ],
         ];
     }

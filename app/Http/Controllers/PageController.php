@@ -159,6 +159,10 @@ class PageController extends Controller
 
         $page->setRelation('sections', $sections);
 
+        // Premières sections (et ancre future côté client) : HTML complet ; le reste différé.
+        $eagerSectionIds = $sections->sortBy('order')->values()->take(3)->pluck('id')->map(fn ($id) => (int) $id)->all();
+        request()->attributes->set('page_show_eager_section_ids', $eagerSectionIds);
+
         $pages = collect(PageService::getPagesSelectList());
 
         // Filtrer la page courante côté PHP (plus rapide que requête SQL)
@@ -192,6 +196,9 @@ class PageController extends Controller
         $sections = SectionService::getSectionsForPage($page, $user);
         $sections->each(fn ($section) => $section->setRelation('page', $page));
         $page->setRelation('sections', $sections);
+
+        $eagerSectionIds = $sections->sortBy('order')->values()->take(3)->pluck('id')->map(fn ($id) => (int) $id)->all();
+        request()->attributes->set('page_show_eager_section_ids', $eagerSectionIds);
 
         $pages = collect(PageService::getPagesSelectList());
         $pagesFiltered = $pages->where('id', '!=', $page->id)->values();

@@ -6,18 +6,19 @@ namespace App\Support\Entity;
 
 use App\Http\Resources\ObjectEffectResource;
 use App\Models\Characteristic;
-use App\Models\Entity\Monster;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
 /**
  * Listes pour les sélecteurs d’effets d’objet (pages d’édition Inertia).
+ *
+ * Les monstres ne sont plus embarqués (EntityPicker / api.tables) — évite ~2k lignes.
  */
 final class ObjectEffectEditOptions
 {
     /**
-     * @return array{objectEffectCharacteristics: Collection<int, Characteristic>, objectEffectMonsters: Collection<int, object>}
+     * @return array{objectEffectCharacteristics: Collection<int, Characteristic>, objectEffectMonsters: array<int, never>}
      */
     public static function toArray(): array
     {
@@ -26,16 +27,9 @@ final class ObjectEffectEditOptions
             ->orderBy('name')
             ->get(['id', 'key', 'name', 'short_name']);
 
-        $monsters = Monster::query()
-            ->join('creatures', 'creatures.id', '=', 'monsters.creature_id')
-            ->orderBy('creatures.name')
-            ->select(['monsters.id', 'creatures.name as name'])
-            ->limit(2000)
-            ->get();
-
         return [
             'objectEffectCharacteristics' => $characteristics,
-            'objectEffectMonsters' => $monsters,
+            'objectEffectMonsters' => [],
         ];
     }
 

@@ -4,6 +4,10 @@
 
 Sur téléphone (&lt; 768px), le menu bas et le contenu ne se marchent plus dessus (padding, FAB, cookies). Les filtres des bibliothèques d’entités s’ouvrent dans un tiroir latéral ; les modes de vue passent en icônes. Les tableaux s’adaptent à la largeur réelle du bloc (container queries), pas seulement à celle de l’écran.
 
+## Septembre 2026 — Perf : boot, Règles, édition, save
+
+Lancement plus léger (vues d’entités en lazy, caractéristiques hors chemin critique, splash plus court). Pages **Règles** : HTML des sections différé + lecture sans TipTap. Édition : plus de dump monstres/ressources/conditions dans les props. Enregistrement : on reste sur le formulaire (`back`) au lieu de recharger toute la fiche show.
+
 ## Septembre 2026 — TipTap 3 et Vitest 4
 
 L’éditeur riche passe en **TipTap 3** (extensions regroupées, signature `setContent` à jour). Les tests front tournent sous **Vitest 4.1.11** (pool forks). Les alertes de sécu TipTap / Vitest côté npm sont résolues.

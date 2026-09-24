@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Log;
 final class CharacteristicMetaByDbColumnService
 {
     /** Clé de cache pour le share Inertia `characteristics` (invalidée à la sauvegarde des pivots / masters). */
-    public const FRONTEND_CACHE_KEY = 'characteristics:frontend:v3';
+    public const FRONTEND_CACHE_KEY = 'characteristics:frontend:v4';
 
     /**
      * Mapping db_column → définition pour l'entité créature (monster, class, npc ou créature standalone).
@@ -437,7 +437,7 @@ final class CharacteristicMetaByDbColumnService
             'name' => $c->name,
             'short_name' => $c->short_name,
             'helper' => $c->helper,
-            'descriptions' => $c->descriptions,
+            'descriptions' => null,
             'icon' => $icons['icon'],
             'icon_false' => $icons['icon_false'],
             'color' => $c->color,
@@ -472,7 +472,8 @@ final class CharacteristicMetaByDbColumnService
             'name' => $c->name,
             'short_name' => $c->short_name,
             'helper' => $c->helper,
-            'descriptions' => $c->descriptions,
+            // Descriptions lore omises du payload front (~200 Ko) — non requises pour icônes/couleurs/filtres.
+            'descriptions' => null,
             'icon' => $icons['icon'],
             'icon_false' => $icons['icon_false'],
             'color' => $c->color,

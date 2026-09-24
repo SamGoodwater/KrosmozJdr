@@ -180,7 +180,7 @@ class ConsumableController extends Controller
         return Inertia::render('Pages/entity/consumable/Edit', array_merge([
             'consumable' => new ConsumableResource($consumable),
             'availableConsumableTypes' => $availableConsumableTypes,
-            'availableResources' => Resource::query()->select('id', 'name', 'description', 'level')->orderBy('name')->get(),
+            'availableResources' => [],
             'effectUsages' => $effectUsages,
             'availableEffects' => $availableEffects,
             'effectEntityType' => 'consumable',
@@ -198,8 +198,7 @@ class ConsumableController extends Controller
 
         $consumable->load(['createdBy', 'consumableType']);
 
-        return redirect()->route('entities.consumables.show', $consumable)
-            ->with('success', 'Consommable mis à jour avec succès.');
+        return back()->with('success', 'Consommable mis à jour avec succès.');
     }
 
     /**

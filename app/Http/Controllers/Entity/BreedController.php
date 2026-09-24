@@ -197,8 +197,7 @@ class BreedController extends Controller
             app(SyncBreedElementOrientations::class)->sync($breed, $orientations);
         }
 
-        return redirect()->route('entities.breeds.show', $breed)
-            ->with('success', 'Classe mise à jour avec succès.');
+        return back()->with('success', 'Classe mise à jour avec succès.');
     }
 
     /**

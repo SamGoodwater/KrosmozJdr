@@ -5,6 +5,7 @@
 import { ref, watch } from 'vue';
 import axios from 'axios';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
+import EntityPickerCore from '@/Pages/Organismes/entity/EntityPickerCore.vue';
 
 const ACTION_OPTIONS = [
     { value: 'regenerate', label: 'Régénérer' },
@@ -179,12 +180,13 @@ async function deleteRow(id) {
                     </div>
                     <div v-if="showMonster(row.action)" class="min-w-[220px] flex-1">
                         <label class="label text-xs">Monstre</label>
-                        <select v-model="row.monster_id" class="select select-bordered select-sm w-full">
-                            <option value="">—</option>
-                            <option v-for="m in objectEffectMonsters" :key="m.id" :value="m.id">
-                                {{ m.name || 'Monstre #' + m.id }}
-                            </option>
-                        </select>
+                        <EntityPickerCore
+                            entity-type="monsters"
+                            :model-value="row.monster_id || null"
+                            :multiple="false"
+                            placeholder="Rechercher un monstre…"
+                            @update:model-value="(id) => { row.monster_id = id ?? ''; }"
+                        />
                     </div>
                     <div v-if="showValue(row.action)" class="w-28">
                         <label class="label text-xs">Valeur</label>

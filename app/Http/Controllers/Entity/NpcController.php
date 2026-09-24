@@ -294,8 +294,7 @@ class NpcController extends Controller
             }
         }
 
-        return redirect()->route('entities.npcs.show', $npc)
-            ->with('success', 'PNJ mis à jour avec succès.');
+        return back()->with('success', 'PNJ mis à jour avec succès.');
     }
 
     public function updateLanguages(UpdateNpcLanguagesRequest $request, Npc $npc): RedirectResponse
