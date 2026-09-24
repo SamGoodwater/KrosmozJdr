@@ -147,7 +147,7 @@
   },
   {
     "name": "OverlayTrigger",
-    "description": "Sans chrome (fond, padding, bordure) : le contenu fournit déjà sa surface (ex. fiche minimale d’entité, panneau `SpellUsageCharacteristicTooltipPanel`).",
+    "description": "Styles additionnels du panneau (ex. `--color` d’accent).",
     "props": [],
     "slots": [],
     "file": "overlay/OverlayTrigger.vue"
@@ -514,61 +514,15 @@
   {
     "name": "Drawer",
     "description": "Drawer Molecule (DaisyUI + Custom Utility)",
-    "props": [
-      {
-        "name": "modelValue",
-        "type": "Boolean",
-        "desc": "- Contrôle l'ouverture du drawer (v-model)"
-      },
-      {
-        "name": "side",
-        "type": "String",
-        "desc": "- Côté du drawer ('start'|'end'), défaut 'start'"
-      },
-      {
-        "name": "overlay",
-        "type": "Boolean",
-        "desc": "- Affiche l'overlay (défaut true)"
-      },
-      {
-        "name": "id",
-        "type": "String",
-        "desc": "- Identifiant unique (pour l'input/label)"
-      },
-      {
-        "name": "width",
-        "type": "String",
-        "desc": "- Largeur custom (ex: 'w-80', 'w-96')"
-      },
-      {
-        "name": "closeOnOverlay",
-        "type": "Boolean",
-        "desc": "- Ferme au clic sur l'overlay (défaut true)"
-      },
-      {
-        "name": "ariaLabel",
-        "type": "String",
-        "desc": "- Accessibilité"
-      },
-      {
-        "name": "class",
-        "type": "String",
-        "desc": "- Classes custom"
-      },
-      {
-        "name": "shadow",
-        "type": "String",
-        "desc": "backdrop, opacity, rounded - utilitaires custom"
-      }
-    ],
+    "props": [],
     "slots": [
       {
         "name": "default",
-        "desc": "- Contenu principal (drawer-content)"
+        "desc": "- Contenu principal (drawer-content) — ignoré si overlayOnly"
       },
       {
         "name": "sidebar",
-        "desc": "- Contenu du drawer (menu, navigation, etc.)"
+        "desc": "- Contenu du panneau latéral"
       },
       {
         "name": "toggle",
@@ -690,6 +644,16 @@
         "name": "contractedDisplayTime",
         "type": "Number",
         "desc": "- Temps en mode contracted"
+      },
+      {
+        "name": "paused",
+        "type": "Boolean",
+        "desc": "- Compte à rebours en pause"
+      },
+      {
+        "name": "elapsedAtPause",
+        "type": "Number|null",
+        "desc": "- Temps écoulé figé pendant la pause"
       }
     ],
     "slots": [
@@ -1237,7 +1201,33 @@
   {
     "name": "EntityViewFullWrapper",
     "description": "EntityViewFullWrapper — Wrapper pour les vues Full affichées en page",
-    "props": [],
+    "props": [
+      {
+        "name": "showBackButton",
+        "type": "Boolean",
+        "desc": "- Affiche le bouton Liste"
+      },
+      {
+        "name": "backRoute",
+        "type": "String",
+        "desc": "- Nom de route Ziggy vers l’index"
+      },
+      {
+        "name": "backRouteParams",
+        "type": "Object|Array",
+        "desc": "- Params Ziggy (optionnel)"
+      },
+      {
+        "name": "backHref",
+        "type": "String",
+        "desc": "- URL directe (optionnel)"
+      },
+      {
+        "name": "backLabel",
+        "type": "String",
+        "desc": "- Libellé (défaut : « Liste »)"
+      }
+    ],
     "slots": [],
     "file": "entity/shared/EntityViewFullWrapper.vue"
   },
@@ -2579,7 +2569,7 @@
   },
   {
     "name": "RichTextReadonlyView",
-    "description": "Affichage HTML TipTap en lecture seule (mêmes extensions que l’éditeur, dont références kref).",
+    "description": "Affichage HTML TipTap en lecture seule (sans instancier l’éditeur TipTap). Sanitize + interactions kref ; TipTap reste réservé à l’édition.",
     "props": [],
     "slots": [],
     "file": "data-display/RichTextReadonlyView.vue"

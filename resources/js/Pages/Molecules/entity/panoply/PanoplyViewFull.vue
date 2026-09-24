@@ -238,10 +238,10 @@ const handleAction = async (actionKey) => {
 </script>
 
 <template>
-    <div class="space-y-6">
+    <div class="space-y-4">
         <EntityViewHeader :mode="headerMode">
             <template #media>
-                <div class="w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72 overflow-hidden rounded-box border border-base-300/60 bg-base-200">
+                <div class="w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56 overflow-hidden rounded-box border border-base-300/60 bg-base-200">
                     <PanoplyThumb
                         size="fill"
                         :items="linkedItems"

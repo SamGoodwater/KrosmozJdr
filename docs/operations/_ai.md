@@ -30,7 +30,7 @@ Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interact
 ## Chemins importants
 
 - Disque public versionné : `storage/app/public/` sauf `images/entity/`, `images/users/` et `downloads/generated/`. Lien web : `php artisan storage:link` (`public/storage` non versionné). Fichier public manquant sous `/storage/…` → route `storage.local` (disque `private`, `serve: true`) → **403**, pas 404.
-- Source règles CMS : `private/game/rules/TABLE_DES_MATIERES.md`. Chapitre 5 → menu **Pour les MJ** (`read_level` MJ). `rules:compile-downloads` : PDF/ODT joueur (ch. 1–4, disque public) + atelier MJ (ch. 5, disque `local` privé — pas `/storage/…`). Changelog hors livre (page Informations). Bouton admin `/admin/content` : file `rules-downloads` + worker ponctuel.
+- Source règles CMS : `private/game/rules/TABLE_DES_MATIERES.md`. Chapitre 5 → menu **Pour les MJ** (`read_level` MJ). `rules:compile-downloads` : PDF/ODT joueur (ch. 1–4) + **L’Essentiel** (seed `essential-pages.php`, public) + atelier MJ (ch. 5, disque `local` privé — pas `/storage/…`). Changelog hors livre (page Informations). Bouton admin `/admin/content` : file `rules-downloads` + worker ponctuel.
 - UI orphelins : `/admin/orphan-files` (super_admin).
 - UI nettoyage caches : `/admin/project-clear` (super_admin).
 - Backup : `project:backup` → `storage/app/backups` (rétention 30 j, cron `project_backup` off par défaut, UI `/admin/backup`) ; restore manuel dans [README.md](README.md#sauvegardes-projectbackup).

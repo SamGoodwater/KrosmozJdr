@@ -789,7 +789,7 @@
   },
   {
     "name": "EffectUsagesManager",
-    "description": "EffectUsagesManager — Gestion des effect_usages (item, consommable, ressource) : lien vers un degré d’effet. Le seuil « niveau créature min. » est porté par le degré ; le modifier dans l’éditeur d’effet / admin.",
+    "description": "EffectUsagesManager — Gestion des effect_usages (item, consommable, ressource) : lien vers un degré d’effet. Le seuil « niveau créature min. » est porté par le degré ; le modifier dans l’éditeur d’effet / admin. Catalogue des degrés : recherche GET /api/effects/effects (pas de dump Inertia).",
     "props": [],
     "slots": [],
     "file": "entity/EffectUsagesManager.vue"
@@ -831,7 +831,7 @@
   },
   {
     "name": "BreedSpellSlotsEditor",
-    "description": "Édition des sorts par emplacement + bloc « hors emplacement » (pivot 0/1). Affichage des sorts via SpellViewText (aperçu minimal au survol).",
+    "description": "Édition des sorts par emplacement + bloc « hors emplacement » (pivot 0/1). Affichage des sorts via SpellViewText (aperçu minimal au survol). Ajout via EntityPicker / api.tables.spells (pas de catalogue Inertia massif).",
     "props": [],
     "slots": [],
     "file": "entity/BreedSpellSlotsEditor.vue"
@@ -845,7 +845,7 @@
   },
   {
     "name": "BreedCapabilitiesEditor",
-    "description": "Capacités liées à une classe (liste plate, pas d’emplacement).",
+    "description": "Capacités liées à une classe (liste plate, pas d’emplacement). Ajout via EntityPicker / api.tables.capabilities.",
     "props": [],
     "slots": [],
     "file": "entity/BreedCapabilitiesEditor.vue"

@@ -18,12 +18,14 @@ const props = defineProps({
     closeOnOutside: { type: Boolean, default: true },
     closeOnEscape: { type: Boolean, default: true },
     panelClass: { type: String, default: "" },
+    /** Styles additionnels du panneau (ex. `--color` d’accent). */
+    panelStyle: { type: Object, default: () => ({}) },
     renderer: { type: [Object, Function], default: null },
     offsetPx: { type: Number, default: 8 },
     allowFlip: { type: Boolean, default: true },
     /**
      * Sans chrome (fond, padding, bordure) : le contenu fournit déjà sa surface
-     * (ex. fiche minimale d’entité, panneau `SpellUsageCharacteristicTooltipPanel`).
+     * (ex. fiche minimale d’entité, panneau d’effet chromé).
      */
     chromeless: { type: Boolean, default: false },
 });
@@ -153,6 +155,7 @@ const panelPointerEventsClass = computed(() =>
 );
 const panelStyle = computed(() => ({
     ...(floatingStyles?.value || {}),
+    ...(props.panelStyle && typeof props.panelStyle === "object" ? props.panelStyle : {}),
     zIndex: OVERLAY_Z_INDEX.floatingPanel,
 }));
 const isPositionReady = computed(() => {
@@ -231,7 +234,7 @@ function handleKeydown(event) {
             @mouseleave="onHoverPanelLeave"
             @keydown="handleKeydown"
         >
-            <div v-if="loading" class="flex items-center gap-2 p-2 text-xs text-base-content/70">
+            <div v-if="loading" class="flex items-center gap-2 text-xs opacity-70">
                 <span class="loading loading-spinner loading-xs"></span>
                 <span>Chargement...</span>
             </div>
@@ -249,10 +252,10 @@ function handleKeydown(event) {
             />
 
             <!-- eslint-disable vue/no-v-html -->
-            <div v-else-if="resolvedKind === 'html'" class="p-2 text-sm" v-html="safeHtml"></div>
+            <div v-else-if="resolvedKind === 'html'" class="text-sm" v-html="safeHtml"></div>
             <!-- eslint-enable vue/no-v-html -->
 
-            <div v-else class="p-2 text-sm">
+            <div v-else class="text-sm">
                 {{ resolved }}
             </div>
         </div>

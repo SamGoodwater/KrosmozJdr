@@ -3,13 +3,12 @@
  * Monster Edit Page
  *
  * @description
- * Page d'édition d'un monstre via le formulaire d'entité générique.
- * Les blocs relationnels sont regroupés dans des Collapse pour alléger la lecture.
+ * Édition dense d’un monstre : coquille dense + sous-managers créature en collapses.
  *
  * @props {Object} monster - Données du monstre à éditer
  */
 import { computed } from 'vue';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Monster } from '@/Models/Entity/Monster';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
@@ -19,7 +18,11 @@ import CreatureTraitsEditor from '@/Pages/Organismes/entity/CreatureTraitsEditor
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import Route from '@/Pages/Atoms/action/Route.vue';
+import EntityListBackButton from '@/Pages/Atoms/action/EntityListBackButton.vue';
+import {
+    buildMonsterFormFieldsConfig,
+    MONSTER_FORM_FIELD_SECTIONS_EDIT,
+} from '@/Entities/monster/monster-form-config';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -27,52 +30,33 @@ const { setPageTitle } = usePageTitle();
 const props = defineProps({
     monster: {
         type: Object,
-        required: true
+        required: true,
     },
     availableScenarios: {
         type: Array,
-        default: () => []
+        default: () => [],
     },
     availableCampaigns: {
         type: Array,
-        default: () => []
+        default: () => [],
     },
     availableSpells: {
         type: Array,
-        default: () => []
+        default: () => [],
     },
     availableLanguages: {
         type: Array,
-        default: () => []
+        default: () => [],
     },
     availableCreatureTraits: {
         type: Array,
-        default: () => []
-    }
+        default: () => [],
+    },
 });
 
-const fieldsConfig = {
-    size: {
-        type: 'number',
-        label: 'Taille',
-        required: false,
-        showInCompact: true
-    },
-    is_boss: {
-        type: 'checkbox',
-        label: 'Boss',
-        required: false,
-        showInCompact: true
-    },
-    boss_pa: {
-        type: 'number',
-        label: 'PA légendaires',
-        required: false,
-        showInCompact: false,
-        visibleWhen: { field: 'is_boss', value: true },
-        tooltip: "Pool hors tour, utilisable entre deux tours d'autres créatures. Se recharge à la fin du tour du boss."
-    }
-};
+const fieldsConfig = computed(() => buildMonsterFormFieldsConfig());
+const fieldSections = MONSTER_FORM_FIELD_SECTIONS_EDIT;
+const fixedFooterInsetClass = 'left-0 right-0';
 
 const monster = computed(() => {
     const monsterData = props.monster || page.props.monster || {};
@@ -84,77 +68,92 @@ const monsterName = computed(() => {
 });
 
 setPageTitle(`Modifier le monstre : ${monsterName.value}`);
+
+function goToShow() {
+    const id = monster.value?.id;
+    if (!id) return;
+    router.visit(route('entities.monsters.show', { monster: id }));
+}
 </script>
 
 <template>
     <Head :title="`Modifier le monstre : ${monsterName}`" />
 
-    <Container class="space-y-6">
-        <Route route="entities.monsters.index">
-            <Btn color="neutral" variant="ghost" size="sm" class="gap-2">
-                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                Retour à la liste
-            </Btn>
-        </Route>
-
-        <div class="rounded-box bg-base-200 p-4">
-            <p class="text-sm text-base-content/70">
-                <strong>Note :</strong> Le nom et les statistiques (totaux / bonus contextuels) sont
-                portés par la créature associée. Voir
-                <code class="text-xs">docs/features/characteristics/COMPUTED_VALUES.md</code>.
-            </p>
-            <p v-if="monster.creature" class="mt-2">
-                <strong>Créature associée :</strong> {{ monster.creature.name }}
-            </p>
+    <Container class="space-y-4">
+        <div
+            class="sticky top-0 z-20 px-3 py-1 bg-glass-3xl backdrop-blur-md border-glass-b-md sm:px-4"
+            style="--bg-color: var(--color-base-100)"
+        >
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="min-w-0 flex-1">
+                    <h1 class="truncate text-md font-bold text-base-content sm:text-lg">
+                        {{ monsterName }}
+                    </h1>
+                    <p class="text-xs text-base-content/60">
+                        Édition · ID {{ monster.id }}
+                        <span v-if="monster.creature">
+                            · Créature : {{ monster.creature.name }}
+                        </span>
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <EntityListBackButton route-name="entities.monsters.index" />
+                    <Btn
+                        color="neutral"
+                        variant="outline"
+                        size="xs"
+                        type="button"
+                        class="gap-1.5"
+                        @click="goToShow"
+                    >
+                        <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+                        Fiche
+                    </Btn>
+                </div>
+            </div>
         </div>
+
+        <p class="text-xs text-base-content/60 px-1">
+            Nom et statistiques (totaux / bonus) sont portés par la créature associée.
+        </p>
 
         <EntityEditForm
             :entity="monster"
             entity-type="monster"
             :fields-config="fieldsConfig"
             :is-updating="true"
+            :field-sections="fieldSections"
+            :show-state-toolbar="true"
+            :show-access-levels-in-footer="false"
+            layout-profile="dense"
             :fixed-footer-actions="true"
+            :fixed-footer-inset-class="fixedFooterInsetClass"
+            :compact-access-levels="true"
         />
 
         <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
-            <template #title>Scénarios</template>
+            <template #title>Langues &amp; traits</template>
             <template #content>
-                <EntityRelationsManager
-                    :relations="monster.scenarios || []"
-                    :available-items="availableScenarios"
-                    :entity-id="monster.id"
-                    entity-type="monsters"
-                    relation-type="scenarios"
-                    relation-name="Scénarios du monstre"
-                    :config="{
-                        displayFields: ['name', 'description'],
-                        searchFields: ['name', 'description'],
-                        itemLabel: 'scénario',
-                        itemLabelPlural: 'scénarios',
-                        searchApiEntityType: 'scenarios',
-                    }"
-                />
-            </template>
-        </Collapse>
+                <div class="space-y-4">
+                    <EntityLanguagesEditor
+                        v-if="monster.id"
+                        entity-type="monster"
+                        :relations="monster.languages || []"
+                        :available-items="availableLanguages"
+                        :entity-id="monster.id"
+                    />
 
-        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
-            <template #title>Campagnes</template>
-            <template #content>
-                <EntityRelationsManager
-                    :relations="monster.campaigns || []"
-                    :available-items="availableCampaigns"
-                    :entity-id="monster.id"
-                    entity-type="monsters"
-                    relation-type="campaigns"
-                    relation-name="Campagnes du monstre"
-                    :config="{
-                        displayFields: ['name', 'description'],
-                        searchFields: ['name', 'description'],
-                        itemLabel: 'campagne',
-                        itemLabelPlural: 'campagnes',
-                        searchApiEntityType: 'campaigns',
-                    }"
-                />
+                    <CreatureTraitsEditor
+                        v-if="monster.id"
+                        :relations="monster.creature?.creatureTraits || monster.creatureTraits || []"
+                        :available-items="availableCreatureTraits"
+                        :entity-id="monster.id"
+                        route-name="entities.monsters.updateCreatureTraits"
+                        route-param-name="monster"
+                        title="Traits du monstre"
+                        help="Traits innés du monstre. Ces traits sont attachés directement à sa créature et n'ont pas de niveau d'activation."
+                    />
+                </div>
             </template>
         </Collapse>
 
@@ -182,26 +181,39 @@ setPageTitle(`Modifier le monstre : ${monsterName.value}`);
         </Collapse>
 
         <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
-            <template #title>Langues &amp; traits</template>
+            <template #title>Scénarios &amp; campagnes</template>
             <template #content>
                 <div class="space-y-4">
-                    <EntityLanguagesEditor
-                        v-if="monster.id"
-                        entity-type="monster"
-                        :relations="monster.languages || []"
-                        :available-items="availableLanguages"
+                    <EntityRelationsManager
+                        :relations="monster.scenarios || []"
+                        :available-items="availableScenarios"
                         :entity-id="monster.id"
+                        entity-type="monsters"
+                        relation-type="scenarios"
+                        relation-name="Scénarios du monstre"
+                        :config="{
+                            displayFields: ['name', 'description'],
+                            searchFields: ['name', 'description'],
+                            itemLabel: 'scénario',
+                            itemLabelPlural: 'scénarios',
+                            searchApiEntityType: 'scenarios',
+                        }"
                     />
 
-                    <CreatureTraitsEditor
-                        v-if="monster.id"
-                        :relations="monster.creature?.creatureTraits || monster.creatureTraits || []"
-                        :available-items="availableCreatureTraits"
+                    <EntityRelationsManager
+                        :relations="monster.campaigns || []"
+                        :available-items="availableCampaigns"
                         :entity-id="monster.id"
-                        route-name="entities.monsters.updateCreatureTraits"
-                        route-param-name="monster"
-                        title="Traits du monstre"
-                        help="Traits innés du monstre. Ces traits sont attachés directement à sa créature et n'ont pas de niveau d'activation."
+                        entity-type="monsters"
+                        relation-type="campaigns"
+                        relation-name="Campagnes du monstre"
+                        :config="{
+                            displayFields: ['name', 'description'],
+                            searchFields: ['name', 'description'],
+                            itemLabel: 'campagne',
+                            itemLabelPlural: 'campagnes',
+                            searchApiEntityType: 'campaigns',
+                        }"
                     />
                 </div>
             </template>

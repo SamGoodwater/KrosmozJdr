@@ -253,6 +253,18 @@ HTML;
                 true
             );
 
+            if (isset($pageConfig['download_catalog']) && is_array($pageConfig['download_catalog'])) {
+                $download = $pageConfig['download_catalog'];
+                $this->ensureDownloadCatalogSection(
+                    $page,
+                    $pageConfig['slug'].'-'.(string) ($download['slug'] ?? 'telechargements'),
+                    (string) ($download['title'] ?? 'Téléchargements'),
+                    is_array($download['settings'] ?? null) ? $download['settings'] : ['groups' => ['essentiel']],
+                    $order++,
+                    $creatorId
+                );
+            }
+
             foreach ($pageConfig['sections'] as $section) {
                 $this->ensureTextSection(
                     $page,
@@ -286,6 +298,7 @@ HTML;
      *
      * @param array{
      *   slug: string,
+     *   download_catalog?: array{slug?: string, title?: string, settings?: array<string, mixed>},
      *   sections: list<array{slug: string, title: string, html: string}>,
      *   include_reference_table?: bool
      * } $pageConfig
@@ -293,6 +306,10 @@ HTML;
     private function removeOrphanEssentialSections(Page $page, array $pageConfig): void
     {
         $expectedSlugs = [$pageConfig['slug'].'-intro'];
+        if (isset($pageConfig['download_catalog']) && is_array($pageConfig['download_catalog'])) {
+            $downloadSlug = (string) ($pageConfig['download_catalog']['slug'] ?? 'telechargements');
+            $expectedSlugs[] = $pageConfig['slug'].'-'.$downloadSlug;
+        }
         foreach ($pageConfig['sections'] as $section) {
             $expectedSlugs[] = $pageConfig['slug'].'-'.$section['slug'];
         }

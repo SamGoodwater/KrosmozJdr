@@ -1,20 +1,24 @@
 <script setup>
 /**
  * Shop Edit Page
- * 
+ *
  * @description
- * Page d'édition d'une hotel de vente avec gestion des relations (Items, Consumables, Resources avec prix/quantité/commentaire)
+ * Édition dense d’un hôtel de vente : grille fieldSections + inventaire en collapses.
  */
 import { computed } from 'vue';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Shop } from '@/Models/Entity/Shop';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
+import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import Route from '@/Pages/Atoms/action/Route.vue';
-import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants';
+import EntityListBackButton from '@/Pages/Atoms/action/EntityListBackButton.vue';
+import {
+    buildShopFormFieldsConfig,
+    SHOP_FORM_FIELD_SECTIONS_EDIT,
+} from '@/Entities/shop/shop-form-config';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -22,153 +26,143 @@ const { setPageTitle } = usePageTitle();
 const props = defineProps({
     shop: {
         type: Object,
-        required: true
+        required: true,
     },
     availableItems: {
         type: Array,
-        default: () => []
+        default: () => [],
     },
     availableConsumables: {
         type: Array,
-        default: () => []
+        default: () => [],
     },
     availableResources: {
         type: Array,
-        default: () => []
-    }
+        default: () => [],
+    },
 });
 
-const fieldsConfig = {
-    name: { 
-        type: 'text', 
-        label: 'Nom', 
-        required: true, 
-        showInCompact: true 
-    },
-    description: { 
-        type: 'textarea', 
-        label: 'Description', 
-        required: false, 
-        showInCompact: false 
-    },
-    location: { 
-        type: 'text', 
-        label: 'Localisation', 
-        required: false, 
-        showInCompact: false 
-    },
-    price: { 
-        type: 'number', 
-        label: 'Prix', 
-        required: false, 
-        showInCompact: true 
-    },
-    state: {
-        type: 'select',
-        label: 'État',
-        required: false,
-        showInCompact: true,
-        options: getEntityStateOptions(),
-    },
-    read_level: {
-        type: 'select',
-        label: 'Lecture (min.)',
-        required: false,
-        showInCompact: false,
-        options: getUserRoleOptions(),
-    },
-    write_level: {
-        type: 'select',
-        label: 'Écriture (min.)',
-        required: false,
-        showInCompact: false,
-        options: getUserRoleOptions(),
-    },
-    image: { 
-        type: 'file', 
-        label: 'Image', 
-        required: false, 
-        showInCompact: false 
-    }
-};
+const fieldsConfig = computed(() =>
+    buildShopFormFieldsConfig({ includeReadonlyMeta: true }),
+);
+const fieldSections = SHOP_FORM_FIELD_SECTIONS_EDIT;
+const fixedFooterInsetClass = 'left-0 right-0';
 
-// Créer une instance de modèle Shop
 const shop = computed(() => {
     const shopData = props.shop || page.props.shop || {};
     return new Shop(shopData);
 });
 
 setPageTitle(`Modifier la hotel de vente : ${shop.value.name || 'Nouvelle hotel de vente'}`);
+
+function goToShow() {
+    const id = shop.value?.id;
+    if (!id) return;
+    router.visit(route('entities.shops.show', { shop: id }));
+}
 </script>
 
 <template>
     <Head :title="`Modifier la hotel de vente : ${shop?.name || 'Nouvelle hotel de vente'}`" />
-    
-    <Container class="space-y-6">
-        <Route route="entities.shops.index">
-            <Btn color="neutral" variant="ghost" size="sm" class="gap-2">
-                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                Retour à la liste
-            </Btn>
-        </Route>
+
+    <Container class="space-y-4">
+        <div
+            class="sticky top-0 z-20 px-3 py-1 bg-glass-3xl backdrop-blur-md border-glass-b-md sm:px-4"
+            style="--bg-color: var(--color-base-100)"
+        >
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="min-w-0 flex-1">
+                    <h1 class="truncate text-md font-bold text-base-content sm:text-lg">
+                        {{ shop.name || 'Hôtel de vente sans nom' }}
+                    </h1>
+                    <p class="text-xs text-base-content/60">
+                        Édition · ID {{ shop.id }}
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <EntityListBackButton route-name="entities.shops.index" />
+                    <Btn
+                        color="neutral"
+                        variant="outline"
+                        size="xs"
+                        type="button"
+                        class="gap-1.5"
+                        @click="goToShow"
+                    >
+                        <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+                        Fiche
+                    </Btn>
+                </div>
+            </div>
+        </div>
 
         <EntityEditForm
             :entity="shop"
             entity-type="shop"
             :fields-config="fieldsConfig"
             :is-updating="true"
+            :field-sections="fieldSections"
+            :show-state-toolbar="true"
+            :show-access-levels-in-footer="false"
+            layout-profile="dense"
+            :fixed-footer-actions="true"
+            :fixed-footer-inset-class="fixedFooterInsetClass"
+            :compact-access-levels="true"
         />
-        
-        <!-- Gestion des objets de la hotel de vente (avec prix/quantité/commentaire) -->
-        <EntityRelationsManager
-            :relations="shop.items || []"
-            :available-items="availableItems"
-            :entity-id="shop.id"
-            entity-type="shops"
-            relation-type="items"
-            relation-name="Objets vendus dans la hotel de vente"
-            :config="{
-                displayFields: ['name', 'description', 'level'],
-                searchFields: ['name', 'description'],
-                pivotFields: ['quantity', 'price', 'comment'],
-                itemLabel: 'objet',
-                itemLabelPlural: 'objets'
-            }"
-        />
-        
-        <!-- Gestion des consommables de la hotel de vente (avec prix/quantité/commentaire) -->
-        <EntityRelationsManager
-            :relations="shop.consumables || []"
-            :available-items="availableConsumables"
-            :entity-id="shop.id"
-            entity-type="shops"
-            relation-type="consumables"
-            relation-name="Consommables vendus dans la hotel de vente"
-            :config="{
-                displayFields: ['name', 'description', 'level'],
-                searchFields: ['name', 'description'],
-                pivotFields: ['quantity', 'price', 'comment'],
-                itemLabel: 'consommable',
-                itemLabelPlural: 'consommables'
-            }"
-        />
-        
-        <!-- Gestion des ressources de la hotel de vente (avec prix/quantité/commentaire) -->
-        <EntityRelationsManager
-            :relations="shop.resources || []"
-            :available-items="availableResources"
-            :entity-id="shop.id"
-            entity-type="shops"
-            relation-type="resources"
-            relation-name="Ressources vendues dans la hotel de vente"
-            :config="{
-                displayFields: ['name', 'description', 'level'],
-                searchFields: ['name', 'description'],
-                pivotFields: ['quantity', 'price', 'comment'],
-                itemLabel: 'ressource',
-                itemLabelPlural: 'ressources'
-            }"
-        />
+
+        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
+            <template #title>Inventaire (objets, conso, ressources)</template>
+            <template #content>
+                <div class="space-y-4">
+                    <EntityRelationsManager
+                        :relations="shop.items || []"
+                        :available-items="availableItems"
+                        :entity-id="shop.id"
+                        entity-type="shops"
+                        relation-type="items"
+                        relation-name="Objets vendus dans la hotel de vente"
+                        :config="{
+                            displayFields: ['name', 'description', 'level'],
+                            searchFields: ['name', 'description'],
+                            pivotFields: ['quantity', 'price', 'comment'],
+                            itemLabel: 'objet',
+                            itemLabelPlural: 'objets'
+                        }"
+                    />
+
+                    <EntityRelationsManager
+                        :relations="shop.consumables || []"
+                        :available-items="availableConsumables"
+                        :entity-id="shop.id"
+                        entity-type="shops"
+                        relation-type="consumables"
+                        relation-name="Consommables vendus dans la hotel de vente"
+                        :config="{
+                            displayFields: ['name', 'description', 'level'],
+                            searchFields: ['name', 'description'],
+                            pivotFields: ['quantity', 'price', 'comment'],
+                            itemLabel: 'consommable',
+                            itemLabelPlural: 'consommables'
+                        }"
+                    />
+
+                    <EntityRelationsManager
+                        :relations="shop.resources || []"
+                        :available-items="availableResources"
+                        :entity-id="shop.id"
+                        entity-type="shops"
+                        relation-type="resources"
+                        relation-name="Ressources vendues dans la hotel de vente"
+                        :config="{
+                            displayFields: ['name', 'description', 'level'],
+                            searchFields: ['name', 'description'],
+                            pivotFields: ['quantity', 'price', 'comment'],
+                            itemLabel: 'ressource',
+                            itemLabelPlural: 'ressources'
+                        }"
+                    />
+                </div>
+            </template>
+        </Collapse>
     </Container>
 </template>
-

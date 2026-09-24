@@ -138,7 +138,6 @@ const magicAffixMuted = computed(
             v-if="castingRitual.show"
             placement="top"
             color="neutral"
-            :glass="false"
             :accent-style="castingRitualTooltipAccent"
         >
             <template #content>
@@ -309,7 +308,6 @@ const magicAffixMuted = computed(
                     <Tooltip
                         placement="top"
                         color="neutral"
-                        :glass="false"
                         :accent-style="tooltipAccentFromVisual(magicUsageVisual)"
                     >
                         <template #content>

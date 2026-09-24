@@ -314,10 +314,10 @@ const handleAction = async (actionKey) => {
 </script>
 
 <template>
-    <div class="space-y-6">
+    <div class="space-y-4">
         <EntityViewHeader :mode="headerMode">
             <template #media>
-                <div class="group relative h-44 w-44 md:h-64 md:w-64 lg:h-72 lg:w-72">
+                <div class="group relative w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56">
                     <ImageViewer
                         v-if="npc.creature?.image"
                         :src="npc.creature.image"

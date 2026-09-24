@@ -98,12 +98,15 @@ class RulesPdfWriter
 
     private function chromiumPrintProcess(string $binary, string $absolutePdf, string $htmlFile, bool $newHeadless): Process
     {
+        $userDataDir = sys_get_temp_dir().'/krosmoz-chromium-'.getmypid().'-'.bin2hex(random_bytes(4));
+
         $args = [
             $binary,
             $newHeadless ? '--headless=new' : '--headless',
             '--disable-gpu',
             '--no-sandbox',
             '--disable-dev-shm-usage',
+            '--user-data-dir='.$userDataDir,
             '--no-pdf-header-footer',
             '--print-to-pdf='.$absolutePdf,
             'file://'.$htmlFile,

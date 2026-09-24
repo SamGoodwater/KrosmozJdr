@@ -3,24 +3,27 @@
  * Panoply Edit Page
  *
  * @description
- * Édition d’une panoplie : pièces et bonus de set d’abord, puis identité
- * et droits (lecture / écriture) en bas de page.
+ * Édition dense d’une panoplie : identité dense + pièces / bonus en collapses.
  *
  * @props {Object} panoply - Données de la panoplie à éditer
  * @props {Array} bonusCharacteristics - Caractéristiques groupe object pour les bonus
  */
-import { computed } from "vue";
-import { Head, usePage } from "@inertiajs/vue3";
-import { usePageTitle } from "@/Composables/layout/usePageTitle";
-import { Panoply } from "@/Models/Entity/Panoply";
-import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
-import EntityRelationsManager from "@/Pages/Organismes/entity/EntityRelationsManager.vue";
-import PanoplyBonusEditor from "@/Pages/Organismes/entity/PanoplyBonusEditor.vue";
-import Container from "@/Pages/Atoms/data-display/Container.vue";
-import Btn from "@/Pages/Atoms/action/Btn.vue";
-import Route from "@/Pages/Atoms/action/Route.vue";
-import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
-import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
+import { computed } from 'vue';
+import { Head, router, usePage } from '@inertiajs/vue3';
+import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { Panoply } from '@/Models/Entity/Panoply';
+import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
+import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
+import PanoplyBonusEditor from '@/Pages/Organismes/entity/PanoplyBonusEditor.vue';
+import Container from '@/Pages/Atoms/data-display/Container.vue';
+import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
+import EntityListBackButton from '@/Pages/Atoms/action/EntityListBackButton.vue';
+import LevelBadge from '@/Pages/Molecules/data-display/LevelBadge.vue';
+import {
+    buildPanoplyFormFieldsConfig,
+    PANOPLY_FORM_FIELD_SECTIONS_EDIT,
+} from '@/Entities/panoply/panoply-form-config';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -36,41 +39,11 @@ const props = defineProps({
     },
 });
 
-const fieldsConfig = {
-    name: {
-        type: "text",
-        label: "Nom",
-        required: true,
-        showInCompact: true,
-    },
-    description: {
-        type: "textarea",
-        label: "Description",
-        required: false,
-        showInCompact: false,
-    },
-    state: {
-        type: "select",
-        label: "État",
-        required: false,
-        showInCompact: true,
-        options: getEntityStateOptions(),
-    },
-    read_level: {
-        type: "select",
-        label: "Lecture (min.)",
-        required: false,
-        showInCompact: false,
-        options: getUserRoleOptions(),
-    },
-    write_level: {
-        type: "select",
-        label: "Écriture (min.)",
-        required: false,
-        showInCompact: false,
-        options: getUserRoleOptions(),
-    },
-};
+const fieldsConfig = computed(() =>
+    buildPanoplyFormFieldsConfig({ includeReadonlyMeta: true }),
+);
+const fieldSections = PANOPLY_FORM_FIELD_SECTIONS_EDIT;
+const fixedFooterInsetClass = 'left-0 right-0';
 
 const panoply = computed(() => {
     const panoplyData = props.panoply || page.props.panoply || {};
@@ -84,81 +57,122 @@ const linkedItems = computed(() => {
 
 const levelValue = computed(() => {
     const lv = panoply.value?.level;
-    if (lv === null || lv === undefined || lv === "") {
+    if (lv === null || lv === undefined || lv === '') {
         return null;
     }
     const n = Number(lv);
     return Number.isFinite(n) ? n : null;
 });
 
-setPageTitle(`Modifier la panoplie : ${panoply.value.name || "Nouvelle panoplie"}`);
+setPageTitle(`Modifier la panoplie : ${panoply.value.name || 'Nouvelle panoplie'}`);
+
+function goToShow() {
+    const id = panoply.value?.id;
+    if (!id) return;
+    router.visit(route('entities.panoplies.show', { panoply: id }));
+}
 </script>
 
 <template>
     <Head :title="`Modifier la panoplie : ${panoply?.name || 'Nouvelle panoplie'}`" />
 
-    <Container class="space-y-6">
-        <Route route="entities.panoplies.index">
-            <Btn color="neutral" variant="ghost" size="sm" class="gap-2">
-                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                Retour à la liste
-            </Btn>
-        </Route>
-
-        <section class="rounded-xl border border-base-300/70 bg-base-100/30 p-3 shadow-sm md:p-4">
-            <div class="mb-2.5 border-b border-base-300/50 pb-2">
-                <div class="flex flex-wrap items-center gap-2">
-                    <h2 class="text-base font-semibold tracking-tight text-base-content">
-                        Équipements de la panoplie
-                    </h2>
-                    <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
+    <Container class="space-y-4">
+        <div
+            class="sticky top-0 z-20 px-3 py-1 bg-glass-3xl backdrop-blur-md border-glass-b-md sm:px-4"
+            style="--bg-color: var(--color-base-100)"
+        >
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h1 class="truncate text-md font-bold text-base-content sm:text-lg">
+                            {{ panoply.name || 'Panoplie sans nom' }}
+                        </h1>
+                        <LevelBadge
+                            v-if="levelValue != null"
+                            :level="levelValue"
+                            size="xs"
+                            class="shrink-0"
+                        />
+                    </div>
+                    <p class="text-xs text-base-content/60">
+                        Édition · ID {{ panoply.id }}
+                    </p>
                 </div>
-                <p class="mt-0.5 text-xs leading-snug text-base-content/70 md:text-sm">
-                    Recherchez un équipement dans le catalogue, puis retirez-le si besoin.
-                    Le niveau du set est celui de la pièce la plus élevée.
-                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <EntityListBackButton route-name="entities.panoplies.index" />
+                    <Btn
+                        color="neutral"
+                        variant="outline"
+                        size="xs"
+                        type="button"
+                        class="gap-1.5"
+                        @click="goToShow"
+                    >
+                        <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+                        Fiche
+                    </Btn>
+                </div>
             </div>
-            <EntityRelationsManager
-                :relations="linkedItems"
-                :entity-id="panoply.id"
-                entity-type="panoplies"
-                relation-type="items"
-                relation-name="Pièces de la panoplie"
-                :show-title="false"
-                :config="{
-                    displayFields: ['name', 'description', 'level'],
-                    searchFields: ['name', 'description'],
-                    relatedEntityType: 'items',
-                    searchApiEntityType: 'items',
-                    itemLabel: 'équipement',
-                    itemLabelPlural: 'équipements',
-                }"
-            />
-        </section>
-
-        <section class="rounded-xl border border-base-300/70 bg-base-100/30 p-3 shadow-sm md:p-4">
-            <div class="mb-2.5 border-b border-base-300/50 pb-2">
-                <h2 class="text-base font-semibold tracking-tight text-base-content">
-                    Bonus de set
-                </h2>
-                <p class="mt-0.5 text-xs leading-snug text-base-content/70 md:text-sm">
-                    Même principe que les effets d’équipement : une caractéristique et une valeur,
-                    groupées par nombre de pièces équipées (2p, 3p, …).
-                </p>
-            </div>
-            <PanoplyBonusEditor
-                v-if="panoply.id"
-                :panoply-id="panoply.id"
-                :bonus="panoply.bonus"
-                :characteristics="bonusCharacteristics"
-            />
-        </section>
+        </div>
 
         <EntityEditForm
             :entity="panoply"
             entity-type="panoply"
             :fields-config="fieldsConfig"
             :is-updating="true"
+            :field-sections="fieldSections"
+            :show-state-toolbar="true"
+            :show-access-levels-in-footer="false"
+            layout-profile="dense"
+            :fixed-footer-actions="true"
+            :fixed-footer-inset-class="fixedFooterInsetClass"
+            :compact-access-levels="true"
         />
+
+        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
+            <template #title>Équipements de la panoplie</template>
+            <template #content>
+                <div class="space-y-4">
+                    <p class="text-xs text-base-content/60">
+                        Recherchez un équipement dans le catalogue, puis retirez-le si besoin.
+                        Le niveau du set est celui de la pièce la plus élevée.
+                    </p>
+                    <EntityRelationsManager
+                        :relations="linkedItems"
+                        :entity-id="panoply.id"
+                        entity-type="panoplies"
+                        relation-type="items"
+                        relation-name="Pièces de la panoplie"
+                        :show-title="false"
+                        :config="{
+                            displayFields: ['name', 'description', 'level'],
+                            searchFields: ['name', 'description'],
+                            relatedEntityType: 'items',
+                            searchApiEntityType: 'items',
+                            itemLabel: 'équipement',
+                            itemLabelPlural: 'équipements',
+                        }"
+                    />
+                </div>
+            </template>
+        </Collapse>
+
+        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
+            <template #title>Bonus de set</template>
+            <template #content>
+                <div class="space-y-4">
+                    <p class="text-xs text-base-content/60">
+                        Même principe que les effets d’équipement : une caractéristique et une valeur,
+                        groupées par nombre de pièces équipées (2p, 3p, …).
+                    </p>
+                    <PanoplyBonusEditor
+                        v-if="panoply.id"
+                        :panoply-id="panoply.id"
+                        :bonus="panoply.bonus"
+                        :characteristics="bonusCharacteristics"
+                    />
+                </div>
+            </template>
+        </Collapse>
     </Container>
 </template>

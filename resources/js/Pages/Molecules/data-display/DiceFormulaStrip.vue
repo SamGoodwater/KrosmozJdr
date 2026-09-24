@@ -119,7 +119,7 @@ function hasRollResult(value) {
                         {{ hasRollResult(rollResult) ? formatStat(rollResult) : '—' }}
                     </span>
                 </span>
-                <Tooltip content="Lancer" placement="top">
+                <Tooltip content="Lancer" placement="top" opaque>
                     <Btn
                         type="button"
                         variant="ghost"

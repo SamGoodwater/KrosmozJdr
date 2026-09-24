@@ -5,7 +5,6 @@
  */
 
 import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants';
-import { getElementOptions } from '@/Utils/Entity/Elements';
 
 /**
  * Champs du formulaire (édition : inclut id / dates en lecture seule si `includeReadonlyMeta`).
@@ -49,10 +48,10 @@ export function buildCapabilityFormFieldsConfig(options = {}) {
             },
         },
         element: {
-            type: 'select',
-            label: 'Élément',
+            type: 'elementPrimaries',
+            label: 'Élément(s)',
             required: false,
-            options: getElementOptions(),
+            help: '« Aucun » : capacité non liée à un élément. Sinon, cochez les primaires (dont Sagesse et Vitalité) ; la valeur enregistrée est un masque 1–127.',
         },
         level: {
             type: 'text',
@@ -230,7 +229,7 @@ export function getCapabilityCreateDefaultEntity() {
         time_before_use_again: '',
         casting_time: '',
         duration: '',
-        element: 0,
+        element: null,
         is_magic: false,
         ritual_available: false,
         is_passive: false,

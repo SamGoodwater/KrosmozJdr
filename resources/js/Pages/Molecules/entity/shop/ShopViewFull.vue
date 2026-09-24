@@ -157,7 +157,7 @@ const handleAction = async (actionKey) => {
 </script>
 
 <template>
-    <div class="space-y-6">
+    <div class="space-y-4">
         <!-- En-tête : mobile titre puis image ; md+ image | titre -->
         <div class="flex w-full min-w-0 items-start gap-4">
             <div class="min-w-0 flex-1">

@@ -12,7 +12,7 @@ import { usePermissions } from "@/Composables/permissions/usePermissions";
 import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
 import ConditionsEditor from "@/Pages/Organismes/entity/ConditionsEditor.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
-import Route from "@/Pages/Atoms/action/Route.vue";
+import EntityListBackButton from "@/Pages/Atoms/action/EntityListBackButton.vue";
 import {
     buildCapabilityFormFieldsConfig,
     CAPABILITY_FORM_FIELD_SECTIONS_EDIT,
@@ -89,12 +89,10 @@ function confirmDelete() {
                     </p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
-                    <Route v-if="!embeddedInModal" route="entities.capabilities.index">
-                        <Btn color="neutral" variant="ghost" size="xs" type="button" class="gap-1.5">
-                            <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                            Liste
-                        </Btn>
-                    </Route>
+                    <EntityListBackButton
+                        v-if="!embeddedInModal"
+                        route-name="entities.capabilities.index"
+                    />
                     <Btn
                         color="neutral"
                         variant="outline"

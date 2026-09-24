@@ -10,7 +10,7 @@ use RuntimeException;
 /**
  * Compile les livres de règles en PDF et ODT.
  *
- * Livre joueur (ch. 1–4, disque public) et atelier MJ (ch. 5, disque privé) :
+ * Livre joueur (ch. 1–4), L’Essentiel (seed CMS), atelier MJ (ch. 5, disque privé) :
  * un `read_level` MJ ne doit pas atterrir sous `/storage/…`.
  * N’est lancé que par la commande Artisan (import / init) ou le bouton admin :
  * jamais à la volée sur une page publique.
@@ -20,8 +20,11 @@ use RuntimeException;
  */
 class RulesDownloadCompiler
 {
+    public const AUDIENCE_ESSENTIEL = 'essentiel';
+
     public function __construct(
         private readonly RulesBookAssembler $assembler,
+        private readonly EssentialBookAssembler $essentialAssembler,
         private readonly RulesPdfWriter $pdfWriter,
         private readonly RulesOdtWriter $odtWriter,
         private readonly GameDownloadCatalog $catalog,
@@ -61,7 +64,7 @@ class RulesDownloadCompiler
         foreach ($items as $item) {
             $audience = (string) ($item['audience'] ?? RulesBookAssembler::AUDIENCE_PLAYER);
             if (! array_key_exists($audience, $htmlByAudience)) {
-                $htmlByAudience[$audience] = $this->assembler->forAudience($audience)->toHtml();
+                $htmlByAudience[$audience] = $this->htmlForAudience($audience);
             }
         }
 
@@ -92,9 +95,11 @@ class RulesDownloadCompiler
             if (! $disk->exists($directory)) {
                 $disk->makeDirectory($directory);
             }
-            $title = $audience === RulesBookAssembler::AUDIENCE_MJ
-                ? 'Krosmoz JDR — Atelier MJ'
-                : 'Krosmoz JDR — Livre de règles';
+            $title = match ($audience) {
+                RulesBookAssembler::AUDIENCE_MJ => 'Krosmoz JDR — Atelier MJ',
+                self::AUDIENCE_ESSENTIEL => 'Krosmoz JDR — L’Essentiel',
+                default => 'Krosmoz JDR — Livre de règles',
+            };
             $mime = (string) ($item['mime'] ?? '');
             if ($mime === 'application/pdf') {
                 $this->pdfWriter->write($html, $relative, $title, $diskName);
@@ -133,5 +138,14 @@ class RulesDownloadCompiler
             'path' => $relativePath,
             'bytes' => (int) $disk->size($relativePath),
         ];
+    }
+
+    private function htmlForAudience(string $audience): string
+    {
+        if ($audience === self::AUDIENCE_ESSENTIEL) {
+            return $this->essentialAssembler->toHtml();
+        }
+
+        return $this->assembler->forAudience($audience)->toHtml();
     }
 }

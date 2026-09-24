@@ -8,9 +8,10 @@ defineOptions({ inheritAttrs: false });
  * Molecule pour afficher une notification toast avec animations avancées, cycle full/contracted,
  * barre de progression, et interactions hover.
  * - Props : id, message, type, icon, onClick, actions, onClose, placement, duration
- * - Cycle de vie : 40% full → 60% contracted → auto-dismiss
+ * - Cycle de vie : 50% full → 50% contracted → auto-dismiss
  * - Animations : fade-in, contract/expand, hover interactions
- * - Barre de progression : bordure bas qui se remplit selon le temps restant
+ * - Barre de progression : bordure bas qui diminue selon le temps restant
+ * - Pause du compte à rebours au survol / focus clavier ; reprise uniquement quand les deux sont sortis
  * - Intégration avec l'atom Icon pour les icônes par défaut
  * - Accessibilité (role alert, aria-live, etc.)
  *
@@ -32,6 +33,8 @@ defineOptions({ inheritAttrs: false });
  * @props {Number} createdAt - Timestamp de création
  * @props {Number} fullDisplayTime - Temps en mode full
  * @props {Number} contractedDisplayTime - Temps en mode contracted
+ * @props {Boolean} paused - Compte à rebours en pause
+ * @props {Number|null} elapsedAtPause - Temps écoulé figé pendant la pause
  * @slot default - Contenu custom (remplace le message)
  * @slot actions - Slot pour actions custom
  */
@@ -57,16 +60,47 @@ const props = defineProps({
     contractedDisplayTime: { type: Number, default: 0 },
     progress: { type: [Number, null], default: null },
     dismissible: { type: Boolean, default: true },
+    paused: { type: Boolean, default: false },
+    elapsedAtPause: { type: [Number, null], default: null },
+    pauseStartedAt: { type: [Number, null], default: null },
 });
 
-const { getProgressPercentage, getNotificationState, pauseNotification, resumeNotification } = useNotificationStore();
+const {
+    notifications,
+    getProgressPercentage,
+    getNotificationState,
+    pauseNotification,
+    resumeNotification,
+} = useNotificationStore();
 
-// État local
-const isHovered = ref(false);
+/** Objet live du store (champs pause mutés en place) — fallback sur les props. */
+const storeNotification = computed(() => {
+    return notifications.value.find((n) => n.id === props.id) ?? {
+        id: props.id,
+        message: props.message,
+        type: props.type,
+        placement: props.placement,
+        duration: props.duration,
+        createdAt: props.createdAt,
+        fullDisplayTime: props.fullDisplayTime,
+        contractedDisplayTime: props.contractedDisplayTime,
+        progress: props.progress,
+        dismissible: props.dismissible,
+        paused: props.paused,
+        elapsedAtPause: props.elapsedAtPause,
+        pauseStartedAt: props.pauseStartedAt,
+    };
+});
+
+// État local d’interaction : pointer et focus séparés pour éviter les flickers focusin/focusout
+const isPointerInside = ref(false);
+const isFocusInside = ref(false);
 const isExpanded = ref(false);
 const progressInterval = ref(null);
 // Ref réactive pour forcer la mise à jour des computed basés sur le temps
 const currentTime = ref(Date.now());
+
+const isInteracting = computed(() => isPointerInside.value || isFocusInside.value);
 
 // Icône par défaut selon le type (FontAwesome)
 const defaultIconMap = {
@@ -83,23 +117,17 @@ const iconSource = computed(() => {
     return props.icon || defaultIconMap[props.type] || defaultIconMap[''];
 });
 
-// État de la notification (full/contracted)
-// Utilise currentTime pour forcer la réactivité
+// État de la notification (full/contracted/expanded)
 const notificationState = computed(() => {
-    // Force la dépendance réactive
-    const _time = currentTime.value;
-    void _time;
-    if (isHovered.value && isExpanded.value) return 'expanded';
-    return getNotificationState(props);
+    void currentTime.value;
+    if (isInteracting.value && isExpanded.value) return 'expanded';
+    return getNotificationState(storeNotification.value);
 });
 
-// Barre de progression
-// Utilise currentTime pour forcer la réactivité
+// Barre de progression (utilise l’objet store pour respecter paused / elapsedAtPause)
 const progressPercentage = computed(() => {
-    // Force la dépendance réactive
-    const _time = currentTime.value;
-    void _time;
-    return getProgressPercentage(props);
+    void currentTime.value;
+    return getProgressPercentage(storeNotification.value);
 });
 
 // Classes CSS pour les animations
@@ -112,12 +140,10 @@ const notificationClasses = computed(() => {
         'overflow-hidden',
     ];
 
-    // Classes selon l'état
     if (notificationState.value === 'full' || notificationState.value === 'expanded') {
         baseClasses.push('w-80 max-w-sm');
     } else {
         baseClasses.push('w-12 h-12');
-        // Justification selon le placement pour les notifications contractées
         if (props.placement?.includes('right')) {
             baseClasses.push('justify-self-end');
         } else {
@@ -128,7 +154,21 @@ const notificationClasses = computed(() => {
     return baseClasses;
 });
 
-// Gestion des événements
+function enterInteraction() {
+    if (getNotificationState(storeNotification.value) === 'contracted') {
+        isExpanded.value = true;
+    }
+    pauseNotification(props.id);
+}
+
+function leaveInteraction() {
+    if (isInteracting.value) {
+        return;
+    }
+    isExpanded.value = false;
+    resumeNotification(props.id);
+}
+
 function handleClick() {
     if (props.onClick) {
         props.onClick();
@@ -136,27 +176,29 @@ function handleClick() {
 }
 
 function handlePointerEnter() {
-    isHovered.value = true;
-    pauseNotification(props.id);
-    if (notificationState.value === 'contracted') {
-        isExpanded.value = true;
-    }
+    isPointerInside.value = true;
+    enterInteraction();
 }
 
 function handlePointerLeave(event) {
     if (event?.currentTarget?.contains(event?.relatedTarget)) {
         return;
     }
-    isHovered.value = false;
-    isExpanded.value = false;
-    resumeNotification(props.id);
+    isPointerInside.value = false;
+    leaveInteraction();
+}
+
+function handleFocusIn() {
+    isFocusInside.value = true;
+    enterInteraction();
 }
 
 function handleFocusOut(event) {
     if (event?.currentTarget?.contains(event?.relatedTarget)) {
         return;
     }
-    handlePointerLeave(event);
+    isFocusInside.value = false;
+    leaveInteraction();
 }
 
 function handleClose(e) {
@@ -166,14 +208,12 @@ function handleClose(e) {
     }
 }
 
-// Mise à jour de la barre de progression et de l'état
 function startProgressUpdate() {
     const hasDynamicProgress = props.progress !== null && props.progress !== undefined;
     if (props.duration === 0 || hasDynamicProgress) {
         return;
     }
     progressInterval.value = setInterval(() => {
-        // Mettre à jour currentTime pour forcer le recalcul des computed
         currentTime.value = Date.now();
     }, 300);
 }
@@ -203,7 +243,7 @@ onUnmounted(() => {
         tabindex="0"
         @mouseenter="handlePointerEnter"
         @mouseleave="handlePointerLeave"
-        @focusin="handlePointerEnter"
+        @focusin="handleFocusIn"
         @focusout="handleFocusOut"
         role="alert"
         aria-live="polite"
