@@ -153,6 +153,57 @@ class BreedControllerTest extends TestCase
             ->assertRedirect();
     }
 
+    public function test_edit_payload_avoids_heavy_catalog_resources(): void
+    {
+        $admin = $this->adminUser();
+        $breed = Breed::factory()->create([
+            'created_by' => $admin->id,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+        Spell::factory()->count(3)->create();
+        $page = Page::factory()->create(['created_by' => $admin->id]);
+        Section::factory()->create([
+            'page_id' => $page->id,
+            'created_by' => $admin->id,
+            'title' => 'Intro',
+            'slug' => 'intro',
+            'data' => ['heavy' => str_repeat('x', 200)],
+            'settings' => ['a' => 1],
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('entities.breeds.edit', $breed))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Pages/entity/breed/Edit')
+                ->where('availableSpells', [])
+                ->where('availableCapabilities', [])
+                ->where('availableCreatureTraits', [])
+                ->has('availableLanguages')
+                ->has('availableSections')
+                ->where('availableSections', function ($sections) {
+                    if (! is_array($sections) || $sections === []) {
+                        return false;
+                    }
+                    $row = $sections[0];
+                    if (! is_array($row)) {
+                        return false;
+                    }
+                    foreach (['id', 'title', 'slug'] as $key) {
+                        if (! array_key_exists($key, $row)) {
+                            return false;
+                        }
+                    }
+                    foreach (['data', 'settings', 'can'] as $forbidden) {
+                        if (array_key_exists($forbidden, $row)) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }));
+    }
+
     public function test_admin_can_create_breed_and_redirects_to_edit(): void
     {
         $admin = $this->adminUser();

@@ -135,9 +135,9 @@ class UserPolicyTest extends TestCase
      */
     public function test_system_super_admin_actor_has_no_privileged_super_policy(): void
     {
-        $systemActor = User::factory()->create([
+        $systemActor = User::factory()->systemAccount()->create([
             'role' => User::ROLE_SUPER_ADMIN,
-            'is_system' => true,
+            
         ]);
         $target = User::factory()->create(['role' => User::ROLE_USER]);
         $anotherSuperHuman = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);

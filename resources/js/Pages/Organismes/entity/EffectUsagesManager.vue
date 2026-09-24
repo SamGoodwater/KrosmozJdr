@@ -2,8 +2,9 @@
 /**
  * EffectUsagesManager — Gestion des effect_usages (item, consommable, ressource) : lien vers un degré d’effet.
  * Le seuil « niveau créature min. » est porté par le degré ; le modifier dans l’éditeur d’effet / admin.
+ * Catalogue des degrés : recherche GET /api/effects/effects (pas de dump Inertia).
  */
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onBeforeUnmount } from 'vue';
 import axios from 'axios';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
@@ -20,6 +21,7 @@ import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
 
 const props = defineProps({
     effectUsages: { type: Array, default: () => [] },
+    /** @deprecated Seed optionnel — préférez la recherche API. */
     availableEffects: { type: Array, default: () => [] },
     entityType: { type: String, required: true },
     entityId: { type: Number, required: true },
@@ -27,9 +29,9 @@ const props = defineProps({
 
 const usages = ref(
     (props.effectUsages || []).map((u) => ({
-        id: u.id,
-        effect_degree_id: u.effect_degree_id,
-        effect: u.effect,
+    id: u.id,
+    effect_degree_id: u.effect_degree_id,
+    effect: u.effect,
     }))
 );
 const previewLevel = ref(1);
@@ -40,11 +42,103 @@ const errorMessage = ref('');
 /** Onglet actif (un usage = souvent un degré lié au sort). */
 const activeUsageTab = ref(0);
 
+const degreeSearchQuery = ref('');
+const degreeSearchResults = ref([]);
+const degreeSearchLoading = ref(false);
+let degreeSearchSeq = 0;
+let degreeSearchTimer = null;
+
+function flattenDegreeOption(effect, degree) {
+    const base = effect?.name || effect?.slug || `Effet #${effect?.id ?? '?'}`;
+    const deg = degree?.degree != null && degree?.degree !== '' ? ` · D${degree.degree}` : '';
+    return {
+        id: degree.id,
+        name: `${base}${deg}`,
+        slug: degree.slug,
+        degree: degree.degree,
+        target_type: effect?.target_type ?? 'direct',
+        area: degree.area,
+        effect_definition_id: effect?.id,
+        required_creature_level: degree.required_creature_level,
+    };
+}
+
+async function searchEffectDegrees() {
+    const seq = ++degreeSearchSeq;
+    degreeSearchLoading.value = true;
+    try {
+        const { data } = await axios.get('/api/effects/effects', {
+            params: {
+                q: degreeSearchQuery.value.trim(),
+                per_page: 30,
+            },
+        });
+        if (seq !== degreeSearchSeq) return;
+        const effects = Array.isArray(data?.data) ? data.data : [];
+        degreeSearchResults.value = effects.flatMap((effect) =>
+            (Array.isArray(effect.degrees) ? effect.degrees : []).map((d) =>
+                flattenDegreeOption(effect, d)
+            )
+        );
+    } catch (err) {
+        if (seq !== degreeSearchSeq) return;
+        degreeSearchResults.value = [];
+        errorMessage.value =
+            err.response?.data?.message || 'Impossible de rechercher les degrés d’effet.';
+    } finally {
+        if (seq === degreeSearchSeq) {
+            degreeSearchLoading.value = false;
+        }
+    }
+}
+
+function scheduleDegreeSearch() {
+    if (degreeSearchTimer) clearTimeout(degreeSearchTimer);
+    degreeSearchTimer = setTimeout(() => {
+        degreeSearchTimer = null;
+        searchEffectDegrees();
+    }, 250);
+}
+
+watch(degreeSearchQuery, () => scheduleDegreeSearch());
+
+onBeforeUnmount(() => {
+    if (degreeSearchTimer) clearTimeout(degreeSearchTimer);
+});
+
+const catalogDegrees = computed(() => {
+    const byId = new Map();
+    for (const e of props.availableEffects || []) {
+        if (e?.id != null) byId.set(Number(e.id), e);
+    }
+    for (const e of degreeSearchResults.value) {
+        if (e?.id != null) byId.set(Number(e.id), e);
+    }
+    for (const u of usages.value) {
+        if (u?.effect?.id != null) {
+            byId.set(Number(u.effect.id), {
+                id: u.effect.id,
+                name: u.effect.name,
+                slug: u.effect.slug,
+                degree: u.effect.degree,
+                target_type: u.effect.target_type,
+                area: u.effect.area,
+                effect_definition_id: u.effect.effect_definition_id,
+                required_creature_level: u.effect.required_creature_level,
+            });
+        }
+    }
+    return [...byId.values()];
+});
+
 const effectOptions = computed(() => [
     { value: '', label: '— Choisir un effet —' },
-    ...props.availableEffects.map((e) => {
+    ...catalogDegrees.value.map((e) => {
         const base = e.name || e.slug || 'Effet #' + e.id;
-        const deg = e.degree != null && e.degree !== '' ? ` · D${e.degree}` : '';
+        const deg =
+            e.degree != null && e.degree !== '' && !String(base).includes(`D${e.degree}`)
+                ? ` · D${e.degree}`
+                : '';
         const suffix = showTargetTypeBadge(e.target_type) ? ` (${targetTypeLabel(e.target_type)})` : '';
         return { value: e.id, label: base + deg + suffix, target_type: e.target_type };
     }),
@@ -135,10 +229,13 @@ async function fetchUsages() {
 function addUsage() {
     usages.value.push({
         id: null,
-        effect_degree_id: props.availableEffects[0]?.id ?? '',
+        effect_degree_id: '',
         effect: null,
     });
     activeUsageTab.value = usages.value.length - 1;
+    if (!degreeSearchResults.value.length) {
+        searchEffectDegrees();
+    }
 }
 
 async function saveUsage(index) {
@@ -218,9 +315,9 @@ function showTargetTypeBadge(type) {
     return type === 'trap' || type === 'glyph';
 }
 
-/** Retourne le target_type de l'effet sélectionné (par id) depuis availableEffects ou usages. */
+/** Retourne le target_type de l'effet sélectionné (par id) depuis catalogue ou usages. */
 function selectedEffectTargetType(effectDegreeId) {
-    const e = props.availableEffects.find((x) => x.id == effectDegreeId);
+    const e = catalogDegrees.value.find((x) => x.id == effectDegreeId);
     if (e?.target_type) return e.target_type;
     const u = usages.value.find((x) => x.effect_degree_id == effectDegreeId);
     return u?.effect?.target_type ?? null;
@@ -232,10 +329,21 @@ function selectedEffectTargetType(effectDegreeId) {
         <h2 class="text-lg font-semibold mb-3">Effets (système unifié)</h2>
         <p class="text-sm text-base-content/70 mb-4">
             Chaque usage pointe vers un <strong>degré d’effet</strong> (ligne dans la liste). Le seuil de niveau créature est défini
-            sur ce degré (admin / éditeur d’effet). L’aperçu simule un porteur de niveau donné.
+            sur ce degré (admin / éditeur d’effet). L’aperçu simule un porteur de niveau donné. Recherche des degrés via
+            <code class="text-xs">/api/effects/effects</code>.
         </p>
 
         <p v-if="errorMessage" class="text-error text-sm mb-3">{{ errorMessage }}</p>
+
+        <div class="mb-4">
+            <InputField
+                v-model="degreeSearchQuery"
+                label="Rechercher un degré d’effet"
+                placeholder="Nom ou slug de l’effet…"
+                size="sm"
+            />
+            <p v-if="degreeSearchLoading" class="text-xs text-base-content/55 mt-1">Recherche…</p>
+        </div>
 
         <div class="mb-6 space-y-4">
             <div v-if="usages.length" class="space-y-4">

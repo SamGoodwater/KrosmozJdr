@@ -64,6 +64,56 @@ Un fichier **absent** de ce lien n’est pas servi en 404. La requête atteint l
 
 Jobs Artisan admin (review, clear, deps, backup, `project:data sync`) : table `project_console_jobs`, poll `GET /admin/console-jobs/{id}`, toast animé + log filtré sur la page. Un seul job actif par domaine. Imports scrapping et nettoyage orphelins : suivi persisté (progression, annulation). Backup / sync planifiée : notification de résultat admin en plus du suivi live.
 
+## Sauvegardes (`project:backup`)
+
+Dump BDD gzip + archive `storage/app` (hors `app/backups`), rotation, UI et cron. Vocabulaire CLI : [COMMANDS.md — project:backup](../../app/Console/COMMANDS.md#projectbackup). Service : `app/Services/Project/ProjectBackupService.php`. Config : `config/project-backup.php`.
+
+Voir aussi : [SECRET_SCAN.md](./SECRET_SCAN.md) (hook pre-push + CI gitleaks).
+
+| Élément | Détail |
+|--------|--------|
+| Fichiers | `{prefix}_{runId}_mysql.sql.gz` + `{prefix}_{runId}_storage.tar.gz` (ou `.zip` si `tar` indisponible) |
+| Répertoire | `PROJECT_BACKUP_PATH` ou défaut `storage/app/backups` |
+| Rétention | `PROJECT_BACKUP_RETENTION_DAYS` (défaut **30** j) ; purge à chaque run sauf `--no-prune` / `--prune-only` |
+| Cron | clé catalogue `project_backup` ; seed `.env` : `PROJECT_BACKUP_ENABLED=false`, `PROJECT_BACKUP_CRON="0 4 * * *"` |
+| UI | `/admin/backup` (super_admin, job file + confirmation mot de passe) |
+| Prérequis | binaire `mysqldump` (MySQL/MariaDB) ; protéger le répertoire (données sensibles) |
+
+```bash
+php artisan project:backup
+php artisan project:backup --no-storage
+php artisan project:backup --prune-only --dry-run
+```
+
+### Restauration manuelle
+
+Il n’y a pas de commande Artisan de restore : procédure manuelle. Arrêter l’app / les workers pendant l’opération. Remplacer `BACKUP_DIR` et les noms de fichiers par le run ciblé.
+
+**1. Base MySQL / MariaDB** (`*_mysql.sql.gz`) — client `mysql` ou `mariadb` :
+
+```bash
+gunzip -c BACKUP_DIR/project-backup_YYYYMMDD_HHMMSS_xxxx_mysql.sql.gz \
+  | mysql -u"$DB_USERNAME" -p"$DB_PASSWORD" -h"$DB_HOST" "$DB_DATABASE"
+```
+
+**2. Storage** — l’archive contient le dossier `app/` relativement à `storage/` (excl. `app/backups`) :
+
+```bash
+# tar.gz (cas normal Linux)
+tar -xzf BACKUP_DIR/project-backup_YYYYMMDD_HHMMSS_xxxx_storage.tar.gz -C storage/
+
+# ZIP de repli
+unzip -o BACKUP_DIR/project-backup_YYYYMMDD_HHMMSS_xxxx_storage.zip -d storage/
+```
+
+**3. SQLite** (connexion sqlite) : le fichier `*_mysql.sql.gz` est une **copie compressée du fichier** SQLite (pas un dump SQL texte) :
+
+```bash
+gunzip -c BACKUP_DIR/project-backup_YYYYMMDD_HHMMSS_xxxx_mysql.sql.gz > chemin/vers/database.sqlite
+```
+
+Après restore : `php artisan storage:link` si besoin, vider les caches applicatifs (`project:clear --safe`), redémarrer queue / scheduler.
+
 ## Planification
 
 Le serveur lance `php artisan schedule:run` chaque minute. Les tâches viennent d’un catalogue fixe (`ProjectScheduleCatalog`), pas d’une commande libre. Réglages : `/admin/project-schedule` (commande Artisan affichée + lien vers la page thématique).

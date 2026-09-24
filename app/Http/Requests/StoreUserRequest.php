@@ -36,13 +36,7 @@ class StoreUserRequest extends FormRequest
             ],
             'password' => ['required', 'string', 'min:8'],
             'password_confirmation' => ['required', 'string', 'same:password'],
-            'role' => ['required', 'integer', Rule::in([
-                User::ROLE_GUEST,
-                User::ROLE_USER,
-                User::ROLE_PLAYER,
-                User::ROLE_GAME_MASTER,
-                User::ROLE_ADMIN,
-            ])],
+            'role' => ['required', 'integer', Rule::in($this->allowedRolesForActor())],
             'notifications_enabled' => ['sometimes', 'boolean'],
             'notification_channels' => ['sometimes', 'array'],
             'notification_channels.*' => ['sometimes', 'string', Rule::in(['database', 'mail'])],
@@ -68,5 +62,26 @@ class StoreUserRequest extends FormRequest
                 'role' => User::ROLE_USER,
             ]);
         }
+    }
+
+    /**
+     * Aligné sur `UserController::updateRole` : seul un super_admin interactif peut créer un admin.
+     *
+     * @return list<int>
+     */
+    private function allowedRolesForActor(): array
+    {
+        $roles = [
+            User::ROLE_GUEST,
+            User::ROLE_USER,
+            User::ROLE_PLAYER,
+            User::ROLE_GAME_MASTER,
+        ];
+
+        if ($this->user()?->isInteractiveSuperAdmin()) {
+            $roles[] = User::ROLE_ADMIN;
+        }
+
+        return $roles;
     }
 }

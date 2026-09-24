@@ -80,7 +80,6 @@ class ImageController extends Controller
 
             return response()->json([
                 'error' => 'Erreur lors de l\'affichage de l\'image',
-                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -155,7 +154,6 @@ class ImageController extends Controller
 
             return response()->json([
                 'error' => 'Erreur lors de la génération du thumbnail',
-                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -176,7 +174,6 @@ class ImageController extends Controller
 
             return response()->json([
                 'error' => 'Erreur lors du nettoyage des thumbnails',
-                'message' => $e->getMessage(),
             ], 500);
         }
     }

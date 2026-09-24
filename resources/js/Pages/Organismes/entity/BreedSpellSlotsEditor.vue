@@ -2,17 +2,18 @@
 /**
  * Édition des sorts par emplacement + bloc « hors emplacement » (pivot 0/1).
  * Affichage des sorts via SpellViewText (aperçu minimal au survol).
+ * Ajout via EntityPicker / api.tables.spells (pas de catalogue Inertia massif).
  */
 import { ref, computed, watch } from "vue";
 import { useForm } from "@inertiajs/vue3";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import EditActionDock from "@/Pages/Molecules/action/EditActionDock.vue";
-import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import SpellViewText from "@/Pages/Molecules/entity/spell/SpellViewText.vue";
+import EntityPickerCore from "@/Pages/Organismes/entity/EntityPickerCore.vue";
 import { Spell } from "@/Models/Entity/Spell";
 import {
     getStandardBreedSlotDefinitions,
@@ -31,6 +32,7 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    /** @deprecated Seed local optionnel — recherche via EntityPicker. */
     availableItems: {
         type: Array,
         default: () => [],
@@ -69,6 +71,9 @@ const pivotDefaults = () => ({
 /** @type {Record<number, Record<string, string>>} */
 const pivotValues = ref({});
 
+/** Valeur EntityPicker par emplacement (reset après ajout). */
+const slotPickerValues = ref({});
+
 const initializePivotValues = () => {
     const pivots = {};
     for (const item of props.relations) {
@@ -97,19 +102,6 @@ watch(
     },
     { deep: true }
 );
-
-const availableSorted = computed(() => {
-    const list = [...props.availableItems];
-    list.sort((a, b) => {
-        const la = Number(a.level);
-        const lb = Number(b.level);
-        if (Number.isFinite(la) && Number.isFinite(lb) && la !== lb) {
-            return la - lb;
-        }
-        return String(a.name || "").localeCompare(String(b.name || ""));
-    });
-    return list;
-});
 
 const slotKey = (def) => `${def.character_level}|${def.slot_index}`;
 
@@ -147,8 +139,6 @@ const orphanRelationItems = computed(() =>
     })
 );
 
-const slotQueries = ref({});
-
 const nextChoiceOrder = (def) => {
     const inSlot = spellsInSlot(def);
     let max = -1;
@@ -160,24 +150,29 @@ const nextChoiceOrder = (def) => {
 };
 
 const isSpellInSlot = (spellId, def) => {
-    return spellsInSlot(def).some((s) => s.id === spellId);
+    return spellsInSlot(def).some((s) => Number(s.id) === Number(spellId));
 };
 
-const filteredForSlot = (def) => {
-    const q = (slotQueries.value[slotKey(def)] || "").trim().toLowerCase();
-    return availableSorted.value.filter((item) => {
-        if (isSpellInSlot(item.id, def)) return false;
-        if (!q) return true;
-        const name = String(item.name || "").toLowerCase();
-        const desc = String(item.description || "").toLowerCase();
-        return name.includes(q) || desc.includes(q);
-    });
-};
+const slotBlacklist = (def) => spellsInSlot(def).map((s) => s.id);
 
 const canAddToSlot = (def) => spellsInSlot(def).length < BREED_MAX_SPELLS_PER_VARIANT_SLOT;
 
+const normalizePickedSpell = (raw) => {
+    if (!raw || typeof raw !== "object") return null;
+    const data = raw._data && typeof raw._data === "object" ? { ...raw._data, ...raw } : raw;
+    const id = Number(data.id);
+    if (!Number.isFinite(id)) return null;
+    return {
+        ...data,
+        id,
+        name: data.name ?? `#${id}`,
+    };
+};
+
 const addToSlot = (spell, def) => {
-    if (isSpellInSlot(spell.id, def)) return;
+    const normalized = normalizePickedSpell(spell);
+    if (!normalized) return;
+    if (isSpellInSlot(normalized.id, def)) return;
     if (!canAddToSlot(def)) {
         notificationStore.warning(
             `Maximum ${BREED_MAX_SPELLS_PER_VARIANT_SLOT} sorts par emplacement (variantes).`,
@@ -185,31 +180,37 @@ const addToSlot = (spell, def) => {
         );
         return;
     }
-    const existing = localRelations.value.find((r) => r.id === spell.id);
+    const existing = localRelations.value.find((r) => Number(r.id) === normalized.id);
     if (existing) {
-        pivotValues.value[spell.id] = {
+        pivotValues.value[normalized.id] = {
             character_level: String(def.character_level),
             slot_index: String(def.slot_index),
             choice_order: String(nextChoiceOrder(def)),
         };
-        slotQueries.value[slotKey(def)] = "";
-        notificationStore.success(`« ${spell.name || spell.id} » déplacé vers cet emplacement.`, {
+        slotPickerValues.value[slotKey(def)] = null;
+        notificationStore.success(`« ${normalized.name || normalized.id} » déplacé vers cet emplacement.`, {
             duration: 2500,
             placement: "top-right",
         });
         return;
     }
-    localRelations.value.push(spell);
-    pivotValues.value[spell.id] = {
+    localRelations.value.push(normalized);
+    pivotValues.value[normalized.id] = {
         character_level: String(def.character_level),
         slot_index: String(def.slot_index),
         choice_order: String(nextChoiceOrder(def)),
     };
-    slotQueries.value[slotKey(def)] = "";
-    notificationStore.success(`« ${spell.name || spell.id} » ajouté à l’emplacement.`, {
+    slotPickerValues.value[slotKey(def)] = null;
+    notificationStore.success(`« ${normalized.name || normalized.id} » ajouté à l’emplacement.`, {
         duration: 2500,
         placement: "top-right",
     });
+};
+
+const onSlotPickerSelected = (entities, def) => {
+    const entity = Array.isArray(entities) ? entities[0] : null;
+    if (!entity) return;
+    addToSlot(entity, def);
 };
 
 const removeItem = (spellId) => {
@@ -223,22 +224,20 @@ const relationsForm = useForm({ spells: {} });
 
 const hasUnsavedChanges = computed(() => {
     const origIds = [...props.relations].map((r) => r.id).sort((a, b) => a - b);
-    const locIds = [...localRelations.value].map((r) => r.id).sort((a, b) => a - b);
-    if (JSON.stringify(origIds) !== JSON.stringify(locIds)) return true;
-    for (const id of locIds) {
-        const cur = pivotValues.value[id];
+    const curIds = [...localRelations.value].map((r) => r.id).sort((a, b) => a - b);
+    if (origIds.length !== curIds.length || origIds.some((id, i) => id !== curIds[i])) {
+        return true;
+    }
+    for (const id of curIds) {
         const orig = props.relations.find((r) => r.id === id);
+        const pv = pivotValues.value[id] || {};
         const op = orig?.pivot || {};
-        const fields = ["character_level", "slot_index", "choice_order"];
-        for (const f of fields) {
-            const a = String(cur?.[f] ?? "");
-            const b =
-                op[f] !== undefined && op[f] !== null && op[f] !== ""
-                    ? String(op[f])
-                    : f === "choice_order"
-                      ? "0"
-                      : "1";
-            if (a !== b) return true;
+        if (
+            String(pv.character_level ?? "") !== String(op.character_level ?? "") ||
+            String(pv.slot_index ?? "") !== String(op.slot_index ?? "") ||
+            String(pv.choice_order ?? "") !== String(op.choice_order ?? "")
+        ) {
+            return true;
         }
     }
     return false;
@@ -247,20 +246,11 @@ const hasUnsavedChanges = computed(() => {
 const save = () => {
     const dataWithPivots = {};
     for (const item of localRelations.value) {
-        const id = item.id;
-        const pv = pivotValues.value[id] || pivotDefaults();
-        const nCl = Number(pv.character_level);
-        const nSi = Number(pv.slot_index);
-        const nCo = Number(pv.choice_order);
-        let cl = Number.isFinite(nCl) && nCl >= 0 ? Math.floor(nCl) : 1;
-        let si = Number.isFinite(nSi) && nSi >= 1 ? Math.floor(nSi) : 1;
-        if (cl === 0) {
-            si = BREED_SPELL_EXTRA_SLOT;
-        }
-        dataWithPivots[id] = {
-            character_level: cl,
-            slot_index: si,
-            choice_order: Number.isFinite(nCo) && nCo >= 0 ? Math.floor(nCo) : 0,
+        const pv = pivotValues.value[item.id] || pivotDefaults();
+        dataWithPivots[item.id] = {
+            character_level: Number(pv.character_level) || 1,
+            slot_index: Number(pv.slot_index) || 1,
+            choice_order: Number(pv.choice_order) || 0,
         };
     }
     relationsForm.spells = dataWithPivots;
@@ -287,18 +277,17 @@ const save = () => {
     <Container class="space-y-4">
         <div class="flex flex-wrap items-start justify-between gap-2">
             <div>
-                <h3 class="text-lg font-semibold">Variantes de sorts</h3>
+                <h3 class="text-lg font-semibold">Sorts de classe</h3>
                 <p class="text-sm text-base-content/70 max-w-3xl mt-1">
-                    Au niveau 1 : trois variantes (un choix de sort par variante). Aux niveaux impairs suivants (3, 5,
-                    7…), une variante supplémentaire. Ajoutez plusieurs sorts dans une même variante pour proposer des
-                    options au joueur (un seul sort retenu en jeu par variante). Les sorts listés « hors variante » sont
-                    utilisables sans choix préalable (pivot 0/1, en plus de la grille).
+                    Emplacements de progression (niveau PJ / index) et variantes. Recherche via le catalogue sorts
+                    (api.tables.spells).
                 </p>
             </div>
-            <Badge :content="String(localRelations.length)" color="primary" />
+            <Badge color="neutral" size="sm" class="shrink-0">
+                {{ localRelations.length }} sort{{ localRelations.length === 1 ? "" : "s" }}
+            </Badge>
         </div>
 
-        <!-- Présentation « texte » : alignée sur l’affichage minimal des variantes en lecture -->
         <div class="breed-spell-slots-edit space-y-3 text-[13px] leading-snug text-base-content/90">
             <div
                 v-for="def in standardSlots"
@@ -351,36 +340,28 @@ const save = () => {
                     <span v-else class="text-[11px] text-base-content/45 italic">—</span>
                 </div>
 
-                <div class="mt-2 ml-0 sm:ml-6 sm:border-l sm:border-base-300/50 sm:pl-3 space-y-1">
-                    <InputField
-                        v-model="slotQueries[slotKey(def)]"
-                        :label="`Ajouter (${def.character_level}/${def.slot_index})`"
-                        placeholder="Filtrer par nom…"
+                <div
+                    v-if="canAddToSlot(def)"
+                    class="mt-2 ml-0 sm:ml-6 sm:border-l sm:border-base-300/50 sm:pl-3"
+                >
+                    <p class="text-xs text-base-content/60 mb-1">
+                        Ajouter ({{ def.character_level }}/{{ def.slot_index }})
+                    </p>
+                    <EntityPickerCore
+                        :model-value="slotPickerValues[slotKey(def)] ?? null"
+                        entity-type="spells"
+                        :multiple="false"
+                        variant="extended"
+                        :blacklist="slotBlacklist(def)"
+                        placeholder="Rechercher un sort…"
                         size="sm"
+                        @update:model-value="slotPickerValues[slotKey(def)] = $event"
+                        @update:selected-entities="onSlotPickerSelected($event, def)"
                     />
-                    <div
-                        v-if="(slotQueries[slotKey(def)] || '').trim() && filteredForSlot(def).length > 0"
-                        class="max-h-32 overflow-y-auto rounded border border-base-300/80 bg-glass-3xl text-[13px]"
-                        style="--bg-color: var(--color-base-100)"
-                    >
-                        <button
-                            v-for="item in filteredForSlot(def).slice(0, 12)"
-                            :key="item.id"
-                            type="button"
-                            class="w-full text-left px-2.5 py-1.5 hover:bg-base-200 border-b border-base-200/80 last:border-0"
-                            @mousedown.prevent="addToSlot(item, def)"
-                        >
-                            <span class="font-medium">{{ item.name || `#${item.id}` }}</span>
-                            <span v-if="item.level != null" class="text-base-content/55 text-xs ml-1.5">
-                                nv. {{ item.level }}
-                            </span>
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Sorts hors emplacement (pivot 0 / 1) -->
         <div class="border border-primary/25 bg-primary/5 rounded-lg p-3 space-y-2 text-[13px]">
             <div class="flex flex-wrap items-baseline gap-x-1 gap-y-1.5">
                 <span
@@ -430,38 +411,22 @@ const save = () => {
                 </template>
                 <span v-else class="text-[11px] text-base-content/45 italic">—</span>
             </div>
-            <div class="mt-2 space-y-1">
-                <InputField
-                    v-model="slotQueries[slotKey(extraSlotDef)]"
-                    :label="`Ajouter (hors emplacement)`"
-                    placeholder="Filtrer par nom…"
+            <div v-if="canAddToSlot(extraSlotDef)" class="mt-2 space-y-1">
+                <p class="text-xs text-base-content/60">Ajouter (hors emplacement)</p>
+                <EntityPickerCore
+                    :model-value="slotPickerValues[slotKey(extraSlotDef)] ?? null"
+                    entity-type="spells"
+                    :multiple="false"
+                    variant="extended"
+                    :blacklist="slotBlacklist(extraSlotDef)"
+                    placeholder="Rechercher un sort…"
                     size="sm"
+                    @update:model-value="slotPickerValues[slotKey(extraSlotDef)] = $event"
+                    @update:selected-entities="onSlotPickerSelected($event, extraSlotDef)"
                 />
-                <div
-                    v-if="
-                        (slotQueries[slotKey(extraSlotDef)] || '').trim() &&
-                        filteredForSlot(extraSlotDef).length > 0
-                    "
-                    class="max-h-32 overflow-y-auto rounded border border-base-300/80 bg-glass-3xl text-[13px]"
-                    style="--bg-color: var(--color-base-100)"
-                >
-                    <button
-                        v-for="item in filteredForSlot(extraSlotDef).slice(0, 12)"
-                        :key="`ex-add-${item.id}`"
-                        type="button"
-                        class="w-full text-left px-2.5 py-1.5 hover:bg-base-200 border-b border-base-200/80 last:border-0"
-                        @mousedown.prevent="addToSlot(item, extraSlotDef)"
-                    >
-                        <span class="font-medium">{{ item.name || `#${item.id}` }}</span>
-                        <span v-if="item.level != null" class="text-base-content/55 text-xs ml-1.5">
-                            nv. {{ item.level }}
-                        </span>
-                    </button>
-                </div>
             </div>
         </div>
 
-        <!-- Emplacements hors grille (données legacy ou personnalisées) -->
         <div
             v-if="orphanRelationItems.length"
             class="border border-warning/35 bg-warning/5 rounded-md p-3 space-y-2 text-[13px]"

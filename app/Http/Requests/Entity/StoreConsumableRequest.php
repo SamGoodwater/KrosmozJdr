@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Http\Requests\Concerns\RestrictsAccessLevelMutation;
 use App\Enums\EntityState;
 use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Http\Requests\Concerns\HasCharacteristicValidation;
@@ -17,6 +18,8 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class StoreConsumableRequest extends FormRequest
 {
+    use RestrictsAccessLevelMutation;
+
     use GuardsPlayableState;
     use HasCharacteristicValidation;
 
@@ -59,5 +62,10 @@ class StoreConsumableRequest extends FormRequest
     protected function playableModelClass(): string
     {
         return Consumable::class;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->stripAccessLevelsUnlessAdmin();
     }
 }

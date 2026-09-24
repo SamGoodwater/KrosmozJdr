@@ -33,7 +33,9 @@
         "audit:docs": "node docs/scripts/audit-docs-quality.cjs",
         "test:coverage": "vitest run --coverage",
         "lint": "eslint resources/js/Pages/Organismes/section resources/js/Pages/Pages/page resources/js/Utils/security resources/js/Composables/pages resources/js/Pages/Molecules/header/LoggedHeaderContainer.vue resources/js/Pages/Organismes/table/TanStackTable.vue resources/js/Pages/Atoms/data-input/DateCore.vue",
-        "project:review:cursor-agents": "node scripts/cursor-dev-review-agents.mjs"
+        "project:review:cursor-agents": "node scripts/cursor-dev-review-agents.mjs",
+        "secrets:scan": "node scripts/scan-secrets.mjs",
+        "secrets:scan:pre-push": "node scripts/scan-secrets.mjs --mode=pre-push"
     },
     "devDependencies": {
         "@cursor/sdk": "^1.0.31",

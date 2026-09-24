@@ -82,6 +82,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
+        // Mass assignment ouvert pour les Form Requests (validated()).
+        // Ne jamais passer $request->all() à create/update. User::is_system est protégé dans User::fill().
         Model::unguard();
 
         Route::bind('user', function (string $value): User {

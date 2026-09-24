@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Http\Requests\Concerns\RestrictsAccessLevelMutation;
 use App\Enums\EntityState;
 use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Models\Entity\Breed;
@@ -15,6 +16,8 @@ use Illuminate\Validation\Rule;
  */
 class UpdateBreedRequest extends FormRequest
 {
+    use RestrictsAccessLevelMutation;
+
     use GuardsPlayableState;
 
     public function authorize(): bool
@@ -70,5 +73,10 @@ class UpdateBreedRequest extends FormRequest
     protected function playableModelClass(): string
     {
         return Breed::class;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->stripAccessLevelsUnlessAdmin();
     }
 }

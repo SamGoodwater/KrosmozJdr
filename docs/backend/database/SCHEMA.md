@@ -15,6 +15,24 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
+  AI_GENERATION_RUNS {
+    id : bigint(20) unsigned
+    user_id : bigint(20) unsigned
+    action : varchar(64)
+    entity_type : varchar(64)
+    entity_id : bigint(20) unsigned
+    related_ids : longtext
+    model : varchar(128)
+    input_tokens : int(10) unsigned
+    output_tokens : int(10) unsigned
+    cache_read_tokens : int(10) unsigned
+    status : varchar(32)
+    error : text
+    prompt_version : varchar(64)
+    ai_generated_at : timestamp
+    created_at : timestamp
+    updated_at : timestamp
+  }
   APPLICATION_SETTINGS {
     id : bigint(20) unsigned
     key : varchar(255)
@@ -395,6 +413,7 @@ erDiagram
     name : varchar(255)
     description : text
     effect : varchar(255)
+    bonus : text
     level : varchar(255)
     recipe : varchar(255)
     price_calculated : bigint(20)
@@ -1176,6 +1195,7 @@ erDiagram
     name : varchar(255)
     description : text
     effect : varchar(255)
+    bonus : text
     level : varchar(255)
     price : varchar(255)
     weight : varchar(255)
@@ -1498,6 +1518,7 @@ erDiagram
     updated_at : timestamp
   }
   ADMIN_ACTIVITY_LOGS }o--|| USERS : "FK actor_id"
+  AI_GENERATION_RUNS }o--|| USERS : "FK user_id"
   BREED_CAPABILITY }o--|| BREEDS : "FK breed_id"
   BREED_CAPABILITY }o--|| CAPABILITIES : "FK capability_id"
   BREED_CREATURE_TRAIT }o--|| BREEDS : "FK breed_id"

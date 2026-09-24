@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Type;
 
+use App\Http\Requests\Concerns\RestrictsAccessLevelMutation;
 use App\Enums\EntityState;
 use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Models\Type\ResourceType;
@@ -12,6 +13,8 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class UpdateResourceTypeRequest extends FormRequest
 {
+    use RestrictsAccessLevelMutation;
+
     use GuardsPlayableState;
 
     public function authorize(): bool
@@ -41,5 +44,10 @@ class UpdateResourceTypeRequest extends FormRequest
     protected function playableModelClass(): string
     {
         return ResourceType::class;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->stripAccessLevelsUnlessAdmin();
     }
 }

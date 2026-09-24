@@ -15,20 +15,8 @@ use App\Http\Requests\Entity\UpdateSpecializationRequest;
 use App\Http\Requests\Entity\UpdateSpecializationResourcesRequest;
 use App\Http\Requests\Entity\UpdateSpecializationSectionsRequest;
 use App\Http\Requests\Entity\UpdateSpecializationSpellsRequest;
-use App\Http\Resources\Entity\CapabilityResource;
-use App\Http\Resources\Entity\ConsumableResource;
-use App\Http\Resources\Entity\CreatureTraitResource;
-use App\Http\Resources\Entity\ItemResource;
-use App\Http\Resources\Entity\ResourceResource;
 use App\Http\Resources\Entity\SpecializationResource;
-use App\Http\Resources\Entity\SpellResource;
-use App\Models\Entity\Capability;
-use App\Models\Entity\Consumable;
-use App\Models\Entity\CreatureTrait;
-use App\Models\Entity\Item;
-use App\Models\Entity\Resource;
 use App\Models\Entity\Specialization;
-use App\Models\Entity\Spell;
 use App\Models\User;
 use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
@@ -168,40 +156,15 @@ class SpecializationController extends Controller
             'sections' => Specialization::orderedSectionsEagerLoadConstraint(),
         ]);
 
-        $request = request();
-
-        $availableSpells = SpellResource::collection(
-            Spell::query()->orderBy('name')->limit(8000)->get()
-        )->toArray($request);
-
-        $availableCapabilities = CapabilityResource::collection(
-            Capability::query()->orderBy('name')->limit(5000)->get()
-        )->toArray($request);
-
-        $availableCreatureTraits = CreatureTraitResource::collection(
-            CreatureTrait::query()->orderBy('name')->limit(5000)->get()
-        )->toArray($request);
-
-        $availableConsumables = ConsumableResource::collection(
-            Consumable::query()->orderBy('name')->limit(5000)->get()
-        )->toArray($request);
-
-        $availableResources = ResourceResource::collection(
-            Resource::query()->orderBy('name')->limit(5000)->get()
-        )->toArray($request);
-
-        $availableItems = ItemResource::collection(
-            Item::query()->orderBy('name')->limit(5000)->get()
-        )->toArray($request);
-
+        // Pas de dump Resource::collection : EntityPicker / api.tables.* côté front.
         return Inertia::render('Pages/entity/specialization/Edit', [
             'specialization' => new SpecializationResource($specialization),
-            'availableSpells' => $availableSpells,
-            'availableCapabilities' => $availableCapabilities,
-            'availableCreatureTraits' => $availableCreatureTraits,
-            'availableConsumables' => $availableConsumables,
-            'availableResources' => $availableResources,
-            'availableItems' => $availableItems,
+            'availableSpells' => [],
+            'availableCapabilities' => [],
+            'availableCreatureTraits' => [],
+            'availableConsumables' => [],
+            'availableResources' => [],
+            'availableItems' => [],
             'availableSections' => $this->availableSectionsPayload(),
         ]);
     }

@@ -1,6 +1,7 @@
 <script setup>
 /**
  * Capacités liées à une classe (liste plate, pas d’emplacement).
+ * Ajout via EntityPicker / api.tables.capabilities.
  */
 import { ref, computed, watch } from "vue";
 import { useForm } from "@inertiajs/vue3";
@@ -8,8 +9,8 @@ import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { Capability } from "@/Models/Entity/Capability";
 import EditActionDock from "@/Pages/Molecules/action/EditActionDock.vue";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
-import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import CapabilityViewText from "@/Pages/Molecules/entity/capability/CapabilityViewText.vue";
+import EntityPickerCore from "@/Pages/Organismes/entity/EntityPickerCore.vue";
 import { warnDev } from "@/Utils/dev-logger";
 
 const props = defineProps({
@@ -17,6 +18,7 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    /** @deprecated Seed local optionnel — recherche via EntityPicker. */
     availableItems: {
         type: Array,
         default: () => [],
@@ -30,6 +32,8 @@ const props = defineProps({
 const notificationStore = useNotificationStore();
 
 const localIds = ref(props.relations.map((r) => Number(r.id)).filter((n) => Number.isFinite(n)));
+const pickedExtras = ref([]);
+const pickerValue = ref(null);
 
 watch(
     () => props.relations,
@@ -44,7 +48,11 @@ const byId = computed(() => {
     for (const r of props.relations) {
         m.set(Number(r.id), r);
     }
-    for (const a of props.availableItems) {
+    for (const a of props.availableItems || []) {
+        const id = Number(a.id);
+        if (!m.has(id)) m.set(id, a);
+    }
+    for (const a of pickedExtras.value) {
         const id = Number(a.id);
         if (!m.has(id)) m.set(id, a);
     }
@@ -57,36 +65,32 @@ const linkedCapabilities = computed(() =>
         .filter(Boolean)
 );
 
-const query = ref("");
-
-const availableSorted = computed(() => {
-    const list = [...props.availableItems];
-    list.sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")));
-    return list;
-});
-
-const filteredToAdd = computed(() => {
-    const q = query.value.trim().toLowerCase();
-    const idSet = new Set(localIds.value);
-    return availableSorted.value.filter((c) => {
-        if (idSet.has(Number(c.id))) return false;
-        if (!q) return true;
-        const name = String(c.name || "").toLowerCase();
-        const desc = String(c.description || "").toLowerCase();
-        return name.includes(q) || desc.includes(q);
-    });
-});
-
 const asCapabilityModel = (raw) => (raw instanceof Capability ? raw : new Capability(raw));
 
 const isPassiveCapability = (raw) => asCapabilityModel(raw).isPassive;
 
-const addId = (id) => {
-    const n = Number(id);
-    if (!Number.isFinite(n) || localIds.value.includes(n)) return;
-    localIds.value = [...localIds.value, n];
-    query.value = "";
+const normalizePicked = (raw) => {
+    if (!raw || typeof raw !== "object") return null;
+    const data = raw._data && typeof raw._data === "object" ? { ...raw._data, ...raw } : raw;
+    const id = Number(data.id);
+    if (!Number.isFinite(id)) return null;
+    return { ...data, id, name: data.name ?? `#${id}` };
+};
+
+const addEntity = (raw) => {
+    const entity = normalizePicked(raw);
+    if (!entity) return;
+    if (localIds.value.includes(entity.id)) return;
+    pickedExtras.value = [...pickedExtras.value, entity];
+    localIds.value = [...localIds.value, entity.id];
+    pickerValue.value = null;
     notificationStore.success("Capacité ajoutée à la liste.", { duration: 2000, placement: "top-right" });
+};
+
+const onPickerSelected = (entities) => {
+    const entity = Array.isArray(entities) ? entities[0] : null;
+    if (!entity) return;
+    addEntity(entity);
 };
 
 const removeId = (id) => {
@@ -130,7 +134,7 @@ const save = () => {
         <div>
             <h3 class="text-lg font-semibold">Capacités de classe</h3>
             <p class="text-sm text-base-content/70 max-w-3xl mt-1">
-                Capacités supplémentaires sans emplacement (en plus des sorts). Choisis parmi les capacités du référentiel.
+                Capacités supplémentaires sans emplacement (en plus des sorts). Recherche via le catalogue capacités.
             </p>
         </div>
 
@@ -161,23 +165,18 @@ const save = () => {
         <p v-else class="text-sm text-base-content/50 italic">Aucune capacité liée.</p>
 
         <div class="space-y-2">
-            <InputField v-model="query" label="Ajouter une capacité" placeholder="Filtrer par nom…" size="sm" />
-            <div
-                v-if="query.trim() && filteredToAdd.length > 0"
-                class="max-h-40 overflow-y-auto rounded border border-base-300/80 bg-glass-3xl text-[13px]"
-                style="--bg-color: var(--color-base-100)"
-            >
-                <button
-                    v-for="opt in filteredToAdd.slice(0, 20)"
-                    :key="opt.id"
-                    type="button"
-                    class="w-full text-left px-2.5 py-1.5 hover:bg-base-200 border-b border-base-200/80 last:border-0"
-                    @mousedown.prevent="addId(opt.id)"
-                >
-                    <span class="font-medium">{{ opt.name || `#${opt.id}` }}</span>
-                    <span v-if="opt.level != null" class="text-base-content/55 text-xs ml-1.5">nv. {{ opt.level }}</span>
-                </button>
-            </div>
+            <p class="text-sm font-medium">Ajouter une capacité</p>
+            <EntityPickerCore
+                :model-value="pickerValue"
+                entity-type="capabilities"
+                :multiple="false"
+                variant="extended"
+                :blacklist="localIds"
+                placeholder="Rechercher une capacité…"
+                size="sm"
+                @update:model-value="pickerValue = $event"
+                @update:selected-entities="onPickerSelected"
+            />
         </div>
 
         <div class="flex justify-end border-t border-base-300 pt-2">

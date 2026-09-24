@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
                 $user->restore();
             }
 
-            $user->fill($attributes);
+            $user->forceFill($attributes);
             $user->save();
 
             $this->command->info('♻️  '.$label.' restauré/mis à jour: '.$email);
@@ -34,7 +34,9 @@ class UserSeeder extends Seeder
             return $user;
         }
 
-        $user = User::create($attributes);
+        $user = new User;
+        $user->forceFill($attributes);
+        $user->save();
         $this->command->info('✅ '.$label.' créé: '.$email);
 
         return $user;

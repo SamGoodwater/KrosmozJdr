@@ -19,7 +19,8 @@ trait CreatesSystemUser
         $systemUser = User::getSystemUser();
 
         if (! $systemUser) {
-            $systemUser = User::create([
+            $systemUser = new User;
+            $systemUser->forceFill([
                 'name' => 'Système',
                 'email' => User::SYSTEM_USER_EMAIL,
                 'role' => User::ROLE_SUPER_ADMIN,
@@ -29,6 +30,7 @@ trait CreatesSystemUser
                 'notification_channels' => [],
                 'is_system' => true,
             ]);
+            $systemUser->save();
         }
 
         return $systemUser;

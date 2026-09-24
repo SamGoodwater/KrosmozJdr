@@ -44,4 +44,14 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /**
+     * Compte système (`is_system`) — forceFill après création (SEC-05).
+     */
+    public function systemAccount(bool $value = true): static
+    {
+        return $this->afterCreating(function (User $user) use ($value): void {
+            $user->forceFill(['is_system' => $value])->save();
+        });
+    }
 }

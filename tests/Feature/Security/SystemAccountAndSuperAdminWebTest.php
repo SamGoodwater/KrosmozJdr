@@ -28,9 +28,9 @@ class SystemAccountAndSuperAdminWebTest extends TestCase
      */
     public function test_system_user_cannot_authenticate_via_login_form(): void
     {
-        $user = User::factory()->create([
+        $user = User::factory()->systemAccount()->create([
             'email' => 'system-web-guard@example.test',
-            'is_system' => true,
+            
             'password' => 'correct-password',
         ]);
 
@@ -48,9 +48,9 @@ class SystemAccountAndSuperAdminWebTest extends TestCase
      */
     public function test_oauth_confirm_link_does_not_attach_provider_to_system_user(): void
     {
-        $system = User::factory()->create([
+        $system = User::factory()->systemAccount()->create([
             'email' => 'oauth-blocked-system@example.test',
-            'is_system' => true,
+            
         ]);
 
         $pending = [

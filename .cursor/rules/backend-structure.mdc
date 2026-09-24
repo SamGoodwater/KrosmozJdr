@@ -4,7 +4,7 @@ alwaysApply: false
 ---
 # Structure Backend Laravel
 
-Backend Laravel 12 / PHP 8.4, **monolithe classique sous `app/`** (il n'y a pas de dossier `app/Modules/`). Sert Inertia.js + une API « hybride » (souvent `middleware ['web','auth']`, donc session + CSRF).
+Backend Laravel 13 / PHP 8.4, **monolithe classique sous `app/`** (il n'y a pas de dossier `app/Modules/`). Sert Inertia.js + une API « hybride » (souvent `middleware ['web','auth']`, donc session + CSRF).
 
 ## Organisation réelle
 

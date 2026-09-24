@@ -6,6 +6,7 @@ namespace App\Policies\Entity;
 
 use App\Models\Entity\Spell;
 use App\Models\User;
+use App\Policies\Entity\Concerns\AdminMutationsOnly;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,6 +14,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class SpellPolicy extends BaseEntityPolicy
 {
+    use AdminMutationsOnly;
+
+    /**
+     * Auteur ou admin (override du trait admin-only).
+     */
     public function update(User $user, Model $model): bool
     {
         if (! $model instanceof Spell) {
@@ -20,29 +26,5 @@ class SpellPolicy extends BaseEntityPolicy
         }
 
         return (int) $user->id === (int) $model->created_by || $user->isAdmin();
-    }
-
-    public function updateAny(User $user): bool
-    {
-        return $user->isAdmin();
-    }
-
-    public function delete(User $user, Model $model): bool
-    {
-        if (! $model instanceof Spell) {
-            return false;
-        }
-
-        return $user->isAdmin();
-    }
-
-    public function deleteAny(User $user): bool
-    {
-        return $user->isAdmin();
-    }
-
-    public function manageAny(User $user): bool
-    {
-        return $user->isAdmin();
     }
 }

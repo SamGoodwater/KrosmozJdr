@@ -93,6 +93,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable visibleToUser(?\App\Models\User $user)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable wherePriceCalculated($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable wherePriceCustom($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereBonus($value)
  * @mixin \Eloquent
  */
 class Consumable extends Model implements HasMedia

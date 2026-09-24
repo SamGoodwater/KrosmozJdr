@@ -133,4 +133,41 @@ class BreedBulkControllerTest extends TestCase
 
         $response->assertStatus(422);
     }
+
+    public function test_admin_can_bulk_publish_breeds(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $breed = Breed::factory()->create(['state' => Breed::STATE_AUTO]);
+
+        $this->actingAs($admin)
+            ->patchJson('/api/entities/breeds/bulk', [
+                'ids' => [$breed->id],
+                'state' => Breed::STATE_PLAYABLE,
+            ])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('breeds', [
+            'id' => $breed->id,
+            'state' => Breed::STATE_PLAYABLE,
+        ]);
+    }
+
+    public function test_game_master_cannot_bulk_publish_breeds(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $breed = Breed::factory()->create(['state' => Breed::STATE_DRAFT]);
+
+        $this->actingAs($gm)
+            ->patchJson('/api/entities/breeds/bulk', [
+                'ids' => [$breed->id],
+                'state' => Breed::STATE_PLAYABLE,
+            ])
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('breeds', [
+            'id' => $breed->id,
+            'state' => Breed::STATE_DRAFT,
+        ]);
+    }
 }

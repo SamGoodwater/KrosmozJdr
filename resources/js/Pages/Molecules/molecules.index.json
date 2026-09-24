@@ -48,37 +48,6 @@
     "file": "table/TanStackTableSkeletonBody.vue"
   },
   {
-    "name": "EntityViewSkeleton",
-    "description": "Placeholder de chargement calqué sur la vue Minimal compacte ou Line.",
-    "props": [
-      {
-        "name": "variant",
-        "type": "String",
-        "desc": "- compact (grille) ou line"
-      },
-      {
-        "name": "count",
-        "type": "Number",
-        "desc": "- Nombre de cartes / lignes fantômes"
-      }
-    ],
-    "slots": [],
-    "file": "entity/shared/EntityViewSkeleton.vue"
-  },
-  {
-    "name": "SectionContentSkeleton",
-    "description": "Placeholder de chargement d’une section CMS selon son template.",
-    "props": [
-      {
-        "name": "template",
-        "type": "String",
-        "desc": "- Valeur SectionType"
-      }
-    ],
-    "slots": [],
-    "file": "section/SectionContentSkeleton.vue"
-  },
-  {
     "name": "TanStackTableShortcutsModal",
     "description": "Aide : raccourcis clavier et clics souris du tableau TanStack.",
     "props": [],
@@ -154,6 +123,13 @@
     ],
     "slots": [],
     "file": "section/SectionHeader.vue"
+  },
+  {
+    "name": "SectionContentSkeleton",
+    "description": "SectionContentSkeleton Molecule",
+    "props": [],
+    "slots": [],
+    "file": "section/SectionContentSkeleton.vue"
   },
   {
     "name": "PendingErasureBanner",
@@ -747,6 +723,13 @@
     "file": "entity/PanoplyItemsManager.vue"
   },
   {
+    "name": "EntityUpdateDiffView",
+    "description": "Tableau avant / après d’une maj DofusDB ou d’une conversion IA. Chaque cellule changée se choisit (ancienne ou nouvelle) ; les en-têtes « Avant » / « Après » sélectionnent toute la colonne.",
+    "props": [],
+    "slots": [],
+    "file": "entity/EntityUpdateDiffView.vue"
+  },
+  {
     "name": "EntityStateAction",
     "description": "EntityStateAction — pastille d'état dynamique dans la barre d'actions.",
     "props": [],
@@ -755,17 +738,10 @@
   },
   {
     "name": "EntitySourceModal",
-    "description": "Modal unique DofusDB + conversion IA, puis tableau avant/après.",
+    "description": "Modal unique DofusDB + conversion IA (une icône menu).",
     "props": [],
     "slots": [],
     "file": "entity/EntitySourceModal.vue"
-  },
-  {
-    "name": "EntityUpdateDiffView",
-    "description": "Tableau avant/après d’une maj DofusDB ou d’une conversion IA (Enregistrer / Rétablir).",
-    "props": [],
-    "slots": [],
-    "file": "entity/EntityUpdateDiffView.vue"
   },
   {
     "name": "EntityFormField",
@@ -1208,6 +1184,13 @@
     "props": [],
     "slots": [],
     "file": "entity/shared/EntityViewTextLink.vue"
+  },
+  {
+    "name": "EntityViewSkeleton",
+    "description": "EntityViewSkeleton Molecule",
+    "props": [],
+    "slots": [],
+    "file": "entity/shared/EntityViewSkeleton.vue"
   },
   {
     "name": "EntityViewHeader",
@@ -2302,7 +2285,7 @@
   },
   {
     "name": "BreedViewFull",
-    "description": "BreedViewFull — Vue Full pour Breed En-tête + blocs gameplay structuraux (orientations, traits, langues, variantes sorts). Le contenu narratif (spécificité, dé de vie, évolution, capacités en prose) est dans les sections liées.",
+    "description": "BreedViewFull — Vue Full pour Breed En-tête + blocs gameplay structuraux (voix, passif, traits, langues, choix de sorts). Le contenu narratif (spécificité, dé de vie, évolution) est dans les sections liées.",
     "props": [],
     "slots": [],
     "file": "entity/breed/BreedViewFull.vue"
@@ -2644,12 +2627,12 @@
   },
   {
     "name": "KrefEntityTooltipBody",
-    "description": "Corps d’infobulle pour une référence kref « entité » (aperçu léger, chargé au survol puis mis en cache).",
+    "description": "Repli d’infobulle kref « entité » (aperçu léger) si le type n’a pas de vue Minimal catalogue.",
     "props": [
       {
         "name": "entityType",
         "type": "string",
-        "desc": "— ex. spells, items"
+        "desc": "— ex. creatures"
       },
       {
         "name": "id",
@@ -2669,8 +2652,38 @@
   },
   {
     "name": "DiceFormulaStrip",
-    "description": "Bande min / moyenne / max d’une formule de dés, valeur du lancer, bouton icône (tooltip Lancer) et historique de session.",
+    "description": "DiceFormulaStrip Molecule",
     "props": [
+      {
+        "name": "min",
+        "type": "Number|null",
+        "desc": "- Borne minimale"
+      },
+      {
+        "name": "max",
+        "type": "Number|null",
+        "desc": "- Borne maximale"
+      },
+      {
+        "name": "average",
+        "type": "Number|null",
+        "desc": "- Espérance"
+      },
+      {
+        "name": "rangeEquivalents",
+        "type": "Array",
+        "desc": "- Libellés « [2-6] = 1d5+1 »"
+      },
+      {
+        "name": "rollResult",
+        "type": "Number|String|null",
+        "desc": "- Dernier lancer, ou null"
+      },
+      {
+        "name": "history",
+        "type": "Array",
+        "desc": "- Jets de la session `{ formula, value }` (mémoire seule)"
+      },
       {
         "name": "density",
         "type": "String",

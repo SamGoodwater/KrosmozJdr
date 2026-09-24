@@ -103,7 +103,7 @@ class PageController extends Controller
     public function redirectLegacy(string $legacySlug): RedirectResponse
     {
         $target = CreationPageLegacyRedirects::MAP[$legacySlug] ?? null;
-        abort_if(! is_string($target) || $target === '', 404);
+        abort_if(! is_string($target), 404);
 
         return redirect()->route('pages.show', $target, 301);
     }

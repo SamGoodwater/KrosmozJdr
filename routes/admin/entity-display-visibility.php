@@ -13,5 +13,7 @@ Route::prefix('admin/entity-display-visibility')
     ->middleware(['auth', 'role:admin'])
     ->group(function () {
         Route::get('/', [EntityDisplayVisibilityController::class, 'index'])->name('index');
-        Route::patch('/', [EntityDisplayVisibilityController::class, 'update'])->name('update');
+        Route::patch('/', [EntityDisplayVisibilityController::class, 'update'])
+            ->middleware('password.confirm')
+            ->name('update');
     });
