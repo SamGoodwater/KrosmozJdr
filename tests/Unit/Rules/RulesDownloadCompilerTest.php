@@ -15,6 +15,7 @@ class RulesDownloadCompilerTest extends TestCase
     public function test_writes_pdf_and_odt_on_public_disk(): void
     {
         Storage::fake('public');
+        Storage::fake('local');
         $root = sys_get_temp_dir().'/krosmoz-rules-'.uniqid('', true);
         mkdir($root, 0775, true);
         file_put_contents($root.'/1.1.1-intro.md', "# 1.1.1 Intro\n\nUn **paragraphe** de test.\n");
@@ -47,6 +48,8 @@ class RulesDownloadCompilerTest extends TestCase
     public function test_writes_mj_book_when_chapter_five_exists(): void
     {
         Storage::fake('public');
+        Storage::fake('local');
+        Storage::disk('public')->put('downloads/generated/krosmoz-jdr-atelier-mj.pdf', '%PDF-leftover');
         $root = sys_get_temp_dir().'/krosmoz-rules-'.uniqid('', true);
         mkdir($root, 0775, true);
         file_put_contents($root.'/1.1.1-intro.md', "# 1.1.1 Intro\n\nJoueur.\n");
@@ -54,13 +57,16 @@ class RulesDownloadCompilerTest extends TestCase
 
         try {
             $this->app->instance(RulesBookAssembler::class, new RulesBookAssembler($root));
-            $written = app(RulesDownloadCompiler::class)->compile();
+            $written = app(RulesDownloadCompiler::class)->compile(pdf: false, odt: true);
 
-            $this->assertCount(4, $written);
-            Storage::disk('public')->assertExists('downloads/generated/krosmoz-jdr-atelier-mj.pdf');
-            Storage::disk('public')->assertExists('downloads/generated/krosmoz-jdr-atelier-mj.odt');
+            $this->assertCount(2, $written);
+            Storage::disk('local')->assertExists('downloads/generated/krosmoz-jdr-atelier-mj.odt');
+            Storage::disk('public')->assertMissing('downloads/generated/krosmoz-jdr-atelier-mj.pdf');
+            Storage::disk('public')->assertMissing('downloads/generated/krosmoz-jdr-atelier-mj.odt');
+            Storage::disk('public')->assertExists('downloads/generated/krosmoz-jdr-regles.odt');
+            Storage::disk('local')->assertMissing('downloads/generated/krosmoz-jdr-regles.odt');
 
-            $odtAbsolute = Storage::disk('public')->path('downloads/generated/krosmoz-jdr-atelier-mj.odt');
+            $odtAbsolute = Storage::disk('local')->path('downloads/generated/krosmoz-jdr-atelier-mj.odt');
             $zip = new ZipArchive;
             $this->assertTrue($zip->open($odtAbsolute) === true);
             $content = (string) $zip->getFromName('content.xml');

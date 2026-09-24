@@ -8,8 +8,7 @@
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
     "description": "Les consommables (et ressources) se filtrent maintenant comme les équipements : on choisit une caractéristique, puis une valeur min/max. Les soins, PV temporaires et points de bouclier sont enregistrés en chiffres (plus seulement dans le texte), avec le détail d’usage (hors combat, durée…) toujours lisible sur la fiche."
-  },
-  {
+  },  {
     "path": "backend/_ai.md",
     "title": "Backend — IA",
     "description": "Modèles, contrôleurs, services, policies, jobs, commandes, routes."

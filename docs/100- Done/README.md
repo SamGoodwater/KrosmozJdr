@@ -75,6 +75,10 @@ Au passage, **aptitude et capacité échangent leur sens**. Une **capacité** es
 ## Septembre 2026 — Les onze spécialisations recalées sur les nouveaux paliers
 
 Les six spécialisations jouables (Artiste, Dévot, Érudit, Explorateur·rice, Milicien·ne, Voleur·euse) étaient écrites sur une vieille grille de dix paliers. Elles sont **redécoupées sur les sept paliers** actuels : les gains des niveaux 13 et 15 fusionnent, ceux des niveaux 18 et 20 aussi, et les expertises retombent sur les paliers 9, 15 et 20 comme le veut la règle. Chacune garde **trois aptitudes**, aux niveaux 3, 9 et 15 ; les autres bonus nommés redeviennent des capacités proposées à leur palier. Les cinq brouillons (Artisan·e, Négociant·e, Sylvain·e, Marin·e, Courtisan·e) sont réécrits sur la même trame.
+## Septembre 2026 — PDF MJ hors disque public
+
+L’atelier MJ compilé n’est plus écrit sous `storage/app/public` : un joueur ne peut plus le récupérer via `/storage/downloads/generated/…`. Le téléchargement passe uniquement par `/telechargements/mj-pdf` (rôle MJ). Une copie publique déjà générée est migrée puis effacée.
+
 
 ## Septembre 2026 — Règles sans catalogues, changelog hors livre, PDF MJ
 

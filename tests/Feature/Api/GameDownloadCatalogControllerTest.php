@@ -16,6 +16,7 @@ class GameDownloadCatalogControllerTest extends TestCase
     public function test_guest_receives_catalog_groups(): void
     {
         Storage::fake('public');
+        Storage::fake('local');
         Storage::disk('public')->put('downloads/generated/krosmoz-jdr-regles.pdf', '%PDF-fake');
 
         $response = $this->getJson('/api/game-downloads');
@@ -49,7 +50,8 @@ class GameDownloadCatalogControllerTest extends TestCase
     public function test_game_master_sees_mj_book(): void
     {
         Storage::fake('public');
-        Storage::disk('public')->put('downloads/generated/krosmoz-jdr-atelier-mj.pdf', '%PDF-fake');
+        Storage::fake('local');
+        Storage::disk('local')->put('downloads/generated/krosmoz-jdr-atelier-mj.pdf', '%PDF-fake');
         $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
 
         $response = $this->actingAs($gm)->getJson('/api/game-downloads');
@@ -62,5 +64,17 @@ class GameDownloadCatalogControllerTest extends TestCase
             ->all();
         $this->assertContains('mj-pdf', $keys);
         $this->assertContains('rules-pdf', $keys);
+    }
+
+    public function test_guest_catalog_purges_public_mj_leftover(): void
+    {
+        Storage::fake('public');
+        Storage::fake('local');
+        Storage::disk('public')->put('downloads/generated/krosmoz-jdr-atelier-mj.pdf', '%PDF-secret-mj');
+
+        $this->getJson('/api/game-downloads')->assertOk();
+
+        Storage::disk('public')->assertMissing('downloads/generated/krosmoz-jdr-atelier-mj.pdf');
+        Storage::disk('local')->assertExists('downloads/generated/krosmoz-jdr-atelier-mj.pdf');
     }
 }

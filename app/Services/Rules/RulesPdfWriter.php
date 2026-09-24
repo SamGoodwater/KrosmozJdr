@@ -11,7 +11,7 @@ use RuntimeException;
 use Symfony\Component\Process\Process;
 
 /**
- * Écrit le livre de règles en PDF sur le disque public.
+ * Écrit le livre de règles en PDF (disque public ou privé selon l’entrée).
  *
  * Chromium (impression headless) est préféré : DomPDF sature sur le livre complet.
  * DomPDF reste le repli pour les extraits courts et les environnements sans navigateur.
@@ -23,11 +23,14 @@ class RulesPdfWriter
 {
     private const DOMPDF_MAX_HTML_BYTES = 120_000;
 
+    private string $diskName = 'public';
+
     /**
-     * @return string Chemin relatif sur le disque public
+     * @return string Chemin relatif sur le disque cible
      */
-    public function write(string $html, string $relativePath, string $title = 'Krosmoz JDR — Livre de règles'): string
+    public function write(string $html, string $relativePath, string $title = 'Krosmoz JDR — Livre de règles', ?string $disk = null): string
     {
+        $this->diskName = $disk ?? (string) config('game_downloads.disk', 'public');
         $rendered = view('pdf.rules-book', [
             'title' => $title,
             'html' => $html,
@@ -125,6 +128,6 @@ class RulesPdfWriter
 
     private function disk(): Filesystem
     {
-        return Storage::disk((string) config('game_downloads.disk', 'public'));
+        return Storage::disk($this->diskName);
     }
 }
