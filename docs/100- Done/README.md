@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Dock mobile branché (menu, recherche, compte)
+
+Sur téléphone, les trois boutons du menu bas fonctionnent : **Menu** ouvre la navigation, **Recherche** lance la recherche globale, **Compte** ouvre le menu utilisateur (ou connexion / inscription).
+
 ## Septembre 2026 — Couverture tests inject JSON (5 types)
 
 Les Feature PHPUnit d’injection couvrent sort, objet, consommable, rencontre et PNJ (sans appel Anthropic). Côté front : onglet JSON du modal Sources + `submitAiInject` du dispatcher.
