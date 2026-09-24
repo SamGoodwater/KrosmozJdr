@@ -514,61 +514,15 @@
   {
     "name": "Drawer",
     "description": "Drawer Molecule (DaisyUI + Custom Utility)",
-    "props": [
-      {
-        "name": "modelValue",
-        "type": "Boolean",
-        "desc": "- Contrôle l'ouverture du drawer (v-model)"
-      },
-      {
-        "name": "side",
-        "type": "String",
-        "desc": "- Côté du drawer ('start'|'end'), défaut 'start'"
-      },
-      {
-        "name": "overlay",
-        "type": "Boolean",
-        "desc": "- Affiche l'overlay (défaut true)"
-      },
-      {
-        "name": "id",
-        "type": "String",
-        "desc": "- Identifiant unique (pour l'input/label)"
-      },
-      {
-        "name": "width",
-        "type": "String",
-        "desc": "- Largeur custom (ex: 'w-80', 'w-96')"
-      },
-      {
-        "name": "closeOnOverlay",
-        "type": "Boolean",
-        "desc": "- Ferme au clic sur l'overlay (défaut true)"
-      },
-      {
-        "name": "ariaLabel",
-        "type": "String",
-        "desc": "- Accessibilité"
-      },
-      {
-        "name": "class",
-        "type": "String",
-        "desc": "- Classes custom"
-      },
-      {
-        "name": "shadow",
-        "type": "String",
-        "desc": "backdrop, opacity, rounded - utilitaires custom"
-      }
-    ],
+    "props": [],
     "slots": [
       {
         "name": "default",
-        "desc": "- Contenu principal (drawer-content)"
+        "desc": "- Contenu principal (drawer-content) — ignoré si overlayOnly"
       },
       {
         "name": "sidebar",
-        "desc": "- Contenu du drawer (menu, navigation, etc.)"
+        "desc": "- Contenu du panneau latéral"
       },
       {
         "name": "toggle",
