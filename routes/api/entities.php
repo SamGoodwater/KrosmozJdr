@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\EntityDofusdbRefreshController;
 use App\Http\Controllers\Api\EntityStateController;
 use App\Http\Controllers\Api\EntityUpdateDiffController;
 use App\Http\Controllers\Api\GenerativeAi\IaConvertController;
+use App\Http\Controllers\Api\GenerativeAi\IaInjectController;
 use App\Http\Controllers\Api\ItemBulkController;
 use App\Http\Controllers\Api\MonsterBulkController;
 use App\Http\Controllers\Api\NpcBulkController;
@@ -50,6 +51,11 @@ Route::middleware(['web', 'auth'])->prefix('entities')->group(function () {
         ->where('entityType', '[a-z-]+')
         ->whereNumber('id')
         ->name('api.entities.ia-convert');
+    Route::post('/{entityType}/{id}/ia-inject', IaInjectController::class)
+        ->middleware(['role:admin', 'password.confirm', 'throttle:12,1'])
+        ->where('entityType', '[a-z-]+')
+        ->whereNumber('id')
+        ->name('api.entities.ia-inject');
     Route::post('/{entityType}/{id}/update-diff/restore', [EntityUpdateDiffController::class, 'restore'])
         ->middleware(['role:game_master', 'throttle:12,1'])
         ->where('entityType', '[a-z-]+')

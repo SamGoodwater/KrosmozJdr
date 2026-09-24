@@ -95,6 +95,11 @@ const aiName = ref('');
 const aiBrief = ref('');
 const aiBusy = ref(false);
 const aiError = ref('');
+const jsonText = ref('');
+const jsonLocalError = ref('');
+const jsonDropActive = ref(false);
+const jsonFileInput = ref(null);
+const jsonExampleLoading = ref(false);
 
 const normalizedEntityType = computed(() => normalizeEntityType(props.entityType));
 const registryEntityConfig = computed(() => getRegistryEntityConfig(props.entityType));
@@ -109,6 +114,9 @@ watch(
             aiBrief.value = '';
             aiError.value = '';
             aiBusy.value = false;
+            jsonText.value = '';
+            jsonLocalError.value = '';
+            jsonDropActive.value = false;
         }
     },
 );
@@ -316,6 +324,179 @@ function submitAi() {
         },
     );
 }
+
+function stubNameFromJsonPayload(payload) {
+    const typed = String(aiName.value || '').trim();
+    if (typed !== '') {
+        return typed;
+    }
+    const fromPayload = payload?.name ?? payload?.monster?.name ?? payload?.npc?.name;
+    if (typeof fromPayload === 'string' && fromPayload.trim() !== '') {
+        return fromPayload.trim().slice(0, 80);
+    }
+    return 'Brouillon JSON';
+}
+
+function parseCreateJsonText() {
+    const raw = String(jsonText.value || '').trim();
+    if (raw === '') {
+        jsonLocalError.value = 'Colle ou dépose un JSON non vide.';
+        return null;
+    }
+    try {
+        const decoded = JSON.parse(raw);
+        if (!decoded || typeof decoded !== 'object' || Array.isArray(decoded)) {
+            jsonLocalError.value = 'Le JSON racine doit être un objet.';
+            return null;
+        }
+        jsonLocalError.value = '';
+        return decoded;
+    } catch (error) {
+        jsonLocalError.value = error?.message ? `JSON invalide : ${error.message}` : 'JSON invalide.';
+        return null;
+    }
+}
+
+async function runJsonCreate() {
+    const payload = parseCreateJsonText();
+    if (!payload) {
+        return;
+    }
+    aiBusy.value = true;
+    aiError.value = '';
+    try {
+        const created = await axios.post(
+            route(storeRouteName.value),
+            {
+                name: stubNameFromJsonPayload(payload),
+                description: typeof payload.description === 'string' ? payload.description : '',
+                state: 'draft',
+            },
+            { headers: { Accept: 'application/json' } },
+        );
+        const id = Number(created?.data?.id);
+        const editUrl = created?.data?.edit_url;
+        if (!id) {
+            throw new Error('Création refusée : identifiant manquant.');
+        }
+        await axios.post(
+            route('api.entities.ia-inject', {
+                entityType: normalizedEntityType.value,
+                id,
+            }),
+            {
+                action: iaAction.value,
+                payload,
+                force: false,
+            },
+            { headers: { Accept: 'application/json' } },
+        );
+        emit('created', { id, via: 'json' });
+        handleClose();
+        if (editUrl) {
+            router.visit(editUrl);
+        }
+    } catch (error) {
+        if (error?.response?.status === 423) {
+            aiBusy.value = false;
+            requirePassword(
+                'Confirmer l’injection JSON',
+                'Entre ton mot de passe admin pour injecter le paquet.',
+                'Continuer',
+                () => {
+                    runJsonCreate();
+                },
+            );
+            return;
+        }
+        const message = error?.response?.data?.message
+            || Object.values(error?.response?.data?.errors || {})?.flat()?.[0]
+            || error?.message
+            || 'L’injection JSON a échoué.';
+        aiError.value = String(message);
+    } finally {
+        aiBusy.value = false;
+    }
+}
+
+function submitJsonCreate() {
+    if (!parseCreateJsonText()) {
+        return;
+    }
+    requirePassword(
+        'Confirmer l’injection JSON',
+        'Entre ton mot de passe admin pour créer la fiche puis injecter le JSON.',
+        'Créer avec le JSON',
+        () => {
+            runJsonCreate();
+        },
+    );
+}
+
+async function loadCreateJsonExample() {
+    if (jsonExampleLoading.value) return;
+    jsonExampleLoading.value = true;
+    jsonLocalError.value = '';
+    try {
+        const { data } = await axios.get(
+            route('api.ia.schema', { entityType: normalizedEntityType.value }),
+            { headers: { Accept: 'application/json' } },
+        );
+        if (data?.example && typeof data.example === 'object') {
+            jsonText.value = JSON.stringify(data.example, null, 2);
+        } else {
+            jsonLocalError.value = 'Aucun exemple disponible pour ce type.';
+        }
+    } catch (error) {
+        if (error?.response?.status === 423) {
+            requirePassword(
+                'Confirmer l’accès',
+                'Entre ton mot de passe admin pour charger l’exemple.',
+                'Continuer',
+                () => {
+                    loadCreateJsonExample();
+                },
+            );
+            return;
+        }
+        jsonLocalError.value = String(
+            error?.response?.data?.message || 'Impossible de charger l’exemple.',
+        );
+    } finally {
+        jsonExampleLoading.value = false;
+    }
+}
+
+function onCreateJsonFileSelected(event) {
+    const file = event?.target?.files?.[0];
+    if (file) {
+        void readCreateJsonFile(file);
+    }
+    if (event?.target) {
+        event.target.value = '';
+    }
+}
+
+function onCreateJsonDrop(event) {
+    jsonDropActive.value = false;
+    const file = event?.dataTransfer?.files?.[0];
+    if (file) {
+        void readCreateJsonFile(file);
+    }
+}
+
+async function readCreateJsonFile(file) {
+    if (!file || typeof file.text !== 'function') {
+        jsonLocalError.value = 'Fichier illisible.';
+        return;
+    }
+    try {
+        jsonText.value = await file.text();
+        parseCreateJsonText();
+    } catch {
+        jsonLocalError.value = 'Impossible de lire le fichier.';
+    }
+}
 </script>
 
 <template>
@@ -361,6 +542,17 @@ function submitAi() {
                 >
                     Conversion IA
                 </button>
+                <button
+                    type="button"
+                    role="tab"
+                    class="tab"
+                    :class="{ 'tab-active': pane === 'json' }"
+                    :aria-selected="pane === 'json' ? 'true' : 'false'"
+                    data-testid="entity-create-tab-json"
+                    @click="pane = 'json'"
+                >
+                    JSON
+                </button>
             </div>
 
             <p class="text-sm text-base-content/80">
@@ -389,7 +581,7 @@ function submitAi() {
                 />
             </div>
 
-            <div v-else class="space-y-3">
+            <div v-else-if="pane === 'ia'" class="space-y-3">
                 <InputField
                     v-model="aiName"
                     label="Nom (optionnel)"
@@ -418,6 +610,83 @@ function submitAi() {
                     >
                         {{ aiBusy ? 'Génération…' : 'Créer avec l’IA' }}
                     </Btn>
+                </div>
+            </div>
+
+            <div v-else-if="pane === 'json'" class="space-y-3" data-testid="entity-create-json-pane">
+                <InputField
+                    v-model="aiName"
+                    label="Nom (optionnel)"
+                    placeholder="Sinon repris du JSON ou « Brouillon JSON »"
+                />
+                <div
+                    class="rounded-box border border-dashed border-base-300 bg-base-200/40 px-3 py-4 text-center text-sm"
+                    :class="{ 'border-primary bg-primary/10': jsonDropActive }"
+                    data-testid="entity-create-json-drop"
+                    @dragenter.prevent="jsonDropActive = true"
+                    @dragover.prevent="jsonDropActive = true"
+                    @dragleave.prevent="jsonDropActive = false"
+                    @drop.prevent="onCreateJsonDrop"
+                >
+                    <p class="text-base-content/80">Glisse un fichier .json ici</p>
+                    <Btn
+                        size="sm"
+                        variant="ghost"
+                        class="mt-2"
+                        @click="jsonFileInput?.click()"
+                    >
+                        Choisir un fichier
+                    </Btn>
+                    <input
+                        ref="jsonFileInput"
+                        type="file"
+                        accept=".json,application/json,text/json,text/plain"
+                        class="hidden"
+                        data-testid="entity-create-json-file"
+                        @change="onCreateJsonFileSelected"
+                    />
+                </div>
+                <TextareaField
+                    v-model="jsonText"
+                    label="Paquet JSON"
+                    helper="Même structure que la réponse IA (submit_json)."
+                    :rows="8"
+                />
+                <p
+                    v-if="jsonLocalError"
+                    class="text-sm text-error"
+                    data-testid="entity-create-json-local-error"
+                >
+                    {{ jsonLocalError }}
+                </p>
+                <p
+                    v-if="aiError"
+                    class="rounded-box border border-error/40 bg-error/10 px-3 py-2 text-sm text-error"
+                    data-testid="entity-create-json-error"
+                >
+                    {{ aiError }}
+                </p>
+                <div class="flex flex-wrap justify-between gap-2">
+                    <Btn
+                        size="sm"
+                        variant="ghost"
+                        :disabled="jsonExampleLoading"
+                        data-testid="entity-create-json-example"
+                        @click="loadCreateJsonExample"
+                    >
+                        {{ jsonExampleLoading ? 'Exemple…' : 'Charger un exemple' }}
+                    </Btn>
+                    <div class="flex gap-2">
+                        <Btn variant="ghost" :disabled="aiBusy" @click="handleCancel">Annuler</Btn>
+                        <Btn
+                            color="primary"
+                            :disabled="aiBusy"
+                            data-testid="entity-create-json-submit"
+                            @click="submitJsonCreate"
+                        >
+                            {{ aiBusy ? 'Injection…' : 'Créer avec le JSON' }}
+                        </Btn>
+                    </div>
                 </div>
             </div>
         </div>

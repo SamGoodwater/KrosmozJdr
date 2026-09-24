@@ -12,7 +12,7 @@ use RuntimeException;
 /**
  * Pipeline : assembleur → LLM JSON → validateurs (+ retries) → writer `auto`.
  *
- * 1 paquet = 1 requête. Retries = `generation.max_retries`.
+ * Import manuel : `runFromPayload` saute le LLM et réutilise validate + persist.
  *
  * @example $result = app(ConversionPipeline::class)->run($request);
  */
@@ -26,15 +26,7 @@ final class ConversionPipeline
         $user = $request->userId !== null ? User::query()->find($request->userId) : null;
         ConversionRequest::assertUserMayGenerate($user);
 
-        $run = $request->runId !== null
-            ? AiGenerationRun::query()->findOrFail($request->runId)
-            : AiGenerationRun::query()->create([
-                'user_id' => $request->userId,
-                'action' => $request->action,
-                'entity_type' => $request->entityType,
-                'entity_id' => $request->entityId,
-                'status' => AiGenerationRun::STATUS_QUEUED,
-            ]);
+        $run = $this->resolveRun($request);
 
         try {
             $spec = app(SpecializationRegistry::class)->forAction($request->action);
@@ -76,39 +68,124 @@ final class ConversionPipeline
                 throw new RuntimeException('Validateur IA : '.implode(' ', $errors));
             }
 
-            $persisted = $spec->persist($payload, $request, $assembled->profile);
-
-            $run->fill([
-                'entity_id' => $persisted['entity_id'],
-                'related_ids' => $persisted['related_ids'],
-                'model' => $llm?->model,
-                'input_tokens' => $llm?->inputTokens ?? 0,
-                'output_tokens' => $llm?->outputTokens ?? 0,
-                'cache_read_tokens' => $llm?->cacheReadTokens ?? 0,
-                'status' => AiGenerationRun::STATUS_SUCCESS,
-                'error' => null,
-                'prompt_version' => 'v1',
-                'ai_generated_at' => now(),
-            ]);
-            $run->save();
-
-            return [
-                'run_id' => (int) $run->id,
-                'entity_id' => $persisted['entity_id'],
-                'related_ids' => $persisted['related_ids'],
-                'model' => (string) $llm?->model,
-                'input_tokens' => (int) ($llm?->inputTokens ?? 0),
-                'output_tokens' => (int) ($llm?->outputTokens ?? 0),
-            ];
+            return $this->persistAndComplete(
+                $run,
+                $spec->persist($payload, $request, $assembled->profile),
+                model: (string) ($llm?->model ?? ''),
+                inputTokens: (int) ($llm?->inputTokens ?? 0),
+                outputTokens: (int) ($llm?->outputTokens ?? 0),
+                cacheReadTokens: (int) ($llm?->cacheReadTokens ?? 0),
+                promptVersion: 'v1',
+            );
         } catch (\Throwable $exception) {
-            $run->fill([
-                'status' => AiGenerationRun::STATUS_FAILED,
-                'error' => $exception->getMessage(),
-                'ai_generated_at' => now(),
-            ]);
-            $run->save();
+            $this->failRun($run, $exception);
 
             throw $exception;
         }
+    }
+
+    /**
+     * Injecte un JSON manuel (même validate + persist que le LLM, sans appel API).
+     *
+     * @param  array<string, mixed>  $payload
+     * @return array{run_id: int, entity_id: int, related_ids: list<int>, model: string, input_tokens: int, output_tokens: int}
+     */
+    public function runFromPayload(ConversionRequest $request, array $payload): array
+    {
+        $user = $request->userId !== null ? User::query()->find($request->userId) : null;
+        ConversionRequest::assertUserMayGenerate($user);
+
+        $run = $this->resolveRun($request);
+
+        try {
+            $spec = app(SpecializationRegistry::class)->forAction($request->action);
+            app(ConversionSafety::class)->assertRequest($request, $spec);
+            $profile = GenerationConfigLoader::default()->forEntity($spec->entityType());
+            $preflight = $spec->preflight($request, $profile);
+            if ($preflight !== []) {
+                throw new RuntimeException('Validateur IA : '.implode(' ', $preflight));
+            }
+
+            $errors = $spec->validate($payload, $request, $profile);
+            if ($errors !== []) {
+                throw new RuntimeException('Validateur IA : '.implode(' ', $errors));
+            }
+
+            return $this->persistAndComplete(
+                $run,
+                $spec->persist($payload, $request, $profile),
+                model: 'manual-json',
+                inputTokens: 0,
+                outputTokens: 0,
+                cacheReadTokens: 0,
+                promptVersion: 'manual-v1',
+            );
+        } catch (\Throwable $exception) {
+            $this->failRun($run, $exception);
+
+            throw $exception;
+        }
+    }
+
+    private function resolveRun(ConversionRequest $request): AiGenerationRun
+    {
+        if ($request->runId !== null) {
+            return AiGenerationRun::query()->findOrFail($request->runId);
+        }
+
+        return AiGenerationRun::query()->create([
+            'user_id' => $request->userId,
+            'action' => $request->action,
+            'entity_type' => $request->entityType,
+            'entity_id' => $request->entityId,
+            'status' => AiGenerationRun::STATUS_QUEUED,
+        ]);
+    }
+
+    /**
+     * @param  array{entity_id: int, related_ids: list<int>}  $persisted
+     * @return array{run_id: int, entity_id: int, related_ids: list<int>, model: string, input_tokens: int, output_tokens: int}
+     */
+    private function persistAndComplete(
+        AiGenerationRun $run,
+        array $persisted,
+        string $model,
+        int $inputTokens,
+        int $outputTokens,
+        int $cacheReadTokens,
+        string $promptVersion,
+    ): array {
+        $run->fill([
+            'entity_id' => $persisted['entity_id'],
+            'related_ids' => $persisted['related_ids'],
+            'model' => $model !== '' ? $model : null,
+            'input_tokens' => $inputTokens,
+            'output_tokens' => $outputTokens,
+            'cache_read_tokens' => $cacheReadTokens,
+            'status' => AiGenerationRun::STATUS_SUCCESS,
+            'error' => null,
+            'prompt_version' => $promptVersion,
+            'ai_generated_at' => now(),
+        ]);
+        $run->save();
+
+        return [
+            'run_id' => (int) $run->id,
+            'entity_id' => $persisted['entity_id'],
+            'related_ids' => $persisted['related_ids'],
+            'model' => $model,
+            'input_tokens' => $inputTokens,
+            'output_tokens' => $outputTokens,
+        ];
+    }
+
+    private function failRun(AiGenerationRun $run, \Throwable $exception): void
+    {
+        $run->fill([
+            'status' => AiGenerationRun::STATUS_FAILED,
+            'error' => $exception->getMessage(),
+            'ai_generated_at' => now(),
+        ]);
+        $run->save();
     }
 }

@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Injecter un JSON comme paquet IA
+
+Sur **Sources**, un onglet **JSON** (à côté de DofusDB et Conversion IA) permet de coller ou déposer un fichier au format de réponse de l’IA. Même contrôles (admin, mot de passe), même validation, même écriture en **auto**, puis le tableau avant/après — **sans** appeler Anthropic. À la création d’une fiche, le même flux existe via l’onglet JSON du modal Créer.
+
 ## Septembre 2026 — Responsive chrome et tableaux
 
 Sur téléphone (&lt; 768px), le menu bas et le contenu ne se marchent plus dessus (padding, FAB, cookies). Les filtres des bibliothèques d’entités s’ouvrent dans un tiroir latéral ; les modes de vue passent en icônes. Les tableaux s’adaptent à la largeur réelle du bloc (container queries), pas seulement à celle de l’écran.
