@@ -3,7 +3,7 @@
  * CreateEntityModal Organism
  *
  * @description
- * Modal de création courte : à la main (champs principaux) ou via IA (admin, types convertibles).
+ * Modal de création courte : à la main, JSON (admin), ou IA (admin, types convertibles).
  * Après création, redirection vers la vue Modifier pour le reste de la fiche.
  *
  * @example
@@ -104,6 +104,8 @@ const jsonExampleLoading = ref(false);
 const normalizedEntityType = computed(() => normalizeEntityType(props.entityType));
 const registryEntityConfig = computed(() => getRegistryEntityConfig(props.entityType));
 const showAiTab = computed(() => Boolean(isAdmin.value) && isAiConvertibleEntityType(normalizedEntityType.value));
+const showJsonTab = computed(() => Boolean(isAdmin.value));
+const showCreateTabs = computed(() => showAiTab.value || showJsonTab.value);
 
 watch(
     () => props.open,
@@ -385,7 +387,7 @@ async function runJsonCreate() {
                 id,
             }),
             {
-                action: iaAction.value,
+                ...(iaAction.value ? { action: iaAction.value } : {}),
                 payload,
                 force: false,
             },
@@ -515,7 +517,7 @@ async function readCreateJsonFile(file) {
 
         <div class="entity-create-theme rounded-(--radius-field) border p-3 space-y-3" :style="modalBodyStyle">
             <div
-                v-if="showAiTab"
+                v-if="showCreateTabs"
                 role="tablist"
                 class="tabs tabs-box tabs-sm bg-base-200/60 p-1 w-fit"
                 data-testid="entity-create-tabs"
@@ -532,6 +534,7 @@ async function readCreateJsonFile(file) {
                     À la main
                 </button>
                 <button
+                    v-if="showAiTab"
                     type="button"
                     role="tab"
                     class="tab"
@@ -543,6 +546,7 @@ async function readCreateJsonFile(file) {
                     Conversion IA
                 </button>
                 <button
+                    v-if="showJsonTab"
                     type="button"
                     role="tab"
                     class="tab"

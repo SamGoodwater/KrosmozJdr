@@ -5,19 +5,21 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\GenerativeAi;
 
 use App\Http\Controllers\Controller;
+use App\Services\Entity\GenericEntityJsonInjector;
 use App\Services\GenerativeAi\ConversionRequest;
 use App\Services\GenerativeAi\CostEstimator;
 use App\Services\GenerativeAi\GenerationConfigLoader;
 use App\Services\GenerativeAi\Specializations\SpecializationRegistry;
 use App\Support\EntityModelRegistry;
+use Illuminate\Database\Eloquent\Model; // pragma: allowlist secret
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use InvalidArgumentException;
 
 /**
- * Schéma JSON attendu pour un type convertible (bouton Exemple de l’onglet JSON).
+ * Schéma / exemple JSON pour l’onglet Sources (convertible IA ou fillable générique).
  *
  * @example GET /api/ia/schema/spells
+ * @example GET /api/ia/schema/campaigns
  */
 class IaSchemaController extends Controller
 {
@@ -26,42 +28,56 @@ class IaSchemaController extends Controller
         abort_unless($request->user()?->isAdmin() === true, 403);
 
         $plural = EntityModelRegistry::normalizeType($entityType);
-        $action = app(CostEstimator::class)->actionForEntityType($plural);
-
-        try {
-            $spec = app(SpecializationRegistry::class)->forAction($action);
-        } catch (InvalidArgumentException) {
+        $modelClass = EntityModelRegistry::modelMap()[$plural] ?? null;
+        if ($modelClass === null) {
             return response()->json([
                 'success' => false,
-                'message' => 'Type non convertible par IA.',
+                'message' => 'Type d’entité inconnu.',
             ], 422);
         }
 
-        $singular = match ($plural) {
-            'monsters' => 'monster',
-            'spells' => 'spell',
-            'npcs' => 'npc',
-            'items' => 'item',
-            'consumables' => 'consumable',
-            default => $spec->entityType(),
-        };
+        $spec = app(SpecializationRegistry::class)->tryForEntityType($plural);
+        if ($spec !== null) {
+            $action = app(CostEstimator::class)->actionForEntityType($plural);
+            $singular = match ($plural) {
+                'monsters' => 'monster',
+                'spells' => 'spell',
+                'npcs' => 'npc',
+                'items' => 'item',
+                'consumables' => 'consumable',
+                default => $spec->entityType(),
+            };
+            $profile = GenerationConfigLoader::default()->forEntity($spec->entityType());
+            $conversion = new ConversionRequest(
+                action: $action,
+                entityType: $singular,
+                entityId: null,
+                userId: $request->user()?->id,
+            );
+            $schema = $spec->jsonSchema($profile, $conversion);
+            $example = $this->exampleFromSchema($schema);
 
-        $profile = GenerationConfigLoader::default()->forEntity($spec->entityType());
-        $conversion = new ConversionRequest(
-            action: $action,
-            entityType: $singular,
-            entityId: null,
-            userId: $request->user()?->id,
-        );
-        $schema = $spec->jsonSchema($profile, $conversion);
-        $example = $this->exampleFromSchema($schema);
+            return response()->json([
+                'success' => true,
+                'entity_type' => $plural,
+                'action' => $action,
+                'mode' => 'specialization',
+                'schema' => $schema,
+                'example' => $example,
+            ]);
+        }
+
+        /** @var Model $blank */
+        $blank = new $modelClass;
+        $pack = app(GenericEntityJsonInjector::class)->schemaAndExample($blank);
 
         return response()->json([
             'success' => true,
             'entity_type' => $plural,
-            'action' => $action,
-            'schema' => $schema,
-            'example' => $example,
+            'action' => 'inject',
+            'mode' => 'generic',
+            'schema' => $pack['schema'],
+            'example' => $pack['example'],
         ]);
     }
 

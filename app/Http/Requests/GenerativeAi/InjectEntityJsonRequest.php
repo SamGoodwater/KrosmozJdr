@@ -6,15 +6,19 @@ namespace App\Http\Requests\GenerativeAi;
 
 use App\Services\GenerativeAi\CostEstimator;
 use App\Services\GenerativeAi\ManualJsonPayloadSanitizer;
+use App\Services\GenerativeAi\Specializations\SpecializationRegistry;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 
 /**
- * Injection d’un paquet JSON manuel (admin), même schéma que la conversion IA.
+ * Injection d’un paquet JSON manuel (admin).
+ *
+ * Types convertibles : même schéma que la conversion IA (`action` calée sur le type).
+ * Autres types du registre : fillable générique (`action` optionnelle / ignorée).
  *
  * @example ['action' => 'spell', 'payload' => ['effect' => '1d6 Terre'], 'force' => false]
+ * @example ['payload' => ['name' => 'Campagne', 'description' => '…'], 'force' => false]
  */
 class InjectEntityJsonRequest extends FormRequest
 {
@@ -31,13 +35,21 @@ class InjectEntityJsonRequest extends FormRequest
         return [
             'action' => [
                 'sometimes',
+                'nullable',
                 'string',
-                Rule::in(array_keys(CostEstimator::ACTIONS)),
                 function (string $attribute, mixed $value, \Closure $fail): void {
                     if (! is_string($value) || $value === '') {
                         return;
                     }
                     $entityType = (string) $this->route('entityType');
+                    $spec = app(SpecializationRegistry::class)->tryForEntityType($entityType);
+                    if ($spec === null) {
+                        if ($value !== 'inject' && isset(CostEstimator::ACTIONS[$value])) {
+                            $fail("L’action IA « {$value} » ne s’applique pas au type « {$entityType} ».");
+                        }
+
+                        return;
+                    }
                     $expected = app(CostEstimator::class)->actionForEntityType($entityType);
                     if ($value !== $expected) {
                         $fail("L’action IA « {$value} » ne correspond pas au type « {$entityType} » (attendu : {$expected}).");

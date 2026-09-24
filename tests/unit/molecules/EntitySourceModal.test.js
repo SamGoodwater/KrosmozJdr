@@ -65,6 +65,7 @@ describe("EntitySourceModal", () => {
                 open: true,
                 showDofusdb: true,
                 showAi: true,
+                showJson: true,
                 entityLabel: "Pression",
                 entityType: "spells",
                 aiActionLabel: "Sort (effets)",
@@ -96,12 +97,31 @@ describe("EntitySourceModal", () => {
         expect(wrapper.emitted("convert")).toBeTruthy();
     });
 
+    it("ouvre le volet JSON seul pour un type non convertible (campagne)", () => {
+        const wrapper = mount(EntitySourceModal, {
+            props: {
+                open: true,
+                showDofusdb: false,
+                showAi: false,
+                showJson: true,
+                entityLabel: "Incarnam",
+                entityType: "campaigns",
+            },
+            global: { stubs },
+        });
+
+        expect(wrapper.findAll("button.tab")).toHaveLength(0);
+        expect(wrapper.get("[data-testid='entity-source-json-pane']").exists()).toBe(true);
+        expect(wrapper.text()).toContain("Injecter le JSON");
+    });
+
     it("émet inject depuis l’onglet JSON avec un objet valide", async () => {
         const wrapper = mount(EntitySourceModal, {
             props: {
                 open: true,
                 showDofusdb: true,
                 showAi: true,
+                showJson: true,
                 entityLabel: "Pression",
                 entityType: "spells",
             },
@@ -133,6 +153,7 @@ describe("EntitySourceModal", () => {
                 open: true,
                 showDofusdb: false,
                 showAi: true,
+                showJson: true,
                 entityLabel: "Sort",
                 entityType: "spells",
             },
@@ -161,6 +182,7 @@ describe("EntitySourceModal", () => {
                 open: true,
                 showDofusdb: true,
                 showAi: true,
+                showJson: true,
                 entityLabel: "Cape du Piou",
             },
             global: { stubs },
@@ -182,6 +204,7 @@ describe("EntitySourceModal", () => {
                 open: true,
                 showDofusdb: true,
                 showAi: true,
+                showJson: true,
                 playable: true,
                 entityLabel: "Pression",
             },
@@ -199,6 +222,7 @@ describe("EntitySourceModal", () => {
                 open: true,
                 showDofusdb: true,
                 showAi: true,
+                showJson: true,
                 error: "Le type de cette fiche n’autorise pas la mise à jour depuis DofusDB.",
                 entityLabel: "Cape du Piou",
             },
@@ -216,6 +240,7 @@ describe("EntitySourceModal", () => {
                 open: true,
                 showDofusdb: false,
                 showAi: true,
+                showJson: true,
                 entityLabel: "Ganymède",
                 aiActionLabel: "PNJ (fiche complète)",
             },
@@ -235,6 +260,7 @@ describe("EntitySourceModal", () => {
                 open: true,
                 showDofusdb: false,
                 showAi: true,
+                showJson: true,
                 entityLabel: "Barricade",
                 aiActionLabel: "PNJ (fiche complète)",
                 aiEstimate: { formatted: "~ 0,12 $" },
@@ -259,6 +285,7 @@ describe("EntitySourceModal", () => {
                 open: true,
                 showDofusdb: false,
                 showAi: true,
+                showJson: true,
                 entityLabel: "Cape",
                 aiUsage: { has_api_key: false, local_input_tokens: 0, local_output_tokens: 0, local_runs: 0 },
             },
@@ -277,6 +304,7 @@ describe("EntitySourceModal", () => {
                 open: true,
                 showDofusdb: false,
                 showAi: true,
+                showJson: true,
                 entityLabel: "Ganymède",
                 aiActionLabel: "PNJ (fiche complète)",
             },
@@ -300,6 +328,7 @@ describe("EntitySourceModal", () => {
                 open: true,
                 showDofusdb: true,
                 showAi: true,
+                showJson: true,
                 diff: {
                     source: "ia",
                     changed_count: 0,

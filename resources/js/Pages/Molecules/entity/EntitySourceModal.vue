@@ -27,6 +27,8 @@ const props = defineProps({
     entityType: { type: String, default: "" },
     showDofusdb: { type: Boolean, default: true },
     showAi: { type: Boolean, default: false },
+    /** Injection JSON (admin) — indépendant de la conversion LLM. */
+    showJson: { type: Boolean, default: false },
     aiBrief: { type: String, default: "" },
     aiSubmitting: { type: Boolean, default: false },
     aiError: { type: String, default: "" },
@@ -63,7 +65,7 @@ const iaUnlocked = computed(() => Boolean(isAdminUnlocked?.value));
 const updateContent = ref(true);
 const includeImage = ref(true);
 const force = ref(false);
-const pane = ref(!props.showDofusdb && props.showAi ? "ia" : "dofusdb");
+const pane = ref(resolveDefaultPane(props));
 const localUsage = ref(null);
 const localEstimate = ref(null);
 const jsonText = ref("");
@@ -72,6 +74,13 @@ const jsonExampleLoading = ref(false);
 const jsonDropActive = ref(false);
 const jsonFileInput = ref(null);
 
+function resolveDefaultPane(p) {
+    if (p.showDofusdb) return "dofusdb";
+    if (p.showAi) return "ia";
+    if (p.showJson) return "json";
+    return "dofusdb";
+}
+
 watch(
     () => props.open,
     (open) => {
@@ -79,13 +88,13 @@ watch(
             updateContent.value = true;
             includeImage.value = true;
             force.value = Boolean(props.playable);
-            pane.value = props.showDofusdb ? "dofusdb" : "ia";
+            pane.value = resolveDefaultPane(props);
             localUsage.value = null;
             localEstimate.value = null;
             jsonText.value = "";
             jsonLocalError.value = "";
             jsonDropActive.value = false;
-            if (!props.showDofusdb && props.showAi) {
+            if (!props.showDofusdb && (props.showAi || props.showJson)) {
                 promptIaUnlock();
             }
         }
@@ -94,15 +103,24 @@ watch(
 );
 
 watch(
-    () => [props.showDofusdb, props.showAi],
+    () => [props.showDofusdb, props.showAi, props.showJson],
     () => {
-        if (!props.showDofusdb && props.showAi && pane.value === "dofusdb") {
-            pane.value = "ia";
+        if (pane.value === "dofusdb" && !props.showDofusdb) {
+            pane.value = resolveDefaultPane(props);
+        }
+        if (pane.value === "ia" && !props.showAi) {
+            pane.value = resolveDefaultPane(props);
+        }
+        if (pane.value === "json" && !props.showJson) {
+            pane.value = resolveDefaultPane(props);
         }
     }
 );
 
-const showSourceTabs = computed(() => Boolean(props.showAi));
+const tabCount = computed(
+    () => [props.showDofusdb, props.showAi, props.showJson].filter(Boolean).length
+);
+const showSourceTabs = computed(() => tabCount.value > 1);
 
 const convertedName = computed(() => {
     const converted = props.preview?.data?.converted;
@@ -347,6 +365,7 @@ async function readJsonFile(file) {
                     Conversion DofusDB
                 </button>
                 <button
+                    v-if="showAi"
                     type="button"
                     role="tab"
                     class="tab"
@@ -358,6 +377,7 @@ async function readJsonFile(file) {
                     Conversion IA
                 </button>
                 <button
+                    v-if="showJson"
                     type="button"
                     role="tab"
                     class="tab"
@@ -488,7 +508,7 @@ async function readJsonFile(file) {
                 </template>
             </div>
 
-            <div v-else-if="!hasDiff && pane === 'json' && showAi" class="space-y-4" data-testid="entity-source-json-pane">
+            <div v-else-if="!hasDiff && pane === 'json' && showJson" class="space-y-4" data-testid="entity-source-json-pane">
                 <p class="text-sm text-base-content/80">
                     Colle ou dépose un paquet JSON au format IA. Même validation et écriture
                     <span class="font-medium">auto</span> que la conversion, sans appel LLM.

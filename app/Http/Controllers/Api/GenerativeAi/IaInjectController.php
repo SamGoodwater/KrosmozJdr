@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\GenerativeAi\InjectEntityJsonRequest;
 use App\Models\AiGenerationRun;
 use App\Services\Entity\EntityUpdateDiffService;
+use App\Services\Entity\GenericEntityJsonInjector;
 use App\Services\GenerativeAi\ConversionPipeline;
 use App\Services\GenerativeAi\ConversionRequest;
 use App\Services\GenerativeAi\ConversionSafety;
@@ -17,11 +18,13 @@ use Illuminate\Database\Eloquent\Model; // pragma: allowlist secret
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
+use Throwable;
 
 /**
- * Injecte un JSON manuel comme paquet IA (admin) — sans appel LLM.
+ * Injecte un JSON manuel (admin) — spécialisation IA si convertible, sinon fillable générique.
  *
  * @example POST /api/entities/spells/12/ia-inject {"action":"spell","payload":{"effect":"1d6"}}
+ * @example POST /api/entities/campaigns/3/ia-inject {"payload":{"name":"Incarnam","description":"…"}}
  */
 class IaInjectController extends Controller
 {
@@ -38,20 +41,12 @@ class IaInjectController extends Controller
         $this->authorize('generate', $entity);
 
         $safety = app(ConversionSafety::class);
-        $fallbackAction = $safety->expectedAction($entityType);
-        $action = $request->action($fallbackAction);
+        $normalizedPlural = EntityModelRegistry::normalizeType($entityType);
+        $spec = app(SpecializationRegistry::class)->tryForEntityType($normalizedPlural);
 
         try {
-            app(SpecializationRegistry::class)->forAction($action);
-            $safety->assertActionMatches($action, $entityType);
             $safety->assertMayOverwrite($entity, $request->force());
             $payload = $request->payload();
-        } catch (InvalidArgumentException $exception) {
-            return response()->json([
-                'success' => false,
-                'queued' => false,
-                'message' => 'Action IA inconnue.',
-            ], 422);
         } catch (ValidationException $exception) {
             throw $exception;
         } catch (\RuntimeException $exception) {
@@ -62,17 +57,54 @@ class IaInjectController extends Controller
             ], 422);
         }
 
-        $normalizedPlural = EntityModelRegistry::normalizeType($entityType);
+        if ($spec !== null) {
+            return $this->injectViaSpecialization($request, $entity, $entityType, $normalizedPlural, $id, $payload, $spec->key());
+        }
+
+        return $this->injectViaGeneric($request, $entity, $entityType, $normalizedPlural, $id, $payload);
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     */
+    private function injectViaSpecialization(
+        InjectEntityJsonRequest $request,
+        Model $entity,
+        string $entityType,
+        string $normalizedPlural,
+        int $id,
+        array $payload,
+        string $action,
+    ): JsonResponse {
+        $safety = app(ConversionSafety::class);
+        $requested = $request->action($action);
+        try {
+            app(SpecializationRegistry::class)->forAction($requested);
+            $safety->assertActionMatches($requested, $entityType);
+        } catch (InvalidArgumentException) {
+            return response()->json([
+                'success' => false,
+                'queued' => false,
+                'message' => 'Action IA inconnue.',
+            ], 422);
+        } catch (\RuntimeException $exception) {
+            return response()->json([
+                'success' => false,
+                'queued' => false,
+                'message' => $exception->getMessage(),
+            ], 422);
+        }
+
         $run = AiGenerationRun::query()->create([
             'user_id' => $request->user()?->id,
-            'action' => $action,
+            'action' => $requested,
             'entity_type' => $normalizedPlural,
             'entity_id' => $id,
             'status' => AiGenerationRun::STATUS_QUEUED,
         ]);
 
         $conversion = new ConversionRequest(
-            action: $action,
+            action: $requested,
             entityType: match ($normalizedPlural) {
                 'monsters' => 'monster',
                 'spells' => 'spell',
@@ -93,23 +125,73 @@ class IaInjectController extends Controller
 
         try {
             app(ConversionPipeline::class)->runFromPayload($conversion, $payload);
-        } catch (\Throwable $exception) {
-            $run->refresh();
-            $message = is_string($run->error) && $run->error !== ''
-                ? $run->error
-                : $exception->getMessage();
-
-            return response()->json([
-                'success' => false,
-                'queued' => false,
-                'status' => $run->status,
-                'run_id' => $run->id,
-                'entity_id' => $run->entity_id,
-                'related_ids' => $run->related_ids ?? [],
-                'message' => $message !== '' ? $message : 'L’injection JSON a échoué.',
-            ], 422);
+        } catch (Throwable $exception) {
+            return $this->failedInjectResponse($run, $exception);
         }
 
+        return $this->successInjectResponse($request, $entity, $entityType, $id, $run, $before, $diffService);
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     */
+    private function injectViaGeneric(
+        InjectEntityJsonRequest $request,
+        Model $entity,
+        string $entityType,
+        string $normalizedPlural,
+        int $id,
+        array $payload,
+    ): JsonResponse {
+        $run = AiGenerationRun::query()->create([
+            'user_id' => $request->user()?->id,
+            'action' => 'inject',
+            'entity_type' => $normalizedPlural,
+            'entity_id' => $id,
+            'status' => AiGenerationRun::STATUS_QUEUED,
+        ]);
+
+        $diffService = app(EntityUpdateDiffService::class);
+        $before = $diffService->capture($entity);
+
+        try {
+            $persisted = app(GenericEntityJsonInjector::class)->persist($entity, $payload);
+            $run->fill([
+                'entity_id' => $persisted['entity_id'],
+                'related_ids' => $persisted['related_ids'],
+                'model' => 'manual-json',
+                'input_tokens' => 0,
+                'output_tokens' => 0,
+                'cache_read_tokens' => 0,
+                'status' => AiGenerationRun::STATUS_SUCCESS,
+                'prompt_version' => 'manual-v1',
+                'ai_generated_at' => now(),
+                'error' => null,
+            ])->save();
+        } catch (Throwable $exception) {
+            $run->fill([
+                'status' => AiGenerationRun::STATUS_FAILED,
+                'error' => $exception->getMessage(),
+            ])->save();
+
+            return $this->failedInjectResponse($run, $exception);
+        }
+
+        return $this->successInjectResponse($request, $entity, $entityType, $id, $run, $before, $diffService);
+    }
+
+    /**
+     * @param  array<string, mixed>  $before
+     */
+    private function successInjectResponse(
+        InjectEntityJsonRequest $request,
+        Model $entity,
+        string $entityType,
+        int $id,
+        AiGenerationRun $run,
+        array $before,
+        EntityUpdateDiffService $diffService,
+    ): JsonResponse {
         $run->refresh();
         if ($run->status !== AiGenerationRun::STATUS_SUCCESS) {
             return response()->json([
@@ -144,5 +226,23 @@ class IaInjectController extends Controller
             'diff' => $diff,
             'message' => $message,
         ]);
+    }
+
+    private function failedInjectResponse(AiGenerationRun $run, Throwable $exception): JsonResponse
+    {
+        $run->refresh();
+        $message = is_string($run->error) && $run->error !== ''
+            ? $run->error
+            : $exception->getMessage();
+
+        return response()->json([
+            'success' => false,
+            'queued' => false,
+            'status' => $run->status,
+            'run_id' => $run->id,
+            'entity_id' => $run->entity_id,
+            'related_ids' => $run->related_ids ?? [],
+            'message' => $message !== '' ? $message : 'L’injection JSON a échoué.',
+        ], 422);
     }
 }

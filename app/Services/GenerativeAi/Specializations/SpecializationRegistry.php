@@ -41,6 +41,18 @@ final class SpecializationRegistry
     }
 
     /**
+     * Null si le type n’a pas de spécialisation LLM (injection générique fillable).
+     */
+    public function tryForEntityType(string $entityType): ?Specialization
+    {
+        try {
+            return $this->forEntityType($entityType);
+        } catch (InvalidArgumentException) {
+            return null;
+        }
+    }
+
+    /**
      * @return array<string, Specialization>
      */
     public function all(): array

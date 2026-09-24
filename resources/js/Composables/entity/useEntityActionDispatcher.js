@@ -157,6 +157,7 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         meta: {},
         showDofusdb: false,
         showAi: false,
+        showJson: false,
         aiBrief: "",
         aiSubmitting: false,
         aiError: "",
@@ -183,6 +184,7 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
             meta: {},
             showDofusdb: false,
             showAi: false,
+            showJson: false,
             aiBrief: "",
             aiSubmitting: false,
             aiError: "",
@@ -279,7 +281,8 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         const showDofusdb = Boolean(entityId && isScrappableEntityType(plural) && canUpdateEntity(entity, plural));
         const aiAction = actionForType(plural);
         const showAi = Boolean(entityId && isAdmin.value && isAiConvertibleEntityType(plural) && aiAction);
-        if (!entityId || (!showDofusdb && !showAi)) return false;
+        const showJson = Boolean(entityId && isAdmin.value);
+        if (!entityId || (!showDofusdb && !showAi && !showJson)) return false;
 
         refreshConfirm.value = {
             open: true,
@@ -294,6 +297,7 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
             meta,
             showDofusdb,
             showAi,
+            showJson,
             aiBrief: "",
             aiSubmitting: false,
             aiError: "",
@@ -422,9 +426,9 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
         const entity = pending.entity;
         const entityId = getEntityId(entity);
         const plural = normalizedType.value;
-        const action = pending.aiAction || actionForType(plural);
+        const action = pending.aiAction || actionForType(plural) || null;
         const payload = options?.payload;
-        if (!entityId || !plural || pending.aiSubmitting || !action) return false;
+        if (!entityId || !plural || pending.aiSubmitting) return false;
         if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
             refreshConfirm.value = {
                 ...pending,
@@ -435,9 +439,13 @@ export function useEntityActionDispatcher(entityType, handlers = {}) {
 
         refreshConfirm.value = { ...pending, aiSubmitting: true, aiError: "", aiSuccess: "" };
         try {
+            const body = { payload, force: Boolean(pending.playable) };
+            if (action) {
+                body.action = action;
+            }
             const { data } = await axios.post(
                 `/api/entities/${encodeURIComponent(plural)}/${entityId}/ia-inject`,
-                { action, payload, force: Boolean(pending.playable) },
+                body,
                 { headers: { Accept: "application/json" }, timeout: 60000 },
             );
             if (data?.success === false) {

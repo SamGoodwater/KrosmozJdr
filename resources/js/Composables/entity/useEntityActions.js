@@ -158,7 +158,8 @@ export function useEntityActions(entityType, entity = null, options = {}) {
         if (action.key === "refresh") {
           const scrappable = isScrappableEntityType(normalizedEntityType.value) && checkPermission("canUpdate");
           const aiOk = Boolean(isAdmin.value) && isAiConvertibleEntityType(normalizedEntityType.value);
-          if (!scrappable && !aiOk) {
+          const jsonOk = Boolean(isAdmin.value);
+          if (!scrappable && !aiOk && !jsonOk) {
             return false;
           }
         }

@@ -342,8 +342,86 @@ final class IaInjectJsonTest extends TestCase
                 ->assertOk()
                 ->assertJsonPath('success', true)
                 ->assertJsonPath('action', $action)
+                ->assertJsonPath('mode', 'specialization')
                 ->assertJsonStructure(['schema', 'example']);
         }
+    }
+
+    public function test_admin_injects_generic_campaign_fillable_fields(): void
+    {
+        config(['services.anthropic.api_key' => null]);
+        Http::fake();
+        Http::preventStrayRequests();
+
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $campaign = \App\Models\Entity\Campaign::factory()->create([
+            'name' => 'Campagne brute',
+            'description' => 'ancien',
+            'state' => EntityState::Draft->value,
+            'created_by' => $admin->id,
+        ]);
+
+        $this->actingAsConfirmed($admin)
+            ->postJson(route('api.entities.ia-inject', ['entityType' => 'campaigns', 'id' => $campaign->id]), [
+                'payload' => [
+                    'name' => 'Incarnam injecté',
+                    'description' => 'Tutoriel des Douze.',
+                ],
+            ])
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('status', AiGenerationRun::STATUS_SUCCESS);
+
+        $campaign->refresh();
+        $this->assertSame(EntityState::Auto->value, $campaign->state);
+        $this->assertSame('Incarnam injecté', $campaign->name);
+        $this->assertSame('Tutoriel des Douze.', $campaign->description);
+        $this->assertDatabaseHas('ai_generation_runs', [
+            'action' => 'inject',
+            'entity_type' => 'campaigns',
+            'entity_id' => $campaign->id,
+            'model' => 'manual-json',
+            'status' => AiGenerationRun::STATUS_SUCCESS,
+        ]);
+        Http::assertSentCount(0);
+    }
+
+    public function test_schema_endpoint_returns_generic_example_for_campaigns(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $this->actingAsConfirmed($admin)
+            ->getJson(route('api.ia.schema', ['entityType' => 'campaigns']))
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('action', 'inject')
+            ->assertJsonPath('mode', 'generic')
+            ->assertJsonStructure(['schema', 'example']);
+    }
+
+    public function test_generic_inject_rejects_state_key(): void
+    {
+        Http::fake();
+        Http::preventStrayRequests();
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $campaign = \App\Models\Entity\Campaign::factory()->create([
+            'name' => 'Garde',
+            'state' => EntityState::Draft->value,
+            'created_by' => $admin->id,
+        ]);
+
+        $this->actingAsConfirmed($admin)
+            ->postJson(route('api.entities.ia-inject', ['entityType' => 'campaigns', 'id' => $campaign->id]), [
+                'payload' => [
+                    'name' => 'Hacked',
+                    'state' => 'playable',
+                ],
+            ])
+            ->assertStatus(422);
+
+        $this->assertSame('Garde', $campaign->fresh()->name);
+        $this->assertSame(EntityState::Draft->value, $campaign->fresh()->state);
+        Http::assertSentCount(0);
     }
 
     public function test_game_master_cannot_inject(): void

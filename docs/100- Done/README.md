@@ -12,6 +12,10 @@ Sur téléphone, les infos-bulles des propriétés d’une fiche ne restent plus
 
 Sur téléphone, les trois boutons du menu bas fonctionnent : **Menu** ouvre la navigation, **Recherche** lance la recherche globale, **Compte** ouvre le menu utilisateur (ou connexion / inscription).
 
+## Septembre 2026 — JSON injectable sur toutes les entités
+
+L’onglet **JSON** (texte ou fichier) n’est plus réservé aux 5 types convertibles par IA. Tout admin peut l’utiliser sur n’importe quelle fiche du registre : même validation/sanitisation, écriture en **auto**, tableau avant/après. Les sorts / PNJ / etc. gardent le schéma IA ; les autres types utilisent les champs fillable (sans toucher state, droits, etc.).
+
 ## Septembre 2026 — Couverture tests inject JSON (5 types)
 
 Les Feature PHPUnit d’injection couvrent sort, objet, consommable, rencontre et PNJ (sans appel Anthropic). Côté front : onglet JSON du modal Sources + `submitAiInject` du dispatcher.

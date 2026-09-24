@@ -293,7 +293,7 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
   refresh: {
     key: "refresh",
     label: "Sources",
-    tooltip: "Mettre à jour depuis DofusDB ou convertir avec l’IA",
+    tooltip: "Mettre à jour depuis DofusDB, convertir avec l’IA ou injecter un JSON",
     icon: "fa-solid fa-arrow-rotate-right",
     permission: null,
     requiresEntity: true,

@@ -360,6 +360,7 @@ const handleAction = async (actionKey, entity) => {
         :entity-type="refreshConfirm.entityType"
         :show-dofusdb="refreshConfirm.showDofusdb"
         :show-ai="refreshConfirm.showAi"
+        :show-json="refreshConfirm.showJson"
         :ai-brief="refreshConfirm.aiBrief"
         :ai-submitting="refreshConfirm.aiSubmitting"
         :ai-error="refreshConfirm.aiError"
