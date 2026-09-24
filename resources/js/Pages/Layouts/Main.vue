@@ -39,6 +39,7 @@ import FeedbackFab from "@/Pages/Organismes/feedback/FeedbackFab.vue";
 import DofusDbReferencePanel from "@/Pages/Molecules/entity/DofusDbReferencePanel.vue";
 import PinnedEntitiesHost from "@/Pages/Organismes/entity/PinnedEntitiesHost.vue";
 import FavoritesModal from "@/Pages/Organismes/entity/FavoritesModal.vue";
+import SearchInput from "@/Pages/Organismes/data-input/SearchInput.vue";
 import {
     LAYOUT_APP_SIDEBAR_OFFSET_LEFT_CLASS,
     LAYOUT_FLOATING_TOGGLE_HIDDEN_ON_MOBILE_CLASS,
@@ -190,12 +191,20 @@ onUnmounted(() => {
             <div class="background-filter--2" aria-hidden="true"></div>
         </div>
 
-        <!-- Header -->
+        <!-- Header (desktop / tablette) -->
         <Header 
             v-if="!isMobile"
             :class="headerClasses" 
             :is-open="isHeaderOpen"
             class="header-animated"
+        />
+
+        <!-- Recherche globale hors header : montée en mobile pour le dock (pas de barre compacte) -->
+        <SearchInput
+            v-if="isMobile"
+            :compact-visible="false"
+            class="sr-only"
+            aria-hidden="true"
         />
 
         <!-- Toggle Aside -->

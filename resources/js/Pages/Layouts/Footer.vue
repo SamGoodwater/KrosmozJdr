@@ -3,12 +3,10 @@
  * Footer Layout (Atomic Design, DaisyUI)
  *
  * @description
- * Pied de page desktop en deux lignes compactes :
- * - ligne 1 : nom + version à gauche, logo au centre, liens (contact, Discord, GitHub) à droite ;
- * - ligne 2 : texte de présentation à gauche, bouton cookies à droite.
- * Mobile : bouton cookies dans le flux, dock de navigation en bas.
+ * Pied de page desktop en deux lignes compactes.
+ * Mobile (&lt; md) : dock bas — Menu (sidebar), Recherche globale, Compte (dropdown).
  *
- * @see Footer, Icon, Route, Tooltip, CookieConsentTriggerButton
+ * @see Footer, Dock, DockItem, SearchInput, AccountMenuPanel
  */
 import { ref } from "vue";
 import FooterMolecule from "@/Pages/Molecules/navigation/Footer.vue";
@@ -17,7 +15,13 @@ import Route from "@/Pages/Atoms/action/Route.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import Dock from "@/Pages/Molecules/navigation/Dock.vue";
 import DockItem from "@/Pages/Atoms/navigation/DockItem.vue";
+import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
+import GlassMenuPanel from "@/Pages/Atoms/navigation/GlassMenuPanel.vue";
+import GlassMenuItem from "@/Pages/Atoms/navigation/GlassMenuItem.vue";
+import AccountMenuPanel from "@/Pages/Molecules/header/AccountMenuPanel.vue";
 import { useSidebar } from "@/Composables/layout/useSidebar";
+import { requestOpenGlobalSearch } from "@/Composables/layout/useGlobalSearchUi";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
 import CookieConsentTriggerButton from "@/Pages/Molecules/privacy/CookieConsentTriggerButton.vue";
 import {
@@ -26,6 +30,7 @@ import {
 } from "@/Composables/layout/viewport-breakpoints";
 
 const { toggleSidebar } = useSidebar();
+const { isAuthenticated } = usePermissions();
 
 const desktopFooterClass = LAYOUT_DESKTOP_FOOTER_HIDDEN_ON_MOBILE_CLASS;
 const mobileDockClass = LAYOUT_MOBILE_DOCK_VISIBLE_CLASS;
@@ -69,6 +74,14 @@ const footerItems = [
         target: "_blank",
     },
 ];
+
+function onMenuClick() {
+    toggleSidebar();
+}
+
+function onSearchClick() {
+    requestOpenGlobalSearch();
+}
 </script>
 
 <template>
@@ -134,25 +147,80 @@ const footerItems = [
             </div>
         </div>
     </FooterMolecule>
-    <!-- Mobile (&lt; md) : cookies dans le flux (au-dessus du dock), aligné à droite — non fixe -->
+    <!-- Mobile (&lt; md) : cookies dans le flux (au-dessus du dock) -->
     <div class="flex w-full justify-end px-3 py-2 md:hidden">
         <CookieConsentTriggerButton />
     </div>
-    <!-- Mobile Footer (Dock) — aligné useDevice.isMobile (&lt; md) -->
+    <!-- Mobile Footer (Dock) -->
     <div :class="mobileDockClass" data-kz-nav-mobile-dock>
-        <Dock size="md" class="px-1 py-2 flex justify-between box-glass-md pb-[max(0.5rem,env(safe-area-inset-bottom,0px))]">
-            <!-- Bouton sidebar -->
+        <Dock
+            size="md"
+            class="px-1 py-2 flex justify-between box-glass-md pb-[max(0.5rem,env(safe-area-inset-bottom,0px))]"
+            aria-label="Navigation mobile"
+        >
             <DockItem
                 icon="fa-bars"
                 pack="solid"
                 label="Menu"
                 data-kz-nav-toggle-sidebar
-                @click="toggleSidebar()"
+                aria-label="Ouvrir ou fermer le menu"
+                @click="onMenuClick"
             />
-            <!-- Bouton recherche (placeholder) -->
-            <DockItem icon="fa-magnifying-glass" pack="solid" label="Recherche" />
-            <!-- Bouton compte/utilisateur (placeholder dropdown) -->
-            <DockItem icon="fa-user" pack="solid" label="Compte" />
+            <DockItem
+                icon="fa-magnifying-glass"
+                pack="solid"
+                label="Recherche"
+                aria-label="Ouvrir la recherche"
+                @click="onSearchClick"
+            />
+            <Dropdown
+                v-if="isAuthenticated"
+                placement="top"
+                :close-on-content-click="false"
+                block
+                class="min-w-0 max-w-[8rem] flex-1"
+            >
+                <template #trigger>
+                    <DockItem
+                        icon="fa-user"
+                        pack="solid"
+                        label="Compte"
+                        aria-label="Menu du compte"
+                        class="w-full"
+                    />
+                </template>
+                <template #content>
+                    <AccountMenuPanel />
+                </template>
+            </Dropdown>
+            <Dropdown
+                v-else
+                placement="top"
+                block
+                class="min-w-0 max-w-[8rem] flex-1"
+            >
+                <template #trigger>
+                    <DockItem
+                        icon="fa-user"
+                        pack="solid"
+                        label="Compte"
+                        aria-label="Connexion ou inscription"
+                        class="w-full"
+                    />
+                </template>
+                <template #content>
+                    <GlassMenuPanel class="min-w-56">
+                        <div class="flex flex-col gap-0.5 p-1">
+                            <GlassMenuItem route="login" icon="fa-right-to-bracket" icon-alt="" hover3d>
+                                Se connecter
+                            </GlassMenuItem>
+                            <GlassMenuItem route="register" icon="fa-user-plus" icon-alt="" hover3d>
+                                S'inscrire
+                            </GlassMenuItem>
+                        </div>
+                    </GlassMenuPanel>
+                </template>
+            </Dropdown>
         </Dock>
     </div>
 </template>

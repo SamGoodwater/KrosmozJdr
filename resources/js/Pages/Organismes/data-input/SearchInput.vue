@@ -32,6 +32,7 @@ import { getEntityStateChipClass, getEntityStateDotClass } from "@/Utils/Entity/
 import { router } from "@inertiajs/vue3";
 import DiceFormulaStrip from "@/Pages/Molecules/data-display/DiceFormulaStrip.vue";
 import { parseDiceFormula, rollDiceFormula } from "@/Utils/dice/diceParser.js";
+import { useGlobalSearchUi } from "@/Composables/layout/useGlobalSearchUi";
 
 /** @typedef {InstanceType<typeof InputField> & { focus?: () => void }} SearchInputFieldRef */
 
@@ -44,6 +45,14 @@ const props = defineProps({
     shortcut: {
         type: String,
         default: "alt+k",
+    },
+    /**
+     * Affiche la barre compacte (header). Si false : composant monté pour le dialog
+     * / raccourcis uniquement (dock mobile).
+     */
+    compactVisible: {
+        type: Boolean,
+        default: true,
     },
 });
 
@@ -168,6 +177,15 @@ const openSearch = () => {
     isFocused.value = true;
 };
 
+const { openNonce } = useGlobalSearchUi();
+watch(openNonce, (n, prev) => {
+    if (n > 0 && n !== prev) {
+        openSearch();
+    }
+});
+
+defineExpose({ open: openSearch, openSearch });
+
 const blurSearch = () => {
     lastSearchInputAt = 0;
     isFocused.value = false;
@@ -272,7 +290,7 @@ watch([loading, groupedResults], () => {
 
 <template>
     <div
-        v-if="!isFocused"
+        v-if="!isFocused && compactVisible"
         class="global-search-root global-search-root--compact relative"
     >
         <div class="global-search-compact-shell border-glass-sm rounded-box bd-blur-sm">

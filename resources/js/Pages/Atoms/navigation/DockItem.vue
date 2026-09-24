@@ -90,21 +90,34 @@ const atomClasses = computed(() =>
     ),
 );
 const attrs = computed(() => getCommonAttrs(props));
+const emit = defineEmits(["click"]);
+
+function onTriggerClick(event) {
+    if (props.disabled) {
+        event.preventDefault();
+        return;
+    }
+    emit("click", event);
+}
 </script>
 
 <template>
-    <li :class="atomClasses" v-bind="attrs" v-on="$attrs">
+    <li
+        :class="atomClasses"
+        v-bind="{ ...attrs, ...$attrs }"
+    >
         <RouteAtom
             v-if="route || href"
             :route="route"
             :href="href"
             :disabled="props.disabled"
-            :aria-label="props.ariaLabel"
+            :aria-label="props.ariaLabel || props.label || undefined"
             :tabindex="props.tabindex"
             :role="props.role"
             :id="props.id"
             :target="props.target"
             class="dock-item__trigger"
+            @click="onTriggerClick"
         >
             <span
                 v-if="$slots.icon || icon"
@@ -128,10 +141,12 @@ const attrs = computed(() => getCommonAttrs(props));
         </RouteAtom>
         <button
             v-else
+            type="button"
             :disabled="props.disabled"
             :tabindex="props.tabindex"
-            :aria-label="props.ariaLabel"
+            :aria-label="props.ariaLabel || props.label || undefined"
             class="dock-item__trigger"
+            @click="onTriggerClick"
         >
             <span
                 v-if="$slots.icon || icon"
