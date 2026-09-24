@@ -53,6 +53,24 @@ class CharacteristicDefinitionQualityServiceTest extends TestCase
         );
     }
 
+    public function test_it_does_not_treat_shield_points_as_shield_equipment(): void
+    {
+        $service = new CharacteristicDefinitionQualityService;
+
+        $this->assertSame(
+            [],
+            $service->suggestedDofusTypeIdsForHelper(
+                'Ajoute des points de bouclier (absorbent les dégâts avant les PV temporaires puis les PV).'
+            )
+        );
+        $this->assertSame(
+            [],
+            $service->suggestedDofusTypeIdsForHelper(
+                'Ajoute des PV temporaires. Absorbent après les points de bouclier et avant les PV.'
+            )
+        );
+    }
+
     public function test_object_definitions_use_existing_dofusdb_type_ids_and_match_helpers(): void
     {
         $root = dirname(__DIR__, 3);

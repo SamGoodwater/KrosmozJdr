@@ -213,7 +213,8 @@ final class CharacteristicDefinitionQualityService
         if (str_contains($h, 'cape')) {
             $ids[] = 17;
         }
-        if (str_contains($h, 'bouclier')) {
+        // Emplacement équipement « bouclier(s) » uniquement — pas « points de bouclier » (conso).
+        if (str_contains($h, 'bouclier') && ! str_contains($h, 'points de bouclier')) {
             $ids[] = 82;
         }
         if ($this->helperMentionsWeapons($h)) {
