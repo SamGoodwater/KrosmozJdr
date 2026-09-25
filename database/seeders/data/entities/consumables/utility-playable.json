@@ -79,8 +79,8 @@
             "rarity": 0,
             "price": 800,
             "bonus": { "shield_points": 5 },
-            "effect": "+5 points de bouclier jusqu’au prochain repos long (8 h max) ou jusqu’à absorption. Usage unique.",
-            "description": "Une couche de Wakfu liquide. Elle encaisse avant tes PV, puis disparaît."
+            "effect": "+5 points de bouclier jusqu’au prochain repos long (8 h max) ou jusqu’à absorption (sauf chute / poussée). Usage unique.",
+            "description": "Une couche de Wakfu liquide. Elle encaisse avant tes PV (sauf chute et poussée), puis disparaît."
         },
         {
             "name": "Potion de grand bouclier",
@@ -90,8 +90,8 @@
             "rarity": 1,
             "price": 2500,
             "bonus": { "shield_points": 10 },
-            "effect": "+10 points de bouclier jusqu’au prochain repos long (8 h max) ou jusqu’à absorption. Usage unique.",
-            "description": "Même principe que la petite fiole, en plus dense. Toujours pas un vrai bouclier d’acier."
+            "effect": "+10 points de bouclier jusqu’au prochain repos long (8 h max) ou jusqu’à absorption (sauf chute / poussée). Usage unique.",
+            "description": "Même principe que la petite fiole, en plus dense. Toujours pas un vrai bouclier d’acier — et toujours inutile contre une chute."
         },
         {
             "name": "Friandise de vitalité",

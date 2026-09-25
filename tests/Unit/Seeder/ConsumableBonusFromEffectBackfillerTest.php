@@ -20,7 +20,7 @@ final class ConsumableBonusFromEffectBackfillerTest extends TestCase
         );
         $this->assertSame(
             '{"shield_points":5}',
-            $svc->inferBonus('+5 points de bouclier jusqu’au prochain repos long (8 h max) ou jusqu’à absorption. Usage unique.')
+            $svc->inferBonus('+5 points de bouclier jusqu’au prochain repos long (8 h max) ou jusqu’à absorption (sauf chute / poussée). Usage unique.')
         );
         $this->assertSame(
             '{"temporary_life_points":10}',

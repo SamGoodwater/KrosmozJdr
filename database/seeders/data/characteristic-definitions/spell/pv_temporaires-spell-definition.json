@@ -5,7 +5,7 @@
         "name": "PV temporaires",
         "short_name": "PV temp.",
         "helper": "Réserve de PV temporaires d’un sous-effet donner-pv-temporaires. Conversion Dofus → Krosmoz.",
-        "descriptions": "PV temporaires (sous-effet donner-pv-temporaires, 3.2.4.2). Absorbent après les boucliers et avant les PV ; non dissipables, non soignables, non cumulables. Même enveloppe de budget que les soins / boucliers.",
+        "descriptions": "PV temporaires (sous-effet donner-pv-temporaires, 3.2.4.2). Absorbent après les boucliers et avant les PV (ou en premier pour chute / poussée) ; non dissipables, non soignables, non cumulables. Même enveloppe de budget que les soins / boucliers.",
         "icon": "lifeTemp.webp",
         "icon_false": null,
         "color": "emerald",

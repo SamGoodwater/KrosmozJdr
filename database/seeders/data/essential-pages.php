@@ -251,7 +251,7 @@ return [
             [
                 'slug' => 'sante-etats',
                 'title' => 'PV',
-                'html' => '<p>Dégâts : boucliers → [[kref:characteristic:life_points_creature|PV]] temp → [[kref:characteristic:life_points_creature|PV]]. Le reste : [[kref:page:essentiels-sante-etats|Santé, états, repos]].</p>',
+                'html' => '<p>Dégâts : boucliers → [[kref:characteristic:life_points_creature|PV]] temp → [[kref:characteristic:life_points_creature|PV]] (sauf chute / poussée : pas de bouclier). Le reste : [[kref:page:essentiels-sante-etats|Santé, états, repos]].</p>',
             ],
         ],
     ],
@@ -261,13 +261,14 @@ return [
         'icon' => null,
         'menu_order' => 45,
         'intro_title' => 'Survie',
-        'intro_html' => '<p>Boucliers, puis [[kref:characteristic:life_points_creature|PV]] temp, puis [[kref:characteristic:life_points_creature|PV]]. Note tes états sur la fiche.</p>'
+        'intro_html' => '<p>Boucliers, puis [[kref:characteristic:life_points_creature|PV]] temp, puis [[kref:characteristic:life_points_creature|PV]] — sauf chute / poussée (pas de bouclier). Note tes états sur la fiche.</p>'
             .'<p>→ [[kref:page:regles-3-2-combat|Gérer la santé]]</p>',
         'sections' => [
             [
                 'slug' => 'pv',
                 'title' => 'Absorption',
                 'html' => '<p>Ordre : <strong>boucliers</strong> (cumulables, pas à 0 PV, dissipables) → <strong>[[kref:characteristic:life_points_creature|PV]] temp</strong> (pas de cumul, pas de dissipation, ne réveillent pas) → <strong>[[kref:characteristic:life_points_creature|PV]]</strong>.</p>'
+                    .'<p><strong>Chute / poussée</strong> : le bouclier n’encaisse pas → [[kref:characteristic:life_points_creature|PV]] temp puis [[kref:characteristic:life_points_creature|PV]].</p>'
                     .'<p>Vol de vie : pas sur les boucliers. Max [[kref:characteristic:life_points_creature|PV]] : <strong>max du dé de classe + (mod. Vitalité × niveau) + ((niveau − 1) × round(dé/2)) + équipement</strong>.</p>',
             ],
             [

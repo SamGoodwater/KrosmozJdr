@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Bouclier : pas contre chute ni poussée
+
+Les **points de bouclier** n’encaissent pas les dégâts de **chute** ni de **poussée** : ce sont les PV temporaires, puis les PV. Règles (3.2.4, 2.2.2, chutes), L’Essentiel et les aides caractéristiques sont alignés.
+
 ## Septembre 2026 — En-tête fiche entité mobile (nom puis image)
 
 Sur téléphone, le nom de la fiche est au-dessus de l’image (plus collé à droite à côté d’une grosse vignette). Dès tablette, l’image revient à gauche.

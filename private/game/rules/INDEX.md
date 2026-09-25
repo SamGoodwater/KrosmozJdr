@@ -33,9 +33,11 @@ Les numéros renvoient aux fichiers du livre. Changelog et historique : [[kref:p
 - **PM** (3 / max 6) : 2.2.2, 1.2.2
 - **PO** (portée, 0 / max 6) : 2.2.2, 1.2.2
 - **PV** (formule seeder `life_points_creature`) : 2.2.2, 3.2.4
+- **Bouclier / PV temp** (ordre d’absorption ; chute & poussée ignorent le bouclier) : 3.2.4, 2.2.2
 - **Repos** (1 court entre deux longs ; long 8 h) : 3.2.4
 - **Wakfu** (hors combat ; 1 pt = 1× PA max) : 3.3.4
 - **Mort** (jets 10+, 3/3) : 3.2.4
+- **Chute** (1d6 / 3 m, max 20d6 ; pas de bouclier) : 3.1.4, 3.2.4
 
 ## Création et progression
 
