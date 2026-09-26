@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Tooltips et alertes plus lisibles
+
+Les bulles d’aide (lancer de dés dans la recherche, flèche pour replier l’en-tête) se placent correctement et se lisent mieux. Les bandeaux d’alerte reprennent le fond des petites fiches, avec un trait et une ombre de la couleur du message.
+
 ## Septembre 2026 — Bouclier : pas contre chute ni poussée
 
 Les **points de bouclier** n’encaissent pas les dégâts de **chute** ni de **poussée** : ce sont les PV temporaires, puis les PV. Règles (3.2.4, 2.2.2, chutes), L’Essentiel et les aides caractéristiques sont alignés.

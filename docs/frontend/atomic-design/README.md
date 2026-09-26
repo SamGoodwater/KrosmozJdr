@@ -12,6 +12,10 @@ Les index `atoms.index.json`, `molecules.index.json`, `organisms.index.json` ser
 
 ## Tooltips
 
-Les infobulles hover (`Tooltip.vue` → `OverlayTrigger`) restent ouvertes tant que le pointeur est sur le déclencheur **ou** sur le panneau. Un pont CSS (`overlay-hover-bridge`) couvre l’écart Floating UI ; le délai de fermeture est `hoverCloseDelayMs` (250 ms). Une seule surface visuelle : `glass=false` / `chromeless` quand le slot fournit déjà le chrome (fiches minimales, panneaux de sorts) ; sinon `panelClass` (Popover) ou la surface tooltip par défaut.
+Les infobulles hover (`Tooltip.vue` → `OverlayTrigger`) restent ouvertes tant que le pointeur est sur le déclencheur **ou** sur le panneau. Un pont CSS (`overlay-hover-bridge`) couvre l’écart Floating UI ; le délai de fermeture est `hoverCloseDelayMs` (250 ms). Une seule surface visuelle : `glass=false` / `chromeless` quand le slot fournit déjà le chrome (fiches minimales, panneaux de sorts) ; sinon `panelClass` (Popover) ou la surface tooltip par défaut. Les classes de positionnement du déclencheur (`fixed`, etc.) passent par `triggerClass` sur le nœud mesuré par Floating UI. Dans un dialog (recherche globale), le mode `opaque` utilise un fond `base-100` solide.
+
+## Alertes
+
+En mode glass (défaut), `Alert` reprend le fond des cartes minimales (`bg-glass-2xl`), un texte `base-content`, une bordure fine et une ombre teintées par la couleur sémantique (`color-info`, etc.).
 
 Un `Dropdown` ouvert depuis une carte minimale (`EntityMinimalCard`) maintient la carte déployée (`entityMinimalCardOverlayHold` et `data-dropdown-open`) : le menu est téléporté hors de la carte.

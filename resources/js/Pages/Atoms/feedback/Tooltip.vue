@@ -142,7 +142,10 @@ const floatingPanelClasses = computed(() => {
     );
 });
 
-/** Trigger : pas de classes `tooltip-*` Daisy (évite le pseudo ::before clippé). */
+/**
+ * Classes sur le nœud Floating UI (via OverlayTrigger.triggerClass).
+ * Important : `fixed` / positionnement parent doivent être ici, pas sur un enfant.
+ */
 const triggerClasses = computed(() =>
     mergeClasses("inline-flex max-w-full min-w-0", getCustomUtilityClasses(props), props.class),
 );
@@ -159,7 +162,7 @@ const overlayContent = computed(() =>
     <OverlayTrigger
         v-if="hasTooltip"
         :content="overlayContent"
-        trigger="auto"
+        trigger="hover"
         :placement="placement"
         :allow-flip="allowFlip"
         :interactive="interactive"
@@ -169,10 +172,11 @@ const overlayContent = computed(() =>
         :chromeless="!glass"
         :panel-class="floatingPanelClasses"
         :panel-style="accentStyle"
+        :trigger-class="triggerClasses"
         @open="emit('open')"
         @close="emit('close')"
     >
-        <span :class="triggerClasses" v-bind="attrs">
+        <span class="inline-flex max-w-full min-w-0" v-bind="attrs">
             <slot />
         </span>
     </OverlayTrigger>

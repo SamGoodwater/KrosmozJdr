@@ -25,7 +25,7 @@ import { useDevice } from "@/Composables/layout/useDevice";
 import Kbd from "@/Pages/Atoms/data-display/Kbd.vue";
 
 const { toggleHeader, isHeaderOpen } = useHeader();
-const { isMobile, isTablet } = useDevice();
+const { isMobile } = useDevice();
 
 const props = defineProps({
     size: {
@@ -51,14 +51,11 @@ const faSize = computed(() => {
     }
 });
 
-// Computed pour les tooltips selon le mode
 const tooltipContent = computed(() => {
-    const isMobileMode = isMobile.value || isTablet.value;
     if (isHeaderOpen.value) {
-        return isMobileMode ? "Fermer le menu" : "Masquer la barre latérale";
-    } else {
-        return isMobileMode ? "Ouvrir le menu" : "Afficher la barre latérale";
+        return "Masquer l'en-tête";
     }
+    return "Afficher l'en-tête";
 });
 
 const handleKeydown = (event) => {

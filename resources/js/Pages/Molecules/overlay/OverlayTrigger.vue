@@ -28,6 +28,11 @@ const props = defineProps({
      * (ex. fiche minimale d’entité, panneau d’effet chromé).
      */
     chromeless: { type: Boolean, default: false },
+    /**
+     * Classes sur le nœud de référence Floating UI (ex. `fixed` du parent).
+     * Doivent être ici — pas sur un enfant — sinon le panneau se positionne mal.
+     */
+    triggerClass: { type: [String, Array, Object], default: "" },
 });
 
 const emit = defineEmits(["open", "close", "error"]);
@@ -128,6 +133,16 @@ watch(nestHoldCount, (count) => {
 });
 
 const panelMaxWidthClass = computed(() => OVERLAY_MAX_WIDTH_CLASS[props.maxWidth] || "");
+const triggerRootClass = computed(() => {
+    const extra = props.triggerClass;
+    if (extra == null || extra === "") {
+        return "inline-flex min-w-0 max-w-full";
+    }
+    if (typeof extra === "string") {
+        return `inline-flex min-w-0 max-w-full ${extra}`.trim();
+    }
+    return ["inline-flex", "min-w-0", "max-w-full", extra];
+});
 /**
  * Une seule surface : `chromeless` (ou `panelClass` déjà chromeless) pour les
  * fiches / panneaux qui ont leur chrome ; sinon `panelClass` fourni (Popover) ;
@@ -204,7 +219,7 @@ function handleKeydown(event) {
 <template>
     <span
         ref="triggerRef"
-        class="inline-flex min-w-0"
+        :class="triggerRootClass"
         v-bind="triggerAttrs"
         @mouseenter="trigger.onTriggerEnter"
         @mouseleave="onHoverTriggerLeave"

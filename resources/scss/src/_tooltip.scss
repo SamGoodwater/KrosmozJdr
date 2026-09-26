@@ -37,13 +37,20 @@
 /**
  * Fond opaque (sans blur) : dialogs top-layer à fond transparent
  * (ex. recherche globale) où le glass semi-transparent devient illisible.
+ * Tokens Daisy `--color-base-*` pour coller à la charte (bande dés, résultats).
  */
 .tooltip-floating-surface--opaque,
 .global-search-dialog > .tooltip-floating-surface {
-    background-color: rgb(12, 14, 22);
-    background-color: oklch(0.18 0.03 265);
+    background-color: var(--color-base-100, #0c0e16);
+    background-image: none;
+    color: var(--color-base-content, rgba(248, 250, 252, 0.96));
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    border-color: color-mix(in oklch, var(--color, var(--color-base-content)) 28%, transparent);
+    box-shadow:
+        0 0 0 1px color-mix(in oklch, var(--color, var(--color-base-content)) 18%, transparent),
+        0 14px 36px -10px color-mix(in oklch, var(--color, var(--color-neutral-500)) 35%, transparent),
+        0 4px 14px -4px rgba(0, 0, 0, 0.35);
 }
 
 /**

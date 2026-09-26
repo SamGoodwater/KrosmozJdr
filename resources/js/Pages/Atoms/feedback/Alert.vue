@@ -7,17 +7,14 @@
  * - Slots : #icon (icône SVG ou composant), #content (contenu HTML), #action (boutons)
  * - Prop content : texte simple (prioritaire si pas de slot #content)
  * - Props DaisyUI : color (info, success, warning, error), variant (outline, dash, soft), direction (vertical/horizontal)
+ * - Mode glass (défaut) : fond type carte minimale (`bg-glass-2xl`), texte `base-content`,
+ *   contour fin teinté + ombre portée de la couleur d’alerte (lisible, charte projet)
  * - Props utilitaires custom : shadow, backdrop, opacity (via getCustomUtilityProps)
  * - Responsive : vertical sur mobile, horizontal sur desktop
- * - Icone et contenu côte à côte dans une div
  * - Toutes les classes DaisyUI sont écrites en toutes lettres
- * - Les classes utilitaires custom sont ajoutées dynamiquement
- * - Accessibilité renforcée (role, aria, etc.)
  *
  * @see https://daisyui.com/components/alert/
  * @version DaisyUI v5.x
- *
- * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  *
  * @example
  * <Alert color="info" content="Nouvelle mise à jour disponible !" />
@@ -28,10 +25,10 @@
  * </Alert>
  *
  * @props {String} color - Couleur DaisyUI ('', 'info', 'success', 'warning', 'error')
- * @props {String} variant - Style DaisyUI ('', 'outline', 'dash', 'soft')
+ * @props {String} variant - Style DaisyUI ('', 'outline', 'dash', 'soft') — ignoré en mode glass
  * @props {String} direction - Direction ('', 'vertical', 'horizontal'), défaut responsive
  * @props {String} content - Texte simple à afficher (optionnel, prioritaire sur slot #content)
- * @props {Boolean} glass - Style glassmorphism (box-glass-sm, paires color-X et bg-color-X, texte blanc, défaut true)
+ * @props {Boolean} glass - Surface charte (bg-glass + ombre/bordure teintées), défaut true
  * @props {String} shadow, backdrop, opacity - utilitaires custom ('' | 'xs' | ...)
  * @props {String|Object} id, ariaLabel, role, tabindex - hérités de commonProps
  * @slot icon - Icône SVG ou composant
@@ -68,11 +65,57 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    /** Style glass sombre à fort contraste (recommandé pour les bandeaux informatifs). */
+    /** Surface type carte minimale + accent couleur (recommandé). */
     glass: {
         type: Boolean,
         default: true,
     },
+});
+
+/** Accent sémantique pour `--color` (bordure / ombre), voir `.alert-surface`. */
+const surfaceColorClass = computed(() => {
+    switch (props.color) {
+        case 'info':
+            return 'color-info';
+        case 'success':
+            return 'color-success';
+        case 'warning':
+            return 'color-warning';
+        case 'error':
+            return 'color-error';
+        case 'primary':
+            return 'color-primary';
+        case 'secondary':
+            return 'color-secondary';
+        case 'accent':
+            return 'color-accent';
+        case 'neutral':
+            return 'color-neutral';
+        default:
+            return 'color-neutral';
+    }
+});
+
+/** Teinte d’icône (contraste sur fond glass). */
+const iconToneClass = computed(() => {
+    switch (props.color) {
+        case 'info':
+            return 'text-info';
+        case 'success':
+            return 'text-success';
+        case 'warning':
+            return 'text-warning';
+        case 'error':
+            return 'text-error';
+        case 'primary':
+            return 'text-primary';
+        case 'secondary':
+            return 'text-secondary';
+        case 'accent':
+            return 'text-accent';
+        default:
+            return 'text-base-content/80';
+    }
 });
 
 const atomClasses = computed(() =>
@@ -83,24 +126,16 @@ const atomClasses = computed(() =>
             !props.glass && props.color === 'success' && 'alert-success',
             !props.glass && props.color === 'warning' && 'alert-warning',
             !props.glass && props.color === 'error' && 'alert-error',
-            props.variant === 'outline' && 'alert-outline',
-            props.variant === 'dash' && 'alert-dash',
-            props.variant === 'soft' && !props.glass && 'alert-soft',
+            !props.glass && props.variant === 'outline' && 'alert-outline',
+            !props.glass && props.variant === 'dash' && 'alert-dash',
+            !props.glass && props.variant === 'soft' && 'alert-soft',
+            props.glass && 'alert-surface',
             props.glass && 'relative',
-            props.glass && 'box-glass-sm',
-            props.glass && 'box-soft-sm',
-            props.glass && 'rounded-sm',
-            props.glass && 'text-white',
-            props.glass && props.color === 'info' && 'color-info',
-            props.glass && props.color === 'info' && 'bg-color-info',
-            props.glass && props.color === 'success' && 'color-success',
-            props.glass && props.color === 'success' && 'bg-color-success',
-            props.glass && props.color === 'warning' && 'color-warning',
-            props.glass && props.color === 'warning' && 'bg-color-warning',
-            props.glass && props.color === 'error' && 'color-error',
-            props.glass && props.color === 'error' && 'bg-color-error',
-            props.glass && !props.color && 'color-base',
-            props.glass && !props.color && 'bg-color-base',
+            props.glass && 'rounded-box',
+            props.glass && 'border',
+            props.glass && 'bg-glass-2xl',
+            props.glass && 'text-base-content',
+            props.glass && surfaceColorClass.value,
             props.direction === 'vertical' && 'alert-vertical',
             props.direction === 'horizontal' && 'alert-horizontal',
             !props.direction && 'alert-vertical',
@@ -118,31 +153,30 @@ const attrs = computed(() => getCommonAttrs(props));
     <div :class="atomClasses" v-bind="attrs" role="alert" v-on="$attrs">
         <!-- Icone + contenu côte à côte -->
         <div class="flex items-center gap-3 flex-1">
-            <span v-if="$slots.icon && showIcon" class="shrink-0">
+            <span v-if="$slots.icon && showIcon" class="shrink-0" :class="glass ? iconToneClass : undefined">
                 <slot name="icon" />
             </span>
-            <span v-else-if="color === 'info' && showIcon" class="shrink-0">
-                <!-- Icône info par défaut DaisyUI -->
+            <span v-else-if="color === 'info' && showIcon" class="shrink-0" :class="glass ? iconToneClass : undefined">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 stroke-current opacity-90">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </span>
-            <span v-else-if="color === 'success' && showIcon" class="shrink-0">
+            <span v-else-if="color === 'success' && showIcon" class="shrink-0" :class="glass ? iconToneClass : undefined">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                     class="h-6 w-6 stroke-current opacity-90">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </span>
-            <span v-else-if="color === 'warning' && showIcon" class="shrink-0">
+            <span v-else-if="color === 'warning' && showIcon" class="shrink-0" :class="glass ? iconToneClass : undefined">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                     class="h-6 w-6 stroke-current opacity-90">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </span>
-            <span v-else-if="color === 'error' && showIcon" class="shrink-0">
+            <span v-else-if="color === 'error' && showIcon" class="shrink-0" :class="glass ? iconToneClass : undefined">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                     class="h-6 w-6 stroke-current opacity-90">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -164,4 +198,21 @@ const attrs = computed(() => getCommonAttrs(props));
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+/**
+ * Surface charte : fond type carte minimale (`bg-glass-2xl`) ;
+ * accent via `--color` (classes `.color-*`).
+ * Spécificité > DaisyUI `.alert` pour conserver le glass lisible.
+ */
+.alert.alert-surface {
+    background-color: rgba(255, 255, 255, 0.09);
+    background-image: none;
+    color: var(--color-base-content);
+    border-color: color-mix(in oklch, var(--color, var(--color-base-content)) 32%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow:
+        0 0 0 1px color-mix(in oklch, var(--color, var(--color-base-content)) 14%, transparent),
+        0 12px 28px -12px color-mix(in oklch, var(--color, var(--color-base-content)) 42%, transparent);
+}
+</style>
