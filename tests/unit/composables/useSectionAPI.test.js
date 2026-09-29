@@ -97,6 +97,21 @@ describe('useSectionAPI', () => {
 
       expect(result).toBeDefined();
     });
+
+    it('ne transmet pas le placeholder de contenu différé', async () => {
+      const { router } = await import('@inertiajs/vue3');
+      const { updateSection } = useSectionAPI();
+
+      await updateSection(1, {
+        data: { content: null, content_deferred: true, align: 'left' },
+      });
+
+      expect(router.patch).toHaveBeenCalledWith(
+        expect.any(String),
+        { data: { align: 'left' } },
+        expect.any(Object),
+      );
+    });
   });
 
   describe('deleteSection', () => {

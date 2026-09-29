@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Septembre 2026 — Pages Règles : plus d’effacement du HTML différé
+
+Sur une page longue, seules les trois premières sections embarquent leur texte. Un enregistrement trop tôt (éditeur encore vide) n’écrase plus le chapitre en base : le placeholder de chargement est ignoré.
+
 ## Septembre 2026 — Bouclier : pas contre chute ni poussée
 
 Les **points de bouclier** n’encaissent pas les dégâts de **chute** ni de **poussée** : ce sont les PV temporaires, puis les PV. Règles (3.2.4, 2.2.2, chutes), L’Essentiel et les aides caractéristiques sont alignés.

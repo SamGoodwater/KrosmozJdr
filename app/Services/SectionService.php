@@ -180,6 +180,8 @@ class SectionService
                 $data['params'] = $data['data'];
             }
 
+            $data = self::stripDeferredContentPlaceholders($section, $data);
+
             // Fusionner les settings et data existants avec les nouveaux
             // Cela permet de mettre à jour seulement une partie des données sans perdre le reste
             if (isset($data['settings'])) {
@@ -217,6 +219,84 @@ class SectionService
             ]);
             throw $e;
         }
+    }
+
+    /**
+     * Retire les placeholders du HTML différé (`pages.show`) avant fusion.
+     *
+     * Sans ça, un PATCH autosave `{ content: null, content_deferred: true }`
+     * écrase le HTML en base et persiste le flag dans `data`.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     *
+     * @example self::stripDeferredContentPlaceholders($section, ['data' => ['content' => null, 'content_deferred' => true]]);
+     */
+    private static function stripDeferredContentPlaceholders(Section $section, array $data): array
+    {
+        foreach (['data', 'params'] as $key) {
+            if (! isset($data[$key]) || ! is_array($data[$key])) {
+                continue;
+            }
+            $data[$key] = self::stripDeferredContentBag($section, $data[$key]);
+        }
+
+        unset($data['content_deferred']);
+
+        return $data;
+    }
+
+    /**
+     * @param  array<string, mixed>  $bag
+     * @return array<string, mixed>
+     */
+    private static function stripDeferredContentBag(Section $section, array $bag): array
+    {
+        $deferred = ! empty($bag['content_deferred']);
+        unset($bag['content_deferred']);
+
+        if (! array_key_exists('content', $bag)) {
+            return $bag;
+        }
+
+        $incoming = $bag['content'];
+        $existing = is_array($section->data) ? ($section->data['content'] ?? null) : null;
+        $existingHtml = is_string($existing) ? $existing : '';
+        $existingNonEmpty = ! self::isEmptySectionHtml($existingHtml);
+
+        if ($incoming === null && $existingNonEmpty) {
+            unset($bag['content']);
+
+            return $bag;
+        }
+
+        if ($deferred && $existingNonEmpty && self::isEmptySectionHtml($incoming)) {
+            unset($bag['content']);
+        }
+
+        return $bag;
+    }
+
+    /**
+     * HTML vide, y compris le paragraphe TipTap par défaut.
+     *
+     * @param  mixed  $value
+     */
+    private static function isEmptySectionHtml(mixed $value): bool
+    {
+        if ($value === null) {
+            return true;
+        }
+        if (! is_string($value)) {
+            return false;
+        }
+        $trimmed = trim($value);
+        if ($trimmed === '') {
+            return true;
+        }
+        $text = trim(html_entity_decode(strip_tags($trimmed), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+
+        return $text === '';
     }
 
     /**
