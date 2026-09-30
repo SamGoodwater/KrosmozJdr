@@ -2,18 +2,17 @@
 
 namespace App\Http\Requests\Entity;
 
-use App\Http\Requests\Concerns\RestrictsAccessLevelMutation;
 use App\Enums\EntityState;
 use App\Http\Requests\Concerns\GuardsPlayableState;
+use App\Http\Requests\Concerns\RestrictsAccessLevelMutation;
 use App\Models\Entity\Monster;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateMonsterRequest extends FormRequest
 {
-    use RestrictsAccessLevelMutation;
-
     use GuardsPlayableState;
+    use RestrictsAccessLevelMutation;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -40,8 +39,8 @@ class UpdateMonsterRequest extends FormRequest
             'dofus_version' => ['nullable', 'string', 'max:255'],
             'auto_update' => ['nullable', 'boolean'],
             'state' => ['nullable', 'string', EntityState::rule()],
-            'read_level' => ['nullable', 'integer', 'min:0', 'max:4'],
-            'write_level' => ['nullable', 'integer', 'min:0', 'max:4'],
+            'read_level' => ['sometimes', 'integer', 'min:0', 'max:4'],
+            'write_level' => ['sometimes', 'integer', 'min:0', 'max:4'],
         ];
     }
 

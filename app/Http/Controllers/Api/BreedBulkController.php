@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Breed;
+use App\Support\Entity\AccessLevelMutationGuard;
 use App\Support\Entity\EntityStateGate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,6 +35,7 @@ class BreedBulkController extends Controller
             'write_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
             'auto_update' => ['sometimes', 'nullable', 'boolean'],
         ]);
+        $validated = AccessLevelMutationGuard::stripUnlessAdmin($request->user(), $validated);
 
         $ids = array_values(array_unique(array_map('intval', $validated['ids'])));
         if (count($ids) < 1) {

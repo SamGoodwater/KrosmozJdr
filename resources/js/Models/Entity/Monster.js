@@ -818,7 +818,10 @@ export class Monster extends BaseModel {
             size: this.size,
             monster_race_id: this.monsterRaceId,
             is_boss: this.isBoss,
-            boss_pa: this.bossPa
+            boss_pa: this.bossPa,
+            state: this.state,
+            read_level: this.readLevel,
+            write_level: this.writeLevel,
         };
     }
 }

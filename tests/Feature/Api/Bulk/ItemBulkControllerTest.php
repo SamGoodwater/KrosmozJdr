@@ -176,6 +176,53 @@ class ItemBulkControllerTest extends TestCase
             ->assertJson(['message' => 'Aucun champ à mettre à jour.']);
     }
 
+    public function test_game_master_cannot_bulk_change_access_levels(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $item = Item::factory()->create([
+            'state' => Item::STATE_DRAFT,
+            'read_level' => User::ROLE_GAME_MASTER,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'rarity' => 0,
+        ]);
+
+        $this->actingAs($gm)
+            ->patchJson('/api/entities/items/bulk', [
+                'ids' => [$item->id],
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_GUEST,
+                'rarity' => 2,
+            ])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $item->refresh();
+        $this->assertSame(User::ROLE_GAME_MASTER, (int) $item->read_level);
+        $this->assertSame(User::ROLE_GAME_MASTER, (int) $item->write_level);
+        $this->assertSame(2, (int) $item->rarity);
+    }
+
+    public function test_game_master_bulk_only_access_levels_is_rejected(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $item = Item::factory()->create([
+            'read_level' => User::ROLE_PLAYER,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $this->actingAs($gm)
+            ->patchJson('/api/entities/items/bulk', [
+                'ids' => [$item->id],
+                'write_level' => User::ROLE_GUEST,
+            ])
+            ->assertStatus(422)
+            ->assertJson(['message' => 'Aucun champ à mettre à jour.']);
+
+        $item->refresh();
+        $this->assertSame(User::ROLE_PLAYER, (int) $item->read_level);
+        $this->assertSame(User::ROLE_GAME_MASTER, (int) $item->write_level);
+    }
+
     public function test_game_master_can_bulk_publish_items(): void
     {
         $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);

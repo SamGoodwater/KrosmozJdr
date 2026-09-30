@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Concerns;
 
+use App\Support\Entity\AccessLevelMutationGuard;
+
 /**
  * Empêche un non-admin de modifier `read_level` / `write_level` (SEC-07).
  *
@@ -19,11 +21,12 @@ trait RestrictsAccessLevelMutation
      */
     protected function stripAccessLevelsUnlessAdmin(): void
     {
-        if ($this->user()?->isAdmin()) {
+        if (AccessLevelMutationGuard::userMayMutate($this->user())) {
             return;
         }
 
-        $this->request->remove('read_level');
-        $this->request->remove('write_level');
+        foreach (AccessLevelMutationGuard::KEYS as $key) {
+            $this->request->remove($key);
+        }
     }
 }

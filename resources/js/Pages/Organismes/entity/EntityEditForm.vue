@@ -641,8 +641,9 @@ const initializeForm = () => {
                 return;
             }
             // Utiliser la valeur de l'entité si fournie, sinon valeur par défaut
-            formData[key] = props.entity[key] !== undefined 
-                ? props.entity[key] 
+            const fromEntity = resolveFormFieldValue(props.entity, key);
+            formData[key] = fromEntity !== undefined
+                ? fromEntity
                 : getDefaultValue(fieldsConfig.value[key].type);
         });
         return formData;
@@ -653,10 +654,15 @@ const initializeForm = () => {
         const modelFormData = props.entity.toFormData();
         const formData = {};
         resolveFormFieldKeys().forEach(key => {
-            // Utiliser les données du modèle si disponibles, sinon valeur par défaut
-            formData[key] = modelFormData[key] !== undefined 
-                ? modelFormData[key] 
-                : (props.entity[key] !== undefined ? props.entity[key] : getDefaultValue(fieldsConfig.value[key].type));
+            const fromModel = resolveFormFieldValue(modelFormData, key);
+            if (fromModel !== undefined) {
+                formData[key] = fromModel;
+                return;
+            }
+            const fromEntity = resolveFormFieldValue(props.entity, key);
+            formData[key] = fromEntity !== undefined
+                ? fromEntity
+                : getDefaultValue(fieldsConfig.value[key].type);
         });
         return formData;
     }
@@ -665,11 +671,35 @@ const initializeForm = () => {
     // Pour l'édition multiple, l'entité peut être un objet simple avec les valeurs communes
     const formData = {};
     resolveFormFieldKeys().forEach(key => {
-        formData[key] = props.entity[key] !== undefined 
-            ? props.entity[key] 
+        const fromEntity = resolveFormFieldValue(props.entity, key);
+        formData[key] = fromEntity !== undefined
+            ? fromEntity
             : getDefaultValue(fieldsConfig.value[key].type);
     });
     return formData;
+};
+
+/**
+ * Valeur d’un champ formulaire : clé snake_case, sinon getter camelCase du modèle.
+ *
+ * @param {object|null|undefined} source
+ * @param {string} key
+ * @returns {*}
+ */
+const resolveFormFieldValue = (source, key) => {
+    if (!source || typeof source !== 'object') {
+        return undefined;
+    }
+    if (source[key] !== undefined) {
+        return source[key];
+    }
+    if (typeof key === 'string' && key.includes('_')) {
+        const camel = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+        if (camel !== key && source[camel] !== undefined) {
+            return source[camel];
+        }
+    }
+    return undefined;
 };
 
 const getDefaultValue = (type) => {

@@ -76,7 +76,7 @@ La logique est centralisée dans `app/Policies/Entity/BaseEntityPolicy.php`. Pou
    - `playable` / `archived` : visible si `rôle ≥ read_level`.
    - `raw` / `draft` / `auto` : réservé aux éditeurs (`rôle ≥ write_level`).
 
-Pour l'écriture (`update`/`delete`) : admin, auteur, ou `rôle ≥ write_level`. Les abilities « bulk » (`updateAny`, `deleteAny`, `manageAny`) ciblent game_master/admin. Le registre des permissions exposées au front est dans `config/entity-permissions.php` (consommé par `EntityPermissionService`, partagé via Inertia → composable `usePermissions`).
+Pour l'écriture (`update`/`delete`) : admin, auteur, ou `rôle ≥ write_level`. Les abilities « bulk » (`updateAny`, `deleteAny`, `manageAny`) ciblent game_master/admin. Seuls les **admins** posent `read_level` / `write_level` (formulaires et `PATCH …/bulk`). Le registre des permissions exposées au front est dans `config/entity-permissions.php` (consommé par `EntityPermissionService`, partagé via Inertia → composable `usePermissions`).
 
 La restauration et la suppression définitive (`restore`, `forceDelete`) sont réservées aux admins/super-admins via la policy de base.
 
