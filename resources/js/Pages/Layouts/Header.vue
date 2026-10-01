@@ -42,7 +42,7 @@ import { onMounted, watch } from "vue";
 import { usePage } from "@inertiajs/vue3";
 
 // Composables
-const { pageTitle } = usePageTitle();
+const { pageTitle, hasPageHeader } = usePageTitle();
 const { isAuthenticated } = usePermissions();
 const favoritesUi = useFavoritesUiStore();
 const page = usePage();
@@ -82,9 +82,10 @@ defineProps({
     <Navbar :class="['header-animated', { 'header-open': isOpen  }]">
         <template #start>
             <Transition name="title" class="ml-14" mode="out-in">
-                <h2 :key="pageTitle" id="pageTitle" class="items-center truncate text-lg font-semibold sm:text-2xl max-w-[min(100%,28rem)]">
+                <h2 v-if="!hasPageHeader" :key="pageTitle" id="pageTitle" class="items-center truncate text-lg font-semibold sm:text-2xl max-w-[min(100%,28rem)]">
                     {{ pageTitle }}
                 </h2>
+                <span v-else key="page-header-present" aria-hidden="true"></span>
             </Transition>
         </template>
         <template #center>
