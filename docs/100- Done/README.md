@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Sections CMS des classes / spés : plus de fuite lecture
+
+Sur une fiche classe ou spécialisation (et la page bibliothèque liée), un invité ne voit plus les chapitres CMS brouillon ou réservés MJ : même règle que pour les sorts liés. L’écran Modifier continue d’afficher toutes les liaisons.
+
 ## Septembre 2026 — Bouclier : pas contre chute ni poussée
 
 Les **points de bouclier** n’encaissent pas les dégâts de **chute** ni de **poussée** : ce sont les PV temporaires, puis les PV. Règles (3.2.4, 2.2.2, chutes), L’Essentiel et les aides caractéristiques sont alignés.

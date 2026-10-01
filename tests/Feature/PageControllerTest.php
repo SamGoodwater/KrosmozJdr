@@ -7,6 +7,7 @@ use App\Models\Entity\Breed;
 use App\Models\Entity\Specialization;
 use App\Models\Entity\Spell;
 use App\Models\Page;
+use App\Models\Section;
 use App\Models\User;
 use App\Services\PageService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -638,6 +639,69 @@ class PageControllerTest extends TestCase
             ->assertInertia(fn (Assert $inertia) => $inertia
                 ->component('Pages/page/LinkedEntityShow')
                 ->has('linkedEntity.data.spells', 2));
+    }
+
+    public function test_guest_does_not_see_restricted_sections_on_linked_breed_library_page(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $breed = Breed::factory()->create([
+            'name' => 'Cra Public',
+            'state' => Breed::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $cmsPage = Page::factory()->create(['created_by' => $author->id]);
+        $playableSection = Section::factory()->create([
+            'page_id' => $cmsPage->id,
+            'created_by' => $author->id,
+            'title' => 'Identité publique',
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'data' => ['content' => '<p>Présentation Cra</p>'],
+        ]);
+        $draftSection = Section::factory()->create([
+            'page_id' => $cmsPage->id,
+            'created_by' => $author->id,
+            'title' => 'WIP bibliothèque',
+            'state' => Section::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'data' => ['content' => '<p>Spoiler bibliothèque</p>'],
+        ]);
+        $breed->sections()->attach($playableSection->id, ['level' => 1]);
+        $breed->sections()->attach($draftSection->id, ['level' => 2]);
+
+        $page = Page::factory()->create([
+            'title' => 'Cra Public',
+            'slug' => 'classe-cra-public',
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'entity_key' => 'breed',
+            'settings' => [
+                'linked_entity' => [
+                    'type' => 'breed',
+                    'id' => $breed->id,
+                ],
+            ],
+        ]);
+
+        $this->get(route('pages.show', $page->slug))
+            ->assertOk()
+            ->assertInertia(fn (Assert $inertia) => $inertia
+                ->component('Pages/page/LinkedEntityShow')
+                ->has('linkedEntity.data.sections', 1)
+                ->where('linkedEntity.data.sections.0.title', 'Identité publique'))
+            ->assertDontSee('Spoiler bibliothèque', false);
+
+        $this->actingAs($author)
+            ->get(route('pages.show', $page->slug))
+            ->assertOk()
+            ->assertInertia(fn (Assert $inertia) => $inertia
+                ->component('Pages/page/LinkedEntityShow')
+                ->has('linkedEntity.data.sections', 2));
     }
 
     public function test_guest_does_not_see_draft_spells_on_linked_specialization_library_page(): void

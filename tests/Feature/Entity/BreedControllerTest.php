@@ -87,6 +87,91 @@ class BreedControllerTest extends TestCase
                 ->has('breed.data.spells', 2));
     }
 
+    public function test_guest_does_not_see_restricted_sections_on_playable_breed_show(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $breed = Breed::factory()->create([
+            'state' => Breed::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $page = Page::factory()->create(['created_by' => $author->id]);
+
+        $playableSection = Section::factory()->create([
+            'page_id' => $page->id,
+            'created_by' => $author->id,
+            'title' => 'Texte public',
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'data' => ['content' => '<p>Lore public</p>'],
+        ]);
+        $draftSection = Section::factory()->create([
+            'page_id' => $page->id,
+            'created_by' => $author->id,
+            'title' => 'Notes MJ secrètes',
+            'state' => Section::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'data' => ['content' => '<p>Spoilers campagne</p>'],
+        ]);
+        $gmOnlySection = Section::factory()->create([
+            'page_id' => $page->id,
+            'created_by' => $author->id,
+            'title' => 'Aide MJ',
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GAME_MASTER,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'data' => ['content' => '<p>Stats cachées</p>'],
+        ]);
+        $breed->sections()->attach($playableSection->id, ['level' => 1]);
+        $breed->sections()->attach($draftSection->id, ['level' => 2]);
+        $breed->sections()->attach($gmOnlySection->id, ['level' => 3]);
+
+        $this->get(route('entities.breeds.show', $breed))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Pages/entity/breed/Show')
+                ->has('breed.data.sections', 1)
+                ->where('breed.data.sections.0.title', 'Texte public'))
+            ->assertDontSee('Spoilers campagne', false)
+            ->assertDontSee('Stats cachées', false);
+
+        $this->actingAs($author)
+            ->get(route('entities.breeds.show', $breed))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Pages/entity/breed/Show')
+                ->has('breed.data.sections', 3));
+    }
+
+    public function test_breed_edit_still_loads_restricted_sections(): void
+    {
+        $admin = $this->adminUser();
+        $breed = Breed::factory()->create([
+            'created_by' => $admin->id,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+        $page = Page::factory()->create(['created_by' => $admin->id]);
+        $draftSection = Section::factory()->create([
+            'page_id' => $page->id,
+            'created_by' => $admin->id,
+            'title' => 'Brouillon lié',
+            'state' => Section::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+        ]);
+        $breed->sections()->attach($draftSection->id, ['level' => 1]);
+
+        $this->actingAs($admin)
+            ->get(route('entities.breeds.edit', $breed))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Pages/entity/breed/Edit')
+                ->has('breed.data.sections', 1)
+                ->where('breed.data.sections.0.title', 'Brouillon lié'));
+    }
+
     public function test_guest_cannot_view_draft_breed(): void
     {
         $breed = Breed::factory()->create([

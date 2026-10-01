@@ -127,7 +127,7 @@ class BreedController extends Controller
             'capabilities' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
             'creatureTraits' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
             'languages',
-            'sections' => Breed::orderedSectionsEagerLoadConstraint(),
+            'sections' => Breed::visibleSectionsEagerLoadConstraint($viewer),
         ]);
 
         return Inertia::render('Pages/entity/breed/Show', [

@@ -130,7 +130,7 @@ class SpecializationController extends Controller
             'consumables' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
             'resources' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
             'items' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
-            'sections' => Specialization::orderedSectionsEagerLoadConstraint(),
+            'sections' => Specialization::visibleSectionsEagerLoadConstraint($viewer),
         ]);
 
         return Inertia::render('Pages/entity/specialization/Show', [

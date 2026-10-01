@@ -224,7 +224,7 @@ class PageController extends Controller
                 'capabilities' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
                 'creatureTraits' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
                 'languages',
-                'sections' => Breed::orderedSectionsEagerLoadConstraint(),
+                'sections' => Breed::visibleSectionsEagerLoadConstraint($user),
             ]);
             $payload['linkedEntity'] = new BreedResource($entity);
         } else {
@@ -238,7 +238,7 @@ class PageController extends Controller
                 'consumables' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
                 'resources' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
                 'items' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
-                'sections' => Specialization::orderedSectionsEagerLoadConstraint(),
+                'sections' => Specialization::visibleSectionsEagerLoadConstraint($user),
             ]);
             $payload['linkedEntity'] = new SpecializationResource($entity);
         }
