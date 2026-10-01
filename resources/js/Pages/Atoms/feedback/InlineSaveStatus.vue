@@ -6,11 +6,12 @@
  * Petit indicateur de statut de sauvegarde inline.
  * États supportés:
  * - idle: masqué
- * - saving: "Enregistrement..."
- * - saved: "Sauvegardé"
- * - error: "Erreur de sauvegarde"
+ * - saving: "Enregistrement…"
+ * - saved: "Enregistré"
+ * - error: "Échec de l’enregistrement"
  */
 import { computed } from 'vue';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 
 const props = defineProps({
   state: {
@@ -21,9 +22,9 @@ const props = defineProps({
 });
 
 const label = computed(() => {
-  if (props.state === 'saving') return 'Enregistrement...';
-  if (props.state === 'saved') return 'Sauvegardé';
-  if (props.state === 'error') return 'Erreur de sauvegarde';
+  if (props.state === 'saving') return ACTION.save.processing;
+  if (props.state === 'saved') return 'Enregistré';
+  if (props.state === 'error') return 'Échec de l’enregistrement';
   return '';
 });
 

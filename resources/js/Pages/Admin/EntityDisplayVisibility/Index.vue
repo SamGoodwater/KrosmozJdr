@@ -5,13 +5,11 @@
 import { computed } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
-import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
+import { usePageForms } from '@/Composables/form/usePageForms';
 import { KREF_ENTITY_CONFIGS } from '@/Composables/richText/krefEntityRegistry';
 
 defineOptions({ layout: AdminArea });
-
-const { setPageTitle } = usePageTitle();
-setPageTitle('Affichage des entités');
 
 const props = defineProps({
     matrix: { type: Object, required: true },
@@ -40,25 +38,28 @@ const form = useForm({
     rules: JSON.parse(JSON.stringify(props.matrix)),
 });
 
-function submit() {
-    form.patch(route('admin.entity-display-visibility.update'));
-}
+const pageForms = usePageForms();
+pageForms.register('rules', form, (callbacks) =>
+    form.patch(route('admin.entity-display-visibility.update'), {
+        preserveScroll: true,
+        preserveState: true,
+        ...callbacks,
+    }),
+);
 </script>
 
 <template>
     <Head title="Affichage des entités" />
 
     <div class="space-y-6 pb-10">
-        <div>
-            <h1 class="text-2xl font-semibold text-base-content">Gérer l’affichage</h1>
-            <p class="mt-2 text-sm text-base-content/70 max-w-3xl">
-                Définissez le <strong>rôle minimal</strong> (invité à super admin) nécessaire pour qu’un utilisateur
-                puisse <strong>voir</strong> une fiche dans un état donné. Les administrateurs conservent toujours un
-                accès complet ; cette matrice complète les autres règles des policies (niveaux de lecture, etc.).
-            </p>
-        </div>
+        <PageHeader title="Affichage des entités" :forms="pageForms">
+            <template #subtitle>
+                Rôle minimal nécessaire pour <strong>voir</strong> une fiche selon son état. Les administrateurs
+                gardent un accès complet ; cette matrice complète les autres règles (niveaux de lecture, etc.).
+            </template>
+        </PageHeader>
 
-        <form class="space-y-4" @submit.prevent="submit">
+        <form class="space-y-4" @submit.prevent="pageForms.saveAll()">
             <div class="overflow-x-auto rounded-box border border-base-content/10 bg-base-100/60">
                 <table class="table table-sm table-zebra">
                     <thead>
@@ -85,14 +86,6 @@ function submit() {
                         </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <div class="flex items-center gap-3">
-                <button type="submit" class="btn btn-primary btn-sm" :disabled="form.processing">
-                    Enregistrer
-                </button>
-                <span v-if="form.processing" class="text-xs text-base-content/60">Enregistrement…</span>
-                <span v-if="form.recentlySuccessful" class="text-xs text-success">Mis à jour.</span>
             </div>
         </form>
     </div>

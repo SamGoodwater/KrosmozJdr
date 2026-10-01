@@ -14,15 +14,16 @@
  */
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 
 defineProps({
     primaryLabel: {
         type: String,
-        required: true,
+        default: ACTION.save.label,
     },
     processingLabel: {
         type: String,
-        default: 'Enregistrement...',
+        default: ACTION.save.processing,
     },
     processing: {
         type: Boolean,
@@ -98,7 +99,7 @@ function secondaryColor(act) {
             :disabled="disabled || processing"
             @click="emit('primary')"
         >
-            <i class="fa-solid fa-save mr-2"></i>
+            <i :class="ACTION.save.icon" class="mr-2" aria-hidden="true"></i>
             {{ processing ? processingLabel : primaryLabel }}
         </Btn>
 
@@ -198,7 +199,7 @@ function secondaryColor(act) {
             :disabled="disabled || processing"
             @click="emit('primary')"
         >
-            <i class="fa-solid fa-save mr-2"></i>
+            <i :class="ACTION.save.icon" class="mr-2" aria-hidden="true"></i>
             {{ processing ? processingLabel : primaryLabel }}
         </Btn>
     </div>

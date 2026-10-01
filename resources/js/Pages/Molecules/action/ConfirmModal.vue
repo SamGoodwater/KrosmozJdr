@@ -39,11 +39,8 @@ const emit = defineEmits(["close", "confirm", "cancel"]);
 <template>
     <Modal :open="open" size="sm" placement="middle-center" close-on-esc @close="emit('close')">
         <template #header>
-            <div class="flex items-center justify-between gap-3 w-full">
-                <div class="font-semibold text-primary-100">
-                    {{ title }}
-                </div>
-                <Btn size="sm" variant="ghost" @click="emit('close')">Fermer</Btn>
+            <div class="font-semibold text-primary-100 pr-8">
+                {{ title }}
             </div>
         </template>
 

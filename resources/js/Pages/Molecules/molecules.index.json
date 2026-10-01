@@ -512,6 +512,85 @@
     "file": "layout/ToggleHeader.vue"
   },
   {
+    "name": "PageHeader",
+    "description": "PageHeader — En-tête universel d’une page (titre, sous-titre, retour, actions, enregistrement).",
+    "props": [
+      {
+        "name": "title",
+        "type": "String",
+        "desc": "- Titre affiché (h1) et titre de l’onglet"
+      },
+      {
+        "name": "subtitle",
+        "type": "String",
+        "desc": "- Sous-titre facultatif"
+      },
+      {
+        "name": "backHref",
+        "type": "String",
+        "desc": "- URL de retour"
+      },
+      {
+        "name": "backRoute",
+        "type": "String",
+        "desc": "- Nom de route Ziggy de retour (prioritaire sur backHref)"
+      },
+      {
+        "name": "backRouteParams",
+        "type": "Object|Array|Number|String",
+        "desc": "- Paramètres de backRoute"
+      },
+      {
+        "name": "backLabel",
+        "type": "String",
+        "desc": "- Libellé du retour (défaut : « Retour »)"
+      },
+      {
+        "name": "sticky",
+        "type": "Boolean",
+        "desc": "- Reste visible au défilement (défaut : true)"
+      },
+      {
+        "name": "forms",
+        "type": "Object",
+        "desc": "- Retour de `usePageForms()` : affiche « Enregistrer » / « Annuler les modifications »"
+      },
+      {
+        "name": "saveLabel",
+        "type": "String",
+        "desc": "- Libellé du bouton principal (défaut : « Enregistrer »)"
+      },
+      {
+        "name": "saveDisabled",
+        "type": "Boolean",
+        "desc": "- Bloque l’enregistrement"
+      }
+    ],
+    "slots": [
+      {
+        "name": "actions",
+        "desc": "- Actions secondaires (à gauche du bloc d’enregistrement)"
+      },
+      {
+        "name": "primary",
+        "desc": "- Remplace le bloc d’enregistrement (ex. « Créer », « Lancer »)"
+      },
+      {
+        "name": "subtitle",
+        "desc": "- Sous-titre riche"
+      },
+      {
+        "name": "meta",
+        "desc": "- Badges / état sous le titre"
+      },
+      {
+        "name": "tabs",
+        "desc": "- Sous-navigation sous l’en-tête"
+      }
+    ],
+    "file": "layout/PageHeader.vue"
+  },
+  {
     "name": "Drawer",
     "description": "Drawer Molecule (DaisyUI + Custom Utility)",
     "props": [],
@@ -2948,6 +3027,49 @@
     ],
     "slots": [],
     "file": "action/ThemeController.vue"
+  },
+  {
+    "name": "PageSaveActions",
+    "description": "PageSaveActions — Bloc « Annuler les modifications » + « Enregistrer » d’une page.",
+    "props": [
+      {
+        "name": "dirty",
+        "type": "Boolean",
+        "desc": "- Des modifications sont en attente"
+      },
+      {
+        "name": "processing",
+        "type": "Boolean",
+        "desc": "- Enregistrement en cours"
+      },
+      {
+        "name": "disabled",
+        "type": "Boolean",
+        "desc": "- Bloque l’enregistrement (ex. formulaire invalide)"
+      },
+      {
+        "name": "alwaysEnabled",
+        "type": "Boolean",
+        "desc": "- « Enregistrer » actif même sans modification détectée"
+      },
+      {
+        "name": "status",
+        "type": "String",
+        "desc": "- idle | saving | saved | error (indicateur inline)"
+      },
+      {
+        "name": "saveLabel",
+        "type": "String",
+        "desc": "- Libellé principal (défaut : « Enregistrer »)"
+      },
+      {
+        "name": "shortcut",
+        "type": "Boolean",
+        "desc": "- Active Ctrl+S / Cmd+S (défaut : true)"
+      }
+    ],
+    "slots": [],
+    "file": "action/PageSaveActions.vue"
   },
   {
     "name": "Modal",

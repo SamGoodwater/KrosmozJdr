@@ -195,6 +195,11 @@
     "description": "`Btn` : `color` = teinte DaisyUI, `variant` = style (`glass`/`ghost`/`outline`/…). Une couleur passée en `variant` (`variant=\"primary\"`) est remappée vers `color` + `glass` (compat) — les usages corrects ne changent pas."
   },
   {
+    "path": "frontend/atomic-design/page-header-actions.md",
+    "title": "En-tête de page et boutons d’action",
+    "description": "Règles communes pour le titre d’une page, ses actions et l’enregistrement. Objectif : les mêmes termes et le même emplacement partout."
+  },
+  {
     "path": "frontend/atomic-design/README.md",
     "title": "Atomic Design",
     "description": "Les composants UI sont organisés dans `resources/js/Pages/Atoms`, `Molecules` et `Organismes`."
