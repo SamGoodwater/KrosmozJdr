@@ -29,7 +29,7 @@ class LegalAndChangelogMarkdownRoutesTest extends TestCase
         $response = $this->get(route('changelog.feed', ['version' => '1.3.2']));
         $response->assertOk()->assertHeader('Content-Type', 'text/markdown; charset=UTF-8');
         $body = $response->getContent() ?: '';
-        $this->assertStringContainsString('Navigation des versions', $body);
+        $this->assertStringContainsString('### Versions', $body);
         $this->assertStringContainsString('**1.3.2**', $body);
         $this->assertStringContainsString('/changelog/feed/1.3.1', $body);
     }

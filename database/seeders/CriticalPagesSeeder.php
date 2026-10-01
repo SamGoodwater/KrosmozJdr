@@ -192,7 +192,7 @@ class CriticalPagesSeeder extends Seeder
         );
 
         $changelogPage = $this->createOrRestoreBySlug([
-            'title' => 'Changelog',
+            'title' => 'Journal',
             'slug' => 'changelog',
             'in_menu' => true,
             'state' => Page::STATE_PLAYABLE,
@@ -208,10 +208,11 @@ class CriticalPagesSeeder extends Seeder
         $this->ensureLegalMarkdownSection(
             $changelogPage,
             'legal-changelog',
-            'Changelog du site',
+            'Journal',
             '/changelog/feed/'.$this->publicChangelogSemver(),
             1,
-            $defaultCreatorId
+            $defaultCreatorId,
+            ''
         );
     }
 
@@ -529,7 +530,8 @@ class CriticalPagesSeeder extends Seeder
         string $title,
         string $sourceUrl,
         int $order,
-        ?int $creatorId
+        ?int $creatorId,
+        ?string $contentTitle = null
     ): Section {
         $section = Section::withTrashed()
             ->where('page_id', $page->id)
@@ -546,11 +548,11 @@ class CriticalPagesSeeder extends Seeder
             'settings' => [],
             'data' => [
                 'sourceUrl' => $sourceUrl,
-                'title' => $title,
+                'title' => $contentTitle ?? $title,
             ],
             'params' => [
                 'sourceUrl' => $sourceUrl,
-                'title' => $title,
+                'title' => $contentTitle ?? $title,
             ],
             'state' => Section::STATE_PLAYABLE,
             'read_level' => User::ROLE_GUEST,
@@ -594,6 +596,7 @@ class CriticalPagesSeeder extends Seeder
 
         $changelog = [
             'changelog/intro.md' => $this->defaultChangelogIntroMarkdown(),
+            'changelog/roadmap.md' => $this->defaultChangelogRoadmapMarkdown(),
             'changelog/'.$this->publicChangelogSemver().'.md' => $this->defaultChangelogVersionMarkdown(),
         ];
 
@@ -748,46 +751,56 @@ MD;
     private function defaultChangelogIntroMarkdown(): string
     {
         return <<<'MD'
-# À propos de ce changelog
+# Journal
 
-Les versions suivent le schéma **X.Y.Z** (semver courte). Pour chaque version : **contenu / produit** en premier, puis un volet **technique** succinct lorsque c’est utile.
+Ce qui a changé dans le jeu, et les quelques nouveautés du site. Le détail des règles est dans le livre.
+MD;
+    }
 
-Utilise la navigation injectée automatiquement en tête pour passer d’un fichier changelog à un autre.
+    private function defaultChangelogRoadmapMarkdown(): string
+    {
+        return <<<'MD'
+## 1.3 · Déjà là
+
+Le jeu se joue : personnage, combat, sorts, règles et bibliothèques.
+
+## 1.4 · Prochaine version
+
+Les campagnes, les scénarios, et les fiches de joueurs et de joueuses.
+
+## 1.5 · Ensuite
+
+Des outils pour aider à résoudre les combats.
 MD;
     }
 
     private function defaultChangelogPriorVersionMarkdown(): string
     {
         return <<<'MD'
-# Changelog — 1.3.1
+# Version 1.3.1
 
-Version archivée pour la navigation semver (précède habituellement le gel fonctionnel suivant).
-
-## Technique
-
-- Travaux préparatoires avant la ligne directrice semver publique actuelle dans `config/releases.php`.
+Première mise en ligne : le site, les comptes et les règles.
 MD;
     }
 
     private function defaultChangelogVersionMarkdown(): string
     {
         return <<<'MD'
-# KrosmozJDR — notes de version (semver publique)
+# Version 1.3
 
-> Si ce fichier existe déjà depuis le dépôt, le seeder ne l’écrase pas ; ce bloc sert uniquement de repli après déploiement.
+On peut préparer et jouer une partie : les règles sont en ligne, et le site rassemble ce qu’il faut pour s’en servir.
 
-## Contenu / produit
+## Le jeu
 
-- Matrice « Gérer l’affichage » (visibilité par type d’entité × état workflow × rôle minimal).
-- Recherche globale (API + en-tête / filtres).
-- Documents Markdown légaux servis depuis `storage/app/public/legal/` via routes **`/legal/…`** ou le legacy **`/storage/legal/*.md`**.
-- Changelog versionné sous **`storage/app/public/changelog/{X.Y.Z}.md`**, exposition agrégée par **`GET /changelog/feed/{version}`**.
+- Créer un personnage : caractéristiques, classe, sorts et équipement.
+- Combattre : points d’action, déplacement, portée, classe d’armure, points de vie et sorts.
+- S’appuyer sur L’Essentiel à la table, sans relire tout le livre.
 
-## Technique (court)
+## Le site
 
-- Policies (`BaseEntityPolicy`, Breed…) + gardes **`Model` / `instanceof`** contre régressions LSP.
-- Défauts CMS page/section (lecture invité, écriture MJ si niveaux omis ; décision **Q6**).
-- Bump cache permissions après sauvegarde matrice (**`EntityPermissionService`**).
+- Les bibliothèques (classes, sorts, monstres, objets…) pour préparer une séance.
+- La recherche pour trouver une page ou une fiche.
+- Les meneurs préparent le contenu du jeu directement sur le site.
 MD;
     }
 

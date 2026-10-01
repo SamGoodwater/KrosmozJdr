@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChangelogMarkdownEditorController;
 use App\Http\Controllers\ChangelogMarkdownFeedController;
 use App\Http\Controllers\LegalMarkdownSourceController;
 use Illuminate\Support\Facades\Route;
@@ -17,3 +18,14 @@ Route::get('/legal/cookies', [LegalMarkdownSourceController::class, 'cookies'])-
 Route::get('/changelog/feed/{version}', [ChangelogMarkdownFeedController::class, 'show'])
     ->where('version', '[0-9]+\.[0-9]+\.[0-9]+')
     ->name('changelog.feed');
+
+Route::get('/changelog/roadmap', [ChangelogMarkdownFeedController::class, 'roadmap'])
+    ->name('changelog.roadmap');
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/changelog/sources', [ChangelogMarkdownEditorController::class, 'index'])
+        ->name('changelog.sources');
+    Route::put('/changelog/sources/{name}', [ChangelogMarkdownEditorController::class, 'update'])
+        ->where('name', 'intro|roadmap|[0-9]+\.[0-9]+\.[0-9]+')
+        ->name('changelog.sources.update');
+});

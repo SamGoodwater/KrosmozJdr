@@ -10,6 +10,7 @@ import { computed, ref, watch } from 'vue';
 import { marked } from 'marked';
 import { sanitizeHtml } from '@/Utils/security/sanitizeHtml';
 import SectionContentSkeleton from '@/Pages/Molecules/section/SectionContentSkeleton.vue';
+import ChangelogRoadmap from '@/Pages/Molecules/data-display/ChangelogRoadmap.vue';
 
 const props = defineProps({
   section: { type: Object, required: true },
@@ -20,11 +21,14 @@ const props = defineProps({
 const isLoading = ref(false);
 const errorMessage = ref('');
 const htmlContent = ref('');
+const roadmapSteps = ref([]);
 
 const sourceUrl = computed(() => {
   const raw = props.data?.sourceUrl || props.settings?.sourceUrl || '';
   return String(raw || '').trim();
 });
+
+const isChangelog = computed(() => sourceUrl.value.includes('/changelog/feed/'));
 
 const sectionTitle = computed(() => {
   const raw = props.data?.title || props.settings?.title || props.section?.title || '';
@@ -42,6 +46,20 @@ function getSafeSameOriginUrl(rawUrl) {
     return url.toString();
   } catch {
     return null;
+  }
+}
+
+async function loadRoadmap() {
+  roadmapSteps.value = [];
+  if (!isChangelog.value) return;
+
+  try {
+    const response = await fetch(route('changelog.roadmap'), { credentials: 'same-origin' });
+    if (!response.ok) return;
+    const payload = await response.json();
+    roadmapSteps.value = Array.isArray(payload?.steps) ? payload.steps : [];
+  } catch {
+    roadmapSteps.value = [];
   }
 }
 
@@ -74,14 +92,17 @@ async function loadMarkdown() {
 
 watch(sourceUrl, () => {
   loadMarkdown();
+  loadRoadmap();
 }, { immediate: true });
 </script>
 
 <template>
   <div class="section-legal-markdown space-y-4">
-    <h2 v-if="sectionTitle" class="text-2xl font-semibold">
+    <h2 v-if="sectionTitle && !isChangelog" class="text-2xl font-semibold">
       {{ sectionTitle }}
     </h2>
+
+    <ChangelogRoadmap v-if="isChangelog" :steps="roadmapSteps" class="mb-8" />
 
     <SectionContentSkeleton v-if="isLoading" template="legal_markdown" :show-header="false" />
 

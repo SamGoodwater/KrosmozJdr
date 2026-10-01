@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Services\ChangelogMarkdownService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
 /**
@@ -28,7 +29,21 @@ final class ChangelogMarkdownFeedController extends Controller
 
         return response($markdown, 200, [
             'Content-Type' => 'text/markdown; charset=UTF-8',
-            'Cache-Control' => 'public, max-age=120',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
+    /**
+     * Étapes de la frise (fichier `roadmap.md`), pour la page Journal.
+     */
+    public function roadmap(): JsonResponse
+    {
+        $markdown = $this->changelogMarkdown->read('roadmap') ?? '';
+
+        return response()->json([
+            'steps' => $this->changelogMarkdown->parseRoadmap($markdown),
+        ], 200, [
+            'Cache-Control' => 'no-store',
         ]);
     }
 }
