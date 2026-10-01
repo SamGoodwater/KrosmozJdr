@@ -82,9 +82,9 @@ return [
                     .'<tr><td>[[kref:characteristic:action_points_creature|PA]]</td><td>6</td><td>12</td><td>Full chaque tour</td><td>Via [[kref:characteristic:wakfu_reserve_creature|Wakfu]]</td></tr>'
                     .'<tr><td>[[kref:characteristic:movement_points_creature|PM]]</td><td>3</td><td>6</td><td>Full chaque tour</td><td>Libre</td></tr>'
                     .'<tr><td>[[kref:characteristic:range_creature|PO]]</td><td>0</td><td>6</td><td>Portée + PO</td><td>—</td></tr>'
-                    .'<tr><td>[[kref:characteristic:wakfu_reserve_creature|Wakfu]]</td><td>[[kref:characteristic:mastery_bonus_creature|Maîtrise]]+</td><td>—</td><td>Non consommé</td><td>1 pt = 1× tes [[kref:characteristic:action_points_creature|PA]] max</td></tr>'
+                    .'<tr><td>[[kref:characteristic:wakfu_reserve_creature|Wakfu]]</td><td>[[kref:characteristic:mastery_bonus_creature|Maîtrise]] + équipement (max +3)</td><td>—</td><td>Non consommé</td><td>1 pt = 1× tes [[kref:characteristic:action_points_creature|PA]] max</td></tr>'
                     .'</tbody></table>'
-                    .'<p>Initiative : 1d20 + [[kref:characteristic:intelligence_creature|Intelligence]]. [[kref:characteristic:armor_class_creature|CA]] = 10 + <strong>mod.</strong> [[kref:characteristic:vitality_creature|Vitalité]] + bouclier / équipement.</p>'
+                    .'<p>Initiative : 1d20 + modificateur d\'[[kref:characteristic:intelligence_creature|Intelligence]] + bonus d\'équipement. [[kref:characteristic:armor_class_creature|CA]] = 10 + <strong>mod.</strong> [[kref:characteristic:vitality_creature|Vitalité]] + bouclier / équipement.</p>'
                     .'<p>Combat <strong>significatif</strong> (enjeu réel) : PA chaque tour, Wakfu intact. Sinon le MJ coupe la régénération — 1 pt Wakfu = 1× PA max.</p>',
             ],
             [
@@ -150,7 +150,7 @@ return [
                 'slug' => 'exploration',
                 'title' => 'Explorer',
                 'html' => '<ul>'
-                    .'<li><strong>Observer</strong> — [[kref:characteristic:perception_creature|Perception]] (passive = 10 + Sag + maîtrise si maîtrisée)</li>'
+                    .'<li><strong>Observer</strong> — [[kref:characteristic:perception_creature|Perception]] (passive = 10 + mod. [[kref:characteristic:wisdom_creature|Sagesse]] + maîtrise si maîtrisée + équipement + bonus de classe)</li>'
                     .'<li><strong>Marcher</strong> — 45 / 36 / 27 km/j (rapide / normal / lent)</li>'
                     .'<li><strong>Fouiller, crocheter, parler</strong> — le MJ fixe compétence + DD</li>'
                     .'<li><strong>Sorts / capacités</strong> — ça puise dans la [[kref:characteristic:wakfu_reserve_creature|réserve de Wakfu]]</li>'
@@ -193,7 +193,7 @@ return [
                 'slug' => 'mise-en-place',
                 'title' => 'Lancer le combat',
                 'html' => '<ol>'
-                    .'<li>Initiative : 1d20 + [[kref:characteristic:intelligence_creature|Intelligence]] (1 jet par groupe de mobs identiques)</li>'
+                    .'<li>Initiative : 1d20 + modificateur d\'[[kref:characteristic:intelligence_creature|Intelligence]] + bonus d\'équipement (1 jet par groupe de mobs identiques)</li>'
                     .'<li>Surprise ? → [[kref:pageSection:essentiels-actions-hors-combat@essentiels-actions-hors-combat-reactions|Surprise]]</li>'
                     .'<li>Place, rappelle les [[kref:page:conditions|états]] déjà actifs</li>'
                     .'</ol>',
@@ -344,7 +344,7 @@ return [
             [
                 'slug' => 'loot',
                 'title' => 'Loot',
-                'html' => '<p>Bonus attendus : niv. 1–5 (+1–2) · 6–10 (+2–3) · 11–15 (+3–4) · 16–20 (+4–5). Carac principale : <strong>+4 par objet</strong> (+2 forgemagie).</p>'
+                'html' => '<p>Dégâts et [[kref:characteristic:armor_class_creature|CA]] : niv. 1–5 (+1–2) · 6–10 (+2–3) · 11–15 (+3–4) · 16–20 (+4–5). Carac principale : +1 / +2 / +3 / <strong>+4 par objet</strong> (pas +5 au niv. 16–20). Plafond cumulé <strong>+8</strong>, dont <strong>+2</strong> de forgemagie.</p>'
                     .'<p><strong>XP</strong> : palier 1–5 ≈ 0–1000. Session type niv. 1 : 2 combats + 1 quête ≈ 450 XP. → [[kref:page:regles-5-2-principes-dequilibrage|5.2.5]]</p>'
                     .'<p>Kamas / rareté : [[kref:page:regles-4-1-lunivers|4.1.3]] · [[kref:page:regles-5-3-tables-de-reference|5.3.2]]</p>'
                     .'<p>→ [[kref:page:regles-5-2-principes-dequilibrage|Équilibrage]]</p>',
@@ -352,7 +352,7 @@ return [
             [
                 'slug' => 'equip',
                 'title' => 'Emplacements',
-                'html' => '<p>8 slots (arme, chapeau, cape, amulette, anneau, ceinture, bottes, bouclier/Dofus). Panoplie = bonus de set — [[kref:page:bibliotheque-panoply|Panoplies]].</p>'
+                'html' => '<p>Arme, chapeau, cape, ceinture, bottes, amulette, <strong>deux anneaux</strong>, bouclier. Dofus : pas de limite de nombre. Trophées : en général 1–2. Panoplie = bonus de set — [[kref:page:bibliotheque-panoply|Panoplies]].</p>'
                     .'<p><strong>Monture</strong> : bonus (ex. [[kref:characteristic:movement_points_creature|PM]]) hors plafond ; perdus si tu descends. Tu peux avoir monture <em>et</em> familier.</p>'
                     .'<p>→ [[kref:page:regles-2-6-sequiper|S\'équiper]]</p>',
             ],

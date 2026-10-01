@@ -294,10 +294,7 @@ function resolvedNameForEntry(entry) {
 }
 
 function formulaTextForEntry(entry) {
-    const creatureFormula = String(entry?.creature?.formula_display || entry?.creature?.formula || "").trim();
-    if (creatureFormula !== "") return creatureFormula;
-    const objectFormula = String(entry?.object?.formula_display || entry?.object?.formula || "").trim();
-    return objectFormula;
+    return String(entry?.creature?.formula_display || entry?.creature?.formula || "").trim();
 }
 
 function formulaSourceGroupsForEntry(entry) {

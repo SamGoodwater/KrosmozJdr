@@ -11,6 +11,8 @@ import {
     mapPlaceholdersForPlayer,
     normalizeCharacteristicIcon,
 } from "@/Utils/Entity/characteristicTooltipLabels";
+import { buildFormulaTableView } from "@/Utils/characteristic/formulaConfig";
+import CharacteristicFormulaRichText from "@/Pages/Molecules/data-display/CharacteristicFormulaRichText.vue";
 
 const props = defineProps({
     model: {
@@ -28,9 +30,12 @@ const iconSource = computed(() =>
     normalizeCharacteristicIcon(props.model?.icon || props.model?._resolvedIcon || ""),
 );
 
-const friendlyFormula = computed(() =>
-    humanizeCharacteristicFormulaText(props.model?.formulaDisplay || ""),
-);
+const formulaTable = computed(() => buildFormulaTableView(props.model?.formulaDisplay || ""));
+
+const friendlyFormula = computed(() => {
+    if (formulaTable.value) return "";
+    return humanizeCharacteristicFormulaText(props.model?.formulaDisplay || "");
+});
 
 const friendlyResolution = computed(() =>
     humanizeCharacteristicFormulaText(props.model?.substituted || ""),
@@ -87,11 +92,14 @@ const hasLayers =
         </dl>
 
         <div
-            v-if="friendlyFormula || friendlyResolution || termRows.length"
+            v-if="formulaTable || friendlyFormula || friendlyResolution || termRows.length"
             class="space-y-2 rounded-md border border-base-300/70 px-2.5 py-2 text-xs"
         >
             <p class="text-[10px] font-semibold uppercase tracking-wider opacity-60">Calcul</p>
-            <div v-if="friendlyFormula">
+            <div v-if="formulaTable">
+                <CharacteristicFormulaRichText :formula="String(model.formulaDisplay || '')" />
+            </div>
+            <div v-else-if="friendlyFormula">
                 <span class="opacity-60">Formule · </span>{{ friendlyFormula }}
             </div>
             <div v-if="friendlyResolution">

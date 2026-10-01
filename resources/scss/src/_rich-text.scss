@@ -2,11 +2,12 @@
  * Styles globaux de contenu riche (TipTap) :
  * - édition : .section-rich-editor .ProseMirror
  * - aperçu split : .section-rich-editor-preview article
- * - lecture seule : .rich-text-readonly .ProseMirror
+ * - lecture seule : .rich-text-readonly (HTML hydraté, sans .ProseMirror)
  */
 
 .section-rich-editor .ProseMirror,
 .section-rich-editor-preview article,
+.rich-text-readonly,
 .rich-text-readonly .ProseMirror {
   outline: none;
   min-height: 0;
@@ -317,6 +318,37 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    &.kref--nav {
+      cursor: pointer;
+      text-decoration: underline;
+      text-decoration-style: dotted;
+      text-underline-offset: 2px;
+    }
+
+    &.kref--type-characteristic {
+      color: var(--color-warning);
+      background: color-mix(in oklch, var(--color-warning) 16%, transparent);
+      border-color: color-mix(in oklch, var(--color-warning) 35%, transparent);
+    }
+
+    &.kref--type-entity {
+      color: var(--color-secondary);
+      background: color-mix(in oklch, var(--color-secondary) 16%, transparent);
+      border-color: color-mix(in oklch, var(--color-secondary) 35%, transparent);
+    }
+
+    &.kref--type-page {
+      color: var(--color-info);
+      background: color-mix(in oklch, var(--color-info) 16%, transparent);
+      border-color: color-mix(in oklch, var(--color-info) 35%, transparent);
+    }
+
+    &.kref--type-pageSection {
+      color: var(--color-accent);
+      background: color-mix(in oklch, var(--color-accent) 16%, transparent);
+      border-color: color-mix(in oklch, var(--color-accent) 35%, transparent);
+    }
   }
 
   .kref .kref__icon,

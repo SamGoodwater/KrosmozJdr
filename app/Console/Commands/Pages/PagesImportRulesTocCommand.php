@@ -10,9 +10,7 @@ use App\Models\User;
 use App\Services\PageService;
 use App\Support\Cms\RulesHtmlSectionSplitter;
 use App\Support\Cms\RulesImportSlugHelper;
-use App\Support\Cms\RulesMarkdownCharacteristicKrefAutowrap;
-use App\Support\Cms\RulesMarkdownInternalRulesLinkToPageKref;
-use App\Support\Cms\RulesMarkdownPlainReferenceToKref;
+use App\Support\Cms\RulesMarkdownSectionCompiler;
 use App\Support\Cms\RulesTocPagePlacement;
 use App\Support\Cms\RulesTocParser;
 use App\Support\Cms\RulesTocSlugIndex;
@@ -52,13 +50,6 @@ class PagesImportRulesTocCommand extends Command
 
     /** Nombre de sections existantes où le HTML issu des .md n’a pas été appliqué (contenu CMS déjà présent, sans --force-content). */
     private int $skippedExistingSectionBodyFromMarkdown = 0;
-
-    /**
-     * Types de référence autorisés dans les shortcodes Markdown.
-     *
-     * @var array<int, string>
-     */
-    private array $allowedKrefTypes = ['characteristic', 'entity', 'page', 'pageSection', 'page_section'];
 
     private ?RulesTocSlugIndex $rulesTocSlugIndex = null;
 
@@ -394,20 +385,12 @@ class PagesImportRulesTocCommand extends Command
                 continue;
             }
 
-            $normalizedMarkdown = $this->stripFirstMarkdownHeading($rawMarkdown);
-            $normalizedMarkdown = RulesMarkdownInternalRulesLinkToPageKref::apply(
-                $normalizedMarkdown,
+            $html = RulesMarkdownSectionCompiler::markdownFileToHtml(
+                $rawMarkdown,
                 $path,
                 $rulesRootReal,
                 $this->rulesTocSlugIndex,
             );
-            $normalizedMarkdown = RulesMarkdownPlainReferenceToKref::apply(
-                $normalizedMarkdown,
-                $this->rulesTocSlugIndex,
-            );
-            $normalizedMarkdown = RulesMarkdownCharacteristicKrefAutowrap::apply($normalizedMarkdown);
-            $normalizedMarkdown = $this->replaceKrefShortcodes($normalizedMarkdown);
-            $html = trim((string) Str::markdown($normalizedMarkdown));
             if ($html === '') {
                 continue;
             }
@@ -419,143 +402,6 @@ class PagesImportRulesTocCommand extends Command
         }
 
         return $contentByNumber;
-    }
-
-    private function stripFirstMarkdownHeading(string $markdown): string
-    {
-        $lines = preg_split("/\r\n|\n|\r/", $markdown);
-        if (! is_array($lines) || count($lines) === 0) {
-            return $markdown;
-        }
-
-        $firstNonEmptyIndex = null;
-        foreach ($lines as $index => $line) {
-            if (trim((string) $line) !== '') {
-                $firstNonEmptyIndex = $index;
-                break;
-            }
-        }
-
-        if ($firstNonEmptyIndex !== null) {
-            $firstLine = trim((string) $lines[$firstNonEmptyIndex]);
-            if (preg_match('/^#\s+/u', $firstLine)) {
-                unset($lines[$firstNonEmptyIndex]);
-                if (isset($lines[$firstNonEmptyIndex + 1]) && trim((string) $lines[$firstNonEmptyIndex + 1]) === '') {
-                    unset($lines[$firstNonEmptyIndex + 1]);
-                }
-            }
-        }
-
-        return implode(PHP_EOL, array_values($lines));
-    }
-
-    /**
-     * Remplace les shortcodes markdown de références riches par des spans `.kref`.
-     *
-     * Syntaxe :
-     * - [[kref:characteristic:action_points_creature|Points d'action]]
-     * - [[kref:page:regles-2-2-les-caracteristiques|Caractéristiques]]
-     * - [[kref:pageSection:regles-2-2-les-caracteristiques:123|Section cible]] (id numérique)
-     * - [[kref:pageSection:regles-2-2-les-caracteristiques@regle-2-2-2-…|Section]] (slug section, scroll + aperçu)
-     * - [[kref:entity:spells:42|Boule de feu]]
-     */
-    private function replaceKrefShortcodes(string $markdown): string
-    {
-        $pattern = '/\[\[kref:([a-zA-Z_]+):([^\]|]+)(?:\|([^\]]+))?\]\]/u';
-
-        return (string) preg_replace_callback($pattern, function (array $matches): string {
-            $rawType = trim((string) ($matches[1] ?? ''));
-            $rawTarget = trim((string) ($matches[2] ?? ''));
-            $label = trim((string) ($matches[3] ?? ''));
-
-            if ($rawType === '' || $rawTarget === '' || ! in_array($rawType, $this->allowedKrefTypes, true)) {
-                return (string) $matches[0];
-            }
-
-            $type = $rawType === 'page_section' ? 'pageSection' : $rawType;
-            $payload = $this->buildKrefPayload($type, $rawTarget);
-            if ($payload === null) {
-                return (string) $matches[0];
-            }
-
-            $finalLabel = $label !== '' ? $label : $rawTarget;
-            $title = $this->encodeKrefTitle($type, $payload, $finalLabel);
-            $classes = $this->isKrefNavigable($type) ? 'kref kref--nav' : 'kref';
-
-            return '<span class="'.$classes.'" title="'.e($title).'">'.e($finalLabel).'</span>';
-        }, $markdown);
-    }
-
-    /**
-     * @return array<string, mixed>|null
-     */
-    private function buildKrefPayload(string $type, string $target): ?array
-    {
-        if ($type === 'characteristic') {
-            return ['key' => trim($target)];
-        }
-
-        if ($type === 'page') {
-            return ['pageSlug' => trim($target)];
-        }
-
-        if ($type === 'pageSection') {
-            if (str_contains($target, '@')) {
-                [$pageSlug, $sectionSlug] = array_pad(explode('@', $target, 2), 2, '');
-                $pageSlug = trim((string) $pageSlug);
-                $sectionSlug = trim((string) $sectionSlug);
-                if ($pageSlug === '' || $sectionSlug === '') {
-                    return null;
-                }
-
-                return ['pageSlug' => $pageSlug, 'sectionSlug' => $sectionSlug];
-            }
-
-            [$pageSlug, $sectionId] = array_pad(explode(':', $target, 2), 2, '');
-            $pageSlug = trim((string) $pageSlug);
-            $sectionId = trim((string) $sectionId);
-            if ($pageSlug === '' || $sectionId === '') {
-                return null;
-            }
-
-            return ['pageSlug' => $pageSlug, 'sectionId' => ctype_digit($sectionId) ? (int) $sectionId : $sectionId];
-        }
-
-        if ($type === 'entity') {
-            [$entityType, $id] = array_pad(explode(':', $target, 2), 2, '');
-            $entityType = trim((string) $entityType);
-            $id = trim((string) $id);
-            if ($entityType === '' || $id === '') {
-                return null;
-            }
-
-            return ['entityType' => $entityType, 'id' => ctype_digit($id) ? (int) $id : $id];
-        }
-
-        return null;
-    }
-
-    /**
-     * @param  array<string, mixed>  $payload
-     */
-    private function encodeKrefTitle(string $type, array $payload, string $label): string
-    {
-        $json = json_encode([
-            't' => $type,
-            'p' => $payload,
-            'l' => trim($label),
-        ], JSON_UNESCAPED_UNICODE);
-
-        if (! is_string($json) || $json === '') {
-            return '';
-        }
-
-        return rtrim(strtr(base64_encode($json), '+/', '-_'), '=');
-    }
-
-    private function isKrefNavigable(string $type): bool
-    {
-        return in_array($type, ['entity', 'page', 'pageSection'], true);
     }
 
     /**

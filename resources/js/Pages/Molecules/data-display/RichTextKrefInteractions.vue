@@ -250,7 +250,7 @@ async function loadPagePreview(info) {
 function openForAnchor(anchor, info) {
     if (!props.enabled || !anchor) return;
     const t = String(info?.krefType || "");
-    /** Infobulles riches gérées dans {@link ReferenceInlineNodeView.vue} (TipTap). */
+    /** Caractéristique et entité : puce KrefInlineChip (lecture et édition). */
     if (t === "characteristic" || t === "entity") {
         return;
     }

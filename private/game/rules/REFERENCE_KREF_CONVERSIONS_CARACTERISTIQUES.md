@@ -15,6 +15,7 @@ La commande `php artisan pages:rules-inject-characteristic-krefs` applique ces r
 ## Règles d’application
 
 - Les blocs déjà `[[kref:…]]`, les blocs de code ` ``` ` et le code inline `` `...` `` ne sont **pas** modifiés.
+- Le libellé après `|` est du texte simple. Ne pas y imbriquer un autre `[[kref:…]]` (`Esquive PA`, pas `Esquive [[kref:…|PA]]`) : le `|` interne casse les tableaux à l’import. Un shortcode imbriqué est aplati avant conversion.
 - Les libellés sont remplacés par ordre de **longueur décroissante** pour éviter les collisions (ex. « Points d’action (PA) » avant « PA » seul).
 - Les abréviations **PA, PM, PO, PV, CA** sont converties seulement lorsqu’elles forment un jeton isolé (pas une sous‑chaîne d’un mot).
 

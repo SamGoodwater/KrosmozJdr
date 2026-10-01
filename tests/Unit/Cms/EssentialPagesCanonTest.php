@@ -89,7 +89,22 @@ final class EssentialPagesCanonTest extends TestCase
         $html = $this->flattenHtml($this->pages['economie-progression']);
 
         $this->assertStringContainsString('+4 par objet', $html);
+        $this->assertStringContainsString('dont <strong>+2</strong> de forgemagie', $html);
+        $this->assertStringContainsString('deux anneaux', $html);
         $this->assertStringNotContainsString('+8 par objet', $html);
+        $this->assertStringNotContainsString('8 slots', $html);
+    }
+
+    public function test_initiative_and_wakfu_match_the_rules(): void
+    {
+        $start = $this->flattenHtml($this->pages['bien-demarrer']);
+        $combat = $this->flattenHtml($this->pages['combat']);
+        $explore = $this->flattenHtml($this->pages['actions-hors-combat']);
+
+        $this->assertStringContainsString("modificateur d'[[kref:characteristic:intelligence_creature|Intelligence]] + bonus d'équipement", $start);
+        $this->assertStringContainsString("modificateur d'[[kref:characteristic:intelligence_creature|Intelligence]] + bonus d'équipement", $combat);
+        $this->assertStringContainsString('Maîtrise]] + équipement (max +3)', $start);
+        $this->assertStringContainsString('10 + mod. [[kref:characteristic:wisdom_creature|Sagesse]] + maîtrise si maîtrisée + équipement + bonus de classe', $explore);
     }
 
     /**

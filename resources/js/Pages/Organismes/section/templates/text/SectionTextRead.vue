@@ -78,7 +78,8 @@ const content = computed(() => {
     Array.from(doc.body.querySelectorAll('h3, h4, h5, h6')).forEach((heading, idx) => {
       const label = String(heading.textContent || '').trim();
       const displayLabel = stripFirstTwoPlanLevels(label);
-      if (displayLabel && displayLabel !== label) {
+      // textContent écraserait les puces kref imbriquées dans le titre.
+      if (displayLabel && displayLabel !== label && !heading.querySelector('span.kref')) {
         heading.textContent = displayLabel;
       }
       const local = slugify(displayLabel || label) || `heading-${idx + 1}`;

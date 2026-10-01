@@ -87,3 +87,54 @@ export function encodeFormulaConfig(decoded) {
 export function isFormulaTable(formula) {
     return decodeFormulaConfig(formula).type === 'table';
 }
+
+/**
+ * Libellé de tranche : la ligne vaut de `from` inclus jusqu’au palier suivant exclus.
+ *
+ * @param {number} from
+ * @param {number|null} nextFrom
+ * @returns {string}
+ *
+ * @example
+ * formulaTableRangeLabel(1, 3) // '1–2'
+ * formulaTableRangeLabel(16, null) // '16+'
+ */
+export function formulaTableRangeLabel(from, nextFrom) {
+    const start = Number(from);
+    if (!Number.isFinite(start)) return '';
+    if (nextFrom == null || !Number.isFinite(Number(nextFrom))) {
+        return `${start}+`;
+    }
+    const next = Number(nextFrom);
+    if (next <= start + 1) {
+        return String(start);
+    }
+    return `${start}\u2013${next - 1}`;
+}
+
+/**
+ * Vue lisible d’une formule tableau, ou null si la chaîne n’en est pas une.
+ *
+ * @param {string|null} formula
+ * @returns {{ characteristic: string, rows: Array<{ range: string, value: number|string }> }|null}
+ *
+ * @example
+ * buildFormulaTableView('{"characteristic":"level","1":"0","3":"1"}')
+ * // { characteristic: 'level', rows: [{ range: '1–2', value: '0' }, { range: '3+', value: '1' }] }
+ */
+export function buildFormulaTableView(formula) {
+    const decoded = decodeFormulaConfig(formula);
+    if (decoded.type !== 'table' || !Array.isArray(decoded.entries) || decoded.entries.length === 0) {
+        return null;
+    }
+    return {
+        characteristic: decoded.characteristic,
+        rows: decoded.entries.map((entry, index) => {
+            const next = decoded.entries[index + 1];
+            return {
+                range: formulaTableRangeLabel(entry.from, next ? next.from : null),
+                value: entry.value,
+            };
+        }),
+    };
+}

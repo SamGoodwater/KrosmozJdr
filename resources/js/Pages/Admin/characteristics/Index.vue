@@ -9,7 +9,6 @@ import { Head, Link, useForm, router, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import EditActionDock from '@/Pages/Molecules/action/EditActionDock.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
@@ -367,6 +366,45 @@ function buildFormData(selected, entitiesByGroup = null) {
 
 const form = useForm(buildFormData(props.selected, props.entitiesByGroup));
 
+/** Enregistrement d’une fiche existante (router.patch, hors form.processing). */
+const characteristicSaving = ref(false);
+
+/**
+ * Photo des champs enregistrables, pour n’activer « Enregistrer » qu’après une vraie modification.
+ *
+ * @returns {string}
+ */
+function characteristicEditSnapshot() {
+    return JSON.stringify({
+        name: form.name ?? '',
+        short_name: form.short_name ?? '',
+        description: form.description ?? '',
+        helper: form.helper ?? '',
+        icon: form.icon ?? '',
+        color: form.color ?? '',
+        type: form.type ?? '',
+        status: form.status ?? '',
+        unit: form.unit ?? '',
+        sort_order: form.sort_order ?? 0,
+        hide_when_empty: !!form.hide_when_empty,
+        hide_when_false: !!form.hide_when_false,
+        value_overrides: form.value_overrides ?? [],
+        entities: form.entities ?? [],
+        entity_override_keys: selectedEntityOverrides.value,
+    });
+}
+
+/** Dernière photo considérée comme enregistrée. */
+const characteristicBaseline = ref('');
+
+/** Aligne la photo sur l’état courant (chargement ou succès). */
+function captureCharacteristicBaseline() {
+    characteristicBaseline.value = characteristicEditSnapshot();
+}
+
+/** Vrai dès qu’un champ de la fiche diffère de la dernière photo enregistrée. */
+const characteristicDirty = computed(() => characteristicEditSnapshot() !== characteristicBaseline.value);
+
 watch(
     () => props.selected,
     (s) => {
@@ -395,6 +433,7 @@ watch(
         conversionSuggestionR2.value = null;
         conversionSuggestionError.value = null;
         conversionSuggestionForEntity.value = null;
+        captureCharacteristicBaseline();
     },
     { immediate: true }
 );
@@ -466,20 +505,6 @@ async function removeEntityOverride(entityKey) {
 function confirmDelete() {
     if (props.selected?.id && confirm('Supprimer cette caractéristique ? Les données associées seront perdues.')) {
         router.delete(route('admin.characteristics.destroy', props.selected.id));
-    }
-}
-
-/** Actions secondaires du dock d’édition (caractéristique non liée). */
-const editCharacteristicDockActions = [
-    { key: 'delete', label: 'Supprimer', variant: 'ghost', color: 'error' },
-];
-
-/**
- * @param {string} key
- */
-function onCharacteristicDockAction(key) {
-    if (key === 'delete') {
-        confirmDelete();
     }
 }
 
@@ -870,7 +895,7 @@ function submit() {
         form.post(route('admin.characteristics.store'));
         return;
     }
-    if (!props.selected?.id) return;
+    if (!props.selected?.id || !characteristicDirty.value || characteristicSaving.value) return;
     // N'envoyer que '*' et les spécificités choisies pour ne pas créer de lignes en BDD
     const entitiesToSend = (form.entities ?? []).filter(
         (e) => e.entity === '*' || selectedEntityOverrides.value.includes(e.entity)
@@ -896,8 +921,15 @@ function submit() {
         entity_override_keys: selectedEntityOverrides.value,
     }, {
         preserveScroll: true,
+        onStart: () => {
+            characteristicSaving.value = true;
+        },
         onSuccess: () => {
             notificationStore?.success?.('Caractéristique mise à jour.', { duration: 5000 });
+            nextTick(() => captureCharacteristicBaseline());
+        },
+        onFinish: () => {
+            characteristicSaving.value = false;
         },
     });
 }
@@ -1019,7 +1051,7 @@ function submitConvertToLinked() {
         </SidebarNav>
 
         <!-- Panneau central -->
-        <main class="min-w-0 flex-1 overflow-y-auto p-6">
+        <main class="min-w-0 flex-1 p-4 sm:p-6">
             <!-- Mode création : nouvelle / lier / copier -->
             <template v-if="createMode">
                 <h1 class="mb-2 text-2xl font-bold">Nouvelle caractéristique</h1>
@@ -1299,23 +1331,37 @@ function submitConvertToLinked() {
 
             <!-- Mode édition : caractéristique existante -->
             <template v-else-if="selected">
-                <div v-if="selected.is_linked && selected.master_key" class="alert alert-info mb-6">
-                    <span>Cette caractéristique est <strong>liée</strong> à la caractéristique maître. Les paramètres (nom, formules, conversion) sont définis sur la maître.</span>
-                    <Link :href="route('admin.characteristics.show', selected.master_key)" class="btn btn-sm btn-ghost">
-                        Modifier la caractéristique maître
-                    </Link>
-                </div>
-                <div class="mb-1 flex flex-wrap items-start justify-between gap-3">
-                    <h1 class="text-2xl font-bold flex flex-wrap items-center gap-2" :style="displayColor(form.color) ? { borderLeftColor: displayColor(form.color) } : {}" :class="displayColor(form.color) ? 'pl-3 border-l-4' : ''">
-                        {{ selected.name || selected.id }}
-                        <span v-if="selected.group" class="badge badge-sm badge-ghost">{{ groupLabels[selected.group] || selected.group }}</span>
-                    </h1>
-                    <div class="flex flex-wrap items-center gap-2">
+                <div
+                    class="sticky top-0 z-30 -mx-4 -mt-4 mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 border-b border-base-300 bg-base-100/95 px-3 py-1.5 shadow-sm backdrop-blur-md sm:-mx-6 sm:-mt-6 sm:px-4"
+                    data-cy="characteristic-edit-header"
+                >
+                    <div class="flex min-w-28 flex-1 items-center gap-1.5 overflow-hidden sm:min-w-40 sm:gap-2">
+                        <h1
+                            class="min-w-0 truncate text-sm font-semibold leading-tight text-base-content sm:text-base"
+                            :style="displayColor(form.color) ? { borderLeftColor: displayColor(form.color) } : {}"
+                            :class="displayColor(form.color) ? 'border-l-4 pl-2' : ''"
+                            :title="(form.name || selected.name || selected.id) + ' [' + selected.id + ']'"
+                        >
+                            {{ form.name || selected.name || selected.id }}
+                        </h1>
+                        <span
+                            v-if="selected.group"
+                            class="badge badge-xs badge-ghost hidden shrink-0 sm:inline-flex"
+                        >
+                            {{ groupLabels[selected.group] || selected.group }}
+                        </span>
+                        <code
+                            class="hidden shrink-0 truncate rounded bg-base-200 px-1 font-mono text-[11px] text-base-content/70 lg:inline"
+                            :title="'Clé formule : [' + selected.id + ']'"
+                        >[{{ selected.id }}]</code>
+                    </div>
+                    <div class="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-1">
                         <select
                             v-model="form.status"
-                            class="select select-bordered select-sm min-w-[220px]"
+                            class="select select-bordered select-xs h-7 min-h-7 w-29 max-w-[40vw] sm:select-sm sm:h-8 sm:w-44 sm:max-w-none"
                             :disabled="!!selected.is_linked"
                             :title="selected.is_linked ? 'Cette caractéristique est liée : statut non modifiable ici.' : 'État de validation interne'"
+                            aria-label="État de validation"
                         >
                             <option
                                 v-for="opt in characteristicStatusOptions"
@@ -1328,25 +1374,49 @@ function submitConvertToLinked() {
                         <button
                             v-if="!selected.is_linked && characteristicsForConvertToLinked?.length"
                             type="button"
-                            class="btn btn-sm btn-ghost btn-outline border-warning/50 text-warning gap-1"
+                            class="btn btn-xs btn-ghost btn-outline shrink-0 gap-1 border-warning/50 text-warning"
                             :class="{ 'btn-active': showConvertToLinkedPanel }"
+                            :aria-label="showConvertToLinkedPanel ? 'Masquer le panneau Lier' : 'Lier cette caractéristique à une maître'"
                             :title="showConvertToLinkedPanel ? 'Masquer le panneau Lier' : 'Lier cette caractéristique à une maître'"
                             @click="showConvertToLinkedPanel = !showConvertToLinkedPanel"
                         >
-                            <i class="fa fa-link text-xs" />
-                            Lier
+                            <i class="fa fa-link text-[10px]" aria-hidden="true" />
+                            <span class="hidden sm:inline">Lier</span>
+                        </button>
+                        <Btn
+                            v-if="!selected.is_linked"
+                            type="button"
+                            color="primary"
+                            size="xs"
+                            class="shrink-0 gap-1"
+                            data-cy="characteristic-save"
+                            :disabled="!characteristicDirty || characteristicSaving"
+                            :aria-label="characteristicSaving ? 'Enregistrement en cours' : 'Enregistrer les modifications'"
+                            :title="characteristicDirty ? 'Enregistrer les modifications' : 'Aucune modification à enregistrer'"
+                            @click="submit"
+                        >
+                            <span v-if="characteristicSaving" class="loading loading-spinner loading-xs" aria-hidden="true" />
+                            <i v-else class="fa-solid fa-save" aria-hidden="true" />
+                            <span class="max-sm:sr-only">{{ characteristicSaving ? 'Enregistrement…' : 'Enregistrer' }}</span>
+                        </Btn>
+                        <button
+                            v-if="!selected.is_linked"
+                            type="button"
+                            class="btn btn-ghost btn-xs shrink-0 text-error"
+                            aria-label="Supprimer cette caractéristique"
+                            title="Supprimer"
+                            @click="confirmDelete"
+                        >
+                            <i class="fa-solid fa-trash" aria-hidden="true" />
                         </button>
                     </div>
                 </div>
-                <p class="mb-1 text-sm italic text-base-content/60" :title="`Clé utilisée dans les formules (non modifiable)`">
-                    Clé formule : <code class="rounded bg-base-200 px-1 font-mono">[{{ selected.id }}]</code>
-                </p>
-                <p v-if="!selected.is_linked" class="mb-6 text-sm text-base-content/70">
-                    Modifiez les champs puis cliquez sur « Enregistrer ». Les paramètres sont organisés par groupe d'entités ; un graphique apparaît pour chaque formule.
-                </p>
-                <p v-else class="mb-6 text-sm text-base-content/70">
-                    Affichage en lecture seule. Pour modifier la définition, utilisez le lien « Modifier la caractéristique maître » ci-dessus.
-                </p>
+                <div v-if="selected.is_linked && selected.master_key" class="alert alert-info mb-4 py-2 text-sm">
+                    <span>Caractéristique <strong>liée</strong> : les paramètres se modifient sur la maître.</span>
+                    <Link :href="route('admin.characteristics.show', selected.master_key)" class="btn btn-xs btn-ghost">
+                        Ouvrir la maître
+                    </Link>
+                </div>
 
                 <div
                     v-show="showConvertToLinkedPanel"
@@ -2227,27 +2297,14 @@ function submitConvertToLinked() {
                     </fieldset>
                     <div
                         v-if="!selected.is_linked"
-                        class="mt-6 flex flex-wrap items-center justify-start gap-2 border-t border-base-300 bg-base-100/95 px-2 py-3"
+                        class="mt-4 flex flex-wrap items-center gap-2 border-t border-base-300 px-1 py-2"
                     >
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span class="label-text">Spécifier pour une entité :</span>
-                            <select class="select select-bordered select-sm max-w-xs" @change="(e) => { const v = e.target.value; if (v) { addEntityOverride(v); e.target.value = ''; } }">
-                                <option value="">— Choisir —</option>
-                                <option v-for="ek in entitiesForSpecifyDropdown.filter(e => !selectedEntityOverrides.includes(e))" :key="ek" :value="ek">{{ entityLabels[ek] || ek }}</option>
-                            </select>
-                        </div>
+                        <span class="label-text text-xs sm:text-sm">Spécifier pour une entité :</span>
+                        <select class="select select-bordered select-xs h-7 min-h-7 max-w-48 sm:select-sm sm:h-8 sm:max-w-xs" aria-label="Spécifier pour une entité" @change="(e) => { const v = e.target.value; if (v) { addEntityOverride(v); e.target.value = ''; } }">
+                            <option value="">— Choisir —</option>
+                            <option v-for="ek in entitiesForSpecifyDropdown.filter(e => !selectedEntityOverrides.includes(e))" :key="ek" :value="ek">{{ entityLabels[ek] || ek }}</option>
+                        </select>
                     </div>
-                    <EditActionDock
-                        v-if="!selected.is_linked"
-                        class="mt-3 w-full"
-                        primary-label="Enregistrer"
-                        processing-label="Enregistrement..."
-                        :processing="form.processing"
-                        :show-secondary="true"
-                        :secondary-actions="editCharacteristicDockActions"
-                        @primary="submit"
-                        @action="onCharacteristicDockAction"
-                    />
                 </form>
                 </div>
             </template>

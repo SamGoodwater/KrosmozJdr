@@ -1,9 +1,7 @@
+import { canonicalCharacteristicKey } from "@/Utils/characteristic/characteristicScopeSummary";
+
 const cache = new Map();
 const inflight = new Map();
-
-function canonicalKey(rawKey) {
-    return String(rawKey || "").replace(/_(creature|object|spell)$/i, "");
-}
 
 function buildReferenceTableUrl(key) {
     try {
@@ -27,7 +25,7 @@ function buildReferenceTableUrl(key) {
 }
 
 export async function loadKrefCharacteristicReferenceMeta(rawKey) {
-    const key = canonicalKey(rawKey);
+    const key = canonicalCharacteristicKey(rawKey);
     if (!key) return null;
     if (cache.has(key)) return cache.get(key);
     if (inflight.has(key)) return inflight.get(key);
@@ -40,10 +38,10 @@ export async function loadKrefCharacteristicReferenceMeta(rawKey) {
         .then(async (res) => {
             if (!res.ok) return null;
             const data = await res.json();
-            const rows = Array.isArray(data?.rows) ? data.rows : [];
-            const creature = rows.find((row) => canonicalKey(row?.key) === key && row?.group === "creature") || null;
-            const object = rows.find((row) => canonicalKey(row?.key) === key && row?.group === "object") || null;
-            return { creature, object };
+            const rows = (Array.isArray(data?.rows) ? data.rows : []).filter(
+                (row) => canonicalCharacteristicKey(row?.key) === key,
+            );
+            return { rows };
         })
         .catch(() => null)
         .finally(() => {

@@ -164,6 +164,7 @@ final class RulesCharacteristicKrefReplacementCatalog
 
     public static function applyToMarkdown(string $markdown): string
     {
+        $markdown = KrefShortcodeReplacer::flattenNestedShortcodes($markdown);
         $placeholders = [];
         $masked = self::maskProtectedRegions($markdown, $placeholders);
         $masked = self::applyWordPairs($masked, $placeholders);

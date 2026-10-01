@@ -2581,7 +2581,7 @@
   },
   {
     "name": "RichTextReadonlyView",
-    "description": "Affichage HTML TipTap en lecture seule (sans instancier l’éditeur TipTap). Sanitize + interactions kref ; TipTap reste réservé à l’édition.",
+    "description": "Affichage HTML TipTap en lecture seule (sans instancier l’éditeur TipTap). Les spans `.kref` sont hydratés en puces (résumé, vue minimale, extrait de page).",
     "props": [],
     "slots": [],
     "file": "data-display/RichTextReadonlyView.vue"
@@ -2592,6 +2592,13 @@
     "props": [],
     "slots": [],
     "file": "data-display/RichTextKrefInteractions.vue"
+  },
+  {
+    "name": "RichTextHtmlTree",
+    "description": "Rendu récursif d’un arbre HTML (voir parseRichTextHtml) avec puces kref Vue.",
+    "props": [],
+    "slots": [],
+    "file": "data-display/RichTextHtmlTree.vue"
   },
   {
     "name": "ResourceIngredientsList",
@@ -2626,6 +2633,13 @@
     "props": [],
     "slots": [],
     "file": "data-display/LevelBadge.vue"
+  },
+  {
+    "name": "KrefInlineChip",
+    "description": "Puce kref hors TipTap et dans l’éditeur : résumé de caractéristique, vue minimale d’entité, ou libellé cliquable (page / section — le popover est géré par RichTextKrefInteractions).",
+    "props": [],
+    "slots": [],
+    "file": "data-display/KrefInlineChip.vue"
   },
   {
     "name": "KrefEntityTooltipBody",
@@ -2774,8 +2788,14 @@
   },
   {
     "name": "CharacteristicFormulaRichText",
-    "description": "`descriptions_first` : tooltip = description (+ helper si différent). `helper_first` : ordre inverse.",
-    "props": [],
+    "description": "Formule de caractéristique : expression (puces) ou tableau de paliers lisible.",
+    "props": [
+      {
+        "name": "formula",
+        "type": "string",
+        "desc": "- Expression ou JSON `{\"characteristic\":\"level\",\"1\":\"0\",\"3\":\"1\"}`."
+      }
+    ],
     "slots": [],
     "file": "data-display/CharacteristicFormulaRichText.vue"
   },
@@ -2809,6 +2829,13 @@
     ],
     "slots": [],
     "file": "data-display/CharacteristicDecompositionBody.vue"
+  },
+  {
+    "name": "ChangelogRoadmap",
+    "description": "Frise des versions du journal : déjà là, prochaine version, ensuite.",
+    "props": [],
+    "slots": [],
+    "file": "data-display/ChangelogRoadmap.vue"
   },
   {
     "name": "AvatarGroup",

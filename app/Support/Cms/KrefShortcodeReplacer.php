@@ -78,8 +78,50 @@ final class KrefShortcodeReplacer
         });
     }
 
+    /**
+     * Aplatit un shortcode imbriqué dans le libellé d’un autre : le libellé redevient du texte.
+     * {@code [[kref:characteristic:dodge_action_points_creature|Esquive [[kref:characteristic:action_points_creature|PA]]]]}
+     * devient {@code [[kref:characteristic:dodge_action_points_creature|Esquive PA]]}.
+     * Un {@code |} dans un libellé imbriqué casse les tableaux Markdown à l’import.
+     */
+    public static function flattenNestedShortcodes(string $content): string
+    {
+        if ($content === '' || ! str_contains($content, '[[kref:')) {
+            return $content;
+        }
+
+        $inner = '/\[\[kref:[a-zA-Z_]+:[^\[\]|]+(?:\|([^\[\]]+))?\]\]/u';
+        $guard = 0;
+        while ($guard < 20 && preg_match_all($inner, $content, $matches, PREG_OFFSET_CAPTURE)) {
+            $guard++;
+            $changed = false;
+            $found = $matches[0];
+            for ($i = count($found) - 1; $i >= 0; $i--) {
+                $full = (string) $found[$i][0];
+                $offset = (int) $found[$i][1];
+                $label = (string) ($matches[1][$i][0] ?? '');
+                if ($label === '') {
+                    continue;
+                }
+                $before = substr($content, 0, $offset);
+                $opens = preg_match_all('/\[\[kref:/', $before);
+                $closes = preg_match_all('/\]\]/', $before);
+                if ($opens > $closes) {
+                    $content = substr_replace($content, $label, $offset, strlen($full));
+                    $changed = true;
+                }
+            }
+            if (! $changed) {
+                break;
+            }
+        }
+
+        return $content;
+    }
+
     public function replace(string $content): string
     {
+        $content = self::flattenNestedShortcodes($content);
         if ($content === '' || ! str_contains($content, '[[kref:')) {
             return $content;
         }

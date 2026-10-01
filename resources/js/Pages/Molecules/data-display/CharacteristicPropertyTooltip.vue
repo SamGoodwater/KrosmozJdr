@@ -15,6 +15,8 @@ import {
     normalizeCharacteristicIcon,
 } from "@/Utils/Entity/characteristicTooltipLabels";
 import { formatCharacteristicLimitLine } from "@/Utils/Entity/entity-view-ui";
+import { buildFormulaTableView } from "@/Utils/characteristic/formulaConfig";
+import CharacteristicFormulaRichText from "@/Pages/Molecules/data-display/CharacteristicFormulaRichText.vue";
 
 const props = defineProps({
     model: {
@@ -27,7 +29,10 @@ const iconSource = computed(() =>
     normalizeCharacteristicIcon(props.model?.icon || props.model?._resolvedIcon || ""),
 );
 
+const formulaTable = computed(() => buildFormulaTableView(props.model?.formulaDisplay || ""));
+
 const friendlyFormula = computed(() => {
+    if (formulaTable.value) return "";
     const raw = props.model?.formulaDisplay || "";
     return humanizeCharacteristicFormulaText(raw);
 });
@@ -40,7 +45,7 @@ const friendlyResolution = computed(() => {
 const termRows = computed(() => mapPlaceholdersForPlayer(props.model?.placeholders));
 
 const hasCalculation = computed(
-    () => Boolean(friendlyFormula.value || friendlyResolution.value || termRows.value.length),
+    () => Boolean(formulaTable.value || friendlyFormula.value || friendlyResolution.value || termRows.value.length),
 );
 
 const levelRows = computed(() => {
@@ -99,7 +104,11 @@ const limitLine = computed(() =>
                 Calcul
             </p>
 
-            <div v-if="friendlyFormula" class="text-xs leading-snug text-white/85">
+            <div v-if="formulaTable" class="text-xs leading-snug text-white/85">
+                <CharacteristicFormulaRichText :formula="String(model.formulaDisplay || '')" />
+            </div>
+
+            <div v-else-if="friendlyFormula" class="text-xs leading-snug text-white/85">
                 <span class="text-white/55">Formule · </span>
                 {{ friendlyFormula }}
             </div>

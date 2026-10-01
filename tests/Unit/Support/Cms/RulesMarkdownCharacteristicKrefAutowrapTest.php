@@ -54,6 +54,23 @@ class RulesMarkdownCharacteristicKrefAutowrapTest extends TestCase
         $this->assertStringContainsString('[[kref:characteristic:save_intelligence_creature|Jet de sauvegarde d’Intelligence]]', $out);
     }
 
+    public function test_flattens_nested_esquive_label_instead_of_wrapping_pa_again(): void
+    {
+        $md = 'Seuil [[kref:characteristic:dodge_action_points_creature|Esquive [[kref:characteristic:action_points_creature|PA]]]].';
+        $out = RulesMarkdownCharacteristicKrefAutowrap::apply($md);
+
+        $this->assertStringContainsString('[[kref:characteristic:dodge_action_points_creature|Esquive PA]]', $out);
+        $this->assertStringNotContainsString('Esquive [[kref:', $out);
+    }
+
+    public function test_wraps_esquive_pa_as_one_shortcode(): void
+    {
+        $out = RulesMarkdownCharacteristicKrefAutowrap::apply('Esquive PA contre le retrait.');
+
+        $this->assertStringContainsString('[[kref:characteristic:dodge_action_points_creature|Esquive PA]]', $out);
+        $this->assertStringNotContainsString('Esquive [[kref:', $out);
+    }
+
     public function test_wraps_resistance_and_equipment_bonus_phrases(): void
     {
         $md = 'Résistance Eau % et Résistance fixe Terre ; bonus d’équipement du tacle.';

@@ -407,6 +407,24 @@ php artisan pages:import-rules-toc --force-content --compile-downloads
 
 ---
 
+## `pages:repair-krefs`
+
+```yaml
+signature: pages:repair-krefs
+domain: data
+ui: false
+cron: false
+```
+
+Convertit les shortcodes `[[kref:…]]` encore stockés en clair dans les sections, et reconstruit les sections règles dont le HTML a été cassé par un shortcode imbriqué (libellé qui contient un autre `[[kref:]]`).
+
+```bash
+php artisan pages:repair-krefs --dry-run
+php artisan pages:repair-krefs
+```
+
+---
+
 ## `ia:equipment-grid`
 
 ```yaml
