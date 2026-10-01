@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Les bulles d’aide (lancer de dés dans la recherche, flèche pour replier l’en-tête) se placent correctement et se lisent mieux. Les bandeaux d’alerte reprennent le fond des petites fiches, avec un trait et une ombre de la couleur du message."
+    "description": "La page **Journal** dit en peu de mots ce qui est déjà jouable, et une frise indique la suite : campagnes, scénarios et fiches en 1.4, puis des outils de combat en 1.5. Les textes restent des fichiers markdown. Un admin les modifie depuis la page."
   },
   {
     "path": "backend/_ai.md",

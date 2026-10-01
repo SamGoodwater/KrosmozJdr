@@ -38,9 +38,9 @@
         "secrets:scan:pre-push": "node scripts/scan-secrets.mjs --mode=pre-push"
     },
     "devDependencies": {
-        "@cursor/sdk": "^1.0.34",
+        "@cursor/sdk": "^1.0.35",
         "@eslint/js": "^10.0.1",
-        "@inertiajs/vue3": "^3.7.1",
+        "@inertiajs/vue3": "^3.8.0",
         "@tailwindcss/forms": "^0.5.11",
         "@tailwindcss/oxide": "4.3.3",
         "@tailwindcss/typography": "^0.5.20",
@@ -70,7 +70,7 @@
         "vue-eslint-parser": "^10.4.1"
     },
     "dependencies": {
-        "@csstools/postcss-oklab-function": "^5.0.13",
+        "@csstools/postcss-oklab-function": "^5.0.14",
         "@floating-ui/dom": "^1.8.0",
         "@floating-ui/vue": "^2.0.1",
         "@playwright/test": "^1.63.0",

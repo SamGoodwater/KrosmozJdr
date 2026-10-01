@@ -1,5 +1,37 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Journal du jeu
+
+La page **Journal** dit en peu de mots ce qui est déjà jouable, et une frise indique la suite : campagnes, scénarios et fiches en 1.4, puis des outils de combat en 1.5. Les textes restent des fichiers markdown. Un admin les modifie depuis la page.
+
+## Octobre 2026 — Réglages IA : enregistrer le prompt, choisir un étalon
+
+Sur **IA métier**, un étalon qui n’est pas une fiche jouable bloque tout l’enregistrement, y compris le prompt superviseur. La page les liste et propose de les retirer. Le sélecteur d’exemples suit l’onglet (consommable, objet, sort…) et retrouve une fiche par son nom ou son identifiant officiel, les plus récentes en premier.
+
+## Octobre 2026 — Classe d’armure : le modificateur
+
+La classe d’armure est 10 + le modificateur de Vitalité, plus le bouclier ou l’équipement. La note de conversion et le guide de création des monstres disaient encore d’ajouter le score. Ils disent maintenant le modificateur, comme la fiche de caractéristique et L’Essentiel.
+
+## Octobre 2026 — Enregistrer une caractéristique sans redescendre
+
+Sur une caractéristique, le bouton **Enregistrer** est dans la barre du haut, à côté du nom, de l’état et de **Lier**. Il s’allume seulement après une modification, et la barre reste visible quand on descend dans la fiche. Sur un petit écran, le libellé « Lier » et la clé technique se rangent pour garder la barre sur une ligne.
+
+## Octobre 2026 — L’Essentiel aligné sur le livre
+
+L’aide-mémoire reprend les formules du livre là où il les raccourcissait : initiative (modificateur d’Intelligence et équipement), réserve de Wakfu (maîtrise + équipement, max +3), perception passive, bonus d’objet (dégâts et CA jusqu’à +5, caractéristique plafonnée à +4 et +8 au total) et emplacements (deux anneaux, Dofus sans quota).
+
+## Octobre 2026 — Bornes et bonus séparés
+
+Sur une caractéristique dans un texte, l’infobulle distingue le personnage ou le PNJ, la créature, le bonus d’équipement et l’effet de sort. Le barème d’un objet ne s’affiche plus comme s’il était le minimum et le maximum de la créature.
+
+## Octobre 2026 — Formules en paliers
+
+Quand une caractéristique dépend d’une autre par paliers (par exemple les PM selon le niveau), l’infobulle et la charte montrent un tableau : de tel niveau à tel niveau, telle valeur. Le JSON technique n’apparaît plus.
+
+## Octobre 2026 — Références dans les textes de règles
+
+Dans une page de règles, un mot comme PA, un nom de capacité ou un renvoi vers une autre page redevient une puce : au survol, le résumé de la caractéristique, la fiche courte de l’entité, ou le titre et un extrait de la section. On peut toujours en insérer avec `@` dans l’éditeur de texte. Les fichiers de règles ne doivent plus glisser un lien à l’intérieur du libellé d’un autre (ça cassait les tableaux).
+
 ## Septembre 2026 — Tooltips et alertes plus lisibles
 
 Les bulles d’aide (lancer de dés dans la recherche, flèche pour replier l’en-tête) se placent correctement et se lisent mieux. Les bandeaux d’alerte reprennent le fond des petites fiches, avec un trait et une ombre de la couleur du message.
