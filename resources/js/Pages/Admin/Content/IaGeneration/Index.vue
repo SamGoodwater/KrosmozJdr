@@ -41,6 +41,7 @@ const props = defineProps({
     estimates: { type: Array, default: () => [] },
     has_api_key: { type: Boolean, default: false },
     available_models: { type: Array, default: () => [] },
+    invalid_example_refs: { type: Object, default: () => ({}) },
 });
 
 const { setPageTitle } = usePageTitle();
@@ -133,6 +134,35 @@ const remainingCreditLabel = computed(() => {
     return `${Number(remaining).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $`;
 });
 
+const lingeringInvalid = computed(() => {
+    const invalid = props.invalid_example_refs || {};
+    const rows = [];
+    for (const key of entityKeys.value) {
+        const bad = new Set((invalid[key] || []).map((ref) => String(ref)));
+        const current = form.entities[key]?.example_ids || [];
+        const refs = current.map((id) => String(id)).filter((id) => bad.has(id));
+        if (refs.length > 0) {
+            rows.push({
+                key,
+                label: props.entity_labels[key] || key,
+                refs,
+            });
+        }
+    }
+    return rows;
+});
+
+const invalidExampleCount = computed(() =>
+    lingeringInvalid.value.reduce((sum, row) => sum + row.refs.length, 0),
+);
+
+const formErrorMessages = computed(() => {
+    const errors = form.errors || {};
+    return Object.values(errors)
+        .flatMap((value) => (Array.isArray(value) ? value : [value]))
+        .filter((value) => typeof value === "string" && value !== "");
+});
+
 const updatedLabel = computed(() => {
     if (!props.updated_at) {
         return null;
@@ -172,6 +202,45 @@ function cloneEntities(entities) {
     return out;
 }
 
+/**
+ * Retire du formulaire les étalons que le serveur a marqués comme non jouables.
+ *
+ * @returns {void}
+ */
+function dropInvalidExamples() {
+    for (const row of lingeringInvalid.value) {
+        const bad = new Set(row.refs);
+        const current = form.entities[row.key];
+        if (!current) {
+            continue;
+        }
+        form.entities[row.key] = {
+            ...current,
+            example_ids: (current.example_ids || []).filter((id) => !bad.has(String(id))),
+        };
+    }
+}
+
+/**
+ * @param {Record<string, string|string[]>} errors
+ * @returns {void}
+ */
+function onSaveError(errors) {
+    const first = Object.values(errors || {})[0];
+    const message = Array.isArray(first) ? first[0] : first;
+    notificationStore.error(
+        typeof message === "string" && message !== ""
+            ? message
+            : "Enregistrement refusé. Vérifie les étalons jouables.",
+    );
+    const entityKey = Object.keys(errors || {})
+        .map((key) => key.match(/^entities\.([^.]+)\./)?.[1])
+        .find((key) => key && form.entities[key]);
+    if (entityKey) {
+        activeEntityKey.value = entityKey;
+    }
+}
+
 function save() {
     requirePassword(
         "Enregistrer les réglages IA",
@@ -181,6 +250,7 @@ function save() {
             form.put(route("admin.content.ia-generation.update"), {
                 preserveScroll: true,
                 onSuccess: () => notificationStore.success("Réglages IA enregistrés."),
+                onError: onSaveError,
             });
         }
     );
@@ -246,6 +316,30 @@ function importItemsFromFiles() {
             </p>
             <p v-else class="mt-2 text-sm text-base-content/70">Aucune surcharge en base : fichier du dépôt.</p>
         </div>
+
+        <section
+            v-if="lingeringInvalid.length"
+            class="rounded-box border border-warning/40 bg-warning/10 px-4 py-3 space-y-3"
+            data-testid="ia-invalid-examples"
+        >
+            <p class="text-sm text-base-content">
+                <span class="font-medium">{{ invalidExampleCount }} étalon(s)</span>
+                de ce réglage ne correspondent pas à une fiche jouable.
+                Enregistrer exige que chaque étalon le soit : retire-les, ou passe les fiches en Jouable
+                puis sélectionne-les dans l’onglet du type.
+            </p>
+            <ul class="text-sm space-y-1">
+                <li v-for="row in lingeringInvalid" :key="row.key">
+                    <button type="button" class="link link-hover font-medium" @click="selectEntity(row)">
+                        {{ row.label }}
+                    </button>
+                    — {{ row.refs.join(", ") }}
+                </li>
+            </ul>
+            <Btn type="button" variant="outline" data-testid="ia-drop-invalid-examples" @click="dropInvalidExamples">
+                Retirer les étalons introuvables
+            </Btn>
+        </section>
 
         <p
             v-if="page.props.flash?.success"
@@ -378,14 +472,24 @@ function importItemsFromFiles() {
                 <div class="min-w-0 flex-1 overflow-y-auto p-4 sm:p-6">
                     <EntityPanel
                         v-if="form.entities[activeEntityKey]"
+                        :key="activeEntityKey"
                         :entity="activeEntityKey"
                         :label="activeEntityLabel"
                         :model-value="form.entities[activeEntityKey]"
                         :characteristic-options="characteristic_options[activeEntityKey] || []"
+                        :invalid-example-refs="invalid_example_refs[activeEntityKey] || []"
                         @update:model-value="(row) => (form.entities[activeEntityKey] = row)"
                     />
                 </div>
             </div>
+
+            <ul
+                v-if="formErrorMessages.length"
+                class="text-sm text-error space-y-1 rounded-box border border-error/30 bg-error/10 px-3 py-2"
+                data-testid="ia-form-errors"
+            >
+                <li v-for="(message, index) in formErrorMessages" :key="index">{{ message }}</li>
+            </ul>
 
             <div class="flex flex-wrap gap-3">
                 <Btn type="submit" color="primary" :disabled="form.processing">Enregistrer</Btn>

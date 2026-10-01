@@ -69,19 +69,42 @@ final class FewShotExamplePool
     }
 
     /**
+     * Refs absentes du vivier `playable` (libellé affichable).
+     *
+     * @param  list<int|string>  $refs
+     * @return list<string>
+     *
+     * @example
+     * $missing = app(FewShotExamplePool::class)->missingPlayableLabels('item', ['Cape inconnue']);
+     */
+    public function missingPlayableLabels(string $entity, array $refs): array
+    {
+        $missing = [];
+        foreach ($refs as $ref) {
+            if ($this->findPlayable($entity, $ref) === null) {
+                $missing[] = $this->stringifyRef($ref);
+            }
+        }
+
+        return $missing;
+    }
+
+    /**
      * Chaque entrée doit exister et être `playable`. Liste vide = aucun étalon configuré (autorisé).
      *
      * @param  list<int|string>  $refs
      */
     public function assertAllPlayable(string $entity, array $refs): void
     {
-        foreach ($refs as $ref) {
-            if ($this->findPlayable($entity, $ref) === null) {
-                throw new RuntimeException(
-                    "Étalon few-shot « {$this->stringifyRef($ref)} » introuvable en état jouable ({$entity})."
-                );
-            }
+        $missing = $this->missingPlayableLabels($entity, $refs);
+        if ($missing === []) {
+            return;
         }
+
+        $list = implode(' », « ', $missing);
+        throw new RuntimeException(
+            "Étalon(s) few-shot introuvable(s) en état jouable ({$entity}) : « {$list} »."
+        );
     }
 
     /**

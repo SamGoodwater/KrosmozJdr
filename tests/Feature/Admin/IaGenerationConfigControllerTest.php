@@ -57,7 +57,13 @@ class IaGenerationConfigControllerTest extends TestCase
                 ->has('usage')
                 ->has('usage.local_input_tokens')
                 ->has('estimates')
-                ->has('available_models'));
+                ->has('available_models')
+                ->where('invalid_example_refs.consumable', [
+                    "Pain d'Incarnam",
+                    'jdr:heal:potion:5',
+                    'jdr:antidote',
+                ])
+                ->where('invalid_example_refs.item.0', 'Cape du Piou Vert'));
     }
 
     public function test_admin_can_save_and_reset_ia_generation_settings(): void

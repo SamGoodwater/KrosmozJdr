@@ -88,10 +88,10 @@ vi.mock("@/Composables/auth/useProtectedAdminAction", () => ({
     }),
 }));
 
-function mountIndex() {
+function mountIndex(propOverrides = {}) {
     vi.stubGlobal("route", (name) => `/${name}`);
     return mount(Index, {
-        props: defaultProps,
+        props: { ...defaultProps, ...propOverrides },
         global: {
             stubs: {
                 AdminArea: { template: "<div><slot /></div>" },
@@ -172,5 +172,29 @@ describe("IaGeneration Index", () => {
         expect(wrapper.get("[data-testid='ia-prompt-cache']").element.checked).toBe(true);
         expect(wrapper.text()).toContain("Modèle Anthropic");
         expect(wrapper.text()).toContain("Cache prompt Anthropic");
+    });
+
+    it("signale les étalons non jouables et les retire du formulaire", async () => {
+        const config = {
+            ...defaultProps.config,
+            entities: {
+                ...defaultProps.config.entities,
+                consumable: {
+                    ...defaultProps.config.entities.consumable,
+                    example_ids: ["Pain d'Incarnam", "jdr:antidote"],
+                },
+            },
+        };
+        const wrapper = mountIndex({
+            config,
+            invalid_example_refs: { consumable: ["Pain d'Incarnam"] },
+        });
+
+        const banner = wrapper.get("[data-testid='ia-invalid-examples']");
+        expect(banner.text()).toContain("Pain d'Incarnam");
+        expect(banner.text()).not.toContain("jdr:antidote");
+
+        await wrapper.get("[data-testid='ia-drop-invalid-examples']").trigger("click");
+        expect(wrapper.find("[data-testid='ia-invalid-examples']").exists()).toBe(false);
     });
 });

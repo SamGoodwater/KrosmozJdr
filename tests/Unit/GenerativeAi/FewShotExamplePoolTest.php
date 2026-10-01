@@ -15,6 +15,23 @@ use Tests\TestCase;
 
 final class FewShotExamplePoolTest extends TestCase
 {
+    public function test_assert_all_playable_lists_every_missing_ref(): void
+    {
+        Item::factory()->create([
+            'name' => 'Seul jouable',
+            'state' => Item::STATE_PLAYABLE,
+        ]);
+
+        try {
+            app(FewShotExamplePool::class)->assertAllPlayable('item', ['Seul jouable', 'Absent A', 'Absent B']);
+            $this->fail('Une liste incomplète doit être refusée.');
+        } catch (RuntimeException $exception) {
+            $this->assertStringContainsString('Absent A', $exception->getMessage());
+            $this->assertStringContainsString('Absent B', $exception->getMessage());
+            $this->assertStringNotContainsString('Seul jouable', $exception->getMessage());
+        }
+    }
+
     public function test_resolves_official_id_and_name_only_when_playable(): void
     {
         $playable = Item::factory()->create([

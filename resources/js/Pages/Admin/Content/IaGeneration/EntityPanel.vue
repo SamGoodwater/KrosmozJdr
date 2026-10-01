@@ -13,6 +13,7 @@ const props = defineProps({
     label: { type: String, required: true },
     modelValue: { type: Object, required: true },
     characteristicOptions: { type: Array, default: () => [] },
+    invalidExampleRefs: { type: Array, default: () => [] },
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -194,7 +195,11 @@ function toggleWritableCharacteristic(key, checked) {
             default-label-position="top"
         />
 
-        <ExamplePicker v-model="exampleIds" :entity="entity" />
+        <ExamplePicker
+            v-model="exampleIds"
+            :entity="entity"
+            :invalid-refs="invalidExampleRefs"
+        />
 
         <div v-if="entity === 'item'" data-testid="ia-example-panoplies">
             <ExamplePicker

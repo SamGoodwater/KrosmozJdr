@@ -10,7 +10,7 @@
  * <ExamplePicker entity="item" v-model="form.entities.item.example_ids" />
  * <ExamplePicker entity="panoply" ref-mode="name" v-model="form.entities.item.few_shot_panoplies" />
  */
-import { computed, onMounted } from "vue";
+import { computed, onMounted, watch } from "vue";
 import InputCore from "@/Pages/Atoms/data-input/InputCore.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
@@ -31,22 +31,24 @@ const props = defineProps({
     helper: {
         type: String,
         default:
-            "Recherche parmi les fiches jouables du type. On stocke l’identifiant officiel ou le nom (pas l’id SQL). Clique une ligne pour ajouter ou retirer.",
+            "Recherche parmi les fiches jouables (nom ou identifiant officiel). Les plus récemment modifiées arrivent en premier. On stocke l’identifiant officiel ou le nom, jamais l’id SQL.",
     },
     searchPlaceholder: { type: String, default: "Rechercher un étalon…" },
     searchAriaLabel: { type: String, default: "Rechercher un étalon" },
     refMode: { type: String, default: "portable" },
+    /** Refs déjà listées mais absentes du vivier jouable (fichier ou base). */
+    invalidRefs: { type: Array, default: () => [] },
 });
 
 const emit = defineEmits(["update:modelValue"]);
 
 const tableType = computed(() => normalizeEntityType(props.entity) || props.entity);
 
-const { query, results, loading, error, search } = useEntitySearch({
+const { query, results, loading, error, search, setEntityType } = useEntitySearch({
     entityType: tableType.value,
     initialFilters: { ...IA_EXAMPLE_STATE_FILTER },
-    initialSort: "id",
-    initialOrder: "asc",
+    initialSort: "updated_at",
+    initialOrder: "desc",
     limit: 20,
     debounce: 250,
 });
@@ -55,10 +57,20 @@ onMounted(() => {
     search();
 });
 
+watch(tableType, (next, prev) => {
+    if (next && next !== prev) {
+        setEntityType(next);
+    }
+});
+
 const selectedRefs = computed(() =>
     (Array.isArray(props.modelValue) ? props.modelValue : [])
         .map((ref) => String(ref).trim())
         .filter(Boolean),
+);
+
+const invalidRefSet = computed(
+    () => new Set((props.invalidRefs || []).map((ref) => String(ref).trim()).filter(Boolean)),
 );
 
 const resultsByRef = computed(() => {
@@ -116,6 +128,14 @@ function chipLabel(ref) {
 }
 
 /**
+ * @param {string} ref
+ * @returns {boolean}
+ */
+function isInvalidRef(ref) {
+    return invalidRefSet.value.has(String(ref));
+}
+
+/**
  * @param {object} entity
  */
 function toggleEntity(entity) {
@@ -156,7 +176,10 @@ function removeRef(ref) {
             <span
                 v-for="ref in selectedRefs"
                 :key="ref"
-                class="inline-flex max-w-full items-center gap-1 rounded-box border border-base-300 bg-base-200/70 py-1 pl-2 pr-1 text-sm"
+                class="inline-flex max-w-full items-center gap-1 rounded-box border bg-base-200/70 py-1 pl-2 pr-1 text-sm"
+                :class="isInvalidRef(ref) ? 'border-warning' : 'border-base-300'"
+                :data-invalid="isInvalidRef(ref) ? 'true' : 'false'"
+                :title="isInvalidRef(ref) ? 'Cette fiche n’est pas jouable : l’enregistrement sera refusé.' : ref"
             >
                 <EntityThumb
                     v-if="entityForRef(ref)"
@@ -242,7 +265,12 @@ function removeRef(ref) {
                 v-else-if="results.length === 0"
                 class="px-3 py-3 text-center text-sm text-base-content/60"
             >
-                Aucun résultat jouable.
+                <template v-if="String(query || '').trim()">
+                    Aucune fiche jouable ne correspond à « {{ query }} ».
+                </template>
+                <template v-else>
+                    Aucune fiche jouable pour ce type. Passe une fiche à l’état Jouable, puis reviens la chercher ici.
+                </template>
             </div>
         </div>
     </div>

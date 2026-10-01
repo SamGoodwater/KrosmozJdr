@@ -12,6 +12,7 @@ use App\Models\IaGenerationSetting;
 use App\Services\GenerativeAi\AnthropicModelCatalog;
 use App\Services\GenerativeAi\AnthropicUsageService;
 use App\Services\GenerativeAi\CostEstimator;
+use App\Services\GenerativeAi\FewShotExamplePool;
 use App\Services\GenerativeAi\GenerationConfigLoader;
 use App\Services\GenerativeAi\GenerationConfigStore;
 use App\Services\GenerativeAi\GenerativeAiClient;
@@ -46,9 +47,12 @@ class IaGenerationConfigController extends Controller
             ? IaGenerationSetting::query()->orderBy('id')->first()
             : null;
 
+        $config = $store->currentPayload();
+
         return Inertia::render('Admin/Content/IaGeneration/Index', [
-            'config' => $store->currentPayload(),
+            'config' => $config,
             'is_stored' => $store->isStored(),
+            'invalid_example_refs' => $this->invalidExampleRefs($config),
             'updated_at' => $row?->updated_at?->toIso8601String(),
             'entity_labels' => self::ENTITY_LABELS,
             'characteristic_options' => $this->characteristicOptions(),
@@ -95,6 +99,25 @@ class IaGenerationConfigController extends Controller
         return redirect()
             ->route('admin.content.ia-generation.edit')
             ->with('success', 'Réglages IA réinitialisés (fichier du dépôt).');
+    }
+
+    /**
+     * Étalons du payload effectif qui ne résolvent pas une fiche jouable.
+     *
+     * @param  array<string, mixed>  $config
+     * @return array<string, list<string>>
+     */
+    private function invalidExampleRefs(array $config): array
+    {
+        $pool = app(FewShotExamplePool::class);
+        $entities = is_array($config['entities'] ?? null) ? $config['entities'] : [];
+        $out = [];
+        foreach (GenerationConfigLoader::ENTITY_TYPES as $entity) {
+            $refs = $entities[$entity]['example_ids'] ?? [];
+            $out[$entity] = is_array($refs) ? $pool->missingPlayableLabels($entity, $refs) : [];
+        }
+
+        return $out;
     }
 
     /**

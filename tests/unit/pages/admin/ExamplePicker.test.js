@@ -74,6 +74,8 @@ describe("ExamplePicker", () => {
         const params = global.route.mock.calls[0][1];
         expect(params["filters[state]"]).toBe("playable");
         expect(params.format).toBe("entities");
+        expect(params.sort).toBe("updated_at");
+        expect(params.order).toBe("desc");
 
         const url = lastFetchUrl();
         expect(url).toContain("filters[state]=playable");
@@ -163,5 +165,35 @@ describe("ExamplePicker", () => {
 
         await wrapper.get("[data-testid='ia-example-results']").find("button").trigger("click");
         expect(wrapper.emitted("update:modelValue")?.[0]).toEqual([["Panoplie du Bouftou"]]);
+    });
+
+    it("relance la recherche sur le catalogue du type quand l’entité change", async () => {
+        const wrapper = mount(ExamplePicker, {
+            props: { entity: "item", modelValue: [] },
+            global: { stubs },
+        });
+        await flushPromises();
+
+        await wrapper.setProps({ entity: "consumable" });
+        await flushPromises();
+
+        const lastCall = global.route.mock.calls.at(-1);
+        expect(lastCall[0]).toBe("api.tables.consumables");
+        expect(lastCall[1]["filters[state]"]).toBe("playable");
+        expect(lastCall[1].sort).toBe("updated_at");
+    });
+
+    it("marque un étalon absent du vivier jouable", async () => {
+        const wrapper = mount(ExamplePicker, {
+            props: {
+                entity: "consumable",
+                modelValue: ["Pain d'Incarnam"],
+                invalidRefs: ["Pain d'Incarnam"],
+            },
+            global: { stubs },
+        });
+        await flushPromises();
+
+        expect(wrapper.get("[data-invalid='true']").text()).toContain("Pain d'Incarnam");
     });
 });

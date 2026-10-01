@@ -60,7 +60,7 @@ return static function (array $k): array {
                     .'<tr><td>11–15</td><td>100–200</td><td>3d6+mod à 4d6+mod</td></tr>'
                     .'<tr><td>16–20</td><td>200–400</td><td>4d6+mod à 5d6+mod</td></tr>'
                     .'</tbody></table>'
-                    .'<p>'.$pv.' ≈ '.$vitalite.' × 5 (faible) / 7 (moyen) / 10 (robuste) / 12–15 (boss). Sbire : −20 à 30 % dégâts. Boss : +50 à 100 % <em>ou</em> des phases, pas les deux à fond. '.$ca.' : 10+'.$vitalite.' sans armure, 12–15+'.$vitalite.' armure naturelle.</p>'
+                    .'<p>'.$pv.' ≈ '.$vitalite.' × 5 (faible) / 7 (moyen) / 10 (robuste) / 12–15 (boss). Sbire : −20 à 30 % dégâts. Boss : +50 à 100 % <em>ou</em> des phases, pas les deux à fond. '.$ca.' : 10 + modificateur de '.$vitalite.' sans armure, 12–15 + modificateur de '.$vitalite.' en armure naturelle.</p>'
                     .'<h3>Rôles</h3>'
                     .'<ul>'
                     .'<li><strong>Sbire</strong> — meurt vite, menace en nombre ; peu de sorts.</li>'

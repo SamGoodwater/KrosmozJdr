@@ -116,7 +116,7 @@ Un JSON « dans les normes » mais idiot (deux capes, PV hors palier) **échoue*
 ## Code et docs existants à réutiliser
 
 - Pipeline scrap : `app/Services/Scrapping/` — Collecte → Conversion → Validation → Intégration. L’IA s’insère **après** la conversion, sur du `raw`.
-- Config gel / étalons : page admin `/admin/content/ia-generation` (`ExamplePicker` via `api.tables.*`, filtre `state=playable`), `GenerationConfigStore`, `resources/ia/generation.json`.
+- Config gel / étalons : page admin `/admin/content/ia-generation` (`ExamplePicker` via `api.tables.*` du type d’onglet, filtre `state=playable`, recherche nom / `official_id`). Les refs non jouables sont signalées (`invalid_example_refs`) et bloquent l’enregistrement tant qu’elles restent. `GenerationConfigStore`, `resources/ia/generation.json`.
 - Fiches de création (conversion) : `CreationGuideCatalog`, `resources/ia/creation-guides/`, commande `ia:creation-guides`. Détail : [CREATION.md](./CREATION.md).
 - Création intelligente objets v1 (preview, pas d’écriture auto) : `NormAwareEntityProcessor`, `ItemEffectsToBonusConverter`.
 - PNJ : `app/Models/Entity/Npc.php` (`creature_id`, `breed_id`, `specialization_id`, story, panoplies). Stats sur `Creature`.
