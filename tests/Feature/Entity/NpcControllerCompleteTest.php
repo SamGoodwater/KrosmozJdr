@@ -234,12 +234,13 @@ class NpcControllerCompleteTest extends TestCase
         $npc = Npc::factory()->create(['state' => Npc::STATE_DRAFT]);
 
         $this->actingAs($admin)
+            ->from(route('entities.npcs.edit', $npc))
             ->patch(route('entities.npcs.update', $npc), [
                 'name' => 'Nouveau nom',
                 'location' => 'Bonta',
                 'npc_role' => NpcRole::MERCHANT,
             ])
-            ->assertRedirect(route('entities.npcs.show', $npc));
+            ->assertRedirect(route('entities.npcs.edit', $npc));
 
         $npc->refresh();
         $this->assertSame('Nouveau nom', $npc->creature->name);

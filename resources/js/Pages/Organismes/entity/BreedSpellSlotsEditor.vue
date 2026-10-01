@@ -482,8 +482,6 @@ const save = () => {
 
         <div class="flex justify-end border-t border-base-300 pt-4">
             <EditActionDock
-                primary-label="Enregistrer les sorts"
-                processing-label="Sauvegarde…"
                 :processing="relationsForm.processing"
                 :disabled="!hasUnsavedChanges"
                 :show-secondary="false"

@@ -130,10 +130,11 @@ class SpecializationControllerTest extends TestCase
         $spec = Specialization::factory()->create(['name' => 'Ancien']);
 
         $this->actingAs($admin)
+            ->from(route('entities.specializations.edit', $spec))
             ->patch(route('entities.specializations.update', $spec), [
                 'name' => 'Nouveau nom',
             ])
-            ->assertRedirect(route('entities.specializations.show', $spec));
+            ->assertRedirect(route('entities.specializations.edit', $spec));
 
         $this->assertDatabaseHas('specializations', [
             'id' => $spec->id,

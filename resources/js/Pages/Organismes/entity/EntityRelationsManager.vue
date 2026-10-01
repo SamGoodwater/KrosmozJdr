@@ -741,8 +741,6 @@ const displayField = (item, field) => {
         <!-- Bouton de sauvegarde -->
         <div class="flex justify-end border-t pt-4">
             <EditActionDock
-                primary-label="Sauvegarder les modifications"
-                processing-label="Sauvegarde..."
                 :processing="relationsForm.processing"
                 :disabled="!hasUnsavedRelationChanges"
                 :show-secondary="false"

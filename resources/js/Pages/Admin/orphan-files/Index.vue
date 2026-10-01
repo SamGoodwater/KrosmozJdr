@@ -4,11 +4,12 @@
  */
 import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import AdminCommandMeta from '@/Pages/Admin/_components/AdminCommandMeta.vue';
+import AdminRunAction from '@/Pages/Admin/_components/AdminRunAction.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 
 defineOptions({ layout: AdminArea });
@@ -18,9 +19,6 @@ const props = defineProps({
     recentJobs: { type: Array, default: () => [] },
     activeJob: { type: Object, default: null },
 });
-
-const { setPageTitle } = usePageTitle();
-setPageTitle('Fichiers orphelins');
 
 const page = usePage();
 const unlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
@@ -77,7 +75,8 @@ function syncOrphanToast(job) {
     }
 }
 
-const canSubmit = computed(() => unlocked.value && !form.processing && !isActiveStatus(liveJob.value?.status));
+const busy = computed(() => isActiveStatus(liveJob.value?.status));
+const canSubmit = computed(() => unlocked.value && !form.processing && !busy.value);
 
 const progressPercent = computed(() => {
     const total = Number(liveJob.value?.progress_total || 0);
@@ -131,6 +130,7 @@ function onPasswordConfirmed() {
 }
 
 function submit() {
+    if (!canSubmit.value) return;
     form.post(route('admin.orphan-files.run'), {
         preserveScroll: true,
         onSuccess: () => {
@@ -250,31 +250,40 @@ onBeforeUnmount(() => {
 <template>
     <Head title="Fichiers orphelins" />
 
-    <div class="space-y-6 pb-8 max-w-3xl">
-        <div>
-            <h1 class="text-2xl font-semibold text-base-content">Fichiers orphelins</h1>
-            <p class="mt-2 text-sm text-base-content/70">
-                Scanne les racines MediaLibrary publiques et repère les fichiers sans ligne
-                <code class="rounded bg-base-300 px-1">media</code>
-                en base. Dry-run par défaut ; la suppression réelle est irréversible. Un worker
-                (<code class="rounded bg-base-300 px-1">queue:work</code>) doit traiter le job.
-            </p>
-            <p class="mt-2 text-xs text-base-content/60">
-                Racines : {{ scannedRoots.join(', ') }}
-            </p>
+    <PageHeader title="Fichiers orphelins">
+        <template #subtitle>
+            Scanne les racines MediaLibrary publiques et repère les fichiers sans ligne
+            <code class="rounded bg-base-300 px-1">media</code>
+            en base. Dry-run par défaut ; la suppression réelle est irréversible. Un worker
+            (<code class="rounded bg-base-300 px-1">queue:work</code>) doit traiter le job.
+        </template>
+        <template #meta>
+            <span class="text-xs text-base-content/60">Racines : {{ scannedRoots.join(', ') }}</span>
             <AdminCommandMeta
                 signature="project:clear-orphan-files"
                 cron-key="media_clear_orphan_files"
                 cron-command="project:clear-orphan-files --queue --delete"
             />
-        </div>
+        </template>
+        <template #primary>
+            <AdminRunAction
+                :unlocked="unlocked"
+                :busy="busy"
+                :processing="form.processing"
+                :label="form.delete ? 'Lancer la suppression' : 'Lancer le dry-run'"
+                :color="form.delete ? 'error' : 'primary'"
+                @confirm="showConfirmModal = true"
+                @run="submit"
+            />
+        </template>
+    </PageHeader>
 
+    <div class="space-y-6 pb-8 max-w-3xl">
         <div
             v-if="!unlocked"
-            class="rounded-box border border-warning/40 bg-warning/10 p-6 text-center space-y-4"
+            class="rounded-box border border-warning/40 bg-warning/10 p-4 text-sm"
         >
-            <p class="text-warning-content text-sm">Confirmez votre mot de passe pour lancer un nettoyage.</p>
-            <Btn color="primary" @click="showConfirmModal = true">Confirmer</Btn>
+            Confirmez votre mot de passe (bouton « Confirmer » en haut) pour lancer un nettoyage.
         </div>
 
         <form
@@ -282,23 +291,27 @@ onBeforeUnmount(() => {
             class="space-y-4 rounded-box border border-base-content/10 bg-base-100/50 p-4"
             @submit.prevent="submit"
         >
-            <label class="flex items-start gap-2 cursor-pointer text-sm">
-                <input v-model="form.delete" type="checkbox" class="checkbox checkbox-sm mt-0.5 checkbox-error" />
-                <span>
-                    <span class="font-medium text-error">Supprimer réellement</span>
-                    les fichiers orphelins (sinon dry-run uniquement).
-                </span>
-            </label>
+            <fieldset class="space-y-2">
+                <legend class="mb-1 text-sm font-medium">Mode</legend>
+                <label class="flex items-start gap-2 cursor-pointer text-sm">
+                    <input v-model="form.delete" type="radio" :value="false" class="radio radio-sm mt-0.5" />
+                    <span>
+                        <span class="font-medium">Dry-run</span>
+                        : liste les fichiers orphelins sans rien supprimer.
+                    </span>
+                </label>
+                <label class="flex items-start gap-2 cursor-pointer text-sm">
+                    <input v-model="form.delete" type="radio" :value="true" class="radio radio-sm radio-error mt-0.5" />
+                    <span>
+                        <span class="font-medium text-error">Suppression réelle</span>
+                        des fichiers orphelins (irréversible).
+                    </span>
+                </label>
+            </fieldset>
             <label class="flex items-center gap-2 cursor-pointer text-sm">
                 <input v-model="form.skip_notify" type="checkbox" class="checkbox checkbox-sm" />
                 Ne pas notifier les admins à la fin
             </label>
-
-            <div class="flex flex-wrap gap-2">
-                <Btn type="submit" color="primary" :disabled="!canSubmit">
-                    {{ form.processing ? 'Envoi…' : form.delete ? 'Lancer la suppression' : 'Lancer le dry-run' }}
-                </Btn>
-            </div>
         </form>
 
         <div
@@ -364,7 +377,7 @@ onBeforeUnmount(() => {
             v-model:open="showConfirmModal"
             title="Confirmer votre identité"
             message="Le nettoyage des fichiers orphelins peut supprimer des données disque. Entrez votre mot de passe."
-            confirm-label="Continuer"
+            confirm-label="Confirmer"
             @confirmed="onPasswordConfirmed"
         />
     </div>

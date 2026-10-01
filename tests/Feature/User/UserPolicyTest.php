@@ -137,7 +137,7 @@ class UserPolicyTest extends TestCase
     {
         $systemActor = User::factory()->systemAccount()->create([
             'role' => User::ROLE_SUPER_ADMIN,
-            
+
         ]);
         $target = User::factory()->create(['role' => User::ROLE_USER]);
         $anotherSuperHuman = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);

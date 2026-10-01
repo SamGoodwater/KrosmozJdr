@@ -5,10 +5,10 @@
 import { Head, router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
-import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import ConfirmModal from '@/Pages/Molecules/action/ConfirmModal.vue';
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
 
 defineOptions({ layout: AdminArea });
 
@@ -21,9 +21,6 @@ defineProps({
         default: () => ({ domains: [], actions: [], statuses: [], actors: [] }),
     },
 });
-
-const { setPageTitle } = usePageTitle();
-setPageTitle('Journal admin');
 
 const confirmState = ref({
     open: false,
@@ -142,13 +139,12 @@ async function onConfirm() {
 <template>
     <Head title="Journal admin" />
 
+    <PageHeader
+        title="Journal admin"
+        subtitle="Suivi des actions sensibles et corbeille centralisée des entités JDR supprimées logiquement."
+    />
+
     <div class="space-y-8 pb-8">
-        <div>
-            <h1 class="text-2xl font-semibold text-base-content">Journal admin</h1>
-            <p class="mt-2 max-w-3xl text-sm text-base-content/70">
-                Suivi des actions sensibles et corbeille centralisée des entités JDR supprimées logiquement.
-            </p>
-        </div>
 
         <form
             method="get"

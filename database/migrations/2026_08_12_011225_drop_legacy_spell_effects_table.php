@@ -21,7 +21,7 @@ return new class extends Migration
 
         $count = (int) DB::table('spell_effects')->count();
         if ($count > 0) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 "Refus de dropper spell_effects : {$count} ligne(s) restantes. Migrer vers Effect avant."
             );
         }

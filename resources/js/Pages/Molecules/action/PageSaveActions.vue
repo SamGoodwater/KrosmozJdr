@@ -5,8 +5,10 @@
  * @description
  * Utilisé par défaut dans {@link PageHeader} quand la page passe un `usePageForms`.
  * « Annuler les modifications » n’apparaît que s’il y a des modifications ; « Enregistrer »
- * est désactivé tant que rien n’a changé (sauf `alwaysEnabled`). Ctrl+S / Cmd+S déclenche
- * l’enregistrement tant que le composant est monté.
+ * est désactivé tant que rien n’a changé (sauf `alwaysEnabled`). Le badge « Modifications
+ * non enregistrées » et l’indicateur « Échec de l’enregistrement » s’affichent ensemble
+ * quand une sauvegarde échoue alors que le formulaire est encore modifié. Ctrl+S / Cmd+S
+ * déclenche l’enregistrement tant que le composant est monté.
  *
  * @example
  * <PageSaveActions :dirty="forms.isDirty.value" :processing="forms.processing.value"
@@ -71,7 +73,7 @@ onBeforeUnmount(() => unregister());
         >
             {{ UNSAVED.badge }}
         </span>
-        <InlineSaveStatus v-else-if="status === 'saved' || status === 'error'" :state="status" />
+        <InlineSaveStatus v-if="status === 'saved' || status === 'error'" :state="status" />
         <Btn
             v-if="dirty"
             type="button"

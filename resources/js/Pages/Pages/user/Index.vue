@@ -10,6 +10,8 @@ import BadgeRole from '@/Pages/Molecules/user/BadgeRole.vue';
 import UserListRowActions from '@/Pages/Molecules/user/UserListRowActions.vue';
 import ConfirmModal from '@/Pages/Molecules/action/ConfirmModal.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { useProtectedAdminAction } from '@/Composables/auth/useProtectedAdminAction';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
@@ -252,19 +254,17 @@ const handleRowAction = (action, user) => {
 
 <template>
     <section class="space-y-5">
-        <header class="flex items-center justify-between gap-3 flex-wrap">
-            <div>
-                <h1 class="text-2xl font-bold">Utilisateurs</h1>
-                <p class="text-sm opacity-70">
-                    Gérez les comptes, les accès et les réinitialisations de mot de passe.
-                    Clic droit sur une ligne pour le menu d’actions.
-                </p>
-            </div>
-            <Btn color="primary" size="sm" class="gap-2" @click="goToCreate">
-                <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                Créer un utilisateur
-            </Btn>
-        </header>
+        <PageHeader
+            title="Utilisateurs"
+            subtitle="Gérez les comptes, les accès et les réinitialisations de mot de passe. Clic droit sur une ligne pour le menu d’actions."
+        >
+            <template #primary>
+                <Btn color="primary" size="sm" class="gap-2" @click="goToCreate">
+                    <i :class="ACTION.create.icon" aria-hidden="true"></i>
+                    Créer un utilisateur
+                </Btn>
+            </template>
+        </PageHeader>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div class="rounded-(--radius-box) border border-base-300 bg-base-100 p-3">

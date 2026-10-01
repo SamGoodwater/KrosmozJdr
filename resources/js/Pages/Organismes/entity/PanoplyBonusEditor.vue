@@ -216,8 +216,6 @@ async function saveBonus() {
 
         <div class="flex justify-end border-t border-base-300/50 pt-4">
             <EditActionDock
-                primary-label="Sauvegarder les bonus"
-                processing-label="Sauvegarde..."
                 :processing="saveLoading"
                 :disabled="!isDirty"
                 :show-secondary="false"

@@ -32,7 +32,7 @@ const props = defineProps({
     entityId: { type: Number, required: true },
     entityType: { type: String, default: 'spell' },
     /**
-     * Masque le bouton « Enregistrer les effets » : sauvegarde via le parent (ex. « Mettre à jour » du sort).
+     * Masque le bouton « Enregistrer » du groupe d’effets : sauvegarde via le parent (ex. « Mettre à jour » du sort).
      */
     hideEffectGroupSubmitButton: { type: Boolean, default: false },
     /**
@@ -452,7 +452,6 @@ defineExpose({
             :selected-effect-id="selectedDegreeIdForEditor"
             :patch-url="patchUrlForSelectedGroup"
             :heading="selectedGroup.label"
-            submit-label="Enregistrer les effets"
             :hide-submit-button="hideEffectGroupSubmitButton"
             :save-without-inertia="embeddedInModal"
             :embedded-in-modal="embeddedInModal"

@@ -28,6 +28,7 @@ import { registerSaveShortcut } from '@/Composables/utils/saveShortcutRegistry';
 import { useEntityActionDispatcher } from '@/Composables/entity/useEntityActionDispatcher';
 import { getRarityOptions } from '@/Utils/Entity/SharedConstants';
 import { LAYOUT_STICKY_ABOVE_MOBILE_DOCK_CLASS } from '@/Composables/layout/viewport-breakpoints';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 import {
     invalidateKrefEntityPreviewCache,
     toKrefPreviewApiEntityType,
@@ -167,7 +168,7 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-    /** Affiche Annuler et Reset dans le pied (désactiver si la navigation se fait via l’en-tête). */
+    /** Affiche Retour et Annuler les modifications dans le pied (désactiver si la navigation se fait via l’en-tête). */
     footerSecondaryActions: {
         type: Boolean,
         default: true,
@@ -316,7 +317,7 @@ const rootFormClass = computed(() => {
 });
 
 /**
- * Dock commun bas-droite (desktop) / flux (mobile) pour Annuler / Reset / Enregistrer.
+ * Dock commun bas-droite (desktop) / flux (mobile) pour Retour / Annuler les modifications / Enregistrer.
  * Désactivé en modal embarquée : barre d’actions classique.
  */
 const useEditActionDock = computed(
@@ -400,20 +401,32 @@ const footerActionsRowClass = computed(() => {
     return parts;
 });
 
-/** Libellé du bouton principal du dock (hors état processing). */
-const primarySaveLabel = computed(() => (props.isUpdating ? 'Enregistrer' : 'Créer'));
+/** Action principale : enregistrer (édition) ou créer (création). */
+const primaryAction = computed(() => (props.isUpdating ? ACTION.save : ACTION.create));
 
-/** Actions secondaires du dock (Annuler / Reset). */
+/** Libellé du bouton principal du dock (hors état processing). */
+const primarySaveLabel = computed(() => primaryAction.value.label);
+
+/** Sortie : ferme la modale embarquée, sinon retour à la fiche. */
+const cancelAction = computed(() => (props.embeddedInModal ? ACTION.close : ACTION.back));
+
+/** Actions secondaires du dock (Retour / Annuler les modifications). */
 const editDockSecondaryActions = computed(() => {
     if (!props.footerSecondaryActions) {
         return [];
     }
     return [
-        { key: 'cancel', label: 'Annuler', variant: 'outline', color: '' },
+        {
+            key: 'cancel',
+            label: cancelAction.value.label,
+            iconClass: `${cancelAction.value.icon} mr-2`,
+            variant: 'outline',
+            color: '',
+        },
         {
             key: 'reset',
-            label: 'Reset',
-            iconClass: 'fa-solid fa-arrow-rotate-left mr-2',
+            label: ACTION.discard.label,
+            iconClass: `${ACTION.discard.icon} mr-2`,
             variant: 'outline',
             color: '',
             tooltip:
@@ -690,7 +703,7 @@ const getDefaultValue = (type) => {
 const form = useForm(initializeForm());
 /**
  * Snapshot des valeurs "initiales" du formulaire (au moment de l'ouverture / dernière synchro).
- * Utilisé par le bouton Reset.
+ * Utilisé par le bouton « Annuler les modifications ».
  */
 const initialSnapshot = ref(initializeForm());
 
@@ -1263,7 +1276,7 @@ async function handleEditPageAction(actionKey) {
                 </div>
                 <EditActionDock
                     :primary-label="primarySaveLabel"
-                    processing-label="Enregistrement..."
+                    :processing-label="primaryAction.processing"
                     :processing="form.processing"
                     :show-secondary="footerSecondaryActions"
                     :secondary-actions="editDockSecondaryActions"
@@ -1308,7 +1321,8 @@ async function handleEditPageAction(actionKey) {
                                 :size="embeddedInModal ? 'sm' : ''"
                                 @click="cancel"
                             >
-                                Annuler
+                                <i :class="cancelAction.icon" class="mr-2" aria-hidden="true"></i>
+                                {{ cancelAction.label }}
                             </Btn>
                             <Tooltip
                                 content="Réinitialise le formulaire : revient aux valeurs chargées au moment de l’ouverture (ou dernière synchro). En multi‑édition, remet les champs ‘valeurs différentes’ en mode ‘ne pas modifier’."
@@ -1320,8 +1334,8 @@ async function handleEditPageAction(actionKey) {
                                     :size="embeddedInModal ? 'sm' : ''"
                                     @click="resetForm"
                                 >
-                                    <i class="fa-solid fa-arrow-rotate-left mr-2"></i>
-                                    Reset
+                                    <i :class="ACTION.discard.icon" class="mr-2" aria-hidden="true"></i>
+                                    {{ ACTION.discard.label }}
                                 </Btn>
                             </Tooltip>
                         </div>
@@ -1335,8 +1349,8 @@ async function handleEditPageAction(actionKey) {
                                 :size="embeddedInModal ? 'sm' : ''"
                                 :disabled="form.processing"
                             >
-                                <i class="fa-solid fa-save mr-2"></i>
-                                {{ form.processing ? 'Enregistrement...' : (isUpdating ? 'Enregistrer' : 'Créer') }}
+                                <i :class="primaryAction.icon" class="mr-2" aria-hidden="true"></i>
+                                {{ form.processing ? primaryAction.processing : primaryAction.label }}
                             </Btn>
                         </div>
                     </div>

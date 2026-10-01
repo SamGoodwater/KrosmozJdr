@@ -26,6 +26,7 @@ import {
     getConditionDispellableIcon,
 } from "@/Composables/condition/conditionDisplay";
 import { DOFUSDB_API_PREFIX } from "@/utils/scrapping/api";
+import { ACTION } from "@/Utils/atomic-design/actionLabels";
 
 const props = defineProps({
     entityType: { type: String, default: "" },
@@ -420,7 +421,7 @@ watch(
 
         <template #actions>
             <div class="flex items-center gap-2">
-                <Btn variant="ghost" @click="emit('close')">Annuler</Btn>
+                <Btn variant="ghost" @click="emit('close')">{{ ACTION.close.label }}</Btn>
                 <Btn
                     color="success"
                     :disabled="!preview || importing"

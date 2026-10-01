@@ -2,16 +2,18 @@
 /**
  * @description
  * Page d'édition du profil utilisateur.
- * - Édition des informations de base (nom, email, avatar)
- * - Lien vers Paramètres du compte (page dédiée, onglet Notifications)
- * - Actions administrateurs (mot de passe, rôle)
- * - Structure DRY, accessibilité, tooltips, etc.
+ * - Profil (nom, email) et niveau d'accès : un seul « Enregistrer » dans l'en-tête (usePageForms)
+ * - Avatar : envoi automatique ; mot de passe : carte dédiée avec son propre bouton
+ * - Archiver / restaurer / supprimer définitivement : actions de l'en-tête (admin)
  */
 import { ref, watch, computed, onMounted, nextTick } from 'vue';
 import { useForm, usePage, router } from '@inertiajs/vue3';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
-import { verifyRole, getRoleTranslation, ROLES } from '@/Utils/user/RoleManager';
+import { usePageForms } from '@/Composables/form/usePageForms';
+import { getRoleTranslation, ROLES } from '@/Utils/user/RoleManager';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import File from '@/Pages/Molecules/data-input/FileField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
@@ -72,19 +74,22 @@ const initializeForms = (userData) => {
         return;
     }
     
-    // Mettre à jour directement les propriétés du formulaire
-    // Cela fonctionne mieux avec v-model dans les composants
+    // Un formulaire modifié (ex. après une erreur de validation) garde la saisie en cours.
+    if (!formRole.isDirty && data.role !== undefined) {
+        formRole.role =
+            data.role === ROLES.SUPER_ADMIN
+                ? ROLES.ADMIN
+                : data.role;
+        formRole.defaults();
+    }
+    if (formProfile.isDirty) {
+        return;
+    }
     if (data.name !== undefined) {
         formProfile.name = data.name;
     }
     if (data.email !== undefined) {
         formProfile.email = data.email;
-    }
-    if (data.role !== undefined) {
-        formRole.role =
-            data.role === ROLES.SUPER_ADMIN
-                ? ROLES.ADMIN
-                : data.role;
     }
     const types = page.props.notificationTypes || {};
     const prefs = data.notification_preferences || {};
@@ -98,6 +103,7 @@ const initializeForms = (userData) => {
         ])
     );
     formProfile.notification_preferences = { ...defaultPrefs, ...normalizedPrefs };
+    formProfile.defaults();
 };
 
 // Surveiller le computed user pour initialiser les formulaires dès que les données sont disponibles
@@ -118,7 +124,10 @@ onMounted(() => {
     });
 });
 
-const updateProfile = () => {
+/**
+ * @param {{ onSuccess?: Function, onError?: Function, onCancel?: Function }} callbacks - Fournis par usePageForms
+ */
+const updateProfile = (callbacks = {}) => {
     // Déterminer la route selon le contexte (profil courant ou admin modifiant un autre utilisateur)
     const userId = user.value?.id;
     const currentUserId = page.props.auth?.user?.id;
@@ -129,8 +138,16 @@ const updateProfile = () => {
     
     formProfile.patch(route(routeName, ...routeParams), {
         preserveScroll: true,
-        onSuccess: () => success('Profil mis à jour avec succès.'),
-        onError: () => error('Erreur lors de la mise à jour du profil.'),
+        preserveState: true,
+        onSuccess: (response) => {
+            success('Profil mis à jour avec succès.');
+            callbacks.onSuccess?.(response);
+        },
+        onError: (errors) => {
+            error('Erreur lors de la mise à jour du profil.');
+            callbacks.onError?.(errors);
+        },
+        onCancel: () => callbacks.onCancel?.(),
     });
 };
 
@@ -279,19 +296,37 @@ const updatePassword = () => {
     });
 };
 
-const updateRole = () => {
+/**
+ * @param {{ onSuccess?: Function, onError?: Function, onCancel?: Function }} callbacks - Fournis par usePageForms
+ */
+const updateRole = (callbacks = {}) => {
     formRole.patch(route('user.admin.updateRole', user.value?.id || page.props.auth?.user?.id), {
         preserveScroll: true,
-        onSuccess: () => success('Rôle mis à jour avec succès.'),
-        onError: () => error('Erreur lors de la mise à jour du rôle.'),
+        preserveState: true,
+        onSuccess: (response) => {
+            success('Rôle mis à jour avec succès.');
+            callbacks.onSuccess?.(response);
+        },
+        onError: (errors) => {
+            error('Erreur lors de la mise à jour du rôle.');
+            callbacks.onError?.(errors);
+        },
+        onCancel: () => callbacks.onCancel?.(),
     });
 };
 
+const pageForms = usePageForms();
+pageForms.register('profile', formProfile, updateProfile);
+pageForms.register('role', formRole, updateRole);
+
 const backRouteName = computed(() => (isSelfUpdate.value ? 'user.show' : 'user.index'));
-const backButtonLabel = computed(() => (isSelfUpdate.value ? 'Retour au profil' : 'Retour à la liste'));
-const goBack = () => {
-    router.visit(route(backRouteName.value));
-};
+const pageTitle = computed(() => (
+    isSelfUpdate.value ? 'Mon compte' : `Gestion du compte de ${user.value?.name || 'Utilisateur'}`
+));
+const canArchive = computed(() => Boolean(
+    isAdmin.value && !isSelfUpdate.value && !user.value?.deleted_at && user.value?.can?.delete
+));
+const isDeletedAccount = computed(() => Boolean(isAdmin.value && !isSelfUpdate.value && user.value?.deleted_at));
 
 // Validation computed pour les champs du profil
 const nameValidation = computed(() => {
@@ -430,41 +465,73 @@ const confirmSoftDeletePrompt = () => {
 
 <template>
     <section class="space-y-6">
-        <header>
-            <div class="mb-3">
-                <Btn color="neutral" variant="ghost" size="sm" class="gap-2" @click="goBack">
-                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                    {{ backButtonLabel }}
+        <PageHeader
+            :title="pageTitle"
+            subtitle="Mettez à jour les informations principales et les accès de ce compte."
+            :back-route="backRouteName"
+            :forms="pageForms"
+        >
+            <template #actions>
+                <template v-if="isSelfUpdate">
+                    <Route :href="route('user.settings')" class="no-underline">
+                        <Btn color="neutral" variant="ghost" size="sm" class="gap-1.5">
+                            <i class="fa-solid fa-cog" aria-hidden="true"></i>
+                            Paramètres
+                        </Btn>
+                    </Route>
+                    <Route :href="`${route('user.settings')}#connections`" class="no-underline">
+                        <Btn color="neutral" variant="ghost" size="sm" class="gap-1.5">
+                            <i class="fa-solid fa-link" aria-hidden="true"></i>
+                            Connexions
+                        </Btn>
+                    </Route>
+                </template>
+                <Btn
+                    v-if="canArchive"
+                    color="warning"
+                    variant="outline"
+                    size="sm"
+                    class="gap-1.5"
+                    @click="showSoftDeleteModal = true"
+                >
+                    <i class="fa-solid fa-box-archive" aria-hidden="true"></i>
+                    Archiver
                 </Btn>
-            </div>
-            <h2 class="text-lg font-medium text-content-300">
-                {{
-                    verifyRole(page.props.auth?.user?.role || 1, ROLES.ADMIN)
-                        ? `Gestion du compte de ${user?.name || 'Utilisateur'}`
-                        : "Mon compte"
-                }}
-            </h2>
-            <p class="mt-1 text-sm text-content-600">
-                Mettez à jour les informations principales et les accès de ce compte.
-            </p>
-            <div v-if="isSelfUpdate" class="flex flex-wrap gap-4 mt-2">
-                <Route
-                    :href="route('user.settings')"
-                    class="link link-primary text-sm inline-flex items-center gap-1"
-                >
-                    <i class="fa-solid fa-cog" aria-hidden="true"></i>
-                    Paramètres du compte
-                </Route>
-                <Route
-                    :href="route('user.settings') + '#connections'"
-                    class="link link-secondary text-sm inline-flex items-center gap-1"
-                >
-                    <i class="fa-solid fa-link" aria-hidden="true"></i>
-                    Gérer les connexions (GitHub, Discord, Steam)
-                </Route>
-            </div>
-        </header>
-        <form @submit.prevent class="mt-6 space-y-6" autocomplete="off">
+                <template v-if="isDeletedAccount">
+                    <Btn
+                        v-if="user?.can?.restore"
+                        color="success"
+                        variant="outline"
+                        size="sm"
+                        class="gap-1.5"
+                        @click="restoreUser"
+                    >
+                        <i class="fa-solid fa-undo" aria-hidden="true"></i>
+                        Restaurer
+                    </Btn>
+                    <Btn
+                        v-if="user?.can?.forceDelete"
+                        color="error"
+                        variant="outline"
+                        size="sm"
+                        class="gap-1.5"
+                        @click="showForceDeleteModal = true"
+                    >
+                        <i :class="ACTION.delete.icon" aria-hidden="true"></i>
+                        Supprimer définitivement
+                    </Btn>
+                </template>
+            </template>
+            <template v-if="isDeletedAccount" #meta>
+                <span class="badge badge-warning badge-soft badge-sm">Compte supprimé</span>
+            </template>
+        </PageHeader>
+
+        <div v-if="isDeletedAccount" class="alert alert-warning alert-soft">
+            Ce compte a été supprimé. Tu peux le restaurer ou le supprimer définitivement depuis l'en-tête.
+        </div>
+
+        <form @submit.prevent="pageForms.saveAll()" class="space-y-6" autocomplete="off">
             <div class="flex flex-row gap-4">
                 <div class="flex flex-col gap-4 w-1/2">
                     <Tooltip content="Dépose ou clique pour changer ton avatar" placement="top">
@@ -539,26 +606,6 @@ const confirmSoftDeletePrompt = () => {
                     </div>
                 </div>
             </div>
-            
-            <!-- Bouton de sauvegarde pour le profil -->
-            <div class="flex items-center gap-4 mt-6">
-                <Tooltip content="Enregistrer les modifications du profil" placement="top">
-                    <Btn
-                        color="primary"
-                        @click="updateProfile"
-                    >
-                        Enregistrer
-                    </Btn>
-                </Tooltip>
-                <Tooltip content="Annuler les modifications" placement="top">
-                    <Btn
-                        color="neutral"
-                        @click="formProfile.reset()"
-                    >
-                        Réinitialiser
-                    </Btn>
-                </Tooltip>
-            </div>
 
             <!-- Section mot de passe -->
             <div class="mt-6">
@@ -621,18 +668,25 @@ const confirmSoftDeletePrompt = () => {
                         </div>
                     </Tooltip>
                     <div v-if="isSelfUpdate || isSuperAdmin" class="flex items-center gap-4">
-                        <Tooltip content="Mettre à jour le mot de passe" placement="top">
+                        <Tooltip content="Enregistrer le nouveau mot de passe" placement="top">
                             <Btn
                                 color="primary"
+                                :disabled="formPassword.processing"
                                 @click="updatePassword"
-                                >Enregistrer le mot de passe
+                            >
+                                <i :class="ACTION.save.icon" class="mr-1.5" aria-hidden="true"></i>
+                                {{ formPassword.processing ? ACTION.save.processing : ACTION.save.label }}
                             </Btn>
                         </Tooltip>
-                        <Tooltip content="Annuler la modification" placement="top">
+                        <Tooltip content="Annuler les modifications du mot de passe" placement="top">
                             <Btn
                                 color="neutral"
-                                @click="formPassword.reset()"
-                                >Réinitialiser
+                                variant="ghost"
+                                :disabled="!formPassword.isDirty || formPassword.processing"
+                                @click="formPassword.reset(); formPassword.clearErrors()"
+                            >
+                                <i :class="ACTION.discard.icon" class="mr-1.5" aria-hidden="true"></i>
+                                {{ ACTION.discard.label }}
                             </Btn>
                         </Tooltip>
                     </div>
@@ -645,101 +699,6 @@ const confirmSoftDeletePrompt = () => {
                     </div>
                 </div>
             </div>
-            <!-- Section admin : archiver un compte actif -->
-            <div
-                v-if="isAdmin && !isSelfUpdate && !user?.deleted_at && user?.can?.delete"
-                class="mt-6"
-            >
-                <hr class="border-gray-300 dark:border-gray-700 my-4" />
-                <div class="mt-6">
-                    <h3 class="text-lg font-medium text-content-300">
-                        Archiver le compte
-                    </h3>
-                    <p class="mt-1 text-sm text-content-600">
-                        Le compte sera désactivé (soft delete) et pourra être restauré depuis la liste des utilisateurs.
-                    </p>
-                </div>
-                <div class="mt-4">
-                    <Btn
-                        color="warning"
-                        size="sm"
-                        @click="showSoftDeleteModal = true"
-                    >
-                        <i class="fa-solid fa-box-archive mr-1" aria-hidden="true" />
-                        Archiver le compte
-                    </Btn>
-                </div>
-                <ConfirmModal
-                    :open="showSoftDeleteModal"
-                    title="Archiver le compte"
-                    :message="`Archiver le compte de ${user?.name || user?.email} ? Il pourra être restauré ultérieurement.`"
-                    confirm-label="Continuer"
-                    cancel-label="Annuler"
-                    confirm-color="warning"
-                    confirm-icon="fa-solid fa-box-archive"
-                    @close="showSoftDeleteModal = false"
-                    @confirm="confirmSoftDeletePrompt"
-                    @cancel="showSoftDeleteModal = false"
-                />
-            </div>
-
-            <!-- Section admin : actions sur compte supprimé (restaurer, supprimer définitivement) -->
-            <div
-                v-if="isAdmin && !isSelfUpdate && user?.deleted_at"
-                class="mt-6"
-            >
-                <hr class="border-gray-300 dark:border-gray-700 my-4" />
-                <div class="mt-6">
-                    <h3 class="text-lg font-medium text-content-300">
-                        Compte supprimé
-                    </h3>
-                    <p class="mt-1 text-sm text-content-600">
-                        Ce compte a été supprimé. Tu peux le restaurer ou le supprimer définitivement.
-                    </p>
-                </div>
-                <div class="mt-4 flex flex-wrap gap-2">
-                    <Btn
-                        v-if="user?.can?.restore"
-                        color="success"
-                        size="sm"
-                        @click="restoreUser"
-                    >
-                        <i class="fa-solid fa-undo mr-1" aria-hidden="true" />
-                        Restaurer le compte
-                    </Btn>
-                    <Btn
-                        v-if="user?.can?.forceDelete"
-                        color="error"
-                        size="sm"
-                        @click="showForceDeleteModal = true"
-                    >
-                        <i class="fa-solid fa-trash mr-1" aria-hidden="true" />
-                        Supprimer définitivement
-                    </Btn>
-                </div>
-                <ConfirmModal
-                    :open="showForceDeleteModal"
-                    title="Supprimer définitivement"
-                    :message="user ? `Supprimer définitivement le compte de ${user.name || user.email} ? Cette action est irréversible.` : ''"
-                    confirm-label="Continuer"
-                    cancel-label="Annuler"
-                    confirm-color="error"
-                    confirm-icon="fa-solid fa-trash"
-                    @close="showForceDeleteModal = false"
-                    @confirm="confirmForceDeletePrompt"
-                    @cancel="showForceDeleteModal = false"
-                />
-            </div>
-
-            <ConfirmPasswordModal
-                v-model:open="showPasswordModal"
-                :title="passwordModalTitle"
-                :message="passwordModalMessage"
-                :confirm-label="passwordModalConfirmLabel"
-                @confirmed="onPasswordConfirmed"
-                @cancel="onPasswordModalCancel"
-            />
-
             <!-- Section admin : rôle (uniquement pour les admins modifiant un autre utilisateur) -->
             <div
                 v-if="isAdmin && !isSelfUpdate && !user?.deleted_at"
@@ -766,25 +725,42 @@ const confirmSoftDeletePrompt = () => {
                             :searchable="false"
                         />
                     </Tooltip>
-                    <div class="flex items-center gap-4">
-                        <Tooltip content="Mettre à jour le niveau d'accès" placement="top">
-                            <Btn
-                                color="primary"
-                                @click="updateRole"
-                                >Enregistrer le niveau d'accès</Btn
-                            >
-                        </Tooltip>
-                        <Tooltip content="Annuler la modification" placement="top">
-                            <Btn
-                                color="neutral"
-                                @click="formRole.reset()"
-                                >Réinitialiser</Btn
-                            >
-                        </Tooltip>
-                    </div>
                 </div>
             </div>
         </form>
+
+        <ConfirmModal
+            :open="showSoftDeleteModal"
+            title="Archiver le compte"
+            :message="`Archiver le compte de ${user?.name || user?.email} ? Il sera désactivé et pourra être restauré depuis la liste des utilisateurs.`"
+            confirm-label="Continuer"
+            cancel-label="Annuler"
+            confirm-color="warning"
+            confirm-icon="fa-solid fa-box-archive"
+            @close="showSoftDeleteModal = false"
+            @confirm="confirmSoftDeletePrompt"
+            @cancel="showSoftDeleteModal = false"
+        />
+        <ConfirmModal
+            :open="showForceDeleteModal"
+            title="Supprimer définitivement"
+            :message="user ? `Supprimer définitivement le compte de ${user.name || user.email} ? Cette action est irréversible.` : ''"
+            confirm-label="Continuer"
+            cancel-label="Annuler"
+            confirm-color="error"
+            :confirm-icon="ACTION.delete.icon"
+            @close="showForceDeleteModal = false"
+            @confirm="confirmForceDeletePrompt"
+            @cancel="showForceDeleteModal = false"
+        />
+        <ConfirmPasswordModal
+            v-model:open="showPasswordModal"
+            :title="passwordModalTitle"
+            :message="passwordModalMessage"
+            :confirm-label="passwordModalConfirmLabel"
+            @confirmed="onPasswordConfirmed"
+            @cancel="onPasswordModalCancel"
+        />
     </section>
 </template>
 

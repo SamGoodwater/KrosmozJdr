@@ -3,19 +3,16 @@
  * Lance `project:backup` via file d’attente (super admin).
  */
 import { Head, useForm, usePage } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
-import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { ref } from 'vue';
 import { useProjectConsoleJob } from '@/Composables/admin/useProjectConsoleJob';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import AdminCommandMeta from '@/Pages/Admin/_components/AdminCommandMeta.vue';
 import AdminConsoleJobPanel from '@/Pages/Admin/_components/AdminConsoleJobPanel.vue';
-import Btn from '@/Pages/Atoms/action/Btn.vue';
+import AdminRunAction from '@/Pages/Admin/_components/AdminRunAction.vue';
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 
 defineOptions({ layout: AdminArea });
-
-const { setPageTitle } = usePageTitle();
-setPageTitle('Sauvegarde');
 
 const props = defineProps({
     consoleJob: { type: Object, default: null },
@@ -39,9 +36,8 @@ const form = useForm({
     retention_days: '',
 });
 
-const canSubmit = computed(() => unlocked.value && !form.processing && !busy.value);
-
 function submit() {
+    if (!unlocked.value || form.processing || busy.value) return;
     form.post(route('admin.backup.run'), { preserveScroll: true });
 }
 </script>
@@ -49,15 +45,26 @@ function submit() {
 <template>
     <Head title="Sauvegarde" />
 
-    <div class="space-y-6 pb-8 max-w-2xl">
-        <div>
-            <h1 class="text-2xl font-semibold text-base-content">Sauvegarde</h1>
-            <p class="mt-2 text-sm text-base-content/70">
-                Enfile un job qui exécute <code class="rounded bg-base-300 px-1">project:backup</code> (dump BDD + archive
-                storage, rotation). Un worker doit traiter la file.
-            </p>
+    <PageHeader title="Sauvegarde">
+        <template #subtitle>
+            Enfile un job qui exécute <code class="rounded bg-base-300 px-1">project:backup</code> (dump BDD + archive
+            storage, rotation). Un worker doit traiter la file.
+        </template>
+        <template #meta>
             <AdminCommandMeta signature="project:backup" cron-key="project_backup" cron-command="project:backup" />
-        </div>
+        </template>
+        <template #primary>
+            <AdminRunAction
+                :unlocked="unlocked"
+                :busy="busy"
+                :processing="form.processing"
+                @confirm="showConfirmModal = true"
+                @run="submit"
+            />
+        </template>
+    </PageHeader>
+
+    <div class="space-y-6 pb-8 max-w-2xl">
 
         <p
             v-if="page.props.flash?.success"
@@ -76,10 +83,9 @@ function submit() {
 
         <div
             v-if="!unlocked"
-            class="rounded-box border border-warning/40 bg-warning/10 p-6 text-center space-y-4"
+            class="rounded-box border border-warning/40 bg-warning/10 p-4 text-sm"
         >
-            <p class="text-warning-content text-sm">Confirmez votre mot de passe pour lancer une sauvegarde.</p>
-            <Btn color="primary" @click="showConfirmModal = true">Confirmer</Btn>
+            Confirmez votre mot de passe (bouton « Confirmer » en haut) pour lancer une sauvegarde.
         </div>
 
         <form v-else class="space-y-4 rounded-box border border-base-content/10 bg-base-100/50 p-4" @submit.prevent="submit">
@@ -114,17 +120,13 @@ function submit() {
                     placeholder="Défaut : config / .env"
                 />
             </div>
-
-            <Btn type="submit" color="primary" :disabled="!canSubmit">
-                {{ busy ? 'Job déjà en cours…' : form.processing ? 'Envoi…' : 'Lancer la sauvegarde' }}
-            </Btn>
         </form>
 
         <ConfirmPasswordModal
             v-model:open="showConfirmModal"
             title="Confirmer votre identité"
             message="La sauvegarde accède aux données du serveur. Entrez votre mot de passe."
-            confirm-label="Continuer"
+            confirm-label="Confirmer"
             @confirmed="onPasswordConfirmed"
         />
     </div>

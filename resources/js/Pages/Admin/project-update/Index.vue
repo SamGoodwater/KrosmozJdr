@@ -4,18 +4,15 @@
  */
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
-import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { useProjectConsoleJob } from '@/Composables/admin/useProjectConsoleJob';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import AdminCommandMeta from '@/Pages/Admin/_components/AdminCommandMeta.vue';
 import AdminConsoleJobPanel from '@/Pages/Admin/_components/AdminConsoleJobPanel.vue';
-import Btn from '@/Pages/Atoms/action/Btn.vue';
+import AdminRunAction from '@/Pages/Admin/_components/AdminRunAction.vue';
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 
 defineOptions({ layout: AdminArea });
-
-const { setPageTitle } = usePageTitle();
-setPageTitle('Mise à jour stack');
 
 const props = defineProps({
     isProduction: { type: Boolean, default: false },
@@ -44,6 +41,7 @@ const canSubmit = computed(
 );
 
 function submit() {
+    if (!canSubmit.value) return;
     form.post(route('admin.project-update.run'), { preserveScroll: true });
 }
 </script>
@@ -51,17 +49,29 @@ function submit() {
 <template>
     <Head title="Mise à jour stack" />
 
-    <div class="space-y-6 pb-8 max-w-2xl">
-        <div>
-            <h1 class="text-2xl font-semibold text-base-content">Mise à jour de la stack</h1>
-            <p class="mt-2 text-sm text-base-content/70">
-                Enfile un job qui exécute <code class="rounded bg-base-300 px-1">project:deps</code> (mise à jour
-                Composer + pnpm, puis pipeline IDE / optimize en mode « tout »).
-                <strong>Interdit en production</strong> — réservé aux machines de développement.
-            </p>
+    <PageHeader title="Mise à jour stack">
+        <template #subtitle>
+            Enfile un job qui exécute <code class="rounded bg-base-300 px-1">project:deps</code> (mise à jour
+            Composer + pnpm, puis pipeline IDE / optimize en mode « tout »).
+            <strong>Interdit en production</strong> — réservé aux machines de développement.
+        </template>
+        <template #meta>
             <AdminCommandMeta signature="project:deps" />
-        </div>
+        </template>
+        <template #primary>
+            <AdminRunAction
+                v-if="!isProduction"
+                :unlocked="unlocked"
+                :busy="busy"
+                :processing="form.processing"
+                label="Lancer la mise à jour"
+                @confirm="showConfirmModal = true"
+                @run="submit"
+            />
+        </template>
+    </PageHeader>
 
+    <div class="space-y-6 pb-8 max-w-2xl">
         <p
             v-if="page.props.flash?.success"
             class="text-success text-sm rounded-box border border-success/30 bg-success/10 px-3 py-2"
@@ -83,10 +93,9 @@ function submit() {
 
         <div
             v-else-if="!unlocked"
-            class="rounded-box border border-warning/40 bg-warning/10 p-6 text-center space-y-4"
+            class="rounded-box border border-warning/40 bg-warning/10 p-4 text-sm"
         >
-            <p class="text-warning-content text-sm">Confirmez votre mot de passe pour continuer.</p>
-            <Btn color="primary" @click="showConfirmModal = true">Confirmer</Btn>
+            Confirmez votre mot de passe (bouton « Confirmer » en haut) pour lancer une mise à jour.
         </div>
 
         <form v-else class="space-y-4 rounded-box border border-base-content/10 bg-base-100/50 p-4" @submit.prevent="submit">
@@ -114,17 +123,13 @@ function submit() {
                     ><input v-model="form.pnpm" type="checkbox" class="checkbox checkbox-sm" :disabled="form.all" /> pnpm</label
                 >
             </div>
-
-            <Btn type="submit" color="primary" :disabled="!canSubmit">
-                {{ busy ? 'Job déjà en cours…' : form.processing ? 'Envoi…' : 'Lancer la mise à jour' }}
-            </Btn>
         </form>
 
         <ConfirmPasswordModal
             v-model:open="showConfirmModal"
             title="Confirmer votre identité"
             message="Cette opération modifie les dépendances du projet. Entrez votre mot de passe."
-            confirm-label="Continuer"
+            confirm-label="Confirmer"
             @confirmed="onPasswordConfirmed"
         />
     </div>

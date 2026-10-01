@@ -20,6 +20,7 @@ import Route from '@/Pages/Atoms/action/Route.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import EntityStateBadge from '@/Pages/Atoms/data-display/EntityStateBadge.vue';
 import { getRoleLabel } from '@/Utils/Entity/SharedConstants';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 
 const props = defineProps({
     pages: {
@@ -224,7 +225,7 @@ function saveOrder() {
                     >
                         <span v-if="saving">
                             <span class="loading loading-spinner loading-xs mr-2" />
-                            Enregistrement...
+                            {{ ACTION.save.processing }}
                         </span>
                         <span v-else>Enregistrer l'ordre des pages</span>
                     </Btn>

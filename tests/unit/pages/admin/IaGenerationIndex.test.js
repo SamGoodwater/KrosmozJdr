@@ -66,23 +66,21 @@ vi.mock("@inertiajs/vue3", () => ({
             delete: vi.fn(),
         }),
     usePage: () => ({ props: { flash: {} } }),
-}));
-
-vi.mock("@/Composables/layout/usePageTitle", () => ({
-    usePageTitle: () => ({ setPageTitle: vi.fn() }),
+    router: { on: () => () => {}, visit: vi.fn() },
 }));
 
 vi.mock("@/Composables/store/useNotificationStore", () => ({
     useNotificationStore: () => ({ success: vi.fn() }),
 }));
 
+const { requirePassword } = vi.hoisted(() => ({ requirePassword: vi.fn() }));
 vi.mock("@/Composables/auth/useProtectedAdminAction", () => ({
     useProtectedAdminAction: () => ({
         showPasswordModal: { value: false },
         passwordModalTitle: { value: "" },
         passwordModalMessage: { value: "" },
         passwordModalConfirmLabel: { value: "" },
-        requirePassword: vi.fn(),
+        requirePassword,
         onPasswordConfirmed: vi.fn(),
         onPasswordModalCancel: vi.fn(),
     }),
@@ -95,6 +93,17 @@ function mountIndex(propOverrides = {}) {
         global: {
             stubs: {
                 AdminArea: { template: "<div><slot /></div>" },
+                PageHeader: {
+                    props: ["title", "forms"],
+                    template: `
+                        <header>
+                            <h1>{{ title }}</h1>
+                            <slot name="meta" />
+                            <slot name="actions" />
+                            <button type="button" data-testid="header-save" @click="forms.saveAll()">Enregistrer</button>
+                        </header>
+                    `,
+                },
                 Btn: { template: '<button type="button"><slot /></button>' },
                 InputField: {
                     props: ["modelValue", "label"],
@@ -196,5 +205,16 @@ describe("IaGeneration Index", () => {
 
         await wrapper.get("[data-testid='ia-drop-invalid-examples']").trigger("click");
         expect(wrapper.find("[data-testid='ia-invalid-examples']").exists()).toBe(false);
+    });
+
+    it("enregistre depuis l’en-tête, après confirmation du mot de passe", async () => {
+        requirePassword.mockClear();
+        const wrapper = mountIndex();
+        wrapper.vm.$.setupState.form.isDirty = true;
+
+        await wrapper.get("[data-testid='header-save']").trigger("click");
+        expect(requirePassword).toHaveBeenCalledTimes(1);
+        expect(requirePassword.mock.calls[0][2]).toBe("Enregistrer");
+        expect(wrapper.find("[data-testid='ia-reset-to-file']").exists()).toBe(true);
     });
 });

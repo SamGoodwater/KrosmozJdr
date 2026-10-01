@@ -2,11 +2,13 @@
 /**
  * Page Centre de notifications.
  * - Onglets : Notifications messages (BDD, lu/archivé/épinglé, copier, supprimer) et Notifications temporaires (toasts de la session, copier, vider).
- * - Lien vers la page Paramètres du compte (onglet Notifications).
+ * - En-tête : lien vers les paramètres de notification, « Vider la liste » (onglet temporaire).
  */
 import { ref, computed, inject, onMounted, watch } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
 import { DOFUSDB_API_PREFIX } from '@/utils/scrapping/api';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
 import Tab from '@/Pages/Molecules/navigation/Tab.vue';
 import TabItem from '@/Pages/Atoms/navigation/TabItem.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -263,26 +265,30 @@ onMounted(() => { fetchMessages(); });
 
 <template>
     <div class="container mx-auto px-4 py-6 max-w-4xl">
-        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-            <h1 class="text-2xl font-bold">Centre de notifications</h1>
-            <Route :href="settingsUrl" class="btn btn-ghost btn-sm gap-2">
-                <Icon source="fa-cog" pack="solid" size="sm" alt="" />
-                Paramètres de notification
-            </Route>
-        </div>
-
-        <div class="rounded-box border border-base-300 bg-base-200/30 p-4 mb-4 flex flex-wrap items-center justify-between gap-3">
-            <div>
-                <p class="text-sm font-medium text-content-200">Canaux et fréquence</p>
-                <p class="text-xs text-content-600">
-                    Les emails et notifications in-app respectent tes préférences par type (site, email, digest).
-                </p>
-            </div>
-            <Route :href="settingsUrl" class="btn btn-outline btn-sm gap-2">
-                <Icon source="fa-sliders" pack="solid" size="sm" alt="" />
-                Gérer les préférences
-            </Route>
-        </div>
+        <PageHeader
+            title="Centre de notifications"
+            subtitle="Les emails et notifications in-app respectent tes préférences par type (site, email, digest)."
+        >
+            <template #actions>
+                <Btn
+                    v-if="activeTab === 'temp'"
+                    color="error"
+                    variant="outline"
+                    size="sm"
+                    class="gap-1.5"
+                    @click="clearTemporaryHistory"
+                >
+                    <i :class="ACTION.delete.icon" aria-hidden="true"></i>
+                    Vider la liste
+                </Btn>
+                <Route :href="settingsUrl" class="no-underline">
+                    <Btn color="neutral" variant="ghost" size="sm" class="gap-1.5">
+                        <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+                        Paramètres de notification
+                    </Btn>
+                </Route>
+            </template>
+        </PageHeader>
 
         <Tab variant="lift" size="md" class="mb-4">
             <TabItem
@@ -493,21 +499,17 @@ onMounted(() => { fetchMessages(); });
 
         <!-- Vue Notifications temporaires -->
         <div v-show="activeTab === 'temp'" class="space-y-4">
-            <div class="flex flex-wrap items-center justify-between gap-2 border-glass-b-sm pb-3">
-                <button
-                    type="button"
-                    class="flex items-center gap-2 text-sm text-base-content/80 hover:text-base-content transition-colors"
-                    @click.prevent="activeTab = 'messages'"
-                >
-                    <Icon source="fa-arrow-left" pack="solid" size="sm" alt="" />
-                    <span>Retour aux notifications</span>
-                </button>
+            <div class="flex flex-wrap items-center gap-2 border-glass-b-sm pb-3">
                 <Btn
-                    variant="outline"
+                    color="neutral"
+                    variant="ghost"
                     size="sm"
-                    content="Vider la liste"
-                    @click="clearTemporaryHistory"
-                />
+                    class="gap-1.5"
+                    @click="activeTab = 'messages'"
+                >
+                    <i :class="ACTION.back.icon" aria-hidden="true"></i>
+                    {{ ACTION.back.label }}
+                </Btn>
             </div>
             <p class="text-sm text-base-content/60">
                 Les notifications temporaires sont les toasts affichés pendant ta session. Elles ne sont pas enregistrées.

@@ -7,6 +7,7 @@ namespace Tests\Feature\GenerativeAi;
 use App\Enums\EntityState;
 use App\Models\AiGenerationRun;
 use App\Models\Entity\Breed;
+use App\Models\Entity\Campaign;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
@@ -354,7 +355,7 @@ final class IaInjectJsonTest extends TestCase
         Http::preventStrayRequests();
 
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $campaign = \App\Models\Entity\Campaign::factory()->create([
+        $campaign = Campaign::factory()->create([
             'name' => 'Campagne brute',
             'description' => 'ancien',
             'state' => EntityState::Draft->value,
@@ -404,7 +405,7 @@ final class IaInjectJsonTest extends TestCase
         Http::fake();
         Http::preventStrayRequests();
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $campaign = \App\Models\Entity\Campaign::factory()->create([
+        $campaign = Campaign::factory()->create([
             'name' => 'Garde',
             'state' => EntityState::Draft->value,
             'created_by' => $admin->id,

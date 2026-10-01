@@ -30,7 +30,7 @@ class SystemAccountAndSuperAdminWebTest extends TestCase
     {
         $user = User::factory()->systemAccount()->create([
             'email' => 'system-web-guard@example.test',
-            
+
             'password' => 'correct-password',
         ]);
 
@@ -50,7 +50,7 @@ class SystemAccountAndSuperAdminWebTest extends TestCase
     {
         $system = User::factory()->systemAccount()->create([
             'email' => 'oauth-blocked-system@example.test',
-            
+
         ]);
 
         $pending = [

@@ -3,15 +3,13 @@
  * Admin Sous-effets — Vue dédiée au référentiel des sous-effets.
  * Liste en lecture (slug, type, template, nb effets associés).
  */
-import { Head, Link } from '@inertiajs/vue3';
-import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { Head } from '@inertiajs/vue3';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Route from '@/Pages/Atoms/action/Route.vue';
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
 
-const { setPageTitle } = usePageTitle();
-setPageTitle('Sous-effets');
-
-const props = defineProps({
+defineProps({
     subEffects: { type: Array, required: true },
 });
 
@@ -21,21 +19,19 @@ defineOptions({ layout: AdminArea });
 <template>
     <Head title="Sous-effets" />
     <div class="space-y-6 pb-8">
-        <div class="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
-            <div>
-                <h1 class="text-3xl font-bold text-primary-100">Sous-effets</h1>
-                <p class="text-primary-200 mt-2">
-                    Référentiel des atomes d'effet (frapper, soigner, booster…). Utilisés dans les Effets.
-                </p>
-            </div>
-            <Link
-                :href="route('admin.effects.index')"
-                class="btn btn-outline btn-sm"
-            >
-                <Icon source="fa-solid fa-bolt" size="sm" class="mr-2" />
-                Voir les Effets
-            </Link>
-        </div>
+        <PageHeader
+            title="Sous-effets"
+            subtitle="Référentiel des atomes d'effet (frapper, soigner, booster…). Utilisés dans les Effets."
+        >
+            <template #actions>
+                <Route :href="route('admin.effects.index')" class="no-underline">
+                    <Btn variant="ghost" size="sm" type="button" class="gap-1.5">
+                        <i class="fa-solid fa-bolt" aria-hidden="true"></i>
+                        Voir les effets
+                    </Btn>
+                </Route>
+            </template>
+        </PageHeader>
 
         <div class="overflow-x-auto rounded-box border border-base-300 bg-base-100">
             <table class="table table-zebra table-pin-rows">

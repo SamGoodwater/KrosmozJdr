@@ -24,7 +24,7 @@ export default defineConfig({
     
     // Pool (Vitest 4) : limiter le parallélisme pour éviter les timeouts workers sous charge
     pool: 'forks',
-    maxWorkers: 4,
+    maxWorkers: 2,
     
     // Coverage (Vitest 4 : include explicite, coverage.all retiré)
     coverage: {
@@ -58,8 +58,9 @@ export default defineConfig({
       '.cache',
     ],
     
-    // Timeout pour les tests
-    testTimeout: 10000,
+    // Timeout pour les tests (imports Vue lourds sous charge de la suite complète)
+    testTimeout: 20000,
+    hookTimeout: 20000,
   },
   
   resolve: {

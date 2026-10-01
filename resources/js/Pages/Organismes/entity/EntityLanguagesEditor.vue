@@ -180,8 +180,6 @@ const save = () => {
 
         <div class="flex justify-end border-t border-base-300 pt-2">
             <EditActionDock
-                primary-label="Enregistrer les langues"
-                processing-label="Sauvegarde…"
                 :processing="form.processing"
                 :disabled="!hasUnsavedChanges"
                 :show-secondary="false"

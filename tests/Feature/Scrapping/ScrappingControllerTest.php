@@ -259,6 +259,8 @@ class ScrappingControllerTest extends TestCase
 
         $response = $this->actingAs($this->admin)->withSession(['auth.password_confirmed_at' => time()])->postJson('/api/dofusdb/import/batch', [
             'entities' => $entities,
+            'include_relations' => false,
+            'download_images' => false,
         ]);
 
         // Le contrôleur retourne 201 pour les batch imports réussis

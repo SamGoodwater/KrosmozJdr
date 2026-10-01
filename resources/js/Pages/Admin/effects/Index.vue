@@ -5,18 +5,18 @@
  */
 import { computed, ref, watch } from 'vue';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
-import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { usePageForms } from '@/Composables/form/usePageForms';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 import SidebarNav from '@/Pages/Organismes/layout/SidebarNav.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import EffectGroupEditorForm from '@/Pages/Organismes/entity/EffectGroupEditorForm.vue';
 import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
 import { AREA_NOTATION_HELP, isValidAreaNotation } from '@/Utils/Entity/areaNotation.js';
-
-const { setPageTitle } = usePageTitle();
 
 const props = defineProps({
     effects: { type: Array, required: true },
@@ -31,7 +31,6 @@ const props = defineProps({
 });
 
 defineOptions({ layout: AdminArea });
-setPageTitle('Effets');
 
 const page = usePage();
 const adminUnlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
@@ -45,6 +44,38 @@ const isGroupEdit = computed(
 );
 
 const groupEditorRef = ref(null);
+
+const pageTitle = computed(() => {
+    if (props.selected === 'new') return 'Nouvel effet';
+    if (props.selected && typeof props.selected === 'object') {
+        return props.selected.name || props.selected.slug || 'Effet';
+    }
+    return 'Effets';
+});
+
+/** Pont entre l’éditeur de groupe (état interne) et l’enregistrement de la page. */
+const groupEditorForm = {
+    get isDirty() {
+        return Boolean(groupEditorRef.value?.isDirty);
+    },
+    reset() {
+        groupEditorRef.value?.resetToSaved?.();
+    },
+    clearErrors() {},
+};
+
+const pageForms = usePageForms();
+pageForms.register('group', groupEditorForm, (callbacks) => {
+    const editor = groupEditorRef.value;
+    if (!editor) {
+        callbacks.onCancel();
+        return;
+    }
+    editor
+        .submitGroupAsync()
+        .then((result) => (result?.ok ? callbacks.onSuccess() : callbacks.onError({ area: result?.reason })))
+        .catch((error) => callbacks.onError(error?.errors));
+});
 
 const TARGET_TYPE_OPTIONS = [
     { value: 'direct', label: 'Direct' },
@@ -146,18 +177,69 @@ function duplicateEffect() {
 </script>
 
 <template>
-    <Head title="Effets" />
+    <Head :title="pageTitle" />
+
+    <PageHeader :title="pageTitle" :forms="isGroupEdit ? pageForms : null">
+        <template v-if="adminUnlocked && isGroupEdit" #subtitle>
+            Champs communs à tous les degrés, puis un onglet par degré (slug, <strong>zone</strong>, sous-effets et
+            <strong>niveau de créature requis</strong> peuvent différer).
+        </template>
+        <template v-else-if="adminUnlocked && selected === 'new'" #subtitle>
+            Un premier degré (D1) est créé automatiquement. Les sous-effets s’ajoutent après la création.
+        </template>
+        <template v-if="adminUnlocked && isGroupEdit" #actions>
+            <Btn
+                type="button"
+                variant="ghost"
+                size="sm"
+                :disabled="duplicateForm.processing || groupEditorRef?.saving"
+                @click="duplicateDegree"
+            >
+                <i :class="ACTION.create.icon" class="mr-1.5" aria-hidden="true"></i>
+                Ajouter un degré
+            </Btn>
+            <Btn
+                type="button"
+                variant="ghost"
+                size="sm"
+                :disabled="duplicateForm.processing || groupEditorRef?.saving"
+                @click="duplicateEffect"
+            >
+                <i class="fa-solid fa-copy mr-1.5" aria-hidden="true"></i>
+                Dupliquer l’effet
+            </Btn>
+            <Btn
+                type="button"
+                variant="ghost"
+                color="error"
+                size="sm"
+                :disabled="form.processing || groupEditorRef?.saving"
+                @click="destroyDefinition"
+            >
+                <i :class="ACTION.delete.icon" class="mr-1.5" aria-hidden="true"></i>
+                {{ ACTION.delete.label }}
+            </Btn>
+        </template>
+        <template v-if="!adminUnlocked" #primary>
+            <Btn color="primary" size="sm" @click="showAdminConfirmModal = true">
+                <i :class="ACTION.confirm.icon" class="mr-1.5" aria-hidden="true"></i>
+                {{ ACTION.confirm.label }}
+            </Btn>
+        </template>
+        <template v-else-if="selected === 'new'" #primary>
+            <Btn color="primary" size="sm" :disabled="form.processing" @click="submit">
+                <i :class="ACTION.create.icon" class="mr-1.5" aria-hidden="true"></i>
+                {{ form.processing ? ACTION.create.processing : ACTION.create.label }}
+            </Btn>
+        </template>
+    </PageHeader>
 
     <div
         v-if="!adminUnlocked"
-        class="rounded-box border border-warning/40 bg-warning/10 p-8 mx-auto max-w-lg my-8 text-center space-y-4"
+        class="rounded-box border border-warning/40 bg-warning/10 p-4 text-sm"
     >
-        <p class="text-warning-content">
-            La définition des effets modifie la base de données. Confirme ton mot de passe pour continuer.
-        </p>
-        <Btn color="primary" @click="showAdminConfirmModal = true">
-            Accéder à l’administration des effets
-        </Btn>
+        La définition des effets modifie la base de données. Confirme ton mot de passe (bouton « Confirmer » en haut)
+        pour continuer.
     </div>
 
     <div v-else class="flex h-full min-h-0 w-full flex-col lg:flex-row">
@@ -189,66 +271,23 @@ function duplicateEffect() {
 
         <main class="min-w-0 flex-1 overflow-y-auto p-6">
             <template v-if="selected">
-                <h1 class="mb-2 text-2xl font-bold">
-                    {{ selected === 'new' ? 'Nouvel effet' : (selected.name || selected.slug || 'Effet') }}
-                </h1>
-                <p class="mb-6 text-sm text-base-content/70">
-                    <template v-if="isGroupEdit">
-                        Champs communs à tous les degrés du groupe, puis un onglet par degré (slug, <strong>zone</strong> et sous-effets peuvent différer par degré).
-                        Le <strong>niveau de créature requis</strong> par degré se règle dans chaque onglet (champ dédié), y compris depuis la fiche sort.
-                    </template>
-                    <template v-else>
-                        Nom, description optionnelle, groupe et degré. Liste des sous-effets avec ordre, contexte (Général / Combat / Hors combat) et paramètres.
-                    </template>
-                </p>
-
-                <!-- ——— Édition groupe (effet existant avec groupEffects) ——— -->
-                <template v-if="isGroupEdit">
-                    <EffectGroupEditorForm
-                        ref="groupEditorRef"
-                        :options="options"
-                        :group-effects="groupEffects"
-                        :selected-effect-id="Number(groupEffects[0]?.id) || 0"
-                        :patch-url="route('admin.effects.group-update', selected.id)"
-                        :show-admin-degree-delete="true"
-                        :admin-effect-id="Number(selected?.id)"
-                    />
-                    <div class="flex flex-wrap gap-2 items-center mt-4">
-                        <button
-                            type="button"
-                            class="btn btn-outline"
-                            :disabled="duplicateForm.processing || groupEditorRef?.saving"
-                            @click="duplicateDegree"
-                        >
-                            Ajouter un degré
-                        </button>
-                        <button
-                            type="button"
-                            class="btn btn-outline"
-                            :disabled="duplicateForm.processing || groupEditorRef?.saving"
-                            @click="duplicateEffect"
-                        >
-                            Dupliquer l'effet
-                        </button>
-                        <button
-                            type="button"
-                            class="btn btn-ghost btn-error"
-                            :disabled="form.processing || groupEditorRef?.saving"
-                            @click="destroyDefinition"
-                        >
-                            Supprimer la définition
-                        </button>
-                    </div>
-                </template>
+                <EffectGroupEditorForm
+                    v-if="isGroupEdit"
+                    ref="groupEditorRef"
+                    :options="options"
+                    :group-effects="groupEffects"
+                    :selected-effect-id="Number(groupEffects[0]?.id) || 0"
+                    :patch-url="route('admin.effects.group-update', selected.id)"
+                    :show-admin-degree-delete="true"
+                    :admin-effect-id="Number(selected?.id)"
+                    hide-submit-button
+                />
 
                 <!-- ——— Création (nouvel effet) ——— -->
                 <form v-else-if="selected === 'new'" class="space-y-6" @submit.prevent="submit">
                     <div class="card bg-base-100 shadow">
                         <div class="card-body">
                             <h2 class="card-title text-lg">Nouvelle définition</h2>
-                            <p class="text-sm text-base-content/70 mb-2">
-                                Un premier degré (D1) est créé automatiquement. Ajoutez les sous-effets après enregistrement.
-                            </p>
                             <div class="grid gap-4 sm:grid-cols-2">
                                 <InputField v-model="form.name" label="Nom" name="name" />
                                 <InputField v-model="form.slug" label="Slug" name="slug" helper="Optionnel, unique." />
@@ -289,13 +328,6 @@ function duplicateEffect() {
                             </div>
                         </div>
                     </div>
-
-                    <div class="flex flex-wrap gap-2">
-                        <button type="submit" class="btn btn-primary" :disabled="form.processing">
-                            {{ form.processing ? 'Enregistrement…' : 'Créer' }}
-                        </button>
-                        <p v-if="form.recentlySuccessful" class="text-sm text-success">Enregistré.</p>
-                    </div>
                 </form>
             </template>
             <template v-else>
@@ -310,7 +342,7 @@ function duplicateEffect() {
         v-model:open="showAdminConfirmModal"
         title="Administration des effets"
         message="Cette section modifie les effets et degrés en base. Entre ton mot de passe pour confirmer ton identité."
-        confirm-label="Accéder"
+        confirm-label="Confirmer"
         @confirmed="onAdminPasswordConfirmed"
     />
 </template>

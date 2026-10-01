@@ -40,7 +40,7 @@ class EntityDisplayVisibilityControllerTest extends TestCase
 
         $visibilityService = app(EntityDisplayVisibilityService::class);
 
-        $response = $this->actingAs($admin)->patch(
+        $response = $this->actingAsConfirmed($admin)->patch(
             route('admin.entity-display-visibility.update'),
             ['rules' => $visibilityService->matrixForManageableEntities()],
         );

@@ -5,12 +5,14 @@
  */
 import { computed, ref } from "vue";
 import { Head, useForm, usePage } from "@inertiajs/vue3";
-import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import { usePageForms } from "@/Composables/form/usePageForms";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { useProtectedAdminAction } from "@/Composables/auth/useProtectedAdminAction";
 import { getEntityIconUrl } from "@/config/entities";
 import AdminArea from "@/Pages/Layouts/AdminArea.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
+import PageHeader from "@/Pages/Molecules/layout/PageHeader.vue";
+import { ACTION } from "@/Utils/atomic-design/actionLabels";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import TextareaField from "@/Pages/Molecules/data-input/TextareaField.vue";
 import ConfirmPasswordModal from "@/Pages/Molecules/action/ConfirmPasswordModal.vue";
@@ -43,9 +45,6 @@ const props = defineProps({
     available_models: { type: Array, default: () => [] },
     invalid_example_refs: { type: Object, default: () => ({}) },
 });
-
-const { setPageTitle } = usePageTitle();
-setPageTitle("IA métier");
 
 const page = usePage();
 const notificationStore = useNotificationStore();
@@ -241,30 +240,56 @@ function onSaveError(errors) {
     }
 }
 
-function save() {
+/** Callbacks de `usePageForms` en attente de la confirmation du mot de passe. */
+let pendingSaveCallbacks = null;
+
+/**
+ * @param {{ onSuccess: Function, onError: Function, onCancel: Function }} callbacks
+ * @returns {void}
+ */
+function submitConfig(callbacks) {
+    pendingSaveCallbacks = callbacks;
     requirePassword(
         "Enregistrer les réglages IA",
         "Ces réglages contrôlent ce que l’IA a le droit de modifier. Confirme ton mot de passe.",
-        "Enregistrer",
+        ACTION.save.label,
         () => {
+            pendingSaveCallbacks = null;
             form.put(route("admin.content.ia-generation.update"), {
                 preserveScroll: true,
-                onSuccess: () => notificationStore.success("Réglages IA enregistrés."),
-                onError: onSaveError,
+                preserveState: true,
+                onSuccess: () => {
+                    notificationStore.success("Réglages IA enregistrés.");
+                    callbacks.onSuccess();
+                },
+                onError: (errors) => {
+                    onSaveError(errors);
+                    callbacks.onError(errors);
+                },
+                onCancel: callbacks.onCancel,
             });
         }
     );
 }
 
+const pageForms = usePageForms();
+pageForms.register("config", form, submitConfig);
+
+function onPasswordCancel() {
+    onPasswordModalCancel();
+    pendingSaveCallbacks?.onCancel();
+    pendingSaveCallbacks = null;
+}
+
 function resetToFile() {
     requirePassword(
-        "Réinitialiser les réglages IA",
+        "Reprendre le fichier du dépôt",
         "La version en base sera effacée. On reprend le fichier du dépôt.",
-        "Réinitialiser",
+        "Reprendre le fichier",
         () => {
             form.delete(route("admin.content.ia-generation.destroy"), {
                 preserveScroll: true,
-                onSuccess: () => notificationStore.success("Réglages IA réinitialisés."),
+                onSuccess: () => notificationStore.success("Fichier du dépôt rétabli."),
             });
         }
     );
@@ -303,19 +328,31 @@ function importItemsFromFiles() {
     <Head title="IA métier" />
 
     <div class="space-y-6 pb-8">
-        <div>
-            <h1 class="text-2xl font-semibold text-base-content">IA métier</h1>
-            <p class="mt-2 text-sm text-base-content/70 max-w-3xl">
-                Ce que le modèle a le droit de modifier, par type d’entité. Les valeurs sont
-                enregistrées en base (pas besoin d’éditer un fichier). Tant que rien n’est sauvé
-                ici, c’est le JSON du dépôt qui s’applique.
-            </p>
-            <p v-if="is_stored" class="mt-2 text-sm text-base-content/70">
-                Version en base
-                <span v-if="updatedLabel">, enregistrée le {{ updatedLabel }}</span>.
-            </p>
-            <p v-else class="mt-2 text-sm text-base-content/70">Aucune surcharge en base : fichier du dépôt.</p>
-        </div>
+        <PageHeader
+            title="IA métier"
+            subtitle="Ce que le modèle a le droit de modifier, par type d’entité. Tant que rien n’est enregistré ici, c’est le JSON du dépôt qui s’applique."
+            :forms="pageForms"
+        >
+            <template #meta>
+                <span v-if="is_stored" class="badge badge-ghost badge-sm" data-testid="ia-stored-badge">
+                    Version en base<template v-if="updatedLabel"> · {{ updatedLabel }}</template>
+                </span>
+                <span v-else class="badge badge-ghost badge-sm">Fichier du dépôt</span>
+            </template>
+            <template #actions>
+                <Btn
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    :disabled="form.processing || !is_stored"
+                    data-testid="ia-reset-to-file"
+                    @click="resetToFile"
+                >
+                    <i :class="ACTION.discard.icon" class="mr-1.5" aria-hidden="true"></i>
+                    Reprendre le fichier du dépôt
+                </Btn>
+            </template>
+        </PageHeader>
 
         <section
             v-if="lingeringInvalid.length"
@@ -354,7 +391,7 @@ function importItemsFromFiles() {
             {{ page.props.flash.error }}
         </p>
 
-        <form class="space-y-6" @submit.prevent="save">
+        <form class="space-y-6" @submit.prevent="pageForms.saveAll()">
             <section
                 class="rounded-box border border-base-300 bg-base-100/50 p-4 space-y-3"
                 data-testid="ia-usage"
@@ -490,18 +527,6 @@ function importItemsFromFiles() {
             >
                 <li v-for="(message, index) in formErrorMessages" :key="index">{{ message }}</li>
             </ul>
-
-            <div class="flex flex-wrap gap-3">
-                <Btn type="submit" color="primary" :disabled="form.processing">Enregistrer</Btn>
-                <Btn
-                    type="button"
-                    variant="outline"
-                    :disabled="form.processing || !is_stored"
-                    @click="resetToFile"
-                >
-                    Reprendre le fichier du dépôt
-                </Btn>
-            </div>
         </form>
 
         <section class="rounded-box border border-base-300 bg-base-100/50 p-4 space-y-3">
@@ -555,6 +580,6 @@ function importItemsFromFiles() {
         :message="passwordModalMessage"
         :confirm-label="passwordModalConfirmLabel"
         @confirmed="onPasswordConfirmed"
-        @cancel="onPasswordModalCancel"
+        @cancel="onPasswordCancel"
     />
 </template>

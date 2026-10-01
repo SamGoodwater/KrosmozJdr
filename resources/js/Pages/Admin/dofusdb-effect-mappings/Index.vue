@@ -5,19 +5,18 @@
  */
 import { computed, onMounted, ref } from 'vue';
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectSearchField from '@/Pages/Molecules/data-input/SelectSearchField.vue';
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
 import axios from 'axios';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 import {
     filterDofusdbEffectMappings,
     groupDofusdbEffectMappings,
 } from '@/Utils/effects/groupDofusdbEffectMappings';
-
-const { setPageTitle } = usePageTitle();
 
 const page = usePage();
 const adminUnlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
@@ -35,7 +34,6 @@ const props = defineProps({
 });
 
 defineOptions({ layout: AdminArea });
-setPageTitle('Mapping effets DofusDB → Krosmoz');
 
 const showModal = ref(false);
 const modalMode = ref('create');
@@ -48,6 +46,12 @@ const form = ref({
 });
 const formErrors = ref({});
 const formSaving = ref(false);
+const submitLabel = computed(() => {
+    if (modalMode.value === 'create') {
+        return formSaving.value ? ACTION.create.processing : ACTION.create.label;
+    }
+    return formSaving.value ? ACTION.save.processing : ACTION.save.label;
+});
 const listFilter = ref(String(props.effectIdFilter || ''));
 const showAutre = ref(false);
 
@@ -133,6 +137,7 @@ function submitMapping() {
     axios[method](url, payload)
         .then(() => {
             showModal.value = false;
+            formSaving.value = false;
             router.reload({ only: ['mappings'] });
         })
         .catch((err) => {
@@ -148,10 +153,6 @@ function confirmDelete(mapping) {
     });
 }
 
-function goBackToEffects() {
-    router.visit(route('admin.effects.index'));
-}
-
 onMounted(() => {
     if (!prefillEffectId.value || hasExactPrefillMatch.value) {
         return;
@@ -162,35 +163,38 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Mapping effets DofusDB" />
+    <Head title="Mappings effets" />
+
+    <PageHeader title="Mappings effets" back-route="admin.effects.index" back-label="Effets">
+        <template #subtitle>
+            Pour chaque effectId DofusDB : l’action Krosmoz (sous-effet) et la source de caractéristique. Le groupe
+            <code class="text-xs">autre</code> est volontairement volumineux (hors périmètre : glyphes, pièges,
+            placeholders). Il est masqué par défaut.
+        </template>
+        <template #primary>
+            <Btn v-if="!adminUnlocked" color="primary" size="sm" type="button" @click="showAdminConfirmModal = true">
+                <i :class="ACTION.confirm.icon" class="mr-1.5" aria-hidden="true"></i>
+                {{ ACTION.confirm.label }}
+            </Btn>
+            <Btn v-else color="primary" size="sm" type="button" @click="openCreate">
+                <i :class="ACTION.create.icon" class="mr-1.5" aria-hidden="true"></i>
+                {{ ACTION.create.label }}
+            </Btn>
+        </template>
+    </PageHeader>
 
     <div
         v-if="!adminUnlocked"
-        class="rounded-box border border-warning/40 bg-warning/10 p-8 mx-auto max-w-lg my-8 text-center space-y-4"
+        class="rounded-box border border-warning/40 bg-warning/10 p-8 mx-auto max-w-lg my-8 text-center"
     >
         <p class="text-warning-content">
-            Les mappings modifient la base de données. Confirme ton mot de passe pour continuer.
+            Les mappings modifient la base de données. Confirme ton mot de passe (bouton « Confirmer » en haut) pour
+            continuer.
         </p>
-        <Btn color="primary" @click="showAdminConfirmModal = true">
-            Accéder aux mappings effets DofusDB
-        </Btn>
     </div>
 
     <div v-else class="flex h-full min-h-0 w-full flex-col lg:flex-row">
         <main class="min-w-0 flex-1 overflow-y-auto p-6">
-            <div class="mb-4">
-                <Btn color="neutral" variant="ghost" size="sm" class="gap-2 mb-2" @click="goBackToEffects">
-                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                    Retour aux effets
-                </Btn>
-                <h1 class="text-2xl font-bold">Mapping effectId DofusDB → sous-effet Krosmoz</h1>
-                <p class="mt-1 text-sm text-base-content/70">
-                    Définit pour chaque effectId DofusDB l’action Krosmoz (sous-effet) et la source de caractéristique.
-                    Le groupe <code class="text-xs">autre</code> est volontairement volumineux (hors périmètre :
-                    glyphes, pièges, placeholders). Il est masqué par défaut.
-                </p>
-            </div>
-
             <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
                 <h2 class="text-lg font-semibold">Mappings en base</h2>
                 <div class="flex flex-wrap items-end gap-3">
@@ -206,7 +210,6 @@ onMounted(() => {
                             <span class="text-base-content/50">({{ autreCount }})</span>
                         </span>
                     </label>
-                    <Btn color="primary" size="sm" @click="openCreate">Ajouter un mapping</Btn>
                 </div>
             </div>
 
@@ -217,15 +220,11 @@ onMounted(() => {
                 <template v-if="mappings.length === 0">
                     Aucun mapping en base. Exécutez le seeder
                     <code class="rounded bg-base-300 px-1 text-xs">php artisan db:seed --class=DofusdbEffectMappingSeeder</code>
-                    ou ajoutez des mappings manuellement.
+                    ou ajoutez des mappings manuellement (bouton « Créer » en haut).
                 </template>
                 <template v-else>
                     Aucun mapping ne correspond au filtre courant.
                 </template>
-                <br />
-                <button type="button" class="btn btn-primary btn-sm mt-4" @click="openCreate">
-                    Ajouter un mapping
-                </button>
             </div>
 
             <div v-else class="space-y-4">
@@ -264,12 +263,12 @@ onMounted(() => {
                                 <td class="font-mono text-sm">{{ m.characteristic_key ?? '—' }}</td>
                                 <td>
                                     <div class="flex gap-1">
-                                        <button type="button" class="btn btn-ghost btn-xs" @click="openEdit(m)">
-                                            Modifier
-                                        </button>
-                                        <button type="button" class="btn btn-ghost btn-xs text-error" @click="confirmDelete(m)">
-                                            Suppr.
-                                        </button>
+                                        <Btn variant="ghost" size="xs" @click="openEdit(m)">
+                                            {{ ACTION.edit.label }}
+                                        </Btn>
+                                        <Btn variant="ghost" color="error" size="xs" @click="confirmDelete(m)">
+                                            {{ ACTION.delete.label }}
+                                        </Btn>
                                     </div>
                                 </td>
                             </tr>
@@ -329,23 +328,23 @@ onMounted(() => {
                     :options="characteristicKeyOptions"
                 />
                 <div class="modal-action">
-                    <button type="button" class="btn" @click="showModal = false">Annuler</button>
-                    <button type="submit" class="btn btn-primary" :disabled="formSaving">
-                        {{ formSaving ? 'Enregistrement…' : (modalMode === 'create' ? 'Créer' : 'Enregistrer') }}
-                    </button>
+                    <Btn variant="ghost" @click="showModal = false">{{ ACTION.close.label }}</Btn>
+                    <Btn type="submit" color="primary" :disabled="formSaving">
+                        {{ submitLabel }}
+                    </Btn>
                 </div>
             </form>
         </div>
         <form method="dialog" class="modal-backdrop">
-            <button type="button" @click="showModal = false">fermer</button>
+            <button type="button" @click="showModal = false">{{ ACTION.close.label }}</button>
         </form>
     </dialog>
 
     <ConfirmPasswordModal
         v-model:open="showAdminConfirmModal"
-        title="Mapping effets DofusDB"
+        title="Mappings effets"
         message="Cette section modifie les mappings effectId en base. Entre ton mot de passe pour confirmer ton identité."
-        confirm-label="Accéder"
+        :confirm-label="ACTION.confirm.label"
         @confirmed="onAdminPasswordConfirmed"
     />
 </template>

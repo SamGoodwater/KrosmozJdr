@@ -1,13 +1,11 @@
 <script setup>
-import { Head, Link, useForm } from "@inertiajs/vue3";
-import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import { Head, useForm } from "@inertiajs/vue3";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
+import PageHeader from "@/Pages/Molecules/layout/PageHeader.vue";
 
 const props = defineProps({
     thread: { type: Object, required: true },
 });
-
-usePageTitle().setPageTitle("Retour utilisateur");
 
 const form = useForm({
     message: "",
@@ -26,24 +24,17 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Retour utilisateur" />
+    <Head :title="thread.subject_preview || 'Retour utilisateur'" />
     <section class="mx-auto flex w-full max-w-4xl flex-col gap-4 p-4">
-        <Link href="/feedback" class="text-sm text-primary hover:underline">
-            Retour à mes retours
-        </Link>
-
-        <header class="rounded-box border border-base-300 bg-base-100/70 p-4">
-            <div class="flex flex-wrap items-start justify-between gap-2">
-                <div>
-                    <span class="badge badge-soft badge-primary mr-2">{{ thread.type }}</span>
-                    <h1 class="inline text-xl font-bold">{{ thread.subject_preview }}</h1>
-                </div>
+        <PageHeader :title="thread.subject_preview || 'Retour utilisateur'" back-href="/feedback">
+            <template v-if="thread.source_url" #subtitle>
+                <a :href="thread.source_url" class="hover:underline">Page signalée : {{ thread.source_url }}</a>
+            </template>
+            <template #meta>
+                <span class="badge badge-soft badge-primary">{{ thread.type }}</span>
                 <span class="badge badge-outline">{{ thread.status }}</span>
-            </div>
-            <a v-if="thread.source_url" :href="thread.source_url" class="mt-2 block text-xs text-base-content/60 hover:underline">
-                Page signalée : {{ thread.source_url }}
-            </a>
-        </header>
+            </template>
+        </PageHeader>
 
         <div class="flex flex-col gap-3">
             <article

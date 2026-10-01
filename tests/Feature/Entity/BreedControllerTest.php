@@ -182,10 +182,14 @@ class BreedControllerTest extends TestCase
                 ->has('availableLanguages')
                 ->has('availableSections')
                 ->where('availableSections', function ($sections) {
-                    if (! is_array($sections) || $sections === []) {
+                    $rows = collect($sections)
+                        ->map(fn ($row) => collect($row)->all())
+                        ->values()
+                        ->all();
+                    if ($rows === []) {
                         return false;
                     }
-                    $row = $sections[0];
+                    $row = $rows[0];
                     if (! is_array($row)) {
                         return false;
                     }
@@ -226,10 +230,11 @@ class BreedControllerTest extends TestCase
         $breed = Breed::factory()->create(['name' => 'Ancien']);
 
         $this->actingAs($admin)
+            ->from(route('entities.breeds.edit', $breed))
             ->patch(route('entities.breeds.update', $breed), [
                 'name' => 'Nouveau nom',
             ])
-            ->assertRedirect(route('entities.breeds.show', $breed));
+            ->assertRedirect(route('entities.breeds.edit', $breed));
 
         $this->assertDatabaseHas('breeds', [
             'id' => $breed->id,
@@ -243,6 +248,7 @@ class BreedControllerTest extends TestCase
         $breed = Breed::factory()->create();
 
         $this->actingAs($admin)
+            ->from(route('entities.breeds.edit', $breed))
             ->patch(route('entities.breeds.update', $breed), [
                 'element_orientations' => [
                     'air' => 'tank',
@@ -251,7 +257,7 @@ class BreedControllerTest extends TestCase
                     'water' => '',
                 ],
             ])
-            ->assertRedirect(route('entities.breeds.show', $breed));
+            ->assertRedirect(route('entities.breeds.edit', $breed));
 
         $this->assertDatabaseHas('breed_element_orientations', [
             'breed_id' => $breed->id,

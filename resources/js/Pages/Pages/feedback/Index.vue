@@ -1,12 +1,10 @@
 <script setup>
 import { Head, Link } from "@inertiajs/vue3";
-import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import PageHeader from "@/Pages/Molecules/layout/PageHeader.vue";
 
 defineProps({
     threads: { type: Object, required: true },
 });
-
-usePageTitle().setPageTitle("Mes retours");
 
 const statusLabel = (status) => ({
     open: "Ouvert",
@@ -18,12 +16,10 @@ const statusLabel = (status) => ({
 <template>
     <Head title="Mes retours" />
     <section class="mx-auto flex w-full max-w-5xl flex-col gap-4 p-4">
-        <header>
-            <h1 class="text-2xl font-bold">Mes retours</h1>
-            <p class="text-sm text-base-content/70">
-                Suivi des bugs, erreurs et suggestions envoyés depuis ton compte.
-            </p>
-        </header>
+        <PageHeader
+            title="Mes retours"
+            subtitle="Suivi des bugs, erreurs et suggestions envoyés depuis ton compte."
+        />
 
         <div v-if="threads.data.length === 0" class="rounded-box border border-base-300 bg-base-100/70 p-6 text-center text-base-content/70">
             Aucun retour pour le moment.

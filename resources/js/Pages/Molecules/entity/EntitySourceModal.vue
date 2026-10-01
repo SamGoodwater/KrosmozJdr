@@ -15,6 +15,7 @@ import EntityUpdateDiffView from "@/Pages/Molecules/entity/EntityUpdateDiffView.
 import ConfirmPasswordModal from "@/Pages/Molecules/action/ConfirmPasswordModal.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useProtectedAdminAction } from "@/Composables/auth/useProtectedAdminAction";
+import { ACTION } from "@/Utils/atomic-design/actionLabels";
 
 const props = defineProps({
     open: { type: Boolean, default: false },
@@ -333,7 +334,7 @@ async function readJsonFile(file) {
                 <div class="font-semibold text-primary-100">
                     {{ hasDiff ? "Avant / après" : "Sources de la fiche" }}
                 </div>
-                <Btn v-if="!hasDiff" size="sm" variant="ghost" @click="emit('close')">Fermer</Btn>
+                <Btn v-if="!hasDiff" size="sm" variant="ghost" @click="emit('close')">{{ ACTION.close.label }}</Btn>
             </div>
         </template>
 
@@ -446,7 +447,7 @@ async function readJsonFile(file) {
                 </div>
 
                 <div class="flex justify-end gap-2">
-                    <Btn variant="ghost" :disabled="applying" @click="emit('close')">Annuler</Btn>
+                    <Btn variant="ghost" :disabled="applying" @click="emit('close')">{{ ACTION.close.label }}</Btn>
                     <Btn
                         color="primary"
                         :disabled="loading || applying || (playable && !isAdmin) || !canSubmitDofusdb"
@@ -471,7 +472,7 @@ async function readJsonFile(file) {
                         Comme la gestion admin, l’IA n’est disponible qu’après confirmation du mot de passe.
                     </p>
                     <div class="flex justify-end gap-2">
-                        <Btn variant="ghost" @click="emit('close')">Annuler</Btn>
+                        <Btn variant="ghost" @click="emit('close')">{{ ACTION.close.label }}</Btn>
                         <Btn color="primary" data-testid="ia-unlock" @click="promptIaUnlock">
                             <Icon source="fa-lock" pack="solid" alt="" class="mr-2" />
                             Déverrouiller l’IA
@@ -499,7 +500,7 @@ async function readJsonFile(file) {
                     <p v-if="aiError" class="text-sm text-error">{{ aiError }}</p>
                     <p v-if="aiSuccess" class="text-sm text-success">{{ aiSuccess }}</p>
                     <div class="flex justify-end gap-2">
-                        <Btn variant="ghost" :disabled="aiSubmitting" @click="emit('close')">Annuler</Btn>
+                        <Btn variant="ghost" :disabled="aiSubmitting" @click="emit('close')">{{ ACTION.close.label }}</Btn>
                         <Btn color="primary" :disabled="aiSubmitting || missingApiKey" @click="submitAi">
                             <Icon source="fa-wand-magic-sparkles" pack="solid" alt="" class="mr-2" />
                             {{ aiSubmitting ? "Conversion…" : "Lancer la conversion" }}
@@ -518,7 +519,7 @@ async function readJsonFile(file) {
                         Déverrouille avec ton mot de passe admin pour injecter un JSON.
                     </p>
                     <div class="flex justify-end gap-2">
-                        <Btn variant="ghost" @click="emit('close')">Annuler</Btn>
+                        <Btn variant="ghost" @click="emit('close')">{{ ACTION.close.label }}</Btn>
                         <Btn color="primary" data-testid="json-unlock" @click="promptIaUnlock">
                             <Icon source="fa-lock" pack="solid" alt="" class="mr-2" />
                             Déverrouiller
@@ -573,7 +574,7 @@ async function readJsonFile(file) {
                             {{ jsonExampleLoading ? "Exemple…" : "Charger un exemple" }}
                         </Btn>
                         <div class="flex gap-2">
-                            <Btn variant="ghost" :disabled="aiSubmitting" @click="emit('close')">Annuler</Btn>
+                            <Btn variant="ghost" :disabled="aiSubmitting" @click="emit('close')">{{ ACTION.close.label }}</Btn>
                             <Btn
                                 color="primary"
                                 :disabled="aiSubmitting"

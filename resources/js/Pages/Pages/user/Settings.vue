@@ -3,11 +3,15 @@
  * Page Paramètres du compte.
  * Page dédiée aux paramètres (indépendante des notifications), avec onglets (Notifications, etc.).
  * L’ancre #notifications permet d’ouvrir directement l’onglet Notifications (ex. depuis le centre de notifications).
+ * Les préférences de notification s’enregistrent depuis l’en-tête (usePageForms).
  */
 import { ref, computed, watch, onMounted, onUnmounted, inject } from 'vue';
 import { useForm, usePage, router } from '@inertiajs/vue3';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Route from '@/Pages/Atoms/action/Route.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
+import { usePageForms } from '@/Composables/form/usePageForms';
 
 const page = usePage();
 const notificationStore = inject('notificationStore', null);
@@ -272,29 +276,41 @@ function initNotificationForm() {
     formNotifications.clearErrors();
     formNotifications.notifications_enabled = data.notifications_enabled ?? true;
     formNotifications.notification_preferences = normalizePrefs(data.notification_preferences || {});
+    formNotifications.defaults();
 }
 
-function saveNotifications() {
+/**
+ * @param {{ onSuccess?: Function, onError?: Function, onCancel?: Function }} callbacks - Fournis par usePageForms
+ */
+function saveNotifications(callbacks = {}) {
     if (!settingsUser.value?.id) {
         showToast('error', 'Impossible de charger ton profil. Recharge la page.');
+        callbacks.onError?.();
         return;
     }
 
     formNotifications.notification_preferences = buildNotificationPreferencesPayload();
     formNotifications.patch(`${route('user.update')}?redirect=settings`, {
         preserveScroll: true,
-        onSuccess: () => {
+        preserveState: true,
+        onSuccess: (response) => {
             formNotifications.clearErrors();
             initNotificationForm();
+            callbacks.onSuccess?.(response);
         },
         onError: (errors) => {
             const msg = firstFormError(errors)
                 ?? firstFormError(formNotifications.errors)
                 ?? 'Erreur lors de l’enregistrement des préférences.';
             showToast('error', msg);
+            callbacks.onError?.(errors);
         },
+        onCancel: () => callbacks.onCancel?.(),
     });
 }
+
+const pageForms = usePageForms();
+pageForms.register('notifications', formNotifications, saveNotifications);
 
 function setActiveTabFromHash() {
     const hash = window.location.hash?.replace('#', '') || TAB_NOTIFICATIONS;
@@ -310,7 +326,7 @@ function syncHashToTab() {
 }
 
 watch(settingsUser, (newUser) => {
-    if (newUser?.id && !formNotifications.processing) {
+    if (newUser?.id && !formNotifications.processing && !formNotifications.isDirty) {
         initNotificationForm();
     }
 }, { immediate: true });
@@ -331,32 +347,26 @@ onUnmounted(() => {
 if (typeof window !== 'undefined') {
     window.addEventListener('hashchange', setActiveTabFromHash);
 }
-
-function goBackToProfile() {
-    router.visit(route('user.show'));
-}
 </script>
 
 <template>
     <div class="container mx-auto px-4 py-6 max-w-4xl">
-        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-            <h1 class="text-2xl font-bold">Paramètres du compte</h1>
-            <div class="flex items-center gap-2">
-                <a :href="route('user.privacy.index')" class="btn btn-outline btn-sm">
-                    Mes données (RGPD)
-                </a>
-                <Btn
-                    color="neutral"
-                    variant="ghost"
-                    size="sm"
-                    class="gap-2"
-                    @click="goBackToProfile"
-                >
-                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                    Retour au profil
-                </Btn>
-            </div>
-        </div>
+        <PageHeader
+            title="Paramètres du compte"
+            subtitle="Notifications et connexions de ton compte."
+            back-route="user.show"
+            :forms="pageForms"
+            :save-disabled="notificationTypesFiltered.length === 0"
+        >
+            <template #actions>
+                <Route :href="route('user.privacy.index')" class="no-underline">
+                    <Btn color="neutral" variant="ghost" size="sm" class="gap-1.5">
+                        <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+                        Mes données (RGPD)
+                    </Btn>
+                </Route>
+            </template>
+        </PageHeader>
 
         <div role="tablist" class="tabs tabs-lift tabs-md tabs-top bg-base-100 shadow-sm mb-4">
             <button
@@ -519,23 +529,6 @@ function goBackToProfile() {
                 <p v-else class="mt-4 text-sm text-content-500">
                     Aucune préférence de notification configurée pour ton niveau d'accès.
                 </p>
-                <div v-if="notificationTypesFiltered.length > 0" class="mt-4 flex items-center gap-2">
-                    <Btn
-                        color="primary"
-                        :disabled="formNotifications.processing"
-                        @click="saveNotifications"
-                    >
-                        Enregistrer les préférences
-                    </Btn>
-                    <Btn
-                        color="neutral"
-                        variant="ghost"
-                        :disabled="formNotifications.processing"
-                        @click="initNotificationForm()"
-                    >
-                        Annuler
-                    </Btn>
-                </div>
             </div>
         </div>
 

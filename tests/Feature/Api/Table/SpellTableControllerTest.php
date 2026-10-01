@@ -4,6 +4,7 @@ namespace Tests\Feature\Api\Table;
 
 use App\Http\Middleware\CheckRole;
 use App\Models\Entity\Spell;
+use App\Models\Type\SpellType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -327,9 +328,9 @@ class SpellTableControllerTest extends TestCase
     public function test_types_filter_matches_related_spell_types(): void
     {
         $user = User::factory()->create();
-        $type = \App\Models\Type\SpellType::factory()->create([
+        $type = SpellType::factory()->create([
             'name' => 'FilterTypeUnique',
-            'state' => \App\Models\Type\SpellType::STATE_PLAYABLE,
+            'state' => SpellType::STATE_PLAYABLE,
         ]);
         $with = Spell::factory()->create($this->playableAttrs(['name' => 'Typed']));
         Spell::factory()->create($this->playableAttrs(['name' => 'Untyped']));

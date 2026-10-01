@@ -262,7 +262,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
           group: "Métier",
           required: false,
           showInCompact: true,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
+          bulk: { enabled: true, nullable: true },
         },
       },
     },

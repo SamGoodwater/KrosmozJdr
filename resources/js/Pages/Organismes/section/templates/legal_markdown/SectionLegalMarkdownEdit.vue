@@ -11,6 +11,7 @@ import axios from 'axios';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import InlineSaveStatus from '@/Pages/Atoms/feedback/InlineSaveStatus.vue';
 import { useSectionSave } from '../../composables/useSectionSave';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 
 const props = defineProps({
   section: { type: Object, required: true },
@@ -290,7 +291,7 @@ const handleFileUpload = async (event) => {
         </div>
 
         <button type="button" class="btn btn-primary" @click="saveChangelog">
-          Enregistrer le journal
+          {{ ACTION.save.label }}
         </button>
       </template>
       <p v-if="editorError" class="text-sm text-error">{{ editorError }}</p>

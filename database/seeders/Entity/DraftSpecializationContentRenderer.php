@@ -303,7 +303,6 @@ final class DraftSpecializationContentRenderer
     }
 
     /**
-     * @param  mixed  $entries
      * @return list<array<string, mixed>>
      */
     private function namedEntries(mixed $entries): array

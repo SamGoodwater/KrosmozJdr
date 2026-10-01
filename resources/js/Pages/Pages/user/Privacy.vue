@@ -1,9 +1,12 @@
 <script setup>
+/**
+ * Page RGPD : export des données (en-tête) et demande de suppression du compte (zone dangereuse).
+ */
 import { computed, ref } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import Route from '@/Pages/Atoms/action/Route.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
 
 const page = usePage();
 
@@ -59,24 +62,22 @@ function onDownloadConfirmed() {
 
 <template>
     <div class="container mx-auto px-4 py-6 max-w-5xl space-y-6">
-        <div class="flex items-center justify-between gap-3 flex-wrap">
-            <h1 class="text-2xl font-bold">Mes données personnelles</h1>
-            <Route :href="route('user.settings')" class="btn btn-ghost btn-sm">Retour aux paramètres</Route>
-        </div>
+        <PageHeader
+            title="Mes données personnelles"
+            subtitle="Tu peux demander une archive contenant les données liées à ton compte (RGPD)."
+            back-route="user.settings"
+        >
+            <template #primary>
+                <Btn color="primary" size="sm" :disabled="exportForm.processing" @click="openExportModal">
+                    <i class="fa-solid fa-file-export mr-1.5" aria-hidden="true"></i>
+                    Demander un export
+                </Btn>
+            </template>
+        </PageHeader>
 
         <div class="alert alert-warning">
             <span>Ces actions sont sensibles et protégées. Une confirmation de mot de passe récente est requise.</span>
         </div>
-
-        <section class="rounded-box border border-base-300 bg-base-200/30 p-4 space-y-3">
-            <h2 class="text-lg font-semibold">Exporter mes données (RGPD)</h2>
-            <p class="text-sm text-content-500">
-                Tu peux demander une archive contenant les données liées à ton compte.
-            </p>
-            <Btn color="primary" :disabled="exportForm.processing" @click="openExportModal">
-                Demander un export
-            </Btn>
-        </section>
 
         <section class="rounded-box border border-error/40 bg-error/10 p-4 space-y-3">
             <h2 class="text-lg font-semibold text-error">Supprimer mon compte</h2>

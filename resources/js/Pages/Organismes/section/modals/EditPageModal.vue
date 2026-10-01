@@ -27,6 +27,7 @@ import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import PageSectionEditor from '../PageSectionEditor.vue';
 import { usePageFormOptions } from '@/Composables/pages/usePageFormOptions';
 import { usePageForm } from '@/Composables/pages/usePageForm';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 
 const props = defineProps({
     open: {
@@ -472,15 +473,15 @@ const handleClose = () => {
                     variant="ghost"
                     @click="handleClose"
                 >
-                    Annuler
+                    {{ ACTION.close.label }}
                 </Btn>
                 <Btn
                     type="submit"
                     color="primary"
                     :disabled="formInstance.processing"
                 >
-                    <span v-if="formInstance.processing">Enregistrement...</span>
-                    <span v-else>Enregistrer les modifications</span>
+                    <span v-if="formInstance.processing">{{ ACTION.save.processing }}</span>
+                    <span v-else>{{ ACTION.save.label }}</span>
                 </Btn>
             </div>
         </form>

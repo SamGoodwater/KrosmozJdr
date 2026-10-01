@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Support;
 
+use App\Models\Entity\Breed;
 use App\Support\BreedImagePaths;
 use Tests\TestCase;
 
@@ -42,7 +43,7 @@ final class BreedImagePathsTest extends TestCase
 
     public function test_menu_icon_prefers_color_symbol_over_bw(): void
     {
-        $breed = new \App\Models\Entity\Breed([
+        $breed = new Breed([
             'symbol_bw' => '/storage/images/breeds/iop/symbol-bw.png',
             'symbol_full' => '/storage/images/breeds/iop/symbol-full.png',
             'icon' => '/storage/images/breeds/iop/symbol-bw.png',

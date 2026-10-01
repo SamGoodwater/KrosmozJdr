@@ -121,8 +121,6 @@ function recalculate() {
                     Actualiser le prix
                 </Btn>
                 <EditActionDock
-                    primary-label="Enregistrer le prix"
-                    processing-label="Enregistrement..."
                     :processing="form.processing"
                     :show-secondary="false"
                     :secondary-actions="[]"

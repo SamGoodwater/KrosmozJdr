@@ -1,25 +1,24 @@
 <script setup>
+/**
+ * Inbox admin des retours utilisateurs (bugs, erreurs, suggestions).
+ */
 import { Head, Link } from "@inertiajs/vue3";
-import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import AdminArea from "@/Pages/Layouts/AdminArea.vue";
+import PageHeader from "@/Pages/Molecules/layout/PageHeader.vue";
 
 defineOptions({ layout: AdminArea });
 
 defineProps({
     threads: { type: Object, required: true },
 });
-
-usePageTitle().setPageTitle("Retours utilisateurs");
 </script>
 
 <template>
     <Head title="Retours utilisateurs" />
-    <section class="mx-auto flex w-full max-w-6xl flex-col gap-4 p-4">
-        <header>
-            <h1 class="text-2xl font-bold">Retours utilisateurs</h1>
-            <p class="text-sm text-base-content/70">Inbox admin des bugs, erreurs et suggestions.</p>
-        </header>
 
+    <PageHeader title="Retours utilisateurs" subtitle="Inbox admin des bugs, erreurs et suggestions." />
+
+    <section class="mx-auto flex w-full max-w-6xl flex-col gap-4 p-4">
         <div v-if="threads.data.length === 0" class="rounded-box border border-base-300 bg-base-100/70 p-6 text-center text-base-content/70">
             Aucun retour ouvert.
         </div>

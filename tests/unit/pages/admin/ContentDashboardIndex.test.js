@@ -17,7 +17,7 @@ vi.mock("@inertiajs/vue3", () => ({
 }));
 
 vi.mock("@/Composables/layout/usePageTitle", () => ({
-    usePageTitle: () => ({ setPageTitle: vi.fn() }),
+    usePageTitle: () => ({ setPageTitle: vi.fn(), registerPageHeader: () => () => {} }),
 }));
 
 vi.mock("@/Composables/admin/useProjectConsoleJob", () => ({

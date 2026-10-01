@@ -23,6 +23,7 @@ import CreateSectionModal from './modals/CreateSectionModal.vue'
 import { useSectionAPI } from './composables/useSectionAPI'
 import { SectionMapper } from '@/Utils/Services/Mappers'
 import { useSectionUI } from './composables/useSectionUI'
+import { ACTION } from '@/Utils/atomic-design/actionLabels'
 
 const props = defineProps({
     sections: {
@@ -286,7 +287,7 @@ function handleSectionCreated(data) {
             >
                 <span v-if="saving">
                     <span class="loading loading-spinner loading-xs mr-2" />
-                    Enregistrement...
+                    {{ ACTION.save.processing }}
                 </span>
                 <span v-else>Enregistrer l'ordre des sections</span>
             </Btn>

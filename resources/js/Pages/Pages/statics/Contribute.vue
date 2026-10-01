@@ -4,22 +4,16 @@
 * Utilise les atoms à jour pour la cohérence du design system.
 */
 <script setup>
-import { onMounted } from "vue";
-import { usePageTitle } from "@/Composables/layout/usePageTitle";
 // Atoms à jour
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
-
-const { setPageTitle } = usePageTitle();
-
-onMounted(() => {
-    setPageTitle('Contribuer');
-});
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
 </script>
 
 <template>
     <Container>
+        <PageHeader title="Contribuer" subtitle="Rejoignez l'aventure collaborative" />
         <div class="mx-auto prose max-sm:prose-sm lg:prose-lg">
             <div
                 class="absolute inset-0 bg-[url('/storage/images/logos/logo_project.png')] bg-no-repeat bg-center opacity-10 blur-lg">
@@ -28,9 +22,6 @@ onMounted(() => {
             <!-- Introduction -->
             <section class="mb-10 relative">
                 <div class="relative">
-                    <h2 class="text-xl font-bold text-title mb-4">
-                        Rejoignez l'aventure collaborative
-                    </h2>
                     <p>
                         Le projet Krosmoz JDR est porté par une communauté de passionnés, et ta contribution peut
                         faire toute la différence. Que tu souhaites partager tes idées, participer au développement

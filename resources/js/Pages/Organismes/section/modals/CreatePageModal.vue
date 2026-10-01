@@ -20,6 +20,7 @@ import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import { router } from '@inertiajs/vue3';
 import { usePageFormOptions } from '@/Composables/pages/usePageFormOptions';
 import { usePageForm } from '@/Composables/pages/usePageForm';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 
 const props = defineProps({
     open: {
@@ -195,15 +196,15 @@ const submit = () => {
                         variant="ghost"
                         @click="handleClose"
                     >
-                        Annuler
+                        {{ ACTION.close.label }}
                     </Btn>
                     <Btn
                         type="submit"
                         color="primary"
                         :disabled="form.processing"
                     >
-                        <span v-if="form.processing">Création...</span>
-                        <span v-else>Créer la page</span>
+                        <span v-if="form.processing">{{ ACTION.create.processing }}</span>
+                        <span v-else>{{ ACTION.create.label }}</span>
                     </Btn>
                 </div>
             </form>

@@ -557,7 +557,7 @@ describe('useEntityActions', () => {
       expect((wrapper.vm.conditions?.value ?? wrapper.vm.conditions).map((a) => a.key)).not.toContain('refresh');
     });
 
-    it('affiche refresh pour un admin sur un type convertible IA même sans DofusDB', () => {
+    it('affiche refresh pour un admin, y compris hors DofusDB (conversion IA ou injection JSON)', () => {
       mockPermissions.canUpdateAny.mockReturnValue(false);
       mockPermissions.isAdmin.value = true;
       mockPermissions.can.mockImplementation(() => false);
@@ -573,7 +573,7 @@ describe('useEntityActions', () => {
 
       const wrapper = mount(TestComponent);
       expect((wrapper.vm.npcs?.value ?? wrapper.vm.npcs).map((a) => a.key)).toContain('refresh');
-      expect((wrapper.vm.conditions?.value ?? wrapper.vm.conditions).map((a) => a.key)).not.toContain('refresh');
+      expect((wrapper.vm.conditions?.value ?? wrapper.vm.conditions).map((a) => a.key)).toContain('refresh');
     });
   });
 

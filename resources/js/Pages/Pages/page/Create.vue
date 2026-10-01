@@ -22,6 +22,7 @@ import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants';
 import { TransformService } from '@/Utils/Services';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 
 const { setPageTitle } = usePageTitle();
 setPageTitle('Créer une page');
@@ -106,8 +107,8 @@ const submit = () => {
         <div class="mb-2">
             <Route route="pages.index">
                 <Btn color="neutral" variant="ghost" size="sm" class="gap-2">
-                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                    Retour à la liste
+                    <i :class="ACTION.back.icon" aria-hidden="true"></i>
+                    {{ ACTION.back.label }}
                 </Btn>
             </Route>
         </div>
@@ -226,8 +227,8 @@ const submit = () => {
                             color="primary"
                             :disabled="form.processing"
                         >
-                            <span v-if="form.processing">Création...</span>
-                            <span v-else>Créer la page</span>
+                            <span v-if="form.processing">{{ ACTION.create.processing }}</span>
+                            <span v-else>{{ ACTION.create.label }}</span>
                         </Btn>
                     </div>
                 </form>

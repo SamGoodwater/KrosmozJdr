@@ -8,10 +8,10 @@
 * - Sans visuels de démonstration non connectés
 */
 import { Head, usePage } from "@inertiajs/vue3";
-import { computed, onMounted } from "vue";
-import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import { computed } from "vue";
 
 // Atoms & Molecules (nouveaux chemins)
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
 import Avatar from '@/Pages/Atoms/data-display/Avatar.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
@@ -21,6 +21,7 @@ import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import EntityLabel from '@/Pages/Atoms/data-display/EntityLabel.vue';
 import VerifyMailAlert from '@/Pages/Molecules/user/VerifyMailAlert.vue';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 
 const page = usePage();
 const RELATION_DISPLAY_LIMIT = 4;
@@ -36,7 +37,6 @@ const user = computed(() => {
     }
     return userData;
 });
-const { setPageTitle } = usePageTitle();
 
 const roleValue = computed(() => Number(user.value?.role ?? 0));
 const canManageEntities = computed(() => roleValue.value >= 3);
@@ -195,16 +195,36 @@ const levelSummary = (item) => {
     }
     return readLevel !== null ? `Lecture ${readLevel}` : `Édition ${writeLevel}`;
 };
-
-onMounted(() => {
-    setPageTitle('Mon Compte');
-});
 </script>
 
 <template>
 
-    <Head title="Mon Compte" />
+    <Head title="Mon compte" />
     <Container class="space-y-6">
+        <PageHeader title="Mon compte" subtitle="Profil, capacités et accès de ton compte.">
+            <template #actions>
+                <Tooltip content="Exercer mes droits RGPD" placement="bottom">
+                    <Route :href="route('user.privacy.index')" class="no-underline">
+                        <Btn color="neutral" variant="ghost" size="sm">Mes données</Btn>
+                    </Route>
+                </Tooltip>
+                <Tooltip content="Paramètres du compte (notifications, etc.)" placement="bottom">
+                    <Route route="user.settings" class="no-underline">
+                        <Btn color="neutral" variant="ghost" size="sm">Paramètres</Btn>
+                    </Route>
+                </Tooltip>
+            </template>
+            <template #primary>
+                <Tooltip content="Modifier mon profil" placement="bottom">
+                    <Route route="user.edit" class="no-underline">
+                        <Btn color="primary" size="sm">
+                            <i :class="ACTION.edit.icon" class="mr-1.5" aria-hidden="true"></i>
+                            {{ ACTION.edit.label }}
+                        </Btn>
+                    </Route>
+                </Tooltip>
+            </template>
+        </PageHeader>
         <!-- Profil utilisateur -->
         <div class="flex flex-col space-y-4">
             <div class="flex justify-between gap-6 max-sm:gap-3 flex-wrap">
@@ -226,23 +246,6 @@ onMounted(() => {
                                 <BadgeRole :role="user?.role_name || 'user'" />
                             </div>
                         </div>
-                    </div>
-                    <div class="flex justify-end gap-2 max-[930px]:w-full">
-                        <Tooltip content="Exercer mes droits RGPD" placement="top">
-                            <Route :href="route('user.privacy.index')">
-                                <Btn color="neutral" variant="outline" size="sm">Mes données</Btn>
-                            </Route>
-                        </Tooltip>
-                        <Tooltip content="Paramètres du compte (notifications, etc.)" placement="top">
-                            <Route route="user.settings">
-                                <Btn color="neutral" variant="outline" size="sm">Paramètres</Btn>
-                            </Route>
-                        </Tooltip>
-                        <Tooltip content="Modifier mon profil" placement="top">
-                            <Route route="user.edit">
-                                <Btn color="primary" size="sm">Éditer</Btn>
-                            </Route>
-                        </Tooltip>
                     </div>
                 </div>
                 <div v-if="user && !user.is_verified">

@@ -24,6 +24,7 @@ import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants';
 import PageSectionEditor from '@/Pages/Organismes/section/PageSectionEditor.vue';
 import { TransformService } from '@/Utils/Services';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 
 const props = defineProps({
     page: {
@@ -131,8 +132,8 @@ const submit = () => {
         <div class="mb-2">
             <Route :href="route('pages.show', pageData.slug)">
                 <Btn color="neutral" variant="ghost" size="sm" class="gap-2">
-                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                    Retour à la page
+                    <i :class="ACTION.back.icon" aria-hidden="true"></i>
+                    {{ ACTION.back.label }}
                 </Btn>
             </Route>
         </div>
@@ -260,8 +261,8 @@ const submit = () => {
                             color="primary"
                             :disabled="form.processing"
                         >
-                            <span v-if="form.processing">Enregistrement...</span>
-                            <span v-else>Enregistrer les modifications</span>
+                            <span v-if="form.processing">{{ ACTION.save.processing }}</span>
+                            <span v-else>{{ ACTION.save.label }}</span>
                         </Btn>
                     </div>
                 </form>

@@ -23,12 +23,12 @@ declare(strict_types=1);
  *     group_label: string,
  *     icon: string,
  *     mime: string,
-     *     generated?: bool,
-     *     audience?: string,
-     *     read_level?: int,
-     *     filename?: string,
-     *     path?: string
-     *   }>
+ *     generated?: bool,
+ *     audience?: string,
+ *     read_level?: int,
+ *     filename?: string,
+ *     path?: string
+ *   }>
  * }
  */
 return [

@@ -1,13 +1,18 @@
 <script setup>
-import { computed, ref } from 'vue';
-import { useForm, router } from '@inertiajs/vue3';
+/**
+ * Création d’un compte utilisateur (admin). « Créer » dans l’en-tête, confirmé par mot de passe.
+ */
+import { computed } from 'vue';
+import { useForm } from '@inertiajs/vue3';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
 import { useProtectedAdminAction } from '@/Composables/auth/useProtectedAdminAction';
 import { getRoleTranslation } from '@/Utils/user/RoleManager';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 
 defineOptions({ layout: AdminArea });
 
@@ -42,8 +47,6 @@ const roleOptions = computed(() => {
         .filter((opt) => opt.value !== 5);
 });
 
-const goToList = () => router.visit(route('user.index'), { preserveState: false, preserveScroll: false });
-
 const submit = () => {
     requirePassword(
         'Confirmer la création',
@@ -59,21 +62,21 @@ const submit = () => {
 </script>
 <template>
     <section class="space-y-5">
-        <header class="space-y-2">
-            <Btn color="neutral" variant="ghost" size="sm" class="gap-2" @click="goToList">
-                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                Retour à la liste
-            </Btn>
-            <div>
-                <h1 class="text-2xl font-bold">Créer un compte utilisateur</h1>
-                <p class="text-sm opacity-70">
-                    Ajoutez une personne à la plateforme et définissez son niveau d'accès.
-                </p>
-            </div>
-        </header>
+        <PageHeader
+            title="Créer un compte utilisateur"
+            subtitle="Ajoutez une personne à la plateforme et définissez son niveau d'accès."
+            back-route="user.index"
+        >
+            <template #primary>
+                <Btn type="submit" form="user-create-form" color="primary" size="sm" :disabled="form.processing">
+                    <i :class="ACTION.create.icon" class="mr-1.5" aria-hidden="true"></i>
+                    {{ form.processing ? ACTION.create.processing : ACTION.create.label }}
+                </Btn>
+            </template>
+        </PageHeader>
 
         <div class="rounded-(--radius-box) border border-base-300 bg-base-100 p-5">
-            <form class="grid grid-cols-1 md:grid-cols-2 gap-4" @submit.prevent="submit">
+            <form id="user-create-form" class="grid grid-cols-1 md:grid-cols-2 gap-4" @submit.prevent="submit">
                 <InputField v-model="form.name" label="Nom" required :validation="form.errors.name ? { state: 'error', message: form.errors.name } : null" />
                 <InputField v-model="form.email" type="email" label="Email" required :validation="form.errors.email ? { state: 'error', message: form.errors.email } : null" />
                 <InputField v-model="form.password" type="password" label="Mot de passe" required :validation="form.errors.password ? { state: 'error', message: form.errors.password } : null" />
@@ -87,14 +90,6 @@ const submit = () => {
                 />
                 <div class="md:col-span-2 alert alert-info alert-soft">
                     Le rôle super administrateur ne peut pas être attribué depuis cet écran.
-                </div>
-                <div class="md:col-span-2 flex items-center gap-2 pt-2">
-                    <Btn type="submit" color="primary" size="sm" :disabled="form.processing">
-                        Créer le compte
-                    </Btn>
-                    <Btn color="neutral" variant="ghost" size="sm" :disabled="form.processing" @click="goToList">
-                        Annuler
-                    </Btn>
                 </div>
             </form>
         </div>

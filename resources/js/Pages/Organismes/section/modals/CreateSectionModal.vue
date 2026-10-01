@@ -16,6 +16,7 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { useTemplateRegistry } from '../composables/useTemplateRegistry';
 import { useSectionAPI } from '../composables/useSectionAPI';
 import { logDev } from '@/Utils/dev-logger';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 
 const props = defineProps({
     open: {
@@ -234,7 +235,7 @@ const handleClose = () => {
         </div>
 
         <template #actions>
-            <Btn variant="ghost" @click="handleClose">Annuler</Btn>
+            <Btn variant="ghost" @click="handleClose">{{ ACTION.close.label }}</Btn>
         </template>
     </Modal>
 </template>

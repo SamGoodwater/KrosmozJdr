@@ -95,4 +95,10 @@ describe('PageSaveActions', () => {
         const wrapper = mount(PageSaveActions, { props: { dirty: true, processing: true } });
         expect(wrapper.find('[data-testid="page-save-primary"]').text()).toContain('Enregistrement…');
     });
+
+    it('garde l’échec visible tant que des modifications restent en attente', () => {
+        const wrapper = mount(PageSaveActions, { props: { dirty: true, status: 'error' } });
+        expect(wrapper.find('[data-testid="page-save-dirty"]').exists()).toBe(true);
+        expect(wrapper.text()).toContain('Échec de l’enregistrement');
+    });
 });

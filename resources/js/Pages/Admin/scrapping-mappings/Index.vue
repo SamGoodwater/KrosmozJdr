@@ -5,16 +5,15 @@
  */
 import { computed, onMounted, ref } from 'vue';
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
 import SidebarNav from '@/Pages/Organismes/layout/SidebarNav.vue';
 import SelectSearchField from '@/Pages/Molecules/data-input/SelectSearchField.vue';
 import axios from 'axios';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
-
-const { setPageTitle } = usePageTitle();
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 
 const page = usePage();
 const adminUnlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
@@ -36,7 +35,6 @@ const props = defineProps({
 });
 
 defineOptions({ layout: AdminArea });
-setPageTitle('Mapping scrapping DofusDB → Krosmoz');
 
 function selectEntity(val) {
     router.get(route('admin.scrapping-mappings.index'), { source: props.source, entity: val || '' }, { preserveState: true });
@@ -86,6 +84,12 @@ const form = ref({
 });
 const formErrors = ref({});
 const formSaving = ref(false);
+const submitLabel = computed(() => {
+    if (modalMode.value === 'create') {
+        return formSaving.value ? ACTION.create.processing : ACTION.create.label;
+    }
+    return formSaving.value ? ACTION.save.processing : ACTION.save.label;
+});
 /** Formatters édités en JSON (texte) pour le modal. */
 const formattersJson = ref('[]');
 
@@ -186,6 +190,7 @@ function submitMapping() {
     axios[method](url, payload)
         .then(() => {
             showModal.value = false;
+            formSaving.value = false;
             router.reload({ only: ['mappings', 'entitiesWithMapping', 'mappingAudit'] });
         })
         .catch((err) => {
@@ -206,10 +211,6 @@ function targetsSummary(mapping) {
     return mapping.targets.map((t) => `${t.target_model}.${t.target_field}`).join(', ');
 }
 
-function goBackToCharacteristics() {
-    router.visit(route('admin.characteristics.index'));
-}
-
 onMounted(() => {
     if (!props.entity || !prefillMappingKey.value || hasExactPrefillMatch.value) {
         return;
@@ -221,18 +222,35 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Mapping scrapping" />
+    <Head title="Mappings champs" />
+
+    <PageHeader title="Mappings champs" back-route="admin.characteristics.index" back-label="Caractéristiques">
+        <template #subtitle>
+            Règles DofusDB → Krosmoz par entité, source de vérité en BDD. Après modification :
+            <code class="rounded bg-base-300 px-1 text-xs">php artisan scrapping:seeders:export</code>
+            puis <code class="rounded bg-base-300 px-1 text-xs">db:seed --class=ScrappingEntityMappingSeeder</code>
+            pour recréer le paramétrage.
+        </template>
+        <template v-if="!adminUnlocked || entity" #primary>
+            <Btn v-if="!adminUnlocked" color="primary" size="sm" type="button" @click="showAdminConfirmModal = true">
+                <i :class="ACTION.confirm.icon" class="mr-1.5" aria-hidden="true"></i>
+                {{ ACTION.confirm.label }}
+            </Btn>
+            <Btn v-else color="primary" size="sm" type="button" @click="openCreate">
+                <i :class="ACTION.create.icon" class="mr-1.5" aria-hidden="true"></i>
+                Ajouter une règle
+            </Btn>
+        </template>
+    </PageHeader>
 
     <div
         v-if="!adminUnlocked"
-        class="rounded-box border border-warning/40 bg-warning/10 p-8 mx-auto max-w-lg my-8 text-center space-y-4"
+        class="rounded-box border border-warning/40 bg-warning/10 p-8 mx-auto max-w-lg my-8 text-center"
     >
         <p class="text-warning-content">
-            Les règles de mapping modifient la base de données. Confirme ton mot de passe pour continuer.
+            Les règles de mapping modifient la base de données. Confirme ton mot de passe (bouton « Confirmer » en
+            haut) pour continuer.
         </p>
-        <Btn color="primary" @click="showAdminConfirmModal = true">
-            Accéder au mapping scrapping
-        </Btn>
     </div>
 
     <div v-else class="flex h-full min-h-0 w-full flex-col lg:flex-row">
@@ -257,18 +275,6 @@ onMounted(() => {
 
         <!-- Panneau droit : règles de l'entité sélectionnée -->
         <main class="min-w-0 flex-1 overflow-y-auto p-6">
-            <div class="mb-4">
-                <Btn color="neutral" variant="ghost" size="sm" class="gap-2 mb-2" @click="goBackToCharacteristics">
-                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                    Retour aux caractéristiques
-                </Btn>
-                <h1 class="text-2xl font-bold">Règles de mapping</h1>
-                <p class="mt-1 text-sm text-base-content/70">
-                    Source de vérité en BDD. Après modification : <code class="rounded bg-base-300 px-1 text-xs">php artisan scrapping:seeders:export</code>
-                    puis <code class="rounded bg-base-300 px-1 text-xs">db:seed --class=ScrappingEntityMappingSeeder</code> pour recréer le paramétrage.
-                </p>
-            </div>
-
             <template v-if="entity">
                 <div
                     v-if="mappingAudit.length > 0"
@@ -289,27 +295,21 @@ onMounted(() => {
 
                 <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
                     <h2 class="text-lg font-semibold">Entité : {{ entity }}</h2>
-                    <div class="flex items-center gap-2">
-                        <InputField
-                            v-model="mappingFilter"
-                            label="Filtrer les règles"
-                            placeholder="mapping_key, from_path, cible…"
-                        />
-                        <Btn color="primary" size="sm" @click="openCreate">Ajouter une règle</Btn>
-                    </div>
+                    <InputField
+                        v-model="mappingFilter"
+                        label="Filtrer les règles"
+                        placeholder="mapping_key, from_path, cible…"
+                    />
                 </div>
 
                 <div v-if="filteredMappings.length === 0" class="rounded-box border border-base-300 bg-base-200/30 p-8 text-center text-base-content/70">
                     <template v-if="mappings.length === 0">
-                        Aucune règle en base pour cette entité. Ajoutez des règles pour que le pipeline puisse convertir les données.
+                        Aucune règle en base pour cette entité. Ajoutez des règles (bouton « Ajouter une règle » en haut)
+                        pour que le pipeline puisse convertir les données.
                     </template>
                     <template v-else>
                         Aucun résultat pour ce filtre. Ajustez la recherche ou videz le champ.
                     </template>
-                    <br />
-                    <button type="button" class="btn btn-primary btn-sm mt-4" @click="openCreate">
-                        Ajouter une règle
-                    </button>
                 </div>
 
                 <div v-else class="overflow-x-auto rounded-box border border-base-300">
@@ -340,8 +340,10 @@ onMounted(() => {
                                 </td>
                                 <td>
                                     <div class="flex gap-1">
-                                        <button type="button" class="btn btn-ghost btn-xs" @click="openEdit(m)">Modifier</button>
-                                        <button type="button" class="btn btn-ghost btn-xs text-error" @click="confirmDelete(m)">Suppr.</button>
+                                        <Btn variant="ghost" size="xs" @click="openEdit(m)">{{ ACTION.edit.label }}</Btn>
+                                        <Btn variant="ghost" color="error" size="xs" @click="confirmDelete(m)">
+                                            {{ ACTION.delete.label }}
+                                        </Btn>
                                     </div>
                                 </td>
                             </tr>
@@ -424,23 +426,23 @@ onMounted(() => {
                 </div>
                 <InputField v-model.number="form.sort_order" label="Ordre" name="sort_order" type="number" />
                 <div class="modal-action">
-                    <button type="button" class="btn" @click="showModal = false">Annuler</button>
-                    <button type="submit" class="btn btn-primary" :disabled="formSaving">
-                        {{ formSaving ? 'Enregistrement…' : (modalMode === 'create' ? 'Créer' : 'Enregistrer') }}
-                    </button>
+                    <Btn variant="ghost" @click="showModal = false">{{ ACTION.close.label }}</Btn>
+                    <Btn type="submit" color="primary" :disabled="formSaving">
+                        {{ submitLabel }}
+                    </Btn>
                 </div>
             </form>
         </div>
         <form method="dialog" class="modal-backdrop">
-            <button type="button" @click="showModal = false">fermer</button>
+            <button type="button" @click="showModal = false">{{ ACTION.close.label }}</button>
         </form>
     </dialog>
 
     <ConfirmPasswordModal
         v-model:open="showAdminConfirmModal"
-        title="Mapping scrapping"
+        title="Mappings champs"
         message="Cette section modifie les règles de mapping en base. Entre ton mot de passe pour confirmer ton identité."
-        confirm-label="Accéder"
+        :confirm-label="ACTION.confirm.label"
         @confirmed="onAdminPasswordConfirmed"
     />
 </template>

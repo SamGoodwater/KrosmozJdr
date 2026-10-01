@@ -4,16 +4,14 @@
  */
 import { ref, computed } from "vue";
 import { Head, useForm, usePage, router } from "@inertiajs/vue3";
-import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import AdminArea from "@/Pages/Layouts/AdminArea.vue";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
+import PageHeader from "@/Pages/Molecules/layout/PageHeader.vue";
 import LanguageChip from "@/Pages/Molecules/entity/language/LanguageChip.vue";
-
-const { setPageTitle } = usePageTitle();
-setPageTitle("Langues");
+import { ACTION } from "@/Utils/atomic-design/actionLabels";
 
 const notificationStore = useNotificationStore();
 
@@ -47,6 +45,7 @@ const cancelEdit = () => {
 };
 
 const store = () => {
+    if (createForm.processing) return;
     createForm.post(route("admin.languages.store"), {
         preserveScroll: true,
         onSuccess: () => {
@@ -89,24 +88,32 @@ defineOptions({ layout: AdminArea });
     <Head title="Langues" />
 
     <Container class="space-y-8 pb-8 max-w-5xl">
-        <div>
-            <h1 class="text-3xl font-bold text-primary-100">Langues</h1>
-            <p class="text-primary-200 mt-2 text-sm max-w-2xl">
+        <PageHeader title="Langues">
+            <template #subtitle>
                 Référentiel des langues (noms, description, couleur d’affichage en
-                <code class="text-xs font-mono">#RRGGBB</code>
-                ). Utilisé pour les classes et les monstres.
-            </p>
-            <p
-                v-if="flashSuccess"
-                class="mt-3 text-sm text-success"
-            >
-                {{ flashSuccess }}
-            </p>
-        </div>
+                <code class="text-xs font-mono">#RRGGBB</code>). Utilisé pour les classes et les monstres.
+            </template>
+            <template #primary>
+                <Btn
+                    type="submit"
+                    form="language-create-form"
+                    color="primary"
+                    size="sm"
+                    :disabled="createForm.processing"
+                >
+                    <i :class="ACTION.create.icon" class="mr-1.5" aria-hidden="true"></i>
+                    {{ createForm.processing ? ACTION.create.processing : ACTION.create.label }}
+                </Btn>
+            </template>
+        </PageHeader>
+
+        <p v-if="flashSuccess" class="text-sm text-success">
+            {{ flashSuccess }}
+        </p>
 
         <div class="rounded-box border border-base-300 bg-base-100/80 p-4 space-y-4">
             <h2 class="text-lg font-semibold text-primary-100">Nouvelle langue</h2>
-            <form class="grid gap-3 md:grid-cols-2" @submit.prevent="store">
+            <form id="language-create-form" class="grid gap-3 md:grid-cols-2" @submit.prevent="store">
                 <InputField
                     v-model="createForm.name"
                     label="Nom"
@@ -142,11 +149,6 @@ defineOptions({ layout: AdminArea });
                         <span v-if="createForm.errors.description" class="text-xs text-error">{{ createForm.errors.description }}</span>
                     </label>
                 </div>
-                <div class="md:col-span-2 flex justify-end">
-                    <Btn type="submit" color="primary" size="sm" :processing="createForm.processing">
-                        Créer
-                    </Btn>
-                </div>
             </form>
         </div>
 
@@ -174,12 +176,12 @@ defineOptions({ layout: AdminArea });
                             <td class="font-mono text-xs text-primary-300">{{ row.color }}</td>
                             <td class="text-right">
                                 <div class="flex justify-end gap-1">
-                                    <button type="button" class="btn btn-ghost btn-xs" @click="startEdit(row)">
-                                        Modifier
-                                    </button>
-                                    <button type="button" class="btn btn-ghost btn-xs text-error" @click="destroy(row.id)">
-                                        Supprimer
-                                    </button>
+                                    <Btn variant="ghost" size="xs" @click="startEdit(row)">
+                                        {{ ACTION.edit.label }}
+                                    </Btn>
+                                    <Btn variant="ghost" color="error" size="xs" @click="destroy(row.id)">
+                                        {{ ACTION.delete.label }}
+                                    </Btn>
                                 </div>
                             </td>
                         </tr>
@@ -220,9 +222,11 @@ defineOptions({ layout: AdminArea });
                                         </label>
                                     </div>
                                     <div class="md:col-span-2 flex justify-end gap-2">
-                                        <button type="button" class="btn btn-ghost btn-sm" @click="cancelEdit">Annuler</button>
-                                        <Btn type="submit" color="primary" size="sm" :processing="editForm.processing">
-                                            Enregistrer
+                                        <Btn variant="ghost" size="sm" @click="cancelEdit">
+                                            {{ ACTION.close.label }}
+                                        </Btn>
+                                        <Btn type="submit" color="primary" size="sm" :disabled="editForm.processing">
+                                            {{ editForm.processing ? ACTION.save.processing : ACTION.save.label }}
                                         </Btn>
                                     </div>
                                 </form>

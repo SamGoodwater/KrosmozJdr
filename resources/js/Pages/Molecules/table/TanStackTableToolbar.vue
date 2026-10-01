@@ -182,7 +182,7 @@ const onSearchInput = (e) => {
                                 @click="emit('reset-columns')"
                             >
                                 <Icon source="fa-solid fa-rotate-left" alt="Réinitialiser" size="sm" />
-                                <span class="hidden @md/table:inline">Reset</span>
+                                <span class="hidden @md/table:inline">Réinitialiser</span>
                             </Btn>
                         </div>
                         <div class="space-y-2 max-h-64 overflow-y-auto pr-1">

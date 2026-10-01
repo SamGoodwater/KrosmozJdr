@@ -1,8 +1,12 @@
 <script setup>
-import { Head, Link, router, useForm } from "@inertiajs/vue3";
-import { usePageTitle } from "@/Composables/layout/usePageTitle";
+/**
+ * Fil d’un retour utilisateur côté staff : statut, messages et réponse.
+ */
+import { computed } from "vue";
+import { Head, router, useForm } from "@inertiajs/vue3";
 import AdminArea from "@/Pages/Layouts/AdminArea.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
+import PageHeader from "@/Pages/Molecules/layout/PageHeader.vue";
 
 defineOptions({ layout: AdminArea });
 
@@ -10,7 +14,7 @@ const props = defineProps({
     thread: { type: Object, required: true },
 });
 
-usePageTitle().setPageTitle("Retour utilisateur");
+const pageTitle = computed(() => props.thread.subject_preview || "Retour utilisateur");
 
 const form = useForm({
     message: "",
@@ -31,32 +35,33 @@ const updateStatus = (status) => {
 </script>
 
 <template>
-    <Head title="Retour utilisateur" />
-    <section class="mx-auto flex w-full max-w-5xl flex-col gap-4 p-4">
-        <Link href="/admin/feedback" class="text-sm text-primary hover:underline">
-            Retour aux retours
-        </Link>
+    <Head :title="pageTitle" />
 
-        <header class="rounded-box border border-base-300 bg-base-100/70 p-4">
-            <div class="flex flex-wrap items-start justify-between gap-2">
-                <div>
-                    <span class="badge badge-soft badge-primary mr-2">{{ thread.type }}</span>
-                    <h1 class="inline text-xl font-bold">{{ thread.subject_preview }}</h1>
-                    <p class="mt-1 text-sm text-base-content/70">
-                        {{ thread.user?.name || 'Utilisateur supprimé' }} · {{ thread.user?.email }}
-                    </p>
-                </div>
-                <select class="select select-bordered select-sm" :value="thread.status" @change="updateStatus($event.target.value)">
-                    <option value="open">Ouvert</option>
-                    <option value="awaiting_user">En attente utilisateur</option>
-                    <option value="closed">Fermé</option>
-                </select>
-            </div>
-            <a v-if="thread.source_url" :href="thread.source_url" class="mt-2 block text-xs text-base-content/60 hover:underline">
+    <PageHeader :title="pageTitle" back-route="admin.feedback.index" back-href="/admin/feedback">
+        <template #subtitle>
+            {{ thread.user?.name || 'Utilisateur supprimé' }} · {{ thread.user?.email }}
+        </template>
+        <template #meta>
+            <span class="badge badge-soft badge-primary">{{ thread.type }}</span>
+            <a v-if="thread.source_url" :href="thread.source_url" class="text-xs text-base-content/60 hover:underline">
                 Page signalée : {{ thread.source_url }}
             </a>
-        </header>
+        </template>
+        <template #actions>
+            <select
+                class="select select-bordered select-sm"
+                aria-label="Statut du retour"
+                :value="thread.status"
+                @change="updateStatus($event.target.value)"
+            >
+                <option value="open">Ouvert</option>
+                <option value="awaiting_user">En attente utilisateur</option>
+                <option value="closed">Fermé</option>
+            </select>
+        </template>
+    </PageHeader>
 
+    <section class="mx-auto flex w-full max-w-5xl flex-col gap-4 p-4">
         <div class="flex flex-col gap-3">
             <article
                 v-for="message in thread.messages"

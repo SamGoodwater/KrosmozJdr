@@ -14,7 +14,7 @@ vi.mock("@inertiajs/vue3", () => ({
 }));
 
 vi.mock("@/Composables/layout/usePageTitle", () => ({
-    usePageTitle: () => ({ setPageTitle: vi.fn() }),
+    usePageTitle: () => ({ setPageTitle: vi.fn(), registerPageHeader: () => () => {} }),
 }));
 
 describe("DofusdbWorkshop Index", () => {

@@ -34,6 +34,7 @@ import { useTemplateRegistry } from '../composables/useTemplateRegistry';
 import { TransformService, SectionParameterService, SectionMapper } from '@/Utils/Services';
 import { Section } from '@/Models';
 import { logDev, warnDev } from '@/Utils/dev-logger';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 
 const props = defineProps({
     open: {
@@ -602,13 +603,13 @@ const checkboxTemplateValue = (key, fallback) => {
                 <Icon source="fa-trash-can" pack="solid" alt="Supprimer la section" size="sm" class="mr-2" />
                 Supprimer
             </Btn>
-            <Btn variant="ghost" @click="handleClose">Annuler</Btn>
+            <Btn variant="ghost" @click="handleClose">{{ ACTION.close.label }}</Btn>
             <Btn 
                 color="primary" 
                 @click="handleValidate"
                 :disabled="!isValid"
             >
-                Valider
+                {{ ACTION.save.label }}
             </Btn>
         </template>
     </Modal>

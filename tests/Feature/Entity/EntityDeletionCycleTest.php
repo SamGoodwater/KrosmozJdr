@@ -10,6 +10,7 @@ use App\Services\Entity\EntityDeletionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Tests\TestCase;
 
@@ -109,7 +110,7 @@ class EntityDeletionCycleTest extends TestCase
             'created_by' => $admin->id,
         ]);
 
-        $this->expectException(\Illuminate\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         app(EntityDeletionService::class)->forceDelete($spell, $admin);
     }
 }

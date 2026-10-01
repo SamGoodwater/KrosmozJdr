@@ -6,9 +6,9 @@ import { computed } from "vue";
 import { Head, Link } from "@inertiajs/vue3";
 import { Chart, BarController, BarElement, CategoryScale, LinearScale, Legend, Tooltip } from "chart.js";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import AdminArea from "@/Pages/Layouts/AdminArea.vue";
 import AdminDoughnutChart from "@/Pages/Molecules/data-display/AdminDoughnutChart.vue";
+import PageHeader from "@/Pages/Molecules/layout/PageHeader.vue";
 
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, Legend, Tooltip);
 
@@ -18,9 +18,6 @@ const props = defineProps({
     recap: { type: Object, required: true },
     commands: { type: Array, default: () => [] },
 });
-
-const { setPageTitle } = usePageTitle();
-setPageTitle("Récapitulatif administration");
 
 const usersByRole = computed(() => props.recap?.usersByRole ?? []);
 const userGrowth = computed(() => props.recap?.userGrowth ?? []);
@@ -68,15 +65,14 @@ onBeforeUnmount(() => growthChart?.destroy());
 </script>
 
 <template>
-    <Head title="Récapitulatif administration" />
+    <Head title="Récapitulatif" />
+
+    <PageHeader
+        title="Récapitulatif"
+        subtitle="Évolution des inscriptions et répartition des comptes par rôle. Zone protégée par confirmation du mot de passe."
+    />
 
     <div class="space-y-6 pb-8">
-        <div>
-            <h1 class="text-2xl font-semibold text-base-content">Récapitulatif</h1>
-            <p class="mt-2 text-sm text-base-content/70 max-w-3xl">
-                Évolution des inscriptions et répartition des comptes par rôle. Zone protégée par confirmation du mot de passe.
-            </p>
-        </div>
 
         <div class="rounded-box border border-base-300 bg-base-100/50 p-4">
             <p class="text-xs uppercase tracking-wide text-base-content/60">Utilisateurs enregistrés</p>

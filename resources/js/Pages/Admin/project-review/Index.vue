@@ -4,18 +4,17 @@
  */
 import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
-import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { useProjectConsoleJob } from '@/Composables/admin/useProjectConsoleJob';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import AdminCommandMeta from '@/Pages/Admin/_components/AdminCommandMeta.vue';
 import AdminConsoleJobPanel from '@/Pages/Admin/_components/AdminConsoleJobPanel.vue';
+import AdminRunAction from '@/Pages/Admin/_components/AdminRunAction.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 
 defineOptions({ layout: AdminArea });
-
-const { setPageTitle } = usePageTitle();
-setPageTitle('Reviews dev');
 
 const props = defineProps({
     reports: { type: Array, required: true },
@@ -56,6 +55,7 @@ function refreshReports() {
 }
 
 function submit() {
+    if (!canSubmit.value) return;
     form.post(route('admin.project-review.run'), { preserveScroll: true });
 }
 
@@ -71,17 +71,34 @@ function setRunAll() {
 <template>
     <Head title="Reviews dev" />
 
-    <div class="space-y-8 pb-8 max-w-3xl">
-        <div>
-            <h1 class="text-2xl font-semibold text-base-content">Rapports de review</h1>
-            <p class="mt-2 text-sm text-base-content/70">
-                Les fichiers se trouvent sous
-                <code class="rounded bg-base-300 px-1">{{ props.reportsPathHint }}</code>. La génération est exécutée en file
-                d’attente (worker requis ; durée très longue si périmètre large).
-            </p>
+    <PageHeader title="Reviews dev">
+        <template #subtitle>
+            Les fichiers se trouvent sous
+            <code class="rounded bg-base-300 px-1">{{ props.reportsPathHint }}</code>. La génération est exécutée en file
+            d’attente (worker requis ; durée très longue si périmètre large).
+        </template>
+        <template #meta>
             <AdminCommandMeta signature="project:review" />
-        </div>
+        </template>
+        <template #actions>
+            <Btn variant="ghost" size="sm" type="button" @click="refreshReports">
+                <i :class="ACTION.refresh.icon" class="mr-1.5" aria-hidden="true"></i>
+                {{ ACTION.refresh.label }}
+            </Btn>
+        </template>
+        <template #primary>
+            <AdminRunAction
+                :unlocked="unlocked"
+                :busy="busy"
+                :processing="form.processing"
+                label="Planifier"
+                @confirm="showConfirmModal = true"
+                @run="submit"
+            />
+        </template>
+    </PageHeader>
 
+    <div class="space-y-8 pb-8 max-w-3xl">
         <section class="space-y-4 rounded-box border border-base-content/10 bg-base-100/40 p-4">
             <h2 class="text-lg font-medium">Historique</h2>
             <div v-if="!props.reports?.length" class="text-sm text-base-content/60">Aucun rapport pour l’instant.</div>
@@ -98,9 +115,6 @@ function setRunAll() {
                     </a>
                 </li>
             </ul>
-            <Btn color="neutral" variant="ghost" size="sm" type="button" @click.prevent="refreshReports">
-                Rafraîchir la liste
-            </Btn>
         </section>
 
         <p v-if="page.props.flash?.success" class="text-success text-sm rounded-box border border-success/30 bg-success/10 px-3 py-2">
@@ -114,22 +128,12 @@ function setRunAll() {
 
         <section class="rounded-box border border-base-content/10 p-6 space-y-4">
             <h2 class="text-lg font-medium">Nouvelle review</h2>
-            <p class="text-sm text-base-content/70">
-                Confirmez votre mot de passe avant d’accéder au formulaire ; le serveur doit traiter une file
-                d’attente.
-            </p>
             <div
                 v-if="!unlocked"
-                class="rounded-box border border-warning/40 bg-warning/10 p-6 text-center space-y-4"
+                class="rounded-box border border-warning/40 bg-warning/10 p-4 text-sm"
             >
-                <Btn color="primary" type="button" @click.prevent="showConfirmModal = true">Confirmer le mot de passe</Btn>
-                <ConfirmPasswordModal
-                    v-model:open="showConfirmModal"
-                    title="Confirmer votre identité"
-                    message="Lancer une review peut être coûteux en ressources. Entrez votre mot de passe pour continuer."
-                    confirm-label="Continuer"
-                    @confirmed="onPasswordConfirmed"
-                />
+                Confirmez votre mot de passe (bouton « Confirmer » en haut) pour choisir le périmètre et planifier une
+                review ; le serveur doit traiter une file d’attente.
             </div>
             <form v-else class="space-y-4" @submit.prevent="submit">
                 <div class="flex flex-wrap gap-2 items-center">
@@ -151,10 +155,15 @@ function setRunAll() {
                     <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" v-model="form.docs" class="checkbox checkbox-sm" /> Documentation</label>
                 </fieldset>
                 <p v-if="form.errors.scope" class="text-error text-sm">{{ form.errors.scope }}</p>
-                <Btn type="submit" color="primary" :disabled="!canSubmit">
-                    {{ busy ? 'Job déjà en cours…' : form.processing ? 'Envoi…' : 'Planifier une review' }}
-                </Btn>
             </form>
         </section>
+
+        <ConfirmPasswordModal
+            v-model:open="showConfirmModal"
+            title="Confirmer votre identité"
+            message="Lancer une review peut être coûteux en ressources. Entrez votre mot de passe pour continuer."
+            confirm-label="Confirmer"
+            @confirmed="onPasswordConfirmed"
+        />
     </div>
 </template>

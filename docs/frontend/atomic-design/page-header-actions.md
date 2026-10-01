@@ -36,7 +36,7 @@ Termes à ne plus utiliser : « Sauvegarder », « Valider » (pour enregistrer)
 ## Composants
 
 - `Molecules/layout/PageHeader.vue` : titre (`h1`), sous-titre, retour, slots `actions` / `primary` / `meta` / `tabs`. Collant par défaut. Appelle `setPageTitle` et masque le titre du header global (pas de doublon).
-- `Molecules/action/PageSaveActions.vue` : badge « Modifications non enregistrées », « Annuler les modifications », « Enregistrer », Ctrl+S / Cmd+S.
+- `Molecules/action/PageSaveActions.vue` : badge « Modifications non enregistrées », indicateur « Enregistré » ou « Échec de l’enregistrement » (l’échec reste visible à côté du badge), « Annuler les modifications », « Enregistrer », Ctrl+S / Cmd+S.
 - `Composables/form/usePageForms.js` : regroupe plusieurs `useForm`, `saveAll()` (formulaires modifiés seulement, arrêt à la première erreur), `discardAll()`, garde de sortie (navigation Inertia GET vers une autre page + fermeture d’onglet).
 
 ```js

@@ -65,7 +65,7 @@ class UserTest extends TestCase
     {
         User::factory()->systemAccount()->create([
             'role' => User::ROLE_SUPER_ADMIN,
-            
+
         ]);
         $humanSuper = User::factory()->create([
             'role' => User::ROLE_SUPER_ADMIN,

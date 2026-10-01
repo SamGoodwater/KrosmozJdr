@@ -4,7 +4,6 @@
  */
 import { computed } from "vue";
 import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
-import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useProjectConsoleJob } from "@/Composables/admin/useProjectConsoleJob";
 import {
     IA_GENERATION_PAGE_PATH,
@@ -16,6 +15,7 @@ import AdminDoughnutChart from "@/Pages/Molecules/data-display/AdminDoughnutChar
 import AdminConsoleJobPanel from "@/Pages/Admin/_components/AdminConsoleJobPanel.vue";
 import AdminCommandMeta from "@/Pages/Admin/_components/AdminCommandMeta.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
+import PageHeader from "@/Pages/Molecules/layout/PageHeader.vue";
 
 defineOptions({ layout: AdminArea });
 
@@ -27,9 +27,6 @@ const props = defineProps({
     consoleJob: { type: Object, default: null },
     pricesConsoleJob: { type: Object, default: null },
 });
-
-const { setPageTitle } = usePageTitle();
-setPageTitle("Gestion du contenu");
 
 const page = usePage();
 const form = useForm({});
@@ -81,6 +78,7 @@ const chartForEntity = (entity) => {
 };
 
 function submitCompile() {
+    if (busy.value || form.processing) return;
     form.post(route("admin.content.rules-downloads.run"), { preserveScroll: true });
 }
 
@@ -98,12 +96,24 @@ function canRecalculatePrices(entityKey) {
     <Head title="Gestion du contenu" />
 
     <div class="space-y-6 pb-8">
-        <div>
-            <h1 class="text-2xl font-semibold text-base-content">Gestion du contenu</h1>
-            <p class="mt-2 text-sm text-base-content/70 max-w-3xl">
-                Vue d’ensemble des entités par statut et du contenu CMS (pages et sections).
-            </p>
-        </div>
+        <PageHeader
+            title="Gestion du contenu"
+            subtitle="Vue d’ensemble des entités par statut et du contenu CMS (pages et sections)."
+        >
+            <template #actions>
+                <Btn
+                    type="button"
+                    color="primary"
+                    variant="outline"
+                    size="sm"
+                    :disabled="busy || form.processing"
+                    @click="submitCompile"
+                >
+                    <i class="fa-solid fa-book mr-1.5" aria-hidden="true"></i>
+                    {{ busy || form.processing ? "Compilation en cours…" : "Compiler le livre de règles" }}
+                </Btn>
+            </template>
+        </PageHeader>
 
         <section aria-labelledby="content-ateliers-heading" class="space-y-3">
             <div>
@@ -180,7 +190,7 @@ function canRecalculatePrices(entityKey) {
             <p class="text-sm text-base-content/70 max-w-3xl">
                 Compile les chapitres Markdown en fichiers téléchargeables, stockés sur le disque public.
                 Les joueurs les récupèrent depuis la page Ressources du menu Règles. La génération n’a lieu
-                que sur ce bouton, après un import des règles, ou via
+                que via le bouton « Compiler le livre de règles » en haut de page, après un import des règles, ou via
                 <code class="rounded bg-base-300 px-1">php artisan rules:compile-downloads</code>.
             </p>
             <AdminCommandMeta signature="rules:compile-downloads" />
@@ -192,14 +202,6 @@ function canRecalculatePrices(entityKey) {
                     <template v-if="rulesDownloads.missing">, {{ rulesDownloads.missing }} manquant(s)</template>)
                 </span>
             </p>
-            <Btn
-                type="button"
-                color="primary"
-                :disabled="busy || form.processing"
-                @click="submitCompile"
-            >
-                {{ busy || form.processing ? "Compilation en cours…" : "Compiler le livre de règles" }}
-            </Btn>
             <AdminConsoleJobPanel
                 :job="liveJob"
                 :poll-error="pollError"

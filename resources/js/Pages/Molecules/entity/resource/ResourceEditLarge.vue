@@ -19,6 +19,7 @@ import { createFieldsConfigFromDescriptors } from '@/Utils/entity/descriptor-for
 import { initializeFormFromEntity } from '@/Utils/entity/form-helpers';
 import { useEntityFieldHelpers } from '@/Composables/entity/useEntityFieldHelpers';
 import { useEntityFormSubmit } from '@/Composables/entity/useEntityFormSubmit';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 
 const props = defineProps({
     resource: {
@@ -116,8 +117,8 @@ const handleCancel = () => {
                     class="btn btn-primary"
                     :disabled="form.processing"
                 >
-                    <span v-if="form.processing">Enregistrement...</span>
-                    <span v-else>{{ isUpdating ? 'Mettre à jour' : 'Créer' }}</span>
+                    <span v-if="form.processing">{{ isUpdating ? ACTION.save.processing : ACTION.create.processing }}</span>
+                    <span v-else>{{ isUpdating ? ACTION.save.label : ACTION.create.label }}</span>
                 </button>
             </div>
         </form>

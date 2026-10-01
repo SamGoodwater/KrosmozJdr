@@ -19,7 +19,7 @@ final class NormsResolverTest extends TestCase
             'very_strong' => array_fill(0, 20, 5),
         ];
 
-        $resolver = new NormsResolver();
+        $resolver = new NormsResolver;
 
         $this->assertSame(10, $resolver->resolve($grid, 10));
         $this->assertSame(4, $resolver->resolve($grid, 10, 2, [
@@ -33,7 +33,7 @@ final class NormsResolverTest extends TestCase
     public function test_compare_returns_delta(): void
     {
         $grid = ['neutral' => array_fill(0, 20, 5)];
-        $result = (new NormsResolver())->compare(8, $grid, 1);
+        $result = (new NormsResolver)->compare(8, $grid, 1);
 
         $this->assertSame(5, $result['value']);
         $this->assertSame(3, $result['delta']);

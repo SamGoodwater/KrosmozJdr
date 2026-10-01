@@ -24,6 +24,7 @@ import { createDefaultEntityFromDescriptors, createFieldsConfigFromDescriptors }
 import { getEntityCreateCoreFieldKeys, getEntityCreateLabel } from '@/Utils/entity/entity-create-config';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { useProtectedAdminAction } from '@/Composables/auth/useProtectedAdminAction';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 
 const props = defineProps({
     open: {
@@ -605,7 +606,7 @@ async function readCreateJsonFile(file) {
                     {{ aiError }}
                 </p>
                 <div class="flex justify-end gap-2">
-                    <Btn variant="ghost" :disabled="aiBusy" @click="handleCancel">Annuler</Btn>
+                    <Btn variant="ghost" :disabled="aiBusy" @click="handleCancel">{{ ACTION.close.label }}</Btn>
                     <Btn
                         color="primary"
                         :disabled="aiBusy"
@@ -681,7 +682,7 @@ async function readCreateJsonFile(file) {
                         {{ jsonExampleLoading ? 'Exemple…' : 'Charger un exemple' }}
                     </Btn>
                     <div class="flex gap-2">
-                        <Btn variant="ghost" :disabled="aiBusy" @click="handleCancel">Annuler</Btn>
+                        <Btn variant="ghost" :disabled="aiBusy" @click="handleCancel">{{ ACTION.close.label }}</Btn>
                         <Btn
                             color="primary"
                             :disabled="aiBusy"

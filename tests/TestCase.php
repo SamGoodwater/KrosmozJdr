@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Http\Middleware\PreventRequestForgery;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
 use Illuminate\Foundation\Http\Middleware\TrimStrings;
@@ -59,7 +60,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * Authentifie un utilisateur avec la session admin déjà déverrouillée.
      */
-    protected function actingAsConfirmed(\Illuminate\Contracts\Auth\Authenticatable $user): static
+    protected function actingAsConfirmed(Authenticatable $user): static
     {
         return $this->actingAs($user)->withSession($this->passwordConfirmedSession());
     }

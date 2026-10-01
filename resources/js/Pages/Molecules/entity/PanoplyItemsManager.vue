@@ -16,6 +16,7 @@ import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 
 const props = defineProps({
     items: {
@@ -209,8 +210,8 @@ const saveItems = () => {
                 color="primary"
                 :disabled="itemsForm.processing || JSON.stringify(localItems.map(i => i.id).sort()) === JSON.stringify(props.items.map(i => i.id).sort())"
             >
-                <i class="fa-solid fa-save mr-2"></i>
-                {{ itemsForm.processing ? 'Sauvegarde...' : 'Sauvegarder les modifications' }}
+                <i :class="ACTION.save.icon" class="mr-2"></i>
+                {{ itemsForm.processing ? ACTION.save.processing : ACTION.save.label }}
             </Btn>
         </div>
     </Container>

@@ -15,6 +15,7 @@ import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EditActionDock from '@/Pages/Molecules/action/EditActionDock.vue';
+import { ACTION } from '@/Utils/atomic-design/actionLabels';
 import { AREA_NOTATION_HELP, isValidAreaNotation } from '@/Utils/Entity/areaNotation.js';
 import { METERS_PER_CASE, previewMetersFromCellsFormula } from '@/Utils/Entity/displacementFormat.js';
 
@@ -42,7 +43,7 @@ const props = defineProps({
     /** Titre optionnel au-dessus du formulaire. */
     heading: { type: String, default: '' },
     /** Libellé du bouton de soumission. */
-    submitLabel: { type: String, default: 'Enregistrer le groupe' },
+    submitLabel: { type: String, default: ACTION.save.label },
     /** Masque le bouton primaire (sauvegarde déclenchée par le parent, ex. fiche sort). */
     hideSubmitButton: { type: Boolean, default: false },
     /** Formulaire affiché dans une modale : pas de {@link EditActionDock}, boutons compacts. */
@@ -791,7 +792,7 @@ const canDeleteActiveDegree = computed(
 );
 
 const deleteDegreeDisabledHint =
-    'Au moins deux degrés sont requis pour en supprimer un. Pour retirer toute la définition, utilisez « Supprimer la définition » sous le formulaire.';
+    'Au moins deux degrés sont requis pour en supprimer un. Pour retirer toute la définition, utilisez « Supprimer » dans l’en-tête de la page.';
 
 function deleteActiveDegree() {
     if (!canDeleteActiveDegree.value) return;
@@ -824,6 +825,8 @@ defineExpose({
     isDirty,
     submitGroup,
     submitGroupAsync,
+    /** Revient à l’état reçu du serveur (« Annuler les modifications »). */
+    resetToSaved: initDegreeFormsFromProps,
 });
 </script>
 
@@ -1323,14 +1326,13 @@ defineExpose({
                         :disabled="groupSaveForm.processing"
                         @click="submitGroup"
                     >
-                        <i class="fa-solid fa-save mr-1.5"></i>
-                        {{ groupSaveForm.processing ? 'Enregistrement…' : submitLabel }}
+                        <i :class="ACTION.save.icon" class="mr-1.5" aria-hidden="true"></i>
+                        {{ groupSaveForm.processing ? ACTION.save.processing : submitLabel }}
                     </Btn>
                 </template>
                 <EditActionDock
                     v-else
                     :primary-label="submitLabel"
-                    processing-label="Enregistrement…"
                     :processing="groupSaveForm.processing"
                     :show-secondary="false"
                     :secondary-actions="[]"
