@@ -45,6 +45,7 @@ export function useEntitySearch(options = {}) {
     const error = ref(null);
     const results = ref([]);
     const filterOptions = ref({});
+    const currentEntityType = ref(entityType || '');
 
     const currentFilters = ref({ ...(initialFilters || {}) });
     const currentSort = ref(initialSort || 'id');
@@ -92,7 +93,7 @@ export function useEntitySearch(options = {}) {
     };
 
     const search = async (override = {}) => {
-        if (!entityType) return;
+        if (!currentEntityType.value) return;
         loading.value = true;
         error.value = null;
 
@@ -100,7 +101,7 @@ export function useEntitySearch(options = {}) {
         const params = { ...baseParams, ...(override || {}) };
 
         try {
-            const url = route(`api.tables.${entityType}`, params);
+            const url = route(`api.tables.${currentEntityType.value}`, params);
             const response = await fetch(url, {
                 headers: {
                     Accept: 'application/json',
@@ -170,6 +171,23 @@ export function useEntitySearch(options = {}) {
         search();
     };
 
+    /**
+     * Change le catalogue (`api.tables.{type}`) et relance la recherche.
+     *
+     * @param {string} next
+     * @returns {void}
+     * @example setEntityType('consumables')
+     */
+    const setEntityType = (next) => {
+        const value = typeof next === 'string' ? next : '';
+        if (!value || value === currentEntityType.value) {
+            return;
+        }
+        currentEntityType.value = value;
+        results.value = [];
+        search();
+    };
+
     watch(
         () => query.value,
         () => {
@@ -192,6 +210,7 @@ export function useEntitySearch(options = {}) {
         setSort,
         setWhitelist,
         setBlacklist,
+        setEntityType,
     };
 }
 

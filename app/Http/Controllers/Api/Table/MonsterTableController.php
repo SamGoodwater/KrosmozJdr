@@ -224,6 +224,7 @@ class MonsterTableController extends Controller
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('dofusdb_id', 'like', "%{$search}%")
+                    ->orWhere('official_id', 'like', "%{$search}%")
                     ->orWhereHas('creature', fn ($qq) => $qq->where('name', 'like', "%{$search}%"))
                     ->orWhereHas('monsterRace', fn ($qq) => $qq->where('name', 'like', "%{$search}%"));
             });

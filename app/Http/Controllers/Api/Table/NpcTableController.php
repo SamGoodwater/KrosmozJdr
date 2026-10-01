@@ -98,9 +98,10 @@ class NpcTableController extends Controller
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
-                $q->orWhereHas('creature', fn ($qq) => $qq
-                    ->where('name', 'like', "%{$search}%")
-                    ->orWhere('location', 'like', "%{$search}%"))
+                $q->where('official_id', 'like', "%{$search}%")
+                    ->orWhereHas('creature', fn ($qq) => $qq
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhere('location', 'like', "%{$search}%"))
                     ->orWhereHas('breed', fn ($qq) => $qq->where('name', 'like', "%{$search}%"))
                     ->orWhereHas('specialization', fn ($qq) => $qq->where('name', 'like', "%{$search}%"));
             });

@@ -65,4 +65,34 @@ final class ConsumableTableControllerTest extends TestCase
         $this->assertNotContains($other->id, $ids);
         $this->assertIsArray($response->json('meta.filterOptions.bonus'));
     }
+
+    public function test_playable_filter_and_official_id_search_find_the_example(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $playable = Consumable::factory()->create($this->playableAttrs([
+            'name' => 'Friandise de vitalité',
+            'official_id' => 'jdr:temp-hp:candy:5',
+        ]));
+        $draft = Consumable::factory()->create([
+            'name' => 'Brouillon secret',
+            'official_id' => 'jdr:draft:hidden',
+            'state' => Consumable::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $byState = $this->actingAs($user)->getJson(
+            '/api/tables/consumables?format=entities&limit=20&filters[state]=playable&sort=updated_at&order=desc'
+        );
+        $byState->assertOk();
+        $ids = collect($byState->json('entities'))->pluck('id')->all();
+        $this->assertContains($playable->id, $ids);
+        $this->assertNotContains($draft->id, $ids);
+
+        $byOfficial = $this->actingAs($user)->getJson(
+            '/api/tables/consumables?format=entities&limit=20&filters[state]=playable&search='.urlencode('jdr:temp-hp:candy:5')
+        );
+        $byOfficial->assertOk();
+        $this->assertSame([$playable->id], collect($byOfficial->json('entities'))->pluck('id')->all());
+    }
 }

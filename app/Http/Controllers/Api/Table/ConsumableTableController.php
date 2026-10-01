@@ -35,7 +35,7 @@ class ConsumableTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['level', 'rarity', 'consumable_type_id', 'bonus'] as $k) {
+        foreach (['level', 'rarity', 'consumable_type_id', 'state', 'bonus'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -72,6 +72,7 @@ class ConsumableTableController extends Controller
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('official_id', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%")
                     ->orWhere('effect', 'like', "%{$search}%")
                     ->orWhere('bonus', 'like', "%{$search}%");

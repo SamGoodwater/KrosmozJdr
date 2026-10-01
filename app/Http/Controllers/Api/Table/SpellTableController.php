@@ -290,6 +290,7 @@ class SpellTableController extends Controller
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('official_id', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%");
             });
         }
