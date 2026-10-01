@@ -694,7 +694,7 @@
       {
         "name": "variant",
         "type": "String",
-        "desc": "- Style DaisyUI ('', 'outline', 'dash', 'soft')"
+        "desc": "- Style DaisyUI ('', 'outline', 'dash', 'soft') — ignoré en mode glass"
       },
       {
         "name": "direction",
@@ -709,7 +709,7 @@
       {
         "name": "glass",
         "type": "Boolean",
-        "desc": "- Style glassmorphism (box-glass-sm, paires color-X et bg-color-X, texte blanc, défaut true)"
+        "desc": "- Surface charte (bg-glass + ombre/bordure teintées), défaut true"
       },
       {
         "name": "shadow",
@@ -2390,6 +2390,11 @@
         "name": "showIcon",
         "type": "boolean",
         "desc": "— Afficher l’icône caractéristique (désactiver si une icône externe la remplace)"
+      },
+      {
+        "name": "wrapValue",
+        "type": "boolean",
+        "desc": "— Valeur multiligne (description, textarea) : pas de truncate"
       },
       {
         "name": "size",
