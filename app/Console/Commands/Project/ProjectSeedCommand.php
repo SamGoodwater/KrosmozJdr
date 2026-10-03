@@ -25,6 +25,7 @@ class ProjectSeedCommand extends Command
     protected $signature = 'project:seed
         {--fresh : migrate:fresh --force avant les seeders}
         {--skip-migrate : Ne pas lancer les migrations}
+        {--overwrite : Réappliquer les fichiers de seed sur les lignes déjà en base}
         {--skip-capabilities : Ne pas importer capabilities:import-legacy}
         {--skip-specializations : Ne pas exécuter SpecializationSeeder (HTML legacy + brouillons)}
         {--init-scheduler : Afficher la ligne cron scheduler (comme project:init)}
@@ -62,6 +63,7 @@ class ProjectSeedCommand extends Command
         foreach ([
             'fresh',
             'skip-migrate',
+            'overwrite',
             'skip-capabilities',
             'skip-specializations',
             'init-scheduler',

@@ -8,6 +8,7 @@ use App\Enums\SectionType;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
+use App\Support\Seeder\SeedMode;
 use Database\Seeders\CreationPagesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -68,7 +69,12 @@ class CreationPagesSeederTest extends TestCase
             'read_level' => User::ROLE_GAME_MASTER,
         ]);
 
-        $this->seed(CreationPagesSeeder::class);
+        SeedMode::forceOverwrite(true);
+        try {
+            $this->seed(CreationPagesSeeder::class);
+        } finally {
+            SeedMode::clearForce();
+        }
 
         $hub->refresh();
         $oldChartes->refresh();

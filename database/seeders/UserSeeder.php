@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -22,6 +23,17 @@ class UserSeeder extends Seeder
         $user = User::withTrashed()->where('email', $email)->first();
 
         if ($user) {
+            if (! SeedMode::overwrite()) {
+                if ($user->trashed()) {
+                    $this->command->info('ℹ️  '.$label.' soft-deleted conservé (passez --overwrite pour restaurer): '.$email);
+
+                    return $user;
+                }
+                $this->command->info('ℹ️  '.$label.' déjà présent, conservation: '.$email);
+
+                return $user;
+            }
+
             if ($user->trashed()) {
                 $user->restore();
             }

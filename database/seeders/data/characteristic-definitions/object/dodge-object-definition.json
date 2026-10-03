@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "dodge_object",
         "name": "Bonus de fuite",

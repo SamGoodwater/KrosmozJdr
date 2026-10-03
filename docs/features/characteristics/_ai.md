@@ -10,7 +10,7 @@
 
 ## Concepts clés
 
-- **Définitions** : JSON seeders → tables `characteristics` + pivots `characteristic_*`. Objets ciblés (chapeau, cape, amulette…) : `item_type_dofus_ids` (IDs DofusDB). Reprise : `php artisan characteristics:definitions-apply --item-types`.
+- **Définitions** : la **base** est la source de vérité ; les JSON sous `database/seeders/data/characteristic-definitions/` sont une copie versionnée. Au seed (ex. `project:dev`), création seule des lignes absentes ; réécriture volontaire via `project:seed --overwrite`. Export base → JSON : `scrapping:seeders:export --characteristics` (aussi branché sur `project:backup` hors prod). Objets ciblés : `item_type_dofus_ids` (IDs DofusDB). Reprise : `php artisan characteristics:definitions-apply --item-types`.
 - **Share Inertia** : `CharacteristicMetaByDbColumnService` expose `helper` / `descriptions` et `limit_min` / `limit_max` (entiers figés du pivot ; les formules sont ignorées). Cache `characteristics:frontend:v3`.
 - **Limites** : `min`/`max` numériques = plafond absolu (UI + validation + clamp scrapping). Pas de clamp post-formule sur le runtime créature : les mods joueur embarquent `⌊niv/4⌋+2` et le max **+7** dans la formule ; scores principaux `max=24` (absolu), le plafond progressif `14+⌊niv/2⌋` est une règle de répartition, pas une formule de colonne.
 - **Composition** : `total = base + objets + contexte`, sauf si un **total explicite** (colonne) est présent. Détail : [COMPUTED_VALUES.md](./COMPUTED_VALUES.md).

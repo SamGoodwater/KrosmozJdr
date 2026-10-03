@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "resistance_percent_tier_fire_object",
         "name": "Bonus de résistance en % (Feu, palier)",

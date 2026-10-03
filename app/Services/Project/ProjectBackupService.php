@@ -42,7 +42,7 @@ class ProjectBackupService
     /**
      * @param  callable(string): void  $log
      * @param  callable(string): void  $error
-     * @return array{run_id: string, files: list<string>}
+     * @return array{run_id: string, files: list<string>, seeder_exports: list<string>}
      */
     public function run(
         bool $withDatabase,
@@ -51,11 +51,13 @@ class ProjectBackupService
         bool $dryRun,
         callable $log,
         callable $error,
+        bool $withSeederData = false,
+        ?SeederDataExportService $seederDataExport = null,
     ): array {
-        if (! $withDatabase && ! $withStorage) {
-            $error('Rien à sauvegarder : utilisez la BDD et/ou le storage (par défaut les deux).');
+        if (! $withDatabase && ! $withStorage && ! $withSeederData) {
+            $error('Rien à sauvegarder : utilisez la BDD, le storage et/ou les fichiers de seed.');
 
-            return ['run_id' => '', 'files' => []];
+            return ['run_id' => '', 'files' => [], 'seeder_exports' => []];
         }
 
         $this->ensureDirectory($this->backupRoot);
@@ -63,12 +65,13 @@ class ProjectBackupService
         $runId = $this->makeRunId();
         $prefix = $this->filenamePrefix.'_'.$runId;
         $created = [];
+        $seederExports = [];
 
         if ($withDatabase) {
             $sqlGz = $this->backupRoot.DIRECTORY_SEPARATOR.$prefix.'_mysql.sql.gz';
             $code = $this->dumpDatabase($sqlGz, $log, $error);
             if ($code !== 0) {
-                return ['run_id' => $runId, 'files' => $created];
+                return ['run_id' => $runId, 'files' => $created, 'seeder_exports' => $seederExports];
             }
             $created[] = $sqlGz;
             $log('Base : '.$sqlGz);
@@ -78,17 +81,22 @@ class ProjectBackupService
             $storagePath = $this->backupRoot.DIRECTORY_SEPARATOR.$prefix.'_storage.tar.gz';
             $actual = $this->archiveStorageApp($storagePath, $log, $error);
             if ($actual === null) {
-                return ['run_id' => $runId, 'files' => $created];
+                return ['run_id' => $runId, 'files' => $created, 'seeder_exports' => $seederExports];
             }
             $created[] = $actual;
             $log('Storage : '.$actual);
+        }
+
+        if ($withSeederData) {
+            $exporter = $seederDataExport ?? app(SeederDataExportService::class);
+            $seederExports = $exporter->export($log);
         }
 
         if ($prune) {
             $this->pruneOldBackups($dryRun, $log, $error);
         }
 
-        return ['run_id' => $runId, 'files' => $created];
+        return ['run_id' => $runId, 'files' => $created, 'seeder_exports' => $seederExports];
     }
 
     /**

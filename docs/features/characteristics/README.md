@@ -11,14 +11,14 @@ Pour le modèle **base + objets + contexte**, les formules saisies et le sélect
 - Limites : `app/Services/Characteristic/Limit/CharacteristicLimitService.php`.
 - Formules : services sous `app/Services/Characteristic/` (`FormulaExpressionParser`, `LevelDomainResolver`).
 - Runtime créature : `app/Services/Creature/Runtime/CreatureRuntimeStatsService.php`.
-- Seeders : `CharacteristicSeeder`, `CreatureCharacteristicSeeder`, `ObjectCharacteristicSeeder`, `SpellCharacteristicSeeder`.
+- Seeders : `CharacteristicSeeder`, `CreatureCharacteristicSeeder`, `ObjectCharacteristicSeeder`, `SpellCharacteristicSeeder`. La base est la source ; les seeders ne créent que les lignes absentes (réécriture : `project:seed --overwrite`). Export base → JSON : `scrapping:seeders:export --characteristics` (aussi via `project:backup` hors prod).
 - Métadonnées front (share Inertia `characteristics`) : `CharacteristicMetaByDbColumnService` — `helper`, descriptions, et `limit_min` / `limit_max` si le pivot a un min/max numérique figé.
 - Qualité des définitions : `app/Services/Characteristics/CharacteristicDefinitionQualityService.php` vérifie notamment les `norms_grid`, formules de conversion et restrictions d'équipement.
 - Reprise des totaux existants : `php artisan creatures:derive-context-bonuses`.
 
 ## Normes
 
-Les définitions JSON dans `database/seeders/data/characteristic-definitions/` portent les grilles de normes 5 puissances × 20 niveaux (`norms_grid`). L'audit 2026-07 ne laisse aucun `norms_grid` manquant sur les vraies définitions `creature`, `object` et `spell`; seuls les fichiers `_templates` restent volontairement vides.
+Les définitions JSON dans `database/seeders/data/characteristic-definitions/` sont la copie versionnée des tables (grilles de normes 5 puissances × 20 niveaux, `norms_grid`). L'audit 2026-07 ne laisse aucun `norms_grid` manquant sur les vraies définitions `creature`, `object` et `spell`; seuls les fichiers `_templates` restent volontairement vides.
 
 Pour les objets, les caractéristiques dont l'aide cible un type d'équipement portent aussi `item_type_dofus_ids` :
 - amulettes : `[1]`

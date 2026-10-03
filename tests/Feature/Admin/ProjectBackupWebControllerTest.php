@@ -35,7 +35,9 @@ class ProjectBackupWebControllerTest extends TestCase
         $response = $this->actingAs($super)->get(route('admin.backup.index'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => $page->component('Admin/backup/Index'));
+        $response->assertInertia(fn ($page) => $page
+            ->component('Admin/backup/Index')
+            ->where('seederExportAvailable', true));
     }
 
     public function test_super_admin_can_dispatch_backup_job_when_password_confirmed(): void
@@ -48,6 +50,7 @@ class ProjectBackupWebControllerTest extends TestCase
             ->withSession(['auth.password_confirmed_at' => time()])
             ->post(route('admin.backup.run'), [
                 'no_storage' => true,
+                'no_seeder_data' => true,
                 'dry_run' => false,
             ]);
 
@@ -60,9 +63,11 @@ class ProjectBackupWebControllerTest extends TestCase
             $uid->setAccessible(true);
             $opts = $ref->getProperty('artisanOptions');
             $opts->setAccessible(true);
+            $options = $opts->getValue($job);
 
             return (int) $uid->getValue($job) === $super->id
-                && ($opts->getValue($job)['--no-storage'] ?? false) === true
+                && ($options['--no-storage'] ?? false) === true
+                && ($options['--no-seeder-data'] ?? false) === true
                 && $job->queue === ProjectQueues::BACKUP;
         });
     }

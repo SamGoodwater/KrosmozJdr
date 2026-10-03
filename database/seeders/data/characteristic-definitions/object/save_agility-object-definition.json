@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "save_agility_object",
         "name": "Bonus de sauvegarde (Agilité)",

@@ -30,21 +30,22 @@ use App\Support\ElementBitmask;
 final class BestiarySeederImporter
 {
     /**
+     * @param  bool  $overwrite  False = ignorer les fiches déjà présentes
      * @return array{
      *     created: list<string>,
      *     updated: list<string>,
      *     skipped: list<string>
      * }
      */
-    public function import(?BestiaryCatalog $catalog = null): array
+    public function import(?BestiaryCatalog $catalog = null, bool $overwrite = true): array
     {
         if ($catalog !== null) {
-            return $this->importCatalog($catalog);
+            return $this->importCatalog($catalog, $overwrite);
         }
 
         $parts = [];
         foreach (BestiaryCatalog::loadAll() as $one) {
-            $parts[] = $this->importCatalog($one);
+            $parts[] = $this->importCatalog($one, $overwrite);
         }
 
         return $this->mergeResults($parts);
@@ -57,13 +58,21 @@ final class BestiarySeederImporter
      *     skipped: list<string>
      * }
      */
-    private function importCatalog(BestiaryCatalog $catalog): array
+    private function importCatalog(BestiaryCatalog $catalog, bool $overwrite = true): array
     {
         $created = [];
         $updated = [];
         $skipped = [];
 
         foreach ($catalog->entries() as $entry) {
+            $monster = $this->findMonster($entry['official_id']);
+            $wasNew = $monster === null;
+            if (! $wasNew && ! $overwrite) {
+                $skipped[] = $entry['name'].' : déjà présent, conservation';
+
+                continue;
+            }
+
             $spellIds = [];
             foreach ($entry['spells'] as $spellRow) {
                 $spell = $this->syncSpell($entry, $spellRow, $skipped);
@@ -72,8 +81,6 @@ final class BestiarySeederImporter
                 }
             }
 
-            $monster = $this->findMonster($entry['official_id']);
-            $wasNew = $monster === null;
             $monster ??= new Monster;
             $creature = $monster->creature ?? new Creature;
 

@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
  *
  * @example
  * $result = $importer->import();
+ * $result = $importer->import(overwrite: false);
  */
 final class ItemSeederImporter
 {
@@ -23,9 +24,10 @@ final class ItemSeederImporter
 
     /**
      * @param  bool  $dryRun  N'écrit rien, se contente de compter
+     * @param  bool  $overwrite  False = ignorer les fiches déjà présentes
      * @return array{created: list<string>, updated: list<string>, skipped: list<string>}
      */
-    public function import(bool $dryRun = false): array
+    public function import(bool $dryRun = false, bool $overwrite = true): array
     {
         $created = [];
         $updated = [];
@@ -50,7 +52,19 @@ final class ItemSeederImporter
 
             $existing = Item::query()->where($lookup)->first();
             if ($dryRun) {
-                $existing === null ? $created[] = $relative : $updated[] = $relative;
+                if ($existing === null) {
+                    $created[] = $relative;
+                } elseif ($overwrite) {
+                    $updated[] = $relative;
+                } else {
+                    $skipped[] = $relative.' : déjà présent, conservation';
+                }
+
+                continue;
+            }
+
+            if ($existing !== null && ! $overwrite) {
+                $skipped[] = $relative.' : déjà présent, conservation';
 
                 continue;
             }
@@ -65,7 +79,7 @@ final class ItemSeederImporter
             $wasNew ? $created[] = $relative : $updated[] = $relative;
         }
 
-        if (! $dryRun) {
+        if (! $dryRun && $overwrite) {
             app(MarkPlayableItemRecipeResources::class)->mark();
         }
 

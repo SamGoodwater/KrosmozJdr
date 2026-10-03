@@ -22,13 +22,14 @@ final class ClassBreedSeederImporter
     ) {}
 
     /**
+     * @param  bool  $overwrite  False = ignorer les fiches déjà présentes
      * @return array{
      *     created: list<string>,
      *     updated: list<string>,
      *     skipped: list<string>
      * }
      */
-    public function import(?ClassBreedCatalog $catalog = null): array
+    public function import(?ClassBreedCatalog $catalog = null, bool $overwrite = true): array
     {
         $catalogs = $catalog instanceof ClassBreedCatalog
             ? [$catalog]
@@ -39,7 +40,7 @@ final class ClassBreedSeederImporter
         $skipped = [];
 
         foreach ($catalogs as $one) {
-            $part = $this->importCatalog($one);
+            $part = $this->importCatalog($one, $overwrite);
             $created = array_merge($created, $part['created']);
             $updated = array_merge($updated, $part['updated']);
             $skipped = array_merge($skipped, $part['skipped']);
@@ -55,7 +56,7 @@ final class ClassBreedSeederImporter
     /**
      * @return array{created: list<string>, updated: list<string>, skipped: list<string>}
      */
-    private function importCatalog(ClassBreedCatalog $catalog): array
+    private function importCatalog(ClassBreedCatalog $catalog, bool $overwrite): array
     {
         $entry = $catalog->entry();
         if ($entry === null) {
@@ -68,6 +69,12 @@ final class ClassBreedSeederImporter
 
         $breed = $this->findBreed($entry);
         $wasNew = $breed === null;
+        $label = $entry['name'];
+
+        if (! $wasNew && ! $overwrite) {
+            return ['created' => [], 'updated' => [], 'skipped' => [$label.' : déjà présent, conservation']];
+        }
+
         $breed ??= new Breed;
 
         $attributes = [
@@ -95,8 +102,6 @@ final class ClassBreedSeederImporter
         $breed->save();
 
         $this->syncOrientations->sync($breed, $entry['element_orientations']);
-
-        $label = $entry['name'];
 
         return $wasNew
             ? ['created' => [$label], 'updated' => [], 'skipped' => []]

@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "range_object",
         "name": "Bonus de portée",

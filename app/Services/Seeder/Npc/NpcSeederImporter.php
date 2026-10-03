@@ -42,9 +42,10 @@ final class NpcSeederImporter
     ) {}
 
     /**
+     * @param  bool  $overwrite  False = ignorer les fiches déjà présentes
      * @return array{created: list<string>, updated: list<string>, skipped: list<string>, retired: list<string>}
      */
-    public function import(?IncarnamNpcCatalog $catalog = null): array
+    public function import(?IncarnamNpcCatalog $catalog = null, bool $overwrite = true): array
     {
         $catalog ??= IncarnamNpcCatalog::load();
         $created = [];
@@ -54,6 +55,11 @@ final class NpcSeederImporter
         foreach ($catalog->entries() as $entry) {
             $npc = $this->findNpc($entry['official_id']);
             $wasNew = $npc === null;
+            if (! $wasNew && ! $overwrite) {
+                $skipped[] = $entry['name'].' : déjà présent, conservation';
+
+                continue;
+            }
             $npc ??= new Npc;
             $creature = $npc->creature ?? new Creature;
 
@@ -76,7 +82,7 @@ final class NpcSeederImporter
             $wasNew ? $created[] = $entry['name'] : $updated[] = $entry['name'];
         }
 
-        $retired = $this->retireLegacyShells();
+        $retired = $overwrite ? $this->retireLegacyShells() : [];
 
         return [
             'created' => $created,

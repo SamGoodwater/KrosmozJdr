@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "save_wisdom_object",
         "name": "Bonus de sauvegarde (Sagesse)",

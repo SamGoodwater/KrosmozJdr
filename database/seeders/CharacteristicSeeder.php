@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\Characteristic;
 use App\Services\Characteristics\CharacteristicDefinitionReader;
 use App\Support\Characteristics\CharacteristicDefinitionNaming;
+use App\Support\Seeder\SeedMode;
 use Database\Seeders\Concerns\RetriesWhenMysqlSchemaChanged;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
@@ -128,14 +129,14 @@ class CharacteristicSeeder extends Seeder
             if ($hasHideWhenFalse) {
                 $payload['hide_when_false'] = (bool) ($row['hide_when_false'] ?? false);
             }
-            $this->retryOnMysqlSchemaChanged(static fn () => Characteristic::updateOrCreate(
-                ['key' => $key],
-                $payload
-            ));
+            $this->retryOnMysqlSchemaChanged(
+                static fn () => SeedMode::upsert(Characteristic::class, ['key' => $key], $payload)
+            );
         }
 
         // 2) Deuxième passage : rattacher les caractéristiques liées à leur maître via linked_to_key
         $idsByKey = Characteristic::query()->pluck('id', 'key')->all();
+        $overwrite = SeedMode::overwrite();
         foreach ($rows as $row) {
             if (empty($row['linked_to_key'])) {
                 continue;
@@ -159,7 +160,11 @@ class CharacteristicSeeder extends Seeder
                 continue;
             }
 
-            Characteristic::whereKey($childId)->update([
+            $query = Characteristic::whereKey($childId);
+            if (! $overwrite) {
+                $query->whereNull('linked_to_characteristic_id');
+            }
+            $query->update([
                 'linked_to_characteristic_id' => $masterId,
             ]);
         }

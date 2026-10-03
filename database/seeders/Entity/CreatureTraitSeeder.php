@@ -4,6 +4,7 @@ namespace Database\Seeders\Entity;
 
 use App\Models\Entity\CreatureTrait;
 use App\Models\User;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 
 class CreatureTraitSeeder extends Seeder
@@ -23,7 +24,7 @@ class CreatureTraitSeeder extends Seeder
             ['name' => 'Agile', 'description' => 'Réussit automatiquement ses jets de fuite et ne peut pas être taclé.'],
         ];
         foreach ($traits as $trait) {
-            CreatureTrait::query()->updateOrCreate(['name' => $trait['name']], array_merge($defaults, $trait));
+            SeedMode::upsert(CreatureTrait::class, ['name' => $trait['name']], array_merge($defaults, $trait));
         }
     }
 }

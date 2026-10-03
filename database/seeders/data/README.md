@@ -30,9 +30,8 @@ Pour les notions liées aux éléments Dofus et aux caracs associées, utiliser 
 Un fichier JSON par équipement relu à la main, pour pouvoir recréer le socle d’objets `auto` (à relire) sur n’importe quelle base (notamment avant de faire tourner l’IA). Le gros du catalogue reste produit par le scrapping DofusDB : ces fichiers ne portent que les items validés.
 
 - **Seed** : `Database\Seeders\Entity\ItemSeeder`, appelé par `DatabaseSeeder`, `project:seed` et `project:init`.
-- **Base → fichiers** : `php artisan items:seeder-export` (défaut : items `auto` ; `--prune` nettoie les fichiers obsolètes).
-- **Fichiers → base** : `php artisan items:seeder-import` (`--dry-run` pour simuler).
-- **Boutons admin** : `/admin/content/ia-generation`, section « Étalons d’équipement » (super administrateur).
+- **Base → fichiers** : `php artisan items:seeder-export` (défaut : items `auto` ; `--prune` nettoie les fichiers obsolètes ; `--versioned` pour le backup). Aussi via `project:backup` hors production.
+- **Fichiers → base** : `php artisan items:seeder-import` (`--dry-run` pour simuler). Pas de boutons admin : CLI uniquement.
 
 Structure d’un fichier :
 

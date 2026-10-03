@@ -7,6 +7,7 @@ namespace Database\Seeders\Entity;
 use App\Services\Seeder\Consumable\CharacteristicRespecScrollSeederImporter;
 use App\Services\Seeder\Consumable\HealingConsumableSeederImporter;
 use App\Services\Seeder\Consumable\UtilityConsumableSeederImporter;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 
 /**
@@ -19,13 +20,14 @@ class ConsumableSeeder extends Seeder
      */
     public function run(): void
     {
-        $healing = app(HealingConsumableSeederImporter::class)->import();
+        $overwrite = SeedMode::overwrite();
+        $healing = app(HealingConsumableSeederImporter::class)->import(overwrite: $overwrite);
         $this->report('soins hors combat', $healing);
 
-        $scrolls = app(CharacteristicRespecScrollSeederImporter::class)->import();
+        $scrolls = app(CharacteristicRespecScrollSeederImporter::class)->import(overwrite: $overwrite);
         $this->report('parchemins de caractéristique', $scrolls);
 
-        $utility = app(UtilityConsumableSeederImporter::class)->import();
+        $utility = app(UtilityConsumableSeederImporter::class)->import(overwrite: $overwrite);
         $this->report('utilitaires', $utility);
     }
 

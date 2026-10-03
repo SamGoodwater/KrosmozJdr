@@ -27,7 +27,6 @@ use Database\Seeders\Data\CharacteristicPaletteResolver;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -654,64 +653,6 @@ class CharacteristicController extends Controller
         }
 
         return response()->json(['success' => true, 'message' => 'Règle déliée.']);
-    }
-
-    /**
-     * Met à jour les fichiers seeders à partir de la BDD (`php artisan scrapping:seeders:export`).
-     * Exporte notamment les définitions JSON caractéristiques sous `characteristic-definitions/`
-     * (fichiers `*-definition.json` par groupe), ainsi que mappings scrapping et types item.
-     * Réservé admin / super_admin. Désactivé en production (commande guardée).
-     */
-    public function runExportSeederData(Request $request): JsonResponse
-    {
-        if (! $request->user() || ! $request->user()->verifyRole(User::ROLE_ADMIN)) {
-            return response()->json(['success' => false, 'message' => 'Accès non autorisé.'], 403);
-        }
-        try {
-            $exitCode = Artisan::call('scrapping:seeders:export');
-            if ($exitCode !== 0) {
-                $out = trim(Artisan::output());
-
-                return response()->json([
-                    'success' => false,
-                    'message' => $out ?: 'La commande est désactivée en production ou a échoué.',
-                ], 422);
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Fichiers seeders mis à jour depuis la BDD (définitions JSON caractéristiques, types d’effets, mappings, types item, etc.).',
-            ]);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur : '.$e->getMessage(),
-            ], 500);
-        }
-    }
-
-    /**
-     * Importe les seeders en BDD (php artisan db:seed --force).
-     * Réservé admin / super_admin.
-     */
-    public function runImportSeeder(Request $request): JsonResponse
-    {
-        if (! $request->user() || ! $request->user()->verifyRole(User::ROLE_ADMIN)) {
-            return response()->json(['success' => false, 'message' => 'Accès non autorisé.'], 403);
-        }
-        try {
-            Artisan::call('db:seed', ['--force' => true]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Seeders exécutés.',
-            ]);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur : '.$e->getMessage(),
-            ], 500);
-        }
     }
 
     /**

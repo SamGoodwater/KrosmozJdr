@@ -17,20 +17,23 @@ use App\Models\Type\ConsumableType;
 final class UtilityConsumableSeederImporter
 {
     /**
+     * @param  bool  $overwrite  False = ignorer les fiches déjà présentes
      * @return array{
      *     created: list<string>,
      *     updated: list<string>,
      *     skipped: list<string>
      * }
      */
-    public function import(?UtilityConsumableCatalog $catalog = null): array
+    public function import(?UtilityConsumableCatalog $catalog = null, bool $overwrite = true): array
     {
         $catalog ??= UtilityConsumableCatalog::load();
         $created = [];
         $updated = [];
         $skipped = [];
 
-        $this->ensureTypesPlayable($catalog);
+        if ($overwrite) {
+            $this->ensureTypesPlayable($catalog);
+        }
 
         foreach ($catalog->entries() as $entry) {
             $typeId = $this->resolveTypeId($entry['type_dofus_id']);
@@ -42,6 +45,11 @@ final class UtilityConsumableSeederImporter
 
             $consumable = $this->findConsumable($entry);
             $wasNew = $consumable === null;
+            if (! $wasNew && ! $overwrite) {
+                $skipped[] = $entry['name'].' : déjà présent, conservation';
+
+                continue;
+            }
             $consumable ??= new Consumable;
 
             $attributes = [

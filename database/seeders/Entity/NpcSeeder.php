@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders\Entity;
 
 use App\Services\Seeder\Npc\NpcSeederImporter;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 
 /**
@@ -16,7 +17,7 @@ class NpcSeeder extends Seeder
 {
     public function run(): void
     {
-        $result = app(NpcSeederImporter::class)->import();
+        $result = app(NpcSeederImporter::class)->import(overwrite: SeedMode::overwrite());
         $this->command?->info(sprintf(
             '  NpcSeeder : %d création(s), %d mise(s) à jour, %d retrait(s), %d avertissement(s).',
             count($result['created']),

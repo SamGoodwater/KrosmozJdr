@@ -24,7 +24,7 @@ ui: false
 cron: false
 ```
 
-Rebuild CSS, vide les caches applicatifs et les vues, régénère les index Atomic et la doc, migrations (`setup --db`), puis pipeline IDE Helper + `optimize`.
+Rebuild CSS, vide les caches applicatifs et les vues, régénère les index Atomic et la doc, migrations (`setup --db`), puis pipeline IDE Helper + `optimize`. Le `db:seed` associé est en **création seule** : les lignes déjà en base ne sont pas réécrites (la BDD est la source de vérité). Pour réappliquer les fichiers JSON, utiliser `project:seed --overwrite`.
 
 ```bash
 php artisan project:prepare
@@ -137,11 +137,12 @@ ui: false
 cron: false
 ```
 
-Pipeline d’installation : migrations, seeders, import règles (`pages:import-rules-toc`), capacités, types DofusDB, scrapping. `--fresh`, `--skip-scrapping`, `--skip-types`, `--verify`, `--deps`. `-y` / `--no` : transmis à `project:deps` (IDE Helper, apt).
+Pipeline d’installation : migrations, seeders, import règles (`pages:import-rules-toc`), capacités, types DofusDB, scrapping. `--fresh`, `--skip-scrapping`, `--skip-types`, `--verify`, `--deps`. `--overwrite` : réapplique les fichiers de seed sur les lignes déjà en base. `-y` / `--no` : transmis à `project:deps` (IDE Helper, apt).
 
 ```bash
 php artisan project:init
 php artisan project:init --skip-scrapping --skip-types --verify
+php artisan project:init --overwrite
 php artisan project:init --deps -y
 ```
 
@@ -158,11 +159,12 @@ ui: false
 cron: false
 ```
 
-Données locales sans DofusDB : `project:init --skip-scrapping --skip-types`.
+Données locales sans DofusDB : `project:init --skip-scrapping --skip-types`. Par défaut, création seule (ne touche pas une ligne déjà présente). `--overwrite` réapplique les JSON / PHP de seed.
 
 ```bash
 php artisan project:seed
 php artisan project:seed --fresh
+php artisan project:seed --overwrite
 ```
 
 ---
@@ -176,11 +178,12 @@ ui: false
 cron: false
 ```
 
-Grand ménage local puis `project:init --fresh`. `--fast` : sans types ni scrapping. `--hard` : wipe vendor/node (`setup --refresh`) avant. `-y` : comme `--force` (pas de confirmation). `--no` : annule.
+Grand ménage local puis `project:init --fresh`. `--fast` : sans types ni scrapping. `--hard` : wipe vendor/node (`setup --refresh`) avant. `--overwrite` : transmis à `project:init`. `-y` : comme `--force` (pas de confirmation). `--no` : annule.
 
 ```bash
 php artisan project:refresh --fast --force
 php artisan project:refresh --fast -y
+php artisan project:refresh --overwrite
 php artisan project:refresh --no
 ```
 
@@ -258,15 +261,16 @@ cron: true
 admin: /admin/backup
 ```
 
-Dump BDD (gzip) + archive `storage/app`, purge selon rétention.
+Dump BDD (gzip) + archive `storage/app`, purge selon rétention. Hors production : réécrit aussi les fichiers de seed depuis la base (caractéristiques, types item, mappings scrapping, équipements versionnés). `--no-seeder-data` pour désactiver cet export.
 
 ```bash
 php artisan project:backup
 php artisan project:backup --no-storage
+php artisan project:backup --no-seeder-data
 php artisan project:backup --prune-only --dry-run
 ```
 
-Admin : `/admin/backup`. Cron : `project_backup`.
+Admin : `/admin/backup` (option « Ne pas réécrire les fichiers de seed » = `--no-seeder-data`). Cron : `project_backup`. Pas d’export/import seeders ailleurs dans l’UI (CLI uniquement).
 
 Restauration manuelle (gunzip + mysql/mariadb, extract tar/zip storage) : [docs/operations/README.md — Sauvegardes](../../docs/operations/README.md#sauvegardes-projectbackup).
 
@@ -529,15 +533,15 @@ php artisan ia:creation-guides --json=storage/logs/creation-guides.json
 ```yaml
 signature: items:seeder-export
 domain: data
-ui: true
+ui: false
 cron: false
-admin: /admin/content/ia-generation
 ```
 
-Base → seeder : écrit les équipements dans `database/seeders/data/entities/items/` (un fichier JSON par item, `effect` / `bonus` en objet éditable). Par défaut, seuls les items `auto`. Réservé au développement : la commande écrit dans le dépôt. `image` n’est jamais exporté (URL liée à l’environnement).
+Base → seeder : écrit les équipements dans `database/seeders/data/entities/items/` (un fichier JSON par item, `effect` / `bonus` en objet éditable). Par défaut, seuls les items `auto`. `--versioned` : états retenus + items déjà présents dans les JSON (utilisé par `project:backup`). Réservé au développement : la commande écrit dans le dépôt. `image` n’est jamais exporté (URL liée à l’environnement). Pas de page admin dédiée (CLI ; backup UI = `project:backup`).
 
 ```bash
 php artisan items:seeder-export
+php artisan items:seeder-export --versioned
 php artisan items:seeder-export --state=auto --state=draft --prune
 php artisan items:seeder-export --all --prune
 php artisan items:seeder-export --id=1958 --id=882
@@ -552,12 +556,11 @@ php artisan items:seeder-export --id=1958 --id=882
 ```yaml
 signature: items:seeder-import
 domain: data
-ui: true
+ui: false
 cron: false
-admin: /admin/content/ia-generation
 ```
 
-Seeder → base : rejoue les fichiers d’équipements versionnés. Upsert sur `dofusdb_id` (`official_id` à défaut), résolution du type via `item_type_dofus_id`, synchronisation des panoplies et de la recette (références introuvables ignorées). Les ressources déjà liées aux items `playable` passent en `playable` (plancher 1 kama). `ConsumableSeeder` rejoue l’échelle de soins hors combat (`healing-out-of-combat.json`), les parchemins de caractéristique (`characteristic-respec-scrolls.json`) et les utilitaires (`utility-playable.json`). `ClassBreedSeeder` pose les 19 classes. `CapabilitySeeder` pose les 19 passifs de classe (`class-passives.json`) et les lie via `breed_capability`. `MonsterSeeder` pose les 19 invocations de classe (`class-summons.json`) et le bestiaire JDR (`incarnam.json` + `amakna.json`, 28 fiches) avant `SpellSeeder`. `SpellSeeder` rejoue les 24 sorts de classe des 19 classes (`*-level-1.json` + `*-progression.json`) et lie `invoquer` aux fiches. Idempotent. Même code que `ItemSeeder`, donc `project:seed` et `project:init` rejouent ces items.
+Seeder → base : rejoue les fichiers d’équipements versionnés (CLI uniquement, pas de bouton admin). Upsert sur `dofusdb_id` (`official_id` à défaut), résolution du type via `item_type_dofus_id`, synchronisation des panoplies et de la recette (références introuvables ignorées). Les ressources déjà liées aux items `playable` passent en `playable` (plancher 1 kama). `ConsumableSeeder` rejoue l’échelle de soins hors combat (`healing-out-of-combat.json`), les parchemins de caractéristique (`characteristic-respec-scrolls.json`) et les utilitaires (`utility-playable.json`). `ClassBreedSeeder` pose les 19 classes. `CapabilitySeeder` pose les 19 passifs de classe (`class-passives.json`) et les lie via `breed_capability`. `MonsterSeeder` pose les 19 invocations de classe (`class-summons.json`) et le bestiaire JDR (`incarnam.json` + `amakna.json`, 28 fiches) avant `SpellSeeder`. `SpellSeeder` rejoue les 24 sorts de classe des 19 classes (`*-level-1.json` + `*-progression.json`) et lie `invoquer` aux fiches. Idempotent. Même code que `ItemSeeder`, donc `project:seed` et `project:init` rejouent ces items.
 
 ```bash
 php artisan items:seeder-import

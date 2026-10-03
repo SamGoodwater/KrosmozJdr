@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — La base garde les modifications
+
+Les changements faits dans l’application (caractéristiques, pages seedées, fiches versionnées…) ne sont plus écrasés au redémarrage du serveur. Les fichiers de seed ne remplissent que ce qui manque. Une sauvegarde hors production recopie la base vers ces fichiers. Pour forcer le retour aux fichiers du dépôt : `project:seed --overwrite`. Les boutons d’export/import seeders ont été retirés de l’admin (caractéristiques, IA métier) : seul l’écran Sauvegarde pilote cette copie, pour éviter d’écraser des données par erreur.
+
 ## Octobre 2026 — Système de caractéristiques finalisé
 
 Les définitions d’équipement sont reproductibles (emplacements versionnés). La réserve de Wakfu, les PV max d’objet et les invocations suivent les règles. Les bonus d’équipement se lisent dans `effect` (le brut Dofus reste dans `bonus`). On peut éditer totaux et contexte sur les fiches monstre/PNJ. Trois compétences techniques s’ajoutent (Artisanat, Herbaliste, Connaissance des créatures) ; l’Intimidation choisit Force ou Chance ; les expertises sont plafonnées à 3. Les tooltips de caractéristiques sont utilisables au clavier.
@@ -501,7 +505,7 @@ Les valeurs suivent les grilles de normes du jeu et ne dépassent jamais le plaf
 
 Les objets validés à la main ne vivent plus uniquement en base : chacun a désormais son fichier dans le dépôt, lisible et modifiable à la main. On peut donc reconstruire le socle d’objets jouables sur une base neuve, ce qui est indispensable pour faire tourner l’IA sans repartir de zéro.
 
-Deux boutons sur la page **IA métier** de l’administration : « Base → fichiers » enregistre l’état actuel des objets jouables dans le dépôt, « Fichiers → base » les remet en base. Réservé au super administrateur, avec confirmation par mot de passe ; l’écriture dans le dépôt n’est possible qu’en développement.
+L’aller-retour base ↔ fichiers se fait en CLI (`items:seeder-export` / `items:seeder-import`) ; hors production, `project:backup` (page **Sauvegarde**) réécrit aussi ces JSON depuis la base. Plus de boutons d’export/import seeders dans l’UI admin (risque de compromission des données versionnées).
 
 Une réinstallation complète du projet recrée maintenant ces objets automatiquement. Les visuels ne sont pas concernés : ils restent gérés par la médiathèque.
 

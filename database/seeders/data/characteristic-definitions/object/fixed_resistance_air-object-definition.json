@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "fixed_resistance_air_object",
         "name": "Bonus de résistance fixe (Air)",

@@ -20,9 +20,18 @@ use Illuminate\Support\Carbon;
  * @property int $duration_seconds Durée d’affichage lisible (hors fondu), 2–30 s
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @method static LoadingTipFactory factory($count = null, $state = [])
- *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoadingTip newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoadingTip newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoadingTip query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoadingTip whereBody($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoadingTip whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoadingTip whereDurationSeconds($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoadingTip whereFeatured($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoadingTip whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoadingTip whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoadingTip whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoadingTip whereUrl($value)
  * @mixin \Eloquent
  */
 class LoadingTip extends Model

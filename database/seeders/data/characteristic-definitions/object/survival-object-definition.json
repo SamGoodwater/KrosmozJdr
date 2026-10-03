@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "survival_object",
         "name": "Bonus de Survie",

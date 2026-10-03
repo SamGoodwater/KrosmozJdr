@@ -17,6 +17,7 @@ final class CharacteristicGroupSeederItemTypeSyncTest extends TestCase
         $source = (string) file_get_contents($path);
 
         $this->assertStringContainsString('allowedItemTypes()->sync($itemTypeIds)', $source);
+        $this->assertStringContainsString('SeedMode::overwrite() || SeedMode::wasRecentlyCreated($model)', $source);
         $this->assertStringNotContainsString('if ($itemTypeIds !== [])', $source);
     }
 }

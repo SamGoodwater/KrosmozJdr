@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\Characteristic;
 use App\Models\Scrapping\ScrappingEntityMapping;
 use App\Models\Scrapping\ScrappingEntityMappingTarget;
+use App\Support\Seeder\SeedMode;
 use Database\Seeders\Concerns\LoadsSeederDataFile;
 use Illuminate\Database\Seeder;
 
@@ -53,6 +54,14 @@ class ScrappingEntityMappingSeeder extends Seeder
 
     public function run(): void
     {
+        if (! SeedMode::overwrite() && ScrappingEntityMapping::query()->exists()) {
+            $this->command?->info(
+                'ScrappingEntityMappingSeeder : mappings déjà présents, conservation (passez --overwrite pour réécrire).'
+            );
+
+            return;
+        }
+
         $rows = $this->loadDataFile(self::DATA_FILE);
         if ($rows === []) {
             $rows = $this->loadRowsFromEntityJson();

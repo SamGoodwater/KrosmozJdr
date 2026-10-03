@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders\Entity;
 
 use App\Models\Entity\Language;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 
 /**
@@ -104,7 +105,8 @@ TXT,
         ];
 
         foreach ($definitions as $row) {
-            Language::updateOrCreate(
+            SeedMode::upsert(
+                Language::class,
                 ['name' => $row['name']],
                 [
                     'description' => trim($row['description']),

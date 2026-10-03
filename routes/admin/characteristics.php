@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Route;
  * Administration des caractéristiques (contenu de jeu, MJ+).
  *
  * Lecture + mutations métier : game_master + content.area + password.confirm.
- * Export / import seeder et liaisons scrapping de masse : admin+.
+ * Liaisons scrapping de masse : admin+.
+ * Export / import seeders : CLI uniquement (`project:backup` hors prod, `project:seed --overwrite`).
  */
 Route::prefix('admin/content/characteristics')
     ->name('admin.characteristics.')
@@ -28,8 +29,6 @@ Route::prefix('admin/content/characteristics')
         Route::delete('/{characteristic_key}', [CharacteristicController::class, 'destroy'])->name('destroy')->where('characteristic_key', '[a-z0-9_]+');
 
         Route::middleware(['role:admin'])->group(function () {
-            Route::post('/run-export-seeder-data', [CharacteristicController::class, 'runExportSeederData'])->name('run-export-seeder-data');
-            Route::post('/run-import-seeder', [CharacteristicController::class, 'runImportSeeder'])->name('run-import-seeder');
             Route::post('/{characteristic_key}/store-scrapping-mapping', [CharacteristicController::class, 'storeScrappingMapping'])->name('store-scrapping-mapping')->where('characteristic_key', '[a-z0-9_]+');
             Route::post('/{characteristic_key}/unlink-scrapping-mapping', [CharacteristicController::class, 'unlinkScrappingMapping'])->name('unlink-scrapping-mapping')->where('characteristic_key', '[a-z0-9_]+');
         });

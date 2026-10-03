@@ -7,6 +7,7 @@ namespace Database\Seeders\Type;
 use App\Models\Type\ConsumableType;
 use App\Models\User;
 use App\Support\CatalogTypeVisibility;
+use App\Support\Seeder\SeedMode;
 use Database\Seeders\Concerns\LoadsSeederDataFile;
 use Database\Seeders\Concerns\RetriesWhenMysqlSchemaChanged;
 use Illuminate\Database\Seeder;
@@ -47,7 +48,8 @@ class ConsumableTypeSeeder extends Seeder
             if ($typeId <= 0) {
                 continue;
             }
-            ConsumableType::updateOrCreate(
+            SeedMode::upsert(
+                ConsumableType::class,
                 ['dofusdb_type_id' => $typeId],
                 [
                     'name' => (string) ($row['name'] ?? ''),

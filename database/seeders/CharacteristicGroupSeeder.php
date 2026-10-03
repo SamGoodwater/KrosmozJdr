@@ -9,6 +9,7 @@ use App\Models\CharacteristicObject;
 use App\Models\Type\ItemType;
 use App\Services\Characteristics\CharacteristicDefinitionReader;
 use App\Support\Characteristics\CharacteristicDefinitionNaming;
+use App\Support\Seeder\SeedMode;
 use Database\Seeders\Concerns\RetriesWhenMysqlSchemaChanged;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
@@ -221,7 +222,8 @@ abstract class CharacteristicGroupSeeder extends Seeder
                 ]);
                 $attributes = $this->mapRowToAttributes($row);
                 $model = $this->retryOnMysqlSchemaChanged(
-                    fn () => $modelClass::updateOrCreate(
+                    fn () => SeedMode::upsert(
+                        $modelClass,
                         [
                             'characteristic_id' => $characteristicId,
                             'entity' => $entity,
@@ -229,7 +231,9 @@ abstract class CharacteristicGroupSeeder extends Seeder
                         $attributes
                     )
                 );
-                if ($model instanceof CharacteristicObject) {
+                if ($model instanceof CharacteristicObject
+                    && (SeedMode::overwrite() || SeedMode::wasRecentlyCreated($model))
+                ) {
                     $itemTypeIds = $this->resolveCharacteristicObjectItemTypeIdsForSync($row);
                     $this->retryOnMysqlSchemaChanged(
                         static fn () => $model->allowedItemTypes()->sync($itemTypeIds)

@@ -31,16 +31,17 @@ final class ClassLevel1SpellSeederImporter
     public const EXTRA_SLOT_INDEX = 1;
 
     /**
+     * @param  bool  $overwrite  False = ignorer les fiches déjà présentes
      * @return array{
      *     created: list<string>,
      *     updated: list<string>,
      *     skipped: list<string>
      * }
      */
-    public function import(?ClassLevel1SpellCatalog $catalog = null): array
+    public function import(?ClassLevel1SpellCatalog $catalog = null, bool $overwrite = true): array
     {
         if ($catalog instanceof ClassLevel1SpellCatalog) {
-            return $this->importBreedCatalogs([$catalog]);
+            return $this->importBreedCatalogs([$catalog], $overwrite);
         }
 
         $grouped = [];
@@ -57,7 +58,7 @@ final class ClassLevel1SpellSeederImporter
         $skipped = [];
 
         foreach ($grouped as $catalogs) {
-            $part = $this->importBreedCatalogs($catalogs);
+            $part = $this->importBreedCatalogs($catalogs, $overwrite);
             $created = array_merge($created, $part['created']);
             $updated = array_merge($updated, $part['updated']);
             $skipped = array_merge($skipped, $part['skipped']);
@@ -74,7 +75,7 @@ final class ClassLevel1SpellSeederImporter
      * @param  list<ClassLevel1SpellCatalog>  $catalogs
      * @return array{created: list<string>, updated: list<string>, skipped: list<string>}
      */
-    private function importBreedCatalogs(array $catalogs): array
+    private function importBreedCatalogs(array $catalogs, bool $overwrite = true): array
     {
         $created = [];
         $updated = [];
@@ -95,6 +96,21 @@ final class ClassLevel1SpellSeederImporter
             foreach ($catalog->entries() as $entry) {
                 $spell = $this->findSpell($entry);
                 $wasNew = $spell === null;
+                $label = $breedName.' / '.$entry['name'];
+                if (! $wasNew && ! $overwrite) {
+                    $skipped[] = $label.' : déjà présent, conservation';
+                    if ($spell !== null) {
+                        $kitSpellIds[] = $spell->id;
+                        $slotMap[$spell->id] = [
+                            'character_level' => $entry['character_level'],
+                            'slot_index' => $entry['slot_index'],
+                            'choice_order' => $entry['choice_order'],
+                        ];
+                    }
+
+                    continue;
+                }
+
                 $spell ??= new Spell;
 
                 $spell->fill($this->spellAttributes($entry));
@@ -111,7 +127,6 @@ final class ClassLevel1SpellSeederImporter
                     'choice_order' => $entry['choice_order'],
                 ];
 
-                $label = $breedName.' / '.$entry['name'];
                 $wasNew ? $created[] = $label : $updated[] = $label;
             }
         }
@@ -123,7 +138,9 @@ final class ClassLevel1SpellSeederImporter
             return compact('created', 'updated', 'skipped');
         }
 
-        $this->syncBreedSlots($breed, $kitSpellIds, $slotMap);
+        if ($overwrite || $created !== []) {
+            $this->syncBreedSlots($breed, $kitSpellIds, $slotMap);
+        }
 
         return compact('created', 'updated', 'skipped');
     }

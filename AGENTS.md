@@ -40,6 +40,9 @@ Commandes : liste dans `app/Console/COMMANDS.md`. Entrée officielle serveur : `
 
 ### Seed / données de jeu (réseau externe)
 
+- La **base** est la source de vérité. Les seeders (y compris via `project:dev` / `project:prepare`) ne créent
+  que les lignes absentes. Pour réappliquer les fichiers JSON/PHP : `project:seed --overwrite` (ou `SEED_OVERWRITE=true`).
+- Hors production, `project:backup` réécrit aussi les fichiers de seed depuis la base (`--no-seeder-data` pour skip).
 - Utiliser `php artisan project:seed` pour peupler la base **sans** scrapping externe (données locales + capacités).
 - `php artisan project:init` (et `project:refresh`) déclenchent en fin de pipeline le **scrapping de DofusDB.fr**
   (réseau externe). À éviter si l'egress est restreint ; utiliser `--skip-scrapping` / `--skip-types` sinon.

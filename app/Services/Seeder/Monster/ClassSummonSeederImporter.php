@@ -26,13 +26,14 @@ use App\Support\ElementBitmask;
 final class ClassSummonSeederImporter
 {
     /**
+     * @param  bool  $overwrite  False = ignorer les fiches déjà présentes
      * @return array{
      *     created: list<string>,
      *     updated: list<string>,
      *     skipped: list<string>
      * }
      */
-    public function import(?ClassSummonCatalog $catalog = null): array
+    public function import(?ClassSummonCatalog $catalog = null, bool $overwrite = true): array
     {
         $catalog ??= ClassSummonCatalog::load();
         $created = [];
@@ -40,9 +41,16 @@ final class ClassSummonSeederImporter
         $skipped = [];
 
         foreach ($catalog->entries() as $entry) {
-            $spell = $this->syncActionSpell($entry, $skipped);
             $monster = $this->findMonster($entry['official_id']);
             $wasNew = $monster === null;
+            $label = $entry['breed'] !== '' ? $entry['breed'].' / '.$entry['name'] : $entry['name'];
+            if (! $wasNew && ! $overwrite) {
+                $skipped[] = $label.' : déjà présent, conservation';
+
+                continue;
+            }
+
+            $spell = $this->syncActionSpell($entry, $skipped);
             $monster ??= new Monster;
             $creature = $monster->creature ?? new Creature;
 
@@ -61,7 +69,6 @@ final class ClassSummonSeederImporter
                 $creature->spells()->sync([$spell->id]);
             }
 
-            $label = $entry['breed'] !== '' ? $entry['breed'].' / '.$entry['name'] : $entry['name'];
             $wasNew ? $created[] = $label : $updated[] = $label;
         }
 

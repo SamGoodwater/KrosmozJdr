@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders\Entity;
 
 use App\Services\Seeder\Breed\ClassBreedSeederImporter;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 
 /**
@@ -17,7 +18,7 @@ class ClassBreedSeeder extends Seeder
      */
     public function run(): void
     {
-        $result = app(ClassBreedSeederImporter::class)->import();
+        $result = app(ClassBreedSeederImporter::class)->import(overwrite: SeedMode::overwrite());
         $this->command?->info(sprintf(
             '  ClassBreedSeeder : %d création(s), %d mise(s) à jour, %d avertissement(s).',
             count($result['created']),

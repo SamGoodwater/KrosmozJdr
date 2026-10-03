@@ -21,7 +21,7 @@ php artisan items:seeder-import --dry-run  # fichiers → base
 php artisan items:seeder-import
 ```
 
-`Database\Seeders\Entity\ItemSeeder` rejoue ces fichiers dans `project:seed` / `project:init`. Upsert sur `dofusdb_id` (`official_id` à défaut), type résolu par `item_type_dofus_id`, `image` exclu. Les ressources des recettes passent en `playable` (`ResourceSeeder`, plancher 1 kama). `ConsumableSeeder` rejoue l’échelle de soins hors combat, les parchemins de caractéristique (respec) et les utilitaires. `ClassBreedSeeder` pose les 19 classes (avant les sorts). `SpellSeeder` rejoue les 24 sorts de classe des 19 classes (`*-level-1.json` + `*-progression.json`). Boutons super administrateur : `/admin/content/ia-generation`. Format : [database/seeders/data/README.md](../../database/seeders/data/README.md).
+`Database\Seeders\Entity\ItemSeeder` rejoue ces fichiers dans `project:seed` / `project:init`. Upsert sur `dofusdb_id` (`official_id` à défaut), type résolu par `item_type_dofus_id`, `image` exclu. Les ressources des recettes passent en `playable` (`ResourceSeeder`, plancher 1 kama). `ConsumableSeeder` rejoue l’échelle de soins hors combat, les parchemins de caractéristique (respec) et les utilitaires. `ClassBreedSeeder` pose les 19 classes (avant les sorts). `SpellSeeder` rejoue les 24 sorts de classe des 19 classes (`*-level-1.json` + `*-progression.json`). Export/import : CLI uniquement ; hors prod, `project:backup` (UI `/admin/backup`) réécrit aussi les seeders data. Format : [database/seeders/data/README.md](../../database/seeders/data/README.md).
 
 ## Import des règles CMS
 
@@ -68,22 +68,26 @@ Chaque type de travail a sa file (`App\Support\Queue\ProjectQueues`) : `notifica
 
 ## Sauvegardes (`project:backup`)
 
-Dump BDD gzip + archive `storage/app` (hors `app/backups`), rotation, UI et cron. Vocabulaire CLI : [COMMANDS.md — project:backup](../../app/Console/COMMANDS.md#projectbackup). Service : `app/Services/Project/ProjectBackupService.php`. Config : `config/project-backup.php`.
+Dump BDD gzip + archive `storage/app` (hors `app/backups`), rotation, UI et cron. Hors production : réécrit aussi les fichiers de seed versionnés depuis la base (caractéristiques, types item, mappings scrapping, équipements `--versioned`). Vocabulaire CLI : [COMMANDS.md — project:backup](../../app/Console/COMMANDS.md#projectbackup). Service : `app/Services/Project/ProjectBackupService.php` + `SeederDataExportService`. Config : `config/project-backup.php`.
+
+La base est la source de vérité ; les JSON sous `database/seeders/data/` en sont une copie. Au démarrage (`project:dev` / `project:prepare`), le seed ne crée que les lignes absentes. Pour réappliquer volontairement les fichiers : `project:seed --overwrite`.
 
 Voir aussi : [SECRET_SCAN.md](./SECRET_SCAN.md) (hook pre-push + CI gitleaks).
 
 | Élément | Détail |
 |--------|--------|
 | Fichiers | `{prefix}_{runId}_mysql.sql.gz` + `{prefix}_{runId}_storage.tar.gz` (ou `.zip` si `tar` indisponible) |
+| Seeders (hors prod) | `scrapping:seeders:export` (characteristics, item-types, scrapping-mappings) + `items:seeder-export --versioned` ; `--no-seeder-data` pour skip |
 | Répertoire | `PROJECT_BACKUP_PATH` ou défaut `storage/app/backups` |
 | Rétention | `PROJECT_BACKUP_RETENTION_DAYS` (défaut **30** j) ; purge à chaque run sauf `--no-prune` / `--prune-only` |
 | Cron | clé catalogue `project_backup` ; seed `.env` : `PROJECT_BACKUP_ENABLED=false`, `PROJECT_BACKUP_CRON="0 4 * * *"` |
-| UI | `/admin/backup` (super_admin, file `backup` + worker ponctuel, confirmation mot de passe) |
+| UI | `/admin/backup` (super_admin, file `backup` + worker ponctuel, confirmation mot de passe ; case « Ne pas réécrire les fichiers de seed » hors prod) |
 | Prérequis | binaire `mysqldump` (MySQL/MariaDB) ; protéger le répertoire (données sensibles) |
 
 ```bash
 php artisan project:backup
 php artisan project:backup --no-storage
+php artisan project:backup --no-seeder-data
 php artisan project:backup --prune-only --dry-run
 ```
 

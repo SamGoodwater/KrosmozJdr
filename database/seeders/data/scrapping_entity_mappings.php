@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Règles de mapping scrapping (DofusDB → Krosmoz). Régénéré depuis les JSON d’entité.
+ * Règles de mapping scrapping (DofusDB → Krosmoz). Régénéré par : php artisan scrapping:seeders:export --scrapping-mappings
  */
 
 return [
@@ -680,7 +680,7 @@ return [
             ],
         ],
     ],
-    77 => [
+    23 => [
         'source' => 'dofusdb',
         'entity' => 'item',
         'mapping_key' => 'bonus_krosmoz',
@@ -708,7 +708,7 @@ return [
             ],
         ],
     ],
-    23 => [
+    24 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'dofusdb_id',
@@ -731,7 +731,7 @@ return [
             ],
         ],
     ],
-    24 => [
+    25 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'name',
@@ -757,7 +757,7 @@ return [
             ],
         ],
     ],
-    25 => [
+    26 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'description',
@@ -783,7 +783,7 @@ return [
             ],
         ],
     ],
-    26 => [
+    27 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'level',
@@ -806,7 +806,7 @@ return [
             ],
         ],
     ],
-    27 => [
+    28 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'life',
@@ -831,7 +831,7 @@ return [
             ],
         ],
     ],
-    28 => [
+    29 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'strength',
@@ -854,7 +854,7 @@ return [
             ],
         ],
     ],
-    29 => [
+    30 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'intelligence',
@@ -877,7 +877,7 @@ return [
             ],
         ],
     ],
-    30 => [
+    31 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'agility',
@@ -900,7 +900,7 @@ return [
             ],
         ],
     ],
-    31 => [
+    32 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'wisdom',
@@ -923,7 +923,7 @@ return [
             ],
         ],
     ],
-    32 => [
+    33 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'chance',
@@ -946,7 +946,7 @@ return [
             ],
         ],
     ],
-    33 => [
+    34 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'pa',
@@ -969,7 +969,7 @@ return [
             ],
         ],
     ],
-    34 => [
+    35 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'pm',
@@ -992,7 +992,7 @@ return [
             ],
         ],
     ],
-    35 => [
+    36 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'po',
@@ -1015,7 +1015,7 @@ return [
             ],
         ],
     ],
-    36 => [
+    37 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'dodge_pa',
@@ -1038,7 +1038,7 @@ return [
             ],
         ],
     ],
-    37 => [
+    38 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'dodge_pm',
@@ -1061,7 +1061,7 @@ return [
             ],
         ],
     ],
-    38 => [
+    39 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'tackle',
@@ -1084,7 +1084,7 @@ return [
             ],
         ],
     ],
-    39 => [
+    40 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'dodge',
@@ -1107,7 +1107,7 @@ return [
             ],
         ],
     ],
-    40 => [
+    41 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'ini',
@@ -1130,7 +1130,7 @@ return [
             ],
         ],
     ],
-    41 => [
+    42 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'vitality',
@@ -1153,7 +1153,7 @@ return [
             ],
         ],
     ],
-    42 => [
+    43 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'image',
@@ -1179,7 +1179,7 @@ return [
             ],
         ],
     ],
-    43 => [
+    44 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'size',
@@ -1204,7 +1204,7 @@ return [
             ],
         ],
     ],
-    44 => [
+    45 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'race',
@@ -1227,7 +1227,7 @@ return [
             ],
         ],
     ],
-    45 => [
+    46 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'res_neutre',
@@ -1250,7 +1250,7 @@ return [
             ],
         ],
     ],
-    46 => [
+    47 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'res_terre',
@@ -1273,7 +1273,7 @@ return [
             ],
         ],
     ],
-    47 => [
+    48 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'res_feu',
@@ -1296,7 +1296,7 @@ return [
             ],
         ],
     ],
-    48 => [
+    49 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'res_air',
@@ -1319,7 +1319,7 @@ return [
             ],
         ],
     ],
-    49 => [
+    50 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'res_eau',
@@ -1342,7 +1342,7 @@ return [
             ],
         ],
     ],
-    50 => [
+    51 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'critical_hit',
@@ -1365,7 +1365,7 @@ return [
             ],
         ],
     ],
-    51 => [
+    52 => [
         'source' => 'dofusdb',
         'entity' => 'monster',
         'mapping_key' => 'heal_bonus',
@@ -1388,7 +1388,7 @@ return [
             ],
         ],
     ],
-    52 => [
+    53 => [
         'source' => 'dofusdb',
         'entity' => 'panoply',
         'mapping_key' => 'dofusdb_id',
@@ -1411,7 +1411,7 @@ return [
             ],
         ],
     ],
-    53 => [
+    54 => [
         'source' => 'dofusdb',
         'entity' => 'panoply',
         'mapping_key' => 'name',
@@ -1437,7 +1437,7 @@ return [
             ],
         ],
     ],
-    54 => [
+    55 => [
         'source' => 'dofusdb',
         'entity' => 'panoply',
         'mapping_key' => 'description',
@@ -1463,7 +1463,7 @@ return [
             ],
         ],
     ],
-    55 => [
+    56 => [
         'source' => 'dofusdb',
         'entity' => 'panoply',
         'mapping_key' => 'bonus',
@@ -1486,7 +1486,7 @@ return [
             ],
         ],
     ],
-    56 => [
+    57 => [
         'source' => 'dofusdb',
         'entity' => 'panoply',
         'mapping_key' => 'item_dofusdb_ids',
@@ -1509,7 +1509,7 @@ return [
             ],
         ],
     ],
-    57 => [
+    58 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'dofusdb_id',
@@ -1532,7 +1532,7 @@ return [
             ],
         ],
     ],
-    58 => [
+    59 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'name',
@@ -1558,7 +1558,7 @@ return [
             ],
         ],
     ],
-    59 => [
+    60 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'description',
@@ -1590,7 +1590,7 @@ return [
             ],
         ],
     ],
-    60 => [
+    61 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'image',
@@ -1616,7 +1616,7 @@ return [
             ],
         ],
     ],
-    61 => [
+    62 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'pa',
@@ -1645,7 +1645,7 @@ return [
             ],
         ],
     ],
-    62 => [
+    63 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'spell_po_min',
@@ -1674,7 +1674,7 @@ return [
             ],
         ],
     ],
-    63 => [
+    64 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'spell_po_max',
@@ -1703,7 +1703,7 @@ return [
             ],
         ],
     ],
-    64 => [
+    65 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'level',
@@ -1734,7 +1734,7 @@ return [
             ],
         ],
     ],
-    65 => [
+    66 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'cast_per_turn',
@@ -1767,7 +1767,7 @@ return [
             ],
         ],
     ],
-    66 => [
+    67 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'cast_per_target',
@@ -1800,7 +1800,7 @@ return [
             ],
         ],
     ],
-    67 => [
+    68 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'sight_line',
@@ -1829,7 +1829,7 @@ return [
             ],
         ],
     ],
-    68 => [
+    69 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'cast_in_line',
@@ -1858,7 +1858,7 @@ return [
             ],
         ],
     ],
-    69 => [
+    70 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'cast_in_diagonal',
@@ -1887,7 +1887,7 @@ return [
             ],
         ],
     ],
-    70 => [
+    71 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'target_type',
@@ -1905,7 +1905,7 @@ return [
             ],
         ],
     ],
-    71 => [
+    72 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'max_stack',
@@ -1934,7 +1934,7 @@ return [
             ],
         ],
     ],
-    72 => [
+    73 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'global_cooldown',
@@ -1963,7 +1963,7 @@ return [
             ],
         ],
     ],
-    73 => [
+    74 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'number_between_two_cast',
@@ -1996,7 +1996,7 @@ return [
             ],
         ],
     ],
-    74 => [
+    75 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'po_editable',
@@ -2025,7 +2025,7 @@ return [
             ],
         ],
     ],
-    75 => [
+    76 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'category',
@@ -2054,7 +2054,7 @@ return [
             ],
         ],
     ],
-    76 => [
+    77 => [
         'source' => 'dofusdb',
         'entity' => 'spell',
         'mapping_key' => 'powerful',

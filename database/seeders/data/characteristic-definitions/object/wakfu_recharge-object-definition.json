@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "wakfu_recharge_object",
         "name": "Bonus de recharge de réserve Wakfu",

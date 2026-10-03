@@ -7,6 +7,7 @@ use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
 use App\Support\Cms\KrefShortcodeReplacer;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 
@@ -225,6 +226,12 @@ class CriticalPagesSeeder extends Seeder
         $page = Page::withTrashed()->where('slug', $slug)->first();
 
         if ($page) {
+            if (! SeedMode::overwrite()) {
+                $this->command?->info("ℹ️ {$label} déjà présente, conservation ({$slug})");
+
+                return $page;
+            }
+
             if ($page->trashed()) {
                 $page->restore();
             }
@@ -391,6 +398,10 @@ class CriticalPagesSeeder extends Seeder
      */
     private function removeOrphanAccueilSections(Page $homePage): void
     {
+        if (! SeedMode::overwrite()) {
+            return;
+        }
+
         $expectedSlugs = [
             'hero-accueil',
             'encart-beta',
@@ -449,6 +460,9 @@ class CriticalPagesSeeder extends Seeder
         ];
 
         if ($section) {
+            if (! SeedMode::overwrite()) {
+                return $section;
+            }
             if ($section->trashed()) {
                 $section->restore();
             }
@@ -502,6 +516,9 @@ class CriticalPagesSeeder extends Seeder
         ];
 
         if ($section) {
+            if (! SeedMode::overwrite()) {
+                return $section;
+            }
             if ($section->trashed()) {
                 $section->restore();
             }
@@ -562,6 +579,9 @@ class CriticalPagesSeeder extends Seeder
         ];
 
         if ($section) {
+            if (! SeedMode::overwrite()) {
+                return $section;
+            }
             if ($section->trashed()) {
                 $section->restore();
             }

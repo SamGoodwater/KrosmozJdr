@@ -1,0 +1,33 @@
+{
+    "_schema_version": "1",
+    "key": {
+        "dofusdb_id": null,
+        "official_id": "ia-grid:amulet:terre:7"
+    },
+    "item": {
+        "name": "[Grille] Amulette Terre 7",
+        "level": "7",
+        "description": "Amulette de la grille Terre, niveau 7. Accessoire pivot voie Terre (Force).",
+        "recipe": null,
+        "rarity": 0,
+        "state": "auto",
+        "dofus_version": "3",
+        "read_level": 0,
+        "write_level": 3,
+        "auto_update": false,
+        "price_calculated": 2050,
+        "price_custom": null,
+        "effect": {
+            "action_points": 2
+        },
+        "bonus": {
+            "strength": 2
+        },
+        "item_type_dofus_id": 1,
+        "item_type_name": "Amulette"
+    },
+    "relations": {
+        "panoply_dofusdb_ids": [],
+        "resources": []
+    }
+}

@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\DofusdbEffectMapping;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\DofusdbEffectMappingService;
+use App\Support\Seeder\SeedMode;
 use Database\Seeders\Concerns\RetriesWhenMysqlSchemaChanged;
 use Illuminate\Database\Seeder;
 
@@ -56,18 +57,21 @@ class DofusdbEffectMappingSeeder extends Seeder
             [$subEffectSlug, $characteristicSource, $characteristicKey] = $mapping;
             $keptIds[] = (int) $dofusdbEffectId;
 
-            $this->retryOnMysqlSchemaChanged(static fn () => DofusdbEffectMapping::updateOrCreate(
-                ['dofusdb_effect_id' => $dofusdbEffectId],
-                [
-                    'sub_effect_slug' => $subEffectSlug,
-                    'characteristic_source' => $characteristicSource,
-                    'characteristic_key' => $characteristicKey,
-                ]
-            ));
+            $this->retryOnMysqlSchemaChanged(
+                static fn () => SeedMode::upsert(
+                    DofusdbEffectMapping::class,
+                    ['dofusdb_effect_id' => $dofusdbEffectId],
+                    [
+                        'sub_effect_slug' => $subEffectSlug,
+                        'characteristic_source' => $characteristicSource,
+                        'characteristic_key' => $characteristicKey,
+                    ]
+                )
+            );
         }
 
-        // Supprime les lignes obsolètes (ex. anciens boosters d’états désormais hors mapping).
-        if ($keptIds !== [] && is_file(self::DATA_FILE)) {
+        // Supprime les lignes obsolètes uniquement en mode overwrite.
+        if (SeedMode::overwrite() && $keptIds !== [] && is_file(self::DATA_FILE)) {
             $this->retryOnMysqlSchemaChanged(
                 static fn () => DofusdbEffectMapping::query()
                     ->whereNotIn('dofusdb_effect_id', $keptIds)

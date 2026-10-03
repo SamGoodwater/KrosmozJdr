@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "tackle_object",
         "name": "Bonus de tacle",

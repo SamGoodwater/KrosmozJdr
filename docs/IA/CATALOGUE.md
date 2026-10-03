@@ -102,16 +102,16 @@ Au niveau 8 la `formula` plafonne la carac de voie à 3 et l’initiative à 2, 
 
 ### Rejouer le socle d’objets (base ↔ seeder)
 
-Les objets relus sont **versionnés** en JSON, un fichier par item, sous `database/seeders/data/entities/items/`. On peut donc recréer ce socle sur n’importe quelle base avant de faire tourner l’IA, et repartir de la base après une session de relecture.
+Les objets relus sont **versionnés** en JSON, un fichier par item, sous `database/seeders/data/entities/items/`. On peut donc recréer ce socle sur n’importe quelle base avant de faire tourner l’IA, et repartir de la base après une session de relecture. **Pas de boutons admin** : export / import uniquement en CLI (ou via `project:backup` hors production pour l’export).
 
-| Sens | Commande | Bouton admin |
-| --- | --- | --- |
-| Base → fichiers | `php artisan items:seeder-export` (`--prune`, `--state=`, `--all`, `--id=`) | `/admin/content/ia-generation` → « Base → fichiers » |
-| Fichiers → base | `php artisan items:seeder-import` (`--dry-run`) | `/admin/content/ia-generation` → « Fichiers → base » |
+| Sens | Commande |
+| --- | --- |
+| Base → fichiers | `php artisan items:seeder-export` (`--prune`, `--state=`, `--all`, `--id=`, `--versioned`) ; aussi inclus dans `project:backup` hors prod |
+| Fichiers → base | `php artisan items:seeder-import` (`--dry-run`) ; aussi via `project:seed` / `ItemSeeder` |
 
 `Database\Seeders\Entity\ItemSeeder` rejoue les mêmes fichiers, donc `project:seed` et `project:init` reconstruisent le socle sans scrapping. L’upsert se fait sur `dofusdb_id` (`official_id` à défaut) et le type est résolu par `item_type_dofus_id`, ce qui rend les fichiers portables entre environnements. Les ressources des recettes de ces items, si elles existent déjà en base (scrapping), passent en `playable` sans autre modification. Détail du format : [`database/seeders/data/README.md`](../../database/seeders/data/README.md).
 
-L’export est déterministe (relancer sans changement ne produit aucun diff Git) et exclut `image`, dont la colonne contient une URL liée à l’environnement. Les boutons admin sont réservés au super administrateur ; l’écriture dans le dépôt n’est possible qu’en développement.
+L’export est déterministe (relancer sans changement ne produit aucun diff Git) et exclut `image`, dont la colonne contient une URL liée à l’environnement. L’écriture dans le dépôt n’est possible qu’en développement (commande d’export et branche seeders de `project:backup`).
 
 ### Panoplies bas niveau (playable)
 

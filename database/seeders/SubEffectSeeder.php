@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\SubEffect;
 use App\Services\Effect\EffectTextSanitizer;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 
 /**
@@ -196,14 +197,17 @@ class SubEffectSeeder extends Seeder
                 'variables_allowed' => $row['variables_allowed'] ?? null,
                 'param_schema' => $row['param_schema'] ?? null,
             ];
-            SubEffect::updateOrCreate(
+            SeedMode::upsert(
+                SubEffect::class,
                 ['slug' => $row['slug']],
                 $payload
             );
         }
 
-        // Retirer les anciens sous-effets qui ne font plus partie du référentiel
-        SubEffect::whereNotIn('slug', $allowedSlugs)->delete();
+        // Retirer les anciens sous-effets uniquement en mode overwrite
+        if (SeedMode::overwrite()) {
+            SubEffect::whereNotIn('slug', $allowedSlugs)->delete();
+        }
 
         if ($this->command) {
             $this->command->info('SubEffectSeeder : '.count($rows).' sous-effets créés ou mis à jour.');

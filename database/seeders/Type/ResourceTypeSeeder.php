@@ -7,6 +7,7 @@ namespace Database\Seeders\Type;
 use App\Models\Type\ResourceType;
 use App\Models\User;
 use App\Support\CatalogTypeVisibility;
+use App\Support\Seeder\SeedMode;
 use Database\Seeders\Concerns\LoadsSeederDataFile;
 use Database\Seeders\Concerns\RetriesWhenMysqlSchemaChanged;
 use Illuminate\Database\Seeder;
@@ -47,7 +48,8 @@ class ResourceTypeSeeder extends Seeder
             if ($typeId <= 0) {
                 continue;
             }
-            ResourceType::updateOrCreate(
+            SeedMode::upsert(
+                ResourceType::class,
                 ['dofusdb_type_id' => $typeId],
                 [
                     'name' => (string) ($row['name'] ?? ''),

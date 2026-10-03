@@ -7,6 +7,7 @@ namespace Database\Seeders\Type;
 use App\Models\Type\ItemType;
 use App\Models\User;
 use App\Support\CatalogTypeVisibility;
+use App\Support\Seeder\SeedMode;
 use Database\Seeders\Concerns\LoadsSeederDataFile;
 use Database\Seeders\Concerns\RetriesWhenMysqlSchemaChanged;
 use Illuminate\Database\Seeder;
@@ -48,7 +49,8 @@ class ItemTypeSeeder extends Seeder
                 continue;
             }
             $this->retryOnMysqlSchemaChanged(
-                static fn () => ItemType::updateOrCreate(
+                static fn () => SeedMode::upsert(
+                    ItemType::class,
                     ['dofusdb_type_id' => $typeId],
                     [
                         'name' => (string) ($row['name'] ?? ''),

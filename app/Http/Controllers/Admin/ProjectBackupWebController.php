@@ -24,7 +24,13 @@ class ProjectBackupWebController extends Controller
 
     public function index(): InertiaResponse
     {
-        return Inertia::render('Admin/backup/Index', $this->consoleJobProps(ProjectConsoleDomain::BACKUP));
+        return Inertia::render('Admin/backup/Index', array_merge(
+            $this->consoleJobProps(ProjectConsoleDomain::BACKUP),
+            [
+                // Aligné sur ProjectBackupCommand : export seeders hors production uniquement.
+                'seederExportAvailable' => ! app()->environment('production'),
+            ]
+        ));
     }
 
     public function store(StoreProjectBackupWebRequest $request, ProjectConsoleJobTracker $tracker): RedirectResponse

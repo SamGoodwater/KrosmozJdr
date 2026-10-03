@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateIaGenerationConfigRequest;
 use App\Models\Characteristic;
-use App\Models\Entity\Item;
 use App\Models\IaGenerationSetting;
 use App\Services\GenerativeAi\AnthropicModelCatalog;
 use App\Services\GenerativeAi\AnthropicUsageService;
@@ -16,7 +15,6 @@ use App\Services\GenerativeAi\FewShotExamplePool;
 use App\Services\GenerativeAi\GenerationConfigLoader;
 use App\Services\GenerativeAi\GenerationConfigStore;
 use App\Services\GenerativeAi\GenerativeAiClient;
-use App\Services\Seeder\Item\ItemSeederFileRepository;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -56,29 +54,11 @@ class IaGenerationConfigController extends Controller
             'updated_at' => $row?->updated_at?->toIso8601String(),
             'entity_labels' => self::ENTITY_LABELS,
             'characteristic_options' => $this->characteristicOptions(),
-            'items_seeder' => $this->itemsSeederState(),
             'usage' => app(AnthropicUsageService::class)->snapshot(),
             'estimates' => app(CostEstimator::class)->all(app(GenerativeAiClient::class)->model()),
             'has_api_key' => filled(config('services.anthropic.api_key')),
             'available_models' => AnthropicModelCatalog::choices(),
         ]);
-    }
-
-    /**
-     * État de l'aller-retour étalons d'équipement (base ↔ fichiers du dépôt).
-     *
-     * @return array{relative_root: string, file_count: int, auto_count: int, can_export: bool, can_import: bool, allowed: bool}
-     */
-    private function itemsSeederState(): array
-    {
-        return [
-            'relative_root' => ItemSeederFileRepository::RELATIVE_ROOT,
-            'file_count' => count(app(ItemSeederFileRepository::class)->paths()),
-            'auto_count' => Item::query()->where('state', Item::STATE_AUTO)->count(),
-            'can_export' => app()->environment(['local', 'testing']),
-            'can_import' => ! app()->environment('production'),
-            'allowed' => request()->user()?->isInteractiveSuperAdmin() === true,
-        ];
     }
 
     public function update(UpdateIaGenerationConfigRequest $request, GenerationConfigStore $store): RedirectResponse

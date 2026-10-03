@@ -23,6 +23,7 @@ class ProjectBackupCommand extends Command
     protected $signature = 'project:backup
         {--no-database : Exclure le dump SQL (gzip)}
         {--no-storage : Exclure l’archive storage/app}
+        {--no-seeder-data : Ne pas réécrire les fichiers de seed depuis la base (hors production)}
         {--path= : Répertoire des sauvegardes (défaut : config ou storage/app/backups)}
         {--retention-days= : Jours de conservation des fichiers (défaut : config, 30)}
         {--no-prune : Ne pas supprimer les sauvegardes plus anciennes que la rétention}
@@ -30,7 +31,7 @@ class ProjectBackupCommand extends Command
         {--dry-run : Avec --prune-only ou --no-prune absent : afficher les fichiers qui seraient supprimés}
         {--skip-notify : Ne pas notifier les admins du résultat de la sauvegarde}';
 
-    protected $description = 'Sauvegarde BDD + storage/app compressés, purge des fichiers > rétention (défaut 30 j)';
+    protected $description = 'Sauvegarde BDD + storage/app (+ fichiers seed hors prod), purge > rétention (défaut 30 j)';
 
     public function handle(): int
     {
@@ -56,12 +57,18 @@ class ProjectBackupCommand extends Command
 
         $withDatabase = ! (bool) $this->option('no-database');
         $withStorage = ! (bool) $this->option('no-storage');
+        $withSeederData = ! (bool) $this->option('no-seeder-data')
+            && ! app()->environment('production');
 
-        if (! $withDatabase && ! $withStorage) {
-            $this->error('Indiquez au moins une cible : ne pas passer --no-database et --no-storage ensemble (utilisez --prune-only pour purger seul).');
+        if (! $withDatabase && ! $withStorage && ! $withSeederData) {
+            $this->error('Indiquez au moins une cible : BDD, storage ou fichiers de seed (utilisez --prune-only pour purger seul).');
             $this->notifyBackupResult(false, $startedAt, 'Aucune cible de sauvegarde sélectionnée.');
 
             return ArtisanExitCode::FAILURE;
+        }
+
+        if ((bool) $this->option('no-seeder-data') === false && app()->environment('production')) {
+            $this->line('Export des fichiers de seed ignoré (production).');
         }
 
         try {
@@ -71,7 +78,8 @@ class ProjectBackupCommand extends Command
                 $prune,
                 $dryRun && $prune,
                 fn (string $m) => $this->line($m),
-                fn (string $m) => $this->error($m)
+                fn (string $m) => $this->error($m),
+                $withSeederData,
             );
         } catch (Throwable $e) {
             $this->error('Sauvegarde impossible : '.$e->getMessage());
@@ -80,7 +88,7 @@ class ProjectBackupCommand extends Command
             return ArtisanExitCode::FAILURE;
         }
 
-        if ($result['run_id'] === '' && ($withDatabase || $withStorage)) {
+        if ($result['run_id'] === '' && ($withDatabase || $withStorage || $withSeederData)) {
             $this->notifyBackupResult(false, $startedAt, 'Sauvegarde interrompue avant création de run.');
 
             return ArtisanExitCode::FAILURE;
@@ -89,12 +97,16 @@ class ProjectBackupCommand extends Command
         if ($result['files'] !== []) {
             $this->info('Sauvegarde terminée : '.count($result['files']).' fichier(s).');
         }
+        if (($result['seeder_exports'] ?? []) !== []) {
+            $this->info('Fichiers de seed mis à jour : '.count($result['seeder_exports']).' export(s).');
+        }
 
+        $success = $result['files'] !== [] || ($result['seeder_exports'] ?? []) !== [];
         $this->notifyBackupResult(
-            $result['files'] !== [],
+            $success,
             $startedAt,
-            $result['files'] !== []
-                ? 'Fichier(s) créé(s) : '.count($result['files']).'.'
+            $success
+                ? 'Fichier(s) créé(s) : '.count($result['files']).', export(s) seed : '.count($result['seeder_exports'] ?? []).'.'
                 : 'Aucun fichier créé.'
         );
 

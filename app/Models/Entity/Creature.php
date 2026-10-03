@@ -390,6 +390,20 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature visibleToUser(?\App\Models\User $user)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoFixeMultiple($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoFixeMultipleContext($value)
+ * @property string $artisanat_bonus
+ * @property string $herbaliste_bonus
+ * @property string $connaissance_creatures_bonus
+ * @property string $intimidation_ability
+ * @property int $artisanat_mastery
+ * @property int $herbaliste_mastery
+ * @property int $connaissance_creatures_mastery
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereArtisanatBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereArtisanatMastery($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereConnaissanceCreaturesBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereConnaissanceCreaturesMastery($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereHerbalisteBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereHerbalisteMastery($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereIntimidationAbility($value)
  * @mixin \Eloquent
  */
 class Creature extends Model implements HasMedia

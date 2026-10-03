@@ -10,6 +10,7 @@ use App\Models\Section;
 use App\Models\User;
 use App\Services\PageService;
 use App\Support\Cms\KrefShortcodeReplacer;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 
 /**
@@ -177,6 +178,10 @@ class CreationPagesSeeder extends Seeder
      */
     private function removeOrphanSections(Page $page, array $expectedSlugs): void
     {
+        if (! SeedMode::overwrite()) {
+            return;
+        }
+
         Section::query()
             ->where('page_id', $page->id)
             ->whereNotIn('slug', $expectedSlugs === [] ? [''] : $expectedSlugs)
@@ -185,6 +190,10 @@ class CreationPagesSeeder extends Seeder
 
     private function archiveDeprecatedPages(Page $parent): void
     {
+        if (! SeedMode::overwrite()) {
+            return;
+        }
+
         foreach (self::DEPRECATED_SLUGS as $slug) {
             /** @var Page|null $page */
             $page = Page::withTrashed()->where('slug', $slug)->first();
@@ -226,6 +235,11 @@ class CreationPagesSeeder extends Seeder
         $page = Page::withTrashed()->where('slug', $slug)->first();
 
         if ($page) {
+            if (! SeedMode::overwrite()) {
+                $this->command?->info("ℹ️ Page {$slug} déjà présente, conservation");
+
+                return $page;
+            }
             if ($page->trashed()) {
                 $page->restore();
             }
@@ -336,6 +350,9 @@ class CreationPagesSeeder extends Seeder
         $attributes = array_merge(['page_id' => $page->id, 'slug' => $slug], $attributes);
 
         if ($section) {
+            if (! SeedMode::overwrite()) {
+                return $section;
+            }
             if ($section->trashed()) {
                 $section->restore();
             }

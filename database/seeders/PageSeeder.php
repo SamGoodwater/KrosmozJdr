@@ -10,6 +10,7 @@ use App\Models\Section;
 use App\Models\User;
 use App\Services\PageService;
 use App\Support\Cms\KrefShortcodeReplacer;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -113,6 +114,13 @@ HTML;
         $page = Page::withTrashed()->where('slug', $slug)->first();
 
         if ($page) {
+            if (! SeedMode::overwrite()) {
+                if ($this->command) {
+                    $this->command->info("ℹ️ Page {$slug} déjà présente, conservation");
+                }
+
+                return $page;
+            }
             if ($page->trashed()) {
                 $page->restore();
             }
@@ -305,6 +313,10 @@ HTML;
      */
     private function removeOrphanEssentialSections(Page $page, array $pageConfig): void
     {
+        if (! SeedMode::overwrite()) {
+            return;
+        }
+
         $expectedSlugs = [$pageConfig['slug'].'-intro'];
         if (isset($pageConfig['download_catalog']) && is_array($pageConfig['download_catalog'])) {
             $downloadSlug = (string) ($pageConfig['download_catalog']['slug'] ?? 'telechargements');
@@ -456,10 +468,12 @@ HTML;
             );
         }
 
-        Section::query()
-            ->where('page_id', $page->id)
-            ->whereNotIn('slug', $expectedSlugs)
-            ->each(fn (Section $section) => $section->delete());
+        if (SeedMode::overwrite()) {
+            Section::query()
+                ->where('page_id', $page->id)
+                ->whereNotIn('slug', $expectedSlugs)
+                ->each(fn (Section $section) => $section->delete());
+        }
     }
 
     /**
@@ -536,10 +550,12 @@ HTML;
             );
         }
 
-        Section::query()
-            ->where('page_id', $page->id)
-            ->whereNotIn('slug', $expectedSlugs)
-            ->each(fn (Section $section) => $section->delete());
+        if (SeedMode::overwrite()) {
+            Section::query()
+                ->where('page_id', $page->id)
+                ->whereNotIn('slug', $expectedSlugs)
+                ->each(fn (Section $section) => $section->delete());
+        }
     }
 
     /**
@@ -604,10 +620,12 @@ HTML;
             );
         }
 
-        Section::query()
-            ->where('page_id', $page->id)
-            ->whereNotIn('slug', $expectedSlugs)
-            ->each(fn (Section $section) => $section->delete());
+        if (SeedMode::overwrite()) {
+            Section::query()
+                ->where('page_id', $page->id)
+                ->whereNotIn('slug', $expectedSlugs)
+                ->each(fn (Section $section) => $section->delete());
+        }
     }
 
     /**
@@ -705,6 +723,9 @@ HTML;
         $attributes = array_merge(['page_id' => $page->id, 'slug' => $slug], $attributes);
 
         if ($section) {
+            if (! SeedMode::overwrite()) {
+                return $section;
+            }
             if ($section->trashed()) {
                 $section->restore();
             }
@@ -761,6 +782,9 @@ HTML;
         ];
 
         if ($section) {
+            if (! SeedMode::overwrite()) {
+                return $section;
+            }
             if ($section->trashed()) {
                 $section->restore();
             }

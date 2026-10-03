@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\LoadingTip;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 
 /**
@@ -58,7 +59,8 @@ class LoadingTipSeeder extends Seeder
         ];
 
         foreach ($definitions as $row) {
-            LoadingTip::updateOrCreate(
+            SeedMode::upsert(
+                LoadingTip::class,
                 ['body' => $row['body']],
                 [
                     'url' => $row['url'],

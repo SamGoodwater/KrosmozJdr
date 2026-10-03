@@ -30,6 +30,7 @@ class ProjectRefreshCommand extends Command
     protected $signature = 'project:refresh
         {--hard : Exécuter setup --refresh (vendor + node_modules) avant le pipeline d’init}
         {--without-seed : Transmet --skip-seeders à project:init}
+        {--overwrite : Transmet --overwrite à project:init (réécrit les lignes seedées)}
         {--skip-scrapping : Transmet à project:init}
         {--fast : --skip-scrapping et --skip-types (données locales sans DofusDB)}
         {--noimage : Transmet à project:init}
@@ -122,7 +123,7 @@ class ProjectRefreshCommand extends Command
             $arguments['--skip-types'] = true;
         }
 
-        foreach (['skip-scrapping', 'noimage', 'skip-types'] as $name) {
+        foreach (['overwrite', 'skip-scrapping', 'noimage', 'skip-types'] as $name) {
             if ($this->option($name)) {
                 $arguments['--'.$name] = true;
             }

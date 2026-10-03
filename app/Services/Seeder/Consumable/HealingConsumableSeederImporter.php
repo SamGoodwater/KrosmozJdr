@@ -24,6 +24,7 @@ final class HealingConsumableSeederImporter
     ) {}
 
     /**
+     * @param  bool  $overwrite  False = ignorer les fiches déjà présentes
      * @return array{
      *     resources: int,
      *     created: list<string>,
@@ -31,15 +32,19 @@ final class HealingConsumableSeederImporter
      *     skipped: list<string>
      * }
      */
-    public function import(?HealingConsumableCatalog $catalog = null): array
+    public function import(?HealingConsumableCatalog $catalog = null, bool $overwrite = true): array
     {
         $catalog ??= HealingConsumableCatalog::load();
         $created = [];
         $updated = [];
         $skipped = [];
 
-        $this->ensureTypesPlayable($catalog);
-        $resourcesPatched = $this->patchResources($catalog);
+        if ($overwrite) {
+            $this->ensureTypesPlayable($catalog);
+            $resourcesPatched = $this->patchResources($catalog);
+        } else {
+            $resourcesPatched = 0;
+        }
 
         foreach ($catalog->entries() as $entry) {
             $typeId = $this->resolveTypeId($catalog, $entry['kind']);
@@ -51,6 +56,11 @@ final class HealingConsumableSeederImporter
 
             $consumable = $this->findConsumable($entry);
             $wasNew = $consumable === null;
+            if (! $wasNew && ! $overwrite) {
+                $skipped[] = $entry['name'].' : déjà présent, conservation';
+
+                continue;
+            }
             $consumable ??= new Consumable;
 
             $attributes = [

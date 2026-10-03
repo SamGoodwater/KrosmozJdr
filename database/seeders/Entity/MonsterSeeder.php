@@ -6,6 +6,7 @@ namespace Database\Seeders\Entity;
 
 use App\Services\Seeder\Monster\BestiarySeederImporter;
 use App\Services\Seeder\Monster\ClassSummonSeederImporter;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 
 /**
@@ -20,10 +21,11 @@ class MonsterSeeder extends Seeder
      */
     public function run(): void
     {
-        $summons = app(ClassSummonSeederImporter::class)->import();
+        $overwrite = SeedMode::overwrite();
+        $summons = app(ClassSummonSeederImporter::class)->import(overwrite: $overwrite);
         $this->report('invocations', $summons);
 
-        $bestiary = app(BestiarySeederImporter::class)->import();
+        $bestiary = app(BestiarySeederImporter::class)->import(overwrite: $overwrite);
         $this->report('bestiaire', $bestiary);
     }
 

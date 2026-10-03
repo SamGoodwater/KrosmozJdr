@@ -226,10 +226,11 @@ onMounted(() => {
 
     <PageHeader title="Mappings champs" back-route="admin.characteristics.index" back-label="Caractéristiques">
         <template #subtitle>
-            Règles DofusDB → Krosmoz par entité, source de vérité en BDD. Après modification :
-            <code class="rounded bg-base-300 px-1 text-xs">php artisan scrapping:seeders:export</code>
-            puis <code class="rounded bg-base-300 px-1 text-xs">db:seed --class=ScrappingEntityMappingSeeder</code>
-            pour recréer le paramétrage.
+            Règles DofusDB → Krosmoz par entité. La base est la source de vérité ; les fichiers du dépôt
+            sont mis à jour hors production via
+            <code class="rounded bg-base-300 px-1 text-xs">project:backup</code>
+            (ou CLI
+            <code class="rounded bg-base-300 px-1 text-xs">scrapping:seeders:export --scrapping-mappings</code>).
         </template>
         <template v-if="!adminUnlocked || entity" #primary>
             <Btn v-if="!adminUnlocked" color="primary" size="sm" type="button" @click="showAdminConfirmModal = true">

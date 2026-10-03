@@ -12,6 +12,7 @@ use App\Console\Concerns\PromptsPrimarySuperAdmin;
 use App\Console\Concerns\RunsBibliothequeEntityPagesSync;
 use App\Console\YesNoFlags;
 use App\Services\NotificationService;
+use App\Support\Seeder\SeedMode;
 use Database\Seeders\CreationPagesSeeder;
 use Database\Seeders\CriticalPagesSeeder;
 use Database\Seeders\Entity\BreedSeeder;
@@ -72,6 +73,7 @@ class ProjectInitCommand extends Command
         {--fresh : migrate:fresh --force avant tout}
         {--skip-migrate : Ne pas lancer les migrations}
         {--skip-seeders : Ne pas exécuter les seeders (socle déjà fait)}
+        {--overwrite : Réappliquer les fichiers de seed sur les lignes déjà en base (updateOrCreate)}
         {--skip-scrapping : Ne pas scraper}
         {--skip-capabilities : Ne pas importer les capabilities}
         {--skip-specializations : Ne pas exécuter le seeder des spécialisations (HTML legacy + brouillons)}
@@ -119,6 +121,11 @@ class ProjectInitCommand extends Command
 
         if ($this->abortIfConflictingYesNoFlags()) {
             return ArtisanExitCode::FAILURE;
+        }
+
+        if ((bool) $this->option('overwrite')) {
+            SeedMode::forceOverwrite(true);
+            $this->info('Mode seed : overwrite (fichiers → base sur lignes existantes).');
         }
 
         set_time_limit(0);
@@ -255,6 +262,7 @@ class ProjectInitCommand extends Command
             $lastError = $e->getMessage();
             throw $e;
         } finally {
+            SeedMode::clearForce();
             $duration = microtime(true) - $startedAt;
             $finishedAt = now()->format('d/m/Y à H:i:s');
             $this->printInitSummary($phaseStatuses, $success, $duration, $finishedAt, $lastError);

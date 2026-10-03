@@ -17,20 +17,23 @@ use App\Models\Type\ConsumableType;
 final class CharacteristicRespecScrollSeederImporter
 {
     /**
+     * @param  bool  $overwrite  False = ignorer les fiches déjà présentes
      * @return array{
      *     created: list<string>,
      *     updated: list<string>,
      *     skipped: list<string>
      * }
      */
-    public function import(?CharacteristicRespecScrollCatalog $catalog = null): array
+    public function import(?CharacteristicRespecScrollCatalog $catalog = null, bool $overwrite = true): array
     {
         $catalog ??= CharacteristicRespecScrollCatalog::load();
         $created = [];
         $updated = [];
         $skipped = [];
 
-        $this->ensureTypePlayable($catalog);
+        if ($overwrite) {
+            $this->ensureTypePlayable($catalog);
+        }
         $typeId = $this->resolveTypeId($catalog);
         if ($typeId === null) {
             $skipped[] = 'Type '.$catalog->consumableTypeName().' introuvable';
@@ -47,6 +50,11 @@ final class CharacteristicRespecScrollSeederImporter
                 ->where('dofusdb_id', $entry['dofusdb_id'])
                 ->first();
             $wasNew = $consumable === null;
+            if (! $wasNew && ! $overwrite) {
+                $skipped[] = $entry['name'].' : déjà présent, conservation';
+
+                continue;
+            }
             $consumable ??= new Consumable;
 
             $consumable->fill([

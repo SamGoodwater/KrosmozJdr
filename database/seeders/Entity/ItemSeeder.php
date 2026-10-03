@@ -6,6 +6,7 @@ namespace Database\Seeders\Entity;
 
 use App\Services\Seeder\Item\ItemSeederFileRepository;
 use App\Services\Seeder\Item\ItemSeederImporter;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 
 /**
@@ -22,7 +23,7 @@ class ItemSeeder extends Seeder
             return;
         }
 
-        $result = app(ItemSeederImporter::class)->import();
+        $result = app(ItemSeederImporter::class)->import(overwrite: SeedMode::overwrite());
 
         $this->command?->info(sprintf(
             '  ItemSeeder : %d création(s), %d mise(s) à jour, %d ignoré(s).',

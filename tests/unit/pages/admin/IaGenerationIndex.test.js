@@ -37,14 +37,6 @@ const defaultProps = {
         consumable: "Consommables",
     },
     characteristic_options: {},
-    items_seeder: {
-        relative_root: "database/seeders/data/entities/items",
-        file_count: 0,
-        auto_count: 0,
-        can_export: false,
-        can_import: false,
-        allowed: false,
-    },
     usage: { available: false, message: "Usage indisponible." },
     estimates: [],
     has_api_key: false,
@@ -170,12 +162,12 @@ describe("IaGeneration Index", () => {
         expect(after[0].text()).toBe("Sorts");
     });
 
-    it("conserve solde, prompts globaux et étalons d’équipement", () => {
+    it("conserve solde et prompts globaux", () => {
         const wrapper = mountIndex();
 
         expect(wrapper.get("[data-testid='ia-usage']").exists()).toBe(true);
         expect(wrapper.text()).toContain("Prompt superviseur");
-        expect(wrapper.text()).toContain("Étalons d’équipement");
+        expect(wrapper.text()).not.toContain("Étalons d’équipement");
         expect(wrapper.text()).toContain("Solde et coûts");
         expect(wrapper.get("[data-testid='ia-model-cache']").exists()).toBe(true);
         expect(wrapper.get("[data-testid='ia-prompt-cache']").element.checked).toBe(true);

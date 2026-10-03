@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders\Entity;
 
 use App\Services\Seeder\Capability\ClassPassiveSeederImporter;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 
 /**
@@ -17,7 +18,7 @@ class CapabilitySeeder extends Seeder
      */
     public function run(): void
     {
-        $result = app(ClassPassiveSeederImporter::class)->import();
+        $result = app(ClassPassiveSeederImporter::class)->import(overwrite: SeedMode::overwrite());
         $this->command?->info(sprintf(
             '  CapabilitySeeder (passifs de classe) : %d création(s), %d mise(s) à jour, %d avertissement(s).',
             count($result['created']),

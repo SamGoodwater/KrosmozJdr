@@ -17,8 +17,8 @@
         "auto_update": false,
         "price_calculated": 300,
         "price_custom": null,
-        "effect": [],
-        "bonus": [],
+        "effect": null,
+        "bonus": null,
         "item_type_dofus_id": 1,
         "item_type_name": "Amulette"
     },

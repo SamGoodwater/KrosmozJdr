@@ -23,6 +23,7 @@ final class ItemsSeederExportCommand extends Command
     protected $signature = 'items:seeder-export
         {--state=* : États retenus (défaut : auto). Vide + --all = tous}
         {--all : Exporte tous les états}
+        {--versioned : Exporte les états retenus + les items déjà présents dans les JSON versionnés}
         {--id=* : Restreint à des identifiants d’items}
         {--prune : Supprime les fichiers qui ne correspondent plus à la sélection}';
 
@@ -37,7 +38,12 @@ final class ItemsSeederExportCommand extends Command
         $states = $this->option('all') ? [] : $this->states();
         $ids = array_values(array_map('intval', array_filter((array) $this->option('id'), 'is_numeric')));
 
-        $result = $exporter->export($states, $ids, (bool) $this->option('prune'));
+        $result = $exporter->export(
+            $states,
+            $ids,
+            (bool) $this->option('prune'),
+            (bool) $this->option('versioned')
+        );
 
         $this->info(sprintf(
             '%d fichier(s) écrit(s) dans %s.',

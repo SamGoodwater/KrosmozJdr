@@ -20,13 +20,14 @@ use App\Models\User;
 final class ClassPassiveSeederImporter
 {
     /**
+     * @param  bool  $overwrite  False = ignorer les fiches déjà présentes
      * @return array{
      *     created: list<string>,
      *     updated: list<string>,
      *     skipped: list<string>
      * }
      */
-    public function import(?ClassPassiveCatalog $catalog = null): array
+    public function import(?ClassPassiveCatalog $catalog = null, bool $overwrite = true): array
     {
         $catalog ??= ClassPassiveCatalog::load();
         $entries = $catalog->entries();
@@ -38,7 +39,12 @@ final class ClassPassiveSeederImporter
         $breedToCapability = [];
 
         foreach ($entries as $entry) {
-            $capability = $this->upsertCapability($entry);
+            $capability = $this->upsertCapability($entry, $overwrite);
+            if ($capability === null) {
+                $skipped[] = $entry['breed'].' — '.$entry['name'].' : déjà présent, conservation';
+
+                continue;
+            }
             $wasNew = $capability['created'];
             $model = $capability['model'];
             $ownedIds[] = $model->id;
@@ -59,18 +65,20 @@ final class ClassPassiveSeederImporter
                 continue;
             }
 
-            $stale = $breed->capabilities()
-                ->whereIn('capabilities.id', $ownedIds)
-                ->where('capabilities.id', '!=', $capabilityId)
-                ->pluck('capabilities.id')
-                ->all();
-            $activeExtras = $breed->capabilities()
-                ->where('capabilities.is_passive', false)
-                ->pluck('capabilities.id')
-                ->all();
-            $toDetach = array_values(array_unique([...$stale, ...$activeExtras]));
-            if ($toDetach !== []) {
-                $breed->capabilities()->detach($toDetach);
+            if ($overwrite) {
+                $stale = $breed->capabilities()
+                    ->whereIn('capabilities.id', $ownedIds)
+                    ->where('capabilities.id', '!=', $capabilityId)
+                    ->pluck('capabilities.id')
+                    ->all();
+                $activeExtras = $breed->capabilities()
+                    ->where('capabilities.is_passive', false)
+                    ->pluck('capabilities.id')
+                    ->all();
+                $toDetach = array_values(array_unique([...$stale, ...$activeExtras]));
+                if ($toDetach !== []) {
+                    $breed->capabilities()->detach($toDetach);
+                }
             }
             $breed->capabilities()->syncWithoutDetaching([$capabilityId]);
         }
@@ -84,14 +92,18 @@ final class ClassPassiveSeederImporter
 
     /**
      * @param  array{name: string, engine: string, is_magic: bool, description: string, effect: string}  $entry
-     * @return array{created: bool, model: Capability}
+     * @return array{created: bool, model: Capability}|null  Null = existant conservé (pas d’overwrite)
      */
-    private function upsertCapability(array $entry): array
+    private function upsertCapability(array $entry, bool $overwrite): ?array
     {
         $existing = Capability::query()
             ->where('is_passive', true)
             ->where('name', $entry['name'])
             ->first();
+
+        if ($existing !== null && ! $overwrite) {
+            return null;
+        }
 
         $wasNew = $existing === null;
         $capability = $existing ?? new Capability;

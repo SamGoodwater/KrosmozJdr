@@ -1,4 +1,5 @@
 {
+    "_schema_version": "1",
     "characteristic": {
         "key": "intimidation_object",
         "name": "Bonus d'Intimidation",

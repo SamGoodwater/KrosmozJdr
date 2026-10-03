@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\Characteristic;
 use App\Models\CharacteristicObject;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 
 /**
@@ -57,8 +58,11 @@ class DofusdbCharacteristicIdSeeder extends Seeder
                 continue;
             }
 
-            $count = CharacteristicObject::where('characteristic_id', $characteristic->id)
-                ->update(['dofusdb_characteristic_id' => $dofusdbId]);
+            $query = CharacteristicObject::where('characteristic_id', $characteristic->id);
+            if (! SeedMode::overwrite()) {
+                $query->whereNull('dofusdb_characteristic_id');
+            }
+            $count = $query->update(['dofusdb_characteristic_id' => $dofusdbId]);
             $updated += $count;
         }
 

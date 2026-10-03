@@ -1,9 +1,10 @@
 <script setup>
 /**
  * Lance `project:backup` via file d’attente (super admin).
+ * Hors production : réécrit aussi les fichiers de seed depuis la BDD.
  */
 import { Head, useForm, usePage } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useProjectConsoleJob } from '@/Composables/admin/useProjectConsoleJob';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import AdminCommandMeta from '@/Pages/Admin/_components/AdminCommandMeta.vue';
@@ -16,6 +17,8 @@ defineOptions({ layout: AdminArea });
 
 const props = defineProps({
     consoleJob: { type: Object, default: null },
+    /** Export seeders data activé par défaut hors production (serveur). */
+    seederExportAvailable: { type: Boolean, default: false },
 });
 
 const page = usePage();
@@ -30,10 +33,24 @@ function onPasswordConfirmed() {
 const form = useForm({
     no_database: false,
     no_storage: false,
+    no_seeder_data: false,
     no_prune: false,
     prune_only: false,
     dry_run: false,
     retention_days: '',
+});
+
+const subtitle = computed(() => {
+    const base =
+        'Enfile un job qui exécute project:backup (dump BDD + archive storage, rotation).';
+    if (props.seederExportAvailable) {
+        return (
+            base +
+            ' Hors production, les fichiers de seed versionnés sont aussi réécrits depuis la base (caractéristiques, types item, mappings, équipements versionnés).'
+        );
+    }
+
+    return base + ' L’export des fichiers de seed est désactivé en production.';
 });
 
 function submit() {
@@ -47,8 +64,8 @@ function submit() {
 
     <PageHeader title="Sauvegarde">
         <template #subtitle>
-            Enfile un job qui exécute <code class="rounded bg-base-300 px-1">project:backup</code> (dump BDD + archive
-            storage, rotation). Un worker doit traiter la file.
+            {{ subtitle }}
+            Un worker doit traiter la file.
         </template>
         <template #meta>
             <AdminCommandMeta signature="project:backup" cron-key="project_backup" cron-command="project:backup" />
@@ -97,6 +114,26 @@ function submit() {
                 <input v-model="form.no_storage" type="checkbox" class="checkbox checkbox-sm" />
                 Exclure le dossier storage/app
             </label>
+            <label
+                v-if="seederExportAvailable"
+                class="flex items-start gap-2 cursor-pointer text-sm"
+            >
+                <input v-model="form.no_seeder_data" type="checkbox" class="checkbox checkbox-sm mt-0.5" />
+                <span>
+                    Ne pas réécrire les fichiers de seed du dépôt
+                    <span class="block text-xs text-base-content/60">
+                        Par défaut, la sauvegarde exporte caractéristiques, types item, mappings scrapping et
+                        équipements versionnés (base → fichiers).
+                    </span>
+                </span>
+            </label>
+            <p
+                v-else
+                class="text-xs text-base-content/60 rounded-box border border-base-content/10 px-3 py-2"
+            >
+                Environnement production : seuls le dump SQL et l’archive storage sont concernés. Les fichiers
+                de seed ne sont pas modifiés.
+            </p>
             <label class="flex items-center gap-2 cursor-pointer text-sm">
                 <input v-model="form.no_prune" type="checkbox" class="checkbox checkbox-sm" />
                 Ne pas purger les anciennes sauvegardes

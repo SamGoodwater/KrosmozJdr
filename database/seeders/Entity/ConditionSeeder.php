@@ -4,6 +4,7 @@ namespace Database\Seeders\Entity;
 
 use App\Models\Entity\Condition;
 use App\Models\User;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 
 class ConditionSeeder extends Seeder
@@ -30,7 +31,7 @@ class ConditionSeeder extends Seeder
             ['name' => 'Affaibli', 'description' => 'Réduit temporairement la puissance ou certaines caractéristiques.'],
         ];
         foreach ($conditions as $condition) {
-            Condition::query()->updateOrCreate(['name' => $condition['name']], array_merge($defaults, $condition));
+            SeedMode::upsert(Condition::class, ['name' => $condition['name']], array_merge($defaults, $condition));
         }
     }
 }

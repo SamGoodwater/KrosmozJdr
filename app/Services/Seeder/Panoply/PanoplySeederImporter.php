@@ -12,15 +12,17 @@ use App\Models\Entity\Panoply;
  *
  * @example
  * $result = $importer->import();
+ * $result = $importer->import(overwrite: false);
  */
 final class PanoplySeederImporter
 {
     public function __construct(private readonly PanoplySeederFileRepository $files) {}
 
     /**
+     * @param  bool  $overwrite  False = ignorer les fiches déjà présentes
      * @return array{created: list<string>, updated: list<string>, skipped: list<string>}
      */
-    public function import(): array
+    public function import(bool $overwrite = true): array
     {
         $created = [];
         $updated = [];
@@ -48,6 +50,12 @@ final class PanoplySeederImporter
             ];
 
             $existing = Panoply::query()->where('dofusdb_id', $dofusdbId)->first();
+            if ($existing !== null && ! $overwrite) {
+                $skipped[] = $relative.' : déjà présent, conservation';
+
+                continue;
+            }
+
             $model = $existing ?? new Panoply;
             $model->fill(array_merge(['dofusdb_id' => $dofusdbId], $attributes));
             $wasNew = ! $model->exists;

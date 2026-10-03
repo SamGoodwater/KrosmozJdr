@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\SpellEffectType;
+use App\Support\Seeder\SeedMode;
 use Database\Seeders\Concerns\LoadsSeederDataFile;
 use Illuminate\Database\Seeder;
 
@@ -31,7 +32,8 @@ class SpellEffectTypeSeeder extends Seeder
 
         $types = $this->loadDataFile(self::DATA_FILE);
         foreach ($types as $row) {
-            SpellEffectType::updateOrCreate(
+            SeedMode::upsert(
+                SpellEffectType::class,
                 ['slug' => $row['slug']],
                 [
                     'name' => $row['name'],

@@ -512,49 +512,6 @@ function confirmDelete() {
     }
 }
 
-/** Actions seeders (admin / super_admin) */
-const seederExportLoading = ref(false);
-const seederImportLoading = ref(false);
-const seederMessage = ref({ type: '', text: '' });
-
-async function runExportSeederData() {
-    if (
-        !confirm(
-            'Mettre à jour les fichiers seeders à partir de la BDD actuelle ?\n\n' +
-                '• Caractéristiques → database/seeders/data/characteristic-definitions/**/*.json\n' +
-                '• Autres données (types effet sorts, mappings scrapping, types item, …)\n\n' +
-                'Commande : scrapping:seeders:export (désactivé en production).'
-        )
-    )
-        return;
-    seederMessage.value = { type: '', text: '' };
-    seederExportLoading.value = true;
-    try {
-        const res = await axios.post(route('admin.characteristics.run-export-seeder-data'));
-        seederMessage.value = { type: res.data?.success ? 'success' : 'error', text: res.data?.message ?? '' };
-        if (res.data?.success) router.reload();
-    } catch (err) {
-        seederMessage.value = { type: 'error', text: err.response?.data?.message ?? 'Erreur réseau.' };
-    } finally {
-        seederExportLoading.value = false;
-    }
-}
-
-async function runImportSeeder() {
-    if (!confirm('Importer les seeders en BDD ? (db:seed --force)\nCela peut écraser des données. Continuer ?')) return;
-    seederMessage.value = { type: '', text: '' };
-    seederImportLoading.value = true;
-    try {
-        const res = await axios.post(route('admin.characteristics.run-import-seeder'));
-        seederMessage.value = { type: res.data?.success ? 'success' : 'error', text: res.data?.message ?? '' };
-        if (res.data?.success) router.reload();
-    } catch (err) {
-        seederMessage.value = { type: 'error', text: err.response?.data?.message ?? 'Erreur réseau.' };
-    } finally {
-        seederImportLoading.value = false;
-    }
-}
-
 // En mode création : n'initialiser qu'avec la ligne par défaut (*). Les spécificités s'ajoutent via « Spécifier pour une entité ». Si copyFromCharacteristic est fourni, préremplir le formulaire.
 watch(
     () => [props.createMode, props.entitiesTemplate, props.entitiesByGroup, form.group, props.copyFromCharacteristic],
@@ -1014,7 +971,8 @@ function submitConvertToLinked() {
                 </Tooltip>
             </template>
             <template #empty>
-                Aucune caractéristique. Exécutez le seeder ou ajoutez-en via un groupe ci-dessous (ou exportez après modification via l'interface) :
+                Aucune caractéristique. Ajoutez-en via un groupe ci-dessous, ou peuplez la base via
+                <code class="text-xs">project:seed</code>.
             </template>
             <template v-for="group in groups" :key="group" #[`group-${group}`]>
                 <Link
@@ -1024,33 +982,6 @@ function submitConvertToLinked() {
                     <i class="fa fa-plus text-xs" />
                     Ajouter une caractéristique
                 </Link>
-            </template>
-            <template #nav-after>
-                <div class="mt-4 border-t border-base-300 pt-3 px-2 space-y-2">
-                    <button
-                        type="button"
-                        class="btn btn-ghost btn-sm w-full justify-start gap-2 text-warning"
-                        :disabled="seederExportLoading || seederImportLoading"
-                        @click="runExportSeederData"
-                    >
-                        <span v-if="seederExportLoading" class="loading loading-spinner loading-xs" />
-                        <i v-else class="fa fa-file-export" />
-                        Mettre à jour le seeder (BDD → fichiers)
-                    </button>
-                    <button
-                        type="button"
-                        class="btn btn-ghost btn-sm w-full justify-start gap-2 text-info"
-                        :disabled="seederExportLoading || seederImportLoading"
-                        @click="runImportSeeder"
-                    >
-                        <span v-if="seederImportLoading" class="loading loading-spinner loading-xs" />
-                        <i v-else class="fa fa-file-import" />
-                        Importer le seeder (fichiers → BDD)
-                    </button>
-                    <p v-if="seederMessage.text" class="text-xs px-1" :class="seederMessage.type === 'success' ? 'text-success' : 'text-error'">
-                        {{ seederMessage.text }}
-                    </p>
-                </div>
             </template>
         </SidebarNav>
 
@@ -2353,7 +2284,7 @@ function submitConvertToLinked() {
     <ConfirmPasswordModal
         v-model:open="showAdminConfirmModal"
         title="Administration des caractéristiques"
-        message="Cette section modifie les caractéristiques et peut lancer des imports/exports de seeders. Entre ton mot de passe pour confirmer ton identité."
+        message="Cette section modifie les caractéristiques en base. Entre ton mot de passe pour confirmer ton identité."
         confirm-label="Accéder"
         @confirmed="onAdminPasswordConfirmed"
     />

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders\Entity;
 
 use App\Services\Seeder\Spell\ClassLevel1SpellSeederImporter;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 
 /**
@@ -17,7 +18,7 @@ class SpellSeeder extends Seeder
      */
     public function run(): void
     {
-        $result = app(ClassLevel1SpellSeederImporter::class)->import();
+        $result = app(ClassLevel1SpellSeederImporter::class)->import(overwrite: SeedMode::overwrite());
         $this->command?->info(sprintf(
             '  SpellSeeder (classe) : %d création(s), %d mise(s) à jour, %d avertissement(s).',
             count($result['created']),

@@ -6,6 +6,7 @@ namespace Database\Seeders\Entity;
 
 use App\Services\Seeder\Panoply\PanoplySeederFileRepository;
 use App\Services\Seeder\Panoply\PanoplySeederImporter;
+use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 
 /**
@@ -21,7 +22,7 @@ class PanoplySeeder extends Seeder
             return;
         }
 
-        $result = app(PanoplySeederImporter::class)->import();
+        $result = app(PanoplySeederImporter::class)->import(overwrite: SeedMode::overwrite());
 
         $this->command?->info(sprintf(
             '  PanoplySeeder : %d création(s), %d mise(s) à jour, %d ignoré(s).',
