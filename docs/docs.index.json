@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Les définitions d’équipement sont reproductibles. Wakfu, PV max d’objet et invocations suivent les règles. Les bonus se lisent dans effect. Totaux et contexte s’éditent sur monstre/PNJ. Trois compétences techniques s’ajoutent ; Intimidation Force ou Chance ; expertises plafonnées à 3."
+    "description": "Les définitions d’équipement sont reproductibles (emplacements versionnés). La réserve de Wakfu, les PV max d’objet et les invocations suivent les règles. Les bonus d’équipement se lisent dans `effect` (le brut Dofus reste dans `bonus`). On peut éditer totaux et contexte sur les fiches monstre/PNJ. Trois compétences techniques s’ajoutent (Artisanat, Herbaliste, Connaissance des créatures) ; l’Intimidation choisit Force ou Chance ; les expertises sont plafonnées à 3. Les tooltips de caractéristiques sont utilisables au clavier."
   },
   {
     "path": "backend/_ai.md",

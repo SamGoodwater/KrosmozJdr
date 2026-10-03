@@ -809,6 +809,13 @@
     "file": "entity/CreatureTraitsEditor.vue"
   },
   {
+    "name": "CreatureComposableCharacteristicsEditor",
+    "description": "Éditeur Inertia des totaux / contextes composables d’une créature liée (monstre ou PNJ).",
+    "props": [],
+    "slots": [],
+    "file": "entity/CreatureComposableCharacteristicsEditor.vue"
+  },
+  {
     "name": "CreateEntityModal",
     "description": "CreateEntityModal Organism",
     "props": [],

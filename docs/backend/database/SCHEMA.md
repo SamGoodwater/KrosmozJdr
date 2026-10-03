@@ -535,11 +535,15 @@ erDiagram
     persuasion_bonus : text
     representation_bonus : text
     supercherie_bonus : text
+    artisanat_bonus : varchar(255)
+    herbaliste_bonus : varchar(255)
+    connaissance_creatures_bonus : varchar(255)
     acrobatie_mastery : tinyint(4)
     discretion_mastery : tinyint(4)
     escamotage_mastery : tinyint(4)
     athletisme_mastery : tinyint(4)
     intimidation_mastery : tinyint(4)
+    intimidation_ability : varchar(16)
     arcane_mastery : tinyint(4)
     histoire_mastery : tinyint(4)
     investigation_mastery : tinyint(4)
@@ -553,6 +557,9 @@ erDiagram
     persuasion_mastery : tinyint(4)
     representation_mastery : tinyint(4)
     supercherie_mastery : tinyint(4)
+    artisanat_mastery : tinyint(4)
+    herbaliste_mastery : tinyint(4)
+    connaissance_creatures_mastery : tinyint(4)
     save_vitality_bonus : text
     save_wisdom_bonus : text
     save_strength_bonus : text

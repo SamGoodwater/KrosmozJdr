@@ -869,6 +869,13 @@
     "file": "entity/DofusDbReferencePanel.vue"
   },
   {
+    "name": "CreatureComposableCharacteristicRow",
+    "description": "Ligne d’édition : total explicite + bonus contextuel pour une colonne composable.",
+    "props": [],
+    "slots": [],
+    "file": "entity/CreatureComposableCharacteristicRow.vue"
+  },
+  {
     "name": "SpellZonePreview",
     "description": "Aperçu schématique de la zone d’effet (damier) à partir de la notation Krosmoz.",
     "props": [],
