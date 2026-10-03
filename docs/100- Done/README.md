@@ -32,6 +32,10 @@ Quand une caractéristique dépend d’une autre par paliers (par exemple les PM
 
 Dans une page de règles, un mot comme PA, un nom de capacité ou un renvoi vers une autre page redevient une puce : au survol, le résumé de la caractéristique, la fiche courte de l’entité, ou le titre et un extrait de la section. On peut toujours en insérer avec `@` dans l’éditeur de texte. Les fichiers de règles ne doivent plus glisser un lien à l’intérieur du libellé d’un autre (ça cassait les tableaux).
 
+## Octobre 2026 — Sections CMS des classes / spés : plus de fuite lecture
+
+Sur une fiche classe ou spécialisation (et la page bibliothèque liée), un invité ne voit plus les chapitres CMS brouillon ou réservés MJ : même règle que pour les sorts liés. L’écran Modifier continue d’afficher toutes les liaisons.
+
 ## Septembre 2026 — Tooltips et alertes plus lisibles
 
 Les bulles d’aide (lancer de dés dans la recherche, flèche pour replier l’en-tête) se placent correctement et se lisent mieux. Les bandeaux d’alerte reprennent le fond des petites fiches, avec un trait et une ombre de la couleur du message.

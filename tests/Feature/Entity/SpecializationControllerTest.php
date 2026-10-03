@@ -88,6 +88,54 @@ class SpecializationControllerTest extends TestCase
                 ->has('specialization.data.spells', 2));
     }
 
+    public function test_guest_does_not_see_restricted_sections_on_playable_specialization_show(): void
+    {
+        $author = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $spec = Specialization::factory()->create([
+            'state' => Specialization::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'created_by' => $author->id,
+        ]);
+        $page = Page::factory()->create(['created_by' => $author->id]);
+
+        $playableSection = Section::factory()->create([
+            'page_id' => $page->id,
+            'created_by' => $author->id,
+            'title' => 'Palier public',
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'data' => ['content' => '<p>Voie publique</p>'],
+        ]);
+        $draftSection = Section::factory()->create([
+            'page_id' => $page->id,
+            'created_by' => $author->id,
+            'title' => 'Brouillon palier',
+            'state' => Section::STATE_DRAFT,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'data' => ['content' => '<p>Notes non relues</p>'],
+        ]);
+        $spec->sections()->attach($playableSection->id, ['level' => 1]);
+        $spec->sections()->attach($draftSection->id, ['level' => 3]);
+
+        $this->get(route('entities.specializations.show', $spec))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Pages/entity/specialization/Show')
+                ->has('specialization.data.sections', 1)
+                ->where('specialization.data.sections.0.title', 'Palier public'))
+            ->assertDontSee('Notes non relues', false);
+
+        $this->actingAs($author)
+            ->get(route('entities.specializations.show', $spec))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Pages/entity/specialization/Show')
+                ->has('specialization.data.sections', 2));
+    }
+
     public function test_guest_cannot_access_edit(): void
     {
         $spec = Specialization::factory()->create();
