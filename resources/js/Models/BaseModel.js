@@ -137,6 +137,20 @@ export class BaseModel {
     }
 
     /**
+     * Alias snake_case pour les clés de formulaire (`read_level`).
+     */
+    get read_level() {
+        return this.readLevel;
+    }
+
+    /**
+     * Alias snake_case pour les clés de formulaire (`write_level`).
+     */
+    get write_level() {
+        return this.writeLevel;
+    }
+
+    /**
      * State lifecycle (raw|draft|auto|playable|archived)
      */
     get state() {

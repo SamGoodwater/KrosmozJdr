@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Monster;
+use App\Support\Entity\AccessLevelMutationGuard;
 use App\Support\Entity\EntityStateGate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -42,6 +43,7 @@ class MonsterBulkController extends Controller
             'dofus_version' => ['sometimes', 'nullable', 'string', 'max:255'],
             'dofusdb_id' => ['sometimes', 'nullable', 'string', 'max:255'],
         ]);
+        $validated = AccessLevelMutationGuard::stripUnlessAdmin($request->user(), $validated);
 
         $ids = array_values(array_unique(array_map('intval', $validated['ids'])));
         if (count($ids) < 1) {

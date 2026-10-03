@@ -44,6 +44,10 @@ Les bulles d’aide (lancer de dés dans la recherche, flèche pour replier l’
 
 Sur une page longue, seules les trois premières sections embarquent leur texte. Un enregistrement trop tôt (éditeur encore vide) n’écrase plus le chapitre en base : le placeholder de chargement est ignoré.
 
+## Septembre 2026 — Droits d’accès : plus d’écrasement ni de raccourci MJ
+
+Enregistrer un monstre ne vide plus ses seuils de lecture / écriture. L’édition multiple (objets, campagnes, etc.) n’autorise plus un meneur à changer ces seuils : seuls les admins le font, comme sur le formulaire d’une fiche.
+
 ## Septembre 2026 — Bouclier : pas contre chute ni poussée
 
 Les **points de bouclier** n’encaissent pas les dégâts de **chute** ni de **poussée** : ce sont les PV temporaires, puis les PV. Règles (3.2.4, 2.2.2, chutes), L’Essentiel et les aides caractéristiques sont alignés.

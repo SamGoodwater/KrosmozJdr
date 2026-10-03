@@ -35,6 +35,72 @@ class MonsterControllerVisibilityAndValidationTest extends TestCase
         $this->assertSame($race->id, $monster->fresh()->monster_race_id);
     }
 
+    public function test_admin_update_without_access_levels_preserves_them(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $monster = Monster::factory()->create([
+            'size' => 2,
+            'read_level' => User::ROLE_GAME_MASTER,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+
+        $this->actingAs($admin)
+            ->patch(route('entities.monsters.update', $monster), [
+                'size' => 3,
+            ])
+            ->assertRedirect();
+
+        $fresh = $monster->fresh();
+        $this->assertSame(3, (int) $fresh->size);
+        $this->assertSame(User::ROLE_GAME_MASTER, (int) $fresh->read_level);
+        $this->assertSame(User::ROLE_ADMIN, (int) $fresh->write_level);
+    }
+
+    public function test_admin_update_rejects_null_access_levels_instead_of_wiping(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $monster = Monster::factory()->create([
+            'size' => 2,
+            'read_level' => User::ROLE_GAME_MASTER,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+
+        $this->actingAs($admin)
+            ->from(route('entities.monsters.edit', $monster))
+            ->patch(route('entities.monsters.update', $monster), [
+                'size' => 1,
+                'read_level' => null,
+                'write_level' => null,
+            ])
+            ->assertRedirect()
+            ->assertSessionHasErrors(['read_level', 'write_level']);
+
+        $fresh = $monster->fresh();
+        $this->assertSame(2, (int) $fresh->size);
+        $this->assertSame(User::ROLE_GAME_MASTER, (int) $fresh->read_level);
+        $this->assertSame(User::ROLE_ADMIN, (int) $fresh->write_level);
+    }
+
+    public function test_admin_can_update_monster_access_levels(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $monster = Monster::factory()->create([
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+
+        $this->actingAs($admin)
+            ->patch(route('entities.monsters.update', $monster), [
+                'read_level' => User::ROLE_PLAYER,
+                'write_level' => User::ROLE_ADMIN,
+            ])
+            ->assertRedirect();
+
+        $fresh = $monster->fresh();
+        $this->assertSame(User::ROLE_PLAYER, (int) $fresh->read_level);
+        $this->assertSame(User::ROLE_ADMIN, (int) $fresh->write_level);
+    }
+
     public function test_multi_pdf_only_includes_monsters_visible_to_viewer(): void
     {
         $player = User::factory()->create(['role' => User::ROLE_PLAYER]);

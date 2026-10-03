@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
 use App\Models\Entity\CreatureTrait;
+use App\Support\Entity\AccessLevelMutationGuard;
 use App\Support\Entity\EntityStateGate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -39,6 +40,7 @@ class CreatureTraitBulkController extends Controller
             'description' => ['sometimes', 'nullable', 'string'],
             'image' => ['sometimes', 'nullable', 'string', 'max:255'],
         ]);
+        $validated = AccessLevelMutationGuard::stripUnlessAdmin($request->user(), $validated);
 
         $ids = array_values(array_unique(array_map('intval', $validated['ids'])));
         if (count($ids) < 1) {
