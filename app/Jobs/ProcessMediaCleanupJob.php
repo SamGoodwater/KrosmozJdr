@@ -7,6 +7,7 @@ namespace App\Jobs;
 use App\Models\MediaCleanupJob;
 use App\Services\Media\OrphanPublicMediaCleanupService;
 use App\Services\NotificationService;
+use App\Support\Queue\ProjectQueues;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Cache;
@@ -28,7 +29,10 @@ class ProcessMediaCleanupJob implements ShouldQueue
 
     private const LOCK_TTL_SECONDS = 3600;
 
-    public function __construct(private readonly string $mediaCleanupJobId) {}
+    public function __construct(private readonly string $mediaCleanupJobId)
+    {
+        $this->onQueue(ProjectQueues::MAINTENANCE);
+    }
 
     public function handle(OrphanPublicMediaCleanupService $cleanupService): void
     {

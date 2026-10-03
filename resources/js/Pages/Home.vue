@@ -118,6 +118,7 @@ onMounted(() => {
                 <div class="space-y-2">
                     <h3 class="font-semibold">Déjà à l’aise en JdR</h3>
                     <ul class="list-disc space-y-1 pl-5 leading-relaxed text-base-content/90">
+                        <li>L’Essentiel — Si tu viens de D&amp;D</li>
                         <li>Règles ch. 1–3 + Essentiel combat</li>
                     </ul>
                 </div>

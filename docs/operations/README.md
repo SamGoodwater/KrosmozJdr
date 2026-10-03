@@ -64,6 +64,8 @@ Un fichier **absent** de ce lien n’est pas servi en 404. La requête atteint l
 
 Jobs Artisan admin (review, clear, deps, backup, `project:data sync`) : table `project_console_jobs`, poll `GET /admin/console-jobs/{id}`, toast animé + log filtré sur la page. Un seul job actif par domaine. Imports scrapping et nettoyage orphelins : suivi persisté (progression, annulation). Backup / sync planifiée : notification de résultat admin en plus du suivi live.
 
+Chaque type de travail a sa file (`App\Support\Queue\ProjectQueues`) : `notifications`, `backup`, `scrapping`, `ia`, `rules-downloads`, `maintenance`, `privacy`, `media`. Déposer un job démarre un worker de cette file seule. Les notifications (maintenance, connexion, fiche modifiée) n’apparaissent dans le centre qu’après ce worker : avant, elles sont seulement dans la table `jobs`. `project:dev --queue` écoute toutes ces files.
+
 ## Sauvegardes (`project:backup`)
 
 Dump BDD gzip + archive `storage/app` (hors `app/backups`), rotation, UI et cron. Vocabulaire CLI : [COMMANDS.md — project:backup](../../app/Console/COMMANDS.md#projectbackup). Service : `app/Services/Project/ProjectBackupService.php`. Config : `config/project-backup.php`.
@@ -76,7 +78,7 @@ Voir aussi : [SECRET_SCAN.md](./SECRET_SCAN.md) (hook pre-push + CI gitleaks).
 | Répertoire | `PROJECT_BACKUP_PATH` ou défaut `storage/app/backups` |
 | Rétention | `PROJECT_BACKUP_RETENTION_DAYS` (défaut **30** j) ; purge à chaque run sauf `--no-prune` / `--prune-only` |
 | Cron | clé catalogue `project_backup` ; seed `.env` : `PROJECT_BACKUP_ENABLED=false`, `PROJECT_BACKUP_CRON="0 4 * * *"` |
-| UI | `/admin/backup` (super_admin, job file + confirmation mot de passe) |
+| UI | `/admin/backup` (super_admin, file `backup` + worker ponctuel, confirmation mot de passe) |
 | Prérequis | binaire `mysqldump` (MySQL/MariaDB) ; protéger le répertoire (données sensibles) |
 
 ```bash

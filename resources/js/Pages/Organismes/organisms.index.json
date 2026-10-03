@@ -587,7 +587,7 @@
   },
   {
     "name": "SiteLoadingOverlay",
-    "description": "SiteLoadingOverlay — Écran de chargement plein page (effet tunnel / zoom) avec astuces bas centrées en fondu.",
+    "description": "SiteLoadingOverlay — Écran de chargement plein page (effet tunnel / zoom).",
     "props": [],
     "slots": [],
     "file": "feedback/SiteLoadingOverlay.vue"

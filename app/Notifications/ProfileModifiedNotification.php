@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Mail\NotificationMail;
 use App\Models\User;
+use App\Notifications\Concerns\QueuesOnNotifications;
 use App\Services\NotificationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -20,6 +21,7 @@ use Illuminate\Notifications\Notification;
 class ProfileModifiedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+    use QueuesOnNotifications;
 
     public $modifiedUser;
 

@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Notifications\Concerns\QueuesOnNotifications;
 use App\Services\NotificationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -18,6 +19,7 @@ use Illuminate\Notifications\Notification;
 class DigestNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+    use QueuesOnNotifications;
 
     public function __construct(
         public string $notificationType,

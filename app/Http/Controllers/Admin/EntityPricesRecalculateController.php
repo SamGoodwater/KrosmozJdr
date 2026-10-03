@@ -54,6 +54,6 @@ class EntityPricesRecalculateController extends Controller
 
         return redirect()
             ->route('admin.content.dashboard.index')
-            ->with('success', 'Recalcul des prix des '.$label.' planifié. Un worker doit exécuter la file.');
+            ->with('success', 'Recalcul des prix des '.$label.' lancé.');
     }
 }

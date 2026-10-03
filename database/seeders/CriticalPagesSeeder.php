@@ -349,6 +349,7 @@ class CriticalPagesSeeder extends Seeder
                 .'</ul>'
                 .'<p><strong>Déjà à l’aise en JdR</strong></p>'
                 .'<ul>'
+                .'<li>[[kref:page:essentiels-differences-dd|Si tu viens de D&D]] — les écarts avec la 5e</li>'
                 .'<li>[[kref:page:regles-1-introduction|Règles]] ch. 1–3 + [[kref:page:essentiels-combat|Essentiel combat]]</li>'
                 .'</ul>'
                 .'<p><strong>Meneuse ou meneur de jeu (MJ)</strong></p>'

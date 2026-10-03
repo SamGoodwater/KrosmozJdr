@@ -76,10 +76,10 @@
             "Composer\\Config::disableProcessTimeout",
             "@php artisan project:dev --queue"
         ],
-        "dev:watch": "npx concurrently --kill-others \"php artisan serve\" \"php artisan queue:listen\" \"pnpm run dev:css:optimized:watch\"",
+        "dev:watch": "npx concurrently --kill-others \"php artisan serve\" \"php artisan queue:listen --queue=notifications,backup,scrapping,ia,rules-downloads,maintenance,privacy,media,default --tries=1 --timeout=10800\" \"pnpm run dev:css:optimized:watch\"",
         "dev:network": [
             "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185\" \"php artisan serve --host=0.0.0.0\" \"php artisan queue:listen --tries=1\" \"pnpm run dev\" --names=server,queue,vite"
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185\" \"php artisan serve --host=0.0.0.0\" \"php artisan queue:listen --queue=notifications,backup,scrapping,ia,rules-downloads,maintenance,privacy,media,default --tries=1 --timeout=10800\" \"pnpm run dev\" --names=server,queue,vite"
         ],
         "scss": "sass --watch resources/scss:resources/css",
         "phpstan": "php -d memory_limit=1G ./vendor/bin/phpstan analyse --configuration=phpstan.neon",

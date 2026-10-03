@@ -6,6 +6,7 @@ namespace Tests\Feature\Admin;
 
 use App\Jobs\RunProjectBackupJob;
 use App\Models\User;
+use App\Support\Queue\ProjectQueues;
 use Illuminate\Support\Facades\Bus;
 use Tests\TestCase;
 
@@ -61,7 +62,8 @@ class ProjectBackupWebControllerTest extends TestCase
             $opts->setAccessible(true);
 
             return (int) $uid->getValue($job) === $super->id
-                && ($opts->getValue($job)['--no-storage'] ?? false) === true;
+                && ($opts->getValue($job)['--no-storage'] ?? false) === true
+                && $job->queue === ProjectQueues::BACKUP;
         });
     }
 

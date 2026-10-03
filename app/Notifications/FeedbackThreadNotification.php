@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\FeedbackThread;
 use App\Models\User;
+use App\Notifications\Concerns\QueuesOnNotifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -18,6 +19,7 @@ use Illuminate\Notifications\Notification;
 class FeedbackThreadNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+    use QueuesOnNotifications;
 
     public function __construct(
         public FeedbackThread $thread,

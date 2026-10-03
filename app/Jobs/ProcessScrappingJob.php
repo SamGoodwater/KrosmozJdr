@@ -6,6 +6,7 @@ use App\Models\ScrappingJob;
 use App\Services\Scrapping\Core\Config\CollectAliasResolver;
 use App\Services\Scrapping\Core\Conversion\UnknownCharacteristicRunTracker;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
+use App\Support\Queue\ProjectQueues;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +29,10 @@ class ProcessScrappingJob implements ShouldQueue
     /** Délai avant retry (secondes). */
     public $backoff = 30;
 
-    public function __construct(private string $scrappingJobId) {}
+    public function __construct(private string $scrappingJobId)
+    {
+        $this->onQueue(ProjectQueues::SCRAPPING);
+    }
 
     public function handle(Orchestrator $orchestrator, CollectAliasResolver $aliasResolver): void
     {

@@ -58,6 +58,6 @@ class ContentDofusdbWorkshopController extends Controller
 
         return redirect()
             ->route('admin.content.dofusdb.index')
-            ->with('success', 'Synchronisation auto_update planifiée. Un worker doit traiter la file (`php artisan queue:work`).');
+            ->with('success', 'Synchronisation lancée.');
     }
 }

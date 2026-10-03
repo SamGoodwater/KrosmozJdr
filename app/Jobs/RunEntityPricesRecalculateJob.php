@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Services\Project\ProjectConsoleJobTracker;
+use App\Support\Queue\ProjectQueues;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Cache;
@@ -29,7 +30,9 @@ class RunEntityPricesRecalculateJob implements ShouldQueue
         private readonly int $triggeredByUserId,
         private readonly string $entityType,
         private readonly ?string $consoleJobId = null,
-    ) {}
+    ) {
+        $this->onQueue(ProjectQueues::MAINTENANCE);
+    }
 
     public function handle(): void
     {

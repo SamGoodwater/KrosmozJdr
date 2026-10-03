@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\PrivacyExport;
+use App\Support\Queue\ProjectQueues;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Storage;
@@ -10,6 +11,11 @@ use Illuminate\Support\Facades\Storage;
 class PurgeExpiredPrivacyExportsJob implements ShouldQueue
 {
     use Queueable;
+
+    public function __construct()
+    {
+        $this->onQueue(ProjectQueues::PRIVACY);
+    }
 
     public function handle(): void
     {

@@ -46,7 +46,7 @@ ui: false
 cron: false
 ```
 
-`project:prepare` puis serveur Laravel (8000) + Vite. Option `--queue` : `queue:listen` sur `default,rules-downloads`. `--no-prepare` : serveurs seuls. `--watch` : watch CSS à la place de Vite. `--clear`, `-y` et `--no` : transmis à prepare.
+`project:prepare` puis serveur Laravel (8000) + Vite. Option `--queue` : `queue:listen` sur les files dédiées (`notifications`, `backup`, `scrapping`, `ia`, `rules-downloads`, `maintenance`, `privacy`, `media`, puis `default`). `--no-prepare` : serveurs seuls. `--watch` : watch CSS à la place de Vite. `--clear`, `-y` et `--no` : transmis à prepare.
 
 ```bash
 php artisan project:dev

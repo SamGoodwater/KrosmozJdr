@@ -68,6 +68,6 @@ class ProjectDepsWebController extends Controller
 
         return redirect()
             ->route('admin.project-update.index')
-            ->with('success', 'Mise à jour de la stack planifiée. Un worker doit exécuter la file (`php artisan queue:work`).');
+            ->with('success', 'Mise à jour de la stack lancée.');
     }
 }

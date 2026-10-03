@@ -56,6 +56,6 @@ class ProjectClearWebController extends Controller
 
         return redirect()
             ->route('admin.project-clear.index')
-            ->with('success', 'Nettoyage planifié. Un worker doit traiter la file (`php artisan queue:work`).');
+            ->with('success', 'Nettoyage lancé.');
     }
 }

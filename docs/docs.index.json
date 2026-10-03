@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Pendant le chargement, des phrases courtes défilent en bas de l’écran. Un admin règle la durée de chaque astuce."
+    "description": "Lancer une sauvegarde, un import ou une compilation ne reste plus bloqué derrière les alertes. Chaque tâche a sa propre file et démarre toute seule. Les alertes (connexion, fiche modifiée, maintenance) arrivent dans le centre de notifications au lieu de s’accumuler en silence."
   },
   {
     "path": "backend/_ai.md",

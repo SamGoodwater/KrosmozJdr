@@ -24,6 +24,7 @@ use App\Services\GenerativeAi\Specializations\SpecializationRegistry;
 use App\Services\Jdr\DiceFormulaService;
 use App\Services\Jdr\DiceNotationService;
 use App\Services\Media\EnsureDirectoryMediaFilesystem;
+use App\Services\Project\ProjectConsoleQueueKicker;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\CollectAliasResolver;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
@@ -31,10 +32,13 @@ use App\Services\Scrapping\Core\Config\ScrappingMappingService;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\DofusdbEffectMappingService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use App\Services\Scrapping\Http\DofusDbClient;
+use App\Support\Queue\ProjectQueues;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
+use Illuminate\Queue\Events\JobQueued;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Vite;
@@ -102,6 +106,20 @@ class AppServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
         $this->registerConversionFunctions();
         $this->registerCharacteristicFrontendCacheInvalidation();
+        $this->registerQueueKicker();
+    }
+
+    /**
+     * Démarre un worker ponctuel dès qu’un job arrive sur une file dédiée.
+     */
+    private function registerQueueKicker(): void
+    {
+        Event::listen(function (JobQueued $event): void {
+            if (! is_string($event->queue) || ! ProjectQueues::isManaged($event->queue)) {
+                return;
+            }
+            app(ProjectConsoleQueueKicker::class)->kick($event->queue);
+        });
     }
 
     /**

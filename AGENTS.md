@@ -35,7 +35,7 @@ Commandes : liste dans `app/Console/COMMANDS.md`. Entrée officielle serveur : `
 
 - Helper : `composer run dev` lance `php artisan project:dev --queue`. Variante réseau : `composer run dev:network`.
 - Ou séparément : `php artisan serve --host=0.0.0.0 --port=8000`, `pnpm run dev` (Vite HMR, port 5173),
-  `php artisan queue:listen --tries=1` (driver queue = `database`).
+  `php artisan queue:listen --queue=notifications,backup,scrapping,ia,rules-downloads,maintenance,privacy,media,default --tries=1 --timeout=10800` (driver queue = `database`). Un job sur une file dédiée démarre aussi son worker (`ProjectConsoleQueueKicker`).
 - Le pipeline CSS custom (`pnpm run css`) génère `resources/css/*` ; nécessaire pour un rendu complet en dev.
 
 ### Seed / données de jeu (réseau externe)

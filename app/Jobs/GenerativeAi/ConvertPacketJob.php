@@ -6,6 +6,7 @@ namespace App\Jobs\GenerativeAi;
 
 use App\Services\GenerativeAi\ConversionPipeline;
 use App\Services\GenerativeAi\ConversionRequest;
+use App\Support\Queue\ProjectQueues;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
@@ -27,7 +28,7 @@ final class ConvertPacketJob implements ShouldQueue
 
     public function __construct(public ConversionRequest $request)
     {
-        $this->onQueue('default');
+        $this->onQueue(ProjectQueues::IA);
     }
 
     public function handle(ConversionPipeline $pipeline): void

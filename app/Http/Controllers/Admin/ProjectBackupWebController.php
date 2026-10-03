@@ -54,6 +54,6 @@ class ProjectBackupWebController extends Controller
 
         return redirect()
             ->route('admin.backup.index')
-            ->with('success', 'Sauvegarde planifiée. Vérifiez qu’un worker traite la file (`php artisan queue:work`).');
+            ->with('success', 'Sauvegarde lancée.');
     }
 }

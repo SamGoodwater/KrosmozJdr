@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Notifications\DigestNotification;
 use App\Support\ProjectSchedule\ProjectScheduleCatalog;
 use App\Support\ProjectSchedule\ProjectScheduleRegistrar;
+use App\Support\Queue\ProjectQueues;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -26,7 +27,7 @@ class SendNotificationDigestsJob implements ShouldQueue
     public function __construct(
         public string $frequency
     ) {
-        $this->onQueue('notifications');
+        $this->onQueue(ProjectQueues::NOTIFICATIONS);
     }
 
     public function handle(): void

@@ -74,6 +74,6 @@ class ProjectReviewWebController extends Controller
 
         return redirect()
             ->back()
-            ->with('success', 'Génération du rapport démarrée (file d’attente). Le suivi s’affiche ci-dessous.');
+            ->with('success', 'Génération du rapport lancée. Le suivi s’affiche ci-dessous.');
     }
 }

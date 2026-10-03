@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Project;
 
+use App\Support\Queue\ProjectQueues;
 use Illuminate\Console\Command;
 
 /**
@@ -37,7 +38,7 @@ class ProjectDevServers
 
         if ($withQueue) {
             $command->info('Démarrage de queue:listen...');
-            exec('php artisan queue:listen --queue=default,'.ProjectConsoleQueueKicker::QUEUE_RULES_DOWNLOADS.' --tries=1 > /dev/null 2>&1 &');
+            exec('php artisan queue:listen --queue='.ProjectQueues::listenList().' --tries=1 --timeout='.ProjectQueues::LISTENER_TIMEOUT.' > /dev/null 2>&1 &');
         }
 
         $command->info('Démarrage de Vite sur le port 5173...');

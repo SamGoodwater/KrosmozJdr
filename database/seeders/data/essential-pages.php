@@ -42,6 +42,7 @@ return [
                 'slug' => 'plan',
                 'title' => 'Les chapitres',
                 'html' => '<ol>'
+                    .'<li>[[kref:page:essentiels-differences-dd|Si tu viens de D&D]] — écarts avec la 5e</li>'
                     .'<li>[[kref:page:essentiels-creation-personnage|Créer son personnage]] — budget, classe, spé</li>'
                     .'<li>[[kref:page:essentiels-actions-hors-combat|Hors combat]] — tests, surprise, temps</li>'
                     .'<li>[[kref:page:essentiels-combat|Combat]] — tour, tacle, réaction</li>'
@@ -91,6 +92,100 @@ return [
                 'slug' => 'boucle',
                 'title' => 'Temps',
                 'html' => '<p>Round / tour = <strong>6 s</strong>. Donjon : minutes. Ville / nature : heures. Voyage : jours. Repos → [[kref:page:essentiels-sante-etats|Santé]].</p>',
+            ],
+        ],
+    ],
+    'differences-dd' => [
+        'title' => 'Si tu viens de D&D',
+        'slug' => 'essentiels-differences-dd',
+        'icon' => null,
+        'menu_order' => 15,
+        'intro_title' => 'Pour qui connaît la 5e',
+        'intro_html' => '<p>Le squelette est celui de <strong>D&amp;D 5e</strong> : d20, niveaux 1–20, avantage, repos, 0 PV. Le combat et le personnage viennent de <strong>Dofus</strong>. Cette page suffit pour jouer ; le livre détaille.</p>'
+            .'<p>→ [[kref:page:regles-1-1-presentation-du-jeu|Concept]] · [[kref:page:essentiels-bien-demarrer|Bien démarrer]]</p>',
+        'sections' => [
+            [
+                'slug' => 'reste',
+                'title' => 'Ce qui reste',
+                'html' => '<ul>'
+                    .'<li><strong>Jet</strong> — 1d20 + mod. + [[kref:characteristic:mastery_bonus_creature|maîtrise]] (expertise = ×2 <strong>à la place</strong>). Avantage / désavantage : relance le d20.</li>'
+                    .'<li><strong>DD</strong> — 5 à 30, base 15. Opposé : le plus haut gagne.</li>'
+                    .'<li><strong>Temps et grille</strong> — round 6 s, case 1,5 m, diagonale libre. Abri +2 / +5 / total.</li>'
+                    .'<li><strong>0 PV</strong> — jets contre la mort (10+). 3 succès = stable, 3 échecs = mort. 1 = deux échecs, 20 = 1 [[kref:characteristic:life_points_creature|PV]].</li>'
+                    .'<li><strong>Repos</strong> — court 1 h (dés de vie, un seul entre deux longs) ; long 8 h, [[kref:characteristic:life_points_creature|PV]] et Wakfu au complet.</li>'
+                    .'</ul>'
+                    .'<p>La maîtrise monte plus lentement : <strong>1 + ⌊niv./4⌋</strong> (+1 aux niv. 1–3, +6 seulement au niv. 20).</p>'
+                    .'<p>Un <strong>20</strong> ou un <strong>1 naturel</strong> réussit ou rate aussi les tests de caractéristique, pas seulement les attaques.</p>',
+            ],
+            [
+                'slug' => 'personnage',
+                'title' => 'Le personnage',
+                'html' => '<table>'
+                    .'<thead><tr><th>D&amp;D 5e</th><th>Ici</th></tr></thead>'
+                    .'<tbody>'
+                    .'<tr><td>Force</td><td>[[kref:characteristic:strength_creature|Force]] — sorts et armes <strong>Terre</strong></td></tr>'
+                    .'<tr><td>Dextérité</td><td>[[kref:characteristic:agility_creature|Agilité]] — <strong>Air</strong>, et la Fuite</td></tr>'
+                    .'<tr><td>Constitution</td><td>[[kref:characteristic:vitality_creature|Vitalité]] — PV, et la [[kref:characteristic:armor_class_creature|CA]]</td></tr>'
+                    .'<tr><td>Intelligence</td><td>[[kref:characteristic:intelligence_creature|Intelligence]] — <strong>Feu</strong>, et l’initiative</td></tr>'
+                    .'<tr><td>Sagesse</td><td>[[kref:characteristic:wisdom_creature|Sagesse]] — soins, esquive [[kref:characteristic:action_points_creature|PA]]/[[kref:characteristic:movement_points_creature|PM]]</td></tr>'
+                    .'<tr><td>Charisme</td><td>[[kref:characteristic:chance_creature|Chance]] — <strong>Eau</strong>, social, et le [[kref:characteristic:tackle_creature|Tacle]]</td></tr>'
+                    .'</tbody></table>'
+                    .'<p>Mod. = ⌊(score − 10) / 2⌋. Création : les six à <strong>8</strong>, <strong>10 points</strong> (une carac à 6, une fois, pour +2). Plafond de score <strong>14 + ⌊niv./2⌋</strong> (14 au niv. 1, 24 au niv. 20), plus <strong>+8</strong> d’équipement. +1 point aux niv. <strong>2, 4, 8, 10, 14, 16</strong>.</p>'
+                    .'<p><strong>19 classes</strong> Dofus, une seule (pas de multiclassage). La <strong>spécialisation</strong> (6 jouables, 11 prévues) remplace la race et l’historique : paliers 1, 3, 6, 9, 12, 15, 20. L’historique et les neuf alignements restent narratifs.</p>'
+                    .'<p>Sauvegarde = 1d20 + modificateur. La maîtrise s’ajoute seulement si une fiche l’accorde.</p>'
+                    .'<p>→ [[kref:page:essentiels-creation-personnage|Créer son personnage]] · [[kref:page:regles-2-4-choisir-sa-specialisation|Spécialisations]]</p>',
+            ],
+            [
+                'slug' => 'tour',
+                'title' => 'Le tour',
+                'html' => '<p>À la place d’une action, d’une action bonus et d’un déplacement : un budget, remis au max au début de chaque tour d’un combat qui compte.</p>'
+                    .'<table>'
+                    .'<thead><tr><th></th><th>Base</th><th>Max</th></tr></thead>'
+                    .'<tbody>'
+                    .'<tr><td>[[kref:characteristic:action_points_creature|PA]]</td><td>6</td><td>12</td></tr>'
+                    .'<tr><td>[[kref:characteristic:movement_points_creature|PM]]</td><td>3 (4,5 m)</td><td>6 (9 m)</td></tr>'
+                    .'<tr><td>[[kref:characteristic:range_creature|PO]]</td><td>0</td><td>6</td></tr>'
+                    .'</tbody></table>'
+                    .'<p>Sort ou attaque simple : <strong>3–4 PA</strong>. Zone ou gros effet : <strong>5</strong>. Bonus : <strong>2–3</strong>, une fois par round. Avec 6 PA tu lances en général deux sorts. 1 PM = 1 case, découpable entre les actions. La [[kref:characteristic:range_creature|PO]] s’ajoute à la portée du sort.</p>'
+                    .'<p>Initiative : 1d20 + modificateur d’[[kref:characteristic:intelligence_creature|Intelligence]] + équipement. <strong>1 réaction</strong> par round (2–3 PA), hors de ton tour, si la fiche le dit. Un boss dépense en plus des <strong>PA légendaires</strong> entre les tours des autres.</p>'
+                    .'<p>→ [[kref:page:essentiels-combat|Combat]]</p>',
+            ],
+            [
+                'slug' => 'corps-a-corps',
+                'title' => 'Le corps à corps',
+                'html' => '<table>'
+                    .'<thead><tr><th>En 5e</th><th>Ici</th></tr></thead>'
+                    .'<tbody>'
+                    .'<tr><td>Attaque d’opportunité</td><td>[[kref:characteristic:tackle_creature|Tacle]] automatique si tu es adjacent <strong>orthogonal</strong> à un hostile. Pour partir : <strong>Fuite</strong> (1d20 + [[kref:characteristic:agility_creature|Agilité]]) vs <strong>Tacle</strong> (1d20 + [[kref:characteristic:chance_creature|Chance]]). Échec : tu restes, 1 PM dépensé, retente au tour suivant. La diagonale ne tacle pas.</td></tr>'
+                    .'<tr><td>Flanking (avantage, option)</td><td><strong>+2</strong> au toucher si la cible est entourée par au moins 2 créatures</td></tr>'
+                    .'<tr><td>Action Esquiver</td><td>3 PA + 2 PM, seule action du tour : désavantage pour te toucher, avantage aux jets d’[[kref:characteristic:agility_creature|Agilité]]</td></tr>'
+                    .'</tbody></table>'
+                    .'<p>L’<strong>esquive PA</strong> et l’<strong>esquive PM</strong> (8 + mod. [[kref:characteristic:wisdom_creature|Sagesse]]) sont un second seuil : elles évitent un retrait de PA ou de PM. Ce n’est pas l’action Esquiver.</p>'
+                    .'<p>→ [[kref:page:regles-3-2-combat|3.2.3]]</p>',
+            ],
+            [
+                'slug' => 'magie',
+                'title' => 'La magie',
+                'html' => '<p>Les emplacements de sorts deviennent deux ressources.</p>'
+                    .'<ul>'
+                    .'<li><strong>Combat qui compte</strong> — les [[kref:characteristic:action_points_creature|PA]] reviennent chaque tour. Tu relances tes sorts tant que le budget tient.</li>'
+                    .'<li><strong>Hors combat</strong> (ou combat sans enjeu) — la [[kref:characteristic:wakfu_reserve_creature|réserve de Wakfu]] paie. Elle vaut le bonus de maîtrise (+3 max d’équipement). <strong>1 point = une fois tes PA max</strong>.</li>'
+                    .'</ul>'
+                    .'<p>Tu apprends <strong>12 sorts de classe</strong> d’ici le niveau 12 (3 au niveau 1, une variante par emplacement). Aux niv. <strong>13, 16 et 20</strong>, ces sorts s’intensifient tous ensemble : les dés montent, tu n’en apprends pas de nouveau. La concentration n’existe que si la fiche le dit.</p>'
+                    .'<p>→ [[kref:page:essentiels-sorts-aptitudes|Sorts]] · [[kref:page:regles-3-3-sorts|3.3]]</p>',
+            ],
+            [
+                'slug' => 'defense',
+                'title' => 'Toucher et encaisser',
+                'html' => '<ul>'
+                    .'<li><strong>[[kref:characteristic:armor_class_creature|CA]]</strong> — 10 + mod. de [[kref:characteristic:vitality_creature|Vitalité]] + équipement. Pas de Dextérité, pas d’armure légère / intermédiaire / lourde.</li>'
+                    .'<li><strong>Éléments</strong> — Feu, Eau, Terre, Air, Neutre. Résistance −100 % (dégâts doublés), −50 %, 0, 50 % (moitié), 100 % (immunité), plus une résistance fixe de 0 à 10.</li>'
+                    .'<li><strong>Bouclier</strong> — points qui absorbent avant les [[kref:characteristic:life_points_creature|PV]] temporaires. Le vol de vie ne les atteint pas. Chute et poussée les ignorent.</li>'
+                    .'<li><strong>Critique d’attaque</strong> — 20 naturel, dés doublés. L’équipement peut abaisser le seuil (19, 18, 17).</li>'
+                    .'<li><strong>Matos</strong> — chapeau, cape, ceinture, bottes, amulette, deux anneaux, arme, bouclier, panoplies, Dofus, forgemagie. L’arme porte surtout des bonus : on frappe avec les sorts.</li>'
+                    .'</ul>'
+                    .'<p>PV max = max du dé de classe + (mod. Vitalité × niveau) + ((niveau − 1) × round(dé/2)) + équipement.</p>'
+                    .'<p>MJ qui convertit un monstre ou un scénario 5e : [[kref:page:regles-5-2-principes-dequilibrage|5.2.1]]. Le livre joueur prime : une réaction existe si la fiche le dit.</p>',
             ],
         ],
     ],

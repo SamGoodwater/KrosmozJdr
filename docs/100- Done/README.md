@@ -1,5 +1,13 @@
 # Ce qui a été fait
 
+## Octobre 2026 — L’Essentiel pour qui vient de D&D
+
+Une page **Si tu viens de D&D** dans L’Essentiel résume les écarts avec la 5e : caractéristiques, PA/PM, tacle, Wakfu, classe et spécialisation, classe d’armure. Le sommaire de Bien démarrer et l’accueil (rubrique « Déjà à l’aise en JdR ») y renvoient.
+
+## Octobre 2026 — Sauvegardes et files séparées
+
+Lancer une sauvegarde, un import ou une compilation ne reste plus bloqué derrière les alertes. Chaque tâche a sa propre file et démarre toute seule. Les alertes (connexion, fiche modifiée, maintenance) arrivent dans le centre de notifications au lieu de s’accumuler en silence.
+
 ## Octobre 2026 — Contenu pour les MJ, Admin pour l’app
 
 La gestion du contenu est ouverte aux maîtres du jeu (langues, types, caractéristiques, effets), après confirmation du mot de passe. Import DofusDB, mappings et IA restent réservés aux admins. Les astuces de chargement sont dans l’espace administration. Débloquer son mot de passe n’élargit jamais le rôle.

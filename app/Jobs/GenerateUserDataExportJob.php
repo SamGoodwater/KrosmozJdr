@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\DataSubjectRequest;
 use App\Models\PrivacyExport;
 use App\Services\Privacy\UserDataExportService;
+use App\Support\Queue\ProjectQueues;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
@@ -15,7 +16,9 @@ class GenerateUserDataExportJob implements ShouldQueue
     public function __construct(
         public int $privacyExportId,
         public ?int $dataSubjectRequestId = null
-    ) {}
+    ) {
+        $this->onQueue(ProjectQueues::PRIVACY);
+    }
 
     public function handle(UserDataExportService $exportService): void
     {

@@ -80,7 +80,7 @@ class ProjectOrphanFilesWebController extends Controller
 
         return redirect()
             ->route('admin.orphan-files.index')
-            ->with('success', "Nettoyage orphelin planifié ({$label}, job {$job->id}). Un worker doit traiter la file (`php artisan queue:work`).");
+            ->with('success', "Nettoyage orphelin lancé ({$label}, job {$job->id}).");
     }
 
     public function status(Request $request, string $jobId): JsonResponse

@@ -872,6 +872,16 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
+  LOADING_TIPS {
+    id : bigint(20) unsigned
+    body : varchar(200)
+    url : varchar(2048)
+    featured : tinyint(1)
+    is_active : tinyint(1)
+    duration_seconds : tinyint(3) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   MEDIA {
     id : bigint(20) unsigned
     model_type : varchar(255)

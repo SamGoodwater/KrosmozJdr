@@ -22,13 +22,16 @@ final class EssentialPagesCanonTest extends TestCase
         $this->pages = require $path;
     }
 
-    public function test_publishes_eight_essentiel_pages(): void
+    public function test_publishes_nine_essentiel_pages(): void
     {
-        $this->assertCount(8, $this->pages);
+        $this->assertCount(9, $this->pages);
         $this->assertArrayHasKey('bien-demarrer', $this->pages);
+        $this->assertArrayHasKey('differences-dd', $this->pages);
         $this->assertArrayHasKey('creation', $this->pages);
         $this->assertArrayHasKey('combat', $this->pages);
         $this->assertArrayHasKey('sante-etats', $this->pages);
+        $this->assertSame(15, $this->pages['differences-dd']['menu_order']);
+        $this->assertSame('essentiels-differences-dd', $this->pages['differences-dd']['slug']);
     }
 
     public function test_creation_uses_fixed_levels_and_level_one_cap(): void
@@ -72,6 +75,21 @@ final class EssentialPagesCanonTest extends TestCase
         $this->assertStringContainsString('mod. Vitalité × niveau', $html);
         $this->assertStringNotContainsString('Vitalité × 10', $html);
         $this->assertStringNotContainsString('classe + niveau +', $html);
+    }
+
+    public function test_dnd_bridge_states_the_play_canons(): void
+    {
+        $html = $this->flattenHtml($this->pages['differences-dd']);
+        $plan = $this->flattenHtml($this->pages['bien-demarrer']);
+
+        $this->assertStringContainsString('essentiels-differences-dd', $plan);
+        $this->assertStringContainsString('1 + ⌊niv./4⌋', $html);
+        $this->assertStringContainsString('14 + ⌊niv./2⌋', $html);
+        $this->assertStringContainsString('orthogonal', $html);
+        $this->assertStringContainsString('1 point = une fois tes PA max', $html);
+        $this->assertStringContainsString('12 sorts de classe', $html);
+        $this->assertStringContainsString('10 + mod. de [[kref:characteristic:vitality_creature|Vitalité]]', $html);
+        $this->assertStringNotContainsString('emplacements de sorts de la 5e', $html);
     }
 
     public function test_mj_bullets_and_world_anchor_are_present(): void

@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\DataSubjectRequest;
 use App\Models\PrivacyAuditLog;
 use App\Services\Privacy\UserErasureService;
+use App\Support\Queue\ProjectQueues;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -27,7 +28,9 @@ class ExecuteUserErasureJob implements ShouldQueue
 
     public function __construct(
         public int $dataSubjectRequestId
-    ) {}
+    ) {
+        $this->onQueue(ProjectQueues::PRIVACY);
+    }
 
     public function handle(UserErasureService $service): void
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Notifications;
 
+use App\Notifications\Concerns\QueuesOnNotifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -22,6 +23,7 @@ use Illuminate\Notifications\Notification;
 class ProjectMaintenanceNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+    use QueuesOnNotifications;
 
     public function __construct(
         public readonly string $command,
