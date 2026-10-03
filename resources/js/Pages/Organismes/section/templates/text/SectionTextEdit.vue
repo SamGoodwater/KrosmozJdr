@@ -22,6 +22,7 @@ import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import CheckboxField from '@/Pages/Molecules/data-input/CheckboxField.vue';
 import InlineSaveStatus from '@/Pages/Atoms/feedback/InlineSaveStatus.vue';
 import { useSectionSave } from '../../composables/useSectionSave';
+import { isSectionContentDeferred } from '@/Utils/section/sectionUpdatePayload';
 
 const props = defineProps({
   section: {
@@ -101,6 +102,9 @@ const sizeOptions = [
 const handleManualSave = () => {
   const sectionId = props.section?.id;
   if (!sectionId) return;
+  if (isSectionContentDeferred(props.section) || isSectionContentDeferred({ data: props.data })) {
+    return;
+  }
 
   const normalizedSettings = {
     align: String(localSettings.value?.align || 'left'),
@@ -111,6 +115,7 @@ const handleManualSave = () => {
     ...props.data,
     content: content.value || '',
   };
+  delete newData.content_deferred;
 
   lastSavedDataSignature.value = JSON.stringify({ content: newData.content || '' });
   lastSavedSettingsSignature.value = JSON.stringify(normalizedSettings);
@@ -202,11 +207,15 @@ watch(content, (newContent) => {
   
   const sectionId = props.section?.id;
   if (!sectionId) return;
+  if (isSectionContentDeferred(props.section) || isSectionContentDeferred({ data: props.data })) {
+    return;
+  }
   
   const newData = {
     ...props.data,
     content: newContent
   };
+  delete newData.content_deferred;
   const signature = JSON.stringify({ content: newData.content || '' });
   if (signature === lastSavedDataSignature.value) return;
   lastSavedDataSignature.value = signature;

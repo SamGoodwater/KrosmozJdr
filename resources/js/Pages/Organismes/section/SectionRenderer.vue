@@ -27,6 +27,7 @@ import { useTemplateRegistry } from './composables/useTemplateRegistry';
 import { useSectionAPI } from './composables/useSectionAPI';
 import { useSectionUI } from './composables/useSectionUI';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
+import { isSectionContentDeferred } from '@/Utils/section/sectionUpdatePayload';
 
 const props = defineProps({
     section: {
@@ -51,6 +52,19 @@ const hydratedSection = ref({ ...props.section });
 watch(
     () => props.section,
     (s) => {
+        const incomingDeferred = isSectionContentDeferred(s);
+        const alreadyHydrated =
+            hydratedSection.value?.id === s?.id && !isSectionContentDeferred(hydratedSection.value);
+        if (incomingDeferred && alreadyHydrated) {
+            hydratedSection.value = {
+                ...s,
+                data: hydratedSection.value.data,
+                settings: hydratedSection.value.settings ?? s.settings,
+                files: hydratedSection.value.files ?? s.files,
+                content_deferred: false,
+            };
+            return;
+        }
         hydratedSection.value = { ...s };
     },
     { deep: true },
@@ -65,9 +79,7 @@ const contentLoading = ref(false);
  */
 async function ensureSectionContent() {
     const current = hydratedSection.value;
-    const deferred =
-        Boolean(current?.content_deferred) ||
-        Boolean(current?.data?.content_deferred);
+    const deferred = isSectionContentDeferred(current);
     if (!deferred || !current?.id || contentLoading.value) {
         return;
     }
@@ -76,9 +88,11 @@ async function ensureSectionContent() {
         const { data } = await axios.get(route('api.cms.sections.content', current.id), {
             headers: { Accept: 'application/json' },
         });
+        const body = { ...(data?.data ?? {}) };
+        delete body.content_deferred;
         hydratedSection.value = {
             ...current,
-            data: data?.data ?? {},
+            data: body,
             settings: data?.settings ?? current.settings,
             files: data?.files ?? current.files,
             content_deferred: false,
@@ -131,6 +145,9 @@ const { copyToClipboard } = useCopyToClipboard();
 watch(() => props.autoEdit, async (shouldEdit) => {
     if (shouldEdit && sectionId.value && canEdit.value) {
         await ensureSectionContent();
+        if (isSectionContentDeferred(hydratedSection.value)) {
+            return;
+        }
         setEditMode(true);
     }
 }, { immediate: true });
@@ -231,6 +248,10 @@ watch(isEditing, async (newValue, oldValue) => {
   if (newValue !== oldValue) {
     if (newValue) {
       await ensureSectionContent();
+      if (isSectionContentDeferred(hydratedSection.value)) {
+        setEditMode(false);
+        return;
+      }
     }
     loadTemplateComponent();
   }
@@ -253,10 +274,17 @@ watch(templateValue, (newValue, oldValue) => {
  * Gère le basculement du mode édition avec rechargement forcé
  */
 const handleToggleEdit = async () => {
+  if (!isEditing.value) {
+    await ensureSectionContent();
+    if (isSectionContentDeferred(hydratedSection.value)) {
+      console.error('[SectionRenderer] édition refusée : contenu différé non chargé', {
+        sectionId: sectionId.value,
+      });
+      return;
+    }
+  }
   toggleEditMode();
-  // Attendre que Vue ait mis à jour la réactivité
   await nextTick();
-  // Forcer le rechargement du template
   loadTemplateComponent();
 };
 

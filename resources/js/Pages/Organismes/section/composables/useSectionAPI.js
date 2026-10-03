@@ -13,6 +13,7 @@ import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { Section } from '@/Models';
 import { logDev } from '@/Utils/dev-logger';
+import { sanitizeSectionUpdatePayload } from '@/Utils/section/sectionUpdatePayload';
 
 /**
  * Composable pour gérer les appels API des sections
@@ -72,8 +73,9 @@ export function useSectionAPI() {
       // Ziggy attend un objet avec la clé correspondant au paramètre de la route
       const routeParams = { section: sectionId };
       const { silent = false, ...visitOptions } = options || {};
+      const payload = sanitizeSectionUpdatePayload(updates);
       const patchWithInertia = () => {
-        router.patch(route('sections.update', routeParams), updates, {
+        router.patch(route('sections.update', routeParams), payload, {
           preserveScroll: true,
           only: ['page'],
           onSuccess: (page) => {
@@ -93,7 +95,7 @@ export function useSectionAPI() {
           : null;
 
         axios
-          .patch(route('sections.update', routeParams), updates, {
+          .patch(route('sections.update', routeParams), payload, {
             withCredentials: true,
             headers: {
               Accept: 'application/json',

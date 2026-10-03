@@ -62,6 +62,8 @@ Largeur des sections (cadre page / fiche) : le layout et `Container fluid` occup
 
 Chargement : `SectionContentSkeleton` (`SectionLazyGate`, `SectionRenderer`, templates async) reprend la forme du contenu (lignes de texte, média, galerie, tableau, cartes `entity_table`, fichiers, chartes). Les catalogues d’entités en vue minimale utilisent `EntityViewSkeleton` (plusieurs cartes vignette + titre), pas un seul bloc gris.
 
+Sur `pages.show`, le HTML (`data.content`) des sections au-delà des trois premières est différé (`content_deferred`) et rechargé par `GET api.cms.sections.content`. L’édition n’ouvre le template qu’après ce fetch. Un enregistrement ne persiste jamais le placeholder (`content: null` / `content_deferred`) : `SectionService::update` et `sanitizeSectionUpdatePayload` l’écartent pour ne pas écraser le HTML en base.
+
 Édition : `usePageForm`/`useSectionForm` (composables `resources/js/Composables/pages|sections/`), modales `CreatePageModal`/`EditPageModal`/`CreateSectionModal`. Si `settings.linked_entity` est présent, `PageController::show` renvoie `Pages/page/LinkedEntityShow.vue` (page CMS + fiche breed/spécialisation). Les sorts, capacités et autres liaisons de cette fiche sont filtrés avec `visibleToUser` (même règle que la page Show de l’entité) : un brouillon ne fuit pas via une fiche jouable. `pages:sync-bibliotheque-entities` crée une sous-page menu (`in_menu`) pour chaque classe / spécialisation **hors archive**. Jouable : `read_level` de la fiche. Brouillon / brut / auto : `read_level` MJ+ (le menu invité ne les liste pas). Les parents `bibliotheque-breed` et `bibliotheque-specialization` ont `settings.menu_collapsible`.
 
 ## Références kref
@@ -93,7 +95,7 @@ Le tableau `equipment_bonus_table` est alimenté par `GET /api/characteristics/e
 ## Routes (extrait)
 
 - Web (`routes/web/page.php`) : `pages.index`, `pages.menu`, `pages.show` (`/pages/{page:slug}`), CRUD `pages.*` (auth), `pages.reorder`. Sections sous `/sections` (`sections.*`, auth) ; binding section par **id**.
-- API (`routes/api/cms.php`) : `api.cms.page-section-picker`, `api.cms.sections.preview-snippet*`, `api.cms.kref-entity-preview`.
+- API (`routes/api/cms.php`) : `api.cms.page-section-picker`, `api.cms.sections.preview-snippet*`, `api.cms.sections.content` (HTML différé), `api.cms.kref-entity-preview`.
 
 ## Pour aller plus loin
 
