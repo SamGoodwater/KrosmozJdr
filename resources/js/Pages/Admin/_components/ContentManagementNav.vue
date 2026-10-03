@@ -1,6 +1,6 @@
 <script setup>
 /**
- * Navigation gestion du contenu (admin+).
+ * Navigation gestion du contenu (MJ+ ; pipeline admin+).
  */
 import { computed } from "vue";
 import { usePage } from "@inertiajs/vue3";
@@ -33,63 +33,56 @@ const navItems = computed(() => {
             href: "admin.content.dashboard.index",
             path: "/admin/content",
             icon: "fa-gauge-high",
-            show: true,
+            show: canAccess("contentManagement"),
         },
         {
             title: "Import DofusDB",
             href: "admin.content.dofusdb.index",
             path: "/admin/content/dofusdb",
             icon: "fa-cloud-arrow-down",
-            show: canAccess("contentManagement") || canAccess("adminPanel"),
+            show: canAccess("contentPipeline"),
         },
         {
             title: "Types",
             href: "admin.content.types.index",
             path: "/admin/content/types",
             icon: "fa-tags",
-            show: canAccess("contentManagement") || canAccess("adminPanel"),
+            show: canAccess("contentManagement"),
         },
         {
             title: "Caractéristiques",
             href: "admin.characteristics.index",
             path: "/admin/content/characteristics",
             icon: "fa-sliders",
-            show: canAccess("contentManagement") || canAccess("adminPanel"),
+            show: canAccess("contentManagement"),
         },
         {
             title: "Mappings champs",
             href: "admin.scrapping-mappings.index",
             path: "/admin/content/scrapping-mappings",
             icon: "fa-diagram-project",
-            show: canAccess("adminPanel"),
+            show: canAccess("contentPipeline"),
         },
         {
             title: "Mappings effets",
             href: "admin.dofusdb-effect-mappings.index",
             path: "/admin/content/dofusdb-effect-mappings",
             icon: "fa-link",
-            show: canAccess("adminPanel"),
+            show: canAccess("contentPipeline"),
         },
         {
             title: "Langues",
             href: "admin.languages.index",
             path: "/admin/content/languages",
             icon: "fa-language",
-            show: canAccess("contentManagement") || canAccess("adminPanel"),
-        },
-        {
-            title: "Astuces de chargement",
-            href: "admin.loading-tips.index",
-            path: "/admin/content/loading-tips",
-            icon: "fa-lightbulb",
-            show: canAccess("contentManagement") || canAccess("adminPanel"),
+            show: canAccess("contentManagement"),
         },
         {
             title: "IA métier",
             href: "admin.content.ia-generation.edit",
             path: "/admin/content/ia-generation",
             icon: "fa-robot",
-            show: canAccess("contentManagement") || canAccess("adminPanel"),
+            show: canAccess("contentPipeline"),
         },
         {
             title: "Effets",
@@ -104,6 +97,13 @@ const navItems = computed(() => {
             path: "/admin/content/sub-effects",
             icon: "fa-wand-magic-sparkles",
             show: canAccess("effectsAdmin"),
+        },
+        {
+            title: "Pages",
+            href: "pages.index",
+            path: "/pages",
+            icon: "fa-file-lines",
+            show: canAccess("pagesManager"),
         },
     ];
 

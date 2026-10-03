@@ -6,12 +6,12 @@ use App\Http\Controllers\Admin\LanguageController;
 use Illuminate\Support\Facades\Route;
 
 /**
- * Référentiel des langues (hors hub bibliothèques).
- * Auth + rôle admin uniquement : pas de middleware password.confirm (référentiel léger).
+ * Référentiel des langues (contenu de jeu, MJ+).
+ * Zone contenu : content.area + password.confirm.
  */
 Route::prefix('admin/content/languages')
     ->name('admin.languages.')
-    ->middleware(['auth', 'role:admin', 'content.area'])
+    ->middleware(['auth', 'role:game_master', 'content.area', 'password.confirm'])
     ->group(function () {
         Route::get('/', [LanguageController::class, 'index'])->name('index');
         Route::post('/', [LanguageController::class, 'store'])->name('store');

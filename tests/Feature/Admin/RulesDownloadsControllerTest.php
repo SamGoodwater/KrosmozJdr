@@ -19,7 +19,7 @@ class RulesDownloadsControllerTest extends TestCase
         Bus::fake();
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->post(route('admin.content.rules-downloads.run'))
             ->assertRedirect(route('admin.content.dashboard.index'))
             ->assertSessionHas('success');
@@ -46,7 +46,7 @@ class RulesDownloadsControllerTest extends TestCase
         $stale->created_at = now()->subMinutes(ProjectConsoleJob::STALE_QUEUED_MINUTES + 1);
         $stale->save();
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->post(route('admin.content.rules-downloads.run'))
             ->assertRedirect(route('admin.content.dashboard.index'))
             ->assertSessionHas('success');
@@ -61,7 +61,7 @@ class RulesDownloadsControllerTest extends TestCase
         Bus::fake();
         $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
 
-        $this->actingAs($gm)
+        $this->actingAsConfirmed($gm)
             ->post(route('admin.content.rules-downloads.run'))
             ->assertForbidden();
 
@@ -72,7 +72,7 @@ class RulesDownloadsControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->get(route('admin.content.dashboard.index'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page
@@ -87,11 +87,11 @@ class RulesDownloadsControllerTest extends TestCase
         Bus::fake();
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->post(route('admin.content.rules-downloads.run'))
             ->assertSessionHas('success');
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->post(route('admin.content.rules-downloads.run'))
             ->assertRedirect(route('admin.content.dashboard.index'))
             ->assertSessionHas('error');

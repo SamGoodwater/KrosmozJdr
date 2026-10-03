@@ -18,6 +18,7 @@ $legacyContentPrefixes = [
     'admin/scrapping-mappings' => 'admin/content/scrapping-mappings',
     'admin/dofusdb-effect-mappings' => 'admin/content/dofusdb-effect-mappings',
     'admin/dofus-conversion-formulas' => 'admin/content/dofus-conversion-formulas',
+    'admin/content/loading-tips' => 'admin/loading-tips',
 ];
 
 foreach ($legacyContentPrefixes as $from => $to) {

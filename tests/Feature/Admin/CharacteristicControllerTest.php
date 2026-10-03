@@ -82,13 +82,22 @@ class CharacteristicControllerTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_game_master_receives_403_on_index(): void
+    public function test_game_master_without_password_is_redirected_from_index(): void
     {
         $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
 
         $response = $this->actingAs($gm)->get(route('admin.characteristics.index'));
 
-        $response->assertForbidden();
+        $response->assertRedirect(route('password.confirm'));
+    }
+
+    public function test_game_master_with_password_can_access_index(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+
+        $response = $this->actingAsConfirmed($gm)->get(route('admin.characteristics.index'));
+
+        $response->assertOk();
     }
 
     public function test_user_receives_403_on_show(): void
@@ -113,7 +122,7 @@ class CharacteristicControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($admin)->get(route('admin.characteristics.create'));
+        $response = $this->actingAsConfirmed($admin)->get(route('admin.characteristics.create'));
 
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
@@ -130,7 +139,7 @@ class CharacteristicControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $uniqueKey = 'test_store_pa_creature';
 
-        $response = $this->actingAs($admin)
+        $response = $this->actingAsConfirmed($admin)
             ->withSession($this->passwordConfirmedSession())
             ->post(route('admin.characteristics.store'), [
                 'key' => $uniqueKey,
@@ -153,7 +162,7 @@ class CharacteristicControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $keyWithoutSuffix = 'test_life_dice';
 
-        $response = $this->actingAs($admin)
+        $response = $this->actingAsConfirmed($admin)
             ->withSession($this->passwordConfirmedSession())
             ->post(route('admin.characteristics.store'), [
                 'key' => $keyWithoutSuffix,
@@ -175,7 +184,7 @@ class CharacteristicControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($admin)
+        $response = $this->actingAsConfirmed($admin)
             ->withSession($this->passwordConfirmedSession())
             ->post(route('admin.characteristics.store'), [
                 'key' => 'life_points_creature',
@@ -192,7 +201,7 @@ class CharacteristicControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($admin)->get(route('admin.characteristics.index'));
+        $response = $this->actingAsConfirmed($admin)->get(route('admin.characteristics.index'));
 
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
@@ -206,7 +215,7 @@ class CharacteristicControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($admin)->get(route('admin.characteristics.show', 'life_points_creature'));
+        $response = $this->actingAsConfirmed($admin)->get(route('admin.characteristics.show', 'life_points_creature'));
 
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
@@ -225,7 +234,7 @@ class CharacteristicControllerTest extends TestCase
         $char = Characteristic::where('key', 'life_points_creature')->first();
         $this->assertNotNull($char);
 
-        $response = $this->actingAs($admin)
+        $response = $this->actingAsConfirmed($admin)
             ->withSession($this->passwordConfirmedSession())
             ->patch(route('admin.characteristics.update', 'life_points_creature'), [
                 'name' => 'Points de vie (modifié)',
@@ -255,7 +264,7 @@ class CharacteristicControllerTest extends TestCase
             'entity' => 'monster',
             'variable' => 'level',
         ]);
-        $response = $this->actingAs($admin)->getJson($url);
+        $response = $this->actingAsConfirmed($admin)->getJson($url);
 
         $response->assertOk();
         $response->assertJsonStructure(['points']);
@@ -267,7 +276,7 @@ class CharacteristicControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($admin)->getJson(route('admin.characteristics.formula-preview').'?'.http_build_query([
+        $response = $this->actingAsConfirmed($admin)->getJson(route('admin.characteristics.formula-preview').'?'.http_build_query([
             'characteristic_id' => 'life_points_creature',
             'entity' => 'monster',
             'variable' => 'level',
@@ -292,7 +301,7 @@ class CharacteristicControllerTest extends TestCase
             'characteristic_id' => 'life_points_creature',
             'entity' => 'invalid_entity',
         ]);
-        $response = $this->actingAs($admin)->getJson($url);
+        $response = $this->actingAsConfirmed($admin)->getJson($url);
 
         $response->assertOk();
         $data = $response->json();
@@ -304,7 +313,7 @@ class CharacteristicControllerTest extends TestCase
     {
         $superAdmin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
 
-        $response = $this->actingAs($superAdmin)->get(route('admin.characteristics.index'));
+        $response = $this->actingAsConfirmed($superAdmin)->get(route('admin.characteristics.index'));
 
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
@@ -319,7 +328,7 @@ class CharacteristicControllerTest extends TestCase
         $char = Characteristic::where('key', 'level_creature')->first();
         $this->assertNotNull($char);
 
-        $response = $this->actingAs($superAdmin)
+        $response = $this->actingAsConfirmed($superAdmin)
             ->withSession($this->passwordConfirmedSession())
             ->patch(route('admin.characteristics.update', 'level_creature'), [
                 'name' => 'Niveau (modifié)',
@@ -344,7 +353,7 @@ class CharacteristicControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($admin)->get(route('admin.characteristics.show', 'nonexistent_key_creature'));
+        $response = $this->actingAsConfirmed($admin)->get(route('admin.characteristics.show', 'nonexistent_key_creature'));
 
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page->where('selected', null));
@@ -370,7 +379,7 @@ class CharacteristicControllerTest extends TestCase
         ]);
         $key = $char->key;
 
-        $response = $this->actingAs($admin)
+        $response = $this->actingAsConfirmed($admin)
             ->withSession($this->passwordConfirmedSession())
             ->delete(route('admin.characteristics.destroy', $key));
 
@@ -400,7 +409,7 @@ class CharacteristicControllerTest extends TestCase
             'linked_to_characteristic_id' => $levelCreature->id,
         ]);
 
-        $response = $this->actingAs($admin)
+        $response = $this->actingAsConfirmed($admin)
             ->withSession($this->passwordConfirmedSession())
             ->delete(route('admin.characteristics.destroy', 'level_creature'));
 
@@ -417,7 +426,7 @@ class CharacteristicControllerTest extends TestCase
             'pairs' => [['d' => 10, 'k' => 1], ['d' => 200, 'k' => 20]],
             'curve_type' => 'table',
         ];
-        $response = $this->actingAs($admin)
+        $response = $this->actingAsConfirmed($admin)
             ->withSession($this->passwordConfirmedSession())
             ->postJson(route('admin.characteristics.suggest-conversion-formula'), $payload);
 
@@ -438,7 +447,7 @@ class CharacteristicControllerTest extends TestCase
         $this->assertNotNull($characteristic);
         $file = UploadedFile::fake()->image('icon.png', 64, 64);
 
-        $response = $this->actingAs($admin)
+        $response = $this->actingAsConfirmed($admin)
             ->withSession($this->passwordConfirmedSession())
             ->postJson(route('admin.characteristics.upload-icon'), [
                 'file' => $file,
@@ -470,7 +479,7 @@ class CharacteristicControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $url = route('admin.characteristics.scrapping-mapping-options', ['characteristic_key' => 'life_points_creature']);
-        $response = $this->actingAs($admin)->getJson($url);
+        $response = $this->actingAsConfirmed($admin)->getJson($url);
         $response->assertOk();
         $response->assertJsonStructure(['entities']);
         $entities = $response->json('entities');
@@ -485,7 +494,7 @@ class CharacteristicControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $url = route('admin.characteristics.scrapping-mapping-options', ['characteristic_key' => 'life_points_creature']).'?entity=monster';
-        $response = $this->actingAs($admin)->getJson($url);
+        $response = $this->actingAsConfirmed($admin)->getJson($url);
         $response->assertOk();
         $response->assertJsonStructure(['paths']);
         $this->assertIsArray($response->json('paths'));
@@ -499,7 +508,7 @@ class CharacteristicControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $char = Characteristic::where('key', 'life_points_creature')->first();
         $this->assertNotNull($char);
-        $response = $this->actingAs($admin)
+        $response = $this->actingAsConfirmed($admin)
             ->withSession($this->passwordConfirmedSession())
             ->postJson(
                 route('admin.characteristics.store-scrapping-mapping', ['characteristic_key' => 'life_points_creature']),
@@ -534,7 +543,7 @@ class CharacteristicControllerTest extends TestCase
                 'sort_order' => 0,
             ]
         );
-        $response = $this->actingAs($admin)
+        $response = $this->actingAsConfirmed($admin)
             ->withSession($this->passwordConfirmedSession())
             ->postJson(
                 route('admin.characteristics.unlink-scrapping-mapping', ['characteristic_key' => 'life_points_creature']),

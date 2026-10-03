@@ -18,30 +18,37 @@
  */
 return [
     /**
-     * Accès au bloc "Administration" dans l'UI.
+     * Accès au bloc "Administration" dans l'UI (app).
      */
     'adminPanel' => [
         ['entity' => 'users', 'ability' => 'manageAny'],
     ],
 
     /**
-     * Accès au menu "Sous-effets" / "Effets" (admin et au-dessus).
+     * Accès au menu Effets / Sous-effets (contenu de jeu, MJ+).
      */
     'effectsAdmin' => [
-        ['entity' => 'users', 'ability' => 'manageAny'],
+        ['entity' => 'users', 'ability' => 'manageContent'],
     ],
 
     /**
-     * Accès au menu "Pages" (gestion).
+     * Accès au menu "Pages" (gestion CMS).
      */
     'pagesManager' => [
         ['entity' => 'pages', 'ability' => 'updateAny'],
     ],
 
     /**
-     * Menu « Gestion du contenu » (admin et au-dessus).
+     * Menu « Gestion du contenu » (jeu, MJ+).
      */
     'contentManagement' => [
+        ['entity' => 'users', 'ability' => 'manageContent'],
+    ],
+
+    /**
+     * Pipeline sensible du contenu (Import DofusDB, mappings, IA métier) — admin+.
+     */
+    'contentPipeline' => [
         ['entity' => 'users', 'ability' => 'manageAny'],
     ],
 ];

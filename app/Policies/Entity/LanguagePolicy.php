@@ -6,32 +6,32 @@ use App\Models\Entity\Language;
 use App\Models\User;
 
 /**
- * Référentiel des langues — CRUD réservé aux administrateurs.
+ * Référentiel des langues — CRUD réservé aux maîtres du jeu et plus.
  */
 class LanguagePolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->isGameMaster();
     }
 
     public function view(User $user, Language $language): bool
     {
-        return $user->isAdmin();
+        return $user->isGameMaster();
     }
 
     public function create(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->isGameMaster();
     }
 
     public function update(User $user, Language $language): bool
     {
-        return $user->isAdmin();
+        return $user->isGameMaster();
     }
 
     public function delete(User $user, Language $language): bool
     {
-        return $user->isAdmin();
+        return $user->isGameMaster();
     }
 }

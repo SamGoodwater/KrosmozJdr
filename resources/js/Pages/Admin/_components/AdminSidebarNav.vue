@@ -54,6 +54,13 @@ const adminNavItems = computed(() => {
         icon: 'fa-comments',
         show: canAccess('adminPanel'),
     });
+    items.push({
+        title: 'Astuces de chargement',
+        href: 'admin.loading-tips.index',
+        path: '/admin/loading-tips',
+        icon: 'fa-lightbulb',
+        show: canAccess('adminPanel'),
+    });
 
     if (isSuperAdmin.value) {
         items.push(

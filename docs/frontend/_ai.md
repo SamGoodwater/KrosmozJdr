@@ -14,11 +14,12 @@
 - Footer desktop (`Layouts/Footer.vue`) : 2 lignes, logo centré ; padding via le layout, pas la molécule.
 - Chrome responsive : mobile `&lt; md` = dock bas (Menu / Recherche / Compte branchés) + pas de header ; tablette `md–lg` = header + hamburger ; desktop `≥ lg` = sidebar fixe. Constantes `LAYOUT_*` dans `viewport-breakpoints.js` (padding bas dock, FAB, cookies). `useGlobalSearchUi` ouvre la recherche depuis le dock.
 - Tableaux : filtres / presets en Drawer `side="end"` sous conteneur étroit ; racine `@container` ; modes de vue icon-only en conteneur étroit.
-- Dashboard `/admin/content` : cartes Atelier DofusDB (3 modes) + Génération IA ; camemberts inchangés.- Modal **Sources** : deux onglets (DofusDB algo + IA). Après écriture, tableau avant/après avec choix par cellule ; Enregistrer / Rétablir.
+- Dashboard `/admin/content` : MJ+ (password.confirm) ; cartes Atelier DofusDB / IA / compile / prix seulement si `contentPipeline` (admin+). Camemberts pour tous les MJ+. Modal **Sources** : deux onglets (DofusDB algo + IA). Après écriture, tableau avant/après avec choix par cellule ; Enregistrer / Rétablir.
+- Astuces de chargement : `/admin/loading-tips` (nav Admin, pas Contenu).
 - Formules de dés : bande min/moy/max + **Valeur** / icône ghost Lancer + historique session ; reconnu si dé, tranche ou opérateur (`50-17`). `diceParser.js`, `DiceFormulaStrip`.
 - Recherche globale / filtres tableau : pastilles d’état via jetons `--color-state-*` (`getEntityStateChipClass`). Brut = error, jouable = success, brouillon = umber, auto = indigo, archivé = info.
 - `vite.config.js` `manualChunks` : uniquement `node_modules` (`vendor` / `cally` / `utils`). Ne pas extraire `Main.vue` ni `Utils/Formatters` : cycle de chunks au boot.
-- Écran de chargement (`SiteLoadingOverlay`) : astuces bas centrées (`loadingTips` via `shareOnce`, table `loading_tips`, admin `/admin/content/loading-tips`). Tirage pondéré `pickLoadingTip` (featured ×3) ; `duration_seconds` (2–30, défaut 8) ; lien optionnel nouvel onglet.
+- Écran de chargement (`SiteLoadingOverlay`) : astuces bas centrées (`loadingTips` via `shareOnce`, table `loading_tips`, admin `/admin/loading-tips`). Tirage pondéré `pickLoadingTip` (featured ×3) ; `duration_seconds` (2–30, défaut 8) ; lien optionnel nouvel onglet.
 
 ## Descendre
 

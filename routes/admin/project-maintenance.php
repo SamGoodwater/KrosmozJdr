@@ -15,6 +15,6 @@ Route::middleware(['auth'])->group(function () {
     })->name('admin.project-maintenance.index');
 
     Route::post('/admin/project-maintenance/sync', [ContentDofusdbWorkshopController::class, 'sync'])
-        ->middleware(['content.area', 'password.confirm', 'throttle:6,1'])
+        ->middleware(['role:admin', 'content.area', 'password.confirm', 'throttle:6,1'])
         ->name('admin.project-maintenance.sync');
 });

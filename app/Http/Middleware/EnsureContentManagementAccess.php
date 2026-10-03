@@ -10,7 +10,9 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Accès à la gestion du contenu (admin et rôles supérieurs).
+ * Accès à la gestion du contenu de jeu (MJ et rôles supérieurs).
+ *
+ * Les pages pipeline (Import, mappings, IA) restent protégées séparément par `role:admin`.
  */
 class EnsureContentManagementAccess
 {
@@ -21,8 +23,8 @@ class EnsureContentManagementAccess
     {
         /** @var User|null $user */
         $user = $request->user();
-        if ($user === null || ! $user->isAdmin()) {
-            abort(403, 'Accès réservé à la gestion du contenu (administrateur et plus).');
+        if ($user === null || ! $user->isGameMaster()) {
+            abort(403, 'Accès réservé à la gestion du contenu (maître du jeu et plus).');
         }
 
         return $next($request);

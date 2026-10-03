@@ -53,7 +53,7 @@ class ScrappingMappingControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($admin)->get(route('admin.scrapping-mappings.index'));
+        $response = $this->actingAsConfirmed($admin)->get(route('admin.scrapping-mappings.index'));
 
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
@@ -69,7 +69,7 @@ class ScrappingMappingControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($admin)->get(route('admin.scrapping-mappings.index', [
+        $response = $this->actingAsConfirmed($admin)->get(route('admin.scrapping-mappings.index', [
             'source' => 'dofusdb',
             'entity' => 'monster',
             'mapping_key' => 'life',
@@ -86,7 +86,7 @@ class ScrappingMappingControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($admin)->get(route('admin.scrapping-mappings.index', [
+        $response = $this->actingAsConfirmed($admin)->get(route('admin.scrapping-mappings.index', [
             'source' => 'dofusdb',
             'entity' => 'monster',
             'mapping_key' => 'missing_key',
@@ -103,7 +103,7 @@ class ScrappingMappingControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($admin)
+        $response = $this->actingAsConfirmed($admin)
             ->withSession($this->passwordConfirmedSession())
             ->postJson(route('admin.scrapping-mappings.store'), [
                 'source' => 'dofusdb',
@@ -144,7 +144,7 @@ class ScrappingMappingControllerTest extends TestCase
             'sort_order' => 0,
         ]);
 
-        $response = $this->actingAs($admin)
+        $response = $this->actingAsConfirmed($admin)
             ->withSession($this->passwordConfirmedSession())
             ->patchJson(route('admin.scrapping-mappings.update', $mapping->id), [
                 'mapping_key' => 'updated_key',
@@ -171,7 +171,7 @@ class ScrappingMappingControllerTest extends TestCase
         ]);
         $id = $mapping->id;
 
-        $response = $this->actingAs($admin)
+        $response = $this->actingAsConfirmed($admin)
             ->withSession($this->passwordConfirmedSession())
             ->deleteJson(route('admin.scrapping-mappings.destroy', $id));
 

@@ -53,7 +53,7 @@ class DofusdbEffectMappingControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($admin)->get(route('admin.dofusdb-effect-mappings.index'));
+        $response = $this->actingAsConfirmed($admin)->get(route('admin.dofusdb-effect-mappings.index'));
 
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
@@ -69,7 +69,7 @@ class DofusdbEffectMappingControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($admin)->get(route('admin.dofusdb-effect-mappings.index', [
+        $response = $this->actingAsConfirmed($admin)->get(route('admin.dofusdb-effect-mappings.index', [
             'effect_id' => 96,
         ]));
 
@@ -84,7 +84,7 @@ class DofusdbEffectMappingControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($admin)
+        $response = $this->actingAsConfirmed($admin)
             ->withSession($this->passwordConfirmedSession())
             ->postJson(route('admin.dofusdb-effect-mappings.store'), [
                 'dofusdb_effect_id' => 96,
@@ -113,7 +113,7 @@ class DofusdbEffectMappingControllerTest extends TestCase
             'characteristic_key' => null,
         ]);
 
-        $response = $this->actingAs($admin)
+        $response = $this->actingAsConfirmed($admin)
             ->withSession($this->passwordConfirmedSession())
             ->patchJson(route('admin.dofusdb-effect-mappings.update', $mapping), [
                 'sub_effect_slug' => 'frapper',
@@ -138,7 +138,7 @@ class DofusdbEffectMappingControllerTest extends TestCase
         ]);
         $id = $mapping->id;
 
-        $response = $this->actingAs($admin)
+        $response = $this->actingAsConfirmed($admin)
             ->withSession($this->passwordConfirmedSession())
             ->deleteJson(route('admin.dofusdb-effect-mappings.destroy', $mapping));
 

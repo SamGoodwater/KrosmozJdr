@@ -40,7 +40,7 @@ class LoadingTipAdminTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         LoadingTip::factory()->create(['body' => 'Astuce visible admin']);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->get(route('admin.loading-tips.index'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
@@ -53,7 +53,7 @@ class LoadingTipAdminTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->post(route('admin.loading-tips.store'), [
                 'body' => 'Rejoins-nous sur Discord.',
                 'url' => 'https://discord.gg/XVu4VWFskj',
@@ -76,7 +76,7 @@ class LoadingTipAdminTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->from(route('admin.loading-tips.index'))
             ->post(route('admin.loading-tips.store'), [
                 'body' => 'Durée trop courte',
@@ -92,7 +92,7 @@ class LoadingTipAdminTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->from(route('admin.loading-tips.index'))
             ->post(route('admin.loading-tips.store'), [
                 'body' => 'Lien invalide',
@@ -116,7 +116,7 @@ class LoadingTipAdminTest extends TestCase
             'featured' => false,
         ]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->patch(route('admin.loading-tips.update', $tip), [
                 'body' => 'Phrase mise à jour',
                 'url' => null,
@@ -134,7 +134,7 @@ class LoadingTipAdminTest extends TestCase
             'duration_seconds' => 10,
         ]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->delete(route('admin.loading-tips.destroy', $tip))
             ->assertRedirect(route('admin.loading-tips.index'));
 

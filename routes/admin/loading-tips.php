@@ -6,11 +6,11 @@ use App\Http\Controllers\Admin\LoadingTipController;
 use Illuminate\Support\Facades\Route;
 
 /**
- * Astuces de l’écran de chargement (référentiel léger, sans password.confirm).
+ * Astuces de l’écran de chargement (UX app) — admin+, zone administration.
  */
-Route::prefix('admin/content/loading-tips')
+Route::prefix('admin/loading-tips')
     ->name('admin.loading-tips.')
-    ->middleware(['auth', 'role:admin', 'content.area'])
+    ->middleware(['auth', 'role:admin', 'admin.area', 'password.confirm'])
     ->group(function () {
         Route::get('/', [LoadingTipController::class, 'index'])->name('index');
         Route::post('/', [LoadingTipController::class, 'store'])->name('store');

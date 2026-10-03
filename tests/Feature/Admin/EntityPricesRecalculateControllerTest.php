@@ -18,7 +18,7 @@ class EntityPricesRecalculateControllerTest extends TestCase
         Bus::fake();
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->post(route('admin.content.entity-prices.run'), ['type' => 'items'])
             ->assertRedirect(route('admin.content.dashboard.index'))
             ->assertSessionHas('success');
@@ -32,7 +32,7 @@ class EntityPricesRecalculateControllerTest extends TestCase
         Bus::fake();
         $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
 
-        $this->actingAs($gm)
+        $this->actingAsConfirmed($gm)
             ->post(route('admin.content.entity-prices.run'), ['type' => 'consumables'])
             ->assertForbidden();
 

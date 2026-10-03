@@ -125,6 +125,19 @@ class UserPolicy
     }
 
     /**
+     * Accès à la gestion du contenu de jeu (MJ et au-dessus).
+     *
+     * Distinct de {@see manageAny} : ne couvre pas l’administration de l’app
+     * ni le pipeline sensible (Import DofusDB, mappings, IA métier).
+     *
+     * @param  User  $user  Utilisateur courant
+     */
+    public function manageContent(User $user): bool
+    {
+        return $user->isGameMaster();
+    }
+
+    /**
      * Détermine si l'utilisateur peut restaurer un utilisateur donné.
      *
      * @param  User  $user  Utilisateur courant

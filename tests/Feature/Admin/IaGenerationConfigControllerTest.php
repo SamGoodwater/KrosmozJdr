@@ -26,7 +26,7 @@ class IaGenerationConfigControllerTest extends TestCase
     {
         $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
 
-        $this->actingAs($gm)
+        $this->actingAsConfirmed($gm)
             ->get(route('admin.content.ia-generation.edit'))
             ->assertForbidden();
     }

@@ -63,7 +63,7 @@ class TypeRegistryFlagsTest extends TestCase
         $this->assertFalse((bool) $type->fresh()->allow_scrap);
     }
 
-    public function test_game_master_cannot_toggle_allow_scrap_via_types_api(): void
+    public function test_game_master_with_password_can_toggle_allow_scrap_via_types_api(): void
     {
         $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         $race = MonsterRace::factory()->create([
@@ -74,17 +74,18 @@ class TypeRegistryFlagsTest extends TestCase
             'allow_scrap' => false,
         ]);
 
-        $this->actingAs($gm)
+        $this->actingAsConfirmed($gm)
             ->patchJson('/api/types/monster-races/bulk', [
                 'ids' => [$race->id],
                 'allow_scrap' => true,
             ])
-            ->assertForbidden();
+            ->assertOk()
+            ->assertJsonPath('success', true);
 
-        $this->assertFalse((bool) $race->fresh()->allow_scrap);
+        $this->assertTrue((bool) $race->fresh()->allow_scrap);
     }
 
-    public function test_game_master_cannot_delete_monster_race_via_types_api(): void
+    public function test_game_master_with_password_can_delete_monster_race_via_types_api(): void
     {
         $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         $race = MonsterRace::factory()->create([
@@ -94,14 +95,14 @@ class TypeRegistryFlagsTest extends TestCase
             'write_level' => User::ROLE_GAME_MASTER,
         ]);
 
-        $this->actingAs($gm)
+        $this->actingAsConfirmed($gm)
             ->deleteJson("/api/types/monster-races/{$race->id}")
-            ->assertForbidden();
+            ->assertOk();
 
-        $this->assertNotNull($race->fresh());
+        $this->assertSoftDeleted($race);
     }
 
-    public function test_game_master_cannot_toggle_spell_type_catalog_via_types_api(): void
+    public function test_game_master_with_password_can_toggle_spell_type_catalog_via_types_api(): void
     {
         $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         $spellType = SpellType::factory()->create([
@@ -110,13 +111,14 @@ class TypeRegistryFlagsTest extends TestCase
             'show_in_catalog' => false,
         ]);
 
-        $this->actingAs($gm)
+        $this->actingAsConfirmed($gm)
             ->patchJson("/api/types/spell-types/{$spellType->id}/catalog", [
                 'show_in_catalog' => true,
             ])
-            ->assertForbidden();
+            ->assertOk()
+            ->assertJsonPath('show_in_catalog', true);
 
-        $this->assertFalse((bool) $spellType->fresh()->show_in_catalog);
+        $this->assertTrue((bool) $spellType->fresh()->show_in_catalog);
     }
 
     public function test_admin_can_toggle_race_flags(): void
@@ -130,7 +132,7 @@ class TypeRegistryFlagsTest extends TestCase
             'allow_scrap' => false,
         ]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->patchJson('/api/types/monster-races/bulk', [
                 'ids' => [$race->id],
                 'allow_scrap' => true,
@@ -154,7 +156,7 @@ class TypeRegistryFlagsTest extends TestCase
             'allow_scrap' => false,
         ]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->patchJson("/api/types/spell-types/{$spellType->id}/catalog", [
                 'show_in_catalog' => true,
             ])

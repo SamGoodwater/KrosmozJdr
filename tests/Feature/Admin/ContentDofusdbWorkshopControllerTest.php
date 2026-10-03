@@ -24,7 +24,7 @@ class ContentDofusdbWorkshopControllerTest extends TestCase
     {
         $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
 
-        $this->actingAs($gm)
+        $this->actingAsConfirmed($gm)
             ->get(route('admin.content.dofusdb.index'))
             ->assertForbidden();
     }
@@ -33,7 +33,7 @@ class ContentDofusdbWorkshopControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->get(route('admin.content.dofusdb.index'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page

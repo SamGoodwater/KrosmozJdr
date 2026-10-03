@@ -7,30 +7,24 @@ use App\Http\Controllers\Admin\SubEffectController;
 use Illuminate\Support\Facades\Route;
 
 /**
- * Administration des effects et sous-effets (système unifié).
- * Effects : liste à gauche, panneau à droite ; duplication degré sur un effect.
- * Sub-effects : vue dédiée en lecture du référentiel.
- *
- * Mutations sur /admin/content/effects : password.confirm.
+ * Administration des effects et sous-effets (contenu de jeu, MJ+).
  */
 Route::get('admin/content/sub-effects', [SubEffectController::class, 'index'])
     ->name('admin.sub-effects.index')
-    ->middleware(['auth', 'role:admin', 'content.area']);
+    ->middleware(['auth', 'role:game_master', 'content.area', 'password.confirm']);
 
 Route::prefix('admin/content/effects')
     ->name('admin.effects.')
-    ->middleware(['auth', 'role:admin', 'content.area'])
+    ->middleware(['auth', 'role:game_master', 'content.area', 'password.confirm'])
     ->group(function () {
         Route::get('/', [AdminEffectController::class, 'index'])->name('index');
         Route::get('/create', [AdminEffectController::class, 'create'])->name('create');
         Route::get('/{effect}', [AdminEffectController::class, 'show'])->name('show');
 
-        Route::middleware(['password.confirm'])->group(function () {
-            Route::post('/', [AdminEffectController::class, 'store'])->name('store');
-            Route::post('/{effect}/duplicate-degree', [AdminEffectController::class, 'duplicateDegree'])->name('duplicate-degree');
-            Route::delete('/{effect}/degrees/{degree}', [AdminEffectController::class, 'destroyDegree'])->name('destroy-degree');
-            Route::post('/{effect}/duplicate', [AdminEffectController::class, 'duplicate'])->name('duplicate');
-            Route::patch('/{effect}/group', [AdminEffectController::class, 'updateGroup'])->name('group-update');
-            Route::delete('/{effect}', [AdminEffectController::class, 'destroy'])->name('destroy');
-        });
+        Route::post('/', [AdminEffectController::class, 'store'])->name('store');
+        Route::post('/{effect}/duplicate-degree', [AdminEffectController::class, 'duplicateDegree'])->name('duplicate-degree');
+        Route::delete('/{effect}/degrees/{degree}', [AdminEffectController::class, 'destroyDegree'])->name('destroy-degree');
+        Route::post('/{effect}/duplicate', [AdminEffectController::class, 'duplicate'])->name('duplicate');
+        Route::patch('/{effect}/group', [AdminEffectController::class, 'updateGroup'])->name('group-update');
+        Route::delete('/{effect}', [AdminEffectController::class, 'destroy'])->name('destroy');
     });

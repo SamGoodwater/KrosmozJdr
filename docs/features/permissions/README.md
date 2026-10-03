@@ -55,7 +55,7 @@ Alias enregistrés dans `bootstrap/app.php` :
 | --- | --- | --- |
 | `role:a|b` | `CheckRole.php` | Non connecté → `login` ; super_admin interactif → bypass ; sinon OU logique sur les rôles ; sinon 403 |
 | `admin.area` | `EnsureAdminAreaAccess.php` | `isAdmin()` sinon 403 |
-| `content.area` | `EnsureContentManagementAccess.php` | `isAdmin()` sinon 403 |
+| `content.area` | `EnsureContentManagementAccess.php` | `isGameMaster()` sinon 403 |
 | `password.confirm` | `RequirePasswordWithInactivity.php` | Exige confirmation MDP récente (inactivité `password_inactivity_timeout`, défaut 3600 s) ; JSON/Inertia → **423**, sinon redirect `password.confirm` |
 
 Exemple : les routes scrapping et la conversion IA (`ia-convert`, `ia/status`, page `/admin/content/ia-generation`) cumulent `auth`, `role:admin`, `password.confirm`.
@@ -68,12 +68,12 @@ Exemple : les routes scrapping et la conversion IA (`ia-convert`, `ia/status`, p
 
 Les types à mutations admin-only partagent le trait `App\Policies\Entity\Concerns\AdminMutationsOnly` (`update` / `delete` / `updateAny` / `deleteAny` / `manageAny` / `publish` → `isAdmin()`) : monstre, PNJ, boutique, capacité, condition, trait créature, spécialisation, sort, panoplie, classe. Overrides locaux conservés : `SpellPolicy::update` (auteur ou admin), `PanoplyPolicy::update` (admin / auteur / write_level), `BreedPolicy` (view / create / restore / forceDelete propres, n’étend pas la base).
 
-Surcharges notables : `TypeRegistryPolicy` (races / types d’équipement, ressource, consommable, sort : `update` / `updateAny` / `delete` admin only — `BaseEntityPolicy::update` laisserait un MJ modifier une race auto-créée en `write_level=3`), `PagePolicy`/`SectionPolicy` (CMS via `canBeViewedBy`/`canBeEditedBy`), `UserPolicy` (`before` = super_admin interactif, `updateRole` restreint), `CreaturePolicy::viewResolvedStats` (stats JSON : `view` du monstre/PNJ lié, pas un accès public inconditionnel). Les relations embarquées suivent la même `view` : `ItemPanoplyPayload` (sets / pièces d’un équipement), les sorts/équipements/traits liés d’un monstre ou d’un PNJ, la boutique / les panoplies / scénarios / campagnes d’un PNJ (et le PNJ d’une boutique), les sorts/capacités/traits/PNJ liés d’une classe, et les sorts/capacités/traits/objets/PNJ liés d’une spécialisation, et les ingrédients de recette (`resources` / `recipeIngredients`) des objets, consommables et ressources (`visibleToUser` à l’eager-load lecture). Enregistrement explicite partiel dans `app/Providers/AuthServiceProvider.php` ; le reste par auto-discovery Laravel.
+Surcharges notables : `TypeRegistryPolicy` (races / types d’équipement, ressource, consommable, sort : `view` / `create` / `update` / `updateAny` / `delete` / `publish` → MJ+), `PagePolicy`/`SectionPolicy` (CMS via `canBeViewedBy`/`canBeEditedBy`), `UserPolicy` (`before` = super_admin interactif, `updateRole` restreint), `CreaturePolicy::viewResolvedStats` (stats JSON : `view` du monstre/PNJ lié, pas un accès public inconditionnel). Les relations embarquées suivent la même `view` : `ItemPanoplyPayload` (sets / pièces d’un équipement), les sorts/équipements/traits liés d’un monstre ou d’un PNJ, la boutique / les panoplies / scénarios / campagnes d’un PNJ (et le PNJ d’une boutique), les sorts/capacités/traits/PNJ liés d’une classe, et les sorts/capacités/traits/objets/PNJ liés d’une spécialisation, et les ingrédients de recette (`resources` / `recipeIngredients`) des objets, consommables et ressources (`visibleToUser` à l’eager-load lecture). Enregistrement explicite partiel dans `app/Providers/AuthServiceProvider.php` ; le reste par auto-discovery Laravel.
 
 ## Configuration des permissions
 
 - `config/entity-permissions.php` : registre `entityType` (kebab/pluriel) → classe Eloquent. Alimente `EntityPermissionService` et les clés de la matrice d'affichage.
-- `config/access-permissions.php` : clés UI → règles `anyOf [entity, ability]` (ex. `adminPanel`/`contentManagement`/`effectsAdmin` → `users`/`manageAny` = admin+, `pagesManager` → `pages`/`updateAny`). Zone contenu (`content.area`) = admin ; les MJ gardent le CRUD des fiches et la maj DofusDB unitaire (`dofusdb-refresh`), pas l’atelier de masse.
+- `config/access-permissions.php` : clés UI → règles `anyOf [entity, ability]` — `contentManagement`/`effectsAdmin` → `users`/`manageContent` (MJ+), `contentPipeline`/`adminPanel` → `users`/`manageAny` (admin+), `pagesManager` → `pages`/`updateAny`. Zone contenu (`content.area` + `password.confirm`) = MJ+ pour les référentiels jeu ; pipeline (Import, mappings, IA) = admin+. Zone admin (`admin.area`) = admin+. `password.confirm` ne change jamais le rôle.
 
 ## Projection vers le front
 

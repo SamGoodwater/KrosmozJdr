@@ -16,6 +16,7 @@ import AdminConsoleJobPanel from "@/Pages/Admin/_components/AdminConsoleJobPanel
 import AdminCommandMeta from "@/Pages/Admin/_components/AdminCommandMeta.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import PageHeader from "@/Pages/Molecules/layout/PageHeader.vue";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
 
 defineOptions({ layout: AdminArea });
 
@@ -23,12 +24,18 @@ const props = defineProps({
     overview: { type: Object, required: true },
     stateLabels: { type: Object, required: true },
     stateColors: { type: Object, required: true },
-    rulesDownloads: { type: Object, default: () => ({ generated_at: null, available: 0, missing: 0 }) },
+    canPipeline: { type: Boolean, default: false },
+    rulesDownloads: { type: Object, default: null },
     consoleJob: { type: Object, default: null },
     pricesConsoleJob: { type: Object, default: null },
 });
 
 const page = usePage();
+const { canAccess } = usePermissions();
+const showPipeline = computed(
+    () => props.canPipeline || canAccess("contentPipeline"),
+);
+
 const form = useForm({});
 const pricesForm = useForm({ type: "items" });
 const { liveJob, pollError, busy, cancelJob, cancelling } = useProjectConsoleJob(props, {
@@ -88,7 +95,7 @@ function submitPrices(type) {
 }
 
 function canRecalculatePrices(entityKey) {
-    return entityKey === "items" || entityKey === "consumables";
+    return showPipeline.value && (entityKey === "items" || entityKey === "consumables");
 }
 </script>
 
@@ -100,7 +107,7 @@ function canRecalculatePrices(entityKey) {
             title="Gestion du contenu"
             subtitle="Vue d’ensemble des entités par statut et du contenu CMS (pages et sections)."
         >
-            <template #actions>
+            <template v-if="showPipeline" #actions>
                 <Btn
                     type="button"
                     color="primary"
@@ -115,7 +122,11 @@ function canRecalculatePrices(entityKey) {
             </template>
         </PageHeader>
 
-        <section aria-labelledby="content-ateliers-heading" class="space-y-3">
+        <section
+            v-if="showPipeline"
+            aria-labelledby="content-ateliers-heading"
+            class="space-y-3"
+        >
             <div>
                 <h2 id="content-ateliers-heading" class="text-lg font-semibold text-base-content">
                     Ateliers
@@ -185,7 +196,10 @@ function canRecalculatePrices(entityKey) {
             {{ page.props.flash.error }}
         </p>
 
-        <section class="rounded-box border border-base-300 bg-base-100/50 p-4 space-y-3">
+        <section
+            v-if="showPipeline"
+            class="rounded-box border border-base-300 bg-base-100/50 p-4 space-y-3"
+        >
             <h2 class="text-lg font-semibold">Livre de règles (PDF et ODT)</h2>
             <p class="text-sm text-base-content/70 max-w-3xl">
                 Compile les chapitres Markdown en fichiers téléchargeables, stockés sur le disque public.
@@ -198,8 +212,8 @@ function canRecalculatePrices(entityKey) {
                 Dernière compilation :
                 <strong>{{ generatedLabel }}</strong>
                 <span class="opacity-70">
-                    ({{ rulesDownloads.available ?? 0 }} fichier(s) prêt(s)
-                    <template v-if="rulesDownloads.missing">, {{ rulesDownloads.missing }} manquant(s)</template>)
+                    ({{ rulesDownloads?.available ?? 0 }} fichier(s) prêt(s)
+                    <template v-if="rulesDownloads?.missing">, {{ rulesDownloads.missing }} manquant(s)</template>)
                 </span>
             </p>
             <AdminConsoleJobPanel

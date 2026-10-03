@@ -8,32 +8,32 @@ use App\Models\User;
 /**
  * Policy pour le modèle Characteristic (administration des caractéristiques).
  *
- * Les actions d'édition (view, create, update, delete) sont réservées aux admins et super_admins.
+ * Édition réservée aux maîtres du jeu et plus (contenu de jeu).
  */
 class CharacteristicPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->isGameMaster();
     }
 
     public function view(User $user, Characteristic $characteristic): bool
     {
-        return $user->isAdmin();
+        return $user->isGameMaster();
     }
 
     public function create(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->isGameMaster();
     }
 
     public function update(User $user, Characteristic $characteristic): bool
     {
-        return $user->isAdmin();
+        return $user->isGameMaster();
     }
 
     public function delete(User $user, Characteristic $characteristic): bool
     {
-        return $user->isAdmin();
+        return $user->isGameMaster();
     }
 }

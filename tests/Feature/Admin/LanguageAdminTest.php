@@ -23,29 +23,38 @@ class LanguageAdminTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_game_master_cannot_view_admin_languages_index(): void
+    public function test_game_master_without_password_is_redirected_from_languages(): void
     {
         $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
 
         $this->actingAs($gm)
             ->get(route('admin.languages.index'))
-            ->assertForbidden();
+            ->assertRedirect(route('password.confirm'));
+    }
+
+    public function test_game_master_with_password_can_view_languages(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+
+        $this->actingAsConfirmed($gm)
+            ->get(route('admin.languages.index'))
+            ->assertOk();
     }
 
     public function test_admin_can_view_admin_languages_index(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->get(route('admin.languages.index'))
             ->assertOk();
     }
 
-    public function test_admin_can_create_language_without_password_confirmation(): void
+    public function test_admin_can_create_language_with_password_confirmation(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->post(route('admin.languages.store'), [
                 'name' => 'Commun (test)',
                 'description' => 'Description test',
@@ -59,12 +68,12 @@ class LanguageAdminTest extends TestCase
         ]);
     }
 
-    public function test_admin_can_delete_language_without_password_confirmation(): void
+    public function test_admin_can_delete_language_with_password_confirmation(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $language = Language::factory()->create();
 
-        $this->actingAs($admin)
+        $this->actingAsConfirmed($admin)
             ->delete(route('admin.languages.destroy', $language))
             ->assertRedirect(route('admin.languages.index'));
 

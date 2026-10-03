@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Contenu pour les MJ, Admin pour l’app
+
+La gestion du contenu est ouverte aux maîtres du jeu (langues, types, caractéristiques, effets), après confirmation du mot de passe. Import DofusDB, mappings et IA restent réservés aux admins. Les astuces de chargement sont dans l’espace administration. Débloquer son mot de passe n’élargit jamais le rôle.
+
 ## Octobre 2026 — Astuces sur l’écran de chargement
 
 Pendant le chargement, des phrases courtes défilent en bas de l’écran, une par une, avec un fondu. Certaines ouvrent Discord ou GitHub. Un admin les ajoute, modifie ou retire depuis **Astuces de chargement**, peut en mettre en avant pour qu’elles apparaissent plus souvent, et régler la durée d’affichage de chaque phrase.
