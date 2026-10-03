@@ -21,6 +21,14 @@ export const CREATURE_CHARACTERISTIC_SUMMARY_COMBAT_KEYS = Object.freeze([
 ]);
 
 /**
+ * Caractéristiques calculées (sans colonne SQL) affichées avec le bloc combat.
+ * @type {readonly string[]}
+ */
+export const CREATURE_CHARACTERISTIC_COMBAT_COMPUTED_KEYS = Object.freeze([
+    "wakfu_reserve_creature",
+]);
+
+/**
  * @deprecated Utiliser CREATURE_CHARACTERISTIC_SUMMARY_COMBAT_KEYS (+ mods en summary).
  * Conservé pour les tests / imports existants.
  */
@@ -127,6 +135,7 @@ export const CREATURE_RESISTANCE_PERCENT_FULL_LABELS = Object.freeze({
  * @property {string} title
  * @property {'db'|'abilityStack'|'resistances'|'damages'} kind
  * @property {string[]} [dbColumns]
+ * @property {string[]} [computedKeys] - Clés métier sans colonne SQL (runtime / formules)
  * @property {boolean} [spread] - Répartir les items sur toute la largeur disponible
  */
 
@@ -137,6 +146,7 @@ export const CREATURE_CHARACTERISTIC_GROUPS = Object.freeze([
         title: "Combat",
         kind: "db",
         dbColumns: Object.freeze(["pa", "pm", "po", "life", "ini", "invocation", "ca"]),
+        computedKeys: CREATURE_CHARACTERISTIC_COMBAT_COMPUTED_KEYS,
     },
     {
         id: "abilities",
@@ -177,3 +187,9 @@ export const CHARACTERISTIC_CARD_DENSITY = Object.freeze({
     labeled: "labeled",
     spacious: "spacious",
 });
+
+export {
+    CREATURE_COMPOSABLE_COLUMNS,
+    contextColumnForComposable,
+} from "@/Support/Creature/creatureComposableColumns.js";
+export { buildCreatureComposableEditSections } from "@/Utils/Entity/buildCreatureComposableEditSections.js";

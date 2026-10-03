@@ -53,6 +53,16 @@ export function buildNpcFormFieldsConfig(options = {}) {
             showInCompact: true,
             options: HOSTILITY_OPTIONS,
         },
+        intimidation_ability: {
+            type: 'select',
+            label: 'Intimidation (caractéristique)',
+            required: false,
+            showInCompact: false,
+            options: [
+                { value: 'strength', label: 'Force' },
+                { value: 'chance', label: 'Chance' },
+            ],
+        },
         npc_role: {
             type: 'select',
             label: 'Rôle',
@@ -125,7 +135,7 @@ export const NPC_FORM_FIELD_SECTIONS_EDIT = [
         id: 'general',
         title: 'Identité',
         subtitle: 'Nom, lieu, niveau, rôle et hostilité.',
-        fieldKeys: ['name', 'location', 'level', 'hostility', 'npc_role', 'state'],
+        fieldKeys: ['name', 'location', 'level', 'hostility', 'intimidation_ability', 'npc_role', 'state'],
     },
     {
         id: 'profile',

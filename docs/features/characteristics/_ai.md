@@ -23,7 +23,11 @@
 - **Admin (fiche)** : barre collée en haut du panneau (`Index.vue`) — nom, état, Lier, Enregistrer, Supprimer sur une ligne (retour à la ligne si ça ne tient pas). Enregistrer reste visible au scroll et n’est actif qu’après une modification. Clé formule et badge de groupe masqués sous `lg` / `sm`.
 - **Runes de forgemagie (public)** : `ForgemagieRuneTableService` filtre `characteristic_object` sur `forgemagie_max > 0` + `rune_price_per_unit` non nul, joint `characteristic_object_item_type` (vide = tous les équipements) ; API `GET /api/characteristics/forgemagie-rune-table`. Source de vérité des prix : la base, pas les règles.
 - **Prix équipements / consommables** : `EquipmentPriceCalculator` (bonus × `base_price_per_unit` + 150×niveau + 200×rareté), `ConsumablePriceCalculator` (somme recette), `EntityPriceRecalculator`. Plus de multiplicateur puissance.
-- **Bonus objets (JSON)** : équipements / panoplies / **consommables / ressources** stockent un objet plat `clé → int` dans `bonus` (panoplie = paliers). Filtre catalogue `picked-range` via `ObjectBonusFilterCatalog` (toutes caracs `group=object` hors méta). Clés conso dédiées : `life_points_restore`, `temporary_life_points`, `shield_points` (helpers hors combat / non cumulable / distinct de la CA). Colonne `effect` = texte de règles (durée, usage). Backfill : `php artisan consumables:backfill-bonus-from-effect`.
+- **Bonus équipements** : `items.effect` = objet plat Krosmoz jouable `clé → int` (source runtime, validation API, filtres). `items.bonus` = JSON brut Dofus (traçabilité / reconversion). Agrégation : `KrosmozItemBonusDecoder` (`effect` puis `bonus`). Audit/repair : `items:audit-bonus-compatibility`, `items:repair-bonus-compatibility` (jamais `playable`). Grille IA : `ia:equipment-grid --refresh-drafts` (bonus par slot 2.6.1).
+- **Consommables / ressources** : objet plat dans `bonus` ; `effect` reste le texte de règles (durée, usage). Clés conso : `life_points_restore`, `temporary_life_points`, `shield_points`. Backfill : `php artisan consumables:backfill-bonus-from-effect`.
+- **Wakfu** : `wakfu_reserve_creature` = `mastery_bonus_creature` + min(équipement `wakfu_recharge`, 3) → 1–9. Alias objet→créature : `life_points_max`→`life_points_creature`, `wakfu_recharge`→`wakfu_reserve_creature`.
+- **Invocations** : base 1, total plafonné par `mastery_bonus_creature`.
+- **Édition** : totaux + `*_context` via `CreatureComposableCharacteristicsPersister` / `CharacteristicFormulaField` (monstre/PNJ).
 
 ## Fichiers pivots
 

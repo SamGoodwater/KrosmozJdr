@@ -72,8 +72,22 @@ final class EquipmentGridAnalyzerTest extends TestCase
         $filler = new EquipmentGridHoleFiller;
         $terre = $grid->voie('terre');
         $this->assertNotNull($terre);
-        $this->assertSame(['strength' => 2], $filler->templateBonus($grid, 'accessory', $terre, 8));
-        $this->assertSame(['fixed_damage_earth' => 2], $filler->templateBonus($grid, 'weapon', $terre, 8));
+        $this->assertSame(
+            ['strength' => 2],
+            $filler->templateBonus($grid, 'cape', 'accessory', $terre, 'terre', 8)
+        );
+        $this->assertSame(
+            ['action_points' => 2],
+            $filler->templateBonus($grid, 'amulet', 'accessory', $terre, 'terre', 8)
+        );
+        $this->assertSame(
+            ['vitality' => 2],
+            $filler->templateBonus($grid, 'hat', 'armor', $terre, 'terre', 8)
+        );
+        $this->assertSame(
+            ['fixed_damage_earth' => 2],
+            $filler->templateBonus($grid, 'weapon', 'weapon', $terre, 'terre', 8)
+        );
     }
 
     /**

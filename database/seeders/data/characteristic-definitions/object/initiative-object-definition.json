@@ -1,5 +1,4 @@
 {
-    "_schema_version": "1",
     "characteristic": {
         "key": "initiative_object",
         "name": "Bonus d'initiative",
@@ -203,7 +202,10 @@
             "base_price_per_unit": 100,
             "rune_price_per_unit": 200,
             "value_available": null,
-            "item_type_dofus_ids": null,
+            "item_type_dofus_ids": [
+                11,
+                17
+            ],
             "item_type_ids": null
         }
     },

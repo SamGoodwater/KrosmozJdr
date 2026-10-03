@@ -115,7 +115,7 @@ const conceptRowsByKey = computed(() => {
 const DISPLAY_SPEC = [
     // Général
     { category: "Général", label: "Niveau", creatureKey: "level", objectKey: "level" },
-    { category: "Général", label: "Recharge de Wakfu", creatureKey: "wakfu_reserve", objectKey: "wakfu_recharge" },
+    { category: "Général", label: "Réserve de Wakfu", creatureKey: "wakfu_reserve", objectKey: "wakfu_recharge" },
     { category: "Général", label: "Bonus de maîtrise", creatureKey: "mastery_bonus", objectKey: "mastery_bonus" },
 
     // Principal — essentielles

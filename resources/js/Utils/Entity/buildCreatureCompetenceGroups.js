@@ -23,6 +23,9 @@ export const CREATURE_MASTERY_DB_COLUMNS = Object.freeze([
     "supercherie_mastery",
     "representation_mastery",
     "persuasion_mastery",
+    "artisanat_mastery",
+    "herbaliste_mastery",
+    "connaissance_creatures_mastery",
 ]);
 
 /**
@@ -35,6 +38,9 @@ export const MASTERY_DB_COLUMN_TO_PRIMARY_STAT = Object.freeze({
     escamotage_mastery: "agi",
     athletisme_mastery: "strong",
     intimidation_mastery: "strong",
+    artisanat_mastery: "intel",
+    herbaliste_mastery: "sagesse",
+    connaissance_creatures_mastery: "intel",
     dressage_mastery: "sagesse",
     medecine_mastery: "sagesse",
     perception_mastery: "sagesse",
@@ -73,6 +79,21 @@ export const MASTERY_DB_COLUMN_TO_SKILL_KEY = Object.freeze({
     supercherie_mastery: "deception_creature",
     representation_mastery: "performance_creature",
     persuasion_mastery: "persuasion_creature",
+    artisanat_mastery: "craftsmanship_creature",
+    herbaliste_mastery: "herbalism_creature",
+    connaissance_creatures_mastery: "creature_lore_creature",
+});
+
+/**
+ * Compétences à caractéristique variable (choix fiche créature).
+ * @type {Readonly<Record<string, { defaultStat: string, statChoiceColumn?: string, alternateStats?: string[] }>>}
+ */
+export const MASTERY_ALTERNATE_STAT_CONFIG = Object.freeze({
+    intimidation_mastery: {
+        defaultStat: "strong",
+        statChoiceColumn: "intimidation_ability",
+        alternateStats: ["chance"],
+    },
 });
 
 /**
@@ -98,6 +119,9 @@ export const MASTERY_DB_COLUMN_TO_BONUS_COLUMN = Object.freeze({
     supercherie_mastery: "supercherie_bonus",
     representation_mastery: "representation_bonus",
     persuasion_mastery: "persuasion_bonus",
+    artisanat_mastery: "artisanat_bonus",
+    herbaliste_mastery: "herbaliste_bonus",
+    connaissance_creatures_mastery: "connaissance_creatures_bonus",
 });
 
 /** Ordre des sous-groupes « par stat » (titres FR). */
@@ -108,7 +132,7 @@ const PRIMARY_STAT_TITLE = {
     agi: "Agilité",
     intel: "Intelligence",
     sagesse: "Sagesse",
-    chance: "Charisme",
+    chance: "Chance",
 };
 
 /** Noms FR de secours si la définition store est absente. */
@@ -131,7 +155,26 @@ const MASTERY_DB_COLUMN_FALLBACK_NAME = Object.freeze({
     supercherie_mastery: "Supercherie",
     representation_mastery: "Représentation",
     persuasion_mastery: "Persuasion",
+    artisanat_mastery: "Artisanat",
+    herbaliste_mastery: "Herbaliste",
+    connaissance_creatures_mastery: "Connaissance des créatures",
 });
+
+/**
+ * @param {Object} creature
+ * @param {string} masteryColumn
+ * @returns {'strong'|'agi'|'intel'|'sagesse'|'chance'|undefined}
+ */
+export function resolvePrimaryStatForMastery(creature, masteryColumn) {
+    const alt = MASTERY_ALTERNATE_STAT_CONFIG[masteryColumn];
+    if (alt?.statChoiceColumn) {
+        const raw = creature?.[alt.statChoiceColumn];
+        if (raw === "chance" || raw === "strong") {
+            return raw === "chance" ? "chance" : "strong";
+        }
+    }
+    return MASTERY_DB_COLUMN_TO_PRIMARY_STAT[masteryColumn];
+}
 
 /**
  * @param {string} dbColumn
@@ -235,7 +278,10 @@ export function resolveCreatureSkillTotal(creature, masteryColumn, runtime = nul
         }
     }
 
-    const primary = MASTERY_DB_COLUMN_TO_PRIMARY_STAT[masteryColumn];
+    const primary = resolvePrimaryStatForMastery(creature, masteryColumn);
+    if (!primary) {
+        return { total: 0, tier: safeTier, tag };
+    }
     const modKeyByStat = {
         strong: "modifier_strength_creature",
         agi: "modifier_agility_creature",
@@ -322,7 +368,7 @@ export function buildCreatureCompetenceGroupsByPrimary(creature, options = {}) {
     }
 
     for (const dbColumn of CREATURE_MASTERY_DB_COLUMNS) {
-        const primary = MASTERY_DB_COLUMN_TO_PRIMARY_STAT[dbColumn];
+        const primary = resolvePrimaryStatForMastery(creature, dbColumn);
         if (!primary || !byPrimary[primary]) continue;
         const raw = creature[dbColumn];
         const n = raw === null || raw === undefined || raw === "" ? 0 : Number.parseInt(String(raw), 10);

@@ -39,4 +39,12 @@ class LevelDomainResolverTest extends TestCase
         $this->assertFalse($this->resolver->isVariable('12'));
         $this->assertSame([1], $this->resolver->resolve(''));
     }
+
+    public function test_it_excludes_level_zero_and_clamps_high_values(): void
+    {
+        $this->assertSame([1], $this->resolver->resolve('0'));
+        $this->assertSame([1], $this->resolver->resolve('{[0-2]}'));
+        $this->assertSame([30], $this->resolver->resolve('99'));
+        $this->assertSame([28, 29, 30], $this->resolver->resolve('{[28-32]}'));
+    }
 }

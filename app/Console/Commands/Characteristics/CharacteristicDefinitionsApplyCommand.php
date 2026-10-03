@@ -7,6 +7,7 @@ namespace App\Console\Commands\Characteristics;
 use App\Console\ArtisanExitCode;
 use App\Services\Characteristics\CharacteristicDefinitionQualityService;
 use App\Services\Characteristics\CharacteristicDefinitionReader;
+use App\Support\Characteristics\CharacteristicDefinitionJson;
 use App\Support\Characteristics\CharacteristicDefinitionNaming;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -64,7 +65,12 @@ class CharacteristicDefinitionsApplyCommand extends Command
             }
 
             if ($changed && ! $dryRun) {
-                File::put($path, json_encode($def, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n");
+                $rawBefore = CharacteristicDefinitionJson::decodeFile($path);
+                $schemaVersion = $rawBefore['_schema_version'] ?? null;
+                if (is_string($schemaVersion) && $schemaVersion !== '') {
+                    $def = ['_schema_version' => $schemaVersion] + $def;
+                }
+                File::put($path, CharacteristicDefinitionJson::encodePretty($def));
                 $updated++;
             }
         }

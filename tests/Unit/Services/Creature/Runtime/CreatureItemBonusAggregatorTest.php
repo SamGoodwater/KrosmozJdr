@@ -52,4 +52,20 @@ final class CreatureItemBonusAggregatorTest extends TestCase
 
         $this->assertSame([], $aggregator->aggregateTotals(new Collection([$item])));
     }
+
+    #[Test]
+    public function it_prefers_effect_json_over_bonus(): void
+    {
+        $aggregator = new CreatureItemBonusAggregator;
+        $item = (object) [
+            'id' => 1,
+            'name' => 'E',
+            'effect' => '{"life_points_max": 3}',
+            'bonus' => '{"life_points_max": 99}',
+            'pivot' => (object) ['quantity' => 1],
+        ];
+
+        $totals = $aggregator->aggregateTotals(new Collection([$item]));
+        $this->assertSame(3, $totals['life_points_max']);
+    }
 }

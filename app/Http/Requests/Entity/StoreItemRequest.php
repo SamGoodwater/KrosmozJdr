@@ -6,9 +6,11 @@ use App\Http\Requests\Concerns\RestrictsAccessLevelMutation;
 use App\Enums\EntityState;
 use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Http\Requests\Concerns\HasCharacteristicValidation;
+use App\Http\Requests\Concerns\ValidatesKrosmozItemEffect;
 use App\Models\Entity\Item;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 /**
  * FormRequest pour la création d'un Item.
@@ -22,6 +24,7 @@ class StoreItemRequest extends FormRequest
 
     use GuardsPlayableState;
     use HasCharacteristicValidation;
+    use ValidatesKrosmozItemEffect;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -70,5 +73,16 @@ class StoreItemRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->stripAccessLevelsUnlessAdmin();
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            $this->validateKrosmozItemEffect($validator);
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+            $this->rejectUnauthorizedPlayableState($validator);
+        });
     }
 }

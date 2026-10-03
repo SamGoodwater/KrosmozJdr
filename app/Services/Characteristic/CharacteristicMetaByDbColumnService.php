@@ -111,6 +111,9 @@ final class CharacteristicMetaByDbColumnService
                     'persuasion_creature',
                     'performance_creature',
                     'deception_creature',
+                    'craftsmanship_creature',
+                    'herbalism_creature',
+                    'creature_lore_creature',
                     'athletics_passive_creature',
                     'intimidation_passive_creature',
                     'acrobatics_passive_creature',
@@ -129,8 +132,12 @@ final class CharacteristicMetaByDbColumnService
                     'persuasion_passive_creature',
                     'performance_passive_creature',
                     'deception_passive_creature',
+                    'craftsmanship_passive_creature',
+                    'herbalism_passive_creature',
+                    'creature_lore_passive_creature',
                     'hit_dice_creature',
                     'mastery_bonus_creature',
+                    'wakfu_reserve_creature',
                 ]))
                 ->with(['characteristic.masterCharacteristic'])
                 ->get();

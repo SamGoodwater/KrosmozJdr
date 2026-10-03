@@ -6,6 +6,7 @@ import {
 } from "@/Composables/entity/useCharacteristicDisplay";
 import {
     CREATURE_ABILITY_STAT_DEFS,
+    CREATURE_CHARACTERISTIC_COMBAT_COMPUTED_KEYS,
     CREATURE_CHARACTERISTIC_GROUPS,
     CREATURE_CHARACTERISTIC_SUMMARY_COMBAT_KEYS,
     CREATURE_RESISTANCE_PERCENT_FULL_LABELS,
@@ -78,13 +79,42 @@ export function buildCreatureCharacteristicGroups(creature, options = {}) {
 
     const addFormulas = (dbColumns, opts) => dbColumns.map((col) => makeFormula(col, opts)).filter(Boolean);
 
+    const makeComputedFormula = (computedKey, { forceShow = false } = {}) => {
+        const def = getCompDef(computedKey);
+        const value = resolveComputedCharacteristicValue(creature, computedKey, runtime);
+        if (value === null || value === undefined || value === "") {
+            if (!forceShow) return null;
+        }
+        const displayValue =
+            value === null || value === undefined || value === ""
+                ? "—"
+                : getDisplayValue(computedKey, value, def);
+        return {
+            type: "formula",
+            def: {
+                ...def,
+                key: def.key || computedKey,
+                hide_when_empty: forceShow ? false : def.hide_when_empty,
+            },
+            value: String(displayValue),
+            formulaResolved: "",
+            formulaRaw: "",
+        };
+    };
+
+    const addComputedFormulas = (keys, opts) =>
+        keys.map((key) => makeComputedFormula(key, opts)).filter(Boolean);
+
     if (mode === "summary") {
         const groups = [];
         const mods = buildModifierItems(creature, getCompDef, runtime);
         if (mods.length > 0) {
             groups.push({ title: "", kind: "modifiers", characteristics: mods });
         }
-        const combat = addFormulas([...CREATURE_CHARACTERISTIC_SUMMARY_COMBAT_KEYS], { forceShow: true });
+        const combat = [
+            ...addFormulas([...CREATURE_CHARACTERISTIC_SUMMARY_COMBAT_KEYS], { forceShow: true }),
+            ...addComputedFormulas([...CREATURE_CHARACTERISTIC_COMBAT_COMPUTED_KEYS], { forceShow: true }),
+        ];
         if (combat.length > 0) {
             groups.push({ title: "", kind: "combatSummary", characteristics: combat });
         }
@@ -96,7 +126,12 @@ export function buildCreatureCharacteristicGroups(creature, options = {}) {
     for (const groupDef of CREATURE_CHARACTERISTIC_GROUPS) {
         let items = [];
         if (groupDef.kind === "db") {
-            items = addFormulas([...(groupDef.dbColumns || [])], { forceShow: groupDef.id === "combat" });
+            items = [
+                ...addFormulas([...(groupDef.dbColumns || [])], { forceShow: groupDef.id === "combat" }),
+                ...addComputedFormulas([...(groupDef.computedKeys || [])], {
+                    forceShow: groupDef.id === "combat",
+                }),
+            ];
         } else if (groupDef.kind === "abilityStack") {
             items = buildAbilityStackItems(creature, getDef, getCompDef, byDb, runtime);
             if (items.length > 0) {
@@ -187,6 +222,27 @@ function runtimeDisplayValue(runtime, key) {
  * @param {Object|null} runtime
  * @returns {string|number|null}
  */
+/**
+ * Valeur d’une caractéristique calculée (clé métier, ex. wakfu_reserve_creature).
+ *
+ * @param {Object} creature
+ * @param {string} computedKey
+ * @param {Object|null} runtime
+ * @returns {string|number|null}
+ */
+export function resolveComputedCharacteristicValue(creature, computedKey, runtime) {
+    const fromRuntime = runtimeDisplayValue(runtime, computedKey);
+    if (fromRuntime != null && fromRuntime !== "") {
+        return fromRuntime;
+    }
+    if (computedKey === "wakfu_reserve_creature") {
+        const level = parseInt(creature?.level, 10) || 1;
+        const masteryBonus = Math.min(1 + Math.floor(level / 4), 6);
+        return masteryBonus;
+    }
+    return null;
+}
+
 function fallbackDbValue(creature, dbColumn, runtime) {
     if (dbColumn === "ca") {
         const modVit =

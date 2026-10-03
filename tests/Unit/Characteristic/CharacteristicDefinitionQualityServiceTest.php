@@ -53,6 +53,21 @@ class CharacteristicDefinitionQualityServiceTest extends TestCase
         );
     }
 
+    public function test_exempt_stems_skip_norms_grid_requirement(): void
+    {
+        $root = dirname(__DIR__, 3);
+        $path = $root.'/database/seeders/data/characteristic-definitions/object/life_points_restore-object-definition.json';
+        if (! is_file($path)) {
+            $this->markTestSkipped('Définition life_points_restore absente.');
+        }
+
+        $definition = json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
+        $service = new CharacteristicDefinitionQualityService;
+        $issues = $service->qualityIssues($path, $definition);
+
+        $this->assertNotContains('norms_grid manquant', $issues);
+    }
+
     public function test_it_does_not_treat_shield_points_as_shield_equipment(): void
     {
         $service = new CharacteristicDefinitionQualityService;

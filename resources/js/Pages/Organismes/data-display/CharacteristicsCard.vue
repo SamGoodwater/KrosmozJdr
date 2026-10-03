@@ -13,7 +13,7 @@
  * @props {'icon'|'labeled'|'spacious'} [density]
  * @props {boolean} [dense] - Alias BC : true → density icon
  */
-import { computed, ref, watch } from "vue";
+import { computed, ref, useId, watch } from "vue";
 import CharacteristicGroup from "@/Pages/Molecules/data-display/CharacteristicGroup.vue";
 import { useCharacteristicLevel } from "@/Utils/Entity/useCharacteristicLevel";
 import { CHARACTERISTIC_CARD_DENSITY } from "@/Utils/Entity/creatureCharacteristicGroups.manifest";
@@ -91,13 +91,16 @@ watch(levelEffective, (v) => {
 });
 
 const groupsList = computed(() => (Array.isArray(props.groups) ? props.groups : []));
+
+const levelSelectId = useId();
 </script>
 
 <template>
     <div :class="cardClass">
         <div v-if="hasLevelSelector" class="mb-2 flex items-center gap-2">
-            <label class="text-xs font-medium opacity-90">Niveau</label>
+            <label :for="levelSelectId" class="text-xs font-medium opacity-90">Niveau</label>
             <select
+                :id="levelSelectId"
                 v-model="levelEffective"
                 class="select select-bordered select-sm max-w-32"
             >

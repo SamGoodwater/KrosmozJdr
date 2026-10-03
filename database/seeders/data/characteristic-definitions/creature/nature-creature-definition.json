@@ -5,7 +5,7 @@
         "name": "Nature",
         "short_name": "Nat.",
         "helper": "Jet : Modificateur lié + maîtrise + bonus d’équipement (plafonds habituels).",
-        "descriptions": "Nature : lire environnement et créatures sauvages. Liée à l’Intelligence.",
+        "descriptions": "Nature : lire environnement et écosystèmes (flore, faune, traces). Liée à l’Intelligence. Distinct de la compétence Herbaliste.",
         "icon": "skillIntelligence.webp",
         "icon_false": null,
         "color": "orange",

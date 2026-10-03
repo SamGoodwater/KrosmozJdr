@@ -13,11 +13,15 @@ use App\Services\Characteristic\Formula\FormulaExpressionParser;
  * une fourchette (`{[5-8]}`) ou un dé (`{8 + [1d4]}`). Toutes les autres caractéristiques se
  * calculent ensuite niveau par niveau.
  *
+ * Niveaux retenus : entiers strictement positifs, plafonnés à {@see MAX_PLAYABLE_LEVEL}.
+ * Le niveau `0` est ignoré ; si aucun niveau valide n’est produit, repli sur {@see FALLBACK_LEVEL}.
+ *
  * @example
  *   $resolver->resolve('7');            // [7]
  *   $resolver->resolve('{[5-8]}');      // [5, 6, 7, 8]
  *   $resolver->resolve('{8 + [1d4]}');  // [9, 10, 11, 12]
  *   $resolver->resolve('1d4');          // [1, 2, 3, 4] (forme héritée, sans accolades)
+ *   $resolver->resolve('0');            // [1] (niveau 0 exclu)
  *
  * @see docs/features/characteristics/COMPUTED_VALUES.md
  */
@@ -25,6 +29,12 @@ final class LevelDomainResolver
 {
     /** Nombre maximal de niveaux retournés (évite les tableaux ingérables côté UI). */
     public const MAX_LEVELS = 20;
+
+    /** Niveau JDR minimum retenu après filtrage (0 exclu). */
+    public const MIN_PLAYABLE_LEVEL = 1;
+
+    /** Niveau JDR maximum retenu (valeurs au-delà sont ignorées). */
+    public const MAX_PLAYABLE_LEVEL = 30;
 
     /** Niveau utilisé quand la saisie est vide ou illisible. */
     private const FALLBACK_LEVEL = 1;
@@ -48,7 +58,10 @@ final class LevelDomainResolver
         $levels = [];
         foreach ($outcomes as $outcome) {
             $value = (int) round($outcome);
-            if ($value >= 0 && ! in_array($value, $levels, true)) {
+            if ($value < self::MIN_PLAYABLE_LEVEL || $value > self::MAX_PLAYABLE_LEVEL) {
+                continue;
+            }
+            if (! in_array($value, $levels, true)) {
                 $levels[] = $value;
             }
         }

@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Système de caractéristiques finalisé
+
+Les définitions d’équipement sont reproductibles (emplacements versionnés). La réserve de Wakfu, les PV max d’objet et les invocations suivent les règles. Les bonus d’équipement se lisent dans `effect` (le brut Dofus reste dans `bonus`). On peut éditer totaux et contexte sur les fiches monstre/PNJ. Trois compétences techniques s’ajoutent (Artisanat, Herbaliste, Connaissance des créatures) ; l’Intimidation choisit Force ou Chance ; les expertises sont plafonnées à 3. Les tooltips de caractéristiques sont utilisables au clavier.
+
 ## Octobre 2026 — L’Essentiel pour qui vient de D&D
 
 Une page **Si tu viens de D&D** dans L’Essentiel résume les écarts avec la 5e : caractéristiques, PA/PM, tacle, Wakfu, classe et spécialisation, classe d’armure. Le sommaire de Bien démarrer et l’accueil (rubrique « Déjà à l’aise en JdR ») y renvoient.

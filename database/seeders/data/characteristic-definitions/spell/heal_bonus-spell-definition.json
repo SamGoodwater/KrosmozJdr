@@ -3,8 +3,8 @@
     "characteristic": {
         "key": "heal_bonus_spell",
         "name": "Bonus de soin",
-        "short_name": "Soin",
-        "helper": "Bonus de soin appliqué par les sous-effets de sort.",
+        "short_name": "Bonus soin",
+        "helper": "Bonus aux soins conféré par un effet de sort.",
         "descriptions": "Bonus temporaire aux soins, converti linéairement de 5–40 Dofus vers 0–7 Krosmoz.",
         "icon": "heal.webp",
         "icon_false": null,

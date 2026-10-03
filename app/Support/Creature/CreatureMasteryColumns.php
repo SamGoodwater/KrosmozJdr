@@ -33,6 +33,9 @@ final class CreatureMasteryColumns
         'supercherie_mastery',
         'representation_mastery',
         'persuasion_mastery',
+        'artisanat_mastery',
+        'herbaliste_mastery',
+        'connaissance_creatures_mastery',
     ];
 
     /**

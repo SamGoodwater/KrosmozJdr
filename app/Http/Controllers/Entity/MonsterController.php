@@ -19,6 +19,7 @@ use App\Models\Entity\Monster;
 use App\Models\Entity\Scenario;
 use App\Models\Entity\Spell;
 use App\Models\User;
+use App\Services\Creature\CreatureComposableCharacteristicsPersister;
 use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
 use Illuminate\Http\JsonResponse;
@@ -242,11 +243,34 @@ class MonsterController extends Controller
             ->with('success', 'Langues du monstre mises à jour.');
     }
 
-    public function update(UpdateMonsterRequest $request, Monster $monster)
-    {
+    public function update(
+        UpdateMonsterRequest $request,
+        Monster $monster,
+        CreatureComposableCharacteristicsPersister $composablePersister,
+    ) {
         $this->authorize('update', $monster);
 
-        $monster->update($request->validated());
+        $validated = $request->validated();
+        $monsterPayload = array_intersect_key($validated, array_flip([
+            'size', 'is_boss', 'boss_pa', 'monster_race_id', 'dofus_version', 'auto_update',
+            'state', 'read_level', 'write_level',
+        ]));
+        if ($monsterPayload !== []) {
+            $monster->update($monsterPayload);
+        }
+
+        $creature = $monster->creature;
+        if ($creature) {
+            $creaturePayload = [];
+            if (array_key_exists('level', $validated)) {
+                $creaturePayload['level'] = $validated['level'];
+            }
+            $creaturePayload = array_merge($creaturePayload, $request->validatedSkillMasteryPayload($validated));
+            $composablePersister->apply($creature, $composablePersister->extractPayload($validated));
+            if ($creaturePayload !== []) {
+                $creature->update($creaturePayload);
+            }
+        }
 
         $monster->load(['creature', 'monsterRace']);
 

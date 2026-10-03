@@ -7,6 +7,7 @@ namespace App\Services\Characteristic\Pricing;
 use App\Models\CharacteristicObject;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Item;
+use App\Support\Entity\KrosmozItemBonusDecoder;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -59,8 +60,11 @@ final class EntityPriceRecalculator
      */
     public function computeItem(Item $item): int
     {
+        $decoder = app(KrosmozItemBonusDecoder::class);
+        $bonus = $decoder->decode($item->effect, $item->bonus);
+
         return $this->equipmentPriceCalculator->calculate(
-            $this->decodeBonus($item->bonus),
+            $bonus,
             $this->objectPriceUnits(),
             $this->parseLevel($item->level),
             max(0, (int) ($item->rarity ?? 0)),

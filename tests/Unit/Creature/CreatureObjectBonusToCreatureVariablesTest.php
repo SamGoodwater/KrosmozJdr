@@ -73,4 +73,25 @@ final class CreatureObjectBonusToCreatureVariablesTest extends TestCase
 
         $this->assertSame(3, $mapped['fixed_damage_multiple_creature']);
     }
+
+    public function test_map_life_points_max_and_wakfu_recharge_aliases(): void
+    {
+        $getter = Mockery::mock(CharacteristicDefinitionLookup::class);
+        $getter->shouldReceive('getDefinition')->andReturnUsing(static function (string $key, string $entity): ?array {
+            return match ($key) {
+                'life_points_creature', 'wakfu_reserve_creature' => ['key' => $key],
+                default => null,
+            };
+        });
+
+        $merger = new CreatureObjectBonusToCreatureVariables($getter);
+        $mapped = $merger->mapToCharacteristicKeys('monster', [
+            'life_points_max' => 4,
+            'wakfu_recharge' => 2,
+            'wakfu_reserve' => 1,
+        ]);
+
+        $this->assertSame(4, $mapped['life_points_creature']);
+        $this->assertSame(3, $mapped['wakfu_reserve_creature']);
+    }
 }

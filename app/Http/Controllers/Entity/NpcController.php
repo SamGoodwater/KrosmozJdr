@@ -23,6 +23,7 @@ use App\Models\Entity\Scenario;
 use App\Models\Entity\Specialization;
 use App\Models\Entity\Spell;
 use App\Models\User;
+use App\Services\Creature\CreatureComposableCharacteristicsPersister;
 use App\Services\Entity\EntityDeletionService;
 use App\Services\Npc\NpcEquipmentSlotValidator;
 use App\Services\PdfService;
@@ -260,8 +261,11 @@ class NpcController extends Controller
         ]);
     }
 
-    public function update(UpdateNpcRequest $request, Npc $npc): RedirectResponse
-    {
+    public function update(
+        UpdateNpcRequest $request,
+        Npc $npc,
+        CreatureComposableCharacteristicsPersister $composablePersister,
+    ): RedirectResponse {
         $this->authorize('update', $npc);
 
         $data = $request->validated();
@@ -289,6 +293,8 @@ class NpcController extends Controller
             if (array_key_exists('state', $data) && $data['state'] !== null) {
                 $creaturePayload['state'] = $data['state'];
             }
+            $creaturePayload = array_merge($creaturePayload, $request->validatedSkillMasteryPayload($data));
+            $composablePersister->apply($creature, $composablePersister->extractPayload($data));
             if ($creaturePayload !== []) {
                 $creature->update($creaturePayload);
             }

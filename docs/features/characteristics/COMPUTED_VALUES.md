@@ -12,7 +12,7 @@ Les champs pivot `min` / `max` **numériques** sont des **plafonds absolus** (m�
 | Couche | Source | Rôle |
 | --- | --- | --- |
 | **Base** | `characteristic_creature.formula` | Formule système (ex. CA = 10 + mod. Vitalité) |
-| **Objets** | Somme de `items.bonus` des équipements portés | Agrégée par `CreatureItemBonusAggregator` |
+| **Objets** | Somme de `items.effect` (fallback `items.bonus` plat) des équipements portés | Agrégée par `CreatureItemBonusAggregator` via `KrosmozItemBonusDecoder` |
 | **Contexte** | Colonne `<db_column>_context` sur `creatures` | Nombre ou formule saisie pour ce monstre / PNJ |
 
 ### Priorité du total explicite
@@ -105,6 +105,8 @@ Compétences (UI) : total = mod. caractéristique + `mastery_bonus × palier(0|1
 ## Édition
 
 - Champ dédié : `CharacteristicFormulaField.vue` (validation live + aperçu + aide « ? »).
+- Éditeur monstre/PNJ : `CreatureComposableCharacteristicsEditor.vue` (branché sur les pages Edit).
+- Persistance : `CreatureComposableCharacteristicsPersister` + validation `ValidatesCreatureComposableCharacteristics`.
 - Pour chaque caractéristique composable : deux saisies distinctes —
   **total explicite** (colonne existante) et **bonus contextuel** (`*_context`).
 - Le niveau accepte les domaines ; le contexte ne les accepte pas.

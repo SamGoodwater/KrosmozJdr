@@ -16,7 +16,10 @@ import {
     formatCreatureSkillDisplay,
     resolveCreatureSkillTotal,
 } from "@/Utils/Entity/buildCreatureCompetenceGroups";
-import { CREATURE_CHARACTERISTIC_SUMMARY_KEYS } from "@/Utils/Entity/creatureCharacteristicGroups.manifest";
+import {
+    CREATURE_CHARACTERISTIC_SUMMARY_KEYS,
+    buildCreatureComposableEditSections,
+} from "@/Utils/Entity/creatureCharacteristicGroups.manifest";
 
 describe("ENTITY_ACTION_CONTEXT_PRESETS", () => {
     it("ordonne le minimal comme convenu", () => {
@@ -180,6 +183,25 @@ describe("buildCreatureCharacteristicGroups", () => {
         expect(ca?.value).toBeTruthy();
     });
 
+    it("mode full expose Combat avec réserve de Wakfu calculée", () => {
+        const groups = buildCreatureCharacteristicGroups(creature, {
+            mode: "full",
+            byDbColumn,
+            byComputedKey: {
+                wakfu_reserve_creature: {
+                    key: "wakfu_reserve_creature",
+                    name: "Réserve de Wakfu",
+                    short_name: "Réserve Wakfu",
+                },
+            },
+        });
+        const combat = groups.find((g) => g.title === "Combat");
+        expect(combat).toBeTruthy();
+        const wakfu = combat.characteristics.find((c) => c.def?.key === "wakfu_reserve_creature");
+        expect(wakfu).toBeTruthy();
+        expect(wakfu.value).toBe("3");
+    });
+
     it("mode full expose Combat puis Caractéristiques (abilityStack)", () => {
         const groups = buildCreatureCharacteristicGroups(creature, { mode: "full", byDbColumn });
         expect(groups[0].title).toBe("Combat");
@@ -298,5 +320,29 @@ describe("buildCreatureCompetenceGroupsByPrimary", () => {
         expect(force?.characteristics[0]?.skillTag).toBe("E");
         expect(force?.characteristics[0]?.value).toContain("Athlétisme");
         expect(force?.characteristics[0]?.value).toContain("+9 (E)");
+    });
+
+    it("Intimidation : regroupe sous Chance si intimidation_ability = chance", () => {
+        const creature = {
+            level: 8,
+            strong: 10,
+            chance: 16,
+            intimidation_mastery: 1,
+            intimidation_bonus: 0,
+            intimidation_ability: "chance",
+        };
+        const groups = buildCreatureCompetenceGroupsByPrimary(creature, { includeZero: false });
+        expect(groups.find((g) => g.title === "Force")).toBeUndefined();
+        const luck = groups.find((g) => g.title === "Chance");
+        expect(luck?.characteristics[0]?.skillName).toBe("Intimidation");
+    });
+});
+
+describe("buildCreatureComposableEditSections", () => {
+    it("inclut les colonnes combat éditables (ex. ca, life)", () => {
+        const sections = buildCreatureComposableEditSections();
+        const combat = sections.find((s) => s.id === "combat");
+        expect(combat?.dbColumns).toContain("ca");
+        expect(combat?.dbColumns).toContain("life");
     });
 });

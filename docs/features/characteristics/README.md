@@ -55,7 +55,7 @@ ou égal à la valeur source, ce qui permet de convertir les faiblesses Dofus en
 
 ## Prix des équipements et consommables
 
-`EquipmentPriceCalculator` calcule le prix automatique d’un objet : somme des (valeur JSON `bonus` × `characteristic_object.base_price_per_unit`) + 150 × niveau + 200 × rareté (0–5). Un malus baisse le total ; plancher 0. Les clés courtes du JSON (`strength`) sont résolues comme `strength_object`.
+`EquipmentPriceCalculator` calcule le prix automatique d’un objet : somme des (valeur JSON `effect` / bonus Krosmoz × `characteristic_object.base_price_per_unit`) + 150 × niveau + 200 × rareté (0–5). Un malus baisse le total ; plancher 0. Les clés courtes du JSON (`strength`) sont résolues comme `strength_object`. `items.bonus` conserve le brut DofusDB.
 
 `ConsumablePriceCalculator` somme les prix d’affichage des ressources de la recette (`consumable_resource.quantity`). `EntityPriceRecalculator` persiste `price_calculated`, remet `price_custom` à null, et synchronise `price` via le trait `HasKamasPrice`.
 
@@ -65,7 +65,7 @@ Les ressources gardent le prix Dofus : pas de formule ni de recalcul.
 
 Les bonus et malus Dofus sont convertis de façon symétrique : hors métadonnées, la borne minimale d'une
 caractéristique objet est l'opposé de sa borne maximale. Les six caractéristiques principales vont de
-`-6` à `+6` sur l'équipement, avec une marge de forgemagie de `2`. Les PA vont de `-5` à `+5`
+`-4` à `+4` sur l'équipement, avec une marge de forgemagie de `+2` (total ±6). Les PA vont de `-5` à `+5`
 (forgemagie `1`) et les PM de `-2` à `+2` (forgemagie `1`).
 Le critique d'objet suit la même convention signée (`-3..3`). Les bonus de PV et d'initiative restent
 sans plafond d'équipement ; leur forgemagie est limitée respectivement à `20` et `3`.

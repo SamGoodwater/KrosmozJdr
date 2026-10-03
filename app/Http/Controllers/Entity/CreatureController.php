@@ -15,6 +15,7 @@ use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
 use App\Models\User;
+use App\Services\Creature\CreatureComposableCharacteristicsPersister;
 use App\Services\Creature\Runtime\CreatureRuntimeStatsService;
 use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
@@ -154,9 +155,24 @@ class CreatureController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCreatureRequest $request, Creature $creature)
-    {
-        //
+    public function update(
+        UpdateCreatureRequest $request,
+        Creature $creature,
+        CreatureComposableCharacteristicsPersister $composablePersister,
+    ) {
+        $this->authorize('update', $creature);
+
+        $validated = $request->validated();
+        $composableKeys = array_flip(CreatureComposableCharacteristicsPersister::storableKeys());
+        $identityPayload = array_diff_key($validated, $composableKeys);
+        $masteryPayload = $request->validatedSkillMasteryPayload($validated);
+        $identityPayload = array_merge($identityPayload, $masteryPayload);
+        if ($identityPayload !== []) {
+            $creature->update($identityPayload);
+        }
+        $composablePersister->apply($creature, $composablePersister->extractPayload($validated));
+
+        return back()->with('success', 'Créature mise à jour avec succès.');
     }
 
     /**

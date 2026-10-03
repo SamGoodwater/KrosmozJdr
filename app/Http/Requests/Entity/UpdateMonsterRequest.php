@@ -5,14 +5,19 @@ namespace App\Http\Requests\Entity;
 use App\Enums\EntityState;
 use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Http\Requests\Concerns\RestrictsAccessLevelMutation;
+use App\Http\Requests\Concerns\ValidatesCreatureComposableCharacteristics;
+use App\Http\Requests\Concerns\ValidatesCreatureSkillMasteries;
 use App\Models\Entity\Monster;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class UpdateMonsterRequest extends FormRequest
 {
     use GuardsPlayableState;
     use RestrictsAccessLevelMutation;
+    use ValidatesCreatureComposableCharacteristics;
+    use ValidatesCreatureSkillMasteries;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -31,7 +36,7 @@ class UpdateMonsterRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        return array_merge([
             'size' => ['nullable', 'integer', 'min:0'],
             'is_boss' => ['nullable', 'boolean'],
             'boss_pa' => ['nullable', 'integer', 'min:0'],
@@ -41,7 +46,23 @@ class UpdateMonsterRequest extends FormRequest
             'state' => ['nullable', 'string', EntityState::rule()],
             'read_level' => ['sometimes', 'integer', 'min:0', 'max:4'],
             'write_level' => ['sometimes', 'integer', 'min:0', 'max:4'],
-        ];
+            'level' => ['sometimes', 'nullable', 'string'],
+        ], $this->creatureComposableFieldRules(), $this->creatureSkillMasteryFieldRules());
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+            $this->rejectUnauthorizedPlayableState($validator);
+        });
+        $validator->after(function (Validator $validator): void {
+            $this->validateCreatureLevelField($validator);
+            $this->validateCreatureComposableFields($validator);
+            $this->validateCreatureSkillMasteries($validator);
+        });
     }
 
     protected function playableModelClass(): string

@@ -3,7 +3,7 @@
     "characteristic": {
         "key": "heal_bonus_creature",
         "name": "Bonus de soin",
-        "short_name": "Soin",
+        "short_name": "Bonus soin",
         "helper": "Chaque point rend tes soins plus généreux.",
         "descriptions": "S’ajoute aux dés et modificateurs quand tu prodigues des soins ; bagues et enchantements peuvent encore le gonfler.",
         "icon": "heal.webp",

@@ -15,6 +15,7 @@ import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import EntityLanguagesEditor from '@/Pages/Organismes/entity/EntityLanguagesEditor.vue';
 import CreatureTraitsEditor from '@/Pages/Organismes/entity/CreatureTraitsEditor.vue';
+import CreatureComposableCharacteristicsEditor from '@/Pages/Organismes/entity/CreatureComposableCharacteristicsEditor.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -116,6 +117,23 @@ function goToShow() {
         <p class="text-xs text-base-content/60 px-1">
             Nom et statistiques (totaux / bonus) sont portés par la créature associée.
         </p>
+
+        <Collapse
+            v-if="monster.creature && monster.id"
+            arrow
+            bg-off="bg-base-100"
+            class="border border-base-300"
+        >
+            <template #title>Caractéristiques (totaux &amp; contexte)</template>
+            <template #content>
+                <CreatureComposableCharacteristicsEditor
+                    :creature="monster.creature"
+                    :entity-id="monster.id"
+                    update-route-name="entities.monsters.update"
+                    update-route-param-name="monster"
+                />
+            </template>
+        </Collapse>
 
         <EntityEditForm
             :entity="monster"

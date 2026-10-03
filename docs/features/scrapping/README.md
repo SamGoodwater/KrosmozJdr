@@ -20,7 +20,7 @@ Les autres conversions propres aux monstres suivent ces principes :
 ### Conversion des objets et panoplies
 
 Les effets numériques des objets sont convertis avec des formules signées : un malus Dofus reste un bonus
-Krosmoz négatif, dans une plage symétrique. Les caractéristiques principales sont limitées à `±6`, les PA
+Krosmoz négatif, dans une plage symétrique. Les caractéristiques principales sont limitées à `±4` (+2 forgemagie), les PA
 à `±5` et les PM à `±2`, hors marge de forgemagie.
 
 Les résistances en pourcentage sont ignorées pour les objets individuels et restent disponibles dans le

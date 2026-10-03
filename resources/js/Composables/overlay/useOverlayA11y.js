@@ -28,13 +28,25 @@ export function useOverlayA11y(options) {
     const interactive = options.interactive ?? false;
     const focusTrap = options.focusTrap ?? false;
 
-    const triggerAttrs = computed(() => ({
-        id: triggerId.value,
-        "aria-expanded": String(options.openRef.value),
-        "aria-controls": panelId.value,
-        "aria-describedby": panelId.value,
-        "aria-haspopup": interactive ? "dialog" : "true",
-    }));
+    const triggerAttrs = computed(() => {
+        const open = options.openRef.value;
+        const attrs = {
+            id: triggerId.value,
+            tabindex: "0",
+            "aria-expanded": String(open),
+            "aria-controls": panelId.value,
+            "aria-haspopup": interactive ? "dialog" : "true",
+        };
+        if (interactive) {
+            attrs.role = "button";
+        } else {
+            attrs.role = "button";
+            if (open) {
+                attrs["aria-describedby"] = panelId.value;
+            }
+        }
+        return attrs;
+    });
 
     const panelAttrs = computed(() => ({
         id: panelId.value,
@@ -83,10 +95,37 @@ export function useOverlayA11y(options) {
         }
     );
 
+    /**
+     * Entrée / Espace : ouvrir ou basculer ; Échap : fermer (si panneau ouvert).
+     *
+     * @param {KeyboardEvent} event
+     * @param {{ open: () => void, close: () => void, toggle: () => void, triggerMode: string }} handlers
+     */
+    function onTriggerKeydown(event, handlers) {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            if (handlers.triggerMode === "hover") {
+                if (options.openRef.value) {
+                    handlers.close();
+                } else {
+                    handlers.open();
+                }
+            } else {
+                handlers.toggle();
+            }
+            return;
+        }
+        if (event.key === "Escape" && options.openRef.value) {
+            event.preventDefault();
+            handlers.close();
+        }
+    }
+
     return {
         triggerAttrs,
         panelAttrs,
         onOpen,
         onPanelKeydown,
+        onTriggerKeydown,
     };
 }

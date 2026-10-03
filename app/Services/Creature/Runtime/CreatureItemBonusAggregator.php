@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Creature\Runtime;
 
 use App\Models\Entity\Item;
+use App\Support\Entity\KrosmozItemBonusDecoder;
 use Illuminate\Support\Collection;
 
 /**
@@ -17,6 +18,10 @@ use Illuminate\Support\Collection;
  */
 final class CreatureItemBonusAggregator
 {
+    public function __construct(
+        private readonly KrosmozItemBonusDecoder $decoder = new KrosmozItemBonusDecoder,
+    ) {}
+
     /**
      * Somme par clé courte (ex. strength, athletics) — même convention que ItemEffectsToBonusConverter.
      *
@@ -31,10 +36,10 @@ final class CreatureItemBonusAggregator
             if ($qty < 1) {
                 $qty = 1;
             }
-            $decoded = $this->decodeBonus($item->bonus);
+            $decoded = $this->decodeItemBonuses($item);
             foreach ($decoded as $key => $val) {
                 $k = (string) $key;
-                $totals[$k] = ($totals[$k] ?? 0) + $val * $qty;
+                $totals[$k] = ($totals[$k] ?? 0) + (int) round($val * $qty);
             }
         }
 
@@ -55,13 +60,13 @@ final class CreatureItemBonusAggregator
             if ($qty < 1) {
                 $qty = 1;
             }
-            $decoded = $this->decodeBonus($item->bonus);
+            $decoded = $this->decodeItemBonuses($item);
             if ($decoded === []) {
                 continue;
             }
             $scaled = [];
             foreach ($decoded as $k => $v) {
-                $scaled[(string) $k] = $v * $qty;
+                $scaled[(string) $k] = (int) round($v * $qty);
             }
             $lines[] = [
                 'item_id' => (int) $item->id,
@@ -75,32 +80,11 @@ final class CreatureItemBonusAggregator
     }
 
     /**
-     * @return array<string, int>
+     * @param  Item|object{effect?: mixed, bonus?: mixed}  $item
+     * @return array<string, float>
      */
-    private function decodeBonus(?string $bonus): array
+    private function decodeItemBonuses(object $item): array
     {
-        if ($bonus === null || trim($bonus) === '') {
-            return [];
-        }
-        try {
-            $decoded = json_decode($bonus, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException) {
-            return [];
-        }
-        if (! is_array($decoded)) {
-            return [];
-        }
-        $out = [];
-        foreach ($decoded as $key => $value) {
-            if (! is_string($key)) {
-                continue;
-            }
-            if (! is_numeric($value)) {
-                continue;
-            }
-            $out[$key] = (int) $value;
-        }
-
-        return $out;
+        return $this->decoder->decode($item->effect ?? null, $item->bonus ?? null);
     }
 }

@@ -153,7 +153,7 @@
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Nombre d'invocations simultanées.",
+            "norms_description": "Nombre d'invocations simultanées (base 1 + équipement). Total plafonné par mastery_bonus_creature au runtime.",
             "norms_help_section_id": null,
             "labels": null,
             "validation": null

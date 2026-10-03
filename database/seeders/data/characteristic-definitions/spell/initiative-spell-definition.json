@@ -4,7 +4,7 @@
         "key": "initiative_spell",
         "name": "Initiative",
         "short_name": "Ini.",
-        "helper": "Initiative appliquée par les sous-effets de sort.",
+        "helper": "Initiative conférée par un effet de sort.",
         "descriptions": "Bonus temporaire d’initiative conservé directement depuis DofusDB, sans plafond artificiel.",
         "icon": "initiative.webp",
         "icon_false": null,

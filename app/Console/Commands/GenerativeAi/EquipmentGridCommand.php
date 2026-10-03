@@ -27,6 +27,7 @@ final class EquipmentGridCommand extends Command
 
     protected $signature = 'ia:equipment-grid
         {--write : Crée des objets draft pour les cases vides (jamais playable)}
+        {--refresh-drafts : Réécrit effect des objets grille draft/auto/raw selon le slot (2.6.1)}
         {--slot= : Restreint à un slot (amulet, ring, belt, boots, hat, cape, weapon)}
         {--voie= : Restreint à une voie (terre, feu, eau, air, neutre)}
         {--level= : Restreint à un niveau 1–20}
@@ -76,8 +77,19 @@ final class EquipmentGridCommand extends Command
             $this->info('Rapport JSON : '.$jsonPath);
         }
 
+        if ($this->option('refresh-drafts')) {
+            if (! $this->guardNotProduction('ia:equipment-grid --refresh-drafts est interdit en production.')) {
+                return ArtisanExitCode::FAILURE;
+            }
+            $refreshed = $filler->refreshDraftGridBonuses($definition);
+            $this->info(sprintf('%d objet(s) grille draft/auto/raw réaligné(s) sur les bonus 2.6.1.', $refreshed));
+            if (! $this->option('write')) {
+                return ArtisanExitCode::SUCCESS;
+            }
+        }
+
         if (! $this->option('write')) {
-            $this->comment('Lecture seule. Passe --write pour créer les trous en draft (interdit en production).');
+            $this->comment('Lecture seule. Passe --write pour créer les trous en draft, --refresh-drafts pour réaligner (interdit en production).');
 
             return ArtisanExitCode::SUCCESS;
         }

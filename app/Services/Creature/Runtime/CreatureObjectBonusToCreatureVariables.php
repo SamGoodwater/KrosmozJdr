@@ -45,6 +45,9 @@ final class CreatureObjectBonusToCreatureVariables
         'persuasion' => 'persuasion_creature',
         'performance' => 'performance_creature',
         'deception' => 'deception_creature',
+        'craftsmanship' => 'craftsmanship_creature',
+        'herbalism' => 'herbalism_creature',
+        'creature_lore' => 'creature_lore_creature',
     ];
 
     /**
@@ -71,6 +74,9 @@ final class CreatureObjectBonusToCreatureVariables
         'persuasion' => 'persuasion_bonus',
         'performance' => 'representation_bonus',
         'deception' => 'supercherie_bonus',
+        'craftsmanship' => 'artisanat_bonus',
+        'herbalism' => 'herbaliste_bonus',
+        'creature_lore' => 'connaissance_creatures_bonus',
     ];
 
     public function __construct(
@@ -142,10 +148,16 @@ final class CreatureObjectBonusToCreatureVariables
             return self::SKILL_SHORT_KEY_TO_BONUS_VARIABLE[$objectShortKey];
         }
 
-        $creatureKey = $objectShortKey.'_creature';
-        $def = $this->getter->getDefinition($creatureKey, $entity);
-        if ($def !== null) {
-            return $creatureKey;
+        $candidates = match ($objectShortKey) {
+            'life_points_max' => ['life_points_creature'],
+            'wakfu_recharge', 'wakfu_reserve' => ['wakfu_reserve_creature'],
+            default => [$objectShortKey.'_creature'],
+        };
+
+        foreach ($candidates as $creatureKey) {
+            if ($this->getter->getDefinition($creatureKey, $entity) !== null) {
+                return $creatureKey;
+            }
         }
 
         return null;

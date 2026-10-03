@@ -231,11 +231,9 @@ abstract class CharacteristicGroupSeeder extends Seeder
                 );
                 if ($model instanceof CharacteristicObject) {
                     $itemTypeIds = $this->resolveCharacteristicObjectItemTypeIdsForSync($row);
-                    if ($itemTypeIds !== []) {
-                        $this->retryOnMysqlSchemaChanged(
-                            static fn () => $model->allowedItemTypes()->sync($itemTypeIds)
-                        );
-                    }
+                    $this->retryOnMysqlSchemaChanged(
+                        static fn () => $model->allowedItemTypes()->sync($itemTypeIds)
+                    );
                 }
                 $n++;
             }

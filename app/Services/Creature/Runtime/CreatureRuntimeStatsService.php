@@ -30,6 +30,7 @@ final class CreatureRuntimeStatsService
         private readonly LevelDomainResolver $levelDomain,
         private readonly CreatureVariableMapBuilder $variableMapBuilder,
         private readonly CreatureItemBonusAggregator $itemBonusAggregator,
+        private readonly CreatureAggregatedItemBonusLimiter $itemBonusLimiter,
         private readonly CreatureObjectBonusToCreatureVariables $objectBonusMerger
     ) {}
 
@@ -53,7 +54,9 @@ final class CreatureRuntimeStatsService
         $creature->loadMissing('items');
 
         $levels = $this->levelDomain->resolve($creature->level);
-        $itemTotals = $this->itemBonusAggregator->aggregateTotals($creature->items);
+        $itemTotals = $this->itemBonusLimiter->apply(
+            $this->itemBonusAggregator->aggregateTotals($creature->items)
+        );
         $objectByKey = $this->objectBonusMerger->mapToCharacteristicKeys($entity, $itemTotals);
         $dbColumnByKey = $this->mapCharacteristicKeysToDbColumns($entity);
 
@@ -176,6 +179,8 @@ final class CreatureRuntimeStatsService
         $computedKeySet = array_fill_keys($computedKeys, true);
         $maxPasses = max(32, count($computedKeys) + 5);
         for ($pass = 0; $pass < $maxPasses; $pass++) {
+            $this->injectIntimidationAbilityModifier($creature, $variables);
+            $variables = FormulaVariableResolver::withShortNames('creature', $variables);
             $progress = false;
             foreach ($computedKeys as $key) {
                 if (isset($resolvedKeys[$key])) {
@@ -283,11 +288,39 @@ final class CreatureRuntimeStatsService
             }
         }
 
+        $this->applyRuntimeTotalCaps($characteristics, $variables);
+
         return [
             'characteristics' => $characteristics,
             'variables' => $this->normalizeNumericMap($variables),
             'unresolved_computed_keys' => $unresolved,
         ];
+    }
+
+    /**
+     * Plafonds métier après composition base + objet + contexte.
+     *
+     * @param  array<string, array<string, mixed>>  $characteristics
+     * @param  array<string, float|int>  $variables
+     */
+    private function applyRuntimeTotalCaps(array &$characteristics, array &$variables): void
+    {
+        if (isset($characteristics['wakfu_reserve_creature'])) {
+            $row = &$characteristics['wakfu_reserve_creature'];
+            $total = max(1.0, min(9.0, (float) ($row['total'] ?? 0)));
+            $row['total'] = $total;
+            $variables['wakfu_reserve_creature'] = $total;
+        }
+
+        if (isset($characteristics['summoning_creature'])) {
+            $mastery = (float) ($variables['mastery_bonus_creature'] ?? 0);
+            if ($mastery > 0) {
+                $row = &$characteristics['summoning_creature'];
+                $total = min((float) ($row['total'] ?? 0), $mastery);
+                $row['total'] = $total;
+                $variables['summoning_creature'] = $total;
+            }
+        }
     }
 
     /**
@@ -486,5 +519,26 @@ final class CreatureRuntimeStatsService
         }
 
         return 0.0;
+    }
+
+    /**
+     * Modificateur Force ou Chance pour Intimidation (choix fiche créature).
+     *
+     * @param  array<string, float|int>  $variables
+     */
+    private function injectIntimidationAbilityModifier(Creature $creature, array &$variables): void
+    {
+        $ability = (string) ($creature->intimidation_ability ?? 'strength');
+        $modKey = $ability === 'chance'
+            ? 'modifier_chance_creature'
+            : 'modifier_strength_creature';
+
+        if (! array_key_exists($modKey, $variables)) {
+            return;
+        }
+
+        $value = (float) $variables[$modKey];
+        $variables['intimidation_ability_modifier_creature'] = $value;
+        $variables['intimidation_ability_modifier'] = $value;
     }
 }

@@ -20,6 +20,7 @@ final class CharacteristicDefinitionQualityService
         'allows_reaction', 'range_editable', 'ritual_available', 'sight_line', 'auto_success_if_willing_target',
         'cast_in_line', 'cast_in_diagonal', 'target_type', 'max_stack', 'global_cooldown',
         'life_dice', 'hit_dice', 'hostility', 'mastery_bonus', 'wakfu_reserve', 'wakfu_recharge',
+        'life_points_restore', 'shield_points', 'temporary_life_points',
     ];
 
     /**
@@ -167,6 +168,7 @@ final class CharacteristicDefinitionQualityService
             'acrobatics', 'animal_handling', 'arcana', 'athletics', 'deception', 'history',
             'insight', 'intimidation', 'investigation', 'medicine', 'nature', 'perception',
             'performance', 'persuasion', 'religion', 'sleight_of_hand', 'stealth', 'survival',
+            'craftsmanship', 'herbalism', 'creature_lore',
         ], true);
     }
 
@@ -180,6 +182,7 @@ final class CharacteristicDefinitionQualityService
             'acrobatics', 'animal_handling', 'arcana', 'athletics', 'deception', 'history',
             'insight', 'intimidation', 'investigation', 'medicine', 'nature', 'perception',
             'performance', 'persuasion', 'religion', 'sleight_of_hand', 'stealth', 'survival',
+            'craftsmanship', 'herbalism', 'creature_lore',
         ], true);
     }
 

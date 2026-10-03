@@ -36,6 +36,7 @@ final class CreatureComposableColumns
         'nature_bonus', 'religion_bonus', 'dressage_bonus', 'medecine_bonus',
         'perception_bonus', 'perspicacite_bonus', 'survie_bonus', 'persuasion_bonus',
         'representation_bonus', 'supercherie_bonus',
+        'artisanat_bonus', 'herbaliste_bonus', 'connaissance_creatures_bonus',
         // Bonus de sauvegardes
         'save_vitality_bonus', 'save_wisdom_bonus', 'save_strength_bonus',
         'save_intelligence_bonus', 'save_chance_bonus', 'save_agility_bonus',

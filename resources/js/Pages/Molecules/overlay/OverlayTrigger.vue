@@ -214,6 +214,15 @@ watch(
 function handleKeydown(event) {
     a11y.onPanelKeydown(event, overlayRef.value);
 }
+
+function handleTriggerKeydown(event) {
+    a11y.onTriggerKeydown(event, {
+        open: () => service.open(),
+        close: () => service.close("trigger"),
+        toggle: () => service.toggle(),
+        triggerMode: trigger.computedTrigger.value,
+    });
+}
 </script>
 
 <template>
@@ -226,6 +235,7 @@ function handleKeydown(event) {
         @focusin="trigger.onTriggerFocusIn"
         @focusout="onHoverTriggerFocusOut"
         @click="trigger.onTriggerClick"
+        @keydown="handleTriggerKeydown"
     >
         <slot />
     </span>

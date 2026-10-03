@@ -10,6 +10,7 @@ import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import EntityLanguagesEditor from '@/Pages/Organismes/entity/EntityLanguagesEditor.vue';
 import CreatureTraitsEditor from '@/Pages/Organismes/entity/CreatureTraitsEditor.vue';
+import CreatureComposableCharacteristicsEditor from '@/Pages/Organismes/entity/CreatureComposableCharacteristicsEditor.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -131,6 +132,23 @@ function goToShow() {
                 </div>
             </div>
         </div>
+
+        <Collapse
+            v-if="npc.creature && npc.id"
+            arrow
+            bg-off="bg-base-100"
+            class="border border-base-300"
+        >
+            <template #title>Caractéristiques (totaux &amp; contexte)</template>
+            <template #content>
+                <CreatureComposableCharacteristicsEditor
+                    :creature="npc.creature"
+                    :entity-id="npc.id"
+                    update-route-name="entities.npcs.update"
+                    update-route-param-name="npc"
+                />
+            </template>
+        </Collapse>
 
         <EntityEditForm
             :entity="npc"
