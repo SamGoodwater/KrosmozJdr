@@ -4,7 +4,7 @@
  *
  * @description
  * Liste, création, édition et suppression des phrases affichées en bas de
- * l’overlay de chargement. Lien optionnel, mise en avant et activation.
+ * l’overlay de chargement. Lien optionnel, mise en avant, durée et activation.
  *
  * @example
  * Inertia::render('Admin/loading-tips/Index', { tips: [...] })
@@ -18,6 +18,11 @@ import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import PageHeader from "@/Pages/Molecules/layout/PageHeader.vue";
 import { ACTION } from "@/Utils/atomic-design/actionLabels";
+import {
+    DEFAULT_LOADING_TIP_DURATION_SECONDS,
+    MAX_LOADING_TIP_DURATION_SECONDS,
+    MIN_LOADING_TIP_DURATION_SECONDS,
+} from "@/Utils/layout/pickLoadingTip";
 
 const notificationStore = useNotificationStore();
 
@@ -30,6 +35,7 @@ const emptyForm = () => ({
     url: "",
     featured: false,
     is_active: true,
+    duration_seconds: DEFAULT_LOADING_TIP_DURATION_SECONDS,
 });
 
 const createForm = useForm(emptyForm());
@@ -43,6 +49,7 @@ const startEdit = (row) => {
     editForm.url = row.url || "";
     editForm.featured = !!row.featured;
     editForm.is_active = row.is_active !== false;
+    editForm.duration_seconds = Number(row.duration_seconds) || DEFAULT_LOADING_TIP_DURATION_SECONDS;
     editForm.clearErrors();
 };
 
@@ -57,6 +64,7 @@ const store = () => {
         onSuccess: () => {
             createForm.reset();
             createForm.is_active = true;
+            createForm.duration_seconds = DEFAULT_LOADING_TIP_DURATION_SECONDS;
             notificationStore.success("Astuce créée.");
         },
     });
@@ -97,8 +105,9 @@ defineOptions({ layout: AdminArea });
         <PageHeader title="Astuces de chargement">
             <template #subtitle>
                 Phrases courtes affichées en bas de l’écran de chargement. Les
-                astuces mises en avant apparaissent plus souvent. Un lien
-                optionnel s’ouvre dans un nouvel onglet.
+                astuces mises en avant apparaissent plus souvent. La durée
+                contrôle le temps de lecture (hors fondu). Un lien optionnel
+                s’ouvre dans un nouvel onglet.
             </template>
             <template #primary>
                 <Btn
@@ -138,7 +147,17 @@ defineOptions({ layout: AdminArea });
                     type="url"
                     placeholder="https://…"
                 />
-                <div class="flex flex-wrap items-end gap-6 pb-1">
+                <InputField
+                    v-model="createForm.duration_seconds"
+                    label="Durée (secondes)"
+                    :error="createForm.errors.duration_seconds"
+                    type="number"
+                    :min="MIN_LOADING_TIP_DURATION_SECONDS"
+                    :max="MAX_LOADING_TIP_DURATION_SECONDS"
+                    required
+                    helper="Temps de lecture avant le fondu de sortie (2–30 s)."
+                />
+                <div class="flex flex-wrap items-end gap-6 pb-1 md:col-span-2">
                     <label class="flex items-center gap-2 text-sm">
                         <input v-model="createForm.featured" type="checkbox" class="checkbox checkbox-sm" />
                         Mise en avant
@@ -157,6 +176,7 @@ defineOptions({ layout: AdminArea });
                     <tr class="bg-base-300/70 text-primary-200">
                         <th class="font-semibold">Phrase</th>
                         <th class="font-semibold">Lien</th>
+                        <th class="w-20 text-center font-semibold">Durée</th>
                         <th class="w-28 text-center font-semibold">Avant</th>
                         <th class="w-24 text-center font-semibold">Active</th>
                         <th class="w-40 text-right font-semibold">Actions</th>
@@ -180,6 +200,9 @@ defineOptions({ layout: AdminArea });
                                 </a>
                                 <span v-else>—</span>
                             </td>
+                            <td class="text-center text-sm tabular-nums text-primary-200">
+                                {{ row.duration_seconds }}s
+                            </td>
                             <td class="text-center text-sm">
                                 <span v-if="row.featured" class="badge badge-primary badge-sm">Oui</span>
                                 <span v-else class="text-primary-400">—</span>
@@ -200,7 +223,7 @@ defineOptions({ layout: AdminArea });
                             </td>
                         </tr>
                         <tr v-else :key="`edit-${row.id}`" class="bg-base-200/40">
-                            <td colspan="5">
+                            <td colspan="6">
                                 <form class="grid gap-3 md:grid-cols-2 py-2" @submit.prevent="update">
                                     <div class="md:col-span-2">
                                         <InputField
@@ -217,7 +240,16 @@ defineOptions({ layout: AdminArea });
                                         :error="editForm.errors.url"
                                         type="url"
                                     />
-                                    <div class="flex flex-wrap items-end gap-6 pb-1">
+                                    <InputField
+                                        v-model="editForm.duration_seconds"
+                                        label="Durée (secondes)"
+                                        :error="editForm.errors.duration_seconds"
+                                        type="number"
+                                        :min="MIN_LOADING_TIP_DURATION_SECONDS"
+                                        :max="MAX_LOADING_TIP_DURATION_SECONDS"
+                                        required
+                                    />
+                                    <div class="flex flex-wrap items-end gap-6 pb-1 md:col-span-2">
                                         <label class="flex items-center gap-2 text-sm">
                                             <input v-model="editForm.featured" type="checkbox" class="checkbox checkbox-sm" />
                                             Mise en avant
@@ -240,7 +272,7 @@ defineOptions({ layout: AdminArea });
                         </tr>
                     </template>
                     <tr v-if="!tips.length">
-                        <td colspan="5" class="text-center py-8 text-primary-400 italic">Aucune astuce</td>
+                        <td colspan="6" class="text-center py-8 text-primary-400 italic">Aucune astuce</td>
                     </tr>
                 </tbody>
             </table>

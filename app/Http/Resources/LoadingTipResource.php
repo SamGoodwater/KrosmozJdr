@@ -23,6 +23,7 @@ class LoadingTipResource extends JsonResource
             'url' => $this->url,
             'featured' => (bool) $this->featured,
             'is_active' => (bool) $this->is_active,
+            'duration_seconds' => (int) $this->duration_seconds,
         ];
     }
 }

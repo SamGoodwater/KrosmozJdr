@@ -18,7 +18,7 @@
 - Formules de dés : bande min/moy/max + **Valeur** / icône ghost Lancer + historique session ; reconnu si dé, tranche ou opérateur (`50-17`). `diceParser.js`, `DiceFormulaStrip`.
 - Recherche globale / filtres tableau : pastilles d’état via jetons `--color-state-*` (`getEntityStateChipClass`). Brut = error, jouable = success, brouillon = umber, auto = indigo, archivé = info.
 - `vite.config.js` `manualChunks` : uniquement `node_modules` (`vendor` / `cally` / `utils`). Ne pas extraire `Main.vue` ni `Utils/Formatters` : cycle de chunks au boot.
-- Écran de chargement (`SiteLoadingOverlay`) : astuces bas centrées (`loadingTips` via `shareOnce`, table `loading_tips`, admin `/admin/content/loading-tips`). Tirage pondéré `pickLoadingTip` (featured ×3) ; lien optionnel nouvel onglet.
+- Écran de chargement (`SiteLoadingOverlay`) : astuces bas centrées (`loadingTips` via `shareOnce`, table `loading_tips`, admin `/admin/content/loading-tips`). Tirage pondéré `pickLoadingTip` (featured ×3) ; `duration_seconds` (2–30, défaut 8) ; lien optionnel nouvel onglet.
 
 ## Descendre
 

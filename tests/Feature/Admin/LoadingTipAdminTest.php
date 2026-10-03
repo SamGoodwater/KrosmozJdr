@@ -59,6 +59,7 @@ class LoadingTipAdminTest extends TestCase
                 'url' => 'https://discord.gg/XVu4VWFskj',
                 'featured' => true,
                 'is_active' => true,
+                'duration_seconds' => 12,
             ])
             ->assertRedirect(route('admin.loading-tips.index'));
 
@@ -67,7 +68,24 @@ class LoadingTipAdminTest extends TestCase
             'url' => 'https://discord.gg/XVu4VWFskj',
             'featured' => 1,
             'is_active' => 1,
+            'duration_seconds' => 12,
         ]);
+    }
+
+    public function test_admin_cannot_create_loading_tip_with_invalid_duration(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $this->actingAs($admin)
+            ->from(route('admin.loading-tips.index'))
+            ->post(route('admin.loading-tips.store'), [
+                'body' => 'Durée trop courte',
+                'featured' => false,
+                'is_active' => true,
+                'duration_seconds' => 1,
+            ])
+            ->assertRedirect(route('admin.loading-tips.index'))
+            ->assertSessionHasErrors('duration_seconds');
     }
 
     public function test_admin_cannot_create_loading_tip_with_invalid_url(): void
@@ -104,6 +122,7 @@ class LoadingTipAdminTest extends TestCase
                 'url' => null,
                 'featured' => true,
                 'is_active' => false,
+                'duration_seconds' => 10,
             ])
             ->assertRedirect(route('admin.loading-tips.index'));
 
@@ -112,6 +131,7 @@ class LoadingTipAdminTest extends TestCase
             'body' => 'Phrase mise à jour',
             'featured' => 1,
             'is_active' => 0,
+            'duration_seconds' => 10,
         ]);
 
         $this->actingAs($admin)
@@ -130,6 +150,7 @@ class LoadingTipAdminTest extends TestCase
             'url' => 'https://github.com/SamGoodwater/KrosmozJdr',
             'featured' => true,
             'is_active' => true,
+            'duration_seconds' => 15,
         ]);
         LoadingTip::factory()->inactive()->create([
             'body' => 'Inactive tip',
@@ -143,6 +164,7 @@ class LoadingTipAdminTest extends TestCase
                 ->where('loadingTips.0.body', 'Active tip')
                 ->where('loadingTips.0.url', 'https://github.com/SamGoodwater/KrosmozJdr')
                 ->where('loadingTips.0.featured', true)
+                ->where('loadingTips.0.duration_seconds', 15)
                 ->missing('loadingTips.0.id')
                 ->missing('loadingTips.0.is_active'));
     }

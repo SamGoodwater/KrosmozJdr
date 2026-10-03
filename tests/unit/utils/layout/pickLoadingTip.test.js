@@ -1,6 +1,19 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
-import { pickLoadingTip } from "../../../../resources/js/Utils/layout/pickLoadingTip.js";
+import {
+    pickLoadingTip,
+    resolveLoadingTipHoldMs,
+} from "../../../../resources/js/Utils/layout/pickLoadingTip.js";
+
+describe("resolveLoadingTipHoldMs", () => {
+    it("convertit les secondes en millisecondes et borne les valeurs", () => {
+        expect(resolveLoadingTipHoldMs({ duration_seconds: 10 })).toBe(10000);
+        expect(resolveLoadingTipHoldMs({ duration_seconds: 1 })).toBe(2000);
+        expect(resolveLoadingTipHoldMs({ duration_seconds: 99 })).toBe(30000);
+        expect(resolveLoadingTipHoldMs({})).toBe(8000);
+        expect(resolveLoadingTipHoldMs(null)).toBe(8000);
+    });
+});
 
 describe("pickLoadingTip", () => {
     it("retourne null si la liste est vide", () => {

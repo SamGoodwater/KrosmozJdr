@@ -26,15 +26,14 @@ import {
     removeBootSplash,
     useSiteLoadingOverlay,
 } from "@/Composables/layout/useSiteLoadingOverlay";
-import { pickLoadingTip } from "@/Utils/layout/pickLoadingTip";
+import { pickLoadingTip, resolveLoadingTipHoldMs } from "@/Utils/layout/pickLoadingTip";
 
 const props = defineProps({
-    /** @type {import('vue').PropType<Array<{ body: string, url?: string|null, featured?: boolean }>>} */
+    /** @type {import('vue').PropType<Array<{ body: string, url?: string|null, featured?: boolean, duration_seconds?: number }>>} */
     tips: { type: Array, default: () => [] },
 });
 
 const FADE_MS = 600;
-const HOLD_MS = 4500;
 
 const { dismissManual, initSiteLoadingReadyWatcher, markControlsVisible, markSiteLoadingReady } =
     useSiteLoadingOverlay();
@@ -89,7 +88,7 @@ function scheduleTipCycle() {
     tipVisible.value = false;
 
     const fadeMs = prefersReducedMotion() ? 0 : FADE_MS;
-    const holdMs = prefersReducedMotion() ? 3000 : HOLD_MS;
+    const holdMs = resolveLoadingTipHoldMs(next);
 
     nextTick(() => {
         if (tipCycleStopped || !siteLoadingActive.value || siteLoadingExiting.value) {

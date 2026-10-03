@@ -102,11 +102,12 @@ class HandleInertiaRequests extends Middleware
             'loadingTips' => fn () => LoadingTip::query()
                 ->where('is_active', true)
                 ->orderBy('id')
-                ->get(['body', 'url', 'featured'])
+                ->get(['body', 'url', 'featured', 'duration_seconds'])
                 ->map(fn (LoadingTip $tip) => [
                     'body' => $tip->body,
                     'url' => $tip->url,
                     'featured' => (bool) $tip->featured,
+                    'duration_seconds' => (int) $tip->duration_seconds,
                 ])
                 ->values()
                 ->all(),

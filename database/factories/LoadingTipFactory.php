@@ -24,6 +24,7 @@ class LoadingTipFactory extends Factory
             'url' => null,
             'featured' => false,
             'is_active' => true,
+            'duration_seconds' => LoadingTip::DEFAULT_DURATION_SECONDS,
         ];
     }
 

@@ -2,7 +2,15 @@
 
 ## Octobre 2026 — Astuces sur l’écran de chargement
 
-Pendant le chargement, des phrases courtes défilent en bas de l’écran, une par une, avec un fondu. Certaines ouvrent Discord ou GitHub. Un admin les ajoute, modifie ou retire depuis **Astuces de chargement**, et peut en mettre en avant pour qu’elles apparaissent plus souvent.
+Pendant le chargement, des phrases courtes défilent en bas de l’écran, une par une, avec un fondu. Certaines ouvrent Discord ou GitHub. Un admin les ajoute, modifie ou retire depuis **Astuces de chargement**, peut en mettre en avant pour qu’elles apparaissent plus souvent, et régler la durée d’affichage de chaque phrase.
+
+## Octobre 2026 — Infobulle « Lancer » dans la recherche
+
+Dans la recherche, l’infobulle du dé (Lancer) passe devant le champ et la croix. Son fond n’est plus découpé.
+
+## Octobre 2026 — Alertes en verre teinté
+
+Les bandeaux d’alerte ne sont plus un aplat de couleur. Le fond laisse voir la page derrière, avec un flou et une teinte selon le type (info, succès, attention, erreur). Le texte reste clair et lisible.
 
 ## Octobre 2026 — Journal du jeu
 

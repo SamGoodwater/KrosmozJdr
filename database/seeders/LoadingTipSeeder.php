@@ -64,6 +64,7 @@ class LoadingTipSeeder extends Seeder
                     'url' => $row['url'],
                     'featured' => $row['featured'],
                     'is_active' => true,
+                    'duration_seconds' => $row['duration_seconds'] ?? LoadingTip::DEFAULT_DURATION_SECONDS,
                 ]
             );
         }

@@ -24,6 +24,12 @@ class StoreLoadingTipRequest extends FormRequest
             'url' => ['nullable', 'string', 'max:2048', 'url:http,https'],
             'featured' => ['sometimes', 'boolean'],
             'is_active' => ['sometimes', 'boolean'],
+            'duration_seconds' => [
+                'required',
+                'integer',
+                'min:'.LoadingTip::MIN_DURATION_SECONDS,
+                'max:'.LoadingTip::MAX_DURATION_SECONDS,
+            ],
         ];
     }
 
@@ -33,6 +39,9 @@ class StoreLoadingTipRequest extends FormRequest
             'featured' => $this->boolean('featured'),
             'is_active' => $this->has('is_active') ? $this->boolean('is_active') : true,
             'url' => $this->filled('url') ? $this->string('url')->toString() : null,
+            'duration_seconds' => $this->filled('duration_seconds')
+                ? (int) $this->input('duration_seconds')
+                : LoadingTip::DEFAULT_DURATION_SECONDS,
         ]);
     }
 }
