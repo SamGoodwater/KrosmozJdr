@@ -6,6 +6,7 @@ use App\Models\Characteristic;
 use App\Models\Entity\Condition;
 use App\Models\Entity\CreatureTrait;
 use App\Models\Entity\Language;
+use App\Models\LoadingTip;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\Type\ConsumableType;
@@ -17,6 +18,7 @@ use App\Policies\CharacteristicPolicy;
 use App\Policies\Entity\ConditionPolicy;
 use App\Policies\Entity\CreatureTraitPolicy;
 use App\Policies\Entity\LanguagePolicy;
+use App\Policies\LoadingTipPolicy;
 use App\Policies\PagePolicy;
 use App\Policies\SectionPolicy;
 use App\Policies\Type\ConsumableTypePolicy;
@@ -35,6 +37,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Language::class => LanguagePolicy::class,
+        LoadingTip::class => LoadingTipPolicy::class,
         Condition::class => ConditionPolicy::class,
         CreatureTrait::class => CreatureTraitPolicy::class,
         Characteristic::class => CharacteristicPolicy::class,

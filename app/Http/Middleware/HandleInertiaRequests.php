@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Http\Resources\UserLightResource;
 use App\Models\DataSubjectRequest;
+use App\Models\LoadingTip;
 use App\Support\EntityPermissions\EntityPermissionService;
 use App\Support\OAuthConfig;
 use Illuminate\Http\Request;
@@ -98,6 +99,17 @@ class HandleInertiaRequests extends Middleware
             'permissions' => fn () => $this->permissionService->forUser($request->user()),
             'ziggy' => fn () => (new Ziggy)->toArray(),
             'oauth_enabled_providers' => fn () => OAuthConfig::enabledProviders(),
+            'loadingTips' => fn () => LoadingTip::query()
+                ->where('is_active', true)
+                ->orderBy('id')
+                ->get(['body', 'url', 'featured'])
+                ->map(fn (LoadingTip $tip) => [
+                    'body' => $tip->body,
+                    'url' => $tip->url,
+                    'featured' => (bool) $tip->featured,
+                ])
+                ->values()
+                ->all(),
         ];
     }
 

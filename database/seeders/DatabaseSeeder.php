@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
+            LoadingTipSeeder::class,
             CriticalPagesSeeder::class,
             NavMenuSeeder::class,
             PageSeeder::class,

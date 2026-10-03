@@ -6,12 +6,15 @@
  * Pendant le chargement : zoom lent 20 s puis dézoom 20 s (boucle). Entrée du texte :
  * fondu d’opacité long (police) + léger zoom. Sortie : plongée rapide (~500 ms) avec
  * opacité à 0 avant la fin du zoom pour révéler le site. Titre Krosmoz / JDR + dots.
+ * Astuces bas centrées : fondu une par une jusqu’à la sortie de l’écran.
  *
  * @see useSiteLoadingOverlay
+ * @see pickLoadingTip
  * @example
  * <!-- Monté une fois dans app.js, au-dessus de l’app Inertia -->
+ * <SiteLoadingOverlay :tips="loadingTips" />
  */
-import { computed, onMounted, onUnmounted } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Loading from "@/Pages/Atoms/feedback/Loading.vue";
 import {
@@ -23,6 +26,15 @@ import {
     removeBootSplash,
     useSiteLoadingOverlay,
 } from "@/Composables/layout/useSiteLoadingOverlay";
+import { pickLoadingTip } from "@/Utils/layout/pickLoadingTip";
+
+const props = defineProps({
+    /** @type {import('vue').PropType<Array<{ body: string, url?: string|null, featured?: boolean }>>} */
+    tips: { type: Array, default: () => [] },
+});
+
+const FADE_MS = 600;
+const HOLD_MS = 4500;
 
 const { dismissManual, initSiteLoadingReadyWatcher, markControlsVisible, markSiteLoadingReady } =
     useSiteLoadingOverlay();
@@ -34,7 +46,83 @@ const stageZoomClass = computed(() => {
     return "site-loading-overlay__stage--pulse";
 });
 
+const currentTip = ref(null);
+const tipVisible = ref(false);
+const tipKey = ref(0);
+
 let stopReadyWatcher = null;
+/** @type {ReturnType<typeof setTimeout>|null} */
+let tipTimer = null;
+let tipCycleStopped = false;
+
+function clearTipTimer() {
+    if (tipTimer !== null) {
+        clearTimeout(tipTimer);
+        tipTimer = null;
+    }
+}
+
+function prefersReducedMotion() {
+    return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function scheduleTipCycle() {
+    clearTipTimer();
+    if (tipCycleStopped || !siteLoadingActive.value || siteLoadingExiting.value) {
+        return;
+    }
+    if (!Array.isArray(props.tips) || props.tips.length === 0) {
+        currentTip.value = null;
+        tipVisible.value = false;
+        return;
+    }
+
+    const next = pickLoadingTip(props.tips, currentTip.value);
+    if (!next) {
+        currentTip.value = null;
+        tipVisible.value = false;
+        return;
+    }
+
+    currentTip.value = next;
+    tipKey.value += 1;
+    tipVisible.value = false;
+
+    const fadeMs = prefersReducedMotion() ? 0 : FADE_MS;
+    const holdMs = prefersReducedMotion() ? 3000 : HOLD_MS;
+
+    nextTick(() => {
+        if (tipCycleStopped || !siteLoadingActive.value || siteLoadingExiting.value) {
+            return;
+        }
+        tipVisible.value = true;
+        tipTimer = window.setTimeout(() => {
+            tipVisible.value = false;
+            tipTimer = window.setTimeout(() => {
+                scheduleTipCycle();
+            }, fadeMs);
+        }, fadeMs + holdMs);
+    });
+}
+
+function stopTipCycle() {
+    tipCycleStopped = true;
+    clearTipTimer();
+    tipVisible.value = false;
+}
+
+watch(siteLoadingExiting, (exiting) => {
+    if (exiting) {
+        stopTipCycle();
+    }
+});
+
+watch(siteLoadingActive, (active) => {
+    if (!active) {
+        stopTipCycle();
+        currentTip.value = null;
+    }
+});
 
 onMounted(() => {
     removeBootSplash();
@@ -43,10 +131,15 @@ onMounted(() => {
         markSiteLoadingReady();
     }
     stopReadyWatcher = initSiteLoadingReadyWatcher();
+    if (siteLoadingActive.value) {
+        tipCycleStopped = false;
+        scheduleTipCycle();
+    }
 });
 
 onUnmounted(() => {
     stopReadyWatcher?.();
+    stopTipCycle();
 });
 </script>
 
@@ -99,6 +192,31 @@ onUnmounted(() => {
                     </p>
                 </div>
 
+                <div
+                    v-if="currentTip"
+                    class="site-loading-overlay__tips pointer-events-auto absolute inset-x-0 bottom-6 z-10 px-6 text-center sm:bottom-8"
+                >
+                    <a
+                        v-if="currentTip.url"
+                        :key="`tip-link-${tipKey}`"
+                        :href="currentTip.url"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="site-loading-overlay__tip site-loading-overlay__tip--link inline-block max-w-3xl text-white/90 underline-offset-4 hover:underline"
+                        :class="tipVisible ? 'site-loading-overlay__tip--visible' : ''"
+                    >
+                        {{ currentTip.body }}
+                    </a>
+                    <p
+                        v-else
+                        :key="`tip-text-${tipKey}`"
+                        class="site-loading-overlay__tip mx-auto max-w-3xl text-white/90"
+                        :class="tipVisible ? 'site-loading-overlay__tip--visible' : ''"
+                    >
+                        {{ currentTip.body }}
+                    </p>
+                </div>
+
                 <button
                     v-show="siteLoadingControlsVisible"
                     type="button"
@@ -148,7 +266,8 @@ onUnmounted(() => {
     animation: site-loading-content-exit 280ms ease-in forwards;
 }
 
-.site-loading-overlay--exiting .site-loading-overlay__close {
+.site-loading-overlay--exiting .site-loading-overlay__close,
+.site-loading-overlay--exiting .site-loading-overlay__tips {
     animation: site-loading-content-exit 220ms ease-in forwards;
 }
 
@@ -228,6 +347,22 @@ onUnmounted(() => {
     }
 }
 
+.site-loading-overlay__tip {
+    font-size: clamp(0.875rem, 2.2vw, 1.125rem);
+    line-height: 1.45;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.85);
+    opacity: 0;
+    transition: opacity 600ms ease;
+}
+
+.site-loading-overlay__tip--visible {
+    opacity: 1;
+}
+
+.site-loading-overlay__tip--link {
+    cursor: pointer;
+}
+
 /** Retrait DOM après sortie CSS : pas de second fondu. */
 .site-loading-fade-enter-active,
 .site-loading-fade-leave-active {
@@ -251,13 +386,18 @@ onUnmounted(() => {
     }
 
     .site-loading-overlay--exiting .site-loading-overlay__content,
-    .site-loading-overlay--exiting .site-loading-overlay__close {
+    .site-loading-overlay--exiting .site-loading-overlay__close,
+    .site-loading-overlay--exiting .site-loading-overlay__tips {
         animation: none;
         opacity: 0;
     }
 
     .site-loading-overlay__content--visible {
         animation: site-loading-content-enter-reduced 1.6s ease-out forwards;
+    }
+
+    .site-loading-overlay__tip {
+        transition: none;
     }
 }
 

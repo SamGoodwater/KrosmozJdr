@@ -78,6 +78,13 @@ const navItems = computed(() => {
             show: canAccess("contentManagement") || canAccess("adminPanel"),
         },
         {
+            title: "Astuces de chargement",
+            href: "admin.loading-tips.index",
+            path: "/admin/content/loading-tips",
+            icon: "fa-lightbulb",
+            show: canAccess("contentManagement") || canAccess("adminPanel"),
+        },
+        {
             title: "IA métier",
             href: "admin.content.ia-generation.edit",
             path: "/admin/content/ia-generation",

@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Astuces sur l’écran de chargement
+
+Pendant le chargement, des phrases courtes défilent en bas de l’écran, une par une, avec un fondu. Certaines ouvrent Discord ou GitHub. Un admin les ajoute, modifie ou retire depuis **Astuces de chargement**, et peut en mettre en avant pour qu’elles apparaissent plus souvent.
+
 ## Octobre 2026 — Journal du jeu
 
 La page **Journal** dit en peu de mots ce qui est déjà jouable, et une frise indique la suite : campagnes, scénarios et fiches en 1.4, puis des outils de combat en 1.5. Les textes restent des fichiers markdown. Un admin les modifie depuis la page.

@@ -29,8 +29,12 @@ createInertiaApp({
             props.initialPage?.props?.ziggy_location,
         );
         const pinia = createPinia();
+        const loadingTips = props.initialPage?.props?.loadingTips ?? [];
         return createApp({
-            render: () => [h(SiteLoadingOverlay), h(App, props)],
+            render: () => [
+                h(SiteLoadingOverlay, { tips: loadingTips }),
+                h(App, props),
+            ],
         })
             .use(plugin)
             .use(InertiaZiggyVue)
