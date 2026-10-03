@@ -11,9 +11,11 @@ Les champs pivot `min` / `max` **numériques** sont des **plafonds absolus** (m�
 
 | Couche | Source | Rôle |
 | --- | --- | --- |
-| **Base** | `characteristic_creature.formula` | Formule système (ex. CA = 10 + mod. Vitalité) |
+| **Base** | `characteristic_creature.formula` | Formule système (ex. CA = 10 + mod. Vitalité). **Ne pas** y coller les `*_object` : l’équipement est la couche suivante. |
 | **Objets** | Somme de `items.effect` (fallback `items.bonus` plat) des équipements portés | Agrégée par `CreatureItemBonusAggregator` via `KrosmozItemBonusDecoder` |
 | **Contexte** | Colonne `<db_column>_context` sur `creatures` | Nombre ou formule saisie pour ce monstre / PNJ |
+
+L’admin caractéristiques rappelle ce point sous le champ Formule (groupe créature) et dans l’aide « ? ».
 
 ### Priorité du total explicite
 

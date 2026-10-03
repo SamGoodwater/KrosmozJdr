@@ -20,8 +20,9 @@ const label = computed(() => def.value.short_name || def.value.name || props.dbC
 const contextKey = computed(() => contextColumnForComposable(props.dbColumn));
 
 const totalHint =
-    "Total explicite : s’il est renseigné, il est affiché tel quel (priorité sur base + objets + contexte). Laissez vide pour composer.";
-const contextHint = "Bonus contextuel propre à ce monstre / PNJ (nombre ou formule, sans fourchette ni dé).";
+    "Total explicite : s’il est renseigné, il est affiché tel quel (priorité sur base + objets + contexte). Laissez vide pour composer. Les bonus d’équipement ne s’écrivent pas ici.";
+const contextHint =
+    "Bonus contextuel propre à ce monstre / PNJ (nombre ou formule, sans fourchette ni dé). Pas de bonus d’équipement : ils s’ajoutent automatiquement.";
 </script>
 
 <template>

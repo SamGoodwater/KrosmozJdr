@@ -74,6 +74,10 @@ const preview = computed(() => {
                             </li>
                             <li v-else>Fourchettes et dés réservés au champ niveau.</li>
                         </ul>
+                        <p class="text-xs text-warning">
+                            Les bonus d’équipement ne s’écrivent pas ici : ils s’ajoutent au runtime
+                            (total = base + objets + contexte).
+                        </p>
                         <p class="text-xs opacity-70">
                             Doc : features/characteristics/COMPUTED_VALUES.md
                         </p>

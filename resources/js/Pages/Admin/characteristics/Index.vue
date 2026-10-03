@@ -32,12 +32,14 @@ const notificationStore = inject('notificationStore', null);
 const formulaHelpContent = {
     title: 'Construire une formule',
     variables:
-        'Variables évaluées côté serveur : toujours entre crochets, ex. [vitality_creature], [modifier_intelligence_creature], [initiative_object], [level], [d] (conversion). Les champs proposent l’autocomplétion après 3 caractères.',
+        'Variables évaluées côté serveur : toujours entre crochets, ex. [vitality_creature], [modifier_intelligence_creature], [level], [d] (conversion). Les champs proposent l’autocomplétion après 3 caractères.',
     operators: 'Opérateurs : + - * / et parenthèses ( ).',
     funcs1: 'Fonctions à 1 argument : floor, ceil, round, sqrt, abs, cos, sin, tan, asin, acos, atan.',
     funcs2: 'Fonctions à 2 arguments : pow(base, exp), min(a, b), max(a, b).',
     examples:
-        'Exemples : [modifier_intelligence_creature]+[initiative_object], [level_creature]*2, floor([d]/10), min(10,[level]*2). Formule d’affichage (site) : clés nudes reliées par +.',
+        'Exemples : [modifier_intelligence_creature], 10+[modifier_vitality_creature], [level_creature]*2, floor([d]/10), min(10,[level]*2). Formule d’affichage (site) : clés nues reliées par +.',
+    equipment:
+        'Groupe créature : n’ajoutez pas les bonus d’équipement (*_object) dans la formule. Ils sont ajoutés automatiquement au runtime (total = base + objets + contexte). Les coller ici les compterait deux fois.',
 };
 
 const props = defineProps({
@@ -84,6 +86,8 @@ const conversionFunctionSelectOptions = computed(() =>
 
 /** Groupe « object » : édition ou création (form.group). */
 const isObjectCharacteristicGroup = computed(() => (props.selected?.group ?? form.group) === 'object');
+/** Groupe « creature » : la formule est la couche base seulement (équipement = couche runtime). */
+const isCreatureCharacteristicGroup = computed(() => (props.selected?.group ?? form.group) === 'creature');
 
 /**
  * Normalise les ids (select multiple renvoie parfois des chaînes).
@@ -1292,6 +1296,9 @@ function submitConvertToLinked() {
                                                 :autocomplete-use-brackets="true"
                                                 placeholder="ex: [level]*2 ou table par niveau"
                                             />
+                                            <p v-if="isCreatureCharacteristicGroup" class="mt-1 text-xs text-base-content/70">
+                                                Couche base uniquement : ne pas y mettre les bonus d’équipement (*_object) — ils s’ajoutent au runtime (base + objets + contexte).
+                                            </p>
                                             <p v-if="ent.formula" class="mt-2 text-xs text-base-content/60">Le graphique sera disponible après enregistrement.</p>
                                         </div>
                                         <div class="sm:col-span-2">
@@ -1748,6 +1755,9 @@ function submitConvertToLinked() {
                                         chart-y-label="Résultat"
                                     />
                                     <p class="mt-1 text-xs text-base-content/70">Syntaxe : [id], floor(), ceil(), round(), sqrt(), pow(), min(), max(), cos/sin/tan, etc. + - * /</p>
+                                    <p v-if="isCreatureCharacteristicGroup" class="mt-1 text-xs text-base-content/70">
+                                        Couche base uniquement : ne pas y mettre les bonus d’équipement (*_object) — ils s’ajoutent au runtime (base + objets + contexte).
+                                    </p>
                                 </div>
                                 <div class="sm:col-span-2">
                                     <label class="label"><span class="label-text">Formule (affichage)</span></label>
@@ -1755,7 +1765,7 @@ function submitConvertToLinked() {
                                         :model-value="ent.formula_display"
                                         :suggestions="allCharacteristicKeySuggestions"
                                         :use-brackets="false"
-                                        placeholder="ex: vitality_creature + initiative_object"
+                                        placeholder="ex: vitality_creature + hit_dice_creature"
                                         input-class="input input-bordered w-full font-mono text-sm"
                                         @update:model-value="(v) => (ent.formula_display = v)"
                                     />
@@ -1876,7 +1886,7 @@ function submitConvertToLinked() {
                                         :model-value="generalEntityRow().formula_display"
                                         :suggestions="allCharacteristicKeySuggestions"
                                         :use-brackets="false"
-                                        placeholder="ex: vitality_creature + initiative_object"
+                                        placeholder="ex: vitality_creature + hit_dice_creature"
                                         input-class="input input-bordered w-full font-mono text-sm"
                                         @update:model-value="(v) => (generalEntityRow().formula_display = v)"
                                     />
@@ -2099,6 +2109,9 @@ function submitConvertToLinked() {
                                         chart-y-label="Résultat"
                                     />
                                     <p class="mt-1 text-xs text-base-content/70">Syntaxe : [id], floor(), ceil(), round(), sqrt(), pow(), min(), max(), etc. + - * /</p>
+                                    <p v-if="isCreatureCharacteristicGroup" class="mt-1 text-xs text-base-content/70">
+                                        Couche base uniquement : ne pas y mettre les bonus d’équipement (*_object) — ils s’ajoutent au runtime (base + objets + contexte).
+                                    </p>
                                 </div>
                                 <div class="sm:col-span-2">
                                     <label class="label"><span class="label-text">Formule (affichage)</span></label>
@@ -2106,7 +2119,7 @@ function submitConvertToLinked() {
                                         :model-value="entityRow(entityKey).formula_display"
                                         :suggestions="allCharacteristicKeySuggestions"
                                         :use-brackets="false"
-                                        placeholder="ex: vitality_creature + initiative_object"
+                                        placeholder="ex: vitality_creature + hit_dice_creature"
                                         input-class="input input-bordered w-full font-mono text-sm"
                                         @update:model-value="(v) => (entityRow(entityKey).formula_display = v)"
                                     />
@@ -2178,7 +2191,7 @@ function submitConvertToLinked() {
                                         :model-value="entityRow(entityKey).formula_display"
                                         :suggestions="allCharacteristicKeySuggestions"
                                         :use-brackets="false"
-                                        placeholder="ex: vitality_creature + initiative_object"
+                                        placeholder="ex: vitality_creature + hit_dice_creature"
                                         input-class="input input-bordered w-full font-mono text-sm"
                                         @update:model-value="(v) => (entityRow(entityKey).formula_display = v)"
                                     />
@@ -2331,6 +2344,7 @@ function submitConvertToLinked() {
                         <li class="[overflow-wrap:anywhere]">{{ formulaHelpContent.funcs2 }}</li>
                     </ul>
                     <p class="text-sm mt-2 text-base-content/80 w-full max-w-full min-w-0 [overflow-wrap:anywhere]">{{ formulaHelpContent.examples }}</p>
+                    <p class="text-sm mt-2 text-warning w-full max-w-full min-w-0 [overflow-wrap:anywhere]">{{ formulaHelpContent.equipment }}</p>
                 </div>
             </div>
         </Teleport>
