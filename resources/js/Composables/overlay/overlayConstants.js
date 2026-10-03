@@ -47,9 +47,13 @@ export const OVERLAY_Z_INDEX = Object.freeze({
     floatingPanel: 1200,
 });
 
-/** Recherche globale header : `dialog.showModal()` (top layer) au-dessus des overlays z-index. */
+/**
+ * Panneau de la recherche globale, à l’intérieur du `dialog` (top layer).
+ * Doit rester sous {@link OVERLAY_Z_INDEX.floatingPanel} : les tooltips y sont
+ * téléportés et passent sinon derrière le champ et la croix.
+ */
 export const GLOBAL_SEARCH_Z_INDEX = Object.freeze({
-    panel: 1260,
+    panel: 1,
 });
 
 export const DEFAULT_OVERLAY_OPTIONS = Object.freeze({

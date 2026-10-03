@@ -33,6 +33,7 @@ import { router } from "@inertiajs/vue3";
 import DiceFormulaStrip from "@/Pages/Molecules/data-display/DiceFormulaStrip.vue";
 import { parseDiceFormula, rollDiceFormula } from "@/Utils/dice/diceParser.js";
 import { useGlobalSearchUi } from "@/Composables/layout/useGlobalSearchUi";
+import { GLOBAL_SEARCH_Z_INDEX } from "@/Composables/overlay/overlayConstants";
 
 /** @typedef {InstanceType<typeof InputField> & { focus?: () => void }} SearchInputFieldRef */
 
@@ -351,6 +352,7 @@ watch([loading, groupedResults], () => {
             <div
                 ref="panelRef"
                 class="global-search-root global-search-root--active"
+                :style="{ zIndex: GLOBAL_SEARCH_Z_INDEX.panel }"
                 @click.stop
             >
                 <div class="global-search-panel global-search-panel--expanded flex flex-col gap-2">
@@ -581,7 +583,6 @@ watch([loading, groupedResults], () => {
     position: fixed;
     left: 50%;
     top: 1rem;
-    z-index: 1260;
     width: min(48rem, calc(100vw - 2rem));
     transform: translateX(-50%);
 }

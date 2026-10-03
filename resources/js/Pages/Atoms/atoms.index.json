@@ -694,7 +694,7 @@
       {
         "name": "variant",
         "type": "String",
-        "desc": "- Style DaisyUI ('', 'outline', 'dash', 'soft') — ignoré en mode glass"
+        "desc": "- Style DaisyUI ('', 'outline', 'dash', 'soft'). outline/dash retirent le voile."
       },
       {
         "name": "direction",
@@ -709,7 +709,7 @@
       {
         "name": "glass",
         "type": "Boolean",
-        "desc": "- Surface charte (bg-glass + ombre/bordure teintées), défaut true"
+        "desc": "- Voile teinté + flou (`.bd-glass-lg`, `.color-*`, `.bg-color-*`), défaut true"
       },
       {
         "name": "shadow",

@@ -80,10 +80,20 @@ $brightness-sizes: (
     backdrop-filter: blur(0px) brightness(1);
 }
 
+// Flou + luminosité (classes .bd-glass-* et surfaces qui les réutilisent).
+@mixin bd-glass($size) {
+    $blur: map.get($blur-sizes, $size);
+    $brightness: map.get($brightness-sizes, $size);
+    @if $blur and $brightness {
+        backdrop-filter: blur(#{$blur}px) brightness(#{$brightness});
+        -webkit-backdrop-filter: blur(#{$blur}px) brightness(#{$brightness});
+    }
+}
+
 // Génération des classes combinées blur + brightness pour le glassmorphisme
 @each $size in (xs, sm, md, lg, xl) {
     .bd-glass-#{$size} {
-        backdrop-filter: blur(map.get($blur-sizes, $size) + px) brightness(map.get($brightness-sizes, $size));
+        @include bd-glass($size);
     }
 }
 $outer-shadows: ();

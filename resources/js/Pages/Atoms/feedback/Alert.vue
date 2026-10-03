@@ -7,8 +7,8 @@
  * - Slots : #icon (icône SVG ou composant), #content (contenu HTML), #action (boutons)
  * - Prop content : texte simple (prioritaire si pas de slot #content)
  * - Props DaisyUI : color (info, success, warning, error), variant (outline, dash, soft), direction (vertical/horizontal)
- * - Mode glass (défaut) : fond type carte minimale (`bg-glass-2xl`), texte `base-content`,
- *   contour fin teinté + ombre portée de la couleur d’alerte (lisible, charte projet)
+ * - Mode glass (défaut) : voile semi-opaque teinté (`.bg-color-*-400` + `.color-*`),
+ *   flou `.bd-glass-lg`, texte `base-content` (lisible sur le fond du thème).
  * - Props utilitaires custom : shadow, backdrop, opacity (via getCustomUtilityProps)
  * - Responsive : vertical sur mobile, horizontal sur desktop
  * - Toutes les classes DaisyUI sont écrites en toutes lettres
@@ -25,10 +25,10 @@
  * </Alert>
  *
  * @props {String} color - Couleur DaisyUI ('', 'info', 'success', 'warning', 'error')
- * @props {String} variant - Style DaisyUI ('', 'outline', 'dash', 'soft') — ignoré en mode glass
+ * @props {String} variant - Style DaisyUI ('', 'outline', 'dash', 'soft'). outline/dash retirent le voile.
  * @props {String} direction - Direction ('', 'vertical', 'horizontal'), défaut responsive
  * @props {String} content - Texte simple à afficher (optionnel, prioritaire sur slot #content)
- * @props {Boolean} glass - Surface charte (bg-glass + ombre/bordure teintées), défaut true
+ * @props {Boolean} glass - Voile teinté + flou (`.bd-glass-lg`, `.color-*`, `.bg-color-*`), défaut true
  * @props {String} shadow, backdrop, opacity - utilitaires custom ('' | 'xs' | ...)
  * @props {String|Object} id, ariaLabel, role, tabindex - hérités de commonProps
  * @slot icon - Icône SVG ou composant
@@ -65,36 +65,42 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    /** Surface type carte minimale + accent couleur (recommandé). */
+    /** Voile teinté semi-opaque + flou (recommandé). */
     glass: {
         type: Boolean,
         default: true,
     },
 });
 
-/** Accent sémantique pour `--color` (bordure / ombre), voir `.alert-surface`. */
-const surfaceColorClass = computed(() => {
-    switch (props.color) {
+/**
+ * Teinte du verre : `--color` (filet) et `--bg-color` (voile).
+ * Classes écrites en toutes lettres (pas de concaténation).
+ *
+ * @param {string} color
+ * @returns {string[]}
+ */
+function glassToneClasses(color) {
+    switch (color) {
         case 'info':
-            return 'color-info';
+            return ['color-info', 'bg-color-info-400'];
         case 'success':
-            return 'color-success';
+            return ['color-success', 'bg-color-success-400'];
         case 'warning':
-            return 'color-warning';
+            return ['color-warning', 'bg-color-warning-400'];
         case 'error':
-            return 'color-error';
+            return ['color-error', 'bg-color-error-400'];
         case 'primary':
-            return 'color-primary';
+            return ['color-primary', 'bg-color-primary-400'];
         case 'secondary':
-            return 'color-secondary';
+            return ['color-secondary', 'bg-color-secondary-400'];
         case 'accent':
-            return 'color-accent';
+            return ['color-accent', 'bg-color-accent-400'];
         case 'neutral':
-            return 'color-neutral';
+            return ['color-neutral', 'bg-color-neutral-400'];
         default:
-            return 'color-neutral';
+            return ['color-neutral', 'bg-color-neutral-400'];
     }
-});
+}
 
 /** Teinte d’icône (contraste sur fond glass). */
 const iconToneClass = computed(() => {
@@ -122,20 +128,19 @@ const atomClasses = computed(() =>
     mergeClasses(
         [
             'alert',
-            !props.glass && props.color === 'info' && 'alert-info',
-            !props.glass && props.color === 'success' && 'alert-success',
-            !props.glass && props.color === 'warning' && 'alert-warning',
-            !props.glass && props.color === 'error' && 'alert-error',
-            !props.glass && props.variant === 'outline' && 'alert-outline',
-            !props.glass && props.variant === 'dash' && 'alert-dash',
-            !props.glass && props.variant === 'soft' && 'alert-soft',
-            props.glass && 'alert-surface',
             props.glass && 'relative',
-            props.glass && 'rounded-box',
-            props.glass && 'border',
-            props.glass && 'bg-glass-2xl',
+            props.glass && 'isolate',
+            props.glass && 'bd-glass-lg',
             props.glass && 'text-base-content',
-            props.glass && surfaceColorClass.value,
+            ...(props.glass ? glassToneClasses(props.color) : []),
+            !props.glass && 'alert-solid',
+            props.color === 'info' && 'alert-info',
+            props.color === 'success' && 'alert-success',
+            props.color === 'warning' && 'alert-warning',
+            props.color === 'error' && 'alert-error',
+            props.variant === 'outline' && 'alert-outline',
+            props.variant === 'dash' && 'alert-dash',
+            props.variant === 'soft' && 'alert-soft',
             props.direction === 'vertical' && 'alert-vertical',
             props.direction === 'horizontal' && 'alert-horizontal',
             !props.direction && 'alert-vertical',
@@ -152,7 +157,7 @@ const attrs = computed(() => getCommonAttrs(props));
 <template>
     <div :class="atomClasses" v-bind="attrs" role="alert" v-on="$attrs">
         <!-- Icone + contenu côte à côte -->
-        <div class="flex items-center gap-3 flex-1">
+        <div class="flex items-start gap-3 flex-1">
             <span v-if="$slots.icon && showIcon" class="shrink-0" :class="glass ? iconToneClass : undefined">
                 <slot name="icon" />
             </span>
@@ -197,22 +202,3 @@ const attrs = computed(() => getCommonAttrs(props));
         </div>
     </div>
 </template>
-
-<style scoped>
-/**
- * Surface charte : fond type carte minimale (`bg-glass-2xl`) ;
- * accent via `--color` (classes `.color-*`).
- * Spécificité > DaisyUI `.alert` pour conserver le glass lisible.
- */
-.alert.alert-surface {
-    background-color: rgba(255, 255, 255, 0.09);
-    background-image: none;
-    color: var(--color-base-content);
-    border-color: color-mix(in oklch, var(--color, var(--color-base-content)) 32%, transparent);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow:
-        0 0 0 1px color-mix(in oklch, var(--color, var(--color-base-content)) 14%, transparent),
-        0 12px 28px -12px color-mix(in oklch, var(--color, var(--color-base-content)) 42%, transparent);
-}
-</style>

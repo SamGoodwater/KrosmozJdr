@@ -1,0 +1,89 @@
+// Surface des alertes.
+// Teinte : mêmes jetons que .color-* (niveau 500) et .bg-color-*-400.
+// Flou : mixin bd-glass(lg) — blur 20px, brightness 1.2.
+// Le fond mélange la teinte au fond de thème, encore transparent, pour que
+// le flou se voie et que le texte base-content reste contrasté.
+
+@use "./_backdrop" as backdrop;
+
+@mixin alert-tone($name) {
+  --color: var(--color-#{$name}-500);
+  --bg-color: var(--color-#{$name}-400);
+}
+
+.alert {
+  @include backdrop.bd-glass(lg);
+
+  position: relative;
+  isolation: isolate;
+  align-items: flex-start;
+  color: var(--color-base-content);
+  background-image: none;
+  background-color: color-mix(in srgb, var(--bg-color) 34%, transparent);
+  border-color: color-mix(in srgb, var(--color) 55%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color) 18%, transparent),
+    0 12px 28px -16px color-mix(in srgb, var(--color) 50%, transparent);
+
+  > i,
+  > svg {
+    color: var(--color, var(--color-base-content));
+    margin-top: 0.125rem;
+  }
+}
+
+.alert :where(p, li, ul, ol, strong, em) {
+  color: inherit;
+}
+
+.alert-info {
+  @include alert-tone(info);
+}
+
+.alert-success {
+  @include alert-tone(success);
+}
+
+.alert-warning {
+  @include alert-tone(warning);
+}
+
+.alert-error {
+  @include alert-tone(error);
+}
+
+// Contour seul : pas de voile coloré.
+.alert.alert-outline,
+.alert.alert-dash {
+  background-color: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+// Repli DaisyUI plein (prop glass=false).
+.alert.alert-solid {
+  color: var(--color-base-content);
+  background-color: var(--alert-color, var(--color-base-200));
+  background-image: none;
+  border-color: var(--alert-border-color, var(--color-base-200));
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.alert.alert-solid.alert-info {
+  color: var(--color-info-content);
+}
+
+.alert.alert-solid.alert-success {
+  color: var(--color-success-content);
+}
+
+.alert.alert-solid.alert-warning {
+  color: var(--color-warning-content);
+}
+
+.alert.alert-solid.alert-error {
+  color: var(--color-error-content);
+}

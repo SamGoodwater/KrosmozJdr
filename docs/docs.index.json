@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "La page **Journal** dit en peu de mots ce qui est déjà jouable, et une frise indique la suite : campagnes, scénarios et fiches en 1.4, puis des outils de combat en 1.5. Les textes restent des fichiers markdown. Un admin les modifie depuis la page."
+    "description": "Pendant le chargement, des phrases courtes défilent en bas de l’écran. Un admin règle la durée de chaque astuce."
   },
   {
     "path": "backend/_ai.md",

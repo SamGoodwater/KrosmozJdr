@@ -16,6 +16,6 @@ Les infobulles hover (`Tooltip.vue` → `OverlayTrigger`) restent ouvertes tant 
 
 ## Alertes
 
-En mode glass (défaut), `Alert` reprend le fond des cartes minimales (`bg-glass-2xl`), un texte `base-content`, une bordure fine et une ombre teintées par la couleur sémantique (`color-info`, etc.).
+En mode glass (défaut), `Alert` pose un voile semi-opaque de la couleur d’alerte (`.color-*` et `.bg-color-*-400`), un flou `.bd-glass-lg` et un texte `base-content`. Le HTML CMS qui utilise encore `alert alert-info` (ou success, warning, error) reçoit la même surface via `resources/scss/src/_alert.scss`. `glass="false"` retrouve l’aplat DaisyUI.
 
 Un `Dropdown` ouvert depuis une carte minimale (`EntityMinimalCard`) maintient la carte déployée (`entityMinimalCardOverlayHold` et `data-dropdown-open`) : le menu est téléporté hors de la carte.
