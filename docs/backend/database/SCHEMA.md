@@ -503,8 +503,6 @@ erDiagram
     do_fixe_feu : text
     do_fixe_air : text
     do_fixe_eau : text
-    do_sagesse : text
-    do_vitalite : text
     res_fixe_neutre : text
     res_fixe_terre : text
     res_fixe_feu : text
@@ -515,8 +513,6 @@ erDiagram
     res_feu : text
     res_air : text
     res_eau : text
-    res_sagesse : text
-    res_vitalite : text
     acrobatie_bonus : text
     discretion_bonus : text
     escamotage_bonus : text
@@ -535,9 +531,6 @@ erDiagram
     persuasion_bonus : text
     representation_bonus : text
     supercherie_bonus : text
-    artisanat_bonus : varchar(255)
-    herbaliste_bonus : varchar(255)
-    connaissance_creatures_bonus : varchar(255)
     acrobatie_mastery : tinyint(4)
     discretion_mastery : tinyint(4)
     escamotage_mastery : tinyint(4)
@@ -557,9 +550,6 @@ erDiagram
     persuasion_mastery : tinyint(4)
     representation_mastery : tinyint(4)
     supercherie_mastery : tinyint(4)
-    artisanat_mastery : tinyint(4)
-    herbaliste_mastery : tinyint(4)
-    connaissance_creatures_mastery : tinyint(4)
     save_vitality_bonus : text
     save_wisdom_bonus : text
     save_strength_bonus : text
@@ -611,8 +601,6 @@ erDiagram
     do_fixe_feu_context : text
     do_fixe_air_context : text
     do_fixe_eau_context : text
-    do_sagesse_context : text
-    do_vitalite_context : text
     res_fixe_neutre_context : text
     res_fixe_terre_context : text
     res_fixe_feu_context : text
@@ -623,8 +611,6 @@ erDiagram
     res_feu_context : text
     res_air_context : text
     res_eau_context : text
-    res_sagesse_context : text
-    res_vitalite_context : text
     acrobatie_bonus_context : text
     discretion_bonus_context : text
     escamotage_bonus_context : text

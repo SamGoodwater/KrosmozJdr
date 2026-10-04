@@ -1279,7 +1279,7 @@ return [
         'mapping_key' => 'res_feu',
         'from_path' => 'grades.0.fireResistance',
         'from_lang_aware' => false,
-        'characteristic_key' => 'resistance_fire_creature',
+        'characteristic_key' => null,
         'formatters' => [
             0 => [
                 'name' => 'convertCharacteristic',
@@ -2065,6 +2065,12 @@ return [
             0 => [
                 'name' => 'nullableInt',
                 'args' => [],
+            ],
+            1 => [
+                'name' => 'clampToCharacteristic',
+                'args' => [
+                    'characteristicId' => 'power_spell',
+                ],
             ],
         ],
         'spell_level_aggregation' => null,
