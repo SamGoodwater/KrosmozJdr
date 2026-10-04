@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Résistances d’une fiche neuve
+
+Créer un PNJ ou un monstre vide ne force plus les résistances fixes à zéro. Ces champs restent vides : l’équipement et les formules s’ajoutent comme pour les autres caractéristiques. Un zéro écrit à la main reste un total explicite.
+
 ## Octobre 2026 — La base garde les modifications
 
 Les changements faits dans l’application (caractéristiques, pages seedées, fiches versionnées…) ne sont plus écrasés au redémarrage du serveur. Les fichiers de seed ne remplissent que ce qui manque. Une sauvegarde hors production recopie la base vers ces fichiers. Pour forcer le retour aux fichiers du dépôt : `project:seed --overwrite`. Les boutons d’export/import seeders ont été retirés de l’admin (caractéristiques, IA métier) : seul l’écran Sauvegarde pilote cette copie, pour éviter d’écraser des données par erreur.

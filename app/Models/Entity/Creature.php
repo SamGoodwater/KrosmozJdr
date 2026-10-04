@@ -50,11 +50,11 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $do_fixe_multiple
  * @property string $do_sagesse
  * @property string $do_vitalite
- * @property string $res_fixe_neutre
- * @property string $res_fixe_terre
- * @property string $res_fixe_feu
- * @property string $res_fixe_air
- * @property string $res_fixe_eau
+ * @property string|null $res_fixe_neutre
+ * @property string|null $res_fixe_terre
+ * @property string|null $res_fixe_feu
+ * @property string|null $res_fixe_air
+ * @property string|null $res_fixe_eau
  * @property string $res_neutre
  * @property string $res_terre
  * @property string $res_feu
@@ -579,19 +579,6 @@ class Creature extends Model implements HasMedia
 
         return is_string($value) ? $value : (string) $value;
     }
-
-    /**
-     * Défauts applicatifs : MySQL 8 refuse DEFAULT SQL sur TEXT (SQLSTATE 1101).
-     *
-     * @var array<string, mixed>
-     */
-    protected $attributes = [
-        'res_fixe_neutre' => '0',
-        'res_fixe_terre' => '0',
-        'res_fixe_feu' => '0',
-        'res_fixe_air' => '0',
-        'res_fixe_eau' => '0',
-    ];
 
     /**
      * The conditions that should be cast.
