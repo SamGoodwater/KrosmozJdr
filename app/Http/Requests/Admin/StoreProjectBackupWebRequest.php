@@ -26,6 +26,7 @@ class StoreProjectBackupWebRequest extends FormRequest
         return [
             'no_database' => ['sometimes', 'boolean'],
             'no_storage' => ['sometimes', 'boolean'],
+            'no_game' => ['sometimes', 'boolean'],
             'no_seeder_data' => ['sometimes', 'boolean'],
             'no_prune' => ['sometimes', 'boolean'],
             'prune_only' => ['sometimes', 'boolean'],
@@ -48,6 +49,9 @@ class StoreProjectBackupWebRequest extends FormRequest
         }
         if ($this->boolean('no_storage')) {
             $opts['--no-storage'] = true;
+        }
+        if ($this->boolean('no_game')) {
+            $opts['--no-game'] = true;
         }
         if ($this->boolean('no_seeder_data')) {
             $opts['--no-seeder-data'] = true;

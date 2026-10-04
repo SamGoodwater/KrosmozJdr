@@ -18,13 +18,13 @@ class RunProjectBackupJob implements ShouldQueue
 {
     use Queueable;
 
-    public int $timeout = 3600;
+    public int $timeout = 7200;
 
     public int $tries = 1;
 
     private const LOCK_KEY = 'project-backup-web';
 
-    private const LOCK_TTL_SECONDS = 3600;
+    private const LOCK_TTL_SECONDS = 7200;
 
     /**
      * @param  array<string, mixed>  $artisanOptions  Options passées à `Artisan::call('project:backup', …)`

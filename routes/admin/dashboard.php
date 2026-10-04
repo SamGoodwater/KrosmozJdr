@@ -69,9 +69,17 @@ Route::prefix('admin/backup')
     ->middleware(['auth', 'role:super_admin'])
     ->group(function () {
         Route::get('/', [ProjectBackupWebController::class, 'index'])->name('index');
+        Route::get('/restore-status', [ProjectBackupWebController::class, 'restoreStatus'])
+            ->name('restore-status');
         Route::post('/run', [ProjectBackupWebController::class, 'store'])
             ->middleware(['password.confirm', 'throttle:6,1'])
             ->name('run');
+        Route::post('/delete', [ProjectBackupWebController::class, 'destroy'])
+            ->middleware(['password.confirm', 'throttle:6,1'])
+            ->name('delete');
+        Route::post('/restore', [ProjectBackupWebController::class, 'restore'])
+            ->middleware(['password.confirm', 'throttle:2,1'])
+            ->name('restore');
     });
 
 Route::prefix('admin/orphan-files')

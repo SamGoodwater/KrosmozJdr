@@ -105,7 +105,9 @@ final class ProjectScheduleRegistrar
 
         if ((bool) env('PROJECT_BACKUP_ENABLED', false)) {
             $cron = (string) env('PROJECT_BACKUP_CRON', '0 4 * * *');
-            $schedule->command('project:backup')->cron($cron);
+            $schedule->command('project:backup')
+                ->cron($cron)
+                ->withoutOverlapping(180);
         }
 
         if ((bool) env('MEDIA_CLEAR_ORPHAN_FILES_ENABLED', false)) {

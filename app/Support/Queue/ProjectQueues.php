@@ -38,7 +38,7 @@ final class ProjectQueues
      */
     private const WORKERS = [
         self::NOTIFICATIONS => ['timeout' => 120, 'max_jobs' => null],
-        self::BACKUP => ['timeout' => 3600, 'max_jobs' => 1],
+        self::BACKUP => ['timeout' => 7200, 'max_jobs' => 1],
         self::SCRAPPING => ['timeout' => 7200, 'max_jobs' => null],
         self::IA => ['timeout' => 180, 'max_jobs' => 1],
         self::RULES_DOWNLOADS => ['timeout' => 1800, 'max_jobs' => 1],

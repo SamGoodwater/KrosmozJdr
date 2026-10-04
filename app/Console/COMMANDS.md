@@ -261,18 +261,58 @@ cron: true
 admin: /admin/backup
 ```
 
-Dump BDD (gzip) + archive `storage/app`, purge selon rétention. Hors production : réécrit aussi les fichiers de seed depuis la base (caractéristiques, types item, mappings scrapping, équipements versionnés). `--no-seeder-data` pour désactiver cet export.
+Archive ZIP unique (`{prefix}_YYYY-MM-DD_HH-mm-ss_xxxx.zip`) : dump BDD + `storage/app` + `private/game` + manifeste v2 (checksums). Purge selon rétention. Hors production : réécrit aussi les fichiers de seed depuis la base. Options : `--no-database`, `--no-storage`, `--no-game`, `--no-seeder-data`, `--prune-only`, `--dry-run`.
 
 ```bash
 php artisan project:backup
-php artisan project:backup --no-storage
+php artisan project:backup --no-storage --no-game
 php artisan project:backup --no-seeder-data
 php artisan project:backup --prune-only --dry-run
+php artisan project:backup:list
+php artisan project:backup:delete {name} --yes
+php artisan project:backup:restore {name} --yes
 ```
 
-Admin : `/admin/backup` (option « Ne pas réécrire les fichiers de seed » = `--no-seeder-data`). Cron : `project_backup`. Pas d’export/import seeders ailleurs dans l’UI (CLI uniquement).
+Admin : `/admin/backup` (lancer, lister, supprimer, restaurer). Cron : `project_backup`. Restauration guidée : [docs/operations/README.md — Sauvegardes](../../docs/operations/README.md#sauvegardes-projectbackup).
 
-Restauration manuelle (gunzip + mysql/mariadb, extract tar/zip storage) : [docs/operations/README.md — Sauvegardes](../../docs/operations/README.md#sauvegardes-projectbackup).
+---
+
+## `project:backup:list`
+
+```yaml
+signature: project:backup:list
+domain: backup
+ui: false
+cron: false
+```
+
+Liste les archives (ZIP v2 et legacy) avec format, composants, intégrité, taille.
+
+---
+
+## `project:backup:delete`
+
+```yaml
+signature: project:backup:delete
+domain: backup
+ui: false
+cron: false
+```
+
+Supprime une archive par nom canonique. Confirmation : `-y` / `--yes`.
+
+---
+
+## `project:backup:restore`
+
+```yaml
+signature: project:backup:restore
+domain: backup
+ui: false
+cron: false
+```
+
+Restaure une archive ZIP v2 (vérif checksums, sauvegarde de secours, maintenance). Confirmation : `--yes`. Option `--no-safety-backup`, `--write-status` (suivi fichier pour l’UI).
 
 ---
 

@@ -84,4 +84,38 @@ class ProjectSuperConsoleTest extends TestCase
         Artisan::call('schedule:list');
         $this->assertStringContainsString('media:clean-thumbnails', Artisan::output());
     }
+
+    public function test_enabled_project_backup_appears_in_schedule_list(): void
+    {
+        $row = ProjectScheduleTask::query()->where('task_key', 'project_backup')->firstOrFail();
+        $row->forceFill([
+            'enabled' => true,
+            'cron_expression' => '0 4 * * *',
+            'without_overlapping' => true,
+        ])->save();
+
+        Artisan::call('schedule:list');
+        $output = Artisan::output();
+        $this->assertStringContainsString('project:backup', $output);
+    }
+
+    public function test_project_backup_task_exposes_admin_href(): void
+    {
+        $super = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+        $backupHref = route('admin.backup.index');
+
+        $this->actingAs($super)
+            ->get(route('admin.project-schedule.index'))
+            ->assertOk()
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->component('Admin/project-schedule/Index')
+                ->where('tasks', function (mixed $tasks) use ($backupHref): bool {
+                    $backup = collect($tasks)->firstWhere('task_key', 'project_backup');
+
+                    return is_array($backup)
+                        && ($backup['admin_href'] ?? null) === $backupHref
+                        && ($backup['command'] ?? null) === 'project:backup';
+                })
+            );
+    }
 }

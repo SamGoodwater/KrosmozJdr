@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Sauvegardes ZIP fiabilisées
+
+Une sauvegarde produit désormais une seule archive ZIP horodatée (base, médias `storage/app`, contenu `private/game`, manifeste avec checksums). On peut lister, supprimer et restaurer depuis la ligne de commande et la page admin Sauvegarde, avec confirmation renforcée et sauvegarde de secours avant restauration. Le cron configurable `project_backup` reste disponible ; le verrou empêche deux opérations en parallèle.
+
 ## Octobre 2026 — Nettoyage des caractéristiques
 
 Suppression des caractéristiques en trop (compétences Artisanat / Herbaliste / Connaissance des créatures, échec critique d’équipement, puissance et poussée de sort, dommages et résistances sagesse·vitalité). Les bornes numériques créature / objet / sort sont symétriques (`min = −max`), avec recalcul des plafonds monstre. Les libellés parlent de **dommage** fixe. Les règles et la doc technique suivent.

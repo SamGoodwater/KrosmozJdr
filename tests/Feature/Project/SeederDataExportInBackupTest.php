@@ -40,9 +40,11 @@ final class SeederDataExportInBackupTest extends TestCase
                 error: static fn () => null,
                 withSeederData: true,
                 seederDataExport: $fake,
+                withGame: false,
             );
 
             $this->assertSame(['fake-export'], $result['seeder_exports']);
+            $this->assertTrue($result['ok']);
         } finally {
             foreach (glob($dir.'/*') ?: [] as $f) {
                 @unlink($f);
@@ -70,11 +72,13 @@ final class SeederDataExportInBackupTest extends TestCase
                 static fn () => null,
                 false,
                 $fake,
+                false,
             );
 
             // Sans aucune cible : run_id vide
             $this->assertSame('', $result['run_id']);
             $this->assertSame([], $result['seeder_exports']);
+            $this->assertFalse($result['ok']);
         } finally {
             foreach (glob($dir.'/*') ?: [] as $f) {
                 @unlink($f);

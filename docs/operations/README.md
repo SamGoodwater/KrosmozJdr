@@ -68,7 +68,9 @@ Chaque type de travail a sa file (`App\Support\Queue\ProjectQueues`) : `notifica
 
 ## Sauvegardes (`project:backup`)
 
-Dump BDD gzip + archive `storage/app` (hors `app/backups`), rotation, UI et cron. Hors production : réécrit aussi les fichiers de seed versionnés depuis la base (caractéristiques, types item, mappings scrapping, équipements `--versioned`). Vocabulaire CLI : [COMMANDS.md — project:backup](../../app/Console/COMMANDS.md#projectbackup). Service : `app/Services/Project/ProjectBackupService.php` + `SeederDataExportService`. Config : `config/project-backup.php`.
+Archive ZIP unique horodatée (BDD + `storage/app` hors backups + `private/game`), manifeste v2 avec checksums SHA-256, inventaire / suppression / restauration (CLI + UI), rotation, cron. Hors production : peut aussi réécrire les fichiers de seed versionnés depuis la base. Vocabulaire CLI : [COMMANDS.md — project:backup](../../app/Console/COMMANDS.md#projectbackup). Services : `ProjectBackupService`, `ProjectBackupRestoreService`, `SeederDataExportService`. Config : `config/project-backup.php`.
+
+**Périmètre** : base MySQL/MariaDB (dump SQL gzip) ou SQLite (copie compressée), médias et fichiers sous `storage/app`, contenu `private/game`. **Jamais inclus** : `.env`, code applicatif, `storage/framework`, `storage/logs`.
 
 La base est la source de vérité ; les JSON sous `database/seeders/data/` en sont une copie. Au démarrage (`project:dev` / `project:prepare`), le seed ne crée que les lignes absentes. Pour réappliquer volontairement les fichiers : `project:seed --overwrite`.
 
@@ -76,49 +78,40 @@ Voir aussi : [SECRET_SCAN.md](./SECRET_SCAN.md) (hook pre-push + CI gitleaks).
 
 | Élément | Détail |
 |--------|--------|
-| Fichiers | `{prefix}_{runId}_mysql.sql.gz` + `{prefix}_{runId}_storage.tar.gz` (ou `.zip` si `tar` indisponible) |
-| Seeders (hors prod) | `scrapping:seeders:export` (characteristics, item-types, scrapping-mappings) + `items:seeder-export --versioned` ; `--no-seeder-data` pour skip |
-| Répertoire | `PROJECT_BACKUP_PATH` ou défaut `storage/app/backups` |
-| Rétention | `PROJECT_BACKUP_RETENTION_DAYS` (défaut **30** j) ; purge à chaque run sauf `--no-prune` / `--prune-only` |
-| Cron | clé catalogue `project_backup` ; seed `.env` : `PROJECT_BACKUP_ENABLED=false`, `PROJECT_BACKUP_CRON="0 4 * * *"` |
-| UI | `/admin/backup` (super_admin, file `backup` + worker ponctuel, confirmation mot de passe ; case « Ne pas réécrire les fichiers de seed » hors prod) |
-| Prérequis | binaire `mysqldump` (MySQL/MariaDB) ; protéger le répertoire (données sensibles) |
+| Fichier | `{prefix}_YYYY-MM-DD_HH-mm-ss_xxxx.zip` (ex. `project-backup_2026-10-05_04-00-00_1234.zip`) |
+| Contenu ZIP | `manifest.json`, `database/mysql.sql.gz` ou `database/sqlite.db.gz`, `storage/app/…`, `private/game/…` |
+| Seeders (hors prod) | `scrapping:seeders:export` + `items:seeder-export --versioned` ; `--no-seeder-data` pour skip (écritures dépôt, hors ZIP) |
+| Répertoire | `PROJECT_BACKUP_PATH` (sous la racine projet) ou défaut `storage/app/backups` |
+| Rétention | `PROJECT_BACKUP_RETENTION_DAYS` (défaut **30** j) ; purge par archive complète |
+| Cron | clé catalogue `project_backup` ; seed `.env` : `PROJECT_BACKUP_ENABLED=false`, `PROJECT_BACKUP_CRON="0 4 * * *"` ; `withoutOverlapping(180)` |
+| UI | `/admin/backup` : lancer, lister, supprimer, restaurer (super_admin + mot de passe) ; suivi restauration fichier (hors file `database`) |
+| CLI | `project:backup`, `project:backup:list`, `project:backup:delete`, `project:backup:restore` |
+| Prérequis | `mysqldump` / `mysql` (MySQL/MariaDB) ; `schedule:run` chaque minute pour le cron ; protéger le répertoire |
+| Legacy | anciennes paires `*_mysql.sql.gz` / `*_storage.*` encore listables et purgables ; **restauration auto réservée au ZIP v2** |
 
 ```bash
 php artisan project:backup
-php artisan project:backup --no-storage
+php artisan project:backup --no-storage --no-game
 php artisan project:backup --no-seeder-data
 php artisan project:backup --prune-only --dry-run
+php artisan project:backup:list
+php artisan project:backup:delete project-backup_2026-10-05_04-00-00_1234.zip --yes
+php artisan project:backup:restore project-backup_2026-10-05_04-00-00_1234.zip --yes
 ```
 
-### Restauration manuelle
+### Restauration
 
-Il n’y a pas de commande Artisan de restore : procédure manuelle. Arrêter l’app / les workers pendant l’opération. Remplacer `BACKUP_DIR` et les noms de fichiers par le run ciblé.
+**Recommandé (ZIP v2)** : `project:backup:restore {name} --yes` ou bouton Restaurer sur `/admin/backup` (retaper le nom exact). Enchaîne : vérification manifeste/checksums → sauvegarde de secours → mode maintenance → restauration BDD + `storage/app` (répertoire backups préservé) + `private/game` → sortie maintenance. Verrou global fichier partagé avec les sauvegardes.
 
-**1. Base MySQL / MariaDB** (`*_mysql.sql.gz`) — client `mysql` ou `mariadb` :
+Après restore : `php artisan storage:link` si besoin, `project:clear --safe`, redémarrer queue / scheduler.
+
+**Legacy (manuel)** — paires pré-ZIP, non restaurées par la commande :
 
 ```bash
 gunzip -c BACKUP_DIR/project-backup_YYYYMMDD_HHMMSS_xxxx_mysql.sql.gz \
   | mysql -u"$DB_USERNAME" -p"$DB_PASSWORD" -h"$DB_HOST" "$DB_DATABASE"
-```
-
-**2. Storage** — l’archive contient le dossier `app/` relativement à `storage/` (excl. `app/backups`) :
-
-```bash
-# tar.gz (cas normal Linux)
 tar -xzf BACKUP_DIR/project-backup_YYYYMMDD_HHMMSS_xxxx_storage.tar.gz -C storage/
-
-# ZIP de repli
-unzip -o BACKUP_DIR/project-backup_YYYYMMDD_HHMMSS_xxxx_storage.zip -d storage/
 ```
-
-**3. SQLite** (connexion sqlite) : le fichier `*_mysql.sql.gz` est une **copie compressée du fichier** SQLite (pas un dump SQL texte) :
-
-```bash
-gunzip -c BACKUP_DIR/project-backup_YYYYMMDD_HHMMSS_xxxx_mysql.sql.gz > chemin/vers/database.sqlite
-```
-
-Après restore : `php artisan storage:link` si besoin, vider les caches applicatifs (`project:clear --safe`), redémarrer queue / scheduler.
 
 ## Planification
 

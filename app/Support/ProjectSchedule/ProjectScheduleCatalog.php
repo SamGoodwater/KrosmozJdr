@@ -100,7 +100,7 @@ final class ProjectScheduleCatalog
                 'overlap_minutes' => 240,
             ],
             'project_backup' => [
-                'label' => 'Sauvegarde projet (BDD + stockage)',
+                'label' => 'Sauvegarde projet (BDD + storage + private/game)',
                 'type' => 'artisan',
                 'command' => 'project:backup',
                 'guide_signature' => 'project:backup',
