@@ -43,7 +43,7 @@
             position: absolute;
             inset: 0;
             transform-origin: center center;
-            animation: site-loading-boot-pulse 40s ease-in-out infinite;
+            animation: site-loading-boot-pulse 17s ease-in-out infinite;
         }
         #site-loading-boot img {
             width: 100%;
