@@ -605,18 +605,6 @@ return [
                     'field_name' => null,
                     'convert' => false,
                 ],
-                'artisanat_mastery' => [
-                    'field_name' => null,
-                    'convert' => false,
-                ],
-                'herbaliste_mastery' => [
-                    'field_name' => null,
-                    'convert' => false,
-                ],
-                'connaissance_creatures_mastery' => [
-                    'field_name' => null,
-                    'convert' => false,
-                ],
                 'kamas' => [
                     'field_name' => null,
                     'convert' => false,

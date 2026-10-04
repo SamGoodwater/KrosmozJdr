@@ -48,8 +48,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string $do_fixe_air
  * @property string $do_fixe_eau
  * @property string|null $do_fixe_multiple
- * @property string $do_sagesse
- * @property string $do_vitalite
  * @property string $res_fixe_neutre
  * @property string $res_fixe_terre
  * @property string $res_fixe_feu
@@ -60,8 +58,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string $res_feu
  * @property string $res_air
  * @property string $res_eau
- * @property string $res_sagesse
- * @property string $res_vitalite
  * @property string $acrobatie_bonus
  * @property string $discretion_bonus
  * @property string $escamotage_bonus
@@ -286,8 +282,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $do_fixe_air_context
  * @property string|null $do_fixe_eau_context
  * @property string|null $do_fixe_multiple_context
- * @property string|null $do_sagesse_context
- * @property string|null $do_vitalite_context
  * @property string|null $res_fixe_neutre_context
  * @property string|null $res_fixe_terre_context
  * @property string|null $res_fixe_feu_context
@@ -298,8 +292,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $res_feu_context
  * @property string|null $res_air_context
  * @property string|null $res_eau_context
- * @property string|null $res_sagesse_context
- * @property string|null $res_vitalite_context
  * @property string|null $acrobatie_bonus_context
  * @property string|null $discretion_bonus_context
  * @property string|null $escamotage_bonus_context
@@ -390,13 +382,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature visibleToUser(?\App\Models\User $user)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoFixeMultiple($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereDoFixeMultipleContext($value)
- * @property string $artisanat_bonus
- * @property string $herbaliste_bonus
- * @property string $connaissance_creatures_bonus
  * @property string $intimidation_ability
- * @property int $artisanat_mastery
- * @property int $herbaliste_mastery
- * @property int $connaissance_creatures_mastery
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereArtisanatBonus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereArtisanatMastery($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereConnaissanceCreaturesBonus($value)
@@ -465,9 +451,7 @@ class Creature extends Model implements HasMedia
         'do_fixe_air',
         'do_fixe_eau',
         'do_fixe_multiple',
-        'do_sagesse',
-        'do_vitalite',
-        'res_fixe_neutre',
+                        'res_fixe_neutre',
         'res_fixe_terre',
         'res_fixe_feu',
         'res_fixe_air',
@@ -477,9 +461,7 @@ class Creature extends Model implements HasMedia
         'res_feu',
         'res_air',
         'res_eau',
-        'res_sagesse',
-        'res_vitalite',
-        'acrobatie_bonus',
+                        'acrobatie_bonus',
         'discretion_bonus',
         'escamotage_bonus',
         'athletisme_bonus',

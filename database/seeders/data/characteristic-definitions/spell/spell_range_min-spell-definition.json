@@ -34,7 +34,7 @@
         "*": {
             "dofusdb_characteristic_id": null,
             "db_column": "po_min",
-            "min": "0",
+            "min": "-20",
             "max": "20",
             "formula": null,
             "formula_display": null,

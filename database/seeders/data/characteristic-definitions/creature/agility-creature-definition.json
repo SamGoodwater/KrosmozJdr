@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": null,
             "db_column": "agi",
-            "min": "6",
+            "min": "-24",
             "max": "24",
             "formula": null,
             "formula_display": null,
@@ -191,8 +191,8 @@
         "monster": {
             "dofusdb_characteristic_id": null,
             "db_column": "agi",
-            "min": "-3",
-            "max": "33",
+            "min": "-48",
+            "max": "48",
             "formula": null,
             "formula_display": null,
             "default_value": "8",

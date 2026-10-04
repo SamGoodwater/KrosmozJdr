@@ -2,10 +2,10 @@
     "_schema_version": "1",
     "characteristic": {
         "key": "fixed_damage_multiple_object",
-        "name": "Bonus de dégâts fixes (multi-éléments)",
+        "name": "Bonus de dommage fixe (multi-éléments)",
         "short_name": "Dmg mult.",
-        "helper": "Équipement (armes) : dégâts fixes appliqués sur plusieurs éléments (2.2.2).",
-        "descriptions": "Bonus de dégâts fixes multi-éléments conféré par l'équipement (armes). S’ajoutent sur plusieurs éléments ; plafonds selon les règles (2.2.2).",
+        "helper": "Équipement (armes) : dommages fixes appliqués sur plusieurs éléments (2.2.2).",
+        "descriptions": "Bonus de dommage fixe multi-éléments conféré par l'équipement (armes). S’ajoutent sur plusieurs éléments ; plafonds selon les règles (2.2.2).",
         "icon": "dmgArme.webp",
         "icon_false": null,
         "color": "slate",
@@ -160,7 +160,7 @@
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Dommages fixes multiples d'équipement. Plus rare.",
+            "norms_description": "Dommage fixe multiples d'équipement. Plus rare.",
             "norms_help_section_id": null,
             "forgemagie_max": 2,
             "base_price_per_unit": 900,

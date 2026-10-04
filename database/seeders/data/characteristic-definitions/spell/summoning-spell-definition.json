@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": 26,
             "db_column": "invocation",
-            "min": "0",
+            "min": "-3",
             "max": "3",
             "formula": null,
             "formula_display": null,

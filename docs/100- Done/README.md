@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Nettoyage des caractéristiques
+
+Suppression des caractéristiques en trop (compétences Artisanat / Herbaliste / Connaissance des créatures, échec critique d’équipement, puissance et poussée de sort, dommages et résistances sagesse·vitalité). Les bornes numériques créature / objet / sort sont symétriques (`min = −max`), avec recalcul des plafonds monstre. Les libellés parlent de **dommage** fixe. Les règles et la doc technique suivent.
+
 ## Octobre 2026 — La base garde les modifications
 
 Les changements faits dans l’application (caractéristiques, pages seedées, fiches versionnées…) ne sont plus écrasés au redémarrage du serveur. Les fichiers de seed ne remplissent que ce qui manque. Une sauvegarde hors production recopie la base vers ces fichiers. Pour forcer le retour aux fichiers du dépôt : `project:seed --overwrite`. Les boutons d’export/import seeders ont été retirés de l’admin (caractéristiques, IA métier) : seul l’écran Sauvegarde pilote cette copie, pour éviter d’écraser des données par erreur.
@@ -10,7 +14,7 @@ Toutes les caractéristiques de créature sont passées en **validée**. Les min
 
 ## Octobre 2026 — Système de caractéristiques finalisé
 
-Les définitions d’équipement sont reproductibles (emplacements versionnés). La réserve de Wakfu, les PV max d’objet et les invocations suivent les règles. Les bonus d’équipement se lisent dans `effect` (le brut Dofus reste dans `bonus`). On peut éditer totaux et contexte sur les fiches monstre/PNJ. Trois compétences techniques s’ajoutent (Artisanat, Herbaliste, Connaissance des créatures) ; l’Intimidation choisit Force ou Chance ; les expertises sont plafonnées à 3. Les tooltips de caractéristiques sont utilisables au clavier.
+Les définitions d’équipement sont reproductibles (emplacements versionnés). La réserve de Wakfu, les PV max d’objet et les invocations suivent les règles. Les bonus d’équipement se lisent dans `effect` (le brut Dofus reste dans `bonus`). On peut éditer totaux et contexte sur les fiches monstre/PNJ. L’Intimidation choisit Force ou Chance ; les expertises sont plafonnées à 3. Les tooltips de caractéristiques sont utilisables au clavier.
 
 ## Octobre 2026 — L’Essentiel pour qui vient de D&D
 

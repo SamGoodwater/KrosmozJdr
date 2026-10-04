@@ -52,6 +52,6 @@
     { "key": "number_between_two_cast", "from": { "path": "spell_global.minCastInterval" }, "to": [{ "model": "spells", "field": "number_between_two_cast" }], "formatters": [{ "name": "nullableInt", "args": {} }, { "name": "clampToCharacteristic", "args": { "characteristicId": "number_between_two_cast_spell" } }, { "name": "toString", "args": {} }] },
     { "key": "po_editable", "from": { "path": "spell_global.rangeCanBeBoosted" }, "to": [{ "model": "spells", "field": "po_editable" }], "formatters": [{ "name": "toInt", "args": {} }, { "name": "clampToCharacteristic", "args": { "characteristicId": "range_editable_spell" } }] },
     { "key": "category", "from": { "path": "spell_global.categoryId" }, "to": [{ "model": "spells", "field": "category" }], "formatters": [{ "name": "nullableInt", "args": {} }, { "name": "clampToCharacteristic", "args": { "characteristicId": "category_spell" } }] },
-    { "key": "powerful", "from": { "path": "spell_global.powerful" }, "to": [{ "model": "spells", "field": "powerful" }], "formatters": [{ "name": "nullableInt", "args": {} }, { "name": "clampToCharacteristic", "args": { "characteristicId": "power_spell" } }] }
+    { "key": "powerful", "from": { "path": "spell_global.powerful" }, "to": [{ "model": "spells", "field": "powerful" }], "formatters": [{ "name": "nullableInt", "args": {} }] }
   ]
 }

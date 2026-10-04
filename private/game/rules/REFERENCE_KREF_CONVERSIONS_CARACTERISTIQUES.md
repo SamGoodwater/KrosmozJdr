@@ -74,12 +74,10 @@ La commande `php artisan pages:rules-inject-characteristic-krefs` applique ces r
 | Intimidation | `intimidation_creature` |
 | Supercherie / Tromperie | `deception_creature` |
 | Représentation | `performance_creature` |
-| Herbaliste | `nature_creature` (même clé que Nature — sens « compétence Nature » côté JDR) |
-
 ## Hors périmètre automatique (à traiter à la main si besoin)
 
-- **Artisanat**, **Connaissance des créatures** : pas de clé `*_creature` unique documentée ici ; ajouter un shortcode manuel si une clé est créée en BDD.
 - **Points de bouclier**, **PV temporaires**, **Résistances** détaillées, **Sauvegardes** nommées : voir les fichiers `resistance_*`, `save_*`, `fixed_damage_*` sous `database/seeders/data/characteristic-definitions/creature/` pour des clés précises.
+- Artisanat / herbalisme / lore de créatures : traités via les **métiers** (4.3) et les compétences existantes (Nature, etc.), pas comme caractéristiques dédiées.
 - **Initiative** volontairement **non** injectée sur le seul mot « Initiative » (collisions avec « l’Initiative » narrative) ; utiliser explicitement `[[kref:characteristic:initiative_creature|Initiative]]` si besoin ciblé.
 
 ## Mise à jour du catalogue

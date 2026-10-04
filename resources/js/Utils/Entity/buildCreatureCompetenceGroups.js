@@ -23,9 +23,6 @@ export const CREATURE_MASTERY_DB_COLUMNS = Object.freeze([
     "supercherie_mastery",
     "representation_mastery",
     "persuasion_mastery",
-    "artisanat_mastery",
-    "herbaliste_mastery",
-    "connaissance_creatures_mastery",
 ]);
 
 /**
@@ -38,9 +35,6 @@ export const MASTERY_DB_COLUMN_TO_PRIMARY_STAT = Object.freeze({
     escamotage_mastery: "agi",
     athletisme_mastery: "strong",
     intimidation_mastery: "strong",
-    artisanat_mastery: "intel",
-    herbaliste_mastery: "sagesse",
-    connaissance_creatures_mastery: "intel",
     dressage_mastery: "sagesse",
     medecine_mastery: "sagesse",
     perception_mastery: "sagesse",
@@ -79,9 +73,6 @@ export const MASTERY_DB_COLUMN_TO_SKILL_KEY = Object.freeze({
     supercherie_mastery: "deception_creature",
     representation_mastery: "performance_creature",
     persuasion_mastery: "persuasion_creature",
-    artisanat_mastery: "craftsmanship_creature",
-    herbaliste_mastery: "herbalism_creature",
-    connaissance_creatures_mastery: "creature_lore_creature",
 });
 
 /**
@@ -119,9 +110,6 @@ export const MASTERY_DB_COLUMN_TO_BONUS_COLUMN = Object.freeze({
     supercherie_mastery: "supercherie_bonus",
     representation_mastery: "representation_bonus",
     persuasion_mastery: "persuasion_bonus",
-    artisanat_mastery: "artisanat_bonus",
-    herbaliste_mastery: "herbaliste_bonus",
-    connaissance_creatures_mastery: "connaissance_creatures_bonus",
 });
 
 /** Ordre des sous-groupes « par stat » (titres FR). */
@@ -155,9 +143,6 @@ const MASTERY_DB_COLUMN_FALLBACK_NAME = Object.freeze({
     supercherie_mastery: "Supercherie",
     representation_mastery: "Représentation",
     persuasion_mastery: "Persuasion",
-    artisanat_mastery: "Artisanat",
-    herbaliste_mastery: "Herbaliste",
-    connaissance_creatures_mastery: "Connaissance des créatures",
 });
 
 /**

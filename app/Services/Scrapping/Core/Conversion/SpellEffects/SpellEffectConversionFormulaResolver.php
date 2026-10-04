@@ -25,7 +25,6 @@ final class SpellEffectConversionFormulaResolver
         'movement' => 'movement_distance_spell',
         'jump' => 'jump_distance_spell',
         'teleport' => 'teleport_distance_spell',
-        'push' => 'push_distance_spell',
         'pull' => 'pull_distance_spell',
     ];
 
@@ -46,6 +45,17 @@ final class SpellEffectConversionFormulaResolver
     private const IGNORED_KEYS = [
         'echec_critique',
         'prospection',
+        'power',
+        'powerful',
+        'push',
+        'poussée',
+        'poussee',
+        'do_sagesse',
+        'do_vitalite',
+        'res_sagesse',
+        'res_vitalite',
+        'fixed_damage_sagesse',
+        'fixed_damage_vitalite',
     ];
 
     /**
@@ -53,7 +63,7 @@ final class SpellEffectConversionFormulaResolver
      *
      * @param  string  $subEffectSlug  Slug du sous-effet (frapper, soigner, booster, …)
      * @param  array<string, mixed>  $params  Params du sous-effet (characteristic, value_formula, …)
-     * @return string|null Clé pour DofusConversionService (ex. power_spell, action_points_variation_spell) ou null
+     * @return string|null Clé pour DofusConversionService (ex. action_points_variation_spell) ou null
      */
     public function resolveCharacteristicKeyForConversion(string $subEffectSlug, array $params): ?string
     {
@@ -133,8 +143,6 @@ final class SpellEffectConversionFormulaResolver
         'do_fixe_multiple' => 'do_fixe_multiple_spell',
         'esquive_pa' => 'dodge_action_points_spell',
         'esquive_pm' => 'dodge_movement_points_spell',
-        'poussée' => 'push_damage_reduction_spell',
-        'poussee' => 'push_damage_reduction_spell',
         'critiques' => 'critical_damage_reduction_spell',
         'res_fixe_terre' => 'fixed_resistance_terre_spell',
         'res_fixe_feu' => 'fixed_resistance_feu_spell',
@@ -157,10 +165,6 @@ final class SpellEffectConversionFormulaResolver
         'do_feu' => 'fixed_damage_fire_spell',
         'do_air' => 'fixed_damage_air_spell',
         'do_eau' => 'fixed_damage_water_spell',
-        'do_sagesse' => 'fixed_damage_sagesse_spell',
-        'do_vitalite' => 'fixed_damage_vitalite_spell',
-        'res_sagesse' => 'res_sagesse_spell',
-        'res_vitalite' => 'res_vitalite_spell',
         'save_vitality' => 'save_vitality_spell',
         'save_wisdom' => 'save_wisdom_spell',
         'save_strength' => 'save_strength_spell',

@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": null,
             "db_column": "pm",
-            "min": "3",
+            "min": "-6",
             "max": "6",
             "formula": null,
             "formula_display": null,
@@ -205,7 +205,7 @@
         "monster": {
             "dofusdb_characteristic_id": null,
             "db_column": "pm",
-            "min": "0",
+            "min": "-12",
             "max": "30",
             "formula": null,
             "formula_display": null,

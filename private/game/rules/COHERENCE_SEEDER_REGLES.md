@@ -48,7 +48,7 @@ Une clé **`_comment_limits`** (préfixe `_`, ignorée au seed) rappelle cette c
 | **Résistances fixes** | ±7 par bouclier, ±3 forgem. (2.6.1) | `fixed_resistance_*_object` : `min` -7, `max` 7, `forgemagie_max` 3 | Le plafond de définition décrit l'objet seul, avant forgemagie. |
 | **Dommages fixes** | +10 équip., +5 forgem. (2.2.2) | `fixed_damage_*` (éléments) : `max` 10 | Ancien `max` 5 + `forgemagie_max` 5 = total OK mais `max` sous-plafonnait l’équipement. |
 | **Bonus de soins** | 7 au total, dont +2 forgem. (2.2.2) | `heal_bonus_object` : `max` 5, `forgemagie_max` 2 | Ancien `max` 7 incluait la forgemagie. |
-| **Critique / échec critique** | critique ±3 ; échec critique 0–3 ; sans forgem. (2.2.2 / fiche) | `critical_hit_object` : `min` -3, `max` 3 ; `failure_hit_object` : `min` 0, `max` 3 ; `forgemagie_max` 0 | Un malus de critique relève le seuil, tandis que l'échec critique reste une zone positive. |
+| **Critique** | critique ±3 ; sans forgem. (2.2.2 / fiche) | `critical_hit_object` / `critical_hit_creature` : `min` -3, `max` 3 ; `forgemagie_max` 0 | Un malus relève le seuil ; plus de caractéristique d’échec critique séparée. |
 | **PV d'objet** | bonus/malus non plafonné, forgem. ±20 (2.2.2) | `life_points_max_object` : `min` -∞, `max` ∞, `forgemagie_max` 20 | L'ID technique DofusDB 0 reste exclu de la conversion. |
 
 ---

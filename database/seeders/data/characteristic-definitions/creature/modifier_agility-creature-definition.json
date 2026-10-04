@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": null,
             "db_column": null,
-            "min": "-2",
+            "min": "-7",
             "max": "7",
             "formula": "min(max(floor(([agility_creature]-10)/2), -2), min(floor([level_creature]/4)+2, 7))",
             "formula_display": "⌊(score−10)/2⌋ plafonné à ⌊niv/4⌋+2 (max +7)",
@@ -198,8 +198,8 @@
         "monster": {
             "dofusdb_characteristic_id": null,
             "db_column": null,
-            "min": "-7",
-            "max": "12",
+            "min": "-14",
+            "max": "14",
             "formula": "min(max(floor(([agility_creature]-10)/2), -2), 10)",
             "formula_display": "floor((agility_creature - 10) / 2), maximum monstre +10",
             "default_value": "0",

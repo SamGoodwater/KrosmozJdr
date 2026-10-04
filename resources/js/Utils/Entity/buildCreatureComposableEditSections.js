@@ -56,7 +56,6 @@ export function buildCreatureComposableEditSections(byDbColumn = {}) {
     for (const el of RESISTANCE_ELEMENTS) {
         resistanceColumns.push(`res_fixe_${el}`, `res_${el}`);
     }
-    resistanceColumns.push("res_sagesse", "res_vitalite");
     sections.push({
         id: "resistances",
         title: "Résistances",
@@ -70,8 +69,6 @@ export function buildCreatureComposableEditSections(byDbColumn = {}) {
             "touch",
             ...RESISTANCE_ELEMENTS.map((el) => `do_fixe_${el}`),
             "do_fixe_multiple",
-            "do_sagesse",
-            "do_vitalite",
         ],
     });
 

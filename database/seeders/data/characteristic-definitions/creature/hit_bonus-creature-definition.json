@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": null,
             "db_column": "touch",
-            "min": "-10",
+            "min": "-12",
             "max": "12",
             "formula": null,
             "formula_display": null,
@@ -196,8 +196,24 @@
             "validation": null
         },
         "monster": {
-            "min": "-21",
-            "max": "23"
+            "dofusdb_characteristic_id": null,
+            "db_column": null,
+            "min": "-24",
+            "max": "24",
+            "formula": null,
+            "formula_display": null,
+            "default_value": null,
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "labels": null,
+            "validation": null
         }
     },
     "relations": null

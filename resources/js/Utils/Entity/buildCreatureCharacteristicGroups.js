@@ -424,25 +424,6 @@ function buildResistanceItems(creature, getDef, runtime) {
             formulaRaw: "",
         });
     }
-    for (const percentDb of ["res_sagesse", "res_vitalite"]) {
-        const percentDef = getDef(percentDb);
-        const percent = resolveCreatureDbValue(creature, percentDb, percentDef, runtime);
-        const label = resistancePercentLabel(percent);
-        if (!label) continue;
-        const full = CREATURE_RESISTANCE_PERCENT_FULL_LABELS[Number(percent)] ?? label;
-        resItems.push({
-            type: "formula",
-            def: {
-                ...percentDef,
-                key: percentDef.key || percentDb,
-                hide_when_empty: false,
-                helper: `${percentDef.helper || percentDef.name || ""} · ${full}`.trim(),
-            },
-            value: `(${label})`,
-            formulaResolved: "",
-            formulaRaw: "",
-        });
-    }
     return resItems;
 }
 

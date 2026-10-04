@@ -71,8 +71,6 @@ const ELEMENT_CHARACTERISTIC_TO_PRIMARY = Object.freeze({
     fixed_damage_fire_spell: 2,
     fixed_damage_air_spell: 3,
     fixed_damage_water_spell: 4,
-    fixed_damage_sagesse_spell: 5,
-    fixed_damage_vitalite_spell: 6,
 });
 
 /**

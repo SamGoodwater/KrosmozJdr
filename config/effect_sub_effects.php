@@ -47,9 +47,6 @@ return [
         ['key' => 'sleight_of_hand', 'label' => 'Escamotage', 'category' => 'skill'],
         ['key' => 'stealth', 'label' => 'Discrétion', 'category' => 'skill'],
         ['key' => 'survival', 'label' => 'Survie', 'category' => 'skill'],
-        ['key' => 'craftsmanship', 'label' => 'Artisanat', 'category' => 'skill'],
-        ['key' => 'herbalism', 'label' => 'Herbaliste', 'category' => 'skill'],
-        ['key' => 'creature_lore', 'label' => 'Connaissance des créatures', 'category' => 'skill'],
         // Éléments : earth, fire, water, air, neutral
         ['key' => 'earth', 'label' => 'Terre', 'category' => 'element'],
         ['key' => 'fire', 'label' => 'Feu', 'category' => 'element'],

@@ -2,10 +2,10 @@
     "_schema_version": "1",
     "characteristic": {
         "key": "fixed_damage_neutral_spell",
-        "name": "Dégâts fixe Neutre",
+        "name": "Dommage fixe Neutre",
         "short_name": "Do N",
-        "helper": "Bonus dégâts Neutre appliqué par les sous-effets de sort.",
-        "descriptions": "Bonus temporaire de dégâts fixes pour cet élément, compris entre 0 et 5.",
+        "helper": "Bonus de dommage Neutre appliqué par les sous-effets de sort.",
+        "descriptions": "Bonus temporaire de dommages fixes pour cet élément, compris entre 0 et 5.",
         "icon": "dmgNeutral.webp",
         "icon_false": null,
         "color": "slate",
@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": 92,
             "db_column": "do_neutre",
-            "min": "0",
+            "min": "-5",
             "max": "5",
             "formula": null,
             "formula_display": null,

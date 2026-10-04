@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": 49,
             "db_column": "heal_bonus",
-            "min": "0",
+            "min": "-7",
             "max": "7",
             "formula": null,
             "formula_display": null,

@@ -45,9 +45,6 @@ final class CreatureObjectBonusToCreatureVariables
         'persuasion' => 'persuasion_creature',
         'performance' => 'performance_creature',
         'deception' => 'deception_creature',
-        'craftsmanship' => 'craftsmanship_creature',
-        'herbalism' => 'herbalism_creature',
-        'creature_lore' => 'creature_lore_creature',
     ];
 
     /**
@@ -74,9 +71,6 @@ final class CreatureObjectBonusToCreatureVariables
         'persuasion' => 'persuasion_bonus',
         'performance' => 'representation_bonus',
         'deception' => 'supercherie_bonus',
-        'craftsmanship' => 'artisanat_bonus',
-        'herbalism' => 'herbaliste_bonus',
-        'creature_lore' => 'connaissance_creatures_bonus',
     ];
 
     public function __construct(

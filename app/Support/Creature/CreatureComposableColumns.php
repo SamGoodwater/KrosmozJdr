@@ -23,20 +23,18 @@ final class CreatureComposableColumns
         'dodge_pa', 'dodge_pm', 'fuite', 'tacle', 'critical_hit', 'heal_bonus',
         // Scores
         'vitality', 'sagesse', 'strong', 'intel', 'agi', 'chance',
-        // Dégâts fixes
+        // Dommages fixes
         'do_fixe_neutre', 'do_fixe_terre', 'do_fixe_feu', 'do_fixe_air', 'do_fixe_eau',
         'do_fixe_multiple',
-        'do_sagesse', 'do_vitalite',
         // Résistances
         'res_fixe_neutre', 'res_fixe_terre', 'res_fixe_feu', 'res_fixe_air', 'res_fixe_eau',
-        'res_neutre', 'res_terre', 'res_feu', 'res_air', 'res_eau', 'res_sagesse', 'res_vitalite',
+        'res_neutre', 'res_terre', 'res_feu', 'res_air', 'res_eau',
         // Bonus de compétences
         'acrobatie_bonus', 'discretion_bonus', 'escamotage_bonus', 'athletisme_bonus',
         'intimidation_bonus', 'arcane_bonus', 'histoire_bonus', 'investigation_bonus',
         'nature_bonus', 'religion_bonus', 'dressage_bonus', 'medecine_bonus',
         'perception_bonus', 'perspicacite_bonus', 'survie_bonus', 'persuasion_bonus',
         'representation_bonus', 'supercherie_bonus',
-        'artisanat_bonus', 'herbaliste_bonus', 'connaissance_creatures_bonus',
         // Bonus de sauvegardes
         'save_vitality_bonus', 'save_wisdom_bonus', 'save_strength_bonus',
         'save_intelligence_bonus', 'save_chance_bonus', 'save_agility_bonus',

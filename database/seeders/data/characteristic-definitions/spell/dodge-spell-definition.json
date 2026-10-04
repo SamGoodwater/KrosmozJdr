@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": 78,
             "db_column": "fuite",
-            "min": "0",
+            "min": "-10",
             "max": "10",
             "formula": null,
             "formula_display": null,

@@ -46,7 +46,7 @@ ne recopie plus aucun prix et renvoie vers la page **Les métiers**.
 ## Surcharges des monstres
 
 Une définition `entities.monster` remplace les limites et la formule génériques uniquement pour les monstres.
-Les personnages et PNJ restent plafonnés comme `*` (ex. scores principaux 6–24). Les monstres élargissent chaque borne de **50 % de l’amplitude** PJ : un score 6–24 devient **-3–33**, le minimum pouvant être négatif. Si l’overlay monstre était déjà plus large (PA 0–20, résistances -100…), on conserve le plus souple.
+Les personnages et PNJ restent plafonnés comme `*` (ex. scores principaux −24…+24 après symétrie). Les monstres élargissent chaque borne de **50 % de l’amplitude** PJ : un score −24…+24 devient **−48…+48**. Si l’overlay monstre était déjà plus large, on conserve le plus souple.
 
 Les tables de formule acceptent des seuils négatifs. La tranche retenue est le plus grand seuil inférieur
 ou égal à la valeur source, ce qui permet de convertir les faiblesses Dofus en `-50` ou `-100`.
@@ -61,12 +61,15 @@ Les ressources gardent le prix Dofus : pas de formule ni de recalcul.
 
 ## Conversion des bonus d'objets
 
-Les bonus et malus Dofus sont convertis de façon symétrique : hors métadonnées, la borne minimale d'une
-caractéristique objet est l'opposé de sa borne maximale. Les six caractéristiques principales vont de
-`-4` à `+4` sur l'équipement, avec une marge de forgemagie de `+2` (total ±6). Les PA vont de `-5` à `+5`
-(forgemagie `1`) et les PM de `-2` à `+2` (forgemagie `1`).
-Le critique d'objet suit la même convention signée (`-3..3`). Les bonus de PV et d'initiative restent
-sans plafond d'équipement ; leur forgemagie est limitée respectivement à `20` et `3`.
+Hors exclusions (`level_*`, `hostility_*`, `hit_dice_*`, `life_dice_*`, bornes non numériques, bool/string),
+les bornes littérales des groupes **créature / objet / sort** sont symétriques : `min = −|max|`.
+Les six caractéristiques principales vont de `-4` à `+4` sur l'équipement, avec une marge de forgemagie
+de `+2` (total ±6). Les PA vont de `-5` à `+5` (forgemagie `1`) et les PM de `-2` à `+2` (forgemagie `1`).
+Le critique suit la même convention signée (`-3..3`) côté objet et créature (overlay monstre recalculé ±50 %).
+Les libellés FR des dommages fixes utilisent **dommage** (pas « dégât »). Plus de caractéristiques
+`failure_hit_*`, puissance/poussée, DO/résist. sagesse·vitalité, ni compétences Artisanat / Herbaliste /
+Connaissance des créatures. Les bonus de PV et d'initiative restent sans plafond d'équipement ; leur
+forgemagie est limitée respectivement à `20` et `3`.
 
 Les résistances fixes de bouclier sont limitées à `±7` hors forgemagie, avec `±3` supplémentaires en
 forgemagie.

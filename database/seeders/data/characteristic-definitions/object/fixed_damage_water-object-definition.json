@@ -2,10 +2,10 @@
     "_schema_version": "1",
     "characteristic": {
         "key": "fixed_damage_water_object",
-        "name": "Bonus de dégâts fixes (Eau)",
+        "name": "Bonus de dommage fixe (Eau)",
         "short_name": "Dmg E",
-        "helper": "Équipement (armes) : dégâts fixes Eau ajoutés aux attaques.",
-        "descriptions": "Bonus de dégâts fixes Eau conféré par l'équipement (armes). S’ajoutent aux dégâts de l’élément sur l’arme ; plafonds selon les règles (2.2.2, 4.3.4).",
+        "helper": "Équipement (armes) : dommages fixes Eau ajoutés aux attaques.",
+        "descriptions": "Bonus de dommage fixe Eau conféré par l'équipement (armes). S’ajoutent aux dégâts de l’élément sur l’arme ; plafonds selon les règles (2.2.2, 4.3.4).",
         "icon": "dmgWater.webp",
         "icon_false": null,
         "color": "blue",

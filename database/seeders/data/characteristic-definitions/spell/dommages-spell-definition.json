@@ -4,7 +4,7 @@
         "key": "dommages_spell",
         "name": "Dommages",
         "short_name": "Dmg",
-        "helper": "Montant de dégâts infligés par un sous-effet frapper. Conversion Dofus → Krosmoz.",
+        "helper": "Montant de dommages infligés par un sous-effet frapper. Conversion Dofus → Krosmoz.",
         "descriptions": "Dégâts supplémentaires de type neutre appliqués par l’effet du sort (2.2.2).",
         "icon": "dmgNeutral.webp",
         "icon_false": null,
@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": null,
             "db_column": null,
-            "min": "0",
+            "min": "-45",
             "max": "45",
             "formula": null,
             "formula_display": null,

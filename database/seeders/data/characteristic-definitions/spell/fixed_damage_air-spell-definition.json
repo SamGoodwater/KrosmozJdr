@@ -2,10 +2,10 @@
     "_schema_version": "1",
     "characteristic": {
         "key": "fixed_damage_air_spell",
-        "name": "Dégâts fixe Air",
+        "name": "Dommage fixe Air",
         "short_name": "Do A",
-        "helper": "Bonus dégâts Air appliqué par les sous-effets de sort.",
-        "descriptions": "Bonus temporaire de dégâts fixes pour cet élément, compris entre 0 et 5.",
+        "helper": "Bonus de dommage Air appliqué par les sous-effets de sort.",
+        "descriptions": "Bonus temporaire de dommages fixes pour cet élément, compris entre 0 et 5.",
         "icon": "dmgAir.webp",
         "icon_false": null,
         "color": "cyan",
@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": 91,
             "db_column": "do_air",
-            "min": "0",
+            "min": "-5",
             "max": "5",
             "formula": null,
             "formula_display": null,

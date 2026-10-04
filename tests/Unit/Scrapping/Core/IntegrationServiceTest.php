@@ -621,7 +621,7 @@ class IntegrationServiceTest extends TestCase
                                 'order' => 0,
                                 'sub_effect_slug' => 'frapper',
                                 'params' => [
-                                    'characteristic' => 'fixed_damage_sagesse_spell',
+                                    'characteristic' => 'fixed_damage_fire_spell',
                                     'value_formula' => '10',
                                 ],
                                 'crit_only' => false,
@@ -630,7 +630,7 @@ class IntegrationServiceTest extends TestCase
                                 'order' => 1,
                                 'sub_effect_slug' => 'soigner',
                                 'params' => [
-                                    'characteristic' => 'res_vitalite_spell',
+                                    'characteristic' => 'heal_bonus_spell',
                                     'value_formula' => '5',
                                 ],
                                 'crit_only' => false,
@@ -655,7 +655,8 @@ class IntegrationServiceTest extends TestCase
         $spell = Spell::find($result->getPrimaryId());
         $this->assertNotNull($spell);
 
-        $this->assertSame(1 << 5, (int) $spell->element);
+        // Feu = primaire Krosmoz 2 → bit 2
+        $this->assertSame(1 << 2, (int) $spell->element);
 
         $attachedTypeIds = $spell->spellTypes()->pluck('spell_types.id')->all();
         $this->assertContains($typeDegats->id, $attachedTypeIds);

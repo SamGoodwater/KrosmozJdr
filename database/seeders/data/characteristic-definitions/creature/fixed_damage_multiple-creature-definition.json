@@ -4,8 +4,8 @@
         "key": "fixed_damage_multiple_creature",
         "name": "Dommage fixe Multiples",
         "short_name": "DO mult.",
-        "helper": "Dommages fixe multi-éléments. 0–5 (équip. +5, forgemagie +2). ",
-        "descriptions": "Dégâts fixes multi-éléments. 0–5 (équip. +5, forgemagie +2). S'ajoutent à tous les éléments (2.2.2).",
+        "helper": "Dommage fixe multi-éléments. 0–5 (équip. +5, forgemagie +2).",
+        "descriptions": "Dommage fixe multi-éléments. 0–5 (équip. +5, forgemagie +2). S'ajoutent à tous les éléments (2.2.2).",
         "icon": "dmgArme.webp",
         "icon_false": null,
         "color": "slate",
@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": null,
             "db_column": "do_fixe_multiple",
-            "min": "0",
+            "min": "-10",
             "max": "10",
             "formula": null,
             "formula_display": null,
@@ -39,7 +39,44 @@
                 "16": 4,
                 "20": 5
             },
-            "conversion_sample_rows": null,
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": null,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": null,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": null,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": null,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": null,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": null,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": null
+                }
+            ],
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -153,14 +190,67 @@
                 ]
             },
             "norms_conditions": null,
-            "norms_description": "Dommages fixes multiples. Progression linéaire modérée.",
+            "norms_description": "Dommage fixe multiples. Progression linéaire modérée.",
             "norms_help_section_id": null,
             "labels": null,
             "validation": null
         },
         "monster": {
-            "min": "-5",
-            "max": "15"
+            "dofusdb_characteristic_id": null,
+            "db_column": null,
+            "min": "-20",
+            "max": "20",
+            "formula": null,
+            "formula_display": null,
+            "default_value": null,
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": null,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": null,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": null,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": null,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": null,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": null,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": null
+                }
+            ],
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "labels": null,
+            "validation": null
         }
     },
     "relations": null

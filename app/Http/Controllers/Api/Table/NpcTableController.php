@@ -231,8 +231,6 @@ class NpcTableController extends Controller
                         'do_fixe_air' => $c->do_fixe_air,
                         'do_fixe_eau' => $c->do_fixe_eau,
                         'do_fixe_multiple' => $c->do_fixe_multiple,
-                        'do_sagesse' => $c->do_sagesse,
-                        'do_vitalite' => $c->do_vitalite,
                         'res_fixe_neutre' => $c->res_fixe_neutre,
                         'res_fixe_terre' => $c->res_fixe_terre,
                         'res_fixe_feu' => $c->res_fixe_feu,
@@ -243,8 +241,6 @@ class NpcTableController extends Controller
                         'res_feu' => $c->res_feu,
                         'res_air' => $c->res_air,
                         'res_eau' => $c->res_eau,
-                        'res_sagesse' => $c->res_sagesse,
-                        'res_vitalite' => $c->res_vitalite,
                         ...CreatureMasteryColumns::extractFrom($c),
                         'spells' => $c->relationLoaded('spells')
                             ? $c->spells

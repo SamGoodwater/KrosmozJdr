@@ -222,36 +222,19 @@ describe("buildCreatureCharacteristicGroups", () => {
         expect(values).toContain("1");
     });
 
-    it("Dommages : expose DO mult. même à 0, sans do_sagesse / do_vitalite", () => {
-        const groups = buildCreatureCharacteristicGroups(
-            { ...creature, do_sagesse: 2, do_vitalite: 3 },
-            {
-                mode: "full",
-                byDbColumn: {
-                    ...byDbColumn,
-                    do_sagesse: {
-                        key: "fixed_damage_sagesse_creature",
-                        db_column: "do_sagesse",
-                        short_name: "DO sag",
-                        type: "int",
-                    },
-                    do_vitalite: {
-                        key: "fixed_damage_vitalite_creature",
-                        db_column: "do_vitalite",
-                        short_name: "DO vit",
-                        type: "int",
-                    },
-                },
-                byComputedKey: {
-                    fixed_damage_multiple_creature: {
-                        key: "fixed_damage_multiple_creature",
-                        short_name: "DO mult.",
-                        hide_when_empty: false,
-                        type: "int",
-                    },
+    it("Dommages : expose DO mult. même à 0", () => {
+        const groups = buildCreatureCharacteristicGroups(creature, {
+            mode: "full",
+            byDbColumn,
+            byComputedKey: {
+                fixed_damage_multiple_creature: {
+                    key: "fixed_damage_multiple_creature",
+                    short_name: "DO mult.",
+                    hide_when_empty: false,
+                    type: "int",
                 },
             },
-        );
+        });
         const dmg = groups.find((g) => g.title === "Dommages");
         expect(dmg).toBeTruthy();
         expect(dmg.spread).toBe(true);

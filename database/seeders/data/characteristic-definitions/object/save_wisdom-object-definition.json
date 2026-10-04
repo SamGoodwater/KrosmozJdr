@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": null,
             "db_column": null,
-            "min": "0",
+            "min": "-3",
             "max": "3",
             "formula": "{\"1\":\"0\",\"7\":\"1\",\"11\":\"2\",\"17\":\"3\",\"characteristic\":\"level_object\"}",
             "formula_display": "level_object",

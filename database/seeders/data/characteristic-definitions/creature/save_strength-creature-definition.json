@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": null,
             "db_column": null,
-            "min": "-2",
+            "min": "-16",
             "max": "16",
             "formula": "[modifier_strength_creature]+[mastery_bonus_creature]*[save_strength_mastery]+[save_strength_bonus]",
             "formula_display": "modifier_strength_creature + mastery_bonus_creature × save_strength_mastery + save_strength_bonus",
@@ -159,8 +159,24 @@
             "validation": null
         },
         "monster": {
-            "min": "-11",
-            "max": "25"
+            "dofusdb_characteristic_id": null,
+            "db_column": null,
+            "min": "-32",
+            "max": "32",
+            "formula": null,
+            "formula_display": null,
+            "default_value": null,
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "labels": null,
+            "validation": null
         }
     },
     "relations": null

@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": 14,
             "db_column": "agi",
-            "min": "0",
+            "min": "-8",
             "max": "8",
             "formula": null,
             "formula_display": null,

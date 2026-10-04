@@ -12,7 +12,7 @@
     "10": "strength_object",
     "11": "vitality_object",
     "12": "wisdom_object",
-    "13": "chance_object" ,
+    "13": "chance_object",
     "14": "agility_object",
     "15": "intelligence_object",
     "16": "fixed_damage_multiple_object",
@@ -167,5 +167,11 @@
     "150": "allDamageMultiplier",
     "158": "pushDamagePercent",
     "199": "StopDrop"
+  },
+  "out_of_scope_ids": {
+    "39": "Échecs critiques (retiré ; utiliser critical_hit signé)",
+    "84": "Dommages de poussée (caractéristique retirée)",
+    "85": "Résistance poussée (caractéristique retirée)",
+    "158": "Dommages de poussée % (caractéristique retirée)"
   }
 }

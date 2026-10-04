@@ -50,7 +50,6 @@ class ScrappingEffectsMapCommand extends Command
         18 => 'critical',
         19 => 'po',
         23 => 'pm',
-        25 => 'power_spell',
         26 => 'invocation',
         27 => 'esquive_pa',
         28 => 'esquive_pm',

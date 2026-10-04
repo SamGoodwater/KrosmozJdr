@@ -4,8 +4,8 @@
         "key": "fixed_damage_neutral_creature",
         "name": "Dommage fixe Neutre",
         "short_name": "Dmg N",
-        "helper": "Bonus dégâts Neutre. 0–10 (équip. +10, forgemagie +5).",
-        "descriptions": "Bonus dégâts fixes Neutre. 0–10 (équip. +10, forgemagie +5). Ajouté à chaque attaque Neutre (2.2.2).",
+        "helper": "Bonus de dommage Neutre. 0–10 (équip. +10, forgemagie +5).",
+        "descriptions": "Bonus dommages fixes Neutre. 0–10 (équip. +10, forgemagie +5). Ajouté à chaque attaque Neutre (2.2.2).",
         "icon": "dmgNeutral.webp",
         "icon_false": null,
         "color": "slate",
@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": null,
             "db_column": "do_fixe_neutre",
-            "min": "0",
+            "min": "-10",
             "max": "10",
             "formula": null,
             "formula_display": null,
@@ -39,7 +39,44 @@
                 "16": 6,
                 "20": 8
             },
-            "conversion_sample_rows": null,
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": null,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": null,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": null,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": null,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": null,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": null,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": null
+                }
+            ],
             "norms_grid": {
                 "very_weak": [
                     0,
@@ -159,8 +196,61 @@
             "validation": null
         },
         "monster": {
-            "min": "-5",
-            "max": "15"
+            "dofusdb_characteristic_id": null,
+            "db_column": null,
+            "min": "-20",
+            "max": "20",
+            "formula": null,
+            "formula_display": null,
+            "default_value": null,
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": null,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": null,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": null,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": null,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": null,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": null,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": null
+                }
+            ],
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "labels": null,
+            "validation": null
         }
     },
     "relations": null

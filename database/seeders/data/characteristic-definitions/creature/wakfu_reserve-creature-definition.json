@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": null,
             "db_column": null,
-            "min": "1",
+            "min": "-9",
             "max": "9",
             "formula": "[mastery_bonus_creature]",
             "formula_display": "mastery_bonus_creature + min(wakfu_recharge_object, 3)",
@@ -159,8 +159,24 @@
             "validation": null
         },
         "monster": {
-            "min": "-3",
-            "max": "13"
+            "dofusdb_characteristic_id": null,
+            "db_column": null,
+            "min": "-18",
+            "max": "18",
+            "formula": null,
+            "formula_display": null,
+            "default_value": null,
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "labels": null,
+            "validation": null
         }
     },
     "relations": null

@@ -120,14 +120,16 @@ class CharacteristicGetterServiceTest extends TestCase
         $this->assertNotSame([], $def['allowed_item_type_ids']);
     }
 
-    public function test_failure_hit_object_shares_amulet_slot_with_critical(): void
+    public function test_critical_hit_object_is_amulet_scoped_and_failure_hit_removed(): void
     {
-        $def = $this->getter->getDefinition('failure_hit_object', 'item');
-        $this->assertNotNull($def);
-        $this->assertTrue($def['allowed_item_type_restricted']);
+        $this->assertNull($this->getter->getDefinition('failure_hit_object', 'item'));
+
         $crit = $this->getter->getDefinition('critical_hit_object', 'item');
         $this->assertNotNull($crit);
-        $this->assertSame($crit['allowed_item_type_ids'], $def['allowed_item_type_ids']);
+        $this->assertTrue($crit['allowed_item_type_restricted']);
+        $this->assertNotSame([], $crit['allowed_item_type_ids']);
+        $this->assertSame(-3, (int) $crit['min']);
+        $this->assertSame(3, (int) $crit['max']);
     }
 
     public function test_object_definition_without_slot_allowlist_marks_unrestricted(): void
@@ -158,11 +160,11 @@ class CharacteristicGetterServiceTest extends TestCase
         $class = $this->getter->getLimits('strength_creature', 'class');
         $this->assertNotNull($monster);
         $this->assertNotNull($class);
-        $this->assertSame(6, $class['min']);
+        $this->assertSame(-24, $class['min']);
         $this->assertSame(24, $class['max']);
         $this->assertLessThan($class['min'], $monster['min']);
         $this->assertGreaterThan($class['max'], $monster['max']);
-        $this->assertSame(-3, $monster['min']);
-        $this->assertSame(33, $monster['max']);
+        $this->assertSame(-48, $monster['min']);
+        $this->assertSame(48, $monster['max']);
     }
 }

@@ -1234,8 +1234,6 @@ final class SpellEffectsConversionService
             'res_feu',
             'res_eau',
             'res_air',
-            'res_sagesse',
-            'res_vitalite',
         ], true);
     }
 

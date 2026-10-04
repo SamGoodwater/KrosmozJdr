@@ -48,7 +48,7 @@
         "*": {
             "dofusdb_characteristic_id": null,
             "db_column": "critical_hit",
-            "min": "0",
+            "min": "-3",
             "max": "3",
             "formula": null,
             "formula_display": null,
@@ -179,8 +179,8 @@
         "monster": {
             "dofusdb_characteristic_id": null,
             "db_column": "critical_hit",
-            "min": "-2",
-            "max": "5",
+            "min": "-6",
+            "max": "6",
             "formula": null,
             "formula_display": null,
             "default_value": "0",

@@ -2060,17 +2060,11 @@ return [
         'mapping_key' => 'powerful',
         'from_path' => 'spell_global.powerful',
         'from_lang_aware' => false,
-        'characteristic_key' => 'power_spell',
+        'characteristic_key' => null,
         'formatters' => [
             0 => [
                 'name' => 'nullableInt',
                 'args' => [],
-            ],
-            1 => [
-                'name' => 'clampToCharacteristic',
-                'args' => [
-                    'characteristicId' => 'power_spell',
-                ],
             ],
         ],
         'spell_level_aggregation' => null,

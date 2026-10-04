@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": null,
             "db_column": null,
-            "min": "8",
+            "min": "-34",
             "max": "34",
             "formula": "[modifier_strength_creature]+[mastery_bonus_creature]*[athletisme_mastery]+[athletisme_bonus]+10",
             "formula_display": "modifier_strength_creature + mastery_bonus_creature × athletisme_mastery + athletisme_bonus",
@@ -41,8 +41,24 @@
             "validation": null
         },
         "monster": {
-            "min": "-5",
-            "max": "47"
+            "dofusdb_characteristic_id": null,
+            "db_column": null,
+            "min": "-68",
+            "max": "68",
+            "formula": null,
+            "formula_display": null,
+            "default_value": null,
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_conditions": null,
+            "norms_description": null,
+            "norms_help_section_id": null,
+            "labels": null,
+            "validation": null
         }
     },
     "relations": null

@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": 10,
             "db_column": "strong",
-            "min": "0",
+            "min": "-8",
             "max": "8",
             "formula": null,
             "formula_display": null,
