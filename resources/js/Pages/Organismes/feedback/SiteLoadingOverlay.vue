@@ -3,7 +3,7 @@
  * SiteLoadingOverlay — Écran de chargement plein page (effet tunnel / zoom).
  *
  * @description
- * Pendant le chargement : zoom lent 20 s puis dézoom 20 s (boucle). Entrée du texte :
+ * Pendant le chargement : zoom lent ~8,5 s puis dézoom ~8,5 s (cycle 17 s). Entrée du texte :
  * fondu d’opacité long (police) + léger zoom. Sortie : plongée rapide (~500 ms) avec
  * opacité à 0 avant la fin du zoom pour révéler le site. Titre Krosmoz / JDR + dots.
  * Astuces bas centrées : fondu une par une jusqu’à la sortie de l’écran.
@@ -243,11 +243,11 @@ onUnmounted(() => {
 }
 
 .site-loading-overlay__stage--pulse {
-    animation: site-loading-pulse 40s ease-in-out infinite;
+    animation: site-loading-pulse 17s ease-in-out infinite;
 }
 
 .site-loading-overlay__stage--infinite {
-    animation: site-loading-infinite 20s linear infinite;
+    animation: site-loading-infinite 8.5s linear infinite;
 }
 
 /** Sortie : plongée rapide ; le stage reste figé (échelle courante) pendant que l’overlay scale. */
@@ -270,7 +270,7 @@ onUnmounted(() => {
     animation: site-loading-content-exit 220ms ease-in forwards;
 }
 
-/** 20 s zoom in, 20 s zoom out — boucle tant que le document charge. */
+/** ~8,5 s zoom in, ~8,5 s zoom out — boucle tant que le document charge. */
 @keyframes site-loading-pulse {
     0%,
     100% {
@@ -281,7 +281,7 @@ onUnmounted(() => {
     }
 }
 
-/** Zoom continu 20 s une fois le site prêt (avant le fondu de sortie). */
+/** Zoom continu 8,5 s une fois le site prêt (avant le fondu de sortie). */
 @keyframes site-loading-infinite {
     0% {
         transform: scale(1);
