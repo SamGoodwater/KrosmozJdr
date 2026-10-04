@@ -65,7 +65,7 @@ watch(
         <p v-if="pollError" class="text-sm text-warning">{{ pollError }}</p>
         <pre
             ref="logEl"
-            class="mt-1 max-h-80 overflow-auto rounded-box bg-neutral text-neutral-content p-3 text-xs font-mono whitespace-pre-wrap break-all"
+            class="mt-1 max-h-80 overflow-auto rounded-box border border-base-content/15 bg-base-200 text-base-content p-3 text-xs font-mono whitespace-pre-wrap break-all"
         >{{ job.output || "En attente de sortie…" }}</pre>
         <p class="text-[11px] text-base-content/50">
             Sortie filtrée (codes ANSI retirés, secrets masqués).
