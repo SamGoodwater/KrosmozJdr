@@ -14,7 +14,7 @@
         "hide_when_false": false,
         "unit": "%",
         "type": "int",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 7,
         "group": "creature",
         "linked_to_key": null
@@ -162,7 +162,7 @@
             "dofusdb_characteristic_id": null,
             "db_column": "res_vitalite",
             "min": "-100",
-            "max": "100",
+            "max": "150",
             "formula": null,
             "formula_display": null,
             "default_value": "0",

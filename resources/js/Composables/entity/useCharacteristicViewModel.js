@@ -75,7 +75,7 @@ export function useCharacteristicViewModel(options) {
         const entityType = String(o?.entityType || "");
         const sourceGroups = getSourceGroupsForEntityType(entityType);
         const val = ep.value.value;
-        const def = resolveDef(fieldKey, val, { sourceGroups }) || {};
+        const def = resolveDef(fieldKey, val, { sourceGroups, entityType }) || {};
         const prop = ep.property.value || {};
         const char = ep.characteristic.value || {};
 

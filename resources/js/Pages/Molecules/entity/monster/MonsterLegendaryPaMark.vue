@@ -50,7 +50,7 @@ const displayPa = computed(() => {
     return n;
 });
 
-const paDef = computed(() => resolveDef("pa", null, { sourceGroups: ["creature"] }) || null);
+const paDef = computed(() => resolveDef("pa", null, { sourceGroups: ["creature"], entityType: "monster" }) || null);
 
 const paIcon = computed(() => {
     const raw = paDef.value?._resolvedIcon || paDef.value?.icon || "fa-solid fa-bolt";

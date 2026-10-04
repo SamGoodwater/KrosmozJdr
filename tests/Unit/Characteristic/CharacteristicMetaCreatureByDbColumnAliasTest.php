@@ -77,4 +77,41 @@ class CharacteristicMetaCreatureByDbColumnAliasTest extends TestCase
         $this->assertArrayNotHasKey('limit_min', $byDb['vit']);
         $this->assertSame('99', $byDb['vit']['limit_max']);
     }
+
+    public function test_default_creature_meta_ignores_monster_overlay_limits(): void
+    {
+        $characteristic = Characteristic::create([
+            'key' => 'agility_creature',
+            'name' => 'Agilité',
+            'short_name' => 'Agi',
+            'type' => 'int',
+            'status' => Characteristic::STATUS_VALIDEE,
+            'sort_order' => 3,
+            'group' => 'creature',
+        ]);
+
+        CharacteristicCreature::create([
+            'characteristic_id' => $characteristic->id,
+            'entity' => CharacteristicCreature::ENTITY_ALL,
+            'db_column' => 'agi',
+            'min' => '6',
+            'max' => '24',
+        ]);
+        CharacteristicCreature::create([
+            'characteristic_id' => $characteristic->id,
+            'entity' => CharacteristicCreature::ENTITY_MONSTER,
+            'db_column' => 'agi',
+            'min' => '-3',
+            'max' => '33',
+        ]);
+
+        $service = new CharacteristicMetaByDbColumnService;
+        $byDb = $service->buildCreatureByDbColumn();
+        $monsterByDb = $service->buildMonsterCreatureByDbColumn();
+
+        $this->assertSame('6', $byDb['agi']['limit_min']);
+        $this->assertSame('24', $byDb['agi']['limit_max']);
+        $this->assertSame('-3', $monsterByDb['agi']['limit_min']);
+        $this->assertSame('33', $monsterByDb['agi']['limit_max']);
+    }
 }

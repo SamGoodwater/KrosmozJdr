@@ -36,12 +36,19 @@ function getRawData() {
 /**
  * @param {string} group - creature, spell, capability, item, consumable, resource, panoply
  * @param {string} key - db_column ou characteristic_key
+ * @param {string} [entityType] - Si `monster` + groupe creature : bornes overlay monstre
  * @returns {Object|null}
  */
-export function getByDbColumn(group, key) {
+export function getByDbColumn(group, key, entityType) {
     const data = getRawData();
+    if (group === "creature" && String(entityType || "").toLowerCase() === "monster") {
+        const monsterByDb = data?.creature?.monsterByDbColumn;
+        if (monsterByDb && typeof monsterByDb === "object" && key && monsterByDb[key]) {
+            return monsterByDb[key];
+        }
+    }
     const byDb = data?.[group]?.byDbColumn;
-    return (byDb && typeof byDb === "object" && key) ? byDb[key] ?? null : null;
+    return byDb && typeof byDb === "object" && key ? byDb[key] ?? null : null;
 }
 
 /**

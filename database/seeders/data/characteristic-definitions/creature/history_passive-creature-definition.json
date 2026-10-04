@@ -14,7 +14,7 @@
         "hide_when_false": false,
         "unit": null,
         "type": "int",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 12,
         "group": "creature",
         "linked_to_key": null
@@ -39,6 +39,10 @@
             "norms_help_section_id": null,
             "labels": null,
             "validation": null
+        },
+        "monster": {
+            "min": "-5",
+            "max": "47"
         }
     },
     "relations": null

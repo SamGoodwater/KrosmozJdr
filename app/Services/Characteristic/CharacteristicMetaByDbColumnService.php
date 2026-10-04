@@ -22,48 +22,30 @@ use Illuminate\Support\Facades\Log;
 final class CharacteristicMetaByDbColumnService
 {
     /** Clé de cache pour le share Inertia `characteristics` (invalidée à la sauvegarde des pivots / masters). */
-    public const FRONTEND_CACHE_KEY = 'characteristics:frontend:v4';
+    public const FRONTEND_CACHE_KEY = 'characteristics:frontend:v5';
 
     /**
-     * Mapping db_column → définition pour l'entité créature (monster, class, npc ou créature standalone).
-     * Utilise entity '*' puis overlay monster (même champs que la créature d'un monstre).
+     * Mapping db_column → définition pour PJ / PNJ (entity `*` uniquement).
+     * Les bornes monstre ne doivent pas fuiter ici.
      *
      * @return array<string, array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null}>
      */
     public function buildCreatureByDbColumn(): array
     {
-        $out = [];
-        try {
-            $charRows = CharacteristicCreature::query()
-                ->whereIn('entity', [
-                    CharacteristicCreature::ENTITY_ALL,
-                    CharacteristicCreature::ENTITY_MONSTER,
-                    CharacteristicCreature::ENTITY_CLASS,
-                ])
-                ->whereNotNull('db_column')
-                ->with(['characteristic.masterCharacteristic'])
-                ->get();
+        return $this->buildCreatureByDbColumnForEntities([CharacteristicCreature::ENTITY_ALL]);
+    }
 
-            $sorted = $this->sortPivotRowsEntityOverlayLast($charRows);
-
-            foreach ($sorted as $row) {
-                $entry = $this->rowToDefinition($row->db_column, $row->characteristic, $this->pivotLimitExtra($row));
-                if ($entry !== null) {
-                    $out[$entry['db_column']] = $entry;
-                    // Alias : les krefs / docs utilisent la clé métier (`strength_creature`) alors que la colonne
-                    // modèle est distincte (`strong`, `agi`, `intel`, …). Sans cette entrée, le frontend ne résout
-                    // pas l’icône (fallback graphique).
-                    $canonicalKey = (string) ($entry['key'] ?? '');
-                    if ($canonicalKey !== '' && $canonicalKey !== $entry['db_column']) {
-                        $out[$canonicalKey] = $entry;
-                    }
-                }
-            }
-        } catch (\Throwable $e) {
-            $this->reportMetaBuildFailure('buildCreatureByDbColumn', $e);
-        }
-
-        return $out;
+    /**
+     * Mapping db_column → définition pour les monstres (`*` puis overlay `monster`).
+     *
+     * @return array<string, array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null}>
+     */
+    public function buildMonsterCreatureByDbColumn(): array
+    {
+        return $this->buildCreatureByDbColumnForEntities([
+            CharacteristicCreature::ENTITY_ALL,
+            CharacteristicCreature::ENTITY_MONSTER,
+        ]);
     }
 
     /**
@@ -356,6 +338,7 @@ final class CharacteristicMetaByDbColumnService
             return [
                 'creature' => [
                     'byDbColumn' => $this->buildCreatureByDbColumn(),
+                    'monsterByDbColumn' => $this->buildMonsterCreatureByDbColumn(),
                     'byComputedKey' => $this->buildCreatureComputedByKey(),
                     'byMonsterField' => $this->buildMonsterFieldMeta(),
                 ],
@@ -387,6 +370,39 @@ final class CharacteristicMetaByDbColumnService
                 ],
             ];
         });
+    }
+
+    /**
+     * @param  list<string>  $entities
+     * @return array<string, array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null}>
+     */
+    private function buildCreatureByDbColumnForEntities(array $entities): array
+    {
+        $out = [];
+        try {
+            $charRows = CharacteristicCreature::query()
+                ->whereIn('entity', $entities)
+                ->whereNotNull('db_column')
+                ->with(['characteristic.masterCharacteristic'])
+                ->get();
+
+            $sorted = $this->sortPivotRowsEntityOverlayLast($charRows);
+
+            foreach ($sorted as $row) {
+                $entry = $this->rowToDefinition($row->db_column, $row->characteristic, $this->pivotLimitExtra($row));
+                if ($entry !== null) {
+                    $out[$entry['db_column']] = $entry;
+                    $canonicalKey = (string) ($entry['key'] ?? '');
+                    if ($canonicalKey !== '' && $canonicalKey !== $entry['db_column']) {
+                        $out[$canonicalKey] = $entry;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            $this->reportMetaBuildFailure('buildCreatureByDbColumnForEntities', $e);
+        }
+
+        return $out;
     }
 
     /**

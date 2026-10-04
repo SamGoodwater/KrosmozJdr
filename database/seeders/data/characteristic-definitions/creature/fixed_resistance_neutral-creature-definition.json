@@ -14,7 +14,7 @@
         "hide_when_false": false,
         "unit": null,
         "type": "int",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 7,
         "group": "creature",
         "linked_to_key": null
@@ -168,8 +168,8 @@
         "monster": {
             "dofusdb_characteristic_id": null,
             "db_column": "res_fixe_neutre",
-            "min": "0",
-            "max": "10",
+            "min": "-5",
+            "max": "15",
             "formula": null,
             "formula_display": null,
             "default_value": "0",

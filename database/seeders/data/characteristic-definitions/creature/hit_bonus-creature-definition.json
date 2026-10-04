@@ -14,7 +14,7 @@
         "hide_when_false": false,
         "unit": null,
         "type": "int",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 2,
         "group": "creature",
         "linked_to_key": null
@@ -23,7 +23,7 @@
         "*": {
             "dofusdb_characteristic_id": null,
             "db_column": "touch",
-            "min": "0",
+            "min": "-10",
             "max": "12",
             "formula": null,
             "formula_display": null,
@@ -39,7 +39,44 @@
                 "16": 11,
                 "20": 12
             },
-            "conversion_sample_rows": null,
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": null,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": null,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": null,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": null,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": null,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": null,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": null
+                }
+            ],
             "norms_grid": {
                 "very_weak": [
                     1,
@@ -157,6 +194,10 @@
             "norms_help_section_id": null,
             "labels": null,
             "validation": null
+        },
+        "monster": {
+            "min": "-21",
+            "max": "23"
         }
     },
     "relations": null

@@ -14,7 +14,7 @@
         "hide_when_false": false,
         "unit": null,
         "type": "int",
-        "status": "a_valider",
+        "status": "validee",
         "sort_order": 4,
         "group": "creature",
         "linked_to_key": null
@@ -39,7 +39,44 @@
                 "16": 0,
                 "20": 0
             },
-            "conversion_sample_rows": null,
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": null,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": null,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": null,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": null,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": null,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": null,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": null
+                }
+            ],
             "norms_grid": {
                 "very_weak": [
                     -2,
@@ -161,8 +198,8 @@
         "monster": {
             "dofusdb_characteristic_id": null,
             "db_column": null,
-            "min": "-2",
-            "max": "10",
+            "min": "-7",
+            "max": "12",
             "formula": "min(max(floor(([intelligence_creature]-10)/2), -2), 10)",
             "formula_display": "floor((intelligence_creature - 10) / 2), maximum monstre +10",
             "default_value": "0",
@@ -170,7 +207,44 @@
             "conversion_function": null,
             "conversion_dofus_sample": null,
             "conversion_krosmoz_sample": null,
-            "conversion_sample_rows": null,
+            "conversion_sample_rows": [
+                {
+                    "dofus_level": 1,
+                    "dofus_value": null,
+                    "krosmoz_level": 1,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 40,
+                    "dofus_value": null,
+                    "krosmoz_level": 4,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 80,
+                    "dofus_value": null,
+                    "krosmoz_level": 8,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 120,
+                    "dofus_value": null,
+                    "krosmoz_level": 12,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 160,
+                    "dofus_value": null,
+                    "krosmoz_level": 16,
+                    "krosmoz_value": null
+                },
+                {
+                    "dofus_level": 200,
+                    "dofus_value": null,
+                    "krosmoz_level": 20,
+                    "krosmoz_value": null
+                }
+            ],
             "norms_grid": {
                 "very_weak": [
                     -2,

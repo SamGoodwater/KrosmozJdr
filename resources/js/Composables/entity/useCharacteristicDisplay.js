@@ -232,20 +232,21 @@ export function shouldHideCharacteristicLine(def, rawValue) {
  *
  * @param {string|number} keyOrId - characteristic_key, db_column, ou dofusdb_characteristic_id
  * @param {string|number|boolean} [value] - Valeur (pour variantes : iconFalse si booléen, label depuis value_available)
- * @param {Object} [options] - { sourceGroups: string[] }
+ * @param {Object} [options] - { sourceGroups: string[], entityType?: string }
  * @returns {Object|null} - { key, db_column, name, short_name, icon, icon_false?, color, unit, type, helper, descriptions, value_available, value_overrides?, _resolvedSubtitle? } ou null
  */
 export function resolveDef(keyOrId, value, options = {}) {
     const sourceGroups = options?.sourceGroups ?? ["creature", "item", "resource", "spell", "capability"];
+    const entityType = options?.entityType;
     const keyStr = keyOrId != null ? String(keyOrId).trim() : "";
     if (!keyStr) return null;
     const keyWithoutGroupSuffix = keyStr.replace(/_(creature|object|spell)$/, "");
 
     for (const group of sourceGroups) {
         let def =
-            getByDbColumn(group, keyStr) ??
-            getByDbColumn(group, keyWithoutGroupSuffix) ??
-            getByDbColumn(group, keyStr.replace(/_object$/, "")) ??
+            getByDbColumn(group, keyStr, entityType) ??
+            getByDbColumn(group, keyWithoutGroupSuffix, entityType) ??
+            getByDbColumn(group, keyStr.replace(/_object$/, ""), entityType) ??
             getByCharacteristicKey(group, keyStr) ??
             getByCharacteristicKey(group, keyStr.replace(/_object$/, "") + "_object") ??
             (group in { item: 1, consumable: 1, resource: 1, panoply: 1 }

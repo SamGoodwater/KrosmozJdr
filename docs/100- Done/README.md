@@ -4,6 +4,10 @@
 
 Les changements faits dans l’application (caractéristiques, pages seedées, fiches versionnées…) ne sont plus écrasés au redémarrage du serveur. Les fichiers de seed ne remplissent que ce qui manque. Une sauvegarde hors production recopie la base vers ces fichiers. Pour forcer le retour aux fichiers du dépôt : `project:seed --overwrite`. Les boutons d’export/import seeders ont été retirés de l’admin (caractéristiques, IA métier) : seul l’écran Sauvegarde pilote cette copie, pour éviter d’écraser des données par erreur.
 
+## Octobre 2026 — Caractéristiques créature validées, monstres plus souples
+
+Toutes les caractéristiques de créature sont passées en **validée**. Les min/max des **monstres** s’élargissent de 50 % de part et d’autre (un score 6–24 va de -3 à 33) ; personnages et PNJ gardent les bornes d’origine.
+
 ## Octobre 2026 — Système de caractéristiques finalisé
 
 Les définitions d’équipement sont reproductibles (emplacements versionnés). La réserve de Wakfu, les PV max d’objet et les invocations suivent les règles. Les bonus d’équipement se lisent dans `effect` (le brut Dofus reste dans `bonus`). On peut éditer totaux et contexte sur les fiches monstre/PNJ. Trois compétences techniques s’ajoutent (Artisanat, Herbaliste, Connaissance des créatures) ; l’Intimidation choisit Force ou Chance ; les expertises sont plafonnées à 3. Les tooltips de caractéristiques sont utilisables au clavier.

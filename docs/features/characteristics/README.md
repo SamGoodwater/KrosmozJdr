@@ -46,9 +46,7 @@ ne recopie plus aucun prix et renvoie vers la page **Les métiers**.
 ## Surcharges des monstres
 
 Une définition `entities.monster` remplace les limites et la formule génériques uniquement pour les monstres.
-Les personnages restent plafonnés à 24 pour leurs caractéristiques principales, tandis que les monstres
-peuvent atteindre 30. Le même mécanisme porte leurs limites PA/PM/PO élargies et les conversions par
-paliers des résistances relatives et des critiques.
+Les personnages et PNJ restent plafonnés comme `*` (ex. scores principaux 6–24). Les monstres élargissent chaque borne de **50 % de l’amplitude** PJ : un score 6–24 devient **-3–33**, le minimum pouvant être négatif. Si l’overlay monstre était déjà plus large (PA 0–20, résistances -100…), on conserve le plus souple.
 
 Les tables de formule acceptent des seuils négatifs. La tranche retenue est le plus grand seuil inférieur
 ou égal à la valeur source, ce qui permet de convertir les faiblesses Dofus en `-50` ou `-100`.

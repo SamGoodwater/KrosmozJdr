@@ -151,4 +151,18 @@ class CharacteristicGetterServiceTest extends TestCase
         $this->assertSame('description', $descDef['db_column']);
         $this->assertSame('string', $descDef['type']);
     }
+
+    public function test_monster_strength_limits_are_wider_than_class(): void
+    {
+        $monster = $this->getter->getLimits('strength_creature', 'monster');
+        $class = $this->getter->getLimits('strength_creature', 'class');
+        $this->assertNotNull($monster);
+        $this->assertNotNull($class);
+        $this->assertSame(6, $class['min']);
+        $this->assertSame(24, $class['max']);
+        $this->assertLessThan($class['min'], $monster['min']);
+        $this->assertGreaterThan($class['max'], $monster['max']);
+        $this->assertSame(-3, $monster['min']);
+        $this->assertSame(33, $monster['max']);
+    }
 }
