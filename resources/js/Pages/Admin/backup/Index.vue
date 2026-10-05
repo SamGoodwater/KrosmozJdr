@@ -10,6 +10,7 @@ import AdminCommandMeta from '@/Pages/Admin/_components/AdminCommandMeta.vue';
 import AdminConsoleJobPanel from '@/Pages/Admin/_components/AdminConsoleJobPanel.vue';
 import AdminRunAction from '@/Pages/Admin/_components/AdminRunAction.vue';
 import BackupArchiveList from '@/Pages/Admin/_components/BackupArchiveList.vue';
+import BackupRestoreStatusPanel from '@/Pages/Admin/_components/BackupRestoreStatusPanel.vue';
 import PageHeader from '@/Pages/Molecules/layout/PageHeader.vue';
 import ConfirmPasswordModal from '@/Pages/Molecules/action/ConfirmPasswordModal.vue';
 
@@ -97,7 +98,6 @@ watch(
 );
 
 async function pollRestoreStatus() {
-    if (!restoreBusy.value) return;
     try {
         const response = await fetch(route('admin.backup.restore-status'), {
             headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
@@ -112,7 +112,7 @@ async function pollRestoreStatus() {
             router.reload({ only: ['backups', 'operationLocked', 'restoreStatus'], preserveScroll: true });
         }
     } catch {
-        /* ignore transient poll errors */
+        /* ignore transient poll errors (ex. redémarrage pendant maintenance) */
     }
 }
 
@@ -122,7 +122,7 @@ function startPoll() {
         if (restoreBusy.value) {
             pollRestoreStatus();
         }
-    }, 2500);
+    }, 1500);
 }
 
 function stopPoll() {
@@ -132,9 +132,16 @@ function stopPoll() {
     }
 }
 
+watch(restoreBusy, (isBusy, wasBusy) => {
+    if (isBusy && !wasBusy) {
+        startPoll();
+        pollRestoreStatus();
+    }
+});
+
 onMounted(() => {
-    startPoll();
     if (restoreBusy.value) {
+        startPoll();
         pollRestoreStatus();
     }
 });
@@ -206,30 +213,9 @@ function onArchivesChanged() {
             · Jamais inclus : <code>.env</code>
         </p>
 
-        <AdminConsoleJobPanel :job="liveJob" :poll-error="pollError" :cancelling="cancelling" @cancel="cancelJob" />
+        <BackupRestoreStatusPanel :status="liveRestoreStatus" />
 
-        <div
-            v-if="liveRestoreStatus"
-            class="rounded-box border border-base-content/10 bg-base-100/50 p-4 space-y-2"
-        >
-            <h2 class="text-sm font-medium">Suivi restauration</h2>
-            <p class="text-sm">
-                État :
-                <span class="badge badge-sm">{{ liveRestoreStatus.state }}</span>
-                <span v-if="liveRestoreStatus.archive" class="ml-2 font-mono text-xs">
-                    {{ liveRestoreStatus.archive }}
-                </span>
-            </p>
-            <p v-if="liveRestoreStatus.message" class="text-sm text-base-content/80">
-                {{ liveRestoreStatus.message }}
-            </p>
-            <ul
-                v-if="Array.isArray(liveRestoreStatus.log) && liveRestoreStatus.log.length"
-                class="text-xs font-mono max-h-40 overflow-y-auto space-y-0.5 text-base-content/70"
-            >
-                <li v-for="(line, idx) in liveRestoreStatus.log" :key="idx">{{ line }}</li>
-            </ul>
-        </div>
+        <AdminConsoleJobPanel :job="liveJob" :poll-error="pollError" :cancelling="cancelling" @cancel="cancelJob" />
 
         <div
             v-if="!unlocked"

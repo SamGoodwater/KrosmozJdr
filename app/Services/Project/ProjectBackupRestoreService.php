@@ -48,45 +48,61 @@ class ProjectBackupRestoreService
             'state' => 'running',
             'archive' => $archiveName,
             'started_at' => now()->toIso8601String(),
+            'phase' => 'verify',
+            'progress' => 5,
             'message' => 'Vérification de l’archive…',
+            'log' => [],
         ]);
+
+        $track = static function (
+            string $line,
+            string $phase,
+            int $progress,
+            bool $updateMessage = true,
+        ) use ($log, $status): void {
+            $log($line);
+            $status?->appendLog($line, $updateMessage, $phase, $progress);
+        };
 
         $extractDir = null;
         $maintenanceEnabled = false;
         $safetyArchive = null;
+        $succeeded = false;
+        $failureMessage = null;
 
         try {
             $verified = $this->backups->openAndVerifyZip($archiveName, true);
             $manifest = $verified['manifest'];
             $archivePath = $verified['path'];
-            $log('Archive vérifiée : '.$archiveName);
-            $status?->appendLog('Archive vérifiée.');
+            $track('Archive vérifiée : '.$archiveName, 'verify', 10);
 
             if ($createSafetyBackup) {
-                $status?->appendLog('Création de la sauvegarde de secours…');
-                $log('Création d’une sauvegarde de secours avant restauration…');
+                $track('Création de la sauvegarde de secours…', 'safety', 15);
                 $safety = $this->backups->run(
                     withDatabase: true,
                     withStorage: true,
                     prune: false,
                     dryRun: false,
-                    log: $log,
+                    log: static function (string $m) use ($log, $status): void {
+                        $log($m);
+                        $status?->appendLog($m, true, 'safety', 25);
+                    },
                     error: $error,
                     withSeederData: false,
                     withGame: true,
                 );
                 if (! ($safety['ok'] ?? false) || ($safety['files'] ?? []) === []) {
                     $error('Impossible de créer la sauvegarde de secours — restauration annulée.');
+                    $failureMessage = 'Sauvegarde de secours impossible.';
 
                     return [
                         'ok' => false,
                         'safety_archive' => null,
-                        'message' => 'Sauvegarde de secours impossible.',
+                        'message' => $failureMessage,
                     ];
                 }
                 $safetyArchive = basename((string) $safety['files'][0]);
-                $log('Secours : '.$safetyArchive);
-                $status?->appendLog('Secours créé : '.$safetyArchive);
+                $track('Secours créé : '.$safetyArchive, 'safety', 35);
             }
 
             $extractDir = $this->backups->resolvedBackupDirectory()
@@ -96,8 +112,15 @@ class ProjectBackupRestoreService
                 throw new \RuntimeException('Impossible de créer le répertoire d’extraction.');
             }
 
-            $status?->appendLog('Extraction sécurisée…');
-            $this->extractZipSafely($archivePath, $extractDir, $log);
+            $track('Extraction sécurisée…', 'extract', 40);
+            $this->extractZipSafely(
+                $archivePath,
+                $extractDir,
+                static function (string $m) use ($log, $status): void {
+                    $log($m);
+                    $status?->appendLog($m, true, 'extract', 50);
+                },
+            );
 
             $code = Artisan::call('down', [
                 '--retry' => 60,
@@ -107,33 +130,46 @@ class ProjectBackupRestoreService
                 throw new \RuntimeException('Activation du mode maintenance impossible.');
             }
             $maintenanceEnabled = true;
-            $log('Mode maintenance activé.');
-            $status?->appendLog('Mode maintenance activé.');
+            $track('Mode maintenance activé.', 'maintenance', 55);
 
             $components = $manifest['components'] ?? [];
             if (isset($components['database'])) {
-                $status?->appendLog('Restauration BDD…');
-                $this->restoreDatabase($extractDir, $components['database'], $log, $error);
+                $track('Restauration BDD…', 'database', 60);
+                $this->restoreDatabase(
+                    $extractDir,
+                    $components['database'],
+                    static function (string $m) use ($log, $status): void {
+                        $log($m);
+                        $status?->appendLog($m, true, 'database', 65);
+                    },
+                    $error,
+                );
             }
 
             if (isset($components['storage'])) {
-                $status?->appendLog('Restauration storage/app…');
-                $this->restoreStorageApp($extractDir, $log);
+                $track('Restauration storage/app…', 'storage', 70);
+                $this->restoreStorageApp(
+                    $extractDir,
+                    static function (string $m) use ($log, $status): void {
+                        $log($m);
+                        $status?->appendLog($m, true, 'storage', 85);
+                    },
+                );
             }
 
             if (isset($components['game'])) {
-                $status?->appendLog('Restauration private/game…');
-                $this->restoreGame($extractDir, $log);
+                $track('Restauration private/game…', 'game', 90);
+                $this->restoreGame(
+                    $extractDir,
+                    static function (string $m) use ($log, $status): void {
+                        $log($m);
+                        $status?->appendLog($m, true, 'game', 95);
+                    },
+                );
             }
 
+            $succeeded = true;
             $log('Restauration terminée.');
-            $status?->write([
-                'state' => 'success',
-                'archive' => $archiveName,
-                'safety_archive' => $safetyArchive,
-                'finished_at' => now()->toIso8601String(),
-                'message' => 'Restauration terminée.',
-            ]);
 
             return [
                 'ok' => true,
@@ -142,13 +178,7 @@ class ProjectBackupRestoreService
             ];
         } catch (\Throwable $e) {
             $error($e->getMessage());
-            $status?->write([
-                'state' => 'failed',
-                'archive' => $archiveName,
-                'safety_archive' => $safetyArchive,
-                'finished_at' => now()->toIso8601String(),
-                'message' => $e->getMessage(),
-            ]);
+            $failureMessage = $e->getMessage();
 
             return [
                 'ok' => false,
@@ -160,13 +190,35 @@ class ProjectBackupRestoreService
                 try {
                     Artisan::call('up');
                     $log('Mode maintenance désactivé.');
-                    $status?->appendLog('Mode maintenance désactivé.');
+                    $status?->appendLog('Mode maintenance désactivé.', false, 'finalize', $succeeded ? 98 : null);
                 } catch (\Throwable $e) {
                     $error('Impossible de sortir du mode maintenance : '.$e->getMessage());
                 }
             }
             if ($extractDir !== null) {
                 $this->removeDirectory($extractDir);
+            }
+
+            if ($succeeded) {
+                $status?->write([
+                    'state' => 'success',
+                    'archive' => $archiveName,
+                    'safety_archive' => $safetyArchive,
+                    'phase' => 'done',
+                    'progress' => 100,
+                    'finished_at' => now()->toIso8601String(),
+                    'message' => 'Restauration terminée.'.($safetyArchive ? ' Secours : '.$safetyArchive : ''),
+                ]);
+            } elseif ($failureMessage !== null || $status?->isBusy()) {
+                $status?->write([
+                    'state' => 'failed',
+                    'archive' => $archiveName,
+                    'safety_archive' => $safetyArchive,
+                    'phase' => 'failed',
+                    'progress' => 100,
+                    'finished_at' => now()->toIso8601String(),
+                    'message' => $failureMessage ?? 'Restauration échouée.',
+                ]);
             }
         }
     }

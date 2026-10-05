@@ -11,7 +11,7 @@ use App\Http\Requests\Admin\RestoreProjectBackupWebRequest;
 use App\Http\Requests\Admin\StoreProjectBackupWebRequest;
 use App\Jobs\RunProjectBackupJob;
 use App\Models\ProjectScheduleTask;
-use App\Services\Project\ProjectBackupOperationStatus;
+use App\Services\Project\ProjectBackupRecovery;
 use App\Services\Project\ProjectBackupRestoreLauncher;
 use App\Services\Project\ProjectBackupService;
 use App\Services\Project\ProjectConsoleJobTracker;
@@ -35,7 +35,7 @@ class ProjectBackupWebController extends Controller
     public function index(): InertiaResponse
     {
         $service = ProjectBackupService::fromConfig();
-        $status = ProjectBackupOperationStatus::forBackupRoot($service->resolvedBackupDirectory());
+        $recovery = ProjectBackupRecovery::fromConfig()->reconcile();
 
         return Inertia::render('Admin/backup/Index', array_merge(
             $this->consoleJobProps(ProjectConsoleDomain::BACKUP),
@@ -44,8 +44,8 @@ class ProjectBackupWebController extends Controller
                 'backupDirectory' => $service->resolvedBackupDirectory(),
                 'retentionDays' => $service->retentionDays(),
                 'backups' => $this->presentBackups($service->listBackups()),
-                'operationLocked' => $service->isLocked() || $status->isBusy(),
-                'restoreStatus' => $status->read(),
+                'operationLocked' => (bool) $recovery['operation_locked'],
+                'restoreStatus' => $recovery['restore_status'],
                 'schedule' => $this->scheduleMeta(),
             ]
         ));
@@ -58,9 +58,8 @@ class ProjectBackupWebController extends Controller
             abort(403);
         }
 
-        $service = ProjectBackupService::fromConfig();
-        $status = ProjectBackupOperationStatus::forBackupRoot($service->resolvedBackupDirectory());
-        if ($service->isLocked() || $status->isBusy()) {
+        $recovery = ProjectBackupRecovery::fromConfig()->reconcile();
+        if ($recovery['operation_locked']) {
             return redirect()
                 ->route('admin.backup.index')
                 ->with('error', 'Une sauvegarde ou une restauration est déjà en cours.');
@@ -173,12 +172,13 @@ class ProjectBackupWebController extends Controller
 
     public function restoreStatus(): JsonResponse
     {
-        $service = ProjectBackupService::fromConfig();
-        $status = ProjectBackupOperationStatus::forBackupRoot($service->resolvedBackupDirectory());
+        $recovery = ProjectBackupRecovery::fromConfig()->reconcile();
 
         return response()->json([
-            'restoreStatus' => $status->read(),
-            'operationLocked' => $service->isLocked() || $status->isBusy(),
+            'restoreStatus' => $recovery['restore_status'],
+            'operationLocked' => (bool) $recovery['operation_locked'],
+            'maintenance' => (bool) $recovery['maintenance'],
+            'reconciled' => (bool) $recovery['reconciled'],
         ]);
     }
 

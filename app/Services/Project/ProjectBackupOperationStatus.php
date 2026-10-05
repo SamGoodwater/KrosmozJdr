@@ -9,7 +9,7 @@ namespace App\Services\Project;
  *
  * @example
  * $status = ProjectBackupOperationStatus::forBackupRoot($root);
- * $status->write(['state' => 'running', 'message' => '…']);
+ * $status->write(['state' => 'running', 'phase' => 'safety', 'progress' => 20, 'message' => '…']);
  */
 final class ProjectBackupOperationStatus
 {
@@ -31,13 +31,16 @@ final class ProjectBackupOperationStatus
 
     /**
      * @param  array{
-     *     state: string,
+     *     state?: string,
      *     message?: string|null,
      *     archive?: string|null,
      *     started_at?: string|null,
      *     finished_at?: string|null,
      *     log?: list<string>,
-     *     user_id?: int|null
+     *     user_id?: int|null,
+     *     phase?: string|null,
+     *     progress?: int|null,
+     *     safety_archive?: string|null
      * }  $payload
      */
     public function write(array $payload): void
@@ -51,6 +54,10 @@ final class ProjectBackupOperationStatus
         $merged = array_merge($existing, $payload, [
             'updated_at' => now()->toIso8601String(),
         ]);
+
+        if (isset($merged['progress'])) {
+            $merged['progress'] = max(0, min(100, (int) $merged['progress']));
+        }
 
         $json = json_encode($merged, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         if ($json === false) {
@@ -71,19 +78,34 @@ final class ProjectBackupOperationStatus
         }
     }
 
-    public function appendLog(string $line): void
-    {
+    /**
+     * @param  bool  $updateMessage  false pour les lignes secondaires (ex. sortie de maintenance)
+     */
+    public function appendLog(
+        string $line,
+        bool $updateMessage = true,
+        ?string $phase = null,
+        ?int $progress = null,
+    ): void {
         $current = $this->read() ?? ['state' => 'running', 'log' => []];
         $log = $current['log'] ?? [];
         if (! is_array($log)) {
             $log = [];
         }
         $log[] = '['.now()->format('H:i:s').'] '.$line;
-        if (count($log) > 200) {
-            $log = array_slice($log, -200);
+        if (count($log) > 300) {
+            $log = array_slice($log, -300);
         }
         $current['log'] = array_values($log);
-        $current['message'] = $line;
+        if ($updateMessage) {
+            $current['message'] = $line;
+        }
+        if ($phase !== null) {
+            $current['phase'] = $phase;
+        }
+        if ($progress !== null) {
+            $current['progress'] = max(0, min(100, $progress));
+        }
         $this->write($current);
     }
 

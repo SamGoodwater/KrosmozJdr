@@ -34,8 +34,10 @@ class ProjectBackupRestoreLauncher
             'archive' => $archiveName,
             'user_id' => $userId,
             'started_at' => now()->toIso8601String(),
-            'message' => 'Restauration en file d’attente locale…',
-            'log' => [],
+            'phase' => 'queued',
+            'progress' => 1,
+            'message' => 'Restauration lancée — démarrage du processus…',
+            'log' => ['['.now()->format('H:i:s').'] Restauration lancée.'],
         ]);
 
         $php = PHP_BINARY !== '' ? PHP_BINARY : 'php';

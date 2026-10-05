@@ -34,6 +34,12 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
+        // Suivi restauration : doit rester joignable pendant `artisan down`.
+        $middleware->preventRequestsDuringMaintenance(except: [
+            'admin/backup/restore-status',
+            'up',
+        ]);
+
         // Enregistrer les middlewares
         $middleware->alias([
             'role' => CheckRole::class,

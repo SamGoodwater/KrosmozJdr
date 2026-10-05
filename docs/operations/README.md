@@ -84,7 +84,8 @@ Voir aussi : [SECRET_SCAN.md](./SECRET_SCAN.md) (hook pre-push + CI gitleaks).
 | Répertoire | `PROJECT_BACKUP_PATH` (sous la racine projet) ou défaut `storage/app/backups` |
 | Rétention | `PROJECT_BACKUP_RETENTION_DAYS` (défaut **30** j) ; purge par archive complète |
 | Cron | clé catalogue `project_backup` ; seed `.env` : `PROJECT_BACKUP_ENABLED=false`, `PROJECT_BACKUP_CRON="0 4 * * *"` ; `withoutOverlapping(180)` |
-| UI | `/admin/backup` : lancer, lister, supprimer, restaurer (super_admin + mot de passe) ; suivi restauration fichier (hors file `database`) |
+| UI | `/admin/backup` : lancer, lister, supprimer, restaurer (super_admin + mot de passe) ; panneau de suivi restauration (fichier local, poll même pendant `artisan down`) |
+| Crash / reboot | `ProjectBackupRecovery` : si le PID de restauration a disparu, statut `interrupted`, nettoyage `.staging_*` / `.restore_*`, levée auto du mode maintenance orphelin |
 | CLI | `project:backup`, `project:backup:list`, `project:backup:delete`, `project:backup:restore` |
 | Prérequis | `mysqldump` / `mysql` (MySQL/MariaDB) ; `schedule:run` chaque minute pour le cron ; protéger le répertoire |
 | Legacy | anciennes paires `*_mysql.sql.gz` / `*_storage.*` encore listables et purgables ; **restauration auto réservée au ZIP v2** |

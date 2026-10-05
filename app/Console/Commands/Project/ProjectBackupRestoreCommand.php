@@ -98,6 +98,16 @@ class ProjectBackupRestoreCommand extends Command
             return ArtisanExitCode::FAILURE;
         }
 
+        // PID pour détecter un crash / reboot (réconciliation UI).
+        $status?->write([
+            'state' => 'running',
+            'archive' => $name,
+            'pid' => getmypid(),
+            'phase' => 'verify',
+            'progress' => 2,
+            'message' => 'Processus de restauration démarré…',
+        ]);
+
         try {
             $restorer = new ProjectBackupRestoreService(
                 $backups,
