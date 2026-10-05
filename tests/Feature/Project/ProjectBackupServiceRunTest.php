@@ -185,4 +185,59 @@ final class ProjectBackupServiceRunTest extends TestCase
         $this->assertSame(['fake'], $result['seeder_exports']);
         $this->assertTrue($result['ok']);
     }
+
+    /**
+     * `storage/app/backups` et le répertoire de sortie ne doivent jamais entrer dans le ZIP
+     * (évite récursion / OOM si d’anciennes archives ou un staging test traînent).
+     */
+    public function test_storage_backup_excludes_backup_directory_contents(): void
+    {
+        $this->useSqliteForDump();
+
+        $storageRoot = sys_get_temp_dir().'/kz_backup_storage_run_'.uniqid('d', false);
+        mkdir($storageRoot.'/app/public', 0700, true);
+        mkdir($storageRoot.'/app/backups', 0700, true);
+        file_put_contents($storageRoot.'/app/public/keep.txt', 'keep');
+        file_put_contents($storageRoot.'/app/backups/nested-old.zip', 'should-not-appear');
+        $this->app->useStoragePath($storageRoot);
+
+        try {
+            $service = ProjectBackupService::fromConfig($this->backupDir, 30);
+            $result = $service->run(
+                true,
+                true,
+                false,
+                false,
+                static fn () => null,
+                static fn () => null,
+                false,
+                null,
+                false,
+            );
+
+            $this->assertTrue($result['ok'], 'archive storage filtrée devrait réussir');
+            $archive = $result['files'][0];
+
+            $zip = new ZipArchive;
+            $this->assertTrue($zip->open($archive) === true);
+            $names = [];
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $names[] = (string) $zip->getNameIndex($i);
+            }
+            $zip->close();
+
+            $this->assertContains('storage/app/public/keep.txt', $names);
+            $this->assertFalse(
+                (bool) array_filter($names, static fn (string $n): bool => str_contains($n, 'backups/')),
+                'aucune entrée sous storage/app/backups attendue'
+            );
+        } finally {
+            @unlink($storageRoot.'/app/public/keep.txt');
+            @unlink($storageRoot.'/app/backups/nested-old.zip');
+            @rmdir($storageRoot.'/app/public');
+            @rmdir($storageRoot.'/app/backups');
+            @rmdir($storageRoot.'/app');
+            @rmdir($storageRoot);
+        }
+    }
 }

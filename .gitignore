@@ -49,6 +49,7 @@ docker-compose.override.yml
 
 # Disques fake PHPUnit (artefacts générés en local)
 /storage/framework/testing/disks/
+/storage/framework/testing/backup-*/
 
 # Vite HMR (équivalent de /public/hot)
 /storage/framework/vite.hot

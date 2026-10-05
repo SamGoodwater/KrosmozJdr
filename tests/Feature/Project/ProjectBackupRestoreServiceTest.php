@@ -10,10 +10,16 @@ use Tests\TestCase;
 
 /**
  * Restauration SQLite complète avec sauvegarde de secours.
+ *
+ * Le storage copié par le secours est un répertoire temporaire : le storage réel
+ * contient des centaines de milliers de médias, et un test tué en cours laisserait
+ * cette copie dans le projet (indexation IDE, saturation RAM WSL).
  */
 final class ProjectBackupRestoreServiceTest extends TestCase
 {
     private string $backupDir;
+
+    private string $storageRoot;
 
     private string $sqlitePath;
 
@@ -24,29 +30,34 @@ final class ProjectBackupRestoreServiceTest extends TestCase
         parent::setUp();
 
         $this->originalDefault = (string) config('database.default');
-        $this->backupDir = storage_path('framework/testing/backup-restore-'.uniqid('d', false));
+        $token = uniqid('d', false);
+        $this->storageRoot = sys_get_temp_dir().'/kz_backup_storage_'.$token;
+        // La sortie ZIP doit rester sous la racine du projet (resolveAndAssertBackupPath).
+        $this->backupDir = storage_path('framework/testing/backup-restore-'.$token);
+        mkdir($this->storageRoot.'/app/public', 0700, true);
+        mkdir($this->storageRoot.'/framework', 0700, true);
+        mkdir($this->storageRoot.'/logs', 0700, true);
         mkdir($this->backupDir, 0700, true);
+        file_put_contents($this->storageRoot.'/app/public/marker.txt', 'marker');
+        $this->app->useStoragePath($this->storageRoot);
 
-        $this->sqlitePath = sys_get_temp_dir().'/kz_backup_restore_'.uniqid('d', false).'.sqlite';
-        file_put_contents($this->sqlitePath, 'ORIGINAL-SQLITE-CONTENT-'.uniqid('d', false));
+        $this->sqlitePath = sys_get_temp_dir().'/kz_backup_restore_'.$token.'.sqlite';
+        file_put_contents($this->sqlitePath, 'ORIGINAL-SQLITE-CONTENT-'.$token);
     }
 
     protected function tearDown(): void
     {
         config(['database.default' => $this->originalDefault]);
 
-        foreach (glob($this->backupDir.DIRECTORY_SEPARATOR.'*') ?: [] as $f) {
-            if (is_file($f)) {
-                @unlink($f);
-            }
-        }
-        @rmdir($this->backupDir);
+        $this->removeTree($this->backupDir);
+        $this->removeTree($this->storageRoot);
         if (is_file($this->sqlitePath)) {
             @unlink($this->sqlitePath);
         }
 
-        // Sortir du mode maintenance si un test l’a laissé actif.
-        $down = storage_path('framework/down');
+        // Le mode maintenance écrit sous le storage actif (temporaire, déjà supprimé).
+        // Filet sur le storage du projet si un appel a échappé à useStoragePath.
+        $down = base_path('storage/framework/down');
         if (is_file($down)) {
             @unlink($down);
         }
@@ -83,5 +94,28 @@ final class ProjectBackupRestoreServiceTest extends TestCase
         $this->assertNotNull($result['safety_archive']);
         $this->assertStringStartsWith('ORIGINAL-SQLITE-CONTENT-', (string) file_get_contents($this->sqlitePath));
         $this->assertFileExists($this->backupDir.DIRECTORY_SEPARATOR.$result['safety_archive']);
+    }
+
+    /**
+     * Supprime un répertoire temporaire, y compris les entrées cachées (`.staging_*`).
+     */
+    private function removeTree(string $directory): void
+    {
+        if (! is_dir($directory)) {
+            return;
+        }
+
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+        foreach ($iterator as $item) {
+            if ($item->isDir() && ! $item->isLink()) {
+                @rmdir($item->getPathname());
+            } else {
+                @unlink($item->getPathname());
+            }
+        }
+        @rmdir($directory);
     }
 }

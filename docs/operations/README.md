@@ -70,7 +70,7 @@ Chaque type de travail a sa file (`App\Support\Queue\ProjectQueues`) : `notifica
 
 Archive ZIP unique horodatée (BDD + `storage/app` hors backups + `private/game`), manifeste v2 avec checksums SHA-256, inventaire / suppression / restauration (CLI + UI), rotation, cron. Hors production : peut aussi réécrire les fichiers de seed versionnés depuis la base. Vocabulaire CLI : [COMMANDS.md — project:backup](../../app/Console/COMMANDS.md#projectbackup). Services : `ProjectBackupService`, `ProjectBackupRestoreService`, `SeederDataExportService`. Config : `config/project-backup.php`.
 
-**Périmètre** : base MySQL/MariaDB (dump SQL gzip) ou SQLite (copie compressée), médias et fichiers sous `storage/app`, contenu `private/game`. **Jamais inclus** : `.env`, code applicatif, `storage/framework`, `storage/logs`.
+**Périmètre** : base MySQL/MariaDB (dump SQL gzip) ou SQLite (copie compressée), médias et fichiers sous `storage/app`, contenu `private/game`. **Jamais inclus** : `.env`, code applicatif, `storage/framework`, `storage/logs`, ni `storage/app/backups` (même si `PROJECT_BACKUP_PATH` pointe ailleurs).
 
 La base est la source de vérité ; les JSON sous `database/seeders/data/` en sont une copie. Au démarrage (`project:dev` / `project:prepare`), le seed ne crée que les lignes absentes. Pour réappliquer volontairement les fichiers : `project:seed --overwrite`.
 
@@ -86,6 +86,7 @@ Voir aussi : [SECRET_SCAN.md](./SECRET_SCAN.md) (hook pre-push + CI gitleaks).
 | Cron | clé catalogue `project_backup` ; seed `.env` : `PROJECT_BACKUP_ENABLED=false`, `PROJECT_BACKUP_CRON="0 4 * * *"` ; `withoutOverlapping(180)` |
 | UI | `/admin/backup` : lancer, lister, supprimer, restaurer (super_admin + mot de passe) ; panneau de suivi restauration (fichier local, poll même pendant `artisan down`) |
 | Crash / reboot | `ProjectBackupRecovery` : si le PID de restauration a disparu, statut `interrupted`, nettoyage `.staging_*` / `.restore_*`, levée auto du mode maintenance orphelin |
+| Mémoire (WSL) | Pas de copie staging de `storage/app` / `private/game` : checksums + `ZipArchive::addFile` depuis la source ; staging limité au dump BDD + manifeste. Toujours exclure `storage/app/backups`. Les tests restore isolent `useStoragePath` hors du storage réel |
 | CLI | `project:backup`, `project:backup:list`, `project:backup:delete`, `project:backup:restore` |
 | Prérequis | `mysqldump` / `mysql` (MySQL/MariaDB) ; `schedule:run` chaque minute pour le cron ; protéger le répertoire |
 | Legacy | anciennes paires `*_mysql.sql.gz` / `*_storage.*` encore listables et purgables ; **restauration auto réservée au ZIP v2** |

@@ -10,7 +10,8 @@ use Symfony\Component\Process\Process;
  * Sauvegarde atomique ZIP (BDD + storage/app + private/game), inventaire, purge et verrou global.
  *
  * Format : `{prefix}_YYYY-MM-DD_HH-mm-ss_xxxx.zip` avec manifeste v2 et checksums.
- * Les anciennes paires `*_mysql.sql.gz` / `*_storage.*` restent listables et purgables.
+ * Les arbres storage/game sont hashés et ajoutés au ZIP depuis la source (pas de copie staging) ;
+ * `storage/app/backups` est toujours exclu. Les anciennes paires legacy restent listables et purgables.
  *
  * @example
  * $svc = ProjectBackupService::fromConfig();
@@ -252,18 +253,33 @@ class ProjectBackupService
                 $checksums[$dbRelative] = hash_file('sha256', $dbPath) ?: '';
             }
 
+            /** @var list<array{source: string, prefix: string, excludes: list<string>}> $trees */
+            $trees = [];
+
             if ($withStorage) {
-                $storageStaging = $stagingDir.DIRECTORY_SEPARATOR.'storage'.DIRECTORY_SEPARATOR.'app';
-                $copied = $this->copyDirectoryFiltered(
-                    storage_path('app'),
-                    $storageStaging,
-                    $this->backupRoot,
-                    $log,
-                    $error,
-                );
-                if (! $copied) {
+                $storageSrc = storage_path('app');
+                if (! is_dir($storageSrc)) {
+                    $error('Répertoire storage/app introuvable.');
+
                     return ['run_id' => $runId, 'files' => [], 'seeder_exports' => [], 'ok' => false];
                 }
+                $storageExcludes = $this->storageExcludePrefixes();
+                $log('Indexation storage/app (sans copie staging)…');
+                foreach ($this->iterateFilesFiltered($storageSrc, $storageExcludes) as $absolute => $relative) {
+                    $entry = self::STORAGE_PREFIX.$relative;
+                    $hash = hash_file('sha256', $absolute);
+                    if ($hash === false) {
+                        $error('Checksum impossible : '.$entry);
+
+                        return ['run_id' => $runId, 'files' => [], 'seeder_exports' => [], 'ok' => false];
+                    }
+                    $checksums[$entry] = $hash;
+                }
+                $trees[] = [
+                    'source' => $storageSrc,
+                    'prefix' => self::STORAGE_PREFIX,
+                    'excludes' => $storageExcludes,
+                ];
                 $components['storage'] = ['prefix' => self::STORAGE_PREFIX];
             }
 
@@ -274,27 +290,23 @@ class ProjectBackupService
 
                     return ['run_id' => $runId, 'files' => [], 'seeder_exports' => [], 'ok' => false];
                 }
-                $gameStaging = $stagingDir.DIRECTORY_SEPARATOR.'private'.DIRECTORY_SEPARATOR.'game';
-                $copied = $this->copyDirectoryFiltered($gameSrc, $gameStaging, null, $log, $error);
-                if (! $copied) {
-                    return ['run_id' => $runId, 'files' => [], 'seeder_exports' => [], 'ok' => false];
-                }
-                $components['game'] = ['prefix' => self::GAME_PREFIX];
-            }
-
-            if ($withStorage || $withGame) {
-                foreach ($this->iterateFiles($stagingDir) as $absolute => $relative) {
-                    if ($relative === self::MANIFEST_ENTRY || str_starts_with($relative, 'database/')) {
-                        continue;
-                    }
+                $log('Indexation private/game (sans copie staging)…');
+                foreach ($this->iterateFilesFiltered($gameSrc, []) as $absolute => $relative) {
+                    $entry = self::GAME_PREFIX.$relative;
                     $hash = hash_file('sha256', $absolute);
                     if ($hash === false) {
-                        $error('Checksum impossible : '.$relative);
+                        $error('Checksum impossible : '.$entry);
 
                         return ['run_id' => $runId, 'files' => [], 'seeder_exports' => [], 'ok' => false];
                     }
-                    $checksums[$relative] = $hash;
+                    $checksums[$entry] = $hash;
                 }
+                $trees[] = [
+                    'source' => $gameSrc,
+                    'prefix' => self::GAME_PREFIX,
+                    'excludes' => [],
+                ];
+                $components['game'] = ['prefix' => self::GAME_PREFIX];
             }
 
             $manifest = [
@@ -318,7 +330,7 @@ class ProjectBackupService
 
             $tmpZip = $finalPath.'.partial';
             @unlink($tmpZip);
-            if (! $this->buildZipFromStaging($stagingDir, $tmpZip, $log, $error)) {
+            if (! $this->buildZip($stagingDir, $trees, $tmpZip, $log, $error)) {
                 @unlink($tmpZip);
 
                 return ['run_id' => $runId, 'files' => [], 'seeder_exports' => [], 'ok' => false];
@@ -864,82 +876,88 @@ class ProjectBackupService
     }
 
     /**
-     * @param  callable(string): void  $log
-     * @param  callable(string): void  $error
+     * Préfixes toujours exclus de `storage/app` (répertoire de sortie + `storage/app/backups`).
+     *
+     * @return list<string>
      */
-    private function copyDirectoryFiltered(
-        string $source,
-        string $destination,
-        ?string $excludeRealPath,
-        callable $log,
-        callable $error,
-    ): bool {
-        $sourceReal = realpath($source);
-        if ($sourceReal === false || ! is_dir($sourceReal)) {
-            $error('Source introuvable : '.$source);
-
-            return false;
+    private function storageExcludePrefixes(): array
+    {
+        $prefixes = [];
+        foreach ([$this->backupRoot, storage_path('app/backups')] as $candidate) {
+            $resolved = realpath($candidate);
+            if ($resolved !== false) {
+                $prefixes[] = $resolved;
+            }
         }
 
-        $excludeReal = $excludeRealPath !== null ? realpath($excludeRealPath) : false;
-        $log('Copie filtrée : '.$sourceReal);
+        return array_values(array_unique($prefixes));
+    }
 
-        $this->ensureDirectory($destination);
+    /**
+     * Fichiers d’un arbre en ignorant des préfixes absolus (liens symboliques exclus).
+     *
+     * @param  list<string>  $excludePrefixes
+     * @return \Generator<string, string> absolute => relative posix
+     *
+     * @example
+     * foreach ($this->iterateFilesFiltered(storage_path('app'), $this->storageExcludePrefixes()) as $abs => $rel) { … }
+     */
+    private function iterateFilesFiltered(string $directory, array $excludePrefixes): \Generator
+    {
+        $baseReal = realpath($directory);
+        if ($baseReal === false) {
+            return;
+        }
+
+        $resolvedExcludes = [];
+        foreach ($excludePrefixes as $candidate) {
+            $resolved = realpath($candidate);
+            if ($resolved !== false) {
+                $resolvedExcludes[] = $resolved;
+            }
+        }
 
         $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($sourceReal, \FilesystemIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::SELF_FIRST
+            new \RecursiveDirectoryIterator($baseReal, \FilesystemIterator::SKIP_DOTS)
         );
 
-        foreach ($iterator as $item) {
-            /** @var \SplFileInfo $item */
-            $real = $item->getRealPath();
+        foreach ($iterator as $file) {
+            /** @var \SplFileInfo $file */
+            if ($file->isLink() || ! $file->isFile()) {
+                continue;
+            }
+            $real = $file->getRealPath();
             if ($real === false) {
                 continue;
             }
 
-            if ($excludeReal !== false
-                && ($real === $excludeReal || str_starts_with($real, $excludeReal.DIRECTORY_SEPARATOR))) {
+            foreach ($resolvedExcludes as $excludeReal) {
+                if ($real === $excludeReal || str_starts_with($real, $excludeReal.DIRECTORY_SEPARATOR)) {
+                    continue 2;
+                }
+            }
+
+            if (! str_starts_with($real, $baseReal.DIRECTORY_SEPARATOR) && $real !== $baseReal) {
                 continue;
             }
 
-            if (! str_starts_with($real, $sourceReal.DIRECTORY_SEPARATOR) && $real !== $sourceReal) {
+            $relative = ltrim(str_replace(DIRECTORY_SEPARATOR, '/', substr($real, strlen($baseReal))), '/');
+            if ($relative === '') {
                 continue;
             }
 
-            $relative = ltrim(substr($real, strlen($sourceReal)), DIRECTORY_SEPARATOR);
-            $target = $destination.($relative !== '' ? DIRECTORY_SEPARATOR.$relative : '');
-
-            if ($item->isDir()) {
-                $this->ensureDirectory($target);
-
-                continue;
-            }
-
-            if ($item->isLink()) {
-                continue;
-            }
-
-            if (! $item->isFile()) {
-                continue;
-            }
-
-            $this->ensureDirectory(dirname($target));
-            if (! @copy($real, $target)) {
-                $error('Copie impossible : '.$real);
-
-                return false;
-            }
+            yield $real => $relative;
         }
-
-        return true;
     }
 
     /**
+     * Construit le ZIP : staging (dump + manifeste) + arbres source (addFile, sans double copie disque).
+     *
+     * @param  list<array{source: string, prefix: string, excludes: list<string>}>  $trees
      * @param  callable(string): void  $log
      * @param  callable(string): void  $error
      */
-    private function buildZipFromStaging(string $stagingDir, string $zipPath, callable $log, callable $error): bool
+    private function buildZip(string $stagingDir, array $trees, string $zipPath, callable $log, callable $error): bool
     {
         $log('Compression ZIP…');
         $zip = new \ZipArchive;
@@ -957,12 +975,24 @@ class ProjectBackupService
             return false;
         }
 
-        foreach ($this->iterateFiles($stagingReal) as $absolute => $relative) {
+        foreach ($this->iterateFilesFiltered($stagingReal, []) as $absolute => $relative) {
             if (! $zip->addFile($absolute, $relative)) {
                 $zip->close();
                 $error('ZIP addFile a échoué : '.$relative);
 
                 return false;
+            }
+        }
+
+        foreach ($trees as $tree) {
+            foreach ($this->iterateFilesFiltered($tree['source'], $tree['excludes']) as $absolute => $relative) {
+                $entry = $tree['prefix'].$relative;
+                if (! $zip->addFile($absolute, $entry)) {
+                    $zip->close();
+                    $error('ZIP addFile a échoué : '.$entry);
+
+                    return false;
+                }
             }
         }
 
@@ -973,38 +1003,6 @@ class ProjectBackupService
         }
 
         return true;
-    }
-
-    /**
-     * @return \Generator<string, string> absolute => relative posix
-     */
-    private function iterateFiles(string $directory): \Generator
-    {
-        $baseReal = realpath($directory);
-        if ($baseReal === false) {
-            return;
-        }
-
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($baseReal, \FilesystemIterator::SKIP_DOTS)
-        );
-
-        foreach ($iterator as $file) {
-            /** @var \SplFileInfo $file */
-            if (! $file->isFile()) {
-                continue;
-            }
-            $real = $file->getRealPath();
-            if ($real === false) {
-                continue;
-            }
-            $relative = ltrim(str_replace(DIRECTORY_SEPARATOR, '/', substr($real, strlen($baseReal))), '/');
-            if ($relative === '') {
-                continue;
-            }
-
-            yield $real => $relative;
-        }
     }
 
     private function zipLooksValid(string $path): bool
