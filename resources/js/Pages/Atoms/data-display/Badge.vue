@@ -11,7 +11,7 @@
  * - Support des couleurs Tailwind : format 'color-shade' (ex: 'blue-700', 'orange-500')
  * - Props utilitaires custom : shadow, backdrop, opacity
  * - Toutes les classes DaisyUI sont écrites en toutes lettres
- * - Accessibilité renforcée (role, aria, etc.)
+ * - Couleurs DaisyUI : le texte vient du jeton `*-content` (thème). Hex et tokens Tailwind calculent un texte lisible.
  *
  * @see https://daisyui.com/components/badge/
  * @version DaisyUI v5.x
@@ -43,7 +43,7 @@
  *
  * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
-import { computed, nextTick, onMounted, ref, watch, useAttrs } from "vue"
+import { computed, useAttrs } from "vue"
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 import { colorList, sizeXlList, variantList } from '@/Pages/Atoms/atomMap';
 import { isValidColor, getReadableTextColor, getTailwindTokenFromLabel } from '@/Utils/color/Color';
@@ -237,79 +237,8 @@ const inlineStyle = computed(() => {
         };
     }
 
-    // 3) Token DaisyUI => on essaie d'améliorer le contraste en se basant sur la variable thème
-    //    (si disponible), sans toucher au background DaisyUI (géré par les classes badge-*).
-    //    But: éviter certains thèmes où le text-content est trop faible.
-    if (props.color && colorList.includes(props.color) && typeof window !== 'undefined') {
-        try {
-            const token = String(props.color);
-            const cssVar = `--color-${token}-500`;
-            const raw = getComputedStyle(document.documentElement).getPropertyValue(cssVar)?.trim();
-            if (raw && isValidColor(raw)) {
-                const fg = getReadableTextColor(raw);
-                return { ...base, color: fg };
-            }
-        } catch {
-            // ignore
-        }
-    }
-
+    // Token DaisyUI : fond et texte viennent des classes badge-* et des jetons *-content.
     return props.style || "";
-});
-
-/**
- * Contraste "robuste" pour DaisyUI:
- * certains thèmes utilisent des backgrounds calculés (color-mix/oklch) et la lecture de `--color-*-500`
- * peut être insuffisante. Ici on lit la couleur de fond réellement rendue sur l'élément et on choisit un
- * texte lisible. (On n'écrase pas le cas Tailwind/custom déjà géré par inlineStyle.)
- */
-const badgeEl = ref(null);
-const domReadableText = ref("");
-
-const shouldUseDomContrast = computed(() => {
-    if (!effectiveColor.value) return false;
-    if (isTailwind.value) return false;
-    if (isCustomCssColor.value) return false;
-    if (!colorList.includes(String(effectiveColor.value))) return false; // DaisyUI token uniquement
-    // Outline/dash n'ont pas de background fiable à analyser
-    if (props.variant === "outline" || props.variant === "dash") return false;
-    return typeof window !== "undefined";
-});
-
-const updateDomContrast = async () => {
-    if (!shouldUseDomContrast.value) {
-        domReadableText.value = "";
-        return;
-    }
-    await nextTick();
-    try {
-        const el = badgeEl.value;
-        if (!el) return;
-        const bg = getComputedStyle(el).backgroundColor?.trim();
-        if (!bg || bg === "transparent" || bg === "rgba(0, 0, 0, 0)") return;
-        if (!isValidColor(bg)) return;
-        domReadableText.value = getReadableTextColor(bg);
-    } catch {
-        // ignore
-    }
-};
-
-onMounted(() => {
-    void updateDomContrast();
-});
-
-watch(
-    () => [String(effectiveColor.value || ""), String(props.variant || ""), Boolean(props.glassy)],
-    () => {
-        void updateDomContrast();
-    }
-);
-
-const domContrastStyle = computed(() => {
-    if (!domReadableText.value) return {};
-    // Ne pas écraser un style explicite fourni par le caller
-    if (props.style && typeof props.style === "object" && "color" in props.style) return {};
-    return { color: domReadableText.value };
 });
 
 const forcedTextStyle = computed(() => {
@@ -369,12 +298,11 @@ const attrs = computed(() => getCommonAttrs(props));
 
 <template>
     <span
-        ref="badgeEl"
         :class="atomClasses"
         :title="title || undefined"
         v-bind="{ ...fallthroughHtmlAttrs, ...attrs }"
         v-on="fallthroughListeners"
-        :style="[inlineStyle, domContrastStyle, forcedTextStyle]"
+        :style="[inlineStyle, forcedTextStyle]"
     >
         <!-- Priorité : content prop > slot content > slot default -->
         <span
