@@ -214,8 +214,8 @@ class ProjectBackupService
         try {
             if (! $needsArchive) {
                 if ($withSeederData) {
-                    $export = $seederDataExport ?? app(SeederDataExportService::class);
-                    $seederExports = $export->export($log);
+                    $exporter = $seederDataExport ?? app(SeederDataExportService::class);
+                    $seederExports = $exporter->export($log);
                 }
                 if ($prune) {
                     $this->pruneOldBackups($dryRun, $log, $error);
@@ -345,7 +345,7 @@ class ProjectBackupService
 
             if ($withSeederData) {
                 $exporter = $seederDataExport ?? app(SeederDataExportService::class);
-                $seederExports = $export->export($log);
+                $seederExports = $exporter->export($log);
             }
 
             if ($prune) {
