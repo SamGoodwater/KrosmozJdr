@@ -18,6 +18,7 @@ import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityListBackButton from '@/Pages/Atoms/action/EntityListBackButton.vue';
+import EntityEditOptionsAnchor from '@/Pages/Molecules/entity/shared/EntityEditOptionsAnchor.vue';
 import { getResourceFieldDescriptors } from '@/Entities/resource/resource-descriptors';
 import { createFieldsConfigFromDescriptors } from '@/Utils/entity/descriptor-form';
 import { RESOURCE_FORM_FIELD_SECTIONS_EDIT } from '@/Entities/resource/resource-form-config';
@@ -117,6 +118,7 @@ function goToShow() {
                         <i class="fa-solid fa-book-open" aria-hidden="true"></i>
                         Fiche
                     </Btn>
+                    <EntityEditOptionsAnchor />
                 </div>
             </div>
         </div>

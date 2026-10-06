@@ -10,6 +10,7 @@ import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityListBackButton from '@/Pages/Atoms/action/EntityListBackButton.vue';
+import EntityEditOptionsAnchor from '@/Pages/Molecules/entity/shared/EntityEditOptionsAnchor.vue';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import CreatureTraitsEditor from '@/Pages/Organismes/entity/CreatureTraitsEditor.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
@@ -94,6 +95,7 @@ const confirmDelete = () => {
                         <i class="fa-solid fa-book-open" aria-hidden="true"></i>
                         Fiche
                     </Btn>
+                    <EntityEditOptionsAnchor />
                 </div>
             </div>
         </div>

@@ -17,6 +17,7 @@ import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityListBackButton from '@/Pages/Atoms/action/EntityListBackButton.vue';
+import EntityEditOptionsAnchor from '@/Pages/Molecules/entity/shared/EntityEditOptionsAnchor.vue';
 import ItemPriceEditSection from '@/Pages/Molecules/entity/item/ItemPriceEditSection.vue';
 import {
     buildConsumableFormFieldsConfig,
@@ -101,6 +102,7 @@ function goToShow() {
                         <i class="fa-solid fa-book-open" aria-hidden="true"></i>
                         Fiche
                     </Btn>
+                    <EntityEditOptionsAnchor />
                 </div>
             </div>
         </div>

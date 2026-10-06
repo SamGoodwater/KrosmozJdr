@@ -16,6 +16,10 @@
 - Affichage sorts : `SpellEffectDefinitionsSerializer` ne lie que les états hors `raw`
 - `Spell::visibleToUser` / `EntityDisplayVisibilityService::constrainQueryToViewer` (listes)
 - `GET /api/effects/definitions` — recherche defs pour liaison sort (payload edit allégé)
+- `POST /api/effects/spell-effects` — crée une définition (degré 1, `initial_sub_effects` optionnels) et la lie au sort depuis la fiche (pas de redirection admin)
+- Fiche sort : `spellHolders` (monstres, PNJ, classes qui possèdent le sort)
+- Édition zone : `parseAreaNotationParts` / `buildAreaNotation` / `getAreaShapeEditorHelp` (`areaNotation.js`) + UI `AreaNotationEditor` ; chaîne stockée inchangée (`point`, `line-1xL`, `cross-a-b`, `circle-a-b`, `rect-WxH`, `shape-…`)
+- Select action sous-effet : `formatSubEffectSelectLabel` (`subEffectLabels.js`) — libellé FR, valeur = id
 - `GET /api/effects/effects?q=&per_page=` — index paginé (plus de dump massif)
 - `GET /api/effects/for-entity` (`format_dice_human` en query : `true`/`false`/`1`/`0`) et `GET /api/effects/usages` : middleware `web` (session) + `view` sur la fiche parente (un sort/objet brouillon ne fuit pas ; l’éditeur connecté n’est pas vu comme un invité)
 - `scrapping:effects:reapply-mappings` — reclasse les `autre` déjà mappés (ex. téléports)

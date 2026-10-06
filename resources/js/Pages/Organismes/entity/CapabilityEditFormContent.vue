@@ -13,6 +13,7 @@ import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
 import ConditionsEditor from "@/Pages/Organismes/entity/ConditionsEditor.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import EntityListBackButton from "@/Pages/Atoms/action/EntityListBackButton.vue";
+import EntityEditOptionsAnchor from "@/Pages/Molecules/entity/shared/EntityEditOptionsAnchor.vue";
 import {
     buildCapabilityFormFieldsConfig,
     CAPABILITY_FORM_FIELD_SECTIONS_EDIT,
@@ -116,6 +117,7 @@ function confirmDelete() {
                         <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
                         Supprimer
                     </Btn>
+                    <EntityEditOptionsAnchor />
                 </div>
             </div>
         </div>

@@ -4,8 +4,8 @@
  *
  * @description
  * Partagé entre la page {@link Pages/entity/spell/Edit} et {@link SpellEditModal}.
- * — Barre d’options en haut (fiche, suppression, retour liste).
- * — Formulaire en grille responsive + pied d’actions fixe via {@link EntityEditForm} (lecture / écriture dans la carte Métadonnées ; effets enregistrés sur le même « Mettre à jour »).
+ * — Barre d’options en haut (fiche, DofusDB, suppression, retour liste).
+ * — Résumé combat + porteurs, puis identité / combat, effets, options avancées.
  * — Les classes liées au sort se gèrent depuis la fiche classe (pas depuis ici).
  */
 import { computed, ref } from "vue";
@@ -16,12 +16,26 @@ import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
 import SpellEffectsUnifiedSection from "@/Pages/Organismes/entity/SpellEffectsUnifiedSection.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import EntityListBackButton from "@/Pages/Atoms/action/EntityListBackButton.vue";
+import EntityEditOptionsAnchor from "@/Pages/Molecules/entity/shared/EntityEditOptionsAnchor.vue";
 import Collapse from "@/Pages/Atoms/data-display/Collapse.vue";
+import Route from "@/Pages/Atoms/action/Route.vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import {
     buildSpellFormFieldsConfig,
     SPELL_FORM_FIELD_SECTIONS_EDIT,
     mergeSpellTypesFieldIntoSpellFormConfig,
 } from "@/Entities/spell/spell-form-config";
+import {
+    buildDofusDbEntityUrl,
+    getEntityDofusDbId,
+} from "@/Utils/dofusdb/buildDofusDbEntityUrl";
+import { useDofusDbReferenceStore } from "@/Composables/store/useDofusDbReferenceStore";
+import { getElementLabel, getElementIcon } from "@/Utils/Entity/Elements";
+import { formatPoRangeDisplay } from "@/Composables/entity/useCharacteristicDisplay";
+import { getEntityStateDisplayLabel } from "@/Utils/Entity/SharedConstants";
+
+/** Icône action DofusDB (`public/images/logos/dofus.png`). */
+const DOFUSDB_ACTION_ICON = "/images/logos/dofus.png";
 
 const props = defineProps({
     spell: { type: Object, required: true },
@@ -30,6 +44,11 @@ const props = defineProps({
     effectEntityType: { type: String, default: "spell" },
     effectFormOptions: { type: Object, default: () => ({}) },
     spellEffectGroups: { type: Array, default: () => [] },
+    /**
+     * Monstres, PNJ et classes qui référencent ce sort.
+     * @type {{ monsters?: Array, npcs?: Array, breeds?: Array }}
+     */
+    spellHolders: { type: Object, default: () => ({ monsters: [], npcs: [], breeds: [] }) },
     /** Quand true : annulation sans redirection vers la fiche lecture. */
     embeddedInModal: { type: Boolean, default: false },
     /**
@@ -39,7 +58,20 @@ const props = defineProps({
     redirectAfterUpdate: { type: String, default: "edit" },
 });
 
-const emit = defineEmits(["cancel", "saved"]);
+const emit = defineEmits(["cancel", "saved", "effects-changed"]);
+
+const holderGroups = computed(() => {
+    const holders = props.spellHolders || {};
+    return [
+        { key: "monsters", label: "Monstres", items: holders.monsters || [] },
+        { key: "npcs", label: "PNJ", items: holders.npcs || [] },
+        { key: "breeds", label: "Classes", items: holders.breeds || [] },
+    ].filter((group) => group.items.length > 0);
+});
+
+const holderCount = computed(() =>
+    holderGroups.value.reduce((sum, group) => sum + group.items.length, 0),
+);
 
 const { canDeleteAny, isAdmin } = usePermissions();
 const canDeleteSpell = computed(() => canDeleteAny("spells") || isAdmin.value);
@@ -56,6 +88,44 @@ const fieldSections = SPELL_FORM_FIELD_SECTIONS_EDIT;
 const spellModel = computed(() =>
     props.spell instanceof Spell ? props.spell : new Spell(props.spell),
 );
+
+const dofusDbStore = useDofusDbReferenceStore();
+
+const dofusDbUrl = computed(() => {
+    const id = getEntityDofusDbId(spellModel.value);
+    if (!id) return null;
+    return buildDofusDbEntityUrl("spells", id);
+});
+
+/** Ouvre le panneau modal de référence DofusDB (iframe + « Ouvrir dans une fenêtre »). */
+function openDofusDbPanel() {
+    if (!dofusDbUrl.value) return;
+    dofusDbStore.openPanel("spells", spellModel.value);
+}
+
+const summaryElementLabel = computed(() => {
+    const el = spellModel.value.element;
+    if (el == null || el === "" || Number(el) === 0) return "Aucun";
+    return getElementLabel(Number(el)) || "—";
+});
+
+const summaryElementIcon = computed(() => {
+    const el = spellModel.value.element;
+    if (el == null || el === "" || Number(el) === 0) return null;
+    return getElementIcon(Number(el));
+});
+
+const summaryPa = computed(() => {
+    const pa = spellModel.value.pa;
+    return pa == null || pa === "" ? "—" : String(pa);
+});
+
+const summaryPo = computed(() => {
+    const display = formatPoRangeDisplay(spellModel.value.poMin, spellModel.value.poMax);
+    return display || "—";
+});
+
+const summaryState = computed(() => getEntityStateDisplayLabel(spellModel.value.state) || "—");
 
 /**
  * Le layout décale déjà `<main>` sous la sidebar ; pas de second décalage sur le pied.
@@ -111,6 +181,32 @@ function confirmDelete() {
                     <p class="text-xs text-base-content/60">
                         Édition · ID {{ spellModel.id }}
                     </p>
+                    <ul
+                        class="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-base-content/80"
+                        data-cy="spell-edit-summary"
+                    >
+                        <li class="inline-flex items-center gap-1.5">
+                            <Icon
+                                v-if="summaryElementIcon"
+                                :source="summaryElementIcon"
+                                size="xs"
+                                class="opacity-90"
+                            />
+                            <span>{{ summaryElementLabel }}</span>
+                        </li>
+                        <li>
+                            <span class="text-base-content/50">PA</span>
+                            {{ summaryPa }}
+                        </li>
+                        <li>
+                            <span class="text-base-content/50">PO</span>
+                            {{ summaryPo }}
+                        </li>
+                        <li>
+                            <span class="text-base-content/50">État</span>
+                            {{ summaryState }}
+                        </li>
+                    </ul>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     <EntityListBackButton
@@ -129,6 +225,20 @@ function confirmDelete() {
                         Fiche
                     </Btn>
                     <Btn
+                        v-if="dofusDbUrl"
+                        color="neutral"
+                        variant="outline"
+                        size="xs"
+                        type="button"
+                        class="gap-1.5"
+                        data-cy="spell-edit-dofusdb"
+                        title="Ouvrir la fiche DofusDB dans un panneau"
+                        @click="openDofusDbPanel"
+                    >
+                        <Icon :source="DOFUSDB_ACTION_ICON" size="xs" class="opacity-90" />
+                        DofusDB
+                    </Btn>
+                    <Btn
                         v-if="canDeleteSpell"
                         color="error"
                         variant="outline"
@@ -140,9 +250,38 @@ function confirmDelete() {
                         <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
                         Supprimer
                     </Btn>
+                    <EntityEditOptionsAnchor />
                 </div>
             </div>
         </div>
+
+        <section class="rounded-box border border-base-300 bg-base-100 px-4 py-3" data-cy="spell-holders">
+            <h2 class="text-sm font-semibold text-base-content">Qui possède ce sort</h2>
+            <p v-if="holderCount === 0" class="mt-1 text-sm text-base-content/70">
+                Aucun monstre, PNJ ou classe ne possède ce sort.
+            </p>
+            <div v-else class="mt-3 space-y-3">
+                <div v-for="group in holderGroups" :key="group.key">
+                    <p class="text-xs font-medium uppercase tracking-wide text-base-content/60">
+                        {{ group.label }}
+                    </p>
+                    <ul class="mt-1 flex flex-wrap gap-2">
+                        <li
+                            v-for="item in group.items"
+                            :key="group.key + '-' + item.id"
+                            class="inline-flex items-center gap-2 rounded-box border border-base-300 bg-base-200/40 px-2 py-1"
+                        >
+                            <Route :href="item.show_url" color="neutral" hover class="text-sm no-underline">
+                                {{ item.name }}
+                            </Route>
+                            <Route :href="item.edit_url" color="neutral" class="text-xs no-underline">
+                                Modifier
+                            </Route>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
 
         <EntityEditForm
             :entity="spellModel"
@@ -162,22 +301,33 @@ function confirmDelete() {
             :before-submit-async="beforeSpellSubmitAsync"
             @cancel="emit('cancel')"
             @submit="emit('saved')"
-        />
-
-        <Collapse arrow :default-open="true" bg-off="bg-base-100" class="border border-base-300">
-            <template #title>Effets du sort</template>
-            <template #content>
-                <SpellEffectsUnifiedSection
-                    ref="spellEffectsSectionRef"
-                    hide-effect-group-submit-button
-                    :available-effects="availableEffects"
-                    :effect-form-options="effectFormOptions"
-                    :spell-effect-groups="spellEffectGroups"
-                    :entity-type="effectEntityType"
-                    :entity-id="spellModel.id"
-                    :embedded-in-modal="embeddedInModal"
-                />
+        >
+            <template #after-primary>
+                <Collapse
+                    arrow
+                    :default-open="true"
+                    bg-off="bg-base-100"
+                    bg-on="bg-base-100"
+                    class="border border-base-300"
+                    data-cy="spell-effects-section"
+                >
+                    <template #title>Effets du sort</template>
+                    <template #content>
+                        <SpellEffectsUnifiedSection
+                            ref="spellEffectsSectionRef"
+                            hide-effect-group-submit-button
+                            :available-effects="availableEffects"
+                            :effect-form-options="effectFormOptions"
+                            :spell-effect-groups="spellEffectGroups"
+                            :entity-type="effectEntityType"
+                            :entity-id="spellModel.id"
+                            :suggested-effect-name="spellModel.name || ''"
+                            :embedded-in-modal="embeddedInModal"
+                            @effects-changed="emit('effects-changed')"
+                        />
+                    </template>
+                </Collapse>
             </template>
-        </Collapse>
+        </EntityEditForm>
     </div>
 </template>

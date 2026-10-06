@@ -10,10 +10,11 @@
  * @props {Object} fieldsConfig - Configuration des champs à afficher
  * @props {Boolean} isUpdating - Mode édition (true) ou création (false)
  */
-import { ref, computed, watch, onUnmounted } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useForm, router } from '@inertiajs/vue3';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
+import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
@@ -202,6 +203,9 @@ const isSpellLayout = computed(
 /** Fiche capacité : 1ʳᵉ ligne 3 panneaux égaux, 2ᵉ ligne effets 2/3 + métadonnées 1/3 (grille 6 cols ≥ md). */
 const isCapabilityLayout = computed(() => props.layoutProfile === 'capability');
 
+/** Fiche sort seule : une colonne, sections avancées repliables, slot effets au milieu. */
+const isSpellOnlyLayout = computed(() => props.layoutProfile === 'spell');
+
 /**
  * Segment `entities.{segment}` (ex. capabilities, pas « capabilitys »).
  *
@@ -220,6 +224,16 @@ const { dispatchEntityAction, deleteConfirm, confirmPendingDelete, cancelPending
         onRefresh: () => router.reload(),
     });
 const showReadAction = computed(() => props.isUpdating && Boolean(props.entity?.id));
+
+/** Cible du menu Options : barre sticky de la page, sinon la rangée du formulaire. */
+const EDIT_OPTIONS_ANCHOR_ID = 'entity-edit-page-options';
+const optionsPlacementReady = ref(false);
+const optionsTargetReady = ref(false);
+
+onMounted(() => {
+    optionsTargetReady.value = Boolean(document.getElementById(EDIT_OPTIONS_ANCHOR_ID));
+    optionsPlacementReady.value = true;
+});
 
 /** Contexte actions : page d’édition ou modal d’édition embarquée. */
 const editActionsContext = computed(() => {
@@ -249,6 +263,9 @@ const sectionsContainerClass = computed(() => {
     if (isCapabilityLayout.value) {
         return 'capability-edit-sections grid w-full min-w-0 grid-cols-1 gap-4 md:grid-cols-6 md:gap-x-4 md:gap-y-5 md:items-stretch';
     }
+    if (isSpellOnlyLayout.value) {
+        return 'space-y-4';
+    }
     return isSpellLayout.value
         ? 'grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
         : 'space-y-5';
@@ -266,7 +283,7 @@ const sectionsContainerClass = computed(() => {
  * @returns {string}
  */
 function spellSectionColClass(sec) {
-    if (!isSpellLayout.value || !sec?.id) {
+    if (!isSpellLayout.value || !sec?.id || isSpellOnlyLayout.value) {
         return '';
     }
     if (isCapabilityLayout.value) {
@@ -719,6 +736,7 @@ const getDefaultValue = (type) => {
     switch (type) {
         case 'number': return null;
         case 'checkbox':
+        case 'toggle':
         case 'physiqueWakfu':
             return false;
         case 'select': return null;
@@ -768,12 +786,27 @@ const mainFieldSections = computed(() => {
         id: sec.id,
         title: sec.title,
         subtitle: sec.subtitle,
+        defaultOpen: sec.defaultOpen !== false,
         fields: (sec.fieldKeys || [])
             .map((k) => byKey.get(k))
             .filter(Boolean)
             .filter((f) => isFieldVisible(f.key, f.config)),
     })).filter((sec) => sec.fields.length > 0);
 });
+
+/** Sections ouvertes par défaut (identité / combat sur le sort). */
+const primaryFieldSections = computed(() =>
+    (mainFieldSections.value || []).filter((sec) => sec.defaultOpen !== false),
+);
+
+/** Sections repliées (résolution, options, métadonnées). */
+const advancedFieldSections = computed(() =>
+    (mainFieldSections.value || []).filter((sec) => sec.defaultOpen === false),
+);
+
+const useCollapsibleSpellSections = computed(
+    () => isSpellOnlyLayout.value && Boolean(mainFieldSections.value?.length),
+);
 
 const visibleMainFields = computed(() =>
     mainFields.value.filter((f) => isFieldVisible(f.key, f.config)),
@@ -963,6 +996,7 @@ const getFieldRenderType = (fieldKey, fieldConfig) => {
     if (fieldConfig?.type === 'elementPrimaries') return 'elementPrimaries';
     if (fieldConfig?.type === 'spellTypesMulti') return 'spellTypesMulti';
     if (fieldConfig?.type === 'physiqueWakfu') return 'physiqueWakfu';
+    if (fieldConfig?.type === 'toggle') return 'checkbox';
     return fieldConfig?.type || 'text';
 };
 
@@ -1074,7 +1108,7 @@ const submit = async () => {
         const data = form.data();
         for (const key of (props.differentFields || [])) {
             const type = fieldsConfig.value?.[key]?.type;
-            if (type === 'checkbox' || type === 'physiqueWakfu') {
+            if (type === 'checkbox' || type === 'toggle' || type === 'physiqueWakfu') {
                 if (!checkboxDirty.value?.[key]) delete data[key];
             } else {
                 if (!fieldDirty.value?.[key]) delete data[key];
@@ -1191,25 +1225,131 @@ async function handleEditPageAction(actionKey) {
                     />
                 </div>
 
-                <div v-if="showReadAction" class="top-tools-row__actions">
-                    <EntityActions
-                        :entity-type="entitiesPluralSegment"
-                        :entity="entity"
-                        format="buttons"
-                        display="icon-only"
-                        size="sm"
-                        color="primary"
-                        :whitelist="['view', 'view-dofusdb']"
-                        :context="editActionsContext"
-                        @action="handleEditPageAction"
-                    />
-                </div>
+                <Teleport
+                    v-if="optionsPlacementReady && showReadAction"
+                    :to="'#' + EDIT_OPTIONS_ANCHOR_ID"
+                    :disabled="!optionsTargetReady"
+                >
+                    <div class="inline-flex shrink-0 items-center">
+                        <EntityActions
+                            :entity-type="entitiesPluralSegment"
+                            :entity="entity"
+                            format="dropdown"
+                            display="icon-text"
+                            size="xs"
+                            color="primary"
+                            labeled-trigger
+                            trigger-label="Options"
+                            :show-inline-shortcuts="false"
+                            :context="editActionsContext"
+                            @action="handleEditPageAction"
+                        />
+                    </div>
+                </Teleport>
             </div>
         </div>
 
         <!-- Formulaire -->
         <form @submit.prevent="submit" :class="['space-y-5', formScrollPaddingClass]">
-            <div v-if="mainFieldSections?.length" :class="sectionsContainerClass">
+            <template v-if="useCollapsibleSpellSections">
+                <div :class="sectionsContainerClass">
+                    <section
+                        v-for="sec in primaryFieldSections"
+                        :key="sec.id"
+                        :class="sectionCardClass"
+                    >
+                        <div class="mb-2.5 border-b border-base-300/50 pb-2 md:mb-3">
+                            <h2 :class="sectionTitleClass">
+                                {{ sec.title }}
+                            </h2>
+                            <p v-if="sec.subtitle" :class="sectionSubtitleClass">
+                                {{ sec.subtitle }}
+                            </p>
+                        </div>
+                        <div class="form-fields">
+                            <template v-for="field in sec.fields" :key="field.key">
+                                <div v-if="field?.config" :class="getFieldWrapperClass(field.key)">
+                                    <EntityEditFormFieldBody
+                                        :field="field"
+                                        :form="form"
+                                        :is-multi-edit="isMultiEdit"
+                                        :different-fields="props.differentFields"
+                                        :field-dirty="fieldDirty"
+                                        :checkbox-dirty="checkboxDirty"
+                                        :get-field-label="getFieldLabel"
+                                        :get-field-helper="getFieldHelper"
+                                        :get-field-validation="getFieldValidation"
+                                        :get-field-placeholder="getFieldPlaceholder"
+                                        :get-field-render-type="getFieldRenderType"
+                                        :get-file-current-path="getFileCurrentPath"
+                                        :get-file-accept="getFileAccept"
+                                        :format-display-value="formatDisplayValue"
+                                        :mark-dirty="markDirty"
+                                        :reset-field-multi-edit="resetFieldMultiEdit"
+                                        :reset-bool-multi-edit="resetBoolMultiEdit"
+                                        :on-checkbox-update="onCheckboxUpdate"
+                                        :characteristics-group="characteristicsGroup"
+                                    />
+                                </div>
+                            </template>
+                        </div>
+                    </section>
+                </div>
+
+                <slot name="after-primary" />
+
+                <div v-if="advancedFieldSections.length" class="space-y-3">
+                    <Collapse
+                        v-for="sec in advancedFieldSections"
+                        :key="sec.id"
+                        arrow
+                        bg-off="bg-base-100"
+                        bg-on="bg-base-100"
+                        class="border border-base-300"
+                        :default-open="false"
+                    >
+                        <template #title>
+                            <span class="font-semibold">{{ sec.title }}</span>
+                            <span
+                                v-if="sec.subtitle"
+                                class="ml-2 text-xs font-normal text-base-content/60"
+                            >
+                                {{ sec.subtitle }}
+                            </span>
+                        </template>
+                        <template #content>
+                            <div class="form-fields pt-2">
+                                <template v-for="field in sec.fields" :key="field.key">
+                                    <div v-if="field?.config" :class="getFieldWrapperClass(field.key)">
+                                        <EntityEditFormFieldBody
+                                            :field="field"
+                                            :form="form"
+                                            :is-multi-edit="isMultiEdit"
+                                            :different-fields="props.differentFields"
+                                            :field-dirty="fieldDirty"
+                                            :checkbox-dirty="checkboxDirty"
+                                            :get-field-label="getFieldLabel"
+                                            :get-field-helper="getFieldHelper"
+                                            :get-field-validation="getFieldValidation"
+                                            :get-field-placeholder="getFieldPlaceholder"
+                                            :get-field-render-type="getFieldRenderType"
+                                            :get-file-current-path="getFileCurrentPath"
+                                            :get-file-accept="getFileAccept"
+                                            :format-display-value="formatDisplayValue"
+                                            :mark-dirty="markDirty"
+                                            :reset-field-multi-edit="resetFieldMultiEdit"
+                                            :reset-bool-multi-edit="resetBoolMultiEdit"
+                                            :on-checkbox-update="onCheckboxUpdate"
+                                            :characteristics-group="characteristicsGroup"
+                                        />
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </Collapse>
+                </div>
+            </template>
+            <div v-else-if="mainFieldSections?.length" :class="sectionsContainerClass">
                 <section
                     v-for="sec in mainFieldSections"
                     :key="sec.id"
@@ -1444,12 +1584,6 @@ async function handleEditPageAction(actionKey) {
     .top-tools-row__formula {
         flex: 1 1 320px;
         min-width: 0;
-    }
-
-    .top-tools-row__actions {
-        display: flex;
-        align-items: center;
-        min-height: 2.5rem;
     }
 
     .form-fields {

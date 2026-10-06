@@ -26,6 +26,28 @@ function resetState() {
     payload.value = null;
 }
 
+async function refreshEffects(id) {
+    if (id == null || id === "" || !payload.value) {
+        return;
+    }
+    try {
+        const { data } = await axios.get(route("entities.spells.edit-payload", { spell: id }), {
+            headers: { Accept: "application/json" },
+        });
+        payload.value = {
+            ...payload.value,
+            spellEffectGroups: data.spellEffectGroups || [],
+            effectFormOptions: data.effectFormOptions || payload.value.effectFormOptions,
+            spellHolders: data.spellHolders || payload.value.spellHolders,
+        };
+    } catch (e) {
+        loadError.value =
+            e?.response?.data?.message ||
+            e?.message ||
+            "Impossible de recharger les effets du sort.";
+    }
+}
+
 async function fetchPayload(id) {
     if (id == null || id === "") {
         return;
@@ -107,10 +129,12 @@ const handleClose = () => {
                 :effect-entity-type="payload.effectEntityType || 'spell'"
                 :effect-form-options="payload.effectFormOptions || {}"
                 :spell-effect-groups="payload.spellEffectGroups || []"
+                :spell-holders="payload.spellHolders || { monsters: [], npcs: [], breeds: [] }"
                 embedded-in-modal
                 redirect-after-update="stay"
                 @cancel="handleClose"
                 @saved="emit('saved')"
+                @effects-changed="refreshEffects(spellId)"
             />
         </div>
     </Modal>

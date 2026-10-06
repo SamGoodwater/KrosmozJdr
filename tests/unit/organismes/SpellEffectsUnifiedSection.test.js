@@ -19,7 +19,6 @@ vi.mock("axios", () => ({
 }));
 
 vi.mock("@inertiajs/vue3", () => ({
-    Link: { props: ["href"], template: "<a><slot /></a>" },
     router: { reload: vi.fn(() => Promise.resolve()) },
     usePage: () => page,
 }));
@@ -37,14 +36,48 @@ afterEach(() => {
  * Monte la section effets (le watch immédiat sur les groupes ne doit pas lever de TDZ).
  *
  * @param {Array} spellEffectGroups
+ * @param {object} [extraProps]
  * @returns {import('@vue/test-utils').VueWrapper}
  */
-function mountSection(spellEffectGroups = []) {
+function mountSection(spellEffectGroups = [], extraProps = {}) {
     const wrapper = mount(SpellEffectsUnifiedSection, {
         props: {
             entityId: 12,
             spellEffectGroups,
-            effectFormOptions: {},
+            effectFormOptions: {
+                sub_effects: [
+                    {
+                        id: 1,
+                        slug: "frapper",
+                        type_slug: "frapper",
+                        param_schema: {
+                            action: "frapper",
+                            params: [
+                                { key: "characteristic", type: "characteristic", categories: ["element"] },
+                                { key: "value", type: "formula" },
+                            ],
+                        },
+                    },
+                    {
+                        id: 2,
+                        slug: "soigner",
+                        type_slug: "soigner",
+                        param_schema: {
+                            action: "soigner",
+                            params: [
+                                { key: "characteristic", type: "characteristic", categories: ["element"] },
+                                { key: "value", type: "formula" },
+                            ],
+                        },
+                    },
+                ],
+                characteristics: [
+                    { key: "fire", label: "Feu", category: "element" },
+                    { key: "earth", label: "Terre", category: "element" },
+                ],
+                characteristics_object: [],
+            },
+            ...extraProps,
         },
         global: {
             stubs: {
@@ -87,5 +120,63 @@ describe("SpellEffectsUnifiedSection", () => {
 
         expect(wrapper.text()).toContain("Effets du sort");
         expect(wrapper.findComponent({ name: "EffectGroupEditorForm" }).exists()).toBe(true);
+    });
+
+    it("crée un effet sur la fiche, sans lien vers l’admin", async () => {
+        page.props.permissions = {
+            entities: {},
+            access: { effectsAdmin: true },
+        };
+        axios.post.mockResolvedValueOnce({ data: { data: { id: 44, name: "Souffle" } } });
+
+        const wrapper = mountSection([]);
+        await flushPromises();
+
+        expect(wrapper.text()).toContain("Créer un effet");
+        expect(wrapper.text()).not.toContain("Créer un effet (admin)");
+        expect(wrapper.find("[data-cy=create-spell-effect-form]").exists()).toBe(false);
+
+        await wrapper.get("[data-cy=create-spell-effect]").trigger("click");
+        expect(wrapper.find("[data-cy=create-spell-effect-form]").exists()).toBe(true);
+        expect(wrapper.findAll("[data-cy=create-spell-effect-sub-row]").length).toBe(1);
+        expect(wrapper.text()).toContain("Sous-effets");
+
+        await wrapper.get("#spell-effect-create-name").setValue("Souffle");
+        const valueInput = wrapper.find("[data-cy=create-spell-effect-sub-row] input[placeholder*='2d6']");
+        expect(valueInput.exists()).toBe(true);
+        await valueInput.setValue("2d6");
+        await wrapper.get("[data-cy=create-spell-effect-form]").trigger("submit");
+        await flushPromises();
+
+        expect(axios.post).toHaveBeenCalledWith("/api/effects/spell-effects", {
+            spell_id: 12,
+            name: "Souffle",
+            target_type: "direct",
+            initial_area: null,
+            initial_sub_effects: [
+                expect.objectContaining({
+                    sub_effect_id: 1,
+                    order: 0,
+                    params: expect.objectContaining({ value_formula: "2d6" }),
+                }),
+            ],
+        });
+    });
+
+    it("permet d’ajouter plusieurs sous-effets dans le formulaire de création", async () => {
+        page.props.permissions = {
+            entities: {},
+            access: { effectsAdmin: true },
+        };
+
+        const wrapper = mountSection([]);
+        await flushPromises();
+
+        await wrapper.get("[data-cy=create-spell-effect]").trigger("click");
+        expect(wrapper.findAll("[data-cy=create-spell-effect-sub-row]").length).toBe(1);
+
+        await wrapper.get("[data-cy=create-spell-effect-add-sub]").trigger("click");
+        expect(wrapper.findAll("[data-cy=create-spell-effect-sub-row]").length).toBe(2);
+        expect(wrapper.text()).toContain("Enchaînement");
     });
 });

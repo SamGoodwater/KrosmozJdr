@@ -46,11 +46,9 @@ export function buildSpellFormFieldsConfig(options = {}) {
             options: getSpellCategoryOptions(),
             optionBadge: {
                 enabled: true,
-                color: 'auto',
-                autoLabelFrom: 'label',
-                autoScheme: 'labelHash',
-                autoTone: 'light',
-                variant: 'soft',
+                // Couleur DaisyUI portée par chaque option (`SPELL_CATEGORY_OPTIONS.color`)
+                // Soft = trop peu contrasté sur thème sombre ; badge plein = fond coloré + *-content.
+                variant: '',
             },
         },
         state: {
@@ -96,17 +94,17 @@ export function buildSpellFormFieldsConfig(options = {}) {
             showInCompact: true,
         },
         sight_line: {
-            type: 'checkbox',
+            type: 'toggle',
             label: 'Ligne de vue requise',
             required: false,
         },
         cast_in_line: {
-            type: 'checkbox',
+            type: 'toggle',
             label: 'Lancer uniquement en ligne',
             required: false,
         },
         cast_in_diagonal: {
-            type: 'checkbox',
+            type: 'toggle',
             label: 'Lancer en diagonale',
             required: false,
         },
@@ -184,7 +182,7 @@ export function buildSpellFormFieldsConfig(options = {}) {
             required: false,
         },
         po_editable: {
-            type: 'checkbox',
+            type: 'toggle',
             label: 'Portée modifiable en jeu',
             required: false,
         },
@@ -292,26 +290,41 @@ export function buildSpellFormFieldsConfig(options = {}) {
     };
 }
 
-/** Sections formulaire — édition (fiche). Ordre des colonnes (grille sort) : généralités, portée/coût/résolution, spécificités, admin. */
+/**
+ * Sections formulaire — édition (fiche).
+ * Ouvertes : identité puis combat. Repliées : résolution, le reste du gameplay, métadonnées.
+ * Les effets (zone / sous-effets) s’insèrent entre les blocs ouverts et les repliés.
+ */
 export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
     {
-        id: 'general',
-        title: 'Généralités',
-        subtitle: 'Nom, description, visuel ; catégorie, état, élément et types.',
-        fieldKeys: ['name', 'description', 'image', 'category', 'state', 'element', 'spellTypes'],
+        id: 'identity',
+        title: 'Identité',
+        subtitle: 'Nom, description, élément, catégorie, types, état et image.',
+        fieldKeys: ['name', 'description', 'element', 'category', 'spellTypes', 'state', 'image'],
+        defaultOpen: true,
     },
     {
-        id: 'range_resolution',
-        title: 'Portée, coût et résolution au combat',
-        subtitle:
-            'Niveau, coût PA, description texte des effets ; PO min / max et portée modifiable en jeu ; jets d’attaque, sauvegarde ou réussite automatique (cible consentante).',
+        id: 'combat',
+        title: 'Combat',
+        subtitle: 'Coût, portée, niveau, contraintes de lancer et résumé texte des effets.',
         fieldKeys: [
-            'level',
             'pa',
-            'effect',
             'po_min',
             'po_max',
             'po_editable',
+            'level',
+            'sight_line',
+            'cast_in_line',
+            'cast_in_diagonal',
+            'effect',
+        ],
+        defaultOpen: true,
+    },
+    {
+        id: 'resolution',
+        title: 'Résolution au combat',
+        subtitle: 'Jets d’attaque, sauvegarde ou réussite automatique.',
+        fieldKeys: [
             'resolution_mode',
             'attack_characteristic_key',
             'save_characteristic_key',
@@ -319,17 +332,14 @@ export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
             'save_success_note',
             'auto_success_if_willing_target',
         ],
+        defaultOpen: false,
     },
     {
         id: 'gameplay',
-        title: 'Spécificités du sort',
-        subtitle:
-            'Physique ou Wakfu, lancers, ligne de vue, réaction, temps d’incantation, rituel. La zone d’impact se définit dans les effets (degrés).',
+        title: 'Options avancées',
+        subtitle: 'Physique ou Wakfu, rituel, réaction, lancers et cumul.',
         fieldKeys: [
             'is_magic',
-            'sight_line',
-            'cast_in_line',
-            'cast_in_diagonal',
             'target_type',
             'max_stack',
             'global_cooldown',
@@ -341,6 +351,7 @@ export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
             'cast_per_target',
             'number_between_two_cast',
         ],
+        defaultOpen: false,
     },
     {
         id: 'admin',
@@ -356,6 +367,7 @@ export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
             'created_at',
             'updated_at',
         ],
+        defaultOpen: false,
     },
 ];
 
@@ -364,11 +376,13 @@ export const SPELL_FORM_FIELD_SECTIONS_CREATE = [
     SPELL_FORM_FIELD_SECTIONS_EDIT[0],
     SPELL_FORM_FIELD_SECTIONS_EDIT[1],
     SPELL_FORM_FIELD_SECTIONS_EDIT[2],
+    SPELL_FORM_FIELD_SECTIONS_EDIT[3],
     {
         id: 'admin',
         title: 'Métadonnées & droits',
         subtitle: 'Identifiants externes, synchro et niveaux d’accès.',
         fieldKeys: ['official_id', 'dofusdb_id', 'auto_update', 'read_level', 'write_level'],
+        defaultOpen: false,
     },
 ];
 

@@ -93,13 +93,16 @@ export class Spell extends BaseModel {
         return this._data.area || null;
     }
 
+    /**
+     * Niveau (formule texte, ex. « 1 », « [level] »).
+     * Ne pas caster en Number : la validation update attend une string et les formules seraient perdues.
+     */
     get level() {
         const v = this._data.level;
         if (v === null || v === undefined || v === '') {
             return null;
         }
-        const n = Number(v);
-        return Number.isFinite(n) ? n : null;
+        return String(v);
     }
 
     /** Affichage portée (calculé côté API à partir de po_min/po_max). */
@@ -137,13 +140,15 @@ export class Spell extends BaseModel {
         return this._data.po_editable ?? null;
     }
 
+    /**
+     * Coût PA (formule texte). Même contrainte que {@link level}.
+     */
     get pa() {
         const v = this._data.pa;
         if (v === null || v === undefined || v === '') {
             return null;
         }
-        const n = Number(v);
-        return Number.isFinite(n) ? n : null;
+        return String(v);
     }
 
     /** Temps d'incantation (texte libre), chaîne vide si absent. */
@@ -201,7 +206,8 @@ export class Spell extends BaseModel {
     }
 
     get category() {
-        return this._data.category || null;
+        const v = this._data.category;
+        return v === undefined || v === null || v === '' ? null : Number(v);
     }
 
     get isMagic() {
@@ -1209,12 +1215,12 @@ export class Spell extends BaseModel {
             effect: this.effect,
             area: this.area,
             level: this.level,
-            po_min: this.poMin,
-            po_max: this.poMax,
+            po_min: this.poMin != null && this.poMin !== '' ? String(this.poMin) : this.poMin,
+            po_max: this.poMax != null && this.poMax !== '' ? String(this.poMax) : this.poMax,
             po_editable: this.poEditable,
             pa: this.pa,
-            cast_per_turn: this.castPerTurn,
-            cast_per_target: this.castPerTarget,
+            cast_per_turn: this.castPerTurn != null && this.castPerTurn !== '' ? String(this.castPerTurn) : this.castPerTurn,
+            cast_per_target: this.castPerTarget != null && this.castPerTarget !== '' ? String(this.castPerTarget) : this.castPerTarget,
             sight_line: this.sightLine,
             cast_in_line: this.castInLine,
             cast_in_diagonal: this.castInDiagonal,

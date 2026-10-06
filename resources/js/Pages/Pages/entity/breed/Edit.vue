@@ -21,6 +21,7 @@ import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityListBackButton from '@/Pages/Atoms/action/EntityListBackButton.vue';
+import EntityEditOptionsAnchor from '@/Pages/Molecules/entity/shared/EntityEditOptionsAnchor.vue';
 import { getBreedFieldDescriptors } from '@/Entities/breed/breed-descriptors';
 import { createFieldsConfigFromDescriptors } from '@/Utils/entity/descriptor-form';
 import { BREED_FORM_FIELD_SECTIONS_EDIT } from '@/Entities/breed/breed-form-config';
@@ -133,6 +134,7 @@ const confirmDelete = () => {
                         <i class="fa-solid fa-book-open" aria-hidden="true"></i>
                         Fiche
                     </Btn>
+                    <EntityEditOptionsAnchor />
                 </div>
             </div>
         </div>

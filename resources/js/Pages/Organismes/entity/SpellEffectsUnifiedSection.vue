@@ -4,7 +4,7 @@
  */
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import axios from 'axios';
-import { Link, router } from '@inertiajs/vue3';
+import { router } from '@inertiajs/vue3';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import { AREA_NOTATION_HELP } from '@/Utils/Entity/areaNotation.js';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -21,6 +21,7 @@ import {
     getConditionDispellableIcon,
 } from '@/Composables/condition/conditionDisplay';
 import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
+import { formatSubEffectSelectLabel } from '@/Utils/Entity/subEffectLabels.js';
 
 const props = defineProps({
     /**
@@ -39,7 +40,13 @@ const props = defineProps({
      * Éditeur affiché dans la modal (liste sorts) : enregistrement groupe d’effets en JSON sans navigation Inertia.
      */
     embeddedInModal: { type: Boolean, default: false },
+    /**
+     * Nom proposé pour une nouvelle définition (en général le nom du sort).
+     */
+    suggestedEffectName: { type: String, default: '' },
 });
+
+const emit = defineEmits(['effects-changed']);
 
 const notificationStore = useNotificationStore();
 const { canAccess } = usePermissions();
@@ -56,6 +63,145 @@ const definitionSearchResults = ref([]);
 const definitionSearchLoading = ref(false);
 let definitionSearchTimer = null;
 let definitionSearchSeq = 0;
+
+const showCreateForm = ref(false);
+const createName = ref('');
+const createTargetType = ref('direct');
+const createArea = ref('');
+const createLoading = ref(false);
+/** @type {import('vue').Ref<Array<Record<string, unknown>>>} */
+const createSubEffects = ref([]);
+
+const TARGET_TYPE_OPTIONS = [
+    { value: 'direct', label: 'Direct' },
+    { value: 'trap', label: 'Piège' },
+    { value: 'glyph', label: 'Glyphe' },
+];
+
+const createSubEffectOptions = computed(() => props.effectFormOptions?.sub_effects ?? []);
+
+const createCharacteristicOptions = computed(() => {
+    const base = props.effectFormOptions?.characteristics ?? [];
+    const objectChars = props.effectFormOptions?.characteristics_object ?? [];
+    const seen = new Set();
+    const out = [];
+    for (const c of [...base, ...objectChars]) {
+        const key = String(c?.key ?? '');
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+        out.push(c);
+    }
+    return out;
+});
+
+/**
+ * @returns {Record<string, unknown>}
+ */
+function emptyCreateSubEffectRow() {
+    const first = createSubEffectOptions.value[0];
+    return {
+        sub_effect_id: first?.id ?? '',
+        scope: 'general',
+        crit_only: false,
+        logic_operator: 'AND',
+        logic_condition: '',
+        duration_formula: '',
+        params: {
+            characteristic: '',
+            value_formula: '',
+            value_formula_crit: '',
+            life_steal_formula: '',
+            cells_formula: '',
+            movement_kind: 'movement',
+            teleport: false,
+        },
+    };
+}
+
+function addCreateSubEffect() {
+    if (!createSubEffectOptions.value.length) {
+        errorMessage.value =
+            'Référentiel de sous-effets indisponible. Rechargez la page puis réessayez.';
+        return;
+    }
+    const row = emptyCreateSubEffectRow();
+    if (createSubEffects.value.length > 0) {
+        row.logic_operator = 'AND';
+    } else {
+        row.logic_operator = '';
+    }
+    createSubEffects.value.push(row);
+}
+
+function removeCreateSubEffect(index) {
+    createSubEffects.value.splice(index, 1);
+}
+
+/**
+ * @param {Record<string, unknown>} row
+ */
+function onCreateSubEffectChange(row) {
+    row.params = {
+        characteristic: '',
+        value_formula: '',
+        value_formula_crit: '',
+        life_steal_formula: '',
+        cells_formula: '',
+        movement_kind: 'movement',
+        teleport: false,
+    };
+}
+
+/**
+ * @param {Record<string, unknown>} row
+ * @returns {string}
+ */
+function createSubEffectSlug(row) {
+    const sub = createSubEffectOptions.value.find((s) => Number(s.id) === Number(row.sub_effect_id));
+    return sub?.slug ?? '';
+}
+
+/**
+ * @param {Record<string, unknown>} row
+ * @returns {boolean}
+ */
+function createRowNeedsCharacteristic(row) {
+    const slug = createSubEffectSlug(row);
+    return ['frapper', 'soigner', 'protéger', 'booster', 'retirer', 'voler-caracteristiques'].includes(slug);
+}
+
+/**
+ * @param {Record<string, unknown>} row
+ * @returns {boolean}
+ */
+function createRowNeedsValue(row) {
+    const slug = createSubEffectSlug(row);
+    return !['appliquer-etat', 's-appliquer-etat', 'invoquer'].includes(slug);
+}
+
+/**
+ * @param {Record<string, unknown>} row
+ * @returns {Array<{key: string, label?: string, category?: string}>}
+ */
+function createCharacteristicsForRow(row) {
+    const slug = createSubEffectSlug(row);
+    const all = createCharacteristicOptions.value;
+    if (slug === 'frapper' || slug === 'soigner' || slug === 'protéger') {
+        return all.filter((c) => c.category === 'element');
+    }
+    if (slug === 'booster' || slug === 'retirer' || slug === 'voler-caracteristiques') {
+        const objectChars = props.effectFormOptions?.characteristics_object ?? [];
+        return objectChars.length ? objectChars : all;
+    }
+    return all;
+}
+
+function resetCreateFormFields() {
+    createName.value = '';
+    createArea.value = '';
+    createTargetType.value = 'direct';
+    createSubEffects.value = [];
+}
 
 const previewLevel = ref(1);
 const previewData = ref(null);
@@ -181,8 +327,84 @@ onBeforeUnmount(() => {
 });
 
 async function reloadSpellEffectData() {
-    await router.reload({ only: ['spellEffectGroups', 'spell'] });
+    if (props.embeddedInModal) {
+        emit('effects-changed');
+        await searchEffectDefinitions();
+        return;
+    }
+    await router.reload({
+        only: ['spellEffectGroups'],
+        preserveState: true,
+        preserveScroll: true,
+    });
     await searchEffectDefinitions();
+}
+
+function openCreateForm() {
+    showCreateForm.value = true;
+    errorMessage.value = '';
+    if (!createName.value.trim() && props.suggestedEffectName) {
+        createName.value = props.suggestedEffectName;
+    }
+    if (createSubEffects.value.length === 0 && createSubEffectOptions.value.length > 0) {
+        addCreateSubEffect();
+    }
+}
+
+function closeCreateForm() {
+    showCreateForm.value = false;
+    errorMessage.value = '';
+    resetCreateFormFields();
+}
+
+/**
+ * Crée une définition (degré 1 + sous-effets optionnels) et la lie au sort, sans quitter la fiche.
+ */
+async function createAndAttachEffect() {
+    const name = createName.value.trim();
+    if (!name) {
+        errorMessage.value = 'Indiquez un nom pour l’effet.';
+        return;
+    }
+    const incomplete = createSubEffects.value.find((row) => !row.sub_effect_id);
+    if (incomplete) {
+        errorMessage.value = 'Chaque sous-effet doit avoir une action choisie.';
+        return;
+    }
+    createLoading.value = true;
+    errorMessage.value = '';
+    try {
+        const initial_sub_effects = createSubEffects.value.map((row, i) => ({
+            sub_effect_id: Number(row.sub_effect_id),
+            order: i,
+            scope: row.scope || 'general',
+            duration_formula: row.duration_formula || null,
+            logic_operator: i > 0 ? row.logic_operator || 'AND' : null,
+            logic_condition: i > 0 && row.logic_operator === 'OR' ? row.logic_condition || null : null,
+            crit_only: Boolean(row.crit_only),
+            params: row.params && typeof row.params === 'object' ? { ...row.params } : null,
+        }));
+        const { data } = await axios.post('/api/effects/spell-effects', {
+            spell_id: props.entityId,
+            name,
+            target_type: createTargetType.value || 'direct',
+            initial_area: createArea.value.trim() || null,
+            initial_sub_effects,
+        });
+        const id = Number(data?.data?.id ?? 0);
+        lastAttachedDefinitionId.value = id > 0 ? id : null;
+        showCreateForm.value = false;
+        resetCreateFormFields();
+        await reloadSpellEffectData();
+    } catch (err) {
+        const payload = err.response?.data;
+        const fieldError = payload?.errors
+            ? Object.values(payload.errors).flat()[0]
+            : null;
+        errorMessage.value = fieldError || payload?.message || 'Impossible de créer cet effet.';
+    } finally {
+        createLoading.value = false;
+    }
 }
 
 async function attachEffect() {
@@ -346,7 +568,7 @@ defineExpose({
     <Container>
         <div class="mb-4">
             <div class="flex flex-wrap items-center gap-2 border-b border-base-300 pb-2">
-                <h2 class="text-xl font-semibold">Effets du sort</h2>
+                <h2 class="text-base font-semibold">Effets du sort</h2>
                 <span
                     v-if="effectsEditorDirty"
                     class="badge badge-sm badge-warning"
@@ -356,15 +578,15 @@ defineExpose({
                 </span>
             </div>
             <p class="text-sm text-base-content/70 mt-2">
-                Liez une ou plusieurs <strong>définitions</strong> d’effet (pivot <code class="text-xs">effect_spell</code>). Chaque
-                définition porte ses degrés : zone, seuil de niveau créature et sous-effets s’éditent dans le bloc ci-dessous.
+                Liez une définition existante, ou créez-en une ici. La zone, le niveau et les sous-effets se règlent
+                dans le bloc qui s’ouvre ensuite, sans quitter cette page.
             </p>
             <p
                 v-if="hideEffectGroupSubmitButton"
-                class="mt-2 rounded-lg border border-primary/25 bg-primary/5 px-3 py-2 text-xs text-base-content/80"
+                class="mt-2 rounded-lg border border-base-300 bg-base-200/50 px-3 py-2 text-xs text-base-content/80"
             >
-                Les changements du bloc d’effets sélectionné sont enregistrés avec le bouton
-                <strong>Mettre à jour</strong> du formulaire du sort (pied de page, au-dessus de cette section).
+                Les changements du bloc sélectionné sont enregistrés avec
+                <strong>Mettre à jour</strong>, en bas du formulaire du sort.
                 <span v-if="effectsEditorDirty" class="mt-1 block font-medium text-warning">
                     Des modifications d’effets sont en attente d’enregistrement.
                 </span>
@@ -423,14 +645,213 @@ defineExpose({
                     >
                         {{ attachLoading ? 'Liaison…' : 'Lier au sort' }}
                     </button>
-                    <Link
+                    <button
                         v-if="canManageEffectsAdmin"
-                        :href="route('admin.effects.create')"
+                        type="button"
                         class="btn btn-sm btn-outline"
+                        data-cy="create-spell-effect"
+                        @click="showCreateForm ? closeCreateForm() : openCreateForm()"
                     >
-                        Créer un effet (admin)
-                    </Link>
+                        {{ showCreateForm ? 'Fermer' : 'Créer un effet' }}
+                    </button>
                 </div>
+                <form
+                    v-if="canManageEffectsAdmin && showCreateForm"
+                    class="grid gap-3 border-t border-base-300 pt-3 sm:grid-cols-2"
+                    data-cy="create-spell-effect-form"
+                    @submit.prevent="createAndAttachEffect"
+                >
+                    <div>
+                        <label class="label text-xs" for="spell-effect-create-name">Nom</label>
+                        <input
+                            id="spell-effect-create-name"
+                            v-model="createName"
+                            type="text"
+                            class="input input-bordered input-sm w-full"
+                            maxlength="255"
+                            required
+                            autocomplete="off"
+                        />
+                    </div>
+                    <div>
+                        <label class="label text-xs" for="spell-effect-create-target">Type de cible</label>
+                        <select
+                            id="spell-effect-create-target"
+                            v-model="createTargetType"
+                            class="select select-bordered select-sm w-full"
+                        >
+                            <option v-for="opt in TARGET_TYPE_OPTIONS" :key="opt.value" :value="opt.value">
+                                {{ opt.label }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="label text-xs" for="spell-effect-create-area">Zone du premier degré</label>
+                        <input
+                            id="spell-effect-create-area"
+                            v-model="createArea"
+                            type="text"
+                            class="input input-bordered input-sm w-full"
+                            placeholder="Optionnel : point, circle-1-2, line-1x3…"
+                            autocomplete="off"
+                        />
+                    </div>
+
+                    <div class="sm:col-span-2 space-y-3 rounded-box border border-base-300 bg-base-200/30 p-3">
+                        <div class="flex flex-wrap items-start justify-between gap-2">
+                            <div>
+                                <h4 class="text-sm font-semibold">Sous-effets</h4>
+                                <p class="text-xs text-base-content/60 mt-0.5">
+                                    Définissez au moins une action (frapper, soigner…). Vous pourrez affiner ensuite dans
+                                    l’éditeur.
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-primary shrink-0"
+                                data-cy="create-spell-effect-add-sub"
+                                :disabled="!createSubEffectOptions.length"
+                                @click="addCreateSubEffect"
+                            >
+                                + Ajouter un sous-effet
+                            </button>
+                        </div>
+
+                        <p
+                            v-if="!createSubEffectOptions.length"
+                            class="text-sm text-warning"
+                        >
+                            Référentiel de sous-effets indisponible — rechargez la page.
+                        </p>
+
+                        <div
+                            v-else-if="!createSubEffects.length"
+                            class="text-sm text-base-content/70 py-2"
+                        >
+                            Aucun sous-effet. Cliquez sur « Ajouter un sous-effet ».
+                        </div>
+
+                        <div v-else class="space-y-3">
+                            <div
+                                v-for="(row, index) in createSubEffects"
+                                :key="'create-sub-' + index"
+                                class="rounded-box border border-base-300 bg-base-100 p-3 space-y-2"
+                                data-cy="create-spell-effect-sub-row"
+                            >
+                                <div
+                                    v-if="index > 0"
+                                    class="flex flex-wrap items-end gap-2 pb-2 border-b border-dashed border-base-300"
+                                >
+                                    <div class="min-w-40">
+                                        <label class="label text-xs py-0">Enchaînement</label>
+                                        <select
+                                            v-model="row.logic_operator"
+                                            class="select select-bordered select-sm w-full"
+                                        >
+                                            <option value="AND">ET — le précédent doit s’appliquer</option>
+                                            <option value="OR">OU — si la condition &gt; 0</option>
+                                        </select>
+                                    </div>
+                                    <div v-if="row.logic_operator === 'OR'" class="flex-1 min-w-40">
+                                        <label class="label text-xs py-0">Condition</label>
+                                        <input
+                                            v-model="row.logic_condition"
+                                            type="text"
+                                            class="input input-bordered input-sm w-full"
+                                            placeholder="ex: [target_is_ally]"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap items-end gap-2">
+                                    <div class="min-w-40 flex-1">
+                                        <label class="label text-xs py-0">Action</label>
+                                        <select
+                                            v-model="row.sub_effect_id"
+                                            class="select select-bordered select-sm w-full"
+                                            required
+                                            @change="onCreateSubEffectChange(row)"
+                                        >
+                                            <option value="">— Choisir —</option>
+                                            <option
+                                                v-for="s in createSubEffectOptions"
+                                                :key="s.id"
+                                                :value="s.id"
+                                            >
+                                                {{ formatSubEffectSelectLabel(s) }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div v-if="createRowNeedsCharacteristic(row)" class="min-w-36 flex-1">
+                                        <label class="label text-xs py-0">
+                                            {{
+                                                ['frapper', 'soigner', 'protéger'].includes(createSubEffectSlug(row))
+                                                    ? 'Élément'
+                                                    : 'Caractéristique'
+                                            }}
+                                        </label>
+                                        <select
+                                            v-model="row.params.characteristic"
+                                            class="select select-bordered select-sm w-full"
+                                        >
+                                            <option value="">— Choisir —</option>
+                                            <option
+                                                v-for="c in createCharacteristicsForRow(row)"
+                                                :key="c.key"
+                                                :value="c.key"
+                                            >
+                                                {{ c.label || c.key }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div v-if="createRowNeedsValue(row)" class="min-w-36 flex-1">
+                                        <label class="label text-xs py-0">Valeur (formule)</label>
+                                        <input
+                                            v-model="row.params.value_formula"
+                                            type="text"
+                                            class="input input-bordered input-sm w-full"
+                                            placeholder="ex: 2d6, [1-4], [level]*2"
+                                        />
+                                    </div>
+                                    <label class="flex items-center gap-2 cursor-pointer pb-1">
+                                        <input
+                                            v-model="row.crit_only"
+                                            type="checkbox"
+                                            class="checkbox checkbox-sm"
+                                        />
+                                        <span class="text-xs whitespace-nowrap">Critique seulement</span>
+                                    </label>
+                                    <button
+                                        type="button"
+                                        class="btn btn-ghost btn-sm btn-square text-error"
+                                        title="Retirer ce sous-effet"
+                                        @click="removeCreateSubEffect(index)"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-2 flex flex-wrap gap-2">
+                        <button
+                            type="submit"
+                            class="btn btn-sm btn-primary"
+                            data-cy="create-spell-effect-submit"
+                            :disabled="createLoading"
+                        >
+                            {{ createLoading ? 'Création…' : 'Créer et lier' }}
+                        </button>
+                        <button type="button" class="btn btn-sm btn-ghost" @click="closeCreateForm">
+                            Annuler
+                        </button>
+                    </div>
+                    <p class="sm:col-span-2 text-xs text-base-content/60">
+                        L’effet est créé avec un premier degré et les sous-effets ci-dessus. Affinez-les ensuite dans le
+                        bloc d’édition (durée, états, déplacement…).
+                    </p>
+                </form>
             </div>
         </div>
 
@@ -475,9 +896,8 @@ defineExpose({
         >
             <p class="font-medium text-base-content">Aucun effet lié</p>
             <p class="text-base-content/70">
-                Utilisez « Rechercher et lier » ci-dessus pour rattacher une définition existante
-                (pivot <code class="text-xs">effect_spell</code>). Les admins peuvent aussi créer une
-                définition vide puis la lier ici.
+                Recherchez une définition existante, ou créez-en une ci-dessus. Les sous-effets s’ajoutent
+                ensuite dans cette page.
             </p>
         </div>
 

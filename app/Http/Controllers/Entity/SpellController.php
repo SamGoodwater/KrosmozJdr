@@ -119,7 +119,8 @@ class SpellController extends Controller
      *     availableEffects: array<int, array<string, mixed>>,
      *     effectEntityType: string,
      *     effectFormOptions: array<string, mixed>,
-     *     spellEffectGroups: array<int, mixed>
+     *     spellEffectGroups: array<int, mixed>,
+     *     spellHolders: array{monsters: list<array<string, mixed>>, npcs: list<array<string, mixed>>, breeds: list<array<string, mixed>>}
      * }
      */
     protected function buildSpellEditPayload(Spell $spell): array
@@ -150,6 +151,7 @@ class SpellController extends Controller
             'effectEntityType' => 'spell',
             'effectFormOptions' => $needsFormOptions ? $editorData->formOptions() : [],
             'spellEffectGroups' => $needsGroups ? $editorData->distinctGroupsForSpell($spell) : [],
+            'spellHolders' => $this->spellHolders($spell),
         ];
     }
 
@@ -169,6 +171,7 @@ class SpellController extends Controller
             'effectEntityType' => $payload['effectEntityType'],
             'effectFormOptions' => $payload['effectFormOptions'],
             'spellEffectGroups' => $payload['spellEffectGroups'],
+            'spellHolders' => $payload['spellHolders'],
         ]);
     }
 
@@ -188,7 +191,71 @@ class SpellController extends Controller
             'effectEntityType' => $payload['effectEntityType'],
             'effectFormOptions' => $payload['effectFormOptions'],
             'spellEffectGroups' => $payload['spellEffectGroups'],
+            'spellHolders' => $payload['spellHolders'],
         ]);
+    }
+
+    /**
+     * Monstres, PNJ et classes qui possèdent ce sort.
+     *
+     * @return array{
+     *     monsters: list<array{id: int, name: string, show_url: string, edit_url: string}>,
+     *     npcs: list<array{id: int, name: string, show_url: string, edit_url: string}>,
+     *     breeds: list<array{id: int, name: string, show_url: string, edit_url: string}>
+     * }
+     */
+    private function spellHolders(Spell $spell): array
+    {
+        $creatures = $spell->creatures()
+            ->with([
+                'monster:id,creature_id',
+                'npc:id,creature_id',
+            ])
+            ->orderBy('creatures.name')
+            ->get();
+
+        $monsters = [];
+        $npcs = [];
+        foreach ($creatures as $creature) {
+            $name = trim((string) $creature->name) !== '' ? (string) $creature->name : 'Sans nom';
+            if ($creature->monster !== null) {
+                $monsters[] = [
+                    'id' => (int) $creature->monster->id,
+                    'name' => $name,
+                    'show_url' => route('entities.monsters.show', $creature->monster, false),
+                    'edit_url' => route('entities.monsters.edit', $creature->monster, false),
+                ];
+            }
+            if ($creature->npc !== null) {
+                $npcs[] = [
+                    'id' => (int) $creature->npc->id,
+                    'name' => $name,
+                    'show_url' => route('entities.npcs.show', $creature->npc, false),
+                    'edit_url' => route('entities.npcs.edit', $creature->npc, false),
+                ];
+            }
+        }
+
+        $breeds = ($spell->relationLoaded('breeds') ? $spell->breeds : $spell->breeds()->get())
+            ->sortBy(static fn ($breed): string => mb_strtolower((string) $breed->name))
+            ->values()
+            ->map(static function ($breed): array {
+                $name = trim((string) $breed->name) !== '' ? (string) $breed->name : 'Sans nom';
+
+                return [
+                    'id' => (int) $breed->id,
+                    'name' => $name,
+                    'show_url' => route('entities.breeds.show', $breed, false),
+                    'edit_url' => route('entities.breeds.edit', $breed, false),
+                ];
+            })
+            ->all();
+
+        return [
+            'monsters' => $monsters,
+            'npcs' => $npcs,
+            'breeds' => $breeds,
+        ];
     }
 
     /**

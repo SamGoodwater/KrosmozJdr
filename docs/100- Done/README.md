@@ -1,5 +1,13 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Effets de sort, sur la fiche
+
+L’édition des effets d’un sort reste sur la page du sort : fond neutre, liste des monstres, PNJ et classes qui le possèdent, et création d’un effet avec ses sous-effets dès le formulaire d’ajout, sans passer par l’administration des effets.
+
+## Octobre 2026 — Lien DofusDB dans les options
+
+Le raccourci vers la fiche du jeu (DofusDB) est de nouveau dans le menu d’options de chaque vue : cartes, lignes, colonnes, fiche et fenêtre. Sur la page Modifier, le menu **Options** est dans la barre du haut, à côté de Liste et Fiche — c’est là qu’on ouvre la source Dofus pendant qu’on édite.
+
 ## Octobre 2026 — Sauvegardes ZIP fiabilisées
 
 Une sauvegarde produit désormais une seule archive ZIP horodatée (base, médias `storage/app`, contenu `private/game`, manifeste avec checksums). On peut lister, supprimer et restaurer depuis la ligne de commande et la page admin Sauvegarde, avec confirmation renforcée et sauvegarde de secours avant restauration. Le cron configurable `project_backup` reste disponible ; le verrou empêche deux opérations en parallèle. Le suivi de restauration reste visible pendant la maintenance, et un crash / reboot marque l’opération comme interrompue puis nettoie les restes. Les médias ne sont plus recopiés dans un dossier temporaire avant compression (évite les plantages mémoire sous WSL), et le dossier des archives n’est jamais ré-inclus dans une sauvegarde.
