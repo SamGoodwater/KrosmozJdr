@@ -13,7 +13,8 @@ import { router } from "@inertiajs/vue3";
 import { Spell } from "@/Models/Entity/Spell";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
-import SpellEffectsUnifiedSection from "@/Pages/Organismes/entity/SpellEffectsUnifiedSection.vue";
+import SpellDegreesEditor from "@/Pages/Organismes/entity/SpellDegreesEditor.vue";
+import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import EntityListBackButton from "@/Pages/Atoms/action/EntityListBackButton.vue";
 import Collapse from "@/Pages/Atoms/data-display/Collapse.vue";
@@ -29,7 +30,9 @@ const props = defineProps({
     availableEffects: { type: Array, default: () => [] },
     effectEntityType: { type: String, default: "spell" },
     effectFormOptions: { type: Object, default: () => ({}) },
+    spellDegrees: { type: Object, default: () => ({ degrees: [], default_degree_id: null }) },
     spellEffectGroups: { type: Array, default: () => [] },
+    spellHolders: { type: Object, default: () => ({}) },
     /** Quand true : annulation sans redirection vers la fiche lecture. */
     embeddedInModal: { type: Boolean, default: false },
     /**
@@ -57,17 +60,28 @@ const spellModel = computed(() =>
     props.spell instanceof Spell ? props.spell : new Spell(props.spell),
 );
 
+const holderGroups = computed(() => [
+    { key: "monsters", label: "Monstres", items: props.spellHolders?.monsters || [] },
+    { key: "npcs", label: "PNJ", items: props.spellHolders?.npcs || [] },
+    { key: "creatures", label: "Créatures", items: props.spellHolders?.creatures || [] },
+    { key: "breeds", label: "Classes", items: props.spellHolders?.breeds || [] },
+].filter((group) => group.items.length > 0));
+
+const holderCount = computed(() =>
+    holderGroups.value.reduce((total, group) => total + group.items.length, 0),
+);
+
 /**
  * Le layout décale déjà `<main>` sous la sidebar ; pas de second décalage sur le pied.
  * @see CapabilityEditFormContent — même raison (`sticky` dans la colonne scrollable).
  */
 const fixedFooterInsetClass = "left-0 right-0";
 
-const spellEffectsSectionRef = ref(null);
+const spellDegreesEditorRef = ref(null);
 
-/** PATCH groupe d’effets sélectionné puis le formulaire entité (via {@link EntityEditForm}). */
+/** PATCH degrés puis le formulaire entité (via {@link EntityEditForm}). */
 async function beforeSpellSubmitAsync() {
-    const fn = spellEffectsSectionRef.value?.flushEffectGroupSave;
+    const fn = spellDegreesEditorRef.value?.flushSave;
     if (typeof fn !== "function") {
         return true;
     }
@@ -94,6 +108,17 @@ function confirmDelete() {
             }
         },
     });
+}
+
+async function handleOptionsAction(actionKey) {
+    if (actionKey === "view") {
+        goToShow();
+        return;
+    }
+    if (actionKey === "copy-link") {
+        const href = route("entities.spells.show", { spell: spellModel.value.id });
+        await navigator.clipboard?.writeText(new URL(href, window.location.origin).toString());
+    }
 }
 </script>
 
@@ -128,6 +153,20 @@ function confirmDelete() {
                         <i class="fa-solid fa-book-open" aria-hidden="true"></i>
                         Fiche
                     </Btn>
+                    <div class="flex items-center gap-1">
+                        <span class="text-xs text-base-content/60">Options</span>
+                        <EntityActions
+                            entity-type="spells"
+                            :entity="spellModel"
+                            format="dropdown"
+                            display="icon-text"
+                            size="sm"
+                            color="neutral"
+                            :whitelist="['view', 'view-dofusdb', 'copy-link']"
+                            :context="embeddedInModal ? { inModal: true, modalMode: 'edit' } : { inPage: true, pageMode: 'edit' }"
+                            @action="handleOptionsAction"
+                        />
+                    </div>
                     <Btn
                         v-if="canDeleteSpell"
                         color="error"
@@ -143,6 +182,33 @@ function confirmDelete() {
                 </div>
             </div>
         </div>
+
+        <details
+            v-if="holderCount"
+            class="rounded-box border border-base-300 bg-base-100/50 px-3 py-2"
+        >
+            <summary class="cursor-pointer list-none text-sm font-medium [&::-webkit-details-marker]:hidden">
+                Utilisé par {{ holderCount }} entité{{ holderCount > 1 ? "s" : "" }}
+                <span class="ml-1 text-xs font-normal text-base-content/55">Afficher</span>
+            </summary>
+            <div class="mt-2 flex flex-wrap gap-2">
+                <template v-for="group in holderGroups" :key="group.key">
+                    <a
+                        v-for="holder in group.items"
+                        :key="`${group.key}-${holder.id}`"
+                        :href="holder.href"
+                        class="badge badge-outline gap-1.5 border-base-300 hover:border-base-content/40"
+                        :title="group.label"
+                    >
+                        <i v-if="group.key === 'monsters'" class="fa-solid fa-dragon" aria-hidden="true"></i>
+                        <i v-else-if="group.key === 'npcs'" class="fa-solid fa-user" aria-hidden="true"></i>
+                        <i v-else-if="group.key === 'creatures'" class="fa-solid fa-paw" aria-hidden="true"></i>
+                        <i v-else class="fa-solid fa-hat-wizard" aria-hidden="true"></i>
+                        {{ holder.name }}
+                    </a>
+                </template>
+            </div>
+        </details>
 
         <EntityEditForm
             :entity="spellModel"
@@ -165,16 +231,13 @@ function confirmDelete() {
         />
 
         <Collapse arrow :default-open="true" bg-off="bg-base-100" class="border border-base-300">
-            <template #title>Effets du sort</template>
+            <template #title>Degrés & effets</template>
             <template #content>
-                <SpellEffectsUnifiedSection
-                    ref="spellEffectsSectionRef"
-                    hide-effect-group-submit-button
-                    :available-effects="availableEffects"
+                <SpellDegreesEditor
+                    ref="spellDegreesEditorRef"
+                    :spell-id="Number(spellModel.id)"
+                    :spell-degrees="spellDegrees"
                     :effect-form-options="effectFormOptions"
-                    :spell-effect-groups="spellEffectGroups"
-                    :entity-type="effectEntityType"
-                    :entity-id="spellModel.id"
                     :embedded-in-modal="embeddedInModal"
                 />
             </template>

@@ -1,0 +1,145 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Unit\Services\Spell;
+
+use App\Models\Entity\Spell;
+use App\Models\SpellDegree;
+use App\Models\SpellDegreeEffect;
+use App\Models\SubEffect;
+use App\Services\Spell\SpellDegreeResolver;
+use App\Services\Spell\SpellDegreeService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+final class SpellDegreeResolverTest extends TestCase
+{
+    use RefreshDatabase;
+
+    private function makeSubEffect(): SubEffect
+    {
+        return SubEffect::query()->create([
+            'slug' => 'frapper-resolver-'.uniqid(),
+            'type_slug' => 'frapper',
+            'template_text' => 'Dégâts [value].',
+            'variables_allowed' => ['value'],
+            'param_schema' => ['action' => 'frapper', 'params' => []],
+        ]);
+    }
+
+    public function test_falls_back_to_spell_properties_without_degrees(): void
+    {
+        $spell = Spell::factory()->create([
+            'pa' => '4',
+            'po_min' => '2',
+            'po_max' => '8',
+            'sight_line' => false,
+        ]);
+        $resolver = app(SpellDegreeResolver::class);
+
+        $props = $resolver->resolveProperties($spell, null);
+
+        $this->assertSame('4', $props['pa']);
+        $this->assertSame('spell', $props['pa_source']);
+        $this->assertNull($props['area']);
+        $this->assertNull($resolver->selectDegree($spell));
+    }
+
+    public function test_selects_degree_by_creature_level_and_inherits_effects(): void
+    {
+        $spell = Spell::factory()->create(['pa' => '3']);
+        $sub = $this->makeSubEffect();
+
+        $d1 = SpellDegree::factory()->create([
+            'spell_id' => $spell->id,
+            'position' => 1,
+            'required_level' => 1,
+            'inherits_effects' => false,
+            'pa' => '3',
+            'area' => 'point',
+        ]);
+        SpellDegreeEffect::factory()->create([
+            'spell_degree_id' => $d1->id,
+            'sub_effect_id' => $sub->id,
+            'order' => 0,
+            'params' => ['value_formula' => '2d6'],
+        ]);
+        $d2 = SpellDegree::factory()->inheriting()->create([
+            'spell_id' => $spell->id,
+            'position' => 2,
+            'required_level' => 10,
+            'pa' => '4',
+            'area' => 'circle-1-1',
+        ]);
+
+        $spell->refresh()->load('degrees.effects.subEffect');
+        $resolver = app(SpellDegreeResolver::class);
+
+        $picked = $resolver->selectDegree($spell, null, 12);
+        $this->assertNotNull($picked);
+        $this->assertSame($d2->id, $picked->id);
+
+        $props = $resolver->resolveProperties($spell, $picked);
+        $this->assertSame('4', $props['pa']);
+        $this->assertSame('circle-1-1', $props['area']);
+
+        $effects = $resolver->resolveEffects($spell, $picked);
+        $this->assertCount(1, $effects);
+        $this->assertSame('2d6', $effects->first()->params['value_formula'] ?? null);
+        $this->assertSame($d1->id, $resolver->effectsSourceDegree($spell, $picked)?->id);
+    }
+
+    public function test_create_degree_copies_previous_properties_and_inherits_by_default(): void
+    {
+        $spell = Spell::factory()->create(['pa' => '5', 'po_min' => '0', 'po_max' => '3']);
+        $service = app(SpellDegreeService::class);
+
+        $first = $service->createDegree($spell, [
+            'required_level' => 1,
+            'inherits_effects' => false,
+            'area' => 'point',
+            'pa' => '5',
+        ]);
+        $sub = $this->makeSubEffect();
+        $service->syncEffects($first, [[
+            'sub_effect_id' => $sub->id,
+            'order' => 0,
+            'params' => ['value_formula' => '1d6'],
+        ]]);
+
+        $second = $service->createDegree($spell->fresh(), ['required_level' => 5]);
+
+        $this->assertSame(2, $second->position);
+        $this->assertTrue($second->inherits_effects);
+        $this->assertSame('5', $second->pa);
+        $this->assertSame('point', $second->area);
+        $this->assertCount(0, $second->effects);
+
+        $resolved = app(SpellDegreeResolver::class)->resolveEffects($spell->fresh(['degrees.effects']), $second);
+        $this->assertCount(1, $resolved);
+    }
+
+    public function test_materialize_effects_copies_inherited_rows(): void
+    {
+        $spell = Spell::factory()->create();
+        $service = app(SpellDegreeService::class);
+        $sub = $this->makeSubEffect();
+
+        $first = $service->createDegree($spell, [
+            'required_level' => 1,
+            'inherits_effects' => false,
+            'pa' => '3',
+        ]);
+        $service->syncEffects($first, [[
+            'sub_effect_id' => $sub->id,
+            'params' => ['value_formula' => '3d6'],
+        ]]);
+        $second = $service->createDegree($spell->fresh(), ['required_level' => 8]);
+
+        $materialized = $service->materializeEffects($second->fresh());
+        $this->assertFalse($materialized->inherits_effects);
+        $this->assertCount(1, $materialized->effects);
+        $this->assertSame('3d6', $materialized->effects->first()->params['value_formula'] ?? null);
+    }
+}

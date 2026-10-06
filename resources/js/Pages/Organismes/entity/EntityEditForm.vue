@@ -281,8 +281,14 @@ function spellSectionColClass(sec) {
         }
         return '';
     }
+    if (sec.id === 'general') {
+        return 'min-w-0 lg:col-span-1 xl:col-span-2';
+    }
+    if (sec.id === 'range_resolution') {
+        return 'min-w-0 lg:col-span-2 xl:col-span-2';
+    }
     if (sec.id === 'admin') {
-        return 'lg:col-span-3 xl:col-span-1';
+        return 'min-w-0 md:col-span-2 lg:col-span-3 xl:col-span-4';
     }
     return '';
 }
@@ -768,6 +774,7 @@ const mainFieldSections = computed(() => {
         id: sec.id,
         title: sec.title,
         subtitle: sec.subtitle,
+        collapsedByDefault: Boolean(sec.collapsedByDefault),
         fields: (sec.fieldKeys || [])
             .map((k) => byKey.get(k))
             .filter(Boolean)
@@ -1215,41 +1222,55 @@ async function handleEditPageAction(actionKey) {
                     :key="sec.id"
                     :class="[sectionCardClass, spellSectionColClass(sec)]"
                 >
-                    <div class="mb-2.5 border-b border-base-300/50 pb-2 md:mb-3">
-                        <h2 :class="sectionTitleClass">
-                            {{ sec.title }}
-                        </h2>
-                        <p v-if="sec.subtitle" :class="sectionSubtitleClass">
-                            {{ sec.subtitle }}
-                        </p>
-                    </div>
-                    <div class="form-fields">
-                        <template v-for="field in sec.fields" :key="field.key">
-                            <div v-if="field?.config" :class="getFieldWrapperClass(field.key)">
-                                <EntityEditFormFieldBody
-                                    :field="field"
-                                    :form="form"
-                                    :is-multi-edit="isMultiEdit"
-                                    :different-fields="props.differentFields"
-                                    :field-dirty="fieldDirty"
-                                    :checkbox-dirty="checkboxDirty"
-                                    :get-field-label="getFieldLabel"
-                                    :get-field-helper="getFieldHelper"
-                                    :get-field-validation="getFieldValidation"
-                                    :get-field-placeholder="getFieldPlaceholder"
-                                    :get-field-render-type="getFieldRenderType"
-                                    :get-file-current-path="getFileCurrentPath"
-                                    :get-file-accept="getFileAccept"
-                                    :format-display-value="formatDisplayValue"
-                                    :mark-dirty="markDirty"
-                                    :reset-field-multi-edit="resetFieldMultiEdit"
-                                    :reset-bool-multi-edit="resetBoolMultiEdit"
-                                    :on-checkbox-update="onCheckboxUpdate"
-                                    :characteristics-group="characteristicsGroup"
-                                />
+                    <details :open="!sec.collapsedByDefault" class="group">
+                        <summary
+                            class="mb-2.5 cursor-pointer list-none border-b border-base-300/50 pb-2 md:mb-3 [&::-webkit-details-marker]:hidden"
+                        >
+                            <div class="flex items-start justify-between gap-2">
+                                <div>
+                                    <h2 :class="sectionTitleClass">
+                                        {{ sec.title }}
+                                    </h2>
+                                    <p v-if="sec.subtitle" :class="sectionSubtitleClass">
+                                        {{ sec.subtitle }}
+                                    </p>
+                                </div>
+                                <span class="text-xs text-base-content/50 group-open:hidden shrink-0 pt-1">
+                                    Afficher
+                                </span>
+                                <span class="text-xs text-base-content/50 hidden group-open:inline shrink-0 pt-1">
+                                    Replier
+                                </span>
                             </div>
-                        </template>
-                    </div>
+                        </summary>
+                        <div class="form-fields">
+                            <template v-for="field in sec.fields" :key="field.key">
+                                <div v-if="field?.config" :class="getFieldWrapperClass(field.key)">
+                                    <EntityEditFormFieldBody
+                                        :field="field"
+                                        :form="form"
+                                        :is-multi-edit="isMultiEdit"
+                                        :different-fields="props.differentFields"
+                                        :field-dirty="fieldDirty"
+                                        :checkbox-dirty="checkboxDirty"
+                                        :get-field-label="getFieldLabel"
+                                        :get-field-helper="getFieldHelper"
+                                        :get-field-validation="getFieldValidation"
+                                        :get-field-placeholder="getFieldPlaceholder"
+                                        :get-field-render-type="getFieldRenderType"
+                                        :get-file-current-path="getFileCurrentPath"
+                                        :get-file-accept="getFileAccept"
+                                        :format-display-value="formatDisplayValue"
+                                        :mark-dirty="markDirty"
+                                        :reset-field-multi-edit="resetFieldMultiEdit"
+                                        :reset-bool-multi-edit="resetBoolMultiEdit"
+                                        :on-checkbox-update="onCheckboxUpdate"
+                                        :characteristics-group="characteristicsGroup"
+                                    />
+                                </div>
+                            </template>
+                        </div>
+                    </details>
                 </section>
             </div>
             <div v-else class="form-fields">

@@ -1399,6 +1399,59 @@ erDiagram
     deleted_at : timestamp
     created_by : bigint(20) unsigned
   }
+  SPELL_DEGREE_EFFECTS {
+    id : bigint(20) unsigned
+    spell_degree_id : bigint(20) unsigned
+    sub_effect_id : bigint(20) unsigned
+    order : smallint(5) unsigned
+    scope : varchar(32)
+    value_min : int(11)
+    value_max : int(11)
+    dice_num : tinyint(3) unsigned
+    dice_side : tinyint(3) unsigned
+    params : longtext
+    crit_only : tinyint(1)
+    duration_formula : varchar(255)
+    logic_group : varchar(64)
+    logic_operator : varchar(8)
+    logic_condition : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  SPELL_DEGREES {
+    id : bigint(20) unsigned
+    spell_id : bigint(20) unsigned
+    position : tinyint(3) unsigned
+    required_level : smallint(5) unsigned
+    inherits_effects : tinyint(1)
+    pa : varchar(64)
+    po_min : varchar(64)
+    po_max : varchar(64)
+    po_editable : tinyint(1)
+    sight_line : tinyint(1)
+    cast_in_line : tinyint(1)
+    cast_in_diagonal : tinyint(1)
+    target_type : varchar(16)
+    element : int(11)
+    area : varchar(64)
+    cast_per_turn : varchar(64)
+    cast_per_target : varchar(64)
+    number_between_two_cast : varchar(64)
+    global_cooldown : tinyint(3) unsigned
+    max_stack : tinyint(3) unsigned
+    duration : varchar(255)
+    allows_reaction : tinyint(1)
+    casting_time : varchar(255)
+    ritual_available : tinyint(1)
+    resolution_mode : varchar(32)
+    attack_characteristic_key : varchar(64)
+    save_characteristic_key : varchar(64)
+    save_dc_formula : varchar(255)
+    save_success_note : text
+    auto_success_if_willing_target : tinyint(1)
+    created_at : timestamp
+    updated_at : timestamp
+  }
   SPELL_INVOCATION {
     spell_id : bigint(20) unsigned
     monster_id : bigint(20) unsigned
@@ -1703,6 +1756,9 @@ erDiagram
   SPECIALIZATION_SPELL }o--|| SPECIALIZATIONS : "FK specialization_id"
   SPECIALIZATION_SPELL }o--|| SPELLS : "FK spell_id"
   SPECIALIZATIONS }o--|| USERS : "FK created_by"
+  SPELL_DEGREE_EFFECTS }o--|| SPELL_DEGREES : "FK spell_degree_id"
+  SPELL_DEGREE_EFFECTS }o--|| SUB_EFFECTS : "FK sub_effect_id"
+  SPELL_DEGREES }o--|| SPELLS : "FK spell_id"
   SPELL_INVOCATION }o--|| MONSTERS : "FK monster_id"
   SPELL_INVOCATION }o--|| SPELLS : "FK spell_id"
   SPELL_TYPE }o--|| SPELLS : "FK spell_id"

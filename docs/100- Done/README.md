@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Degrés de sorts simplifiés
+
+L’édition d’un sort ne passe plus par plusieurs « définitions d’effet ». On ajoute des **degrés** (niveaux) : chacun porte les propriétés de lancement (PA, portée, ligne de vue, zone, relance, limites et incantation) et des **effets** (frapper, soigner…). Un degré peut reprendre les effets du précédent pour éviter de tout ressaisir. Les effets proposent le bon outil selon l’action : élément, caractéristique recherchable, créature ou état, avec une durée propre. La portée se saisit simplement sous la forme `4` ou `2-8`. À l’affichage, des onglets de niveau mettent à jour les propriétés visibles. L’éditeur montre aussi les monstres, PNJ et classes qui utilisent le sort.
+
 ## Octobre 2026 — Sauvegardes ZIP fiabilisées
 
 Une sauvegarde produit désormais une seule archive ZIP horodatée (base, médias `storage/app`, contenu `private/game`, manifeste avec checksums). On peut lister, supprimer et restaurer depuis la ligne de commande et la page admin Sauvegarde, avec confirmation renforcée et sauvegarde de secours avant restauration. Le cron configurable `project_backup` reste disponible ; le verrou empêche deux opérations en parallèle. Le suivi de restauration reste visible pendant la maintenance, et un crash / reboot marque l’opération comme interrompue puis nettoie les restes. Les médias ne sont plus recopiés dans un dossier temporaire avant compression (évite les plantages mémoire sous WSL), et le dossier des archives n’est jamais ré-inclus dans une sauvegarde.

@@ -35,7 +35,6 @@ final class EffectGroupEditorDataService
     {
         return Characteristic::query()
             ->where('group', 'object')
-            ->whereNull('linked_to_characteristic_id')
             ->whereNotIn('key', self::EXCLUDED_OBJECT_CHARACTERISTIC_KEYS)
             ->orderBy('sort_order')
             ->orderBy('key')
@@ -44,7 +43,9 @@ final class EffectGroupEditorDataService
                 $eff = $c->effectiveCharacteristic();
 
                 return [
-                    'key' => $eff->key,
+                    // La clé objet est celle attendue par les formules d’effet, même
+                    // lorsque son libellé provient d’une caractéristique liée.
+                    'key' => $c->key,
                     'label' => $eff->name ?? $eff->short_name ?? $eff->key,
                     'category' => 'object',
                     'helper' => $eff->helper,

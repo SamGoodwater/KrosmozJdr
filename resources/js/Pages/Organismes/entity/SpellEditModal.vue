@@ -106,7 +106,9 @@ const handleClose = () => {
                 :available-effects="payload.availableEffects || []"
                 :effect-entity-type="payload.effectEntityType || 'spell'"
                 :effect-form-options="payload.effectFormOptions || {}"
+                :spell-degrees="payload.spellDegrees || { degrees: [], default_degree_id: null }"
                 :spell-effect-groups="payload.spellEffectGroups || []"
+                :spell-holders="payload.spellHolders || {}"
                 embedded-in-modal
                 redirect-after-update="stay"
                 @cancel="handleClose"

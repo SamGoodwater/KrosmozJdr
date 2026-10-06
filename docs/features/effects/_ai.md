@@ -4,29 +4,41 @@
 
 ## Fichiers pivots
 
-- `app/Models/Effect*.php`, `app/Models/ObjectEffect.php`
+- **Sorts (canal natif)** : `SpellDegree` / `SpellDegreeEffect` — progression unique `Spell → degrés → effets`
+  - `app/Models/SpellDegree.php`, `SpellDegreeEffect.php`
+  - `app/Services/Spell/SpellDegreeResolver.php`, `SpellDegreeService.php`, `SpellDegreesSerializer.php`
+  - `php artisan spells:migrate-degrees` (+ `--dry-run`, `--spell=`) : legacy `effect_spell` → `spell_degrees`
+  - API : `GET/POST /api/spells/{spell}/degrees`, PATCH/DELETE degré, `materialize-effects`, sync effets
+  - UI : `SpellDegreesEditor.vue` (édition), `SpellEffectsJournal.vue` (affichage onglets niveau)
+  - Portée UI compacte `x` / `x-y` (`po_min` + `po_max` en stockage) ; propriétés effectives du
+    degré actif dans Full, premier degré dans Minimal/Line/table
+  - Effets spécialisés : élément, caractéristique recherchable, créature (`params.creature_id`),
+    état et `duration_formula`; `monster_id` reste compatible legacy
+  - Vocabulaire UI : **effet** (= ancien sous-effet) ; catalogue technique `SubEffect` conservé
+- `app/Models/Effect*.php`, `app/Models/ObjectEffect.php` — encore utilisés objets + legacy sorts
 - `GET /api/object-effects` — liste par fiche ; `view` sur le parent + `visibleToUser` sur le monstre invoqué (session `web`)
 - `app/Services/Effect/` (`SpellNestedPreviewSerializer` : chips d’aperçu sur sorts liés)
-- `app/Services/Scrapping/Core/Conversion/SpellEffects/`
+- `app/Services/Scrapping/Core/Conversion/SpellEffects/` — après intégration, `rebuildFromLegacy` miroir natif
 - `app/Support/DofusHyperlinkText.php` (libellés d’états `{{spell,…::Nom}}`)
-- `app/Support/KrosmozGameTerms.php` — désenvoûtable → dissipable (`pickLang`, descriptions d’effets ; `game-terms:rewrite-dissipable`)
+- `app/Support/KrosmozGameTerms.php` — désenvoûtable → dissipable
 - `app/Services/Condition/ConditionCanonicalMapper.php` — jeton Dofus → état JDR `playable`
 - `php artisan conditions:remap-canonical` — recolle `condition_spell` + `params.condition_id`
-- `php artisan spells:sync-elements` — aligne `spells.element` sur les éléments des sous-effets (`dofus_element_id`, `params.element`, slug `characteristic`)
-- Affichage sorts : `SpellEffectDefinitionsSerializer` ne lie que les états hors `raw`
+- `php artisan spells:sync-elements` — aligne `spells.element` sur les éléments des sous-effets
+- Affichage sorts : `spell_degrees` prioritaire ; `effects_definitions` legacy en repli
 - `Spell::visibleToUser` / `EntityDisplayVisibilityService::constrainQueryToViewer` (listes)
-- `GET /api/effects/definitions` — recherche defs pour liaison sort (payload edit allégé)
-- `GET /api/effects/effects?q=&per_page=` — index paginé (plus de dump massif)
-- `GET /api/effects/for-entity` (`format_dice_human` en query : `true`/`false`/`1`/`0`) et `GET /api/effects/usages` : middleware `web` (session) + `view` sur la fiche parente (un sort/objet brouillon ne fuit pas ; l’éditeur connecté n’est pas vu comme un invité)
-- `scrapping:effects:reapply-mappings` — reclasse les `autre` déjà mappés (ex. téléports)
-- Canal sorts : `effects_definitions` (legacy `spell_effects` / `spell_effect_types` droppés)
+- `GET /api/effects/definitions` — recherche defs legacy
+- `GET /api/effects/effects?q=&per_page=` — index paginé
+- `GET /api/effects/for-entity` et `GET /api/effects/usages` : middleware `web` + `view` parent
+- `scrapping:effects:reapply-mappings` — reclasse les `autre` déjà mappés
+- Canal sorts : `spell_degrees` (natif) + `effects_definitions` (legacy jusqu’à bascule)
 - Invisibilité Dofus 150 → `appliquer-etat` (state 250)
 - `database/seeders/DofusdbEffectMappingSeeder.php`
 
 ## Hors périmètre
 
-- Page contenu : `/admin/content/dofusdb-effect-mappings` (groupée par `sub_effect_slug`, `autre` masqué par défaut).
+- Page contenu : `/admin/content/dofusdb-effect-mappings`
 - Triage `autre` / effectId sans clé : [MAPPINGS_HORS_PERIMETRE.md](./MAPPINGS_HORS_PERIMETRE.md)
+- Retrait définitif de `effect_spell` pour les sorts : après audit migration complète
 
 ## Liens
 

@@ -89,8 +89,27 @@ export class Spell extends BaseModel {
         return this._data.effect_usages_chips ?? [];
     }
 
+    /**
+     * Propriété mécanique du degré actif, sinon du premier degré, sinon du sort.
+     *
+     * @param {string} key
+     * @returns {unknown}
+     */
+    _effectiveDegreeProperty(key) {
+        const active = this._data._active_degree_properties;
+        if (active && active[key] !== null && active[key] !== undefined) {
+            return active[key];
+        }
+        const payload = this.spellDegrees;
+        const degree =
+            payload.degrees.find((item) => Number(item.id) === Number(payload.default_degree_id)) ||
+            payload.degrees[0];
+        const value = degree?.properties?.[key];
+        return value !== null && value !== undefined ? value : this._data[key];
+    }
+
     get area() {
-        return this._data.area || null;
+        return this._effectiveDegreeProperty('area') || null;
     }
 
     get level() {
@@ -126,19 +145,19 @@ export class Spell extends BaseModel {
     }
 
     get poMin() {
-        return this._data.po_min ?? null;
+        return this._effectiveDegreeProperty('po_min') ?? null;
     }
 
     get poMax() {
-        return this._data.po_max ?? null;
+        return this._effectiveDegreeProperty('po_max') ?? null;
     }
 
     get poEditable() {
-        return this._data.po_editable ?? null;
+        return this._effectiveDegreeProperty('po_editable') ?? null;
     }
 
     get pa() {
-        const v = this._data.pa;
+        const v = this._effectiveDegreeProperty('pa');
         if (v === null || v === undefined || v === '') {
             return null;
         }
@@ -148,7 +167,7 @@ export class Spell extends BaseModel {
 
     /** Temps d'incantation (texte libre), chaîne vide si absent. */
     get castingTime() {
-        const v = this._data.casting_time;
+        const v = this._effectiveDegreeProperty('casting_time');
         if (v == null || v === "") {
             return "";
         }
@@ -156,15 +175,15 @@ export class Spell extends BaseModel {
     }
 
     get castPerTurn() {
-        return this._data.cast_per_turn || null;
+        return this._effectiveDegreeProperty('cast_per_turn') || null;
     }
 
     get castPerTarget() {
-        return this._data.cast_per_target || null;
+        return this._effectiveDegreeProperty('cast_per_target') || null;
     }
 
     get sightLine() {
-        const v = this._data.sight_line;
+        const v = this._effectiveDegreeProperty('sight_line');
         if (v === null || v === undefined) {
             return null;
         }
@@ -172,31 +191,31 @@ export class Spell extends BaseModel {
     }
 
     get castInLine() {
-        return Boolean(this._data.cast_in_line);
+        return Boolean(this._effectiveDegreeProperty('cast_in_line'));
     }
 
     get castInDiagonal() {
-        return Boolean(this._data.cast_in_diagonal);
+        return Boolean(this._effectiveDegreeProperty('cast_in_diagonal'));
     }
 
     get targetType() {
-        return this._data.target_type || null;
+        return this._effectiveDegreeProperty('target_type') || null;
     }
 
     get maxStack() {
-        return Number(this._data.max_stack ?? 0);
+        return Number(this._effectiveDegreeProperty('max_stack') ?? 0);
     }
 
     get globalCooldown() {
-        return Number(this._data.global_cooldown ?? 0);
+        return Number(this._effectiveDegreeProperty('global_cooldown') ?? 0);
     }
 
     get numberBetweenTwoCast() {
-        return this._data.number_between_two_cast || null;
+        return this._effectiveDegreeProperty('number_between_two_cast') || null;
     }
 
     get element() {
-        const v = this._data.element;
+        const v = this._effectiveDegreeProperty('element');
         return v === undefined || v === null ? null : v;
     }
 
@@ -212,10 +231,19 @@ export class Spell extends BaseModel {
         return Boolean(v);
     }
 
-    /** Définitions d’effets (pivot + degrés) pour la fiche sort, si chargées par l’API. */
+    /** Définitions d’effets (pivot + degrés) pour la fiche sort, si chargées par l’API — legacy. */
     get effectsDefinitions() {
         const raw = this._data.effects_definitions;
         return Array.isArray(raw) ? raw : [];
+    }
+
+    /** Progression native des degrés (`spell_degrees` API). */
+    get spellDegrees() {
+        const raw = this._data.spell_degrees;
+        if (raw && typeof raw === 'object' && Array.isArray(raw.degrees)) {
+            return raw;
+        }
+        return { degrees: [], default_degree_id: null };
     }
 
     /**
@@ -254,12 +282,30 @@ export class Spell extends BaseModel {
      * @returns {Array<{ id: number, name: string, image: string|null }>}
      */
     get summonMonstersFromEffectDefinitions() {
+        const fromNative = [];
+        const seen = new Set();
+        for (const deg of this.spellDegrees.degrees || []) {
+            for (const row of deg.rows || []) {
+                const sm = row.summon_monster;
+                if (sm?.id != null && !seen.has(sm.id)) {
+                    seen.add(sm.id);
+                    fromNative.push({
+                        id: sm.id,
+                        name: sm.name ?? `Monstre #${sm.id}`,
+                        image: sm.image ?? null,
+                    });
+                }
+            }
+        }
+        if (fromNative.length) {
+            return fromNative;
+        }
         return Spell.summonMonstersFromEffectsDefinitionsPayload(this.effectsDefinitions);
     }
 
     /** Utilisable en rituel — présent si la colonne existe côté API. */
     get ritualAvailable() {
-        return this._data.ritual_available ?? null;
+        return this._effectiveDegreeProperty('ritual_available') ?? null;
     }
 
     /**
@@ -270,7 +316,7 @@ export class Spell extends BaseModel {
         if (this._data.is_ritual === true) {
             return true;
         }
-        if (this._data.ritual_available === true) {
+        if (this._effectiveDegreeProperty('ritual_available') === true) {
             return true;
         }
         return false;
@@ -280,7 +326,7 @@ export class Spell extends BaseModel {
      * Sort lançable en réaction de combat (1 réaction / round / créature ; PA non récupérés au tour suivant).
      */
     get allowsReaction() {
-        return Boolean(this._data.allows_reaction);
+        return Boolean(this._effectiveDegreeProperty('allows_reaction'));
     }
 
     get powerful() {
@@ -288,28 +334,28 @@ export class Spell extends BaseModel {
     }
 
     get resolutionMode() {
-        return this._data.resolution_mode || "attack_roll";
+        return this._effectiveDegreeProperty('resolution_mode') || "attack_roll";
     }
 
     get attackCharacteristicKey() {
-        return this._data.attack_characteristic_key || null;
+        return this._effectiveDegreeProperty('attack_characteristic_key') || null;
     }
 
     get saveCharacteristicKey() {
-        return this._data.save_characteristic_key || null;
+        return this._effectiveDegreeProperty('save_characteristic_key') || null;
     }
 
     get saveDcFormula() {
-        return this._data.save_dc_formula || null;
+        return this._effectiveDegreeProperty('save_dc_formula') || null;
     }
 
     get saveSuccessNote() {
-        return this._data.save_success_note || null;
+        return this._effectiveDegreeProperty('save_success_note') || null;
     }
 
     /** Réussite automatique si la cible est consentante (règle optionnelle côté résolution). */
     get autoSuccessIfWillingTarget() {
-        return Boolean(this._data.auto_success_if_willing_target);
+        return Boolean(this._effectiveDegreeProperty('auto_success_if_willing_target'));
     }
 
     get image() {

@@ -971,6 +971,10 @@ final class IntegrationService
         if ($attachEffectIds !== []) {
             $spell->effects()->syncWithoutDetaching($attachEffectIds);
         }
+
+        // Miroir natif SpellDegree (progression unique) pour édition / affichage.
+        app(\App\Services\Spell\SpellDegreeLegacyMigrator::class)
+            ->rebuildFromLegacy($spell->fresh(['effects.degrees.effectSubEffects', 'degrees']) ?? $spell);
     }
 
     private function makeUniqueEffectDegreeSlug(string $preferred): ?string

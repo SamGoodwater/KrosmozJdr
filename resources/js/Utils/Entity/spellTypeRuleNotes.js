@@ -216,7 +216,12 @@ function entityHasMatchingEffect(entity, pred) {
     if (Array.isArray(chips) && chips.some(pred)) {
         return true;
     }
-    const defs = entity.effectsDefinitions ?? data.effects_definitions ?? data.effectsDefinitions;
+    const defs =
+        entity.spellDegrees?.degrees ??
+        data.spell_degrees?.degrees ??
+        entity.effectsDefinitions ??
+        data.effects_definitions ??
+        data.effectsDefinitions;
     return Array.isArray(defs) && defs.some((def) => definitionMatches(def, pred));
 }
 
@@ -272,6 +277,7 @@ function collectEffectTargetTypes(entity) {
             walk(node.rows);
         }
     };
+    walk(entity.spellDegrees?.degrees ?? data.spell_degrees?.degrees);
     walk(entity.effectsDefinitions ?? data.effects_definitions ?? data.effectsDefinitions);
     for (const raw of candidates) {
         const t = normalizeTargetType(raw);

@@ -1,8 +1,28 @@
 # Effets
 
-Le système d'effets décrit les effets de sorts et d'objets : effets principaux, sous-effets, degrés, usages et mappings DofusDB.
+Le système d'effets décrit les effets de sorts et d'objets : degrés, effets (actions), usages et mappings DofusDB.
 
-## Backend
+## Sorts — progression native
+
+- Modèles : `SpellDegree`, `SpellDegreeEffect` (catalogue technique `SubEffect`).
+- Un sort a **une** progression de degrés. Vocabulaire UI : **effet** (ex-sous-effet).
+- Propriétés de lancement (PA, PO, LdV, zone…) : défauts sur `Spell` ; surcharge par degré.
+- `inherits_effects` : un nouveau degré reprend les effets du précédent sans duplication.
+- Services : `SpellDegreeResolver`, `SpellDegreeService`, `SpellDegreesSerializer`, `SpellDegreeLegacyMigrator`.
+- Commande : `php artisan spells:migrate-degrees [--dry-run] [--spell=]`.
+- API : `/api/spells/{spell}/degrees` (+ materialize / sync effets).
+- UI : `SpellDegreesEditor` (édition), `SpellEffectsJournal` (onglets niveau à l’affichage).
+- L’éditeur présente un champ de portée unique (`4` ou `2-8`) tout en conservant `po_min` / `po_max`
+  en stockage. Chaque degré expose les contraintes de lancement, puis autant d’effets que nécessaire.
+- Les lignes d’effet sont spécialisées : élément pour dégâts/soins/vol de vie, catalogue complet des
+  caractéristiques pour bonus/malus/vol, recherche de créature pour invocation et recherche d’état.
+  La durée (`duration_formula`) appartient à chaque effet.
+- Une invocation manuelle stocke `params.creature_id`. `params.monster_id` reste lu pour la
+  compatibilité avec les imports et données antérieures.
+- Scraping : après intégration legacy, miroir via `rebuildFromLegacy`.
+- Canal affichage préféré : `spell_degrees` ; `effects_definitions` reste en repli legacy.
+
+## Backend (objets & legacy)
 
 - Modèles : `Effect`, `SubEffect`, `EffectDegree`, `EffectUsage`, `ObjectEffect`, `DofusdbEffectMapping`.
 - Services : `app/Services/Effect/`, `app/Services/Scrapping/Core/Conversion/SpellEffects/`.
@@ -10,7 +30,7 @@ Le système d'effets décrit les effets de sorts et d'objets : effets principaux
 - Effets d’objet : `GET /api/object-effects?entity_type=&entity_id=` exige `view` sur la fiche
   (item / consommable / ressource). Un monstre invoqué n’est renvoyé que s’il est `visibleToUser`.
   La route lit la session (`web`) pour que l’éditeur d’une fiche brouillon recharge la liste.
-- Canal canon pour les sorts : pivot `effect_spell` + `effects_definitions` (resource). Les tables
+- Canal legacy sorts : pivot `effect_spell` + `effects_definitions` (resource). Les tables
   legacy `spell_effects` / `spell_effect_types` sont droppées.
 - Liaison depuis la fiche sort : `GET /api/effects/definitions?q=&exclude_spell_id=` (pas de liste
   complète dans le payload d’édition).

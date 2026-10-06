@@ -8,6 +8,7 @@
 import { computed } from "vue";
 import EntityViewTextLink from "@/Pages/Molecules/entity/shared/EntityViewTextLink.vue";
 import MonsterViewMinimal from "@/Pages/Molecules/entity/monster/MonsterViewMinimal.vue";
+import NpcViewMinimal from "@/Pages/Molecules/entity/npc/NpcViewMinimal.vue";
 
 const props = defineProps({
     monsterBrief: {
@@ -36,13 +37,28 @@ const monsterEntity = computed(() => {
         can: { view: true, update: false, delete: false },
     };
 });
+
+const entityType = computed(() => props.monsterBrief.entity_type || "monster");
+const entityProp = computed(() => (entityType.value === "npc" ? "npc" : "monster"));
+const minimalComponent = computed(() =>
+    entityType.value === "npc" ? NpcViewMinimal : MonsterViewMinimal,
+);
 </script>
 
 <template>
+    <a
+        v-if="entityType === 'creature'"
+        :href="route('entities.creatures.show', { creature: monsterBrief.creature_id || monsterBrief.id })"
+        class="inline-flex min-w-0 items-center gap-1.5 font-medium hover:underline"
+    >
+        <i class="fa-solid fa-paw shrink-0" aria-hidden="true"></i>
+        <span class="truncate">{{ monsterBrief.name }}</span>
+    </a>
     <EntityViewTextLink
+        v-else
         :entity="monsterEntity"
-        entity-prop="monster"
-        :minimal-component="MonsterViewMinimal"
+        :entity-prop="entityProp"
+        :minimal-component="minimalComponent"
         fallback-icon="fa-solid fa-dragon"
         name-field="name"
         image-field="image"

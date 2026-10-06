@@ -26,7 +26,9 @@ const props = defineProps({
     availableEffects: { type: Array, default: () => [] },
     effectEntityType: { type: String, default: 'spell' },
     effectFormOptions: { type: Object, default: () => ({}) },
+    spellDegrees: { type: Object, default: () => ({ degrees: [], default_degree_id: null }) },
     spellEffectGroups: { type: Array, default: () => [] },
+    spellHolders: { type: Object, default: () => ({}) },
 });
 
 const spell = computed(() => {
@@ -47,7 +49,9 @@ setPageTitle(`Modifier le sort : ${spell.value.name || 'Nouveau sort'}`);
             :available-effects="availableEffects"
             :effect-entity-type="effectEntityType"
             :effect-form-options="effectFormOptions"
+            :spell-degrees="spellDegrees"
             :spell-effect-groups="spellEffectGroups"
+            :spell-holders="spellHolders"
         />
     </Container>
 </template>

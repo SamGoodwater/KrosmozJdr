@@ -378,77 +378,8 @@
   {
     "name": "DockItem",
     "description": "DockItem Atom (DaisyUI + Custom Utility + Route)",
-    "props": [
-      {
-        "name": "active",
-        "type": "Boolean",
-        "desc": "- Met l'item en état actif"
-      },
-      {
-        "name": "disabled",
-        "type": "Boolean",
-        "desc": "- Désactive l'item"
-      },
-      {
-        "name": "icon",
-        "type": "String",
-        "desc": "- Nom logique ou chemin de l'icône (optionnel, sinon slot #icon)"
-      },
-      {
-        "name": "pack",
-        "type": "String",
-        "desc": "- Pack FontAwesome (solid, regular, brands, duotone)"
-      },
-      {
-        "name": "label",
-        "type": "String",
-        "desc": "- Label du dock (optionnel, sinon slot #label)"
-      },
-      {
-        "name": "route",
-        "type": "String",
-        "desc": "- Nom de la route Inertia/Laravel (optionnel)"
-      },
-      {
-        "name": "href",
-        "type": "String",
-        "desc": "- URL absolue ou chemin (prioritaire si route vide ; lien interne Inertia si même origine)"
-      },
-      {
-        "name": "color",
-        "type": "String",
-        "desc": "- Couleur DaisyUI (optionnel)"
-      },
-      {
-        "name": "size",
-        "type": "String",
-        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-      },
-      {
-        "name": "shadow",
-        "type": "String",
-        "desc": "backdrop, opacity, rounded - utilitaires custom"
-      },
-      {
-        "name": "id",
-        "type": "String|Object",
-        "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
-      }
-    ],
-    "slots": [
-      {
-        "name": "icon",
-        "desc": "- Slot pour l'icône (prioritaire sur prop icon)"
-      },
-      {
-        "name": "label",
-        "desc": "- Slot pour le label (prioritaire sur prop label)"
-      },
-      {
-        "name": "default",
-        "desc": "- Contenu custom"
-      }
-    ],
+    "props": [],
+    "slots": [],
     "file": "navigation/DockItem.vue"
   },
   {

@@ -174,13 +174,15 @@ export function buildSpellFormFieldsConfig(options = {}) {
             help: 'Durée globale du sort : instantané, 1 tour, 3 tours, concentration, etc.',
         },
         po_min: {
-            type: 'text',
-            label: 'PO min',
+            type: 'poRange',
+            label: 'Portée',
             required: false,
+            placeholder: '4 ou 2-8',
+            help: 'Une valeur seule fixe les deux bornes. Exemple : 2-8 pour une portée de 2 à 8.',
         },
         po_max: {
-            type: 'text',
-            label: 'PO max',
+            type: 'hidden',
+            label: 'PO max (stockage)',
             required: false,
         },
         po_editable: {
@@ -297,36 +299,28 @@ export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
         title: 'Généralités',
-        subtitle: 'Nom, description, visuel ; catégorie, état, élément et types.',
-        fieldKeys: ['name', 'description', 'image', 'category', 'state', 'element', 'spellTypes'],
+        subtitle: 'Informations propres au sort, indépendantes de ses degrés.',
+        fieldKeys: ['name', 'description', 'image', 'category', 'state', 'spellTypes', 'is_magic'],
     },
     {
         id: 'range_resolution',
-        title: 'Portée, coût et résolution au combat',
+        title: 'Propriétés par défaut du sort',
         subtitle:
-            'Niveau, coût PA, description texte des effets ; PO min / max et portée modifiable en jeu ; jets d’attaque, sauvegarde ou réussite automatique (cible consentante).',
+            'Utilisées si le sort n’a pas de degré, ou en repli. Dès qu’il existe des degrés, leurs valeurs priment à l’affichage.',
+        collapsedByDefault: true,
         fieldKeys: [
             'level',
             'pa',
             'effect',
             'po_min',
-            'po_max',
             'po_editable',
+            'element',
             'resolution_mode',
             'attack_characteristic_key',
             'save_characteristic_key',
             'save_dc_formula',
             'save_success_note',
             'auto_success_if_willing_target',
-        ],
-    },
-    {
-        id: 'gameplay',
-        title: 'Spécificités du sort',
-        subtitle:
-            'Physique ou Wakfu, lancers, ligne de vue, réaction, temps d’incantation, rituel. La zone d’impact se définit dans les effets (degrés).',
-        fieldKeys: [
-            'is_magic',
             'sight_line',
             'cast_in_line',
             'cast_in_diagonal',
@@ -363,7 +357,6 @@ export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
 export const SPELL_FORM_FIELD_SECTIONS_CREATE = [
     SPELL_FORM_FIELD_SECTIONS_EDIT[0],
     SPELL_FORM_FIELD_SECTIONS_EDIT[1],
-    SPELL_FORM_FIELD_SECTIONS_EDIT[2],
     {
         id: 'admin',
         title: 'Métadonnées & droits',

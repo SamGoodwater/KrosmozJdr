@@ -23,6 +23,11 @@ effets : `spellTypeRuleNotes.js`. Consommables et équipements : `EntityRuleNote
 + `consumableRuleNotes.js` / `itemRuleNotes.js` (cumul de buff, parchemin de
 sortilège, respec de caractéristique, monture, soin hors combat, durée jusqu’au repos long).
 
+**Édition sort** (`SpellEditFormContent` / `SpellDegreesEditor`) : identité +
+métadonnées en colonnes ; propriétés mécaniques redondantes dans un panneau
+replié ; degrés en pleine largeur avec portée `x-y`, effets adaptatifs
+(`SpellDegreeEffectRow`), chips porteurs et menu Options/DofusDB.
+
 ## Parcours d’ouverture
 
 ```

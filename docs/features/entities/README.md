@@ -66,6 +66,23 @@ Les fiches de sort stockent indépendamment des effets détaillés les contraint
 Lors d'un import DofusDB, ces valeurs viennent du premier niveau du sort et `target_type` est déduit de ses
 triggers. Cette couche descriptive ne modifie pas l'exécution ni la résolution des effets.
 
+### Créer et faire progresser un sort
+
+1. Renseigner les informations propres au sort : nom, description, image, catégorie, état, types et
+   nature Physique/Wakfu.
+2. Pour un sort uniquement descriptif, ouvrir **Propriétés par défaut du sort** et définir ses PA,
+   sa portée (`4` ou `2-8`), ses contraintes de lancer et sa résolution.
+3. Pour un sort qui évolue, ajouter un premier degré dans **Degrés & effets**. Les propriétés du
+   degré remplacent alors les valeurs par défaut à l’affichage.
+4. Ajouter les actions du degré : dégâts/soin avec élément, bonus/malus avec caractéristique,
+   invocation avec créature, ou application d’un état. Chaque action possède sa propre durée.
+5. Ajouter le degré suivant : ses propriétés sont copiées et ses effets sont hérités par défaut.
+   Choisir **Personnaliser les effets** uniquement lorsqu’ils changent.
+
+La fiche affiche le premier degré par défaut puis actualise PA, portée, ligne de vue, zone,
+résolution et effets lorsque l’utilisateur change d’onglet. L’éditeur liste aussi les monstres,
+PNJ et classes qui utilisent le sort.
+
 ## Droits
 
 La logique est centralisée dans `app/Policies/Entity/BaseEntityPolicy.php`. Pour la lecture (`view`) :

@@ -9,6 +9,7 @@ use App\Models\SubEffect;
 use App\Models\Type\SpellType;
 use App\Services\Effect\SpellEffectDefinitionsSerializer;
 use App\Services\Effect\SpellEffectUsagesDataService;
+use App\Services\Spell\SpellDegreeResolver;
 use App\Support\AreaConstants;
 use App\Support\ElementBitmask;
 use Illuminate\Database\Eloquent\Builder;
@@ -30,8 +31,35 @@ class SpellTableController extends Controller
 
     public function __construct(
         private readonly SpellEffectUsagesDataService $spellEffectUsagesDataService,
-        private readonly SpellEffectDefinitionsSerializer $spellEffectDefinitionsSerializer
+        private readonly SpellEffectDefinitionsSerializer $spellEffectDefinitionsSerializer,
+        private readonly SpellDegreeResolver $spellDegreeResolver
     ) {}
+
+    /**
+     * Propriétés affichées depuis le premier degré, avec repli sur le sort.
+     *
+     * @return array<string, mixed>
+     */
+    private function effectiveProperties(Spell $spell): array
+    {
+        $degree = $this->spellDegreeResolver->selectDegree($spell);
+
+        return $this->spellDegreeResolver->resolveProperties($spell, $degree);
+    }
+
+    private function formatRange(mixed $min, mixed $max): string
+    {
+        $min = trim((string) ($min ?? ''));
+        $max = trim((string) ($max ?? ''));
+        if ($min === '' && $max === '') {
+            return '';
+        }
+        if ($min === '' || $max === '' || $min === $max) {
+            return $min !== '' ? $min : $max;
+        }
+
+        return $min.' - '.$max;
+    }
 
     /**
      * Données communes liste / ligne (effets résolus, définitions + invocations, portée brute).
@@ -284,7 +312,12 @@ class SpellTableController extends Controller
 
         $query = Spell::query()
             ->visibleToUser($request->user())
-            ->with(['createdBy', 'spellTypes', 'effects.degrees.effectSubEffects.subEffect'])
+            ->with([
+                'createdBy',
+                'spellTypes',
+                'effects.degrees.effectSubEffects.subEffect',
+                'degrees.effects.subEffect',
+            ])
             ->withCount(['spellTypes', 'breeds', 'creatures', 'monsters']);
 
         if ($search !== '') {
@@ -379,6 +412,7 @@ class SpellTableController extends Controller
         if ($format === 'entities') {
             $entities = $rows->map(function (Spell $sp) {
                 $createdBy = $sp->createdBy;
+                $effective = $this->effectiveProperties($sp);
                 $displayPayload = $this->buildSpellTableDisplayPayload($sp);
                 $effectSubEffectSlugs = $sp->effects
                     ->flatMap(fn ($e) => $e->degrees->flatMap(fn ($d) => $d->effectSubEffects))
@@ -396,22 +430,24 @@ class SpellTableController extends Controller
                     'description' => $sp->description,
                     'effect' => $sp->effect,
                     'effect_sub_effect_slugs' => $effectSubEffectSlugs,
-                    'area' => $sp->area,
+                    'area' => $effective['area'] ?? null,
                     'level' => $sp->level,
-                    'po' => $sp->po_display,
-                    'po_editable' => (bool) $sp->po_editable,
-                    'pa' => $sp->pa,
-                    'casting_time' => $sp->casting_time,
-                    'ritual_available' => $sp->ritual_available,
-                    'cast_per_turn' => $sp->cast_per_turn,
-                    'cast_per_target' => $sp->cast_per_target,
-                    'sight_line' => (bool) $sp->sight_line,
-                    'number_between_two_cast' => $sp->number_between_two_cast,
-                    'duration' => $sp->duration,
-                    'element' => $sp->element,
+                    'po' => $this->formatRange($effective['po_min'] ?? null, $effective['po_max'] ?? null),
+                    'po_min' => $effective['po_min'] ?? null,
+                    'po_max' => $effective['po_max'] ?? null,
+                    'po_editable' => (bool) ($effective['po_editable'] ?? false),
+                    'pa' => $effective['pa'] ?? null,
+                    'casting_time' => $effective['casting_time'] ?? null,
+                    'ritual_available' => $effective['ritual_available'] ?? null,
+                    'cast_per_turn' => $effective['cast_per_turn'] ?? null,
+                    'cast_per_target' => $effective['cast_per_target'] ?? null,
+                    'sight_line' => (bool) ($effective['sight_line'] ?? false),
+                    'number_between_two_cast' => $effective['number_between_two_cast'] ?? null,
+                    'duration' => $effective['duration'] ?? null,
+                    'element' => $effective['element'] ?? null,
                     'category' => $sp->category,
                     'is_magic' => (bool) $sp->is_magic,
-                    'allows_reaction' => (bool) ($sp->allows_reaction ?? false),
+                    'allows_reaction' => (bool) ($effective['allows_reaction'] ?? false),
                     'powerful' => $sp->powerful,
                     'state' => (string) ($sp->state ?? 'draft'),
                     'read_level' => (int) ($sp->read_level ?? 0),
@@ -466,6 +502,8 @@ class SpellTableController extends Controller
         $tableRows = $rows->map(function (Spell $sp) {
             $showHref = route('entities.spells.show', $sp->id);
             $dofusDbHref = $sp->dofusdb_id ? "https://www.dofus.com/fr/mmorpg/encyclopedie/sorts/{$sp->dofusdb_id}" : null;
+            $effective = $this->effectiveProperties($sp);
+            $effectiveRange = $this->formatRange($effective['po_min'] ?? null, $effective['po_max'] ?? null);
 
             $createdBy = $sp->createdBy;
             $createdByLabel = $createdBy?->name ?: ($createdBy?->email ?: '-');
@@ -513,24 +551,29 @@ class SpellTableController extends Controller
                     ],
                     'pa' => [
                         'type' => 'text',
-                        'value' => $sp->pa ?: '-',
+                        'value' => ($effective['pa'] ?? null) ?: '-',
                         'params' => [
-                            'filterValue' => (string) ($sp->pa ?? ''),
-                            'sortValue' => is_numeric((string) $sp->pa) ? (int) $sp->pa : (string) ($sp->pa ?? ''),
+                            'filterValue' => (string) ($effective['pa'] ?? ''),
+                            'sortValue' => is_numeric((string) ($effective['pa'] ?? ''))
+                                ? (int) $effective['pa']
+                                : (string) ($effective['pa'] ?? ''),
                         ],
                     ],
                     'po' => [
                         'type' => 'text',
-                        'value' => $sp->po_display ?: '-',
+                        'value' => $effectiveRange ?: '-',
                         'params' => [
-                            'sortValue' => (string) ($sp->po_display ?? ''),
+                            'sortValue' => $effectiveRange,
                         ],
                     ],
-                    'area' => $this->buildAreaCell($sp->area),
+                    'area' => $this->buildAreaCell($effective['area'] ?? null),
                     'element' => [
                         'type' => 'badge',
-                        'value' => $sp->element !== null ? (string) $sp->element : '-',
-                        'params' => ['filterValue' => (string) ($sp->element ?? ''), 'sortValue' => $sp->element ?? 0],
+                        'value' => ($effective['element'] ?? null) !== null ? (string) $effective['element'] : '-',
+                        'params' => [
+                            'filterValue' => (string) ($effective['element'] ?? ''),
+                            'sortValue' => $effective['element'] ?? 0,
+                        ],
                     ],
                     'category' => [
                         'type' => 'badge',
@@ -552,48 +595,60 @@ class SpellTableController extends Controller
                     ],
                     'allows_reaction' => [
                         'type' => 'badge',
-                        'value' => $sp->allows_reaction ? 'Oui' : 'Non',
-                        'params' => ['filterValue' => $sp->allows_reaction ? '1' : '0', 'sortValue' => $sp->allows_reaction ? 1 : 0],
+                        'value' => ($effective['allows_reaction'] ?? false) ? 'Oui' : 'Non',
+                        'params' => [
+                            'filterValue' => ($effective['allows_reaction'] ?? false) ? '1' : '0',
+                            'sortValue' => ($effective['allows_reaction'] ?? false) ? 1 : 0,
+                        ],
                     ],
                     'casting_time' => [
                         'type' => 'text',
-                        'value' => $sp->casting_time ?: '-',
-                        'params' => ['sortValue' => (string) ($sp->casting_time ?? '')],
+                        'value' => ($effective['casting_time'] ?? null) ?: '-',
+                        'params' => ['sortValue' => (string) ($effective['casting_time'] ?? '')],
                     ],
                     'ritual_available' => [
                         'type' => 'badge',
-                        'value' => $sp->ritual_available ? 'Oui' : 'Non',
-                        'params' => ['filterValue' => $sp->ritual_available ? '1' : '0', 'sortValue' => $sp->ritual_available ? 1 : 0],
+                        'value' => ($effective['ritual_available'] ?? false) ? 'Oui' : 'Non',
+                        'params' => [
+                            'filterValue' => ($effective['ritual_available'] ?? false) ? '1' : '0',
+                            'sortValue' => ($effective['ritual_available'] ?? false) ? 1 : 0,
+                        ],
                     ],
                     'cast_per_turn' => [
                         'type' => 'text',
-                        'value' => $sp->cast_per_turn ?: '-',
-                        'params' => ['sortValue' => (string) ($sp->cast_per_turn ?? '')],
+                        'value' => ($effective['cast_per_turn'] ?? null) ?: '-',
+                        'params' => ['sortValue' => (string) ($effective['cast_per_turn'] ?? '')],
                     ],
                     'cast_per_target' => [
                         'type' => 'text',
-                        'value' => $sp->cast_per_target ?: '-',
-                        'params' => ['sortValue' => (string) ($sp->cast_per_target ?? '')],
+                        'value' => ($effective['cast_per_target'] ?? null) ?: '-',
+                        'params' => ['sortValue' => (string) ($effective['cast_per_target'] ?? '')],
                     ],
                     'number_between_two_cast' => [
                         'type' => 'text',
-                        'value' => $sp->number_between_two_cast ?: '-',
-                        'params' => ['sortValue' => (string) ($sp->number_between_two_cast ?? '')],
+                        'value' => ($effective['number_between_two_cast'] ?? null) ?: '-',
+                        'params' => ['sortValue' => (string) ($effective['number_between_two_cast'] ?? '')],
                     ],
                     'duration' => [
                         'type' => 'text',
-                        'value' => $sp->duration ?: '-',
-                        'params' => ['sortValue' => (string) ($sp->duration ?? '')],
+                        'value' => ($effective['duration'] ?? null) ?: '-',
+                        'params' => ['sortValue' => (string) ($effective['duration'] ?? '')],
                     ],
                     'sight_line' => [
                         'type' => 'badge',
-                        'value' => $sp->sight_line ? 'Oui' : 'Non',
-                        'params' => ['sortValue' => $sp->sight_line ? 1 : 0, 'filterValue' => $sp->sight_line ? '1' : '0'],
+                        'value' => ($effective['sight_line'] ?? false) ? 'Oui' : 'Non',
+                        'params' => [
+                            'sortValue' => ($effective['sight_line'] ?? false) ? 1 : 0,
+                            'filterValue' => ($effective['sight_line'] ?? false) ? '1' : '0',
+                        ],
                     ],
                     'po_editable' => [
                         'type' => 'badge',
-                        'value' => $sp->po_editable ? 'Oui' : 'Non',
-                        'params' => ['sortValue' => $sp->po_editable ? 1 : 0, 'filterValue' => $sp->po_editable ? '1' : '0'],
+                        'value' => ($effective['po_editable'] ?? false) ? 'Oui' : 'Non',
+                        'params' => [
+                            'sortValue' => ($effective['po_editable'] ?? false) ? 1 : 0,
+                            'filterValue' => ($effective['po_editable'] ?? false) ? '1' : '0',
+                        ],
                     ],
                     'state' => [
                         'type' => 'badge',
@@ -663,22 +718,24 @@ class SpellTableController extends Controller
                         'name' => $sp->name,
                         'description' => $sp->description,
                         'effect' => $sp->effect,
-                        'area' => $sp->area,
+                        'area' => $effective['area'] ?? null,
                         'level' => $sp->level,
-                        'po' => $sp->po_display,
-                        'po_editable' => (bool) $sp->po_editable,
-                        'pa' => $sp->pa,
-                        'casting_time' => $sp->casting_time,
-                        'ritual_available' => $sp->ritual_available,
-                        'cast_per_turn' => $sp->cast_per_turn,
-                        'cast_per_target' => $sp->cast_per_target,
-                        'sight_line' => (bool) $sp->sight_line,
-                        'number_between_two_cast' => $sp->number_between_two_cast,
-                        'duration' => $sp->duration,
-                        'element' => $sp->element,
+                        'po' => $effectiveRange,
+                        'po_min' => $effective['po_min'] ?? null,
+                        'po_max' => $effective['po_max'] ?? null,
+                        'po_editable' => (bool) ($effective['po_editable'] ?? false),
+                        'pa' => $effective['pa'] ?? null,
+                        'casting_time' => $effective['casting_time'] ?? null,
+                        'ritual_available' => $effective['ritual_available'] ?? null,
+                        'cast_per_turn' => $effective['cast_per_turn'] ?? null,
+                        'cast_per_target' => $effective['cast_per_target'] ?? null,
+                        'sight_line' => (bool) ($effective['sight_line'] ?? false),
+                        'number_between_two_cast' => $effective['number_between_two_cast'] ?? null,
+                        'duration' => $effective['duration'] ?? null,
+                        'element' => $effective['element'] ?? null,
                         'category' => $sp->category,
                         'is_magic' => (bool) $sp->is_magic,
-                        'allows_reaction' => (bool) ($sp->allows_reaction ?? false),
+                        'allows_reaction' => (bool) ($effective['allows_reaction'] ?? false),
                         'powerful' => $sp->powerful,
                         'state' => (string) ($sp->state ?? 'draft'),
                         'read_level' => (int) ($sp->read_level ?? 0),

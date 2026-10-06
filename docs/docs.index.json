@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Une sauvegarde produit désormais une seule archive ZIP horodatée (base, médias `storage/app`, contenu `private/game`, manifeste avec checksums). On peut lister, supprimer et restaurer depuis la ligne de commande et la page admin Sauvegarde, avec confirmation renforcée et sauvegarde de secours avant restauration. Le cron configurable `project_backup` reste disponible ; le verrou empêche deux opérations en parallèle. Le suivi de restauration reste visible pendant la maintenance, et un crash / reboot marque l’opération comme interrompue puis nettoie les restes. Les médias ne sont plus recopiés dans un dossier temporaire avant compression (évite les plantages mémoire sous WSL), et le dossier des archives n’est jamais ré-inclus dans une sauvegarde."
+    "description": "Sur la fiche d’édition d’un sort, on ne voit plus les doublons (PA, portée, lancers…) dans le formulaire principal : ils restent dans un panneau « Propriétés par défaut » pour les sorts sans degré. Chaque degré saisit la portée en une seule case (`4` ou `1-6`), regroupe lancement / fréquence / résolution, et adapte les champs d’effet à l’action (élément, caractéristique, invocation, état…). Les porteurs (monstres, PNJ, classes) et le menu Options / DofusDB sont de retour. Changer d’onglet avec des modifications non sauvées demande confirmation."
   },
   {
     "path": "backend/_ai.md",
@@ -112,7 +112,7 @@
   {
     "path": "features/effects/_ai.md",
     "title": "Effets — IA",
-    "description": "`app/Models/Effect*.php`, `app/Models/ObjectEffect.php`"
+    "description": "**Sorts (canal natif)** : `SpellDegree` / `SpellDegreeEffect` — progression unique `Spell → degrés → effets`"
   },
   {
     "path": "features/effects/MAPPINGS_HORS_PERIMETRE.md",
@@ -122,7 +122,7 @@
   {
     "path": "features/effects/README.md",
     "title": "Effets",
-    "description": "Le système d'effets décrit les effets de sorts et d'objets : effets principaux, sous-effets, degrés, usages et mappings DofusDB."
+    "description": "Le système d'effets décrit les effets de sorts et d'objets : degrés, effets (actions), usages et mappings DofusDB."
   },
   {
     "path": "features/entities/_ai.md",

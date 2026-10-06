@@ -9,7 +9,7 @@
  * @props {Spell} spell - Instance du modèle Spell
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
@@ -208,14 +208,55 @@ const effectsDefinitions = computed(() =>
     Array.isArray(props.spell?.effectsDefinitions) ? props.spell.effectsDefinitions : [],
 );
 
-const resolutionLabel = computed(() => RESOLUTION_LABELS[props.spell.resolutionMode] || props.spell.resolutionMode);
+const spellDegreesPayload = computed(() => props.spell?.spellDegrees || { degrees: [], default_degree_id: null });
+
+const activeDegree = ref(null);
+
+function onActiveDegreeChange(deg) {
+    activeDegree.value = deg;
+}
+
+/**
+ * Entité pour la méta PA/PO/LoS : clone Spell avec `_data` surchargé par le degré actif.
+ *
+ * @returns {import('@/Models/Entity/Spell').Spell|object}
+ */
+const usageEntity = computed(() => {
+    const base = props.spell;
+    const propsDeg = activeDegree.value?.properties;
+    if (!base || !propsDeg) {
+        return base;
+    }
+    const merged = { ...(base._data || {}) };
+    for (const [k, v] of Object.entries(propsDeg)) {
+        if (v !== null && v !== undefined) {
+            merged[k] = v;
+        }
+    }
+    merged._active_degree_properties = propsDeg;
+    // Réutiliser la classe Spell si disponible sur l’instance.
+    const Ctor = base.constructor;
+    if (typeof Ctor === 'function' && Ctor !== Object) {
+        try {
+            return new Ctor(merged);
+        } catch {
+            /* fallback objet plat */
+        }
+    }
+    return { ...base, _data: merged, ...merged };
+});
+
+const resolutionLabel = computed(() => {
+    const mode = usageEntity.value?.resolutionMode;
+    return RESOLUTION_LABELS[mode] || mode;
+});
 
 const attackCharKeyResolved = computed(() =>
-    resolveSpellCharacteristicKey(props.spell.attackCharacteristicKey, 'attack'),
+    resolveSpellCharacteristicKey(usageEntity.value?.attackCharacteristicKey, 'attack'),
 );
 
 const saveCharKeyResolved = computed(() =>
-    resolveSpellCharacteristicKey(props.spell.saveCharacteristicKey, 'save'),
+    resolveSpellCharacteristicKey(usageEntity.value?.saveCharacteristicKey, 'save'),
 );
 
 const attackCharDef = computed(() => {
@@ -229,10 +270,10 @@ const saveCharDef = computed(() => {
 });
 
 const ritualDef = computed(() =>
-    resolveDef('ritual_available_spell', props.spell?.isRitual, { sourceGroups: ['spell'] }),
+    resolveDef('ritual_available_spell', usageEntity.value?.isRitual, { sourceGroups: ['spell'] }),
 );
 
-const showRitualBadge = computed(() => props.spell?.isRitual === true);
+const showRitualBadge = computed(() => usageEntity.value?.isRitual === true);
 
 const ritualTooltipText = computed(() => {
     const d = ritualDef.value;
@@ -242,14 +283,14 @@ const ritualTooltipText = computed(() => {
 });
 
 const reactionDef = computed(() => {
-    const val = typeof props.spell?.allowsReaction === 'boolean'
-        ? props.spell.allowsReaction
-        : Boolean(props.spell?._data?.allows_reaction);
+    const val = typeof usageEntity.value?.allowsReaction === 'boolean'
+        ? usageEntity.value.allowsReaction
+        : Boolean(usageEntity.value?._data?.allows_reaction);
     return resolveDef('allows_reaction_spell', val, { sourceGroups: ['spell'] });
 });
 
 const showReactionBadge = computed(() => {
-    const s = props.spell;
+    const s = usageEntity.value;
     if (typeof s?.allowsReaction === 'boolean') {
         return s.allowsReaction === true;
     }
@@ -486,9 +527,8 @@ const handleAction = async (actionKey) => {
             <div class="p-3 bg-base-200 entity-radius-box min-w-0">
                 <SpellUsageBlock
                     parts="meta"
-                    :entity="spell"
                     :descriptors="descriptors"
-                    :table-meta="tableMeta"
+                    :entity="usageEntity"
                     :can-show-field="canShowField"
                     :show-spell-types-cell="showSpellTypesCell"
                     property-size="sm"
@@ -505,7 +545,7 @@ const handleAction = async (actionKey) => {
                 <p class="text-primary-100 font-medium">{{ resolutionLabel }}</p>
 
                 <Tooltip
-                    v-if="spell.resolutionMode === 'attack_roll' && attackCharDef"
+                    v-if="usageEntity.resolutionMode === 'attack_roll' && attackCharDef"
                     :content="
                         characteristicTooltipText(attackCharDef) ||
                         'Caractéristique utilisée pour le jet d’attaque de ce sort.'
@@ -526,7 +566,7 @@ const handleAction = async (actionKey) => {
                     </div>
                 </Tooltip>
 
-                <div v-if="spell.resolutionMode === 'saving_throw'" class="space-y-2">
+                <div v-if="usageEntity.resolutionMode === 'saving_throw'" class="space-y-2">
                     <Tooltip
                         v-if="saveCharDef"
                         :content="
@@ -548,13 +588,13 @@ const handleAction = async (actionKey) => {
                             <span>{{ saveCharDef.short_name || saveCharDef.name }}</span>
                         </div>
                     </Tooltip>
-                    <p v-if="spell.saveDcFormula" class="text-sm text-primary-200 break-words">
+                    <p v-if="usageEntity.saveDcFormula" class="text-sm text-primary-200 break-words">
                         <span class="text-primary-400 font-semibold">DD : </span>
-                        <span class="font-mono">{{ spell.saveDcFormula }}</span>
+                        <span class="font-mono">{{ usageEntity.saveDcFormula }}</span>
                     </p>
-                    <p v-if="spell.saveSuccessNote" class="text-sm text-primary-300 whitespace-pre-wrap break-words">
+                    <p v-if="usageEntity.saveSuccessNote" class="text-sm text-primary-300 whitespace-pre-wrap break-words">
                         <span class="text-primary-400 font-semibold">Si réussite : </span>
-                        {{ spell.saveSuccessNote }}
+                        {{ usageEntity.saveSuccessNote }}
                     </p>
                 </div>
             </div>
@@ -587,8 +627,10 @@ const handleAction = async (actionKey) => {
             </div>
             <SpellEffectsJournal
                 v-if="hasStructuredEffects"
+                :spell-degrees="spellDegreesPayload"
                 :definitions="effectsDefinitions"
                 sub-effect-layout="large"
+                @active-degree-change="onActiveDegreeChange"
             />
             <div
                 v-else-if="hasLegacyEffectText"
@@ -607,8 +649,8 @@ const handleAction = async (actionKey) => {
             >
                 <p class="font-medium text-primary-300">Aucun effet renseigné</p>
                 <p class="mt-1 text-xs leading-relaxed">
-                    Pas de définition liée (pivot effets) ni de texte libre. Liez une définition
-                    depuis l’édition du sort, ou saisissez un résumé dans le champ effet.
+                    Pas de degré ni de texte libre. Ajoutez des degrés depuis l’édition du sort, ou
+                    saisissez un résumé dans le champ description des effets.
                 </p>
             </div>
         </section>

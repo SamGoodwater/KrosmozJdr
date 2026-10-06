@@ -628,6 +628,20 @@
     "file": "entity/SpellEditFormContent.vue"
   },
   {
+    "name": "SpellDegreesEditor",
+    "description": "Éditeur compact des degrés d’un sort (onglets niveau, propriétés, effets).",
+    "props": [],
+    "slots": [],
+    "file": "entity/SpellDegreesEditor.vue"
+  },
+  {
+    "name": "SpellDegreeEffectRow",
+    "description": "Ligne d’effet d’un degré — champs adaptés à l’action (élément, buff, invocation, état…).",
+    "props": [],
+    "slots": [],
+    "file": "entity/SpellDegreeEffectRow.vue"
+  },
+  {
     "name": "PinnedEntitiesHost",
     "description": "PinnedEntitiesHost — Fenêtres flottantes multi-entités (épinglage local).",
     "props": [],

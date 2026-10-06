@@ -34,4 +34,34 @@ describe('Spell global metadata', () => {
         expect(spell.maxStack).toBe(0);
         expect(spell.globalCooldown).toBe(0);
     });
+
+    it('utilise les propriétés du degré par défaut dans les vues compactes', () => {
+        const spell = new Spell({
+            pa: '3',
+            po_min: '1',
+            po_max: '4',
+            sight_line: false,
+            spell_degrees: {
+                default_degree_id: 12,
+                degrees: [
+                    {
+                        id: 12,
+                        properties: {
+                            pa: '5',
+                            po_min: '2',
+                            po_max: '8',
+                            sight_line: true,
+                            global_cooldown: 3,
+                        },
+                    },
+                ],
+            },
+        });
+
+        expect(spell.pa).toBe(5);
+        expect(spell.poMin).toBe('2');
+        expect(spell.poMax).toBe('8');
+        expect(spell.sightLine).toBe(true);
+        expect(spell.globalCooldown).toBe(3);
+    });
 });

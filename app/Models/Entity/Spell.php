@@ -6,6 +6,7 @@ use App\Models\Concerns\HasEntityImageMedia;
 use App\Models\Concerns\VisibleToViewer;
 use App\Models\Effect;
 use App\Models\Pivots\BreedSpellPivot;
+use App\Models\SpellDegree;
 use App\Models\Type\SpellType;
 use App\Models\User;
 use App\Support\AreaConstants;
@@ -13,6 +14,8 @@ use Database\Factories\Entity\SpellFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
@@ -73,6 +76,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $scenarios_count
  * @property-read Collection<int, SpellType> $spellTypes
  * @property-read int|null $spell_types_count
+ *
  * @method static \Database\Factories\Entity\SpellFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell newQuery()
@@ -110,6 +114,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withoutTrashed()
+ *
  * @property string|null $duration
  * @property-read Collection<int, Breed> $breeds
  * @property-read int|null $breeds_count
@@ -123,6 +128,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $spell_effects_count
  * @property-read Collection<int, Condition> $conditions
  * @property-read int|null $conditions_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAllowsReaction($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAttackCharacteristicKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAutoSuccessIfWillingTarget($value)
@@ -133,12 +139,15 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveCharacteristicKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveDcFormula($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveSuccessNote($value)
+ *
  * @property-read BreedSpellPivot|null $pivot
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereCastInDiagonal($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereCastInLine($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereGlobalCooldown($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereMaxStack($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereTargetType($value)
+ *
  * @mixin \Eloquent
  */
 class Spell extends Model implements HasMedia
@@ -373,11 +382,23 @@ class Spell extends Model implements HasMedia
     }
 
     /**
-     * Définitions d’effets liées à ce sort (pivot effect_spell).
+     * Définitions d’effets liées à ce sort (pivot effect_spell) — legacy, remplacé par {@see degrees()}.
+     *
+     * @return BelongsToMany<Effect, $this>
      */
-    public function effects()
+    public function effects(): BelongsToMany
     {
         return $this->belongsToMany(Effect::class, 'effect_spell');
+    }
+
+    /**
+     * Progression native des degrés du sort (propriétés + effets par niveau).
+     *
+     * @return HasMany<SpellDegree, $this>
+     */
+    public function degrees()
+    {
+        return $this->hasMany(SpellDegree::class)->orderBy('position');
     }
 
     /**
@@ -410,31 +431,44 @@ class Spell extends Model implements HasMedia
     }
 
     /**
-     * Zone d’impact affichée (premier degré du premier effet lié).
-     *
-     * Réutilise la relation `effects` déjà eager-loadée quand elle est présente
-     * (évite un N+1 sur les listes / API tableau).
+     * Zone d’impact affichée : premier degré natif, sinon premier degré du premier effet legacy.
      *
      * @return string|null Notation zone (point, line-1x9, …) ou null
      */
     public function getAreaAttribute(): ?string
     {
+        if ($this->relationLoaded('degrees') && $this->degrees->isNotEmpty()) {
+            return $this->degrees->sortBy('position')->first()?->area;
+        }
+
         if ($this->relationLoaded('effects')) {
             $effect = $this->effects->first();
             if ($effect !== null && ! $effect->relationLoaded('degrees')) {
                 $effect->load('degrees');
             }
-        } else {
-            $effect = $this->effects()->with('degrees')->first();
-        }
+            $legacyDegrees = $effect?->degrees;
+            if ($legacyDegrees !== null && $legacyDegrees->isNotEmpty()) {
+                return $legacyDegrees->sortBy('degree')->first()?->area;
+            }
+            // Effets chargés mais vides : tenter le canal natif une fois.
+            if (! $this->relationLoaded('degrees')) {
+                return $this->degrees()->orderBy('position')->value('area');
+            }
 
-        $degrees = $effect?->degrees;
-        if ($degrees === null || $degrees->isEmpty()) {
             return null;
         }
 
-        $deg = $degrees->sortBy('degree')->first();
+        $nativeArea = $this->degrees()->orderBy('position')->value('area');
+        if ($nativeArea) {
+            return $nativeArea;
+        }
 
-        return $deg?->area;
+        $effect = $this->effects()->with('degrees')->first();
+        $legacyDegrees = $effect?->degrees;
+        if ($legacyDegrees === null || $legacyDegrees->isEmpty()) {
+            return null;
+        }
+
+        return $legacyDegrees->sortBy('degree')->first()?->area;
     }
 }

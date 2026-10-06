@@ -4,6 +4,7 @@ namespace App\Http\Resources\Entity;
 
 use App\Services\Effect\SpellEffectDefinitionsSerializer;
 use App\Services\Effect\SpellEffectUsagesDataService;
+use App\Services\Spell\SpellDegreesSerializer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -101,10 +102,16 @@ class SpellResource extends JsonResource
             // Legacy `spell_effects` retiré de la resource : canal canon = effects_definitions (Effect/Degree).
             'monsters' => $this->whenLoaded('monsters'),
 
-            /** Définitions d’effets liées (pivot effect_spell) + degrés + pivots sous-effets — pour affichage fiche. */
+            /** Définitions d’effets liées (pivot effect_spell) — legacy jusqu’à bascule complète. */
             'effects_definitions' => $this->when(
                 $this->relationLoaded('effects'),
                 fn () => app(SpellEffectDefinitionsSerializer::class)->serialize($this->effects)
+            ),
+
+            /** Progression native degrés + effets (canal préféré pour l’affichage / édition). */
+            'spell_degrees' => $this->when(
+                $this->relationLoaded('degrees'),
+                fn () => app(SpellDegreesSerializer::class)->serialize($this->resource)
             ),
 
             // Droits d'accès

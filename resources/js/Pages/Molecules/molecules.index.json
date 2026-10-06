@@ -1039,14 +1039,8 @@
   },
   {
     "name": "SpellEffectsJournal",
-    "description": "Bloc « effets » d’un sort : définitions, onglets par degré, zones, sous-effets (dont branches OU).",
-    "props": [
-      {
-        "name": "definitions",
-        "type": "Array<Object>",
-        "desc": "- `effects_definitions` (SpellResource)"
-      }
-    ],
+    "description": "Progression des degrés d’un sort : onglets niveau + effets + propriétés actives. Préfère `spellDegrees` (canal natif) ; repli sur `effects_definitions` legacy.",
+    "props": [],
     "slots": [],
     "file": "entity/spell/SpellEffectsJournal.vue"
   },

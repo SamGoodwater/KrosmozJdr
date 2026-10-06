@@ -16,6 +16,7 @@ use App\Services\Effect\EffectGroupEditorDataService;
 use App\Services\Effect\EffectGroupUpdateService;
 use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
+use App\Services\Spell\SpellDegreesSerializer;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -103,6 +104,7 @@ class SpellController extends Controller
             'createdBy',
             'spellTypes',
             'effects.degrees.effectSubEffects.subEffect',
+            'degrees.effects.subEffect',
         ]);
 
         return Inertia::render('Pages/entity/spell/Show', [
@@ -119,19 +121,29 @@ class SpellController extends Controller
      *     availableEffects: array<int, array<string, mixed>>,
      *     effectEntityType: string,
      *     effectFormOptions: array<string, mixed>,
-     *     spellEffectGroups: array<int, mixed>
+     *     spellDegrees: array<string, mixed>,
+     *     spellEffectGroups: array<int, mixed>,
+     *     spellHolders: array<string, list<array<string, mixed>>>
      * }
      */
     protected function buildSpellEditPayload(Spell $spell): array
     {
-        $spell->load(['createdBy', 'creatures', 'breeds', 'spellTypes', 'effects.degrees']);
+        $spell->load([
+            'createdBy',
+            'creatures.npc',
+            'creatures.monster',
+            'breeds',
+            'spellTypes',
+            'effects.degrees',
+            'degrees.effects.subEffect',
+        ]);
 
         $availableSpellTypes = SpellType::query()
             ->select(['id', 'name', 'description', 'color', 'icon'])
             ->orderBy('name')
             ->get();
 
-        // Liste complète non embarquée : recherche via GET /api/effects/definitions (SpellEffectsUnifiedSection).
+        // Liste complète non embarquée : recherche via GET /api/effects/definitions (legacy).
         $availableEffects = [];
 
         $editorData = app(EffectGroupEditorDataService::class);
@@ -142,6 +154,7 @@ class SpellController extends Controller
             : array_filter(array_map('trim', explode(',', $partialHeader)));
         $needsFormOptions = $partialProps === null || in_array('effectFormOptions', $partialProps, true);
         $needsGroups = $partialProps === null || in_array('spellEffectGroups', $partialProps, true);
+        $needsDegrees = $partialProps === null || in_array('spellDegrees', $partialProps, true);
 
         return [
             'spell' => $spell,
@@ -149,8 +162,54 @@ class SpellController extends Controller
             'availableEffects' => $availableEffects,
             'effectEntityType' => 'spell',
             'effectFormOptions' => $needsFormOptions ? $editorData->formOptions() : [],
+            'spellDegrees' => $needsDegrees
+                ? app(SpellDegreesSerializer::class)->serialize($spell)
+                : ['degrees' => [], 'default_degree_id' => null],
             'spellEffectGroups' => $needsGroups ? $editorData->distinctGroupsForSpell($spell) : [],
+            'spellHolders' => $this->serializeSpellHolders($spell),
         ];
+    }
+
+    /**
+     * Entités qui utilisent le sort, prêtes à afficher dans l’éditeur.
+     *
+     * @return array<string, list<array{id: int, name: string, href: string}>>
+     */
+    private function serializeSpellHolders(Spell $spell): array
+    {
+        $monsters = [];
+        $npcs = [];
+        $creatures = [];
+
+        foreach ($spell->creatures as $creature) {
+            if ($creature->monster !== null) {
+                $monsters[] = [
+                    'id' => $creature->monster->id,
+                    'name' => $creature->name,
+                    'href' => route('entities.monsters.show', $creature->monster),
+                ];
+            } elseif ($creature->npc !== null) {
+                $npcs[] = [
+                    'id' => $creature->npc->id,
+                    'name' => $creature->name,
+                    'href' => route('entities.npcs.show', $creature->npc),
+                ];
+            } else {
+                $creatures[] = [
+                    'id' => $creature->id,
+                    'name' => $creature->name,
+                    'href' => route('entities.creatures.show', $creature),
+                ];
+            }
+        }
+
+        $breeds = $spell->breeds->map(fn ($breed): array => [
+            'id' => $breed->id,
+            'name' => $breed->name,
+            'href' => route('entities.breeds.show', $breed),
+        ])->values()->all();
+
+        return compact('monsters', 'npcs', 'creatures', 'breeds');
     }
 
     /**
@@ -168,7 +227,9 @@ class SpellController extends Controller
             'availableEffects' => $payload['availableEffects'],
             'effectEntityType' => $payload['effectEntityType'],
             'effectFormOptions' => $payload['effectFormOptions'],
+            'spellDegrees' => $payload['spellDegrees'],
             'spellEffectGroups' => $payload['spellEffectGroups'],
+            'spellHolders' => $payload['spellHolders'],
         ]);
     }
 
@@ -187,7 +248,9 @@ class SpellController extends Controller
             'availableEffects' => $payload['availableEffects'],
             'effectEntityType' => $payload['effectEntityType'],
             'effectFormOptions' => $payload['effectFormOptions'],
+            'spellDegrees' => $payload['spellDegrees'],
             'spellEffectGroups' => $payload['spellEffectGroups'],
+            'spellHolders' => $payload['spellHolders'],
         ]);
     }
 

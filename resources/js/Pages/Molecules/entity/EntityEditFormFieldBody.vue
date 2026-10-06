@@ -19,6 +19,7 @@ import { getByDbColumn, getMonsterFieldMeta } from '@/Composables/store/useChara
 import CharacteristicNormsHelpButton from '@/Pages/Molecules/data-display/CharacteristicNormsHelpButton.vue';
 import { getCharacteristicColorStyle, getCharacteristicContainerStyle } from '@/Utils/color/Color';
 import { resolveSpellUsageCharacteristicVisual } from '@/Utils/Entity/spellUsageCharacteristicVisual';
+import { formatPoRange, parsePoRange } from '@/Utils/Entity/poRange';
 
 const props = defineProps({
     field: { type: Object, required: true },
@@ -77,6 +78,13 @@ const characteristicNormsEntity = computed(() => {
     }
     return '*';
 });
+
+function updatePoRange(value) {
+    const parsed = parsePoRange(value);
+    props.form.po_min = parsed.po_min;
+    props.form.po_max = parsed.po_max;
+    props.markDirty('po_min');
+}
 
 /** Couleur hex caractéristique (BDD ou override formulaire). */
 const characteristicHex = computed(() => {
@@ -474,6 +482,16 @@ const resolvedSelectOptions = computed(() => {
             </Btn>
         </div>
 
+        <InputField
+            v-else-if="getFieldRenderType(field.key, field.config) === 'poRange'"
+            :model-value="formatPoRange(form.po_min, form.po_max)"
+            :label="getFieldLabel(field.key, field.config)"
+            :helper="getFieldHelper(field.key, field.config)"
+            :validation="getFieldValidation(field.key)"
+            :placeholder="getFieldPlaceholder(field.key, field.config) || '4 ou 2-8'"
+            @update:model-value="updatePoRange"
+        />
+
         <!-- InputField -->
         <div
             v-else-if="
@@ -489,6 +507,7 @@ const resolvedSelectOptions = computed(() => {
                     'display',
                     'elementPrimaries',
                     'spellTypesMulti',
+                    'poRange',
                 ].includes(getFieldRenderType(field.key, field.config))
             "
             class="w-full min-w-0"
