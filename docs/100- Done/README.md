@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Droits de lecture après une maj DofusDB
+
+Rétablir la version d’avant une actualisation DofusDB (ou une conversion IA) ne change plus les seuils de lecture et d’écriture d’une fiche, sauf pour un admin. Un MJ qui annule une maj ne rouvre plus accidentellement une fiche restreinte.
+
 ## Octobre 2026 — Sauvegardes ZIP fiabilisées
 
 Une sauvegarde produit désormais une seule archive ZIP horodatée (base, médias `storage/app`, contenu `private/game`, manifeste avec checksums). On peut lister, supprimer et restaurer depuis la ligne de commande et la page admin Sauvegarde, avec confirmation renforcée et sauvegarde de secours avant restauration. Le cron configurable `project_backup` reste disponible ; le verrou empêche deux opérations en parallèle. Le suivi de restauration reste visible pendant la maintenance, et un crash / reboot marque l’opération comme interrompue puis nettoie les restes. Les médias ne sont plus recopiés dans un dossier temporaire avant compression (évite les plantages mémoire sous WSL), et le dossier des archives n’est jamais ré-inclus dans une sauvegarde.
