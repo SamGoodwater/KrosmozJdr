@@ -20,7 +20,8 @@ class HandleInertiaSharedPropsTest extends TestCase
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
             ->has('permissions')
-            ->has('ziggy')
+            ->missing('ziggy')
+            ->has('ziggy_location')
             ->has('oauth_enabled_providers')
             ->has('auth')
             ->where('auth.isLogged', false)
@@ -37,7 +38,7 @@ class HandleInertiaSharedPropsTest extends TestCase
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
             ->has('permissions')
-            ->has('ziggy')
+            ->missing('ziggy')
             ->has('auth.user')
             ->where('auth.isLogged', true)
             ->where('auth.user.id', $user->id)

@@ -39,45 +39,8 @@ class MonsterController extends Controller
     {
         $this->authorize('viewAny', Monster::class);
 
-        $query = Monster::query()
-            ->visibleToUser(request()->user())
-            ->with(['creature', 'monsterRace']);
-
-        // Recherche
-        if (request()->has('search') && request()->search) {
-            $search = request()->search;
-            $query->whereHas('creature', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
-            });
-        }
-
-        // Filtres
-        if (request()->has('size') && request()->size !== '') {
-            $query->where('size', request()->size);
-        }
-
-        if (request()->has('is_boss') && request()->is_boss !== '') {
-            $query->where('is_boss', request()->is_boss);
-        }
-
-        if (request()->has('monster_race_id') && request()->monster_race_id !== '') {
-            $query->where('monster_race_id', request()->monster_race_id);
-        }
-
-        // Tri
-        $sortColumn = request()->get('sort', 'id');
-        $sortOrder = request()->get('order', 'desc');
-
-        if (in_array($sortColumn, ['id', 'size', 'is_boss', 'created_at'])) {
-            $query->orderBy($sortColumn, $sortOrder);
-        } else {
-            $query->latest();
-        }
-
-        $monsters = $query->paginate(20)->withQueryString();
-
+        // Liste chargée par EntityTanStackTable (api.tables.monsters) — pas de collection Inertia.
         return Inertia::render('Pages/entity/monster/Index', [
-            'monsters' => MonsterResource::collection($monsters),
             'filters' => request()->only(['search', 'size', 'is_boss', 'monster_race_id']),
         ]);
     }

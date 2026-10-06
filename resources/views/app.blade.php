@@ -122,7 +122,7 @@
         }
     </style>
 
-    <!-- Scripts (Ziggy via prop Inertia shareOnce — pas de @routes) -->
+    <!-- Scripts (Ziggy via resources/js/ziggy.js + ziggy_location Inertia — pas de @routes) -->
     @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
     @inertiaHead
     <link rel="stylesheet" href="{{ asset('css/characteristic-colors.css') }}" />

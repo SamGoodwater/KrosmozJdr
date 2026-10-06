@@ -28,10 +28,6 @@ import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors }
 import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
 
 const props = defineProps({
-    monsters: {
-        type: Object,
-        required: true
-    },
     filters: {
         type: Object,
         default: () => ({})

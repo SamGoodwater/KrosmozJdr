@@ -35,52 +35,8 @@ class ItemController extends Controller
     {
         $this->authorize('viewAny', Item::class);
 
-        $viewer = request()->user();
-        $query = Item::query()
-            ->visibleToUser($viewer)
-            ->with([
-                'createdBy',
-                'itemType',
-                'resources' => fn ($q) => $q->visibleToUser($viewer),
-                ...ItemPanoplyPayload::eagerLoad($viewer),
-            ]);
-
-        // Recherche
-        if (request()->has('search') && request()->search) {
-            $search = request()->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        // Filtres
-        if (request()->has('level') && request()->level !== '') {
-            $query->where('level', request()->level);
-        }
-
-        if (request()->has('rarity') && request()->rarity !== '') {
-            $query->where('rarity', request()->rarity);
-        }
-
-        if (request()->has('item_type_id') && request()->item_type_id !== '') {
-            $query->where('item_type_id', request()->item_type_id);
-        }
-
-        // Tri
-        $sortColumn = request()->get('sort', 'id');
-        $sortOrder = request()->get('order', 'desc');
-
-        if (in_array($sortColumn, ['id', 'name', 'level', 'rarity', 'dofusdb_id', 'created_at'])) {
-            $query->orderBy($sortColumn, $sortOrder);
-        } else {
-            $query->latest();
-        }
-
-        $items = $query->paginate(20)->withQueryString();
-
+        // Liste chargée par EntityTanStackTable (api.tables.items) — pas de collection Inertia.
         return Inertia::render('Pages/entity/item/Index', [
-            'items' => ItemResource::collection($items),
             'filters' => request()->only(['search', 'level', 'rarity', 'item_type_id']),
             'itemTypes' => ItemType::query()
                 ->orderBy('name')

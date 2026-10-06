@@ -27,12 +27,8 @@ import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-conf
 import { useEntityIndexTableIntents } from "@/Composables/entity/useEntityIndexTableIntents";
 import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
 
-// Props Inertia (gardées à titre documentaire, même si non utilisées directement ici)
+// Props Inertia : filtres + catalogues de filtres. La liste vient de api.tables.items.
 const props = defineProps({
-    items: {
-        type: Object,
-        required: true
-    },
     filters: {
         type: Object,
         default: () => ({})

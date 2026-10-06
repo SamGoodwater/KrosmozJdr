@@ -10,7 +10,6 @@ use App\Support\OAuthConfig;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Middleware;
-use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -97,7 +96,7 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             'permissions' => fn () => $this->permissionService->forUser($request->user()),
-            'ziggy' => fn () => (new Ziggy)->toArray(),
+            // Ziggy : routes dans resources/js/ziggy.js (bundle Vite). Pas de 2e copie Inertia.
             'oauth_enabled_providers' => fn () => OAuthConfig::enabledProviders(),
             'loadingTips' => fn () => LoadingTip::query()
                 ->where('is_active', true)

@@ -37,10 +37,6 @@ import { getEntityCreateAllowFieldKeys } from "@/Utils/entity/entity-create-conf
 import { normalizeIndexTableFilters } from "@/Composables/entity/useEntityIndexTableFilters";
 
 const props = defineProps({
-    spells: {
-        type: Object,
-        required: true
-    },
     filters: {
         type: Object,
         default: () => ({})

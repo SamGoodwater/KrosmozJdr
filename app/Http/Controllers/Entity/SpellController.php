@@ -34,64 +34,13 @@ class SpellController extends Controller
     {
         $this->authorize('viewAny', Spell::class);
 
-        $query = Spell::query()
-            ->visibleToUser(request()->user())
-            ->with(['createdBy', 'creatures', 'breeds', 'spellTypes']);
-
-        // Recherche
-        if (request()->has('search') && request()->search) {
-            $search = request()->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        // Filtres
-        if (request()->has('level') && request()->level !== '') {
-            $query->where('level', request()->level);
-        }
-
-        if (request()->has('pa') && request()->pa !== '') {
-            $query->where('pa', request()->pa);
-        }
-
-        if (request()->has('spell_type_id') && request()->spell_type_id !== '') {
-            $spellTypeId = (int) request()->spell_type_id;
-            $query->whereHas('spellTypes', fn ($q) => $q->where('spell_types.id', $spellTypeId));
-        }
-
-        // Tri (po / area = accessors → colonnes ou sous-requête, pas orderBy direct)
-        $sortColumn = (string) request()->get('sort', 'id');
-        $sortOrder = strtolower((string) request()->get('order', 'desc'));
-        if (! in_array($sortOrder, ['asc', 'desc'], true)) {
-            $sortOrder = 'desc';
-        }
-
-        if ($sortColumn === 'po') {
-            $query->orderBy('po_min', $sortOrder)->orderBy('po_max', $sortOrder);
-        } elseif ($sortColumn === 'area') {
-            $query->orderByRaw(
-                '(SELECT ed.area FROM effect_degrees ed
-                    INNER JOIN effect_spell es ON es.effect_id = ed.effect_id
-                    WHERE es.spell_id = spells.id
-                    ORDER BY ed.degree ASC
-                    LIMIT 1) '.$sortOrder
-            );
-        } elseif (in_array($sortColumn, ['id', 'name', 'level', 'pa', 'dofusdb_id', 'created_at'], true)) {
-            $query->orderBy($sortColumn, $sortOrder);
-        } else {
-            $query->latest();
-        }
-
-        $spells = $query->paginate(20)->withQueryString();
+        // Liste chargée par EntityTanStackTable (api.tables.spells) — pas de collection Inertia.
         $spellTypes = SpellType::query()
             ->select(['id', 'name', 'color', 'icon', 'show_in_catalog'])
             ->orderBy('name')
             ->get();
 
         return Inertia::render('Pages/entity/spell/Index', [
-            'spells' => SpellResource::collection($spells),
             'filters' => request()->only(['search', 'level', 'pa', 'spell_type_id']),
             'spellTypes' => $spellTypes,
         ]);

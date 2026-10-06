@@ -13,16 +13,20 @@ import { route as ziggyRoute } from "../../vendor/tightenco/ziggy";
  * @param {string|undefined} location
  */
 export function applyZiggyFromPageProps(ziggy, location) {
-    if (!ziggy || typeof ziggy !== "object") {
+    if (ziggy && typeof ziggy === "object") {
+        const resolvedLocation =
+            location ??
+            ziggy.location ??
+            (typeof window !== "undefined" ? window.location.href : ziggyRoutes.url);
+
+        globalThis.Ziggy = { ...ziggy, location: resolvedLocation };
         return;
     }
 
-    const resolvedLocation =
-        location ??
-        ziggy.location ??
-        (typeof window !== "undefined" ? window.location.href : ziggyRoutes.url);
-
-    globalThis.Ziggy = { ...ziggy, location: resolvedLocation };
+    // Prop Inertia absente : garder le catalogue du bundle, mettre à jour l’URL courante.
+    if (location && globalThis.Ziggy && typeof globalThis.Ziggy === "object") {
+        globalThis.Ziggy = { ...globalThis.Ziggy, location };
+    }
 }
 
 if (typeof window !== "undefined") {

@@ -8,8 +8,8 @@ Le fichier `resources/js/ssr.js` compile avec Vite. Le SSR Inertia est désactiv
 
 ## Props partagées
 
-`app/Http/Middleware/HandleInertiaRequests.php` partage notamment : utilisateur connecté, flash messages, permissions, Ziggy, confirmation de mot de passe. `permissions`, `ziggy` et `oauth_enabled_providers` passent par `shareOnce` : le client les mémorise après la première visite.
+`app/Http/Middleware/HandleInertiaRequests.php` partage notamment : utilisateur connecté, flash messages, permissions, confirmation de mot de passe, `ziggy_location`. `permissions`, `oauth_enabled_providers` et `loadingTips` passent par `shareOnce` : le client les mémorise après la première visite.
 
 ## Routing JS
 
-Ziggy expose `route()` côté Vue. Le plugin `resources/js/Plugins/inertia-ziggy.js` synchronise les routes avec les props Inertia et ignore `ziggy` s’il est absent d’une visite suivante.
+Ziggy expose `route()` côté Vue via le catalogue généré `resources/js/ziggy.js` (bundle Vite). Le plugin `resources/js/Plugins/inertia-ziggy.js` met à jour l’URL courante avec `ziggy_location` à chaque navigation Inertia.

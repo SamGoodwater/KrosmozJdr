@@ -144,13 +144,12 @@ class CharacteristicController extends Controller
 
     public function index(): InertiaResponse
     {
-        $characteristicsByGroup = $this->buildCharacteristicsByGroup();
-
         return Inertia::render('Admin/characteristics/Index', [
-            'characteristicsByGroup' => $characteristicsByGroup,
+            'characteristicsByGroup' => $this->buildCharacteristicsByGroup(),
             'selected' => null,
             'entitiesByGroup' => self::ENTITIES_BY_GROUP,
-            'itemTypes' => $this->itemTypesForAdminSelect(),
+            // Types d’équipement : utiles à l’édition / création, pas à l’écran d’accueil.
+            'itemTypes' => [],
         ]);
     }
 
@@ -1111,8 +1110,6 @@ class CharacteristicController extends Controller
                 'icon' => $effective->icon,
                 'color' => $effective->color,
                 'status' => $this->characteristicsTableHasStatusColumn() ? ($c->status ?? Characteristic::STATUS_A_VALIDER) : Characteristic::STATUS_A_VALIDER,
-                'is_linked' => $c->isLinked(),
-                'master_key' => $c->isLinked() ? $effective->key : null,
             ];
         }
 
