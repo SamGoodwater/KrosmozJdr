@@ -42,7 +42,7 @@
  * @note Ce composant fusionne l'API DaisyUI Link et Inertia Link.
  */
 
-import { computed } from "vue";
+import { computed, useAttrs } from "vue";
 import { Link } from "@inertiajs/vue3";
 import {
     getCommonProps,
@@ -52,6 +52,8 @@ import {
 } from "@/Utils/atomic-design/uiHelper";
 import { colorList } from "@/Pages/Atoms/atomMap";
 import { targetList, methodList } from "./actionMap";
+
+defineOptions({ inheritAttrs: false });
 
 const props = defineProps({
     ...getCommonProps(),
@@ -195,14 +197,58 @@ const componentBind = computed(() => {
         ...getCommonAttrs(props),
     };
 });
+
+const fallthroughAttrs = useAttrs();
+
+/**
+ * Attributs HTML non déclarés (`rel`, `download`, …).
+ * `v-on="$attrs"` les traitait comme des événements (`onRel`).
+ *
+ * @returns {Record<string, unknown>}
+ */
+const fallthroughHtmlAttrs = computed(() => {
+    const out = {};
+    for (const [key, value] of Object.entries(fallthroughAttrs)) {
+        if (key.startsWith("on") && typeof value === "function") {
+            continue;
+        }
+        if (value == null || value === "") {
+            continue;
+        }
+        out[key] = value;
+    }
+    return out;
+});
+
+/**
+ * Écouteurs uniquement (`onClick` → `click`), pour `v-on`.
+ *
+ * @returns {Record<string, Function>}
+ */
+const fallthroughListeners = computed(() => {
+    const out = {};
+    for (const [key, value] of Object.entries(fallthroughAttrs)) {
+        if (!key.startsWith("on") || typeof value !== "function" || key.length < 3) {
+            continue;
+        }
+        const third = key.charCodeAt(2);
+        if (third >= 97 && third <= 122) {
+            continue;
+        }
+        const raw = key.slice(2);
+        const eventName = raw.charAt(0).toLowerCase() + raw.slice(1);
+        out[eventName] = value;
+    }
+    return out;
+});
 </script>
 
 <template>
     <component
         :is="linkComponent"
-        v-bind="componentBind"
+        v-bind="{ ...componentBind, ...fallthroughHtmlAttrs }"
         :target="target || undefined"
-        v-on="$attrs"
+        v-on="fallthroughListeners"
         :class="atomClasses"
     >
         <slot />

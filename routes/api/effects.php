@@ -12,14 +12,18 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | API Effects — sous-effets, effects, usages, effet pour entité + niveau
 |--------------------------------------------------------------------------
-| Lecture : accessible à tous (guest y compris sans connexion).
+| Lecture : accessible aux invités pour les fiches visibles.
+| `web` démarre la session : un éditeur connecté n’est pas traité comme un invité
+| (sinon un sort `auto` / brouillon renvoie 403 sur la fiche d’édition).
 | Écriture : réservée aux game_master et au-dessus.
 */
 Route::prefix('effects')->group(function () {
-    // ——— Lecture (public / guest) ———
-    Route::get('for-entity', [EffectController::class, 'forEntity'])->name('effects.for-entity');
-    Route::get('usages', [EffectUsageController::class, 'index'])->name('effects.usages.index');
-    Route::get('usages/{effect_usage}', [EffectUsageController::class, 'show'])->name('effects.usages.show');
+    // ——— Lecture (public / guest, session si le visiteur est connecté) ———
+    Route::middleware('web')->group(function () {
+        Route::get('for-entity', [EffectController::class, 'forEntity'])->name('effects.for-entity');
+        Route::get('usages', [EffectUsageController::class, 'index'])->name('effects.usages.index');
+        Route::get('usages/{effect_usage}', [EffectUsageController::class, 'show'])->name('effects.usages.show');
+    });
     Route::get('sub-effects', [SubEffectController::class, 'index'])->name('effects.sub-effects.index');
     Route::get('sub-effects/{sub_effect}', [SubEffectController::class, 'show'])->name('effects.sub-effects.show');
     Route::get('effects', [EffectController::class, 'index'])->name('effects.effects.index');

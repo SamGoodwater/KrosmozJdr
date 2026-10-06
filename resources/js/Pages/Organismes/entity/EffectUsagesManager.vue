@@ -155,7 +155,6 @@ async function fetchPreview() {
                 entity_type: props.entityType,
                 entity_id: props.entityId,
                 level: previewLevel.value,
-                format_dice_human: false,
             },
         });
         previewData.value = data.data || [];

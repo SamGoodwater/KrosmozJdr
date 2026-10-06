@@ -73,6 +73,9 @@ const selectedGroup = computed(() => {
 
 const selectedDegreeIdForEditor = computed(() => selectedGroup.value?.group_effects?.[0]?.id ?? 0);
 
+/** Doit précéder le watch immédiat sur `spellEffectGroups` (zone morte des const). */
+const effectsEditorDirty = ref(false);
+
 watch(
     () => props.spellEffectGroups,
     (groups) => {
@@ -243,7 +246,6 @@ async function fetchPreview() {
                 entity_type: props.entityType,
                 entity_id: props.entityId,
                 level: previewLevel.value,
-                format_dice_human: false,
             },
         });
         previewData.value = data.data || [];
@@ -329,8 +331,6 @@ async function flushEffectGroupSave() {
         return false;
     }
 }
-
-const effectsEditorDirty = ref(false);
 
 function onEffectGroupDirtyChange(dirty) {
     effectsEditorDirty.value = Boolean(dirty);

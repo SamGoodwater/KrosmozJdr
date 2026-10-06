@@ -17,7 +17,7 @@
 - `Spell::visibleToUser` / `EntityDisplayVisibilityService::constrainQueryToViewer` (listes)
 - `GET /api/effects/definitions` — recherche defs pour liaison sort (payload edit allégé)
 - `GET /api/effects/effects?q=&per_page=` — index paginé (plus de dump massif)
-- `GET /api/effects/for-entity` et `GET /api/effects/usages` : `view` sur la fiche parente (un sort/objet brouillon ne fuit pas)
+- `GET /api/effects/for-entity` (`format_dice_human` en query : `true`/`false`/`1`/`0`) et `GET /api/effects/usages` : middleware `web` (session) + `view` sur la fiche parente (un sort/objet brouillon ne fuit pas ; l’éditeur connecté n’est pas vu comme un invité)
 - `scrapping:effects:reapply-mappings` — reclasse les `autre` déjà mappés (ex. téléports)
 - Canal sorts : `effects_definitions` (legacy `spell_effects` / `spell_effect_types` droppés)
 - Invisibilité Dofus 150 → `appliquer-etat` (state 250)

@@ -1,10 +1,12 @@
 <script setup>
-import { computed, nextTick, onUnmounted, watch } from "vue";
+import { computed, nextTick, onUnmounted, useAttrs, watch } from "vue";
 import { useOverlay } from "@/Composables/overlay/useOverlay";
 import { OVERLAY_MAX_WIDTH_CLASS, OVERLAY_TRIGGER, OVERLAY_Z_INDEX } from "@/Composables/overlay/overlayConstants";
 import { useEntityMinimalCardOverlayHold } from "@/Composables/overlay/entityMinimalCardOverlayHold";
 import { provideOverlayNestHold, useOverlayNestHold } from "@/Composables/overlay/overlayNestHold";
 import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
+
+defineOptions({ inheritAttrs: false });
 
 const props = defineProps({
     content: { type: [String, Object, Function], default: "" },
@@ -31,9 +33,12 @@ const props = defineProps({
     /**
      * Classes sur le nœud de référence Floating UI (ex. `fixed` du parent).
      * Doivent être ici — pas sur un enfant — sinon le panneau se positionne mal.
+     * Une `class` héritée (fragment : span + Teleport) est fusionnée sur ce même nœud.
      */
     triggerClass: { type: [String, Array, Object], default: "" },
 });
+
+const fallthroughAttrs = useAttrs();
 
 const emit = defineEmits(["open", "close", "error"]);
 
@@ -135,13 +140,21 @@ watch(nestHoldCount, (count) => {
 const panelMaxWidthClass = computed(() => OVERLAY_MAX_WIDTH_CLASS[props.maxWidth] || "");
 const triggerRootClass = computed(() => {
     const extra = props.triggerClass;
-    if (extra == null || extra === "") {
-        return "inline-flex min-w-0 max-w-full";
+    const inherited = fallthroughAttrs.class;
+    const parts = ["inline-flex min-w-0 max-w-full"];
+    if (extra != null && extra !== "") {
+        parts.push(extra);
     }
-    if (typeof extra === "string") {
-        return `inline-flex min-w-0 max-w-full ${extra}`.trim();
+    if (inherited != null && inherited !== "") {
+        parts.push(inherited);
     }
-    return ["inline-flex", "min-w-0", "max-w-full", extra];
+    return parts;
+});
+
+/** Attributs hors `class` (déjà posée sur le nœud de référence). */
+const triggerFallthroughAttrs = computed(() => {
+    const { class: _class, ...rest } = fallthroughAttrs;
+    return rest;
 });
 /**
  * Une seule surface : `chromeless` (ou `panelClass` déjà chromeless) pour les
@@ -238,7 +251,7 @@ function handleTriggerKeydown(event) {
     <span
         ref="triggerRef"
         :class="triggerRootClass"
-        v-bind="triggerAttrs"
+        v-bind="{ ...triggerAttrs, ...triggerFallthroughAttrs }"
         @mouseenter="trigger.onTriggerEnter"
         @mouseleave="onHoverTriggerLeave"
         @focusin="trigger.onTriggerFocusIn"

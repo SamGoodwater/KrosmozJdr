@@ -160,9 +160,17 @@ class EffectController extends Controller
 
     /**
      * Prévisualisation : degrés d’effet applicables selon le niveau du porteur.
+     *
+     * `format_dice_human` est une query string (`true`/`false`) : normalisée avant la règle `boolean`.
      */
     public function forEntity(Request $request): JsonResponse
     {
+        if ($request->exists('format_dice_human')) {
+            $request->merge([
+                'format_dice_human' => $request->boolean('format_dice_human'),
+            ]);
+        }
+
         $validated = $request->validate([
             'entity_type' => 'required|string|in:spell,item,consumable,resource',
             'entity_id' => 'required|integer|min:1',

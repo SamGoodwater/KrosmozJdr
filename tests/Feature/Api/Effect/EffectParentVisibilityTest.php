@@ -105,6 +105,44 @@ final class EffectParentVisibilityTest extends TestCase
             ->assertNotFound();
     }
 
+    public function test_guest_cannot_resolve_effects_of_an_auto_spell(): void
+    {
+        $spell = Spell::factory()->create([
+            'state' => Spell::STATE_AUTO,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+        $this->attachSpellEffect($spell, 'sort-auto-invite');
+
+        $this->getJson($this->forEntityUrl('spell', $spell->id))
+            ->assertForbidden();
+    }
+
+    public function test_admin_session_can_resolve_effects_of_an_auto_spell(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $spell = Spell::factory()->create([
+            'state' => Spell::STATE_AUTO,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
+        $this->attachSpellEffect($spell, 'sort-auto-admin');
+
+        $this->actingAs($admin)
+            ->getJson($this->forEntityUrl('spell', $spell->id).'&format_dice_human=false')
+            ->assertOk()
+            ->assertJsonPath('data.0.effect.slug', 'sort-auto-admin');
+    }
+
+    public function test_for_entity_accepts_query_string_false_for_format_dice_human(): void
+    {
+        $spell = $this->playableSpell();
+        $this->attachSpellEffect($spell, 'sort-des-texte');
+
+        $this->getJson($this->forEntityUrl('spell', $spell->id).'&format_dice_human=false')
+            ->assertOk();
+    }
+
     private function forEntityUrl(string $entityType, int $entityId): string
     {
         return '/api/effects/for-entity?entity_type='.$entityType.'&entity_id='.$entityId.'&level=1';
