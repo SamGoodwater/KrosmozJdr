@@ -279,8 +279,9 @@ function itemKey(item, prefix) {
                 size="sm"
                 :aria-label="mobileDropdownAria"
             >
-                <template #trigger>
+                <template #trigger="triggerA11y">
                     <Btn
+                        v-bind="triggerA11y"
                         variant="glass"
                         color="neutral"
                         size="md"
@@ -399,8 +400,9 @@ function itemKey(item, prefix) {
                             size="sm"
                             :aria-label="overflowMenuAriaLabel"
                         >
-                            <template #trigger>
+                            <template #trigger="triggerA11y">
                                 <Btn
+                                    v-bind="triggerA11y"
                                     variant="glass"
                                     color="neutral"
                                     size="md"

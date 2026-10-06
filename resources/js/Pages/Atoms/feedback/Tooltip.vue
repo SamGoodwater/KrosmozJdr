@@ -78,9 +78,13 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    /**
+     * Panneau dialog interactif. Défaut false : tooltip au survol, focus sur l’enfant
+     * (évite role=button + tabindex sur l’enveloppe autour d’un lien/bouton).
+     */
     interactive: {
         type: Boolean,
-        default: true,
+        default: false,
     },
     maxWidth: {
         type: String,

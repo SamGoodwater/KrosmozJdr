@@ -35,17 +35,23 @@ const mainBlockClasses = computed(() => {
   // Types d'inputs avec taille dynamique (avec flex-1)
   return `${baseClasses} flex-1`
 })
+
+/** Id du label pour `aria-labelledby` (combobox, etc.). */
+const labelDomId = computed(() =>
+  props.inputAttrs?.id ? `${props.inputAttrs.id}-label` : undefined
+)
 </script> 
 
 <template>
   <div :class="containerClasses">
     <!-- 🔼 Label au-dessus -->
-    <InputLabel
-      v-if="labelConfig.top || $slots.labelTop"
-      :value="labelConfig.top"
-      :for="inputAttrs.id"
-      :color="styleProperties.labelColor"
-      :size="styleProperties.labelSize"
+      <InputLabel
+        v-if="labelConfig.top || $slots.labelTop"
+        :value="labelConfig.top"
+        :for="inputAttrs.id"
+        :id="labelDomId"
+        :color="styleProperties.labelColor"
+        :size="styleProperties.labelSize"
     >
       <slot name="labelTop" />
     </InputLabel>
@@ -59,6 +65,7 @@ const mainBlockClasses = computed(() => {
         v-if="labelConfig.start || $slots.labelStart"
         :value="labelConfig.start"
         :for="inputAttrs.id"
+        :id="labelDomId"
         :color="styleProperties.labelColor"
         :size="styleProperties.labelSize"
         class="mr-2"
@@ -115,6 +122,7 @@ const mainBlockClasses = computed(() => {
         v-if="labelConfig.end || $slots.labelEnd"
         :value="labelConfig.end"
         :for="inputAttrs.id"
+        :id="labelDomId"
         :color="styleProperties.labelColor"
         :size="styleProperties.labelSize"
         class="ml-2"
@@ -128,6 +136,7 @@ const mainBlockClasses = computed(() => {
       v-if="labelConfig.bottom || $slots.labelBottom"
       :value="labelConfig.bottom"
       :for="inputAttrs.id"
+      :id="labelDomId"
       :color="styleProperties.labelColor"
       :size="styleProperties.labelSize"
       class="mt-1"

@@ -338,16 +338,29 @@ const isAdminModeUnlocked = computed(() => Boolean(page.props.auth?.password_rec
     <div class="flex justify-end">
         <!-- Notifications : résumé + accès au centre -->
         <div class="flex items-center mr-6 max-sm:mr-4">
-            <Dropdown ref="notificationsDropdownRef" placement="bottom-end" :close-on-content-click="false">
-                <template #trigger>
+            <Dropdown
+                ref="notificationsDropdownRef"
+                placement="bottom-end"
+                :close-on-content-click="false"
+                aria-label="Notifications (Alt+N pour ouvrir)"
+            >
+                <template #trigger="triggerA11y">
                     <div class="indicator" @click="fetchNotifications">
                         <span
                             v-if="unreadCount > 0"
                             class="indicator-item badge badge-sm bg-primary text-primary-content rounded-full min-w-5"
+                            aria-hidden="true"
                         >
                             {{ unreadCount > 99 ? '99+' : unreadCount }}
                         </span>
-                        <Btn variant="link" color="neutral" circle aria-label="Notifications (Alt+N pour ouvrir)" title="Notifications (Alt+N)">
+                        <Btn
+                            v-bind="triggerA11y"
+                            variant="link"
+                            color="neutral"
+                            circle
+                            class="min-h-6 min-w-6"
+                            title="Notifications (Alt+N)"
+                        >
                             <Icon source="fa-bell" alt="Notifications" size="lg" pack="regular" />
                         </Btn>
                     </div>

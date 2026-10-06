@@ -6,35 +6,16 @@ defineOptions({ inheritAttrs: false });
  *
  * @description
  * Atomique item de dock stylé DaisyUI, conforme Atomic Design et KrosmozJDR.
- * - Rend un <button> ou <Route> stylé DaisyUI (dock)
- * - Props : active, disabled, icon (string), label (string), route (string), color, size, customUtility, accessibilité, etc.
- * - Slot icon prioritaire sur prop icon, slot label prioritaire sur prop label, slot default pour contenu custom
- * - mergeClasses pour les classes DaisyUI explicites (dock-active, dock-label, etc.)
- * - Utilise l'atom Icon pour l'icône
- * - getCommonAttrs pour l'accessibilité
+ * - Par défaut : `<li class="dock-item">` + trigger (enfant direct du `<ul>` Dock)
+ * - `bare` : trigger seul (le parent fournit le `<li>` et peut envelopper tooltip/dropdown)
  *
  * @see https://daisyui.com/components/dock/
  *
  * @example
  * <DockItem icon="fa-home" pack="solid" label="Accueil" active route="home" />
- * <DockItem icon="fa-cog" pack="solid" label="Paramètres" />
- *
- * @props {Boolean} active - Met l'item en état actif
- * @props {Boolean} disabled - Désactive l'item
- * @props {String} icon - Nom logique ou chemin de l'icône (optionnel, sinon slot #icon)
- * @props {String} pack - Pack FontAwesome (solid, regular, brands, duotone)
- * @props {String} label - Label du dock (optionnel, sinon slot #label)
- * @props {String} route - Nom de la route Inertia/Laravel (optionnel)
- * @props {String} href - URL absolue ou chemin (prioritaire si route vide ; lien interne Inertia si même origine)
- * @props {String} color - Couleur DaisyUI (optionnel)
- * @props {String} size - Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')
- * @props {String} shadow, backdrop, opacity, rounded - utilitaires custom
- * @props {String|Object} id, ariaLabel, role, tabindex, class - hérités de commonProps
- * @slot icon - Slot pour l'icône (prioritaire sur prop icon)
- * @slot label - Slot pour le label (prioritaire sur prop label)
- * @slot default - Contenu custom
+ * <li class="dock-item"><DockItem bare icon="fa-user" label="Compte" /></li>
  */
-import { computed } from "vue";
+import { computed, useAttrs } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import RouteAtom from "@/Pages/Atoms/action/Route.vue";
 import {
@@ -72,9 +53,15 @@ const props = defineProps({
         validator: (v) =>
             ["", "_blank", "_self", "_parent", "_top"].includes(v),
     },
+    /**
+     * Sans `<li>` : le parent fournit le list item (tooltip/dropdown autour du trigger).
+     */
+    bare: { type: Boolean, default: false },
 });
 
-const atomClasses = computed(() =>
+const fallthroughAttrs = useAttrs();
+
+const itemClasses = computed(() =>
     mergeClasses(
         [
             "dock-item",
@@ -89,7 +76,27 @@ const atomClasses = computed(() =>
         getCustomUtilityClasses(props),
     ),
 );
-const attrs = computed(() => getCommonAttrs(props));
+
+const triggerClasses = computed(() =>
+    mergeClasses("dock-item__trigger", props.bare ? props.class : ""),
+);
+
+const commonAttrs = computed(() => getCommonAttrs(props));
+const triggerAriaLabel = computed(
+    () => props.ariaLabel || props.label || undefined,
+);
+
+/** Attrs HTML hors props déclarées (ex. data-*, aria-expanded du Dropdown). */
+const triggerFallthrough = computed(() => {
+    const out = {};
+    for (const [key, value] of Object.entries(fallthroughAttrs)) {
+        if (key === "class" || key === "style") continue;
+        if (key.startsWith("on") && typeof value === "function") continue;
+        out[key] = value;
+    }
+    return out;
+});
+
 const emit = defineEmits(["click"]);
 
 function onTriggerClick(event) {
@@ -103,20 +110,22 @@ function onTriggerClick(event) {
 
 <template>
     <li
-        :class="atomClasses"
-        v-bind="{ ...attrs, ...$attrs }"
+        v-if="!bare"
+        :class="itemClasses"
+        v-bind="commonAttrs"
     >
         <RouteAtom
             v-if="route || href"
             :route="route"
             :href="href"
             :disabled="props.disabled"
-            :aria-label="props.ariaLabel || props.label || undefined"
+            :aria-label="triggerAriaLabel"
             :tabindex="props.tabindex"
             :role="props.role"
             :id="props.id"
             :target="props.target"
             class="dock-item__trigger"
+            v-bind="triggerFallthrough"
             @click="onTriggerClick"
         >
             <span
@@ -144,8 +153,10 @@ function onTriggerClick(event) {
             type="button"
             :disabled="props.disabled"
             :tabindex="props.tabindex"
-            :aria-label="props.ariaLabel || props.label || undefined"
+            :aria-label="triggerAriaLabel"
+            :id="props.id"
             class="dock-item__trigger"
+            v-bind="triggerFallthrough"
             @click="onTriggerClick"
         >
             <span
@@ -169,6 +180,73 @@ function onTriggerClick(event) {
             <slot />
         </button>
     </li>
+
+    <RouteAtom
+        v-else-if="route || href"
+        :route="route"
+        :href="href"
+        :disabled="props.disabled"
+        :aria-label="triggerAriaLabel"
+        :tabindex="props.tabindex"
+        :role="props.role"
+        :id="props.id"
+        :target="props.target"
+        :class="triggerClasses"
+        v-bind="{ ...commonAttrs, ...triggerFallthrough }"
+        @click="onTriggerClick"
+    >
+        <span
+            v-if="$slots.icon || icon"
+            class="dock-item__icon"
+        >
+            <slot name="icon">
+                <Icon
+                    v-if="icon"
+                    :source="icon"
+                    :pack="pack"
+                    :alt="'icon'"
+                    :size="size || 'md'"
+                    :disabled="props.disabled"
+                />
+            </slot>
+        </span>
+        <span v-if="$slots.label || label" class="dock-label">
+            <slot name="label">{{ label }}</slot>
+        </span>
+        <slot />
+    </RouteAtom>
+
+    <button
+        v-else
+        type="button"
+        :disabled="props.disabled"
+        :tabindex="props.tabindex"
+        :aria-label="triggerAriaLabel"
+        :id="props.id"
+        :class="triggerClasses"
+        v-bind="{ ...commonAttrs, ...triggerFallthrough }"
+        @click="onTriggerClick"
+    >
+        <span
+            v-if="$slots.icon || icon"
+            class="dock-item__icon"
+        >
+            <slot name="icon">
+                <Icon
+                    v-if="icon"
+                    :source="icon"
+                    :pack="pack"
+                    :alt="'icon'"
+                    :size="size || 'md'"
+                    :disabled="props.disabled"
+                />
+            </slot>
+        </span>
+        <span v-if="$slots.label || label" class="dock-label">
+            <slot name="label">{{ label }}</slot>
+        </span>
+        <slot />
+    </button>
 </template>
 
 <style scoped lang="scss"></style>

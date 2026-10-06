@@ -394,6 +394,8 @@ defineExpose({ enableValidation, disableValidation, resetValidation, focus, vali
                     role="combobox"
                     :aria-expanded="isOpen"
                     aria-haspopup="listbox"
+                    :aria-labelledby="inputAttrs.id ? `${inputAttrs.id}-label` : undefined"
+                    :aria-label="!inputAttrs.id && (props.label || props.ariaLabel) ? (typeof props.label === 'string' ? props.label : props.ariaLabel) : undefined"
                     :class="[
                         'ssf-trigger select select-bordered w-full max-w-none text-left min-h-0',
                         badgesEnabled ? 'ssf-trigger--badges py-1.5' : '',
@@ -455,6 +457,8 @@ defineExpose({ enableValidation, disableValidation, resetValidation, focus, vali
                     role="combobox"
                     :aria-expanded="isOpen"
                     aria-haspopup="listbox"
+                    :aria-labelledby="inputAttrs.id ? `${inputAttrs.id}-label` : undefined"
+                    :aria-label="!inputAttrs.id && (props.label || props.ariaLabel) ? (typeof props.label === 'string' ? props.label : props.ariaLabel) : undefined"
                     :class="[
                         'ssf-multi-trigger flex flex-wrap items-center gap-1 px-2 py-1 min-h-10 w-full rounded-btn border transition-colors',
                         isOpen ? 'border-primary/60 ring-1 ring-primary/30' : 'border-base-300',
@@ -462,6 +466,7 @@ defineExpose({ enableValidation, disableValidation, resetValidation, focus, vali
                         (isReadonly || props.disabled) ? 'opacity-50 cursor-not-allowed bg-base-200' : 'cursor-text bg-base-100',
                         props.size === 'xs' ? 'min-h-7 text-xs' : props.size === 'sm' ? 'min-h-8 text-sm' : '',
                     ]"
+                    tabindex="0"
                     @click="searchable ? openDropdown() : toggleDropdown()"
                 >
                     <span

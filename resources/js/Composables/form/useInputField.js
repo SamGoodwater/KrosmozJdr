@@ -69,12 +69,23 @@ export default function useInputField({
   // --- GESTION DES ATTRIBUTS HTML ---
   const { inputAttrs, listeners } = useInputProps(props, attrs, emit, type, mode)
 
+  /** Id stable pour associer label (`for`) / aria-labelledby quand le caller n’en fournit pas. */
+  const autoFieldId = `field-${type}-${Math.random().toString(36).slice(2, 9)}`;
+
   // --- FUSION DES ATTRIBUTS AVEC LA VALEUR ---
   const mergedInputAttrs = computed(() => {
-    const attrs = { ...inputAttrs.value };
+    const next = { ...inputAttrs.value };
     const inputType = props.type || type;
-    if (!INPUT_TYPES_WITHOUT_VALUE.has(inputType)) attrs.value = currentValue.value;
-    return attrs;
+    if (!INPUT_TYPES_WITHOUT_VALUE.has(inputType)) next.value = currentValue.value;
+    const hasLabel = Boolean(
+      (typeof props.label === "string" && props.label.trim())
+      || (props.label && typeof props.label === "object")
+      || props.ariaLabel
+    );
+    if (hasLabel && !next.id) {
+      next.id = autoFieldId;
+    }
+    return next;
   })
 
   // --- GESTION DE LA VALIDATION ---

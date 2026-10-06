@@ -287,10 +287,20 @@ const contentStyle = computed(() => ({
   zIndex: zIndex.value,
 }));
 
-// Attributs du conteneur
-const containerAttrs = computed(() => ({
-  ...getCommonAttrs(props),
-  'data-dropdown-id': dropdownId.value,
+// Conteneur : pas d’aria-label (interdit sans rôle) — le label va sur le trigger.
+const containerAttrs = computed(() => {
+  const { 'aria-label': _ariaLabel, ...rest } = getCommonAttrs(props);
+  return {
+    ...rest,
+    'data-dropdown-id': dropdownId.value,
+  };
+});
+
+/** Props ARIA à binder sur le contrôle du slot #trigger (Btn, button, etc.). */
+const triggerSlotProps = computed(() => ({
+  'aria-expanded': isOpen.value,
+  'aria-haspopup': true,
+  ...(props.ariaLabel ? { 'aria-label': props.ariaLabel } : {}),
 }));
 
 // Gestion des événements du trigger
@@ -436,18 +446,13 @@ defineExpose({ open, close, toggle, isOpen });
         {{ trigger }}
       </Btn>
       
-      <!-- Trigger custom via slot (ref unique sur le parent trigger-container pour le positionnement) -->
+      <!-- Trigger custom : wrapper non focusable ; le slot porte le bouton et les ARIA -->
       <div
         v-else
         :class="['dropdown-trigger-' + props.variant]"
-        :aria-expanded="isOpen"
-        aria-haspopup="true"
-        tabindex="0"
-        role="button"
         @click="handleTriggerClick"
-        @keydown="handleTriggerKeydown"
       >
-        <slot name="trigger" />
+        <slot name="trigger" v-bind="triggerSlotProps" />
       </div>
     </div>
 

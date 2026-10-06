@@ -132,6 +132,7 @@ function resolveHref(item) {
                                     )
                                 "
                                 class="peer"
+                                :aria-label="`Afficher ou masquer le groupe ${groupLabels[groupKey] || groupKey}`"
                             />
                             <div
                                 class="collapse-title min-h-0 py-2 font-medium peer-checked:min-h-0"

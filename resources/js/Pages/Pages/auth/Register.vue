@@ -1,8 +1,6 @@
 <script setup>
 import { computed } from "vue";
-import { useForm, usePage } from "@inertiajs/vue3";
-import { onMounted } from "vue";
-import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import { Head, useForm, usePage } from "@inertiajs/vue3";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 
 const page = usePage();
@@ -15,7 +13,6 @@ const oauthButtonConfig = {
 };
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
-import Route from "@/Pages/Atoms/action/Route.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 
@@ -26,7 +23,6 @@ const form = useForm({
     password_confirmation: null,
 });
 
-const { setPageTitle } = usePageTitle();
 const notificationStore = useNotificationStore();
 
 // Règles de validation granulaire
@@ -144,13 +140,11 @@ const submit = () => {
     });
 };
 
-onMounted(() => {
-    setPageTitle("Inscription");
-});
 </script>
 
 <template>
     <div class="flex flex-col items-center justify-center h-full w-full">
+        <Head title="Inscription" />
 
         <h2 class="text-title py-8">Inscription</h2>
 
@@ -175,7 +169,7 @@ onMounted(() => {
             color="secondary"
             autofocus
             v-model="form.name"
-            autocomplete="pseudo"
+            autocomplete="username"
             name="name"
             label="Pseudo"
             placeholder="Pseudo"
@@ -260,11 +254,13 @@ onMounted(() => {
 
         <div class="mt-4 block text-center">
             <div>
-                <Route route="login">
-                    <Btn color="neutral" variant="ghost" size="md" tabindex="5"
-                        >Déjà inscrit ?</Btn
-                    >
-                </Route>
+                <a
+                    :href="route('login')"
+                    class="btn btn-md btn-ghost inline-flex min-h-6 items-center justify-center px-4 text-base-content"
+                    tabindex="5"
+                >
+                    Déjà inscrit ?
+                </a>
             </div>
 
             <div>
@@ -281,17 +277,15 @@ onMounted(() => {
             </div>
         </div>
 
-        <div class="mt-2 text-gray-600/80 dark:text-gray-400/60">
-            <p>Confidentialité des données</p>
-            <p class="max-w-80">
-                <small
-                    >Nous nous engageons à ne partager aucune donnée avec des
-                    tiers. Tes informations ne seront pas utilisées à des fins
-                    statistiques. Aucune autre plateforme n'a accès aux
-                    informations que tu sauvegardes ici.</small
-                >
-                </p>
-            </div>
+        <div class="mt-2 max-w-80 text-sm text-base-content/80">
+            <p class="font-medium text-base-content">Confidentialité des données</p>
+            <p class="mt-1 text-base-content/80">
+                Nous nous engageons à ne partager aucune donnée avec des
+                tiers. Tes informations ne seront pas utilisées à des fins
+                statistiques. Aucune autre plateforme n'a accès aux
+                informations que tu sauvegardes ici.
+            </p>
+        </div>
         </form>
     </div>
 </template>

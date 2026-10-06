@@ -727,6 +727,7 @@ const clearAllActiveFilters = () => {
                                 :model-value="Boolean(values?.[col.filter.id]) === true"
                                 size="sm"
                                 :color="uiColor"
+                                :aria-label="getFilterLabel(col)"
                                 @update:model-value="(v) => updateFilter(col.filter.id, Boolean(v) ? true : '')"
                             />
                         </div>
@@ -762,6 +763,7 @@ const clearAllActiveFilters = () => {
                                 :indeterminate="isBooleanIndeterminate(getRawFilterValue(col.filter.id))"
                                 size="sm"
                                 :color="uiColor"
+                                :aria-label="getFilterLabel(col)"
                                 @update:model-value="(v) => toggleBooleanFilter(col.filter.id, v)"
                             />
                         </div>
@@ -979,6 +981,7 @@ const clearAllActiveFilters = () => {
                                 :indeterminate="isBooleanIndeterminate(getRawFilterValue(col.filter.id))"
                                 size="sm"
                                 :color="uiColor"
+                                :aria-label="getFilterLabel(col)"
                                 @update:model-value="(v) => toggleBooleanFilter(col.filter.id, v)"
                             />
                         </div>

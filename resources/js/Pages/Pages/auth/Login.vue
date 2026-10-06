@@ -234,7 +234,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Log in" />
+    <Head title="Connexion" />
 
     <div class="flex flex-col justify-start items-center pt-6 sm:pt-0">
 
@@ -244,7 +244,7 @@ onMounted(() => {
                 Connexion
             </h2>
 
-            <div class="mb-4 text-sm text-gray-600">
+            <div v-if="status" class="mb-4 text-sm text-base-content/80">
                 {{ status }}
             </div>
 
@@ -297,6 +297,7 @@ onMounted(() => {
                     />
 
                     <Checkbox
+                        id="remember"
                         v-model="form.remember"
                         color="primary"
                         size="md"
@@ -308,19 +309,15 @@ onMounted(() => {
                 </div>
 
                 <div class="flex flex-col gap-4 justify-center items-center mt-4">
-                    <Btn
+                    <Route
                         v-if="canResetPassword"
-                        type="button"
-                        color="neutral"
-                        size="md"
-                        variant="link"
+                        route="password.request"
+                        class="inline-flex min-h-6 items-center gap-2 text-sm font-medium text-base-content underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                         tabindex="4"
                     >
-                        <Route route='password.request'>
-                            <i class="fa-solid fa-lock mr-2"></i>
-                            Mot de passe oublié ?
-                        </Route>
-                    </Btn>
+                        <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                        Mot de passe oublié ?
+                    </Route>
                         
                     <Btn
                         type="submit"
@@ -333,18 +330,14 @@ onMounted(() => {
                     </Btn>
 
                     <p>Pas encore de compte ?</p>
-                    <Btn
-                        type="button"
-                        color="primary"
-                        size="sm"
-                        variant="outline"
+                    <a
+                        :href="route('register')"
+                        class="btn btn-sm btn-outline btn-primary inline-flex min-h-6 min-w-6 items-center justify-center gap-2"
                         tabindex="6"
                     >
-                        <Route route='register'>
-                            <i class="fa-solid fa-user-plus mr-2"></i>
-                            Créer un compte
-                        </Route>
-                    </Btn>
+                        <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+                        Créer un compte
+                    </a>
                 </div>
             </form>
         </div>

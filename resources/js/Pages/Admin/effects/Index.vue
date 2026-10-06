@@ -4,7 +4,7 @@
  * (slug, zone, sous-effets). « Ajouter un degré » duplique l’effet courant côté serveur.
  */
 import { computed, ref, watch } from 'vue';
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
 import { usePageForms } from '@/Composables/form/usePageForms';
 import AdminArea from '@/Pages/Layouts/AdminArea.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -19,8 +19,10 @@ import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
 import { AREA_NOTATION_HELP, isValidAreaNotation } from '@/Utils/Entity/areaNotation.js';
 
 const props = defineProps({
-    effects: { type: Array, required: true },
+    effects: { type: Array, default: () => [] },
     groups: { type: Array, default: () => [] },
+    /** Filtre serveur de la sidebar (évite d’embarquer ~15k effets). */
+    sidebarQuery: { type: String, default: '' },
     selected: { type: [Object, String], default: null },
     /** Effets du même groupe (même ordre que les degrés), pour l’édition groupée */
     groupEffects: { type: Array, default: null },
@@ -31,6 +33,44 @@ const props = defineProps({
 });
 
 defineOptions({ layout: AdminArea });
+
+const sidebarSearch = ref(props.sidebarQuery || '');
+let sidebarSearchTimer = null;
+
+watch(
+    () => props.sidebarQuery,
+    (value) => {
+        sidebarSearch.value = value || '';
+    }
+);
+
+/**
+ * Recherche serveur de la sidebar (échantillon limité).
+ *
+ * @param {string} value
+ * @example onSidebarSearchInput('feu')
+ */
+function onSidebarSearchInput(value) {
+    sidebarSearch.value = value;
+    if (sidebarSearchTimer) clearTimeout(sidebarSearchTimer);
+    sidebarSearchTimer = setTimeout(() => {
+        const q = String(value || '').trim();
+        const params = q ? { q } : {};
+        let url = route('admin.effects.index');
+        if (props.selected === 'new') {
+            url = route('admin.effects.create');
+        } else if (props.selected && typeof props.selected === 'object' && props.selected.id) {
+            url = route('admin.effects.show', props.selected.id);
+        }
+        router.get(url, params, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+            only: ['groups', 'sidebarQuery'],
+        });
+    }, 300);
+}
+
 
 const page = usePage();
 const adminUnlocked = ref(Boolean(page.props.auth?.password_recently_confirmed));
@@ -245,16 +285,19 @@ function duplicateEffect() {
     <div v-else class="flex h-full min-h-0 w-full flex-col lg:flex-row">
         <SidebarNav
             title="Effets"
-            description="Une entrée par définition d’effet ; le libellé secondaire indique le nombre de degrés."
+            description="Recherche serveur (50 résultats max) ; le libellé secondaire indique le nombre de degrés."
             :items="groups"
             :get-item-href="(g) => route('admin.effects.show', g.id)"
             :is-item-active="(g) => selected && typeof selected === 'object' && g.id === selected.id"
             :get-item-label="(g) => g.label"
-            :get-item-label-secondary="(g) => (g.effects.length > 1 ? `${g.effects.length} degrés` : (g.effects[0]?.degree != null ? `d${g.effects[0].degree}` : null))"
+            :get-item-label-secondary="(g) => (g.degrees_count > 1 ? `${g.degrees_count} degrés` : (g.degrees_count === 1 ? '1 degré' : null))"
             :get-item-key="(g) => 'effect-' + g.id"
             searchable
-            search-placeholder="Filtrer par nom…"
+            search-placeholder="Rechercher un effet…"
             :search-keys="['label']"
+            :search-query="sidebarSearch"
+            @update:search-query="onSidebarSearchInput"
+            :client-filter="false"
         >
             <template #nav-before>
                 <Link

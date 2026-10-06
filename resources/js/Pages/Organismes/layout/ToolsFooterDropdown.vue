@@ -16,6 +16,7 @@
 import { ref } from 'vue';
 import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import DiceRollerModal from '@/Pages/Organismes/tools/DiceRollerModal.vue';
 
 const props = defineProps({
@@ -54,23 +55,24 @@ const tools = [
             variant="glass"
             :aria-label="label"
         >
-            <template #trigger>
-                <button
-                    type="button"
-                    class="dock-item__trigger"
-                    aria-haspopup="true"
-                    :aria-expanded="undefined"
-                >
-                    <span class="dock-item__icon">
-                        <Icon
-                            :source="icon"
-                            :pack="pack"
-                            alt=""
-                            size="md"
-                        />
-                    </span>
-                    <span class="dock-label">{{ label }}</span>
-                </button>
+            <template #trigger="triggerA11y">
+                <Tooltip :content="tooltip" placement="right">
+                    <button
+                        type="button"
+                        class="dock-item__trigger"
+                        v-bind="triggerA11y"
+                    >
+                        <span class="dock-item__icon">
+                            <Icon
+                                :source="icon"
+                                :pack="pack"
+                                alt=""
+                                size="md"
+                            />
+                        </span>
+                        <span class="dock-label">{{ label }}</span>
+                    </button>
+                </Tooltip>
             </template>
             <template #content>
                 <ul

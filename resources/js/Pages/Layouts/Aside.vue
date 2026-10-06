@@ -85,35 +85,33 @@ const footerItems = [
         </div>
         <div id="footer">
             <Dock size="md" class="px-1 py-2 relative box-glass-t-xs">
-                <Tooltip
-                    v-for="item in footerItems"
-                    :key="item.label"
-                    :content="item.tooltip"
-                    placement="right"
-                >
-                    <DockItem
-                        v-if="item.route || item.href"
-                        :route="item.route"
-                        :href="item.href || ''"
-                        :icon="item.icon"
-                        :pack="item.pack"
-                        :label="item.label"
-                    />
+                <template v-for="item in footerItems" :key="item.label">
                     <ToolsFooterDropdown
-                        v-else-if="item.id === 'tools'"
+                        v-if="item.id === 'tools'"
                         :icon="item.icon"
                         :pack="item.pack"
                         :label="item.label"
                         :tooltip="item.tooltip"
                     />
-                    <DockItem
+                    <li
                         v-else
-                        :route="item.route"
-                        :icon="item.icon"
-                        :pack="item.pack"
-                        :label="item.label"
-                    />
-                </Tooltip>
+                        class="dock-item"
+                    >
+                        <Tooltip
+                            :content="item.tooltip"
+                            placement="right"
+                        >
+                            <DockItem
+                                bare
+                                :route="item.route"
+                                :href="item.href || ''"
+                                :icon="item.icon"
+                                :pack="item.pack"
+                                :label="item.label"
+                            />
+                        </Tooltip>
+                    </li>
+                </template>
             </Dock>
         </div>
     </div>

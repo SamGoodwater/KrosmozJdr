@@ -30,22 +30,24 @@ export function useOverlayA11y(options) {
 
     const triggerAttrs = computed(() => {
         const open = options.openRef.value;
-        const attrs = {
-            id: triggerId.value,
-            tabindex: "0",
-            "aria-expanded": String(open),
-            "aria-controls": panelId.value,
-            "aria-haspopup": interactive ? "dialog" : "true",
-        };
-        if (interactive) {
-            attrs.role = "button";
-        } else {
-            attrs.role = "button";
+        // Tooltip / survol : l’enveloppe ne prend pas le focus (enfant lien/bouton).
+        if (!interactive) {
+            const attrs = {
+                id: triggerId.value,
+            };
             if (open) {
                 attrs["aria-describedby"] = panelId.value;
             }
+            return attrs;
         }
-        return attrs;
+        return {
+            id: triggerId.value,
+            tabindex: "0",
+            role: "button",
+            "aria-expanded": String(open),
+            "aria-controls": panelId.value,
+            "aria-haspopup": "dialog",
+        };
     });
 
     const panelAttrs = computed(() => ({

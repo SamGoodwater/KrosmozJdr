@@ -216,6 +216,15 @@ function handleKeydown(event) {
 }
 
 function handleTriggerKeydown(event) {
+    const target = event.target;
+    // Enfant déjà interactif : ne pas voler Entrée/Espace (évite double action).
+    if (
+        target instanceof Element
+        && target !== event.currentTarget
+        && target.closest('button, a[href], input, select, textarea, [role="button"]')
+    ) {
+        return;
+    }
     a11y.onTriggerKeydown(event, {
         open: () => service.open(),
         close: () => service.close("trigger"),

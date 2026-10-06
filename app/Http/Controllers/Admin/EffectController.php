@@ -13,8 +13,8 @@ use App\Services\Effect\EffectGroupEditorDataService;
 use App\Services\Effect\EffectGroupUpdateService;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
@@ -29,44 +29,41 @@ class EffectController extends Controller
         private readonly EffectGroupUpdateService $effectGroupUpdate,
     ) {}
 
-    public function index(): InertiaResponse
+    public function index(Request $request): InertiaResponse
     {
-        $definitions = Effect::query()
-            ->withCount('degrees')
-            ->with(['degrees' => fn ($q) => $q->orderBy('degree')])
-            ->orderBy('name')
-            ->get();
+        $definitions = $this->sidebarDefinitions(
+            q: trim((string) $request->query('q', '')),
+        );
 
         return Inertia::render('Admin/effects/Index', [
-            'effects' => $definitions->map(fn (Effect $e) => [
-                'id' => $e->id,
-                'name' => $e->name,
-                'slug' => $e->slug,
-                'degrees_count' => $e->degrees_count,
-            ])->values()->all(),
-            'groups' => $this->buildSidebarGroups($definitions),
+            'effects' => [],
+            'groups' => $definitions,
+            'sidebarQuery' => trim((string) $request->query('q', '')),
             'selected' => null,
             'groupEffects' => null,
-            'options' => $this->effectGroupEditorData->formOptions(),
+            // Éditeur fermé : pas de catalogue sous-effets (chargé sur show/create).
+            'options' => [
+                'effect_groups' => [],
+                'sub_effects' => [],
+                'characteristics' => [],
+                'characteristics_object' => [],
+                'monsters' => [],
+                'conditions' => [],
+                'scopes' => [],
+            ],
         ]);
     }
 
-    public function create(): InertiaResponse
+    public function create(Request $request): InertiaResponse
     {
-        $definitions = Effect::query()
-            ->withCount('degrees')
-            ->with(['degrees' => fn ($q) => $q->orderBy('degree')])
-            ->orderBy('name')
-            ->get();
+        $definitions = $this->sidebarDefinitions(
+            q: trim((string) $request->query('q', '')),
+        );
 
         return Inertia::render('Admin/effects/Index', [
-            'effects' => $definitions->map(fn (Effect $e) => [
-                'id' => $e->id,
-                'name' => $e->name,
-                'slug' => $e->slug,
-                'degrees_count' => $e->degrees_count,
-            ])->values()->all(),
-            'groups' => $this->buildSidebarGroups($definitions),
+            'effects' => [],
+            'groups' => $definitions,
+            'sidebarQuery' => trim((string) $request->query('q', '')),
             'selected' => 'new',
             'groupEffects' => null,
             'options' => $this->effectGroupEditorData->formOptions(),
@@ -97,12 +94,6 @@ class EffectController extends Controller
             ->values()
             ->all();
 
-        $definitions = Effect::query()
-            ->withCount('degrees')
-            ->with(['degrees' => fn ($q) => $q->orderBy('degree')])
-            ->orderBy('name')
-            ->get();
-
         $selected = [
             'id' => $effect->id,
             'name' => $effect->name,
@@ -111,14 +102,15 @@ class EffectController extends Controller
             'target_type' => $effect->target_type ?? Effect::TARGET_DIRECT,
         ];
 
+        $definitions = $this->sidebarDefinitions(
+            q: trim((string) request()->query('q', '')),
+            ensureId: $effect->id,
+        );
+
         return Inertia::render('Admin/effects/Index', [
-            'effects' => $definitions->map(fn (Effect $e) => [
-                'id' => $e->id,
-                'name' => $e->name,
-                'slug' => $e->slug,
-                'degrees_count' => $e->degrees_count,
-            ])->values()->all(),
-            'groups' => $this->buildSidebarGroups($definitions),
+            'effects' => [],
+            'groups' => $definitions,
+            'sidebarQuery' => trim((string) request()->query('q', '')),
             'selected' => $selected,
             'groupEffects' => $groupEffects,
             'options' => $this->effectGroupEditorData->formOptions(),
@@ -276,26 +268,55 @@ class EffectController extends Controller
     }
 
     /**
-     * @param  Collection<int, Effect>  $definitions
-     * @return list<array<string, mixed>>
+    /**
+     * Sidebar admin : échantillon limité + recherche (évite ~15k lignes dans le HTML Inertia).
+     *
+     * @return list<array{id:int, label:string, degrees_count:int}>
      */
-    private function buildSidebarGroups($definitions): array
+    private function sidebarDefinitions(string $q = '', ?int $ensureId = null, int $limit = 50): array
     {
-        $groups = [];
-        foreach ($definitions as $effect) {
-            $groups[] = [
-                'id' => $effect->id,
-                'label' => $effect->name ?: ($effect->slug ?: 'Effet #'.$effect->id),
-                'effects' => $effect->degrees->map(fn (EffectDegree $d) => [
-                    'id' => $d->id,
-                    'name' => $effect->name,
-                    'slug' => $d->slug,
-                    'degree' => $d->degree,
-                ])->values()->all(),
-            ];
+        $limit = max(1, min(100, $limit));
+        $q = trim($q);
+
+        $query = Effect::query()
+            ->select(['effects.id', 'effects.name', 'effects.slug'])
+            ->withCount('degrees')
+            ->orderBy('name');
+
+        if ($q !== '') {
+            $like = '%'.$q.'%';
+            $query->where(static function ($builder) use ($like): void {
+                $builder->where('name', 'like', $like)
+                    ->orWhere('slug', 'like', $like);
+            });
         }
 
-        return $groups;
+        $rows = $query
+            ->limit($limit)
+            ->get()
+            ->map(static fn (Effect $effect): array => [
+                'id' => (int) $effect->id,
+                'label' => $effect->name ?: ($effect->slug ?: 'Effet #'.$effect->id),
+                'degrees_count' => (int) $effect->degrees_count,
+            ])
+            ->all();
+
+        if ($ensureId !== null && ! collect($rows)->contains(static fn (array $row): bool => $row['id'] === $ensureId)) {
+            $ensured = Effect::query()
+                ->select(['id', 'name', 'slug'])
+                ->withCount('degrees')
+                ->whereKey($ensureId)
+                ->first();
+            if ($ensured !== null) {
+                array_unshift($rows, [
+                    'id' => (int) $ensured->id,
+                    'label' => $ensured->name ?: ($ensured->slug ?: 'Effet #'.$ensured->id),
+                    'degrees_count' => (int) $ensured->degrees_count,
+                ]);
+            }
+        }
+
+        return $rows;
     }
 
     private function uniqueDegreeSlug(string $preferred): ?string

@@ -41,10 +41,28 @@ const props = defineProps({
         default: 'md',
         validator: (v) => ['sm', 'md'].includes(v),
     },
+    /** Recherche contrôlée (ex. filtre serveur). */
+    searchQuery: { type: String, default: undefined },
+    /** false = ne filtre pas localement (la liste props.items est déjà filtrée). */
+    clientFilter: { type: Boolean, default: true },
 });
 
+const emit = defineEmits(['update:searchQuery']);
+
 const { isDesktop } = useDevice();
-const searchQuery = ref('');
+const internalSearchQuery = ref('');
+const searchQuery = computed({
+    get() {
+        return props.searchQuery !== undefined ? props.searchQuery : internalSearchQuery.value;
+    },
+    set(value) {
+        if (props.searchQuery !== undefined) {
+            emit('update:searchQuery', value);
+        } else {
+            internalSearchQuery.value = value;
+        }
+    },
+});
 
 const hasGroups = computed(() => {
     if (props.groupsMode === false && props.items?.length) return false;
@@ -71,8 +89,9 @@ function itemMatchesSearch(item, query) {
 }
 
 const filteredItemsByGroup = computed(() => {
-    const q = searchQuery.value?.trim() || '';
     const byGroup = props.itemsByGroup || {};
+    if (!props.clientFilter) return byGroup;
+    const q = searchQuery.value?.trim() || '';
     if (!q) return byGroup;
     const result = {};
     for (const groupKey of Object.keys(byGroup)) {
@@ -85,8 +104,9 @@ const filteredItemsByGroup = computed(() => {
 });
 
 const filteredFlatItems = computed(() => {
-    const q = searchQuery.value?.trim() || '';
     const list = props.items || [];
+    if (!props.clientFilter) return list;
+    const q = searchQuery.value?.trim() || '';
     if (!q) return list;
     return list.filter((item) => itemMatchesSearch(item, q));
 });

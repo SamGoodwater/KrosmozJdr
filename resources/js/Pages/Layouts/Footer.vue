@@ -173,54 +173,66 @@ function onSearchClick() {
                 aria-label="Ouvrir la recherche"
                 @click="onSearchClick"
             />
-            <Dropdown
+            <li
                 v-if="isAuthenticated"
-                placement="top"
-                :close-on-content-click="false"
-                block
-                class="min-w-0 max-w-[8rem] flex-1"
+                class="dock-item min-w-0 max-w-[8rem] flex-1"
             >
-                <template #trigger>
-                    <DockItem
-                        icon="fa-user"
-                        pack="solid"
-                        label="Compte"
-                        aria-label="Menu du compte"
-                        class="w-full"
-                    />
-                </template>
-                <template #content>
-                    <AccountMenuPanel />
-                </template>
-            </Dropdown>
-            <Dropdown
+                <Dropdown
+                    placement="top"
+                    :close-on-content-click="false"
+                    block
+                    aria-label="Menu du compte"
+                >
+                    <template #trigger="triggerA11y">
+                        <DockItem
+                            bare
+                            v-bind="triggerA11y"
+                            icon="fa-user"
+                            pack="solid"
+                            label="Compte"
+                            aria-label="Menu du compte"
+                            class="w-full"
+                        />
+                    </template>
+                    <template #content>
+                        <AccountMenuPanel />
+                    </template>
+                </Dropdown>
+            </li>
+            <li
                 v-else
-                placement="top"
-                block
-                class="min-w-0 max-w-[8rem] flex-1"
+                class="dock-item min-w-0 max-w-[8rem] flex-1"
             >
-                <template #trigger>
-                    <DockItem
-                        icon="fa-user"
-                        pack="solid"
-                        label="Compte"
-                        aria-label="Connexion ou inscription"
-                        class="w-full"
-                    />
-                </template>
-                <template #content>
-                    <GlassMenuPanel class="min-w-56">
-                        <div class="flex flex-col gap-0.5 p-1">
-                            <GlassMenuItem route="login" icon="fa-right-to-bracket" icon-alt="" hover3d>
-                                Se connecter
-                            </GlassMenuItem>
-                            <GlassMenuItem route="register" icon="fa-user-plus" icon-alt="" hover3d>
-                                S'inscrire
-                            </GlassMenuItem>
-                        </div>
-                    </GlassMenuPanel>
-                </template>
-            </Dropdown>
+                <Dropdown
+                    placement="top"
+                    block
+                    aria-label="Connexion ou inscription"
+                >
+                    <template #trigger="triggerA11y">
+                        <DockItem
+                            bare
+                            v-bind="triggerA11y"
+                            icon="fa-user"
+                            pack="solid"
+                            label="Compte"
+                            aria-label="Connexion ou inscription"
+                            class="w-full"
+                        />
+                    </template>
+                    <template #content>
+                        <GlassMenuPanel class="min-w-56">
+                            <div class="flex flex-col gap-0.5 p-1">
+                                <GlassMenuItem route="login" icon="fa-right-to-bracket" icon-alt="" hover3d>
+                                    Se connecter
+                                </GlassMenuItem>
+                                <GlassMenuItem route="register" icon="fa-user-plus" icon-alt="" hover3d>
+                                    S'inscrire
+                                </GlassMenuItem>
+                            </div>
+                        </GlassMenuPanel>
+                    </template>
+                </Dropdown>
+            </li>
         </Dock>
     </div>
 </template>

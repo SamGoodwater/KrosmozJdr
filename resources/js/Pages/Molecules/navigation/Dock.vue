@@ -111,6 +111,8 @@ const attrs = computed(() => getCommonAttrs(props));
     :deep(.dock-item__trigger) {
         display: flex;
         width: 100%;
+        min-width: 24px;
+        min-height: 24px;
         flex-direction: column;
         align-items: center;
         justify-content: center;

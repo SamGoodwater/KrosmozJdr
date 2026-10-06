@@ -18,32 +18,32 @@
  * @note Ce composant ne doit être utilisé que dans le header principal.
  * @note Respecte la philosophie Atomic Design (niveau molecule, composition d'atoms).
  */
-import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 </script>
 
 <template>
-    <div class="flex flex-col text-right">
-        <Route route="login" class="pt-1 px-4" target="_self">
-            <Tooltip content="S'identifier à l'aide de son compte" placement="left">
-                <Btn
-                    color="neutral"
-                    size="xs"
-                    content="Se connecter"
-                />
-            </Tooltip>
-        </Route>
+    <div class="flex flex-col items-end gap-2 text-right">
+        <Tooltip content="S'identifier à l'aide de son compte" placement="left">
+            <Route
+                route="login"
+                class="btn btn-sm btn-ghost inline-flex min-h-6 min-w-[5.5rem] items-center justify-end px-3"
+                target="_self"
+                aria-label="Se connecter"
+            >
+                Se connecter
+            </Route>
+        </Tooltip>
 
-        <Route route="register" class="pb-1 px-4" target="_self">
-            <Tooltip content="Créer un compte" placement="left">
-                <Btn
-                    color="neutral"
-                    variant="link"
-                    size="xs"
-                    content="S'inscrire"
-                />
-            </Tooltip>
-        </Route>
+        <Tooltip content="Créer un compte" placement="left">
+            <Route
+                route="register"
+                class="btn btn-sm btn-link inline-flex min-h-6 min-w-[5.5rem] items-center justify-end px-3"
+                target="_self"
+                aria-label="S'inscrire"
+            >
+                S'inscrire
+            </Route>
+        </Tooltip>
     </div>
 </template>
