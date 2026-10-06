@@ -1101,6 +1101,13 @@
     "file": "entity/spell/SpellEffectChipTooltipContent.vue"
   },
   {
+    "name": "SpellDegreePropertyField",
+    "description": "Habillage d’une propriété de degré, aligné sur les champs généraux du sort.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellDegreePropertyField.vue"
+  },
+  {
     "name": "AreaDisplay",
     "description": "Zone d’effet : icône de forme + libellé court, infobulle avec notation complète et schéma.",
     "props": [],
@@ -2658,6 +2665,13 @@
     "props": [],
     "slots": [],
     "file": "data-input/CharacteristicFormulaField.vue"
+  },
+  {
+    "name": "AreaNotationField",
+    "description": "Champ de zone avec aperçu, validation et rappel de la notation Krosmoz.",
+    "props": [],
+    "slots": [],
+    "file": "data-input/AreaNotationField.vue"
   },
   {
     "name": "RichTextReadonlyView",

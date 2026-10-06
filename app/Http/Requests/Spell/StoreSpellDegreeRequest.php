@@ -42,15 +42,8 @@ class StoreSpellDegreeRequest extends FormRequest
             'global_cooldown' => 'nullable|integer|min:0|max:255',
             'max_stack' => 'nullable|integer|min:0|max:255',
             'duration' => 'nullable|string|max:255',
-            'allows_reaction' => 'nullable|boolean',
             'casting_time' => 'nullable|string|max:255',
             'ritual_available' => 'nullable|boolean',
-            'resolution_mode' => 'nullable|string|max:32',
-            'attack_characteristic_key' => 'nullable|string|max:64',
-            'save_characteristic_key' => 'nullable|string|max:64',
-            'save_dc_formula' => 'nullable|string|max:255',
-            'save_success_note' => 'nullable|string|max:65535',
-            'auto_success_if_willing_target' => 'nullable|boolean',
         ], $this->effectsRules());
     }
 

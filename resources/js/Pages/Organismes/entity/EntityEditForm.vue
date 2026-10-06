@@ -663,7 +663,11 @@ const initializeForm = () => {
                 return;
             }
             // Utiliser la valeur de l'entité si fournie, sinon valeur par défaut
-            const fromEntity = resolveFormFieldValue(props.entity, key);
+            const sourceKey = fieldsConfig.value[key]?.sourceKey || key;
+            const fromSource = resolveFormFieldValue(props.entity, sourceKey);
+            const fromEntity = fromSource !== undefined
+                ? fromSource
+                : resolveFormFieldValue(props.entity, key);
             formData[key] = fromEntity !== undefined
                 ? fromEntity
                 : getDefaultValue(fieldsConfig.value[key].type);
@@ -676,6 +680,14 @@ const initializeForm = () => {
         const modelFormData = props.entity.toFormData();
         const formData = {};
         resolveFormFieldKeys().forEach(key => {
+            const sourceKey = fieldsConfig.value[key]?.sourceKey;
+            if (sourceKey) {
+                const fromSource = resolveFormFieldValue(props.entity, sourceKey);
+                if (fromSource !== undefined) {
+                    formData[key] = fromSource;
+                    return;
+                }
+            }
             const fromModel = resolveFormFieldValue(modelFormData, key);
             if (fromModel !== undefined) {
                 formData[key] = fromModel;
@@ -693,7 +705,11 @@ const initializeForm = () => {
     // Pour l'édition multiple, l'entité peut être un objet simple avec les valeurs communes
     const formData = {};
     resolveFormFieldKeys().forEach(key => {
-        const fromEntity = resolveFormFieldValue(props.entity, key);
+        const sourceKey = fieldsConfig.value[key]?.sourceKey || key;
+        const fromSource = resolveFormFieldValue(props.entity, sourceKey);
+        const fromEntity = fromSource !== undefined
+            ? fromSource
+            : resolveFormFieldValue(props.entity, key);
         formData[key] = fromEntity !== undefined
             ? fromEntity
             : getDefaultValue(fieldsConfig.value[key].type);
@@ -1072,6 +1088,7 @@ const getFieldWrapperClass = (fieldKey) => ([
     fieldKey === 'name' ? 'form-field--wide' : '',
     fieldKey === 'description' ? 'form-field--full' : '',
     fieldKey === 'effect' ? 'form-field--full' : '',
+    fieldKey === 'area' ? 'form-field--full' : '',
     ['category', 'state'].includes(fieldKey) ? 'form-field--meta-pair' : '',
     fieldKey === 'element' ? 'form-field--full' : '',
 ].filter(Boolean));

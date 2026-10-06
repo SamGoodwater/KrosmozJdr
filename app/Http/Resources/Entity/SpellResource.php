@@ -35,6 +35,7 @@ class SpellResource extends JsonResource
             'effect_usages_summary' => $this->when($effectUsages !== null, $effectUsages['summary'] ?? ''),
             'effect_usages_chips' => $this->when($effectUsages !== null, $effectUsages['chips'] ?? []),
             'area' => $this->area,
+            'default_area' => $this->resource->getRawOriginal('area'),
             'level' => $this->level,
             'po' => $this->po_display,
             'po_min' => $this->po_min,

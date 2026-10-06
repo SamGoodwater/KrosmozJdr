@@ -1486,6 +1486,7 @@ erDiagram
     level : varchar(255)
     po_min : varchar(64)
     po_max : varchar(64)
+    area : varchar(64)
     po_editable : tinyint(1)
     pa : varchar(255)
     casting_time : varchar(255)

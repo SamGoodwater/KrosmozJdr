@@ -62,12 +62,13 @@ final class SpellDegreeResolver
             if ($key === 'area') {
                 $value = $degree?->area;
                 if ($value === null || $value === '') {
-                    $value = null;
+                    $storedArea = $spell->getRawOriginal('area');
+                    $value = is_string($storedArea) && $storedArea !== '' ? $storedArea : null;
                 }
                 $out[$key] = $value;
                 $out[$key.'_source'] = $degree !== null && $degree->area !== null && $degree->area !== ''
                     ? 'degree'
-                    : 'none';
+                    : ($value !== null ? 'spell' : 'none');
 
                 continue;
             }

@@ -40,6 +40,8 @@ describe('Spell global metadata', () => {
             pa: '3',
             po_min: '1',
             po_max: '4',
+            area: 'point',
+            default_area: 'point',
             sight_line: false,
             spell_degrees: {
                 default_degree_id: 12,
@@ -50,6 +52,7 @@ describe('Spell global metadata', () => {
                             pa: '5',
                             po_min: '2',
                             po_max: '8',
+                            area: 'circle-0-2',
                             sight_line: true,
                             global_cooldown: 3,
                         },
@@ -61,6 +64,8 @@ describe('Spell global metadata', () => {
         expect(spell.pa).toBe(5);
         expect(spell.poMin).toBe('2');
         expect(spell.poMax).toBe('8');
+        expect(spell.area).toBe('circle-0-2');
+        expect(spell.defaultArea).toBe('point');
         expect(spell.sightLine).toBe(true);
         expect(spell.globalCooldown).toBe(3);
     });

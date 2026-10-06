@@ -11,6 +11,7 @@ import FileField from '@/Pages/Molecules/data-input/FileField.vue';
 import ToggleCore from '@/Pages/Atoms/data-input/ToggleCore.vue';
 import SpellElementPrimariesField from '@/Pages/Molecules/entity/spell/SpellElementPrimariesField.vue';
 import SpellTypesMultiField from '@/Pages/Molecules/entity/spell/SpellTypesMultiField.vue';
+import AreaNotationField from '@/Pages/Molecules/data-input/AreaNotationField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import RichTextEditorField from '@/Pages/Molecules/data-input/RichTextEditorField.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
@@ -492,6 +493,14 @@ const resolvedSelectOptions = computed(() => {
             @update:model-value="updatePoRange"
         />
 
+        <AreaNotationField
+            v-else-if="getFieldRenderType(field.key, field.config) === 'areaNotation'"
+            v-model="form[field.key]"
+            :label="getFieldLabel(field.key, field.config)"
+            :helper="getFieldHelper(field.key, field.config)"
+            @update:model-value="() => markDirty(field.key)"
+        />
+
         <!-- InputField -->
         <div
             v-else-if="
@@ -508,6 +517,7 @@ const resolvedSelectOptions = computed(() => {
                     'elementPrimaries',
                     'spellTypesMulti',
                     'poRange',
+                    'areaNotation',
                 ].includes(getFieldRenderType(field.key, field.config))
             "
             class="w-full min-w-0"

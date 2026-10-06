@@ -7,6 +7,7 @@ Le système d'effets décrit les effets de sorts et d'objets : degrés, effets (
 - Modèles : `SpellDegree`, `SpellDegreeEffect` (catalogue technique `SubEffect`).
 - Un sort a **une** progression de degrés. Vocabulaire UI : **effet** (ex-sous-effet).
 - Propriétés de lancement (PA, PO, LdV, zone…) : défauts sur `Spell` ; surcharge par degré.
+  Le ciblage, le mode de résolution et l’utilisation en réaction restent globaux au sort.
 - `inherits_effects` : un nouveau degré reprend les effets du précédent sans duplication.
 - Services : `SpellDegreeResolver`, `SpellDegreeService`, `SpellDegreesSerializer`, `SpellDegreeLegacyMigrator`.
 - Commande : `php artisan spells:migrate-degrees [--dry-run] [--spell=]`.
@@ -14,6 +15,8 @@ Le système d'effets décrit les effets de sorts et d'objets : degrés, effets (
 - UI : `SpellDegreesEditor` (édition), `SpellEffectsJournal` (onglets niveau à l’affichage).
 - L’éditeur présente un champ de portée unique (`4` ou `2-8`) tout en conservant `po_min` / `po_max`
   en stockage. Chaque degré expose les contraintes de lancement, puis autant d’effets que nécessaire.
+- La zone utilise partout le même champ assisté : aperçu graphique, validation et rappel des notations
+  (`point`, `line-1xL`, `circle-a-b`, etc.).
 - Les lignes d’effet sont spécialisées : élément pour dégâts/soins/vol de vie, catalogue complet des
   caractéristiques pour bonus/malus/vol, recherche de créature pour invocation et recherche d’état.
   La durée (`duration_formula`) appartient à chaque effet.

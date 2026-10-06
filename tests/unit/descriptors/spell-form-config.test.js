@@ -11,7 +11,18 @@ describe('sections du formulaire de sort', () => {
             (section) => section.id === 'fallback_properties',
         );
 
-        expect(global.fieldKeys).toEqual(['category', 'state', 'spellTypes', 'is_magic']);
+        expect(global.fieldKeys).toEqual(
+            expect.arrayContaining([
+                'category',
+                'state',
+                'spellTypes',
+                'is_magic',
+                'target_type',
+                'area',
+                'allows_reaction',
+                'resolution_mode',
+            ]),
+        );
         expect(global.fieldKeys).not.toContain('pa');
 
         expect(fallback.collapsedByDefault).toBe(true);
@@ -19,6 +30,8 @@ describe('sections du formulaire de sort', () => {
         expect(fallback.fieldKeys).toEqual(
             expect.arrayContaining(['pa', 'po_min', 'element', 'effect', 'cast_per_turn']),
         );
+        expect(fallback.fieldKeys).not.toContain('resolution_mode');
+        expect(fallback.fieldKeys).not.toContain('allows_reaction');
     });
 
     it('conserve la séparation lors de la création', () => {

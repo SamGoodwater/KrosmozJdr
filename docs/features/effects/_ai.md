@@ -12,6 +12,8 @@
   - UI : `SpellDegreesEditor.vue` (édition), `SpellEffectsJournal.vue` (affichage onglets niveau)
   - Portée UI compacte `x` / `x-y` (`po_min` + `po_max` en stockage) ; propriétés effectives du
     degré actif dans Full, premier degré dans Minimal/Line/table
+  - `target_type`, résolution et `allows_reaction` restent globaux sur `Spell`; `area` existe aussi
+    sur `Spell` comme repli sans degré. Champ zone partagé avec aperçu + validation de notation.
   - Effets spécialisés : élément, caractéristique recherchable, créature (`params.creature_id`),
     état et `duration_formula`; `monster_id` reste compatible legacy
   - Vocabulaire UI : **effet** (= ancien sous-effet) ; catalogue technique `SubEffect` conservé

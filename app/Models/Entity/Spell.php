@@ -32,6 +32,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string $level
  * @property string|null $po_min Portée min (valeur ou formule, ex. "0", "[level]")
  * @property string|null $po_max Portée max (valeur ou formule, ex. "1", "6")
+ * @property string|null $area Zone par défaut si le sort ne possède aucun degré
  * @property bool $po_editable
  * @property string $pa
  * @property string $cast_per_turn
@@ -235,6 +236,7 @@ class Spell extends Model implements HasMedia
         'level',
         'po_min',
         'po_max',
+        'area',
         'po_editable',
         'pa',
         'casting_time',
@@ -438,7 +440,15 @@ class Spell extends Model implements HasMedia
     public function getAreaAttribute(): ?string
     {
         if ($this->relationLoaded('degrees') && $this->degrees->isNotEmpty()) {
-            return $this->degrees->sortBy('position')->first()?->area;
+            $degreeArea = $this->degrees->sortBy('position')->first()?->area;
+            if ($degreeArea !== null && $degreeArea !== '') {
+                return $degreeArea;
+            }
+        }
+
+        $storedArea = $this->attributes['area'] ?? null;
+        if (is_string($storedArea) && trim($storedArea) !== '') {
+            return $storedArea;
         }
 
         if ($this->relationLoaded('effects')) {
@@ -455,7 +465,7 @@ class Spell extends Model implements HasMedia
                 return $this->degrees()->orderBy('position')->value('area');
             }
 
-            return null;
+            return is_string($storedArea) ? $storedArea : null;
         }
 
         $nativeArea = $this->degrees()->orderBy('position')->value('area');
@@ -466,7 +476,7 @@ class Spell extends Model implements HasMedia
         $effect = $this->effects()->with('degrees')->first();
         $legacyDegrees = $effect?->degrees;
         if ($legacyDegrees === null || $legacyDegrees->isEmpty()) {
-            return null;
+            return is_string($storedArea) ? $storedArea : null;
         }
 
         return $legacyDegrees->sortBy('degree')->first()?->area;

@@ -62,7 +62,9 @@ L’état de la fiche classe (`draft` / `playable`) reste celui du JSON `entitie
 
 Les fiches de sort stockent indépendamment des effets détaillés les contraintes globales de lancement :
 `cast_in_line`, `cast_in_diagonal`, `target_type` (`direct`, `trap`, `glyph`), `max_stack` et
-`global_cooldown`. Les deux limites numériques vont de 0 à 10 ; `max_stack = 0` signifie « non limité ».
+`global_cooldown`. Le ciblage, la résolution et l’utilisation en réaction sont globaux et ne varient pas
+selon le degré. `area` conserve la zone d’un sort descriptif sans degré. Les deux limites numériques vont
+de 0 à 10 ; `max_stack = 0` signifie « non limité ».
 Lors d'un import DofusDB, ces valeurs viennent du premier niveau du sort et `target_type` est déduit de ses
 triggers. Cette couche descriptive ne modifie pas l'exécution ni la résolution des effets.
 
@@ -70,9 +72,10 @@ triggers. Cette couche descriptive ne modifie pas l'exécution ni la résolution
 
 1. Renseigner les informations propres au sort : nom, description, image, catégorie, état, types et
    nature Physique/Wakfu.
-2. Les propriétés globales non redondantes restent visibles dans **Propriétés du sort**.
+2. Les propriétés globales non redondantes restent visibles dans **Propriétés du sort** : ciblage,
+   résolution, réaction et zone par défaut, avec l’aide de notation.
 3. Pour un sort uniquement descriptif, ouvrir **Propriétés sans degrés ni effets** et définir ses PA,
-   sa portée (`4` ou `2-8`), ses contraintes de lancer et sa résolution. Ce panneau reste fermé dès
+   sa portée (`4` ou `2-8`) et ses contraintes de lancer. Ce panneau reste fermé dès
    lors que la progression structurée est utilisée.
 4. Pour un sort qui évolue, ajouter un premier degré dans **Degrés & effets**. Les propriétés du
    degré remplacent alors les valeurs par défaut à l’affichage.

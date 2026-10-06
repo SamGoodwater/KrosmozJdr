@@ -112,6 +112,11 @@ export class Spell extends BaseModel {
         return this._effectiveDegreeProperty('area') || null;
     }
 
+    /** Zone stockée directement sur le sort, sans surcharge du degré actif. */
+    get defaultArea() {
+        return this._data.default_area ?? this._data.area ?? null;
+    }
+
     get level() {
         const v = this._data.level;
         if (v === null || v === undefined || v === '') {

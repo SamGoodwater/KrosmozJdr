@@ -6,10 +6,11 @@ import { computed, ref, toRaw, watch } from 'vue';
 import axios from 'axios';
 import { getAreaHumanReadable } from '@/Utils/Entity/Areas';
 import { formatPoRange, parsePoRange } from '@/Utils/Entity/poRange.js';
-import { SPELL_RESOLUTION_MODE_OPTIONS, SPELL_TARGET_TYPE_OPTIONS } from '@/Entities/spell/spell-descriptors';
-import { resolveSpellAttackSaveCharacteristicOptions } from '@/Entities/spell/spell-resolution-characteristic-options';
+import { SPELL_TARGET_TYPE_OPTIONS } from '@/Entities/spell/spell-descriptors';
 import SpellDegreeEffectRow from '@/Pages/Organismes/entity/SpellDegreeEffectRow.vue';
 import SpellElementPrimariesField from '@/Pages/Molecules/entity/spell/SpellElementPrimariesField.vue';
+import SpellDegreePropertyField from '@/Pages/Molecules/entity/spell/SpellDegreePropertyField.vue';
+import AreaNotationField from '@/Pages/Molecules/data-input/AreaNotationField.vue';
 
 const props = defineProps({
     spellId: { type: Number, required: true },
@@ -58,8 +59,6 @@ const degrees = computed(() => degreesPayload.value.degrees || []);
 const active = computed(() => degrees.value[activeIndex.value] || null);
 const subEffectOptions = computed(() => props.effectFormOptions?.sub_effects ?? []);
 const targetTypeOptions = SPELL_TARGET_TYPE_OPTIONS();
-const resolutionModeOptions = SPELL_RESOLUTION_MODE_OPTIONS();
-const resolutionCharacteristicOptions = computed(() => resolveSpellAttackSaveCharacteristicOptions());
 
 function markDirty() {
     dirty.value = true;
@@ -348,17 +347,15 @@ defineExpose({ flushSave, isDirty: dirty, reloadDegrees });
 
                 <div v-if="propsOpen" class="border-t border-base-300 pt-3 space-y-3">
                     <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-                        <div>
-                            <label class="label text-xs py-0">PA</label>
+                        <SpellDegreePropertyField characteristic-key="pa" label="PA" icon="fa-solid fa-bolt">
                             <input
                                 v-model="localPropsModel(active).pa"
                                 type="text"
                                 class="input input-bordered input-sm w-full"
                                 @input="markDirty"
                             />
-                        </div>
-                        <div>
-                            <label class="label text-xs py-0">Portée</label>
+                        </SpellDegreePropertyField>
+                        <SpellDegreePropertyField characteristic-key="po_min" label="Portée" icon="fa-solid fa-bullseye">
                             <input
                                 :value="formatPoRange(localPropsModel(active).po_min, localPropsModel(active).po_max)"
                                 type="text"
@@ -367,28 +364,32 @@ defineExpose({ flushSave, isDirty: dirty, reloadDegrees });
                                 data-cy="spell-degree-po-range"
                                 @input="updatePoRange($event.target.value)"
                             />
-                        </div>
-                        <div>
-                            <label class="label text-xs py-0">Zone</label>
-                            <input
+                        </SpellDegreePropertyField>
+                        <SpellDegreePropertyField
+                            class="sm:col-span-2 lg:col-span-3"
+                            characteristic-key="area"
+                            label="Zone"
+                            icon="fa-solid fa-draw-polygon"
+                        >
+                            <AreaNotationField
                                 v-model="localPropsModel(active).area"
-                                type="text"
-                                class="input input-bordered input-sm w-full"
-                                placeholder="point, circle-1-2, line-1x3…"
-                                @input="markDirty"
+                                label=""
+                                :name="`degree-area-${active.id}`"
+                                @update:model-value="markDirty"
                             />
-                        </div>
-                        <SpellElementPrimariesField
-                            v-model="localPropsModel(active).element"
-                            label="Élément(s)"
-                            size="sm"
-                            @update:model-value="markDirty"
-                        />
+                        </SpellDegreePropertyField>
+                        <SpellDegreePropertyField characteristic-key="element" label="Élément(s)" icon="fa-solid fa-fire">
+                            <SpellElementPrimariesField
+                                v-model="localPropsModel(active).element"
+                                label=""
+                                size="sm"
+                                @update:model-value="markDirty"
+                            />
+                        </SpellDegreePropertyField>
                     </div>
 
                     <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-                        <div>
-                            <label class="label text-xs py-0">Temps de relance</label>
+                        <SpellDegreePropertyField characteristic-key="global_cooldown" label="Temps de relance" icon="fa-solid fa-rotate">
                             <input
                                 v-model.number="localPropsModel(active).global_cooldown"
                                 type="number"
@@ -397,36 +398,32 @@ defineExpose({ flushSave, isDirty: dirty, reloadDegrees });
                                 class="input input-bordered input-sm w-full"
                                 @input="markDirty"
                             />
-                        </div>
-                        <div>
-                            <label class="label text-xs py-0">Lancers / tour</label>
+                        </SpellDegreePropertyField>
+                        <SpellDegreePropertyField characteristic-key="cast_per_turn" label="Lancers / tour" icon="fa-solid fa-repeat">
                             <input
                                 v-model="localPropsModel(active).cast_per_turn"
                                 type="text"
                                 class="input input-bordered input-sm w-full"
                                 @input="markDirty"
                             />
-                        </div>
-                        <div>
-                            <label class="label text-xs py-0">Lancers / cible</label>
+                        </SpellDegreePropertyField>
+                        <SpellDegreePropertyField characteristic-key="cast_per_target" label="Lancers / cible" icon="fa-solid fa-crosshairs">
                             <input
                                 v-model="localPropsModel(active).cast_per_target"
                                 type="text"
                                 class="input input-bordered input-sm w-full"
                                 @input="markDirty"
                             />
-                        </div>
-                        <div>
-                            <label class="label text-xs py-0">Délai entre deux lancers</label>
+                        </SpellDegreePropertyField>
+                        <SpellDegreePropertyField characteristic-key="number_between_two_cast" label="Délai entre deux lancers" icon="fa-solid fa-hourglass-half">
                             <input
                                 v-model="localPropsModel(active).number_between_two_cast"
                                 type="text"
                                 class="input input-bordered input-sm w-full"
                                 @input="markDirty"
                             />
-                        </div>
-                        <div>
-                            <label class="label text-xs py-0">Temps d’incantation</label>
+                        </SpellDegreePropertyField>
+                        <SpellDegreePropertyField characteristic-key="casting_time" label="Temps d’incantation" icon="fa-solid fa-clock">
                             <input
                                 v-model="localPropsModel(active).casting_time"
                                 type="text"
@@ -434,9 +431,8 @@ defineExpose({ flushSave, isDirty: dirty, reloadDegrees });
                                 placeholder="Instantané, 1 action…"
                                 @input="markDirty"
                             />
-                        </div>
-                        <div>
-                            <label class="label text-xs py-0">Cumul maximal</label>
+                        </SpellDegreePropertyField>
+                        <SpellDegreePropertyField characteristic-key="max_stack" label="Cumul maximal" icon="fa-solid fa-layer-group">
                             <input
                                 v-model.number="localPropsModel(active).max_stack"
                                 type="number"
@@ -445,9 +441,8 @@ defineExpose({ flushSave, isDirty: dirty, reloadDegrees });
                                 class="input input-bordered input-sm w-full"
                                 @input="markDirty"
                             />
-                        </div>
-                        <div>
-                            <label class="label text-xs py-0">Type de ciblage</label>
+                        </SpellDegreePropertyField>
+                        <SpellDegreePropertyField characteristic-key="target_type" label="Type de ciblage" icon="fa-solid fa-location-crosshairs">
                             <select
                                 v-model="localPropsModel(active).target_type"
                                 class="select select-bordered select-sm w-full"
@@ -457,84 +452,33 @@ defineExpose({ flushSave, isDirty: dirty, reloadDegrees });
                                     {{ option.label }}
                                 </option>
                             </select>
-                        </div>
-                        <div>
-                            <label class="label text-xs py-0">Mode de résolution</label>
-                            <select
-                                v-model="localPropsModel(active).resolution_mode"
-                                class="select select-bordered select-sm w-full"
-                                @change="markDirty"
-                            >
-                                <option v-for="option in resolutionModeOptions" :key="option.value" :value="option.value">
-                                    {{ option.label }}
-                                </option>
-                            </select>
-                        </div>
+                        </SpellDegreePropertyField>
                     </div>
 
-                    <div
-                        v-if="['attack_roll', 'saving_throw'].includes(localPropsModel(active).resolution_mode)"
-                        class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4"
-                    >
-                        <div v-if="localPropsModel(active).resolution_mode === 'attack_roll'">
-                            <label class="label text-xs py-0">Caractéristique d’attaque</label>
-                            <select
-                                v-model="localPropsModel(active).attack_characteristic_key"
-                                class="select select-bordered select-sm w-full"
-                                @change="markDirty"
-                            >
-                                <option v-for="option in resolutionCharacteristicOptions" :key="option.value" :value="option.value">
-                                    {{ option.label }}
-                                </option>
-                            </select>
-                        </div>
-                        <template v-else>
-                            <div>
-                                <label class="label text-xs py-0">Caractéristique de sauvegarde</label>
-                                <select
-                                    v-model="localPropsModel(active).save_characteristic_key"
-                                    class="select select-bordered select-sm w-full"
-                                    @change="markDirty"
-                                >
-                                    <option v-for="option in resolutionCharacteristicOptions" :key="option.value" :value="option.value">
-                                        {{ option.label }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="label text-xs py-0">Formule du DD</label>
-                                <input
-                                    v-model="localPropsModel(active).save_dc_formula"
-                                    type="text"
-                                    class="input input-bordered input-sm w-full"
-                                    @input="markDirty"
-                                />
-                            </div>
-                        </template>
-                    </div>
-
-                    <div class="flex flex-wrap gap-x-5 gap-y-2 rounded-box bg-base-200/40 px-3 py-2">
-                        <label
+                    <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                        <SpellDegreePropertyField
                             v-for="toggle in [
                                 ['po_editable', 'Portée modifiable'],
                                 ['sight_line', 'Ligne de vue'],
                                 ['cast_in_line', 'Lancer en ligne'],
                                 ['cast_in_diagonal', 'Lancer en diagonale'],
-                                ['allows_reaction', 'Utilisable en réaction'],
                                 ['ritual_available', 'Rituel disponible'],
-                                ['auto_success_if_willing_target', 'Réussite auto si cible consentante'],
                             ]"
                             :key="toggle[0]"
-                            class="flex items-center gap-2 text-xs cursor-pointer"
+                            :characteristic-key="toggle[0]"
+                            :label="toggle[1]"
+                            icon="fa-solid fa-toggle-on"
                         >
-                            <input
-                                v-model="localPropsModel(active)[toggle[0]]"
-                                type="checkbox"
-                                class="checkbox checkbox-sm"
-                                @change="markDirty"
-                            />
-                            {{ toggle[1] }}
-                        </label>
+                            <label class="flex cursor-pointer items-center gap-2 text-xs">
+                                <input
+                                    v-model="localPropsModel(active)[toggle[0]]"
+                                    type="checkbox"
+                                    class="checkbox checkbox-sm"
+                                    @change="markDirty"
+                                />
+                                <span>Actif</span>
+                            </label>
+                        </SpellDegreePropertyField>
                     </div>
                 </div>
 

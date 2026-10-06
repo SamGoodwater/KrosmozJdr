@@ -151,6 +151,10 @@ describe('SpellDegreesEditor', () => {
         expect(wrapper.text()).toContain('Lancers / tour');
         expect(wrapper.text()).toContain('Lancers / cible');
         expect(wrapper.text()).toContain('Temps d’incantation');
+        expect(wrapper.text()).not.toContain('Mode de résolution');
+        expect(wrapper.text()).not.toContain('Utilisable en réaction');
+        expect(wrapper.text()).toContain('Notation');
+        expect(wrapper.findAll('.rounded-lg').length).toBeGreaterThan(0);
     });
 
     it('préserve l’héritage des effets du degré précédent', async () => {

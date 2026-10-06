@@ -83,15 +83,8 @@ class SpellDegree extends Model
         'global_cooldown',
         'max_stack',
         'duration',
-        'allows_reaction',
         'casting_time',
         'ritual_available',
-        'resolution_mode',
-        'attack_characteristic_key',
-        'save_characteristic_key',
-        'save_dc_formula',
-        'save_success_note',
-        'auto_success_if_willing_target',
     ];
 
     protected $fillable = [

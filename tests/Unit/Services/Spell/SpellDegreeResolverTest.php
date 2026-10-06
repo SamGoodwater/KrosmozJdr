@@ -34,7 +34,10 @@ final class SpellDegreeResolverTest extends TestCase
             'pa' => '4',
             'po_min' => '2',
             'po_max' => '8',
+            'area' => 'circle-0-2',
             'sight_line' => false,
+            'allows_reaction' => true,
+            'resolution_mode' => 'saving_throw',
         ]);
         $resolver = app(SpellDegreeResolver::class);
 
@@ -42,7 +45,10 @@ final class SpellDegreeResolverTest extends TestCase
 
         $this->assertSame('4', $props['pa']);
         $this->assertSame('spell', $props['pa_source']);
-        $this->assertNull($props['area']);
+        $this->assertSame('circle-0-2', $props['area']);
+        $this->assertSame('spell', $props['area_source']);
+        $this->assertArrayNotHasKey('allows_reaction', $props);
+        $this->assertArrayNotHasKey('resolution_mode', $props);
         $this->assertNull($resolver->selectDegree($spell));
     }
 

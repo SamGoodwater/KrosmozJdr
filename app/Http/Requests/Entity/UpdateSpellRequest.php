@@ -2,12 +2,13 @@
 
 namespace App\Http\Requests\Entity;
 
-use App\Http\Requests\Concerns\RestrictsAccessLevelMutation;
 use App\Enums\EntityState;
 use App\Http\Requests\Concerns\GuardsPlayableState;
 use App\Http\Requests\Concerns\HasCharacteristicValidation;
+use App\Http\Requests\Concerns\RestrictsAccessLevelMutation;
 use App\Models\Entity\Spell;
 use App\Policies\Entity\SpellPolicy;
+use App\Rules\ValidAreaNotation;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -20,10 +21,9 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class UpdateSpellRequest extends FormRequest
 {
-    use RestrictsAccessLevelMutation;
-
     use GuardsPlayableState;
     use HasCharacteristicValidation;
+    use RestrictsAccessLevelMutation;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -49,6 +49,7 @@ class UpdateSpellRequest extends FormRequest
             'level' => ['nullable', 'string', 'max:255'],
             'po_min' => ['nullable', 'string', 'max:64'],
             'po_max' => ['nullable', 'string', 'max:64'],
+            'area' => ['nullable', 'string', 'max:64', new ValidAreaNotation],
             'po_editable' => ['nullable', 'boolean'],
             'pa' => ['nullable', 'string', 'max:255'],
             'casting_time' => ['nullable', 'string', 'max:255'],
