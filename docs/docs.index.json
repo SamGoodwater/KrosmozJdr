@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Sur la fiche d’édition d’un sort, on ne voit plus les doublons (PA, portée, lancers…) dans le formulaire principal : ils restent dans un panneau « Propriétés par défaut » pour les sorts sans degré. Chaque degré saisit la portée en une seule case (`4` ou `1-6`), regroupe lancement / fréquence / résolution, et adapte les champs d’effet à l’action (élément, caractéristique, invocation, état…). Les porteurs (monstres, PNJ, classes) et le menu Options / DofusDB sont de retour. Changer d’onglet avec des modifications non sauvées demande confirmation."
+    "description": "L’édition d’un sort ne passe plus par plusieurs « définitions d’effet ». On ajoute des **degrés** (niveaux) : chacun porte les propriétés de lancement (PA, portée, ligne de vue, zone, relance, limites et incantation) et des **effets** (frapper, soigner…). Un degré peut reprendre les effets du précédent pour éviter de tout ressaisir. Les effets proposent le bon outil selon l’action : élément, caractéristique recherchable, créature ou état, avec une durée propre. La portée se saisit simplement sous la forme `4` ou `2-8`. À l’affichage, des onglets de niveau mettent à jour les propriétés visibles. L’éditeur montre aussi les monstres, PNJ et classes qui utilisent le sort."
   },
   {
     "path": "backend/_ai.md",

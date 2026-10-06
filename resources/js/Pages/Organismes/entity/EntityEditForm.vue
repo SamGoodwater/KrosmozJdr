@@ -284,8 +284,11 @@ function spellSectionColClass(sec) {
     if (sec.id === 'general') {
         return 'min-w-0 lg:col-span-1 xl:col-span-2';
     }
-    if (sec.id === 'range_resolution') {
+    if (sec.id === 'spell_properties') {
         return 'min-w-0 lg:col-span-2 xl:col-span-2';
+    }
+    if (sec.id === 'fallback_properties') {
+        return 'min-w-0 md:col-span-2 lg:col-span-3 xl:col-span-4';
     }
     if (sec.id === 'admin') {
         return 'min-w-0 md:col-span-2 lg:col-span-3 xl:col-span-4';
@@ -775,6 +778,8 @@ const mainFieldSections = computed(() => {
         title: sec.title,
         subtitle: sec.subtitle,
         collapsedByDefault: Boolean(sec.collapsedByDefault),
+        collapsedActionLabel: sec.collapsedActionLabel || 'Afficher',
+        expandedActionLabel: sec.expandedActionLabel || 'Replier',
         fields: (sec.fieldKeys || [])
             .map((k) => byKey.get(k))
             .filter(Boolean)
@@ -1235,11 +1240,11 @@ async function handleEditPageAction(actionKey) {
                                         {{ sec.subtitle }}
                                     </p>
                                 </div>
-                                <span class="text-xs text-base-content/50 group-open:hidden shrink-0 pt-1">
-                                    Afficher
+                                <span class="btn btn-ghost btn-xs h-auto min-h-0 group-open:hidden shrink-0 px-2 py-1 text-xs">
+                                    {{ sec.collapsedActionLabel }}
                                 </span>
                                 <span class="text-xs text-base-content/50 hidden group-open:inline shrink-0 pt-1">
-                                    Replier
+                                    {{ sec.expandedActionLabel }}
                                 </span>
                             </div>
                         </summary>

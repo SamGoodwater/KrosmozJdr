@@ -70,13 +70,15 @@ triggers. Cette couche descriptive ne modifie pas l'exécution ni la résolution
 
 1. Renseigner les informations propres au sort : nom, description, image, catégorie, état, types et
    nature Physique/Wakfu.
-2. Pour un sort uniquement descriptif, ouvrir **Propriétés par défaut du sort** et définir ses PA,
-   sa portée (`4` ou `2-8`), ses contraintes de lancer et sa résolution.
-3. Pour un sort qui évolue, ajouter un premier degré dans **Degrés & effets**. Les propriétés du
+2. Les propriétés globales non redondantes restent visibles dans **Propriétés du sort**.
+3. Pour un sort uniquement descriptif, ouvrir **Propriétés sans degrés ni effets** et définir ses PA,
+   sa portée (`4` ou `2-8`), ses contraintes de lancer et sa résolution. Ce panneau reste fermé dès
+   lors que la progression structurée est utilisée.
+4. Pour un sort qui évolue, ajouter un premier degré dans **Degrés & effets**. Les propriétés du
    degré remplacent alors les valeurs par défaut à l’affichage.
-4. Ajouter les actions du degré : dégâts/soin avec élément, bonus/malus avec caractéristique,
+5. Ajouter les actions du degré : dégâts/soin avec élément, bonus/malus avec caractéristique,
    invocation avec créature, ou application d’un état. Chaque action possède sa propre durée.
-5. Ajouter le degré suivant : ses propriétés sont copiées et ses effets sont hérités par défaut.
+6. Ajouter le degré suivant : ses propriétés sont copiées et ses effets sont hérités par défaut.
    Choisir **Personnaliser les effets** uniquement lorsqu’ils changent.
 
 La fiche affiche le premier degré par défaut puis actualise PA, portée, ligne de vue, zone,

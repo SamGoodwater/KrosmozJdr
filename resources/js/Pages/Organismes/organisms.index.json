@@ -636,7 +636,7 @@
   },
   {
     "name": "SpellDegreeEffectRow",
-    "description": "Ligne d’effet d’un degré — champs adaptés à l’action (élément, buff, invocation, état…).",
+    "description": "Ligne d’effet d’un degré de sort — champs adaptés à l’action (SubEffect).",
     "props": [],
     "slots": [],
     "file": "entity/SpellDegreeEffectRow.vue"

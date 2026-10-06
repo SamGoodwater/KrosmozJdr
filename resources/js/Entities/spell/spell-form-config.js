@@ -294,20 +294,28 @@ export function buildSpellFormFieldsConfig(options = {}) {
     };
 }
 
-/** Sections formulaire — édition (fiche). Ordre des colonnes (grille sort) : généralités, portée/coût/résolution, spécificités, admin. */
+/** Sections formulaire — édition : identité, propriétés globales, repli sans degrés, puis admin. */
 export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
-        title: 'Généralités',
-        subtitle: 'Informations propres au sort, indépendantes de ses degrés.',
-        fieldKeys: ['name', 'description', 'image', 'category', 'state', 'spellTypes', 'is_magic'],
+        title: 'Identité & description',
+        subtitle: 'Nom, texte et illustration du sort.',
+        fieldKeys: ['name', 'description', 'image'],
     },
     {
-        id: 'range_resolution',
-        title: 'Propriétés par défaut du sort',
+        id: 'spell_properties',
+        title: 'Propriétés du sort',
+        subtitle: 'Informations globales qui ne sont pas redéfinies par les degrés.',
+        fieldKeys: ['category', 'state', 'spellTypes', 'is_magic'],
+    },
+    {
+        id: 'fallback_properties',
+        title: 'Propriétés sans degrés ni effets',
         subtitle:
-            'Utilisées si le sort n’a pas de degré, ou en repli. Dès qu’il existe des degrés, leurs valeurs priment à l’affichage.',
+            'Ces valeurs servent uniquement aux sorts descriptifs qui ne possèdent aucun degré ni effet structuré.',
         collapsedByDefault: true,
+        collapsedActionLabel: 'À remplir uniquement si le sort n’a ni degrés ni effets',
+        expandedActionLabel: 'Masquer ces propriétés',
         fieldKeys: [
             'level',
             'pa',
@@ -357,6 +365,7 @@ export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
 export const SPELL_FORM_FIELD_SECTIONS_CREATE = [
     SPELL_FORM_FIELD_SECTIONS_EDIT[0],
     SPELL_FORM_FIELD_SECTIONS_EDIT[1],
+    SPELL_FORM_FIELD_SECTIONS_EDIT[2],
     {
         id: 'admin',
         title: 'Métadonnées & droits',
