@@ -1573,6 +1573,13 @@
     "file": "entity/shared/EntityEditContainer.vue"
   },
   {
+    "name": "EntityEditHeader",
+    "description": "Header sticky d’édition d’entité (retour, titre, état, options, annuler, supprimer, enregistrer).",
+    "props": [],
+    "slots": [],
+    "file": "entity/shared/EntityEditHeader.vue"
+  },
+  {
     "name": "ScenarioViewText",
     "description": "ScenarioViewText — Vue Texte pour Scenario",
     "props": [

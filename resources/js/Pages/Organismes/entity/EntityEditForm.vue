@@ -137,13 +137,19 @@ const props = defineProps({
     },
     /**
      * Mise en page dense multi-colonnes (`spell` / `dense` / `capability`).
-     * `dense` = même grille que spell, pour les entités hors sort/capacité.
+     * `sheet` = grille 2 colonnes générique ; `spell` est un alias de `sheet`.
+     * `dense` = grille multi-colonnes (legacy) ; `capability` = grille 6 cols dédiée.
      */
     layoutProfile: {
         type: String,
         default: null,
         validator: (v) =>
-            v == null || v === '' || v === 'spell' || v === 'capability' || v === 'dense',
+            v == null
+            || v === ''
+            || v === 'sheet'
+            || v === 'spell'
+            || v === 'capability'
+            || v === 'dense',
     },
     /**
      * Pied d’actions collé en bas du viewport (sort / capacité : long formulaire).
@@ -207,12 +213,18 @@ const props = defineProps({
 
 const emit = defineEmits(['submit', 'cancel']);
 
-/** Grille dense multi-colonnes (fiches sort / capacité / dense générique). */
+/** Grille dense / sheet (fiches sort, sheet générique, capacité, dense legacy). */
 const isSpellLayout = computed(
     () =>
+        props.layoutProfile === 'sheet' ||
         props.layoutProfile === 'spell' ||
         props.layoutProfile === 'capability' ||
         props.layoutProfile === 'dense',
+);
+
+/** Grille 2 colonnes (sheet + alias spell). */
+const isSheetLayout = computed(
+    () => props.layoutProfile === 'sheet' || props.layoutProfile === 'spell',
 );
 
 /** Fiche capacité : 1ʳᵉ ligne 3 panneaux égaux, 2ᵉ ligne effets 2/3 + métadonnées 1/3 (grille 6 cols ≥ md). */
@@ -265,7 +277,7 @@ const sectionsContainerClass = computed(() => {
     if (isCapabilityLayout.value) {
         return 'capability-edit-sections grid w-full min-w-0 grid-cols-1 gap-4 md:grid-cols-6 md:gap-x-4 md:gap-y-5 md:items-stretch';
     }
-    if (props.layoutProfile === 'spell') {
+    if (isSheetLayout.value) {
         return 'grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start';
     }
     return isSpellLayout.value
@@ -274,14 +286,14 @@ const sectionsContainerClass = computed(() => {
 });
 
 /**
- * Portée de colonnes pour une section (profil sort ou capacité).
+ * Portée de colonnes pour une section (profil sheet / sort / capacité).
  *
  * **Capacité** (`layout-profile="capability"`) : grille 6 colonnes à partir de `md` —
  * ligne 1 : généralités, coût, déroulé (2+2+2) ; ligne 2 : effets (4) + admin (2).
  *
- * **Sort** : md 2 cols, lg 3, xl 4 ; admin en pied.
+ * **Sheet** (`sheet` / alias `spell`) : 2 colonnes ; `span: 2` force la pleine largeur.
  *
- * @param {{ id?: string }} sec
+ * @param {{ id?: string, span?: number|string }} sec
  * @returns {string}
  */
 function spellSectionColClass(sec) {
@@ -300,7 +312,10 @@ function spellSectionColClass(sec) {
         }
         return '';
     }
-    if (props.layoutProfile === 'spell') {
+    if (isSheetLayout.value) {
+        if (Number(sec.span) === 2) {
+            return 'min-w-0 lg:col-span-2 self-start';
+        }
         return 'min-w-0 lg:col-span-1 self-start';
     }
     if (sec.id === 'general') {
@@ -816,6 +831,7 @@ const mainFieldSections = computed(() => {
         id: sec.id,
         title: sec.title,
         subtitle: sec.subtitle,
+        span: sec.span ?? 1,
         collapsedByDefault: Boolean(sec.collapsedByDefault),
         collapsedActionLabel: sec.collapsedActionLabel || 'Afficher',
         expandedActionLabel: sec.expandedActionLabel || 'Replier',

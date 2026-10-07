@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, afterEach } from 'vitest';
+import { describe, expect, it, vi, afterEach, beforeEach } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import { defineComponent, h } from 'vue';
 import SpellEditFormContent from '@/Pages/Organismes/entity/SpellEditFormContent.vue';
@@ -36,6 +36,10 @@ vi.mock('@/Composables/store/useNotificationStore', () => ({
 /** @type {import('@vue/test-utils').VueWrapper[]} */
 const wrappers = [];
 
+beforeEach(() => {
+    global.route = vi.fn((name, params) => `/${name}/${params ? Object.values(params).join('/') : ''}`);
+});
+
 afterEach(() => {
     while (wrappers.length) {
         wrappers.pop().unmount();
@@ -43,7 +47,7 @@ afterEach(() => {
 });
 
 describe('SpellEditFormContent header', () => {
-    it('affiche le header compact et déclenche submit au clic Enregistrer', async () => {
+    it('branche EntityEditHeader et déclenche submit au clic Enregistrer', async () => {
         const submit = vi.fn();
         const EntityEditFormStub = defineComponent({
             name: 'EntityEditForm',
