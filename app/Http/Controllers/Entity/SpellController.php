@@ -16,6 +16,7 @@ use App\Services\Effect\EffectGroupEditorDataService;
 use App\Services\Effect\EffectGroupUpdateService;
 use App\Services\Entity\EntityDeletionService;
 use App\Services\PdfService;
+use App\Services\Spell\SpellDegreeResolver;
 use App\Services\Spell\SpellDegreesSerializer;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
@@ -173,43 +174,118 @@ class SpellController extends Controller
     /**
      * Entités qui utilisent le sort, prêtes à afficher dans l’éditeur.
      *
-     * @return array<string, list<array{id: int, name: string, href: string}>>
+     * @return array<string, list<array<string, mixed>>>
      */
     private function serializeSpellHolders(Spell $spell): array
     {
+        $resolver = app(SpellDegreeResolver::class);
         $monsters = [];
         $npcs = [];
         $creatures = [];
 
         foreach ($spell->creatures as $creature) {
+            $level = $this->parseHolderLevel($creature->level);
+            $base = [
+                'name' => $creature->name,
+                'level' => $level,
+                'image' => $creature->image,
+                'stats' => [
+                    'vitality' => $creature->vitality,
+                    'pa' => $creature->pa,
+                    'pm' => $creature->pm,
+                ],
+                'accessible_degree' => $this->accessibleDegreeBrief($resolver, $spell, $level),
+            ];
+
             if ($creature->monster !== null) {
-                $monsters[] = [
-                    'id' => $creature->monster->id,
-                    'name' => $creature->name,
-                    'href' => route('entities.monsters.show', $creature->monster),
-                ];
+                $monster = $creature->monster;
+                $monsters[] = array_merge($base, [
+                    'id' => $monster->id,
+                    'href' => route('entities.monsters.show', $monster),
+                    'monster' => [
+                        'id' => $monster->id,
+                        'creature_id' => $monster->creature_id,
+                        'is_boss' => (bool) $monster->is_boss,
+                        'state' => $monster->state,
+                        'creature' => [
+                            'id' => $creature->id,
+                            'name' => $creature->name,
+                            'level' => $creature->level,
+                            'image' => $creature->image,
+                            'vitality' => $creature->vitality,
+                            'pa' => $creature->pa,
+                            'pm' => $creature->pm,
+                            'description' => $creature->description,
+                        ],
+                    ],
+                ]);
             } elseif ($creature->npc !== null) {
-                $npcs[] = [
+                $npcs[] = array_merge($base, [
                     'id' => $creature->npc->id,
-                    'name' => $creature->name,
                     'href' => route('entities.npcs.show', $creature->npc),
-                ];
+                ]);
             } else {
-                $creatures[] = [
+                $creatures[] = array_merge($base, [
                     'id' => $creature->id,
-                    'name' => $creature->name,
                     'href' => route('entities.creatures.show', $creature),
-                ];
+                ]);
             }
         }
 
-        $breeds = $spell->breeds->map(fn ($breed): array => [
-            'id' => $breed->id,
-            'name' => $breed->name,
-            'href' => route('entities.breeds.show', $breed),
-        ])->values()->all();
+        $breeds = $spell->breeds->map(function ($breed) use ($resolver, $spell): array {
+            $level = isset($breed->pivot?->character_level)
+                ? (int) $breed->pivot->character_level
+                : null;
+
+            return [
+                'id' => $breed->id,
+                'name' => $breed->name,
+                'href' => route('entities.breeds.show', $breed),
+                'level' => $level,
+                'image' => $breed->image ?? null,
+                'stats' => null,
+                'accessible_degree' => $this->accessibleDegreeBrief($resolver, $spell, $level),
+            ];
+        })->values()->all();
 
         return compact('monsters', 'npcs', 'creatures', 'breeds');
+    }
+
+    private function parseHolderLevel(mixed $raw): ?int
+    {
+        if ($raw === null || $raw === '') {
+            return null;
+        }
+        if (is_numeric($raw)) {
+            return (int) $raw;
+        }
+        if (is_string($raw) && preg_match('/(\d+)/', $raw, $m)) {
+            return (int) $m[1];
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array{id: int, position: int, required_level: int|null, label: string}|null
+     */
+    private function accessibleDegreeBrief(SpellDegreeResolver $resolver, Spell $spell, ?int $level): ?array
+    {
+        $degree = $resolver->selectDegree($spell, null, $level);
+        if ($degree === null) {
+            return null;
+        }
+        $req = $degree->required_level;
+        $label = $req !== null && $req > 0
+            ? 'Niveau '.$req
+            : 'Degré '.$degree->position;
+
+        return [
+            'id' => $degree->id,
+            'position' => (int) $degree->position,
+            'required_level' => $req,
+            'label' => $label,
+        ];
     }
 
     /**

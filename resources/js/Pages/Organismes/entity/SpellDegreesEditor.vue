@@ -1,81 +1,99 @@
 <script setup>
 /**
- * Éditeur compact des degrés d’un sort (onglets niveau, propriétés, effets).
+ * Éditeur compact des degrés d’un sort (onglets, propriétés, effets).
+ * Enregistrement via flushAll (bulk) — pas de confirm au changement d’onglet.
  */
-import { computed, ref, toRaw, watch } from 'vue';
-import axios from 'axios';
+import { computed, watch } from 'vue';
 import { getAreaHumanReadable } from '@/Utils/Entity/Areas';
-import { formatPoRange, parsePoRange } from '@/Utils/Entity/poRange.js';
-import { SPELL_TARGET_TYPE_OPTIONS } from '@/Entities/spell/spell-descriptors';
-import SpellDegreeEffectRow from '@/Pages/Organismes/entity/SpellDegreeEffectRow.vue';
+import { formatPoRange } from '@/Utils/Entity/poRange.js';
+import { useSpellDegreesDraft } from '@/Composables/entity/useSpellDegreesDraft.js';
+import SpellDegreeTabs from '@/Pages/Molecules/entity/spell/SpellDegreeTabs.vue';
+import SpellCastPropertiesGrid from '@/Pages/Molecules/entity/spell/SpellCastPropertiesGrid.vue';
+import SpellEffectEditorRow from '@/Pages/Organismes/entity/SpellEffectEditorRow.vue';
 import SpellElementPrimariesField from '@/Pages/Molecules/entity/spell/SpellElementPrimariesField.vue';
 import SpellDegreePropertyField from '@/Pages/Molecules/entity/spell/SpellDegreePropertyField.vue';
-import AreaNotationField from '@/Pages/Molecules/data-input/AreaNotationField.vue';
+import { SPELL_TARGET_TYPE_OPTIONS } from '@/Entities/spell/spell-descriptors';
 
 const props = defineProps({
     spellId: { type: Number, required: true },
     /** Payload `{ degrees, default_degree_id }` depuis l’API / Inertia. */
     spellDegrees: { type: Object, default: () => ({ degrees: [], default_degree_id: null }) },
+    /** Sort de base (repli propriétés). */
+    spell: { type: Object, default: null },
     effectFormOptions: { type: Object, default: () => ({}) },
     embeddedInModal: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['changed', 'dirty-change']);
 
-/**
- * Clone JSON sûr pour les proxies Vue / Inertia (évite DataCloneError de structuredClone).
- *
- * @param {unknown} value
- * @returns {any}
- */
-function clonePlain(value) {
-    return JSON.parse(JSON.stringify(toRaw(value)));
-}
+const draft = useSpellDegreesDraft({
+    spellId: () => props.spellId,
+    spellDegrees: () => props.spellDegrees,
+    spell: () => props.spell,
+});
 
-const degreesPayload = ref({ degrees: [], default_degree_id: null });
-const activeIndex = ref(0);
-const saving = ref(false);
-const errorMessage = ref('');
-const propsOpen = ref(false);
-const dirty = ref(false);
+const {
+    degrees,
+    active,
+    activeIndex,
+    saving,
+    errorMessage,
+    dirty,
+    dirtyDegreeIds,
+    markDirty,
+    selectDegree,
+    ensureProperties,
+    resolvedActive,
+    addDegree,
+    deleteActiveDegree,
+    materializeEffects,
+    flushAll,
+    reloadDegrees,
+} = draft;
 
+watch(dirty, (v) => emit('dirty-change', v));
 watch(
-    () => props.spellDegrees,
-    (v) => {
-        degreesPayload.value = {
-            degrees: Array.isArray(v?.degrees) ? clonePlain(v.degrees) : [],
-            default_degree_id: v?.default_degree_id ?? null,
-        };
-        if (activeIndex.value >= degreesPayload.value.degrees.length) {
-            activeIndex.value = 0;
-        }
-        dirty.value = false;
-        emit('dirty-change', false);
-    },
-    { immediate: true, deep: true },
+    () => draft.degreesPayload.value,
+    (v) => emit('changed', v),
+    { deep: true },
 );
 
-const degrees = computed(() => degreesPayload.value.degrees || []);
-const active = computed(() => degrees.value[activeIndex.value] || null);
 const subEffectOptions = computed(() => props.effectFormOptions?.sub_effects ?? []);
 const targetTypeOptions = SPELL_TARGET_TYPE_OPTIONS();
 
-function markDirty() {
-    dirty.value = true;
-    emit('dirty-change', true);
-}
+const propertiesReadonly = computed(() => {
+    const src = active.value?.properties_source || 'own';
+    return src === 'previous' || src === 'spell';
+});
 
-function degreeTitle(deg) {
-    const lvl = Number(deg?.required_level);
-    if (!Number.isNaN(lvl) && lvl > 0) {
-        return `Niveau ${lvl}`;
+const sourceLabel = computed(() => {
+    const src = active.value?.properties_source || 'own';
+    if (src === 'previous') return 'Hérité du degré précédent';
+    if (src === 'spell') return 'Hérité du sort de base';
+    return '';
+});
+
+const displayProperties = computed(() => {
+    if (propertiesReadonly.value) {
+        return resolvedActive();
     }
-    return `Degré ${deg?.position ?? '?'}`;
-}
+    return ensureProperties(active.value);
+});
+
+const propertySources = computed(() => {
+    const resolved = resolvedActive();
+    const out = {};
+    for (const key of Object.keys(resolved)) {
+        if (key.endsWith('_source')) {
+            out[key.replace(/_source$/, '')] = resolved[key];
+        }
+    }
+    return out;
+});
 
 function propertySummary(deg) {
     if (!deg) return '';
-    const p = deg.properties || {};
+    const p = draft.resolvedFor(deg);
     const parts = [];
     if (p.pa != null && p.pa !== '') parts.push(`${p.pa} PA`);
     const poMin = p.po_min ?? '';
@@ -88,132 +106,16 @@ function propertySummary(deg) {
     return parts.join(' · ') || 'Propriétés non renseignées';
 }
 
-function selectDegree(index) {
-    if (index === activeIndex.value) return;
-    if (dirty.value && !confirm('Les modifications de ce degré ne sont pas enregistrées. Changer de degré ?')) {
-        return;
-    }
-    activeIndex.value = index;
-    propsOpen.value = false;
-}
-
-function updatePoRange(value) {
-    const deg = active.value;
-    if (!deg) return;
-    const parsed = parsePoRange(value);
-    const properties = localPropsModel(deg);
-    properties.po_min = parsed.po_min;
-    properties.po_max = parsed.po_max;
+function onPropertiesSource(value) {
+    if (!active.value) return;
+    active.value.properties_source = value;
     markDirty();
 }
 
-async function reloadDegrees() {
-    const { data } = await axios.get(`/api/spells/${props.spellId}/degrees`);
-    degreesPayload.value = data?.data || { degrees: [], default_degree_id: null };
-    dirty.value = false;
-    emit('dirty-change', false);
-    emit('changed', degreesPayload.value);
-}
-
-async function addDegree() {
-    saving.value = true;
-    errorMessage.value = '';
-    try {
-        const prev = degrees.value[degrees.value.length - 1];
-        const nextLevel = prev?.required_level != null ? Number(prev.required_level) + 1 : 1;
-        const { data } = await axios.post(`/api/spells/${props.spellId}/degrees`, {
-            required_level: nextLevel,
-        });
-        degreesPayload.value = data?.data || degreesPayload.value;
-        activeIndex.value = Math.max(0, (degreesPayload.value.degrees?.length || 1) - 1);
-        emit('changed', degreesPayload.value);
-    } catch (err) {
-        errorMessage.value = err.response?.data?.message || 'Impossible d’ajouter le degré.';
-    } finally {
-        saving.value = false;
-    }
-}
-
-async function deleteActiveDegree() {
-    if (!active.value?.id) return;
-    if (!confirm('Supprimer ce degré ?')) return;
-    saving.value = true;
-    errorMessage.value = '';
-    try {
-        const { data } = await axios.delete(`/api/spells/${props.spellId}/degrees/${active.value.id}`);
-        degreesPayload.value = data?.data || { degrees: [] };
-        activeIndex.value = 0;
-        emit('changed', degreesPayload.value);
-    } catch (err) {
-        errorMessage.value = err.response?.data?.message || 'Suppression impossible.';
-    } finally {
-        saving.value = false;
-    }
-}
-
-function localPropsModel(deg) {
-    if (!deg.properties) deg.properties = {};
-    return deg.properties;
-}
-
-async function saveActiveDegree() {
-    const deg = active.value;
-    if (!deg?.id) return true;
-    saving.value = true;
-    errorMessage.value = '';
-    try {
-        const propsPayload = { ...(deg.properties || {}) };
-        const body = {
-            required_level: deg.required_level,
-            inherits_effects: Boolean(deg.inherits_effects),
-            ...propsPayload,
-        };
-        if (!deg.inherits_effects) {
-            body.effects = (deg.rows || []).map((row, i) => ({
-                sub_effect_id: Number(row.sub_effect_id),
-                order: i,
-                scope: row.scope || 'general',
-                duration_formula: row.duration_formula || null,
-                logic_operator: i > 0 ? row.logic_operator || 'AND' : null,
-                logic_condition: row.logic_condition || null,
-                crit_only: Boolean(row.crit_only),
-                params: row.params || {},
-            }));
-        }
-        const { data } = await axios.patch(`/api/spells/${props.spellId}/degrees/${deg.id}`, body);
-        degreesPayload.value = data?.data || degreesPayload.value;
-        dirty.value = false;
-        emit('dirty-change', false);
-        emit('changed', degreesPayload.value);
-        return true;
-    } catch (err) {
-        errorMessage.value =
-            Object.values(err.response?.data?.errors || {}).flat()[0] ||
-            err.response?.data?.message ||
-            'Enregistrement impossible.';
-        return false;
-    } finally {
-        saving.value = false;
-    }
-}
-
-async function materializeEffects() {
-    const deg = active.value;
-    if (!deg?.id) return;
-    saving.value = true;
-    errorMessage.value = '';
-    try {
-        const { data } = await axios.post(
-            `/api/spells/${props.spellId}/degrees/${deg.id}/materialize-effects`,
-        );
-        degreesPayload.value = data?.data || degreesPayload.value;
-        emit('changed', degreesPayload.value);
-        markDirty();
-    } catch (err) {
-        errorMessage.value = err.response?.data?.message || 'Personnalisation impossible.';
-    } finally {
-        saving.value = false;
-    }
+function onPropertiesUpdate(next) {
+    if (!active.value || propertiesReadonly.value) return;
+    active.value.properties = { ...next };
+    markDirty();
 }
 
 function addEffectRow() {
@@ -263,59 +165,67 @@ function removeEffectRow(index) {
 function duplicateEffectRow(index) {
     const deg = active.value;
     if (!deg?.rows?.[index]) return;
-    const clone = clonePlain(deg.rows[index]);
+    const clone = JSON.parse(JSON.stringify(deg.rows[index]));
     deg.rows.splice(index + 1, 0, clone);
     markDirty();
 }
 
-/** Exposé au parent (sauvegarde sort). */
-async function flushSave() {
-    if (!dirty.value) return true;
-    return saveActiveDegree();
+async function handleDelete() {
+    if (!active.value?.id) return;
+    if (!confirm('Supprimer ce degré ?')) return;
+    await deleteActiveDegree();
 }
 
-defineExpose({ flushSave, isDirty: dirty, reloadDegrees });
+async function handleAdd() {
+    await addDegree();
+}
+
+defineExpose({
+    flushSave: () => flushAll(),
+    flushAll,
+    isDirty: dirty,
+    reloadDegrees,
+    hasDegrees: computed(() => degrees.value.length > 0),
+});
 </script>
 
 <template>
     <div class="space-y-3" data-cy="spell-degrees-editor">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-            <p class="text-sm text-base-content/70 max-w-xl">
-                Un onglet = un niveau. Les propriétés (PA, PO, zone…) changent avec le degré ; les effets
-                décrivent ce que fait le sort.
-            </p>
-            <button
-                type="button"
-                class="btn btn-sm btn-primary"
-                :disabled="saving"
-                data-cy="spell-degree-add"
-                @click="addDegree"
-            >
-                + Degré
-            </button>
-        </div>
+        <p class="text-sm text-base-content/70 max-w-2xl">
+            Un onglet = un niveau. Les propriétés (PA, PO, zone…) changent avec le degré ; les effets
+            décrivent ce que fait le sort. Un nouveau degré copie le précédent.
+        </p>
 
         <p v-if="errorMessage" class="text-sm text-error">{{ errorMessage }}</p>
 
         <div v-if="!degrees.length" class="rounded-box border border-dashed border-base-300 p-4 text-sm">
-            Aucun degré. Les propriétés du sort s’appliquent telles quelles. Cliquez sur « + Degré » pour
-            définir une progression.
+            Aucun degré. Les propriétés du sort s’appliquent telles quelles. Cliquez sur « + Degré »
+            pour définir une progression.
+            <div class="mt-2">
+                <button
+                    type="button"
+                    class="btn btn-sm btn-primary"
+                    :disabled="saving"
+                    data-cy="spell-degree-add"
+                    @click="handleAdd"
+                >
+                    + Degré
+                </button>
+            </div>
         </div>
 
         <template v-else>
-            <div role="tablist" class="tabs tabs-boxed flex-wrap gap-1 bg-base-200/60 p-1">
-                <button
-                    v-for="(deg, idx) in degrees"
-                    :key="deg.id"
-                    type="button"
-                    role="tab"
-                    class="tab tab-sm"
-                    :class="{ 'tab-active': activeIndex === idx }"
-                    @click="selectDegree(idx)"
-                >
-                    {{ degreeTitle(deg) }}
-                </button>
-            </div>
+            <SpellDegreeTabs
+                :degrees="degrees"
+                :active-index="activeIndex"
+                :dirty-ids="dirtyDegreeIds"
+                :properties-source="active?.properties_source || 'own'"
+                :saving="saving"
+                :show-previous-source="activeIndex > 0"
+                @select="selectDegree"
+                @add="handleAdd"
+                @update:properties-source="onPropertiesSource"
+            />
 
             <div v-if="active" class="rounded-box border border-base-300 bg-base-100 p-3 space-y-3">
                 <div class="flex flex-wrap items-end gap-3">
@@ -332,154 +242,83 @@ defineExpose({ flushSave, isDirty: dirty, reloadDegrees });
                     <div class="flex-1 min-w-[12rem] text-sm text-base-content/80">
                         {{ propertySummary(active) }}
                     </div>
-                    <button type="button" class="btn btn-ghost btn-sm" @click="propsOpen = !propsOpen">
-                        {{ propsOpen ? 'Masquer les propriétés' : 'Modifier les propriétés' }}
-                    </button>
                     <button
                         type="button"
                         class="btn btn-ghost btn-sm text-error"
                         :disabled="saving"
-                        @click="deleteActiveDegree"
+                        @click="handleDelete"
                     >
                         Supprimer
                     </button>
                 </div>
 
-                <div v-if="propsOpen" class="border-t border-base-300 pt-3 space-y-3">
-                    <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-                        <SpellDegreePropertyField characteristic-key="pa" label="PA" icon="fa-solid fa-bolt">
-                            <input
-                                v-model="localPropsModel(active).pa"
-                                type="text"
-                                class="input input-bordered input-sm w-full"
-                                @input="markDirty"
-                            />
-                        </SpellDegreePropertyField>
-                        <SpellDegreePropertyField characteristic-key="po_min" label="Portée" icon="fa-solid fa-bullseye">
-                            <input
-                                :value="formatPoRange(localPropsModel(active).po_min, localPropsModel(active).po_max)"
-                                type="text"
-                                class="input input-bordered input-sm w-full"
-                                placeholder="4 ou 2-8"
-                                data-cy="spell-degree-po-range"
-                                @input="updatePoRange($event.target.value)"
-                            />
-                        </SpellDegreePropertyField>
-                        <SpellDegreePropertyField
-                            class="sm:col-span-2 lg:col-span-3"
-                            characteristic-key="area"
-                            label="Zone"
-                            icon="fa-solid fa-draw-polygon"
-                        >
-                            <AreaNotationField
-                                v-model="localPropsModel(active).area"
-                                label=""
-                                :name="`degree-area-${active.id}`"
-                                @update:model-value="markDirty"
-                            />
-                        </SpellDegreePropertyField>
-                        <SpellDegreePropertyField characteristic-key="element" label="Élément(s)" icon="fa-solid fa-fire">
-                            <SpellElementPrimariesField
-                                v-model="localPropsModel(active).element"
-                                label=""
-                                size="sm"
-                                @update:model-value="markDirty"
-                            />
-                        </SpellDegreePropertyField>
-                    </div>
+                <SpellCastPropertiesGrid
+                    :model-value="displayProperties"
+                    :readonly="propertiesReadonly"
+                    :source-label="sourceLabel"
+                    :property-sources="propertySources"
+                    @update:model-value="onPropertiesUpdate"
+                    @dirty="markDirty"
+                />
 
-                    <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-                        <SpellDegreePropertyField characteristic-key="global_cooldown" label="Temps de relance" icon="fa-solid fa-rotate">
-                            <input
-                                v-model.number="localPropsModel(active).global_cooldown"
-                                type="number"
-                                min="0"
-                                max="255"
-                                class="input input-bordered input-sm w-full"
-                                @input="markDirty"
-                            />
-                        </SpellDegreePropertyField>
-                        <SpellDegreePropertyField characteristic-key="cast_per_turn" label="Lancers / tour" icon="fa-solid fa-repeat">
-                            <input
-                                v-model="localPropsModel(active).cast_per_turn"
-                                type="text"
-                                class="input input-bordered input-sm w-full"
-                                @input="markDirty"
-                            />
-                        </SpellDegreePropertyField>
-                        <SpellDegreePropertyField characteristic-key="cast_per_target" label="Lancers / cible" icon="fa-solid fa-crosshairs">
-                            <input
-                                v-model="localPropsModel(active).cast_per_target"
-                                type="text"
-                                class="input input-bordered input-sm w-full"
-                                @input="markDirty"
-                            />
-                        </SpellDegreePropertyField>
-                        <SpellDegreePropertyField characteristic-key="number_between_two_cast" label="Délai entre deux lancers" icon="fa-solid fa-hourglass-half">
-                            <input
-                                v-model="localPropsModel(active).number_between_two_cast"
-                                type="text"
-                                class="input input-bordered input-sm w-full"
-                                @input="markDirty"
-                            />
-                        </SpellDegreePropertyField>
-                        <SpellDegreePropertyField characteristic-key="casting_time" label="Temps d’incantation" icon="fa-solid fa-clock">
-                            <input
-                                v-model="localPropsModel(active).casting_time"
-                                type="text"
-                                class="input input-bordered input-sm w-full"
-                                placeholder="Instantané, 1 action…"
-                                @input="markDirty"
-                            />
-                        </SpellDegreePropertyField>
-                        <SpellDegreePropertyField characteristic-key="max_stack" label="Cumul maximal" icon="fa-solid fa-layer-group">
-                            <input
-                                v-model.number="localPropsModel(active).max_stack"
-                                type="number"
-                                min="0"
-                                max="255"
-                                class="input input-bordered input-sm w-full"
-                                @input="markDirty"
-                            />
-                        </SpellDegreePropertyField>
-                        <SpellDegreePropertyField characteristic-key="target_type" label="Type de ciblage" icon="fa-solid fa-location-crosshairs">
-                            <select
-                                v-model="localPropsModel(active).target_type"
-                                class="select select-bordered select-sm w-full"
-                                @change="markDirty"
+                <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 border-t border-base-300 pt-3">
+                    <SpellDegreePropertyField
+                        characteristic-key="element"
+                        label="Élément(s)"
+                        icon="fa-solid fa-fire"
+                        helper="Éléments primaires associés à ce degré."
+                    >
+                        <SpellElementPrimariesField
+                            v-model="ensureProperties(active).element"
+                            label=""
+                            size="sm"
+                            :disabled="propertiesReadonly"
+                            @update:model-value="markDirty"
+                        />
+                    </SpellDegreePropertyField>
+                    <SpellDegreePropertyField
+                        characteristic-key="target_type"
+                        label="Type de ciblage"
+                        icon="fa-solid fa-location-crosshairs"
+                        helper="Direct, piège ou glyphe."
+                    >
+                        <select
+                            v-model="ensureProperties(active).target_type"
+                            class="select select-bordered select-sm w-full"
+                            :disabled="propertiesReadonly"
+                            @change="markDirty"
+                        >
+                            <option
+                                v-for="option in targetTypeOptions"
+                                :key="option.value"
+                                :value="option.value || null"
                             >
-                                <option v-for="option in targetTypeOptions" :key="option.value" :value="option.value || null">
-                                    {{ option.label }}
-                                </option>
-                            </select>
-                        </SpellDegreePropertyField>
-                    </div>
-
-                    <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                        <SpellDegreePropertyField
-                            v-for="toggle in [
-                                ['po_editable', 'Portée modifiable'],
-                                ['sight_line', 'Ligne de vue'],
-                                ['cast_in_line', 'Lancer en ligne'],
-                                ['cast_in_diagonal', 'Lancer en diagonale'],
-                                ['ritual_available', 'Rituel disponible'],
-                            ]"
-                            :key="toggle[0]"
-                            :characteristic-key="toggle[0]"
-                            :label="toggle[1]"
-                            icon="fa-solid fa-toggle-on"
-                        >
-                            <label class="flex cursor-pointer items-center gap-2 text-xs">
-                                <input
-                                    v-model="localPropsModel(active)[toggle[0]]"
-                                    type="checkbox"
-                                    class="checkbox checkbox-sm"
-                                    @change="markDirty"
-                                />
-                                <span>Actif</span>
-                            </label>
-                        </SpellDegreePropertyField>
-                    </div>
+                                {{ option.label }}
+                            </option>
+                        </select>
+                    </SpellDegreePropertyField>
+                    <SpellDegreePropertyField
+                        v-for="toggle in [
+                            ['cast_in_line', 'Lancer en ligne'],
+                            ['cast_in_diagonal', 'Lancer en diagonale'],
+                            ['ritual_available', 'Rituel disponible'],
+                        ]"
+                        :key="toggle[0]"
+                        :characteristic-key="toggle[0]"
+                        :label="toggle[1]"
+                        icon="fa-solid fa-toggle-on"
+                    >
+                        <label class="flex cursor-pointer items-center gap-2 text-xs">
+                            <input
+                                v-model="ensureProperties(active)[toggle[0]]"
+                                type="checkbox"
+                                class="checkbox checkbox-sm"
+                                :disabled="propertiesReadonly"
+                                @change="markDirty"
+                            />
+                            <span>Actif</span>
+                        </label>
+                    </SpellDegreePropertyField>
                 </div>
 
                 <div class="border-t border-base-300 pt-3 space-y-2">
@@ -518,18 +357,22 @@ defineExpose({ flushSave, isDirty: dirty, reloadDegrees });
                         </div>
                     </div>
 
-                    <p v-if="active.inherits_effects" class="text-xs text-base-content/60">
-                        Ce degré réutilise les effets du niveau précédent. Personnalisez pour les modifier.
+                    <p v-if="active.inherits_effects" class="text-xs text-base-content/70">
+                        Ce degré réutilise les effets du niveau précédent. Personnalisez pour les
+                        modifier.
                     </p>
 
-                    <div v-else-if="!(active.rows || []).length" class="text-xs text-base-content/60 py-2">
+                    <div
+                        v-else-if="!(active.rows || []).length"
+                        class="text-xs text-base-content/70 py-2"
+                    >
                         Aucun effet. Ajoutez une action (frapper, soigner…).
                     </div>
 
                     <div v-else class="space-y-2">
-                        <SpellDegreeEffectRow
+                        <SpellEffectEditorRow
                             v-for="(row, index) in active.rows"
-                            :key="'fx-' + index"
+                            :key="'fx-' + active.id + '-' + index"
                             :row="row"
                             :index="index"
                             :options="effectFormOptions"
@@ -538,18 +381,6 @@ defineExpose({ flushSave, isDirty: dirty, reloadDegrees });
                             @remove="removeEffectRow(index)"
                         />
                     </div>
-                </div>
-
-                <div class="flex justify-end gap-2 border-t border-base-300 pt-2">
-                    <button
-                        type="button"
-                        class="btn btn-sm btn-primary"
-                        :disabled="saving || !dirty"
-                        data-cy="spell-degree-save"
-                        @click="saveActiveDegree"
-                    >
-                        {{ saving ? 'Enregistrement…' : 'Enregistrer le degré' }}
-                    </button>
                 </div>
             </div>
         </template>

@@ -7,6 +7,7 @@ vi.mock('axios', () => ({
     default: {
         get: vi.fn(() => Promise.resolve({ data: { data: { degrees: [], default_degree_id: null } } })),
         post: vi.fn(() => Promise.resolve({ data: { data: { degrees: [], default_degree_id: null } } })),
+        put: vi.fn(() => Promise.resolve({ data: { data: { degrees: [], default_degree_id: null } } })),
         patch: vi.fn(() => Promise.resolve({ data: { data: { degrees: [], default_degree_id: null } } })),
         delete: vi.fn(() => Promise.resolve({ data: { data: { degrees: [], default_degree_id: null } } })),
     },
@@ -35,26 +36,6 @@ const subEffects = [
             ],
         },
     },
-    {
-        id: 2,
-        slug: 'booster',
-        type_slug: 'booster',
-        param_schema: {
-            params: [{ key: 'characteristic' }, { key: 'value' }],
-        },
-    },
-    {
-        id: 3,
-        slug: 'invoquer',
-        type_slug: 'invoquer',
-        param_schema: { params: [{ key: 'monster' }] },
-    },
-    {
-        id: 4,
-        slug: 'appliquer-etat',
-        type_slug: 'appliquer-etat',
-        param_schema: { params: [{ key: 'condition' }] },
-    },
 ];
 
 const effectFormOptions = {
@@ -63,10 +44,7 @@ const effectFormOptions = {
         { key: 'fire', label: 'Feu', category: 'element' },
         { key: 'earth', label: 'Terre', category: 'element' },
     ],
-    characteristics_object: [
-        { key: 'action_points_object', label: 'PA', category: 'object' },
-        { key: 'vitality_object', label: 'Vitalité', category: 'object' },
-    ],
+    characteristics_object: [],
     scopes: [
         { value: 'general', label: 'Général' },
         { value: 'combat', label: 'Combat' },
@@ -79,6 +57,7 @@ function baseDegree(overrides = {}) {
         position: 1,
         required_level: 1,
         inherits_effects: false,
+        properties_source: 'own',
         properties: {
             pa: '3',
             po_min: '1',
@@ -88,6 +67,7 @@ function baseDegree(overrides = {}) {
             number_between_two_cast: '2',
             casting_time: '0',
             global_cooldown: 0,
+            area: 'point',
         },
         rows: [
             {
@@ -113,18 +93,20 @@ function mountEditor(degrees = [baseDegree()], extra = {}) {
     const wrapper = mount(SpellDegreesEditor, {
         props: {
             spellId: 42,
+            spell: { pa: '3', po_min: '0', po_max: '0', area: 'point' },
             spellDegrees: { degrees, default_degree_id: degrees[0]?.id ?? null },
             effectFormOptions,
             ...extra,
         },
         global: {
             stubs: {
-                SpellDegreeEffectRow: {
+                SpellEffectEditorRow: {
                     props: ['row', 'index', 'options'],
                     template:
                         '<div data-cy="spell-degree-effect-row" class="effect-stub">{{ row.sub_effect_id }}</div>',
                 },
                 SpellElementPrimariesField: true,
+                SpellZonePreview: true,
             },
         },
     });
@@ -136,25 +118,22 @@ describe('SpellDegreesEditor', () => {
     it('affiche une portée compacte unique', async () => {
         const wrapper = mountEditor();
         await flushPromises();
-        await wrapper.find('button.btn-ghost').trigger('click');
-        const po = wrapper.find('[data-cy="spell-degree-po-range"]');
+        const po = wrapper.find('[data-cy="spell-cast-po-range"]');
         expect(po.exists()).toBe(true);
         expect(po.element.value).toBe('1-6');
         expect(wrapper.text()).toContain('PO 1-6');
     });
 
-    it('expose les champs de fréquence dans le panneau propriétés', async () => {
+    it('expose les champs de fréquence dans la grille propriétés', async () => {
         const wrapper = mountEditor();
         await flushPromises();
-        await wrapper.find('button.btn-ghost').trigger('click');
         expect(wrapper.text()).toContain('Temps de relance');
         expect(wrapper.text()).toContain('Lancers / tour');
         expect(wrapper.text()).toContain('Lancers / cible');
         expect(wrapper.text()).toContain('Temps d’incantation');
         expect(wrapper.text()).not.toContain('Mode de résolution');
         expect(wrapper.text()).not.toContain('Utilisable en réaction');
-        expect(wrapper.text()).toContain('Notation');
-        expect(wrapper.findAll('.rounded-lg').length).toBeGreaterThan(0);
+        expect(wrapper.find('[data-cy="area-shape-picker"]').exists()).toBe(true);
     });
 
     it('préserve l’héritage des effets du degré précédent', async () => {
@@ -176,24 +155,23 @@ describe('SpellDegreesEditor', () => {
         expect(wrapper.text()).toContain('réutilise les effets');
     });
 
-    it('demande confirmation avant de quitter un onglet sale', async () => {
+    it('change d’onglet sans confirmation même si dirty', async () => {
         const confirmSpy = vi.spyOn(globalThis, 'confirm').mockReturnValue(false);
         const wrapper = mountEditor([
             baseDegree({ id: 1 }),
             baseDegree({ id: 2, position: 2, required_level: 3 }),
         ]);
         await flushPromises();
-        await wrapper.find('button.btn-ghost').trigger('click');
-        const po = wrapper.find('[data-cy="spell-degree-po-range"]');
+        const po = wrapper.find('[data-cy="spell-cast-po-range"]');
         await po.setValue('2-8');
         await wrapper.findAll('[role="tab"]')[1].trigger('click');
-        expect(confirmSpy).toHaveBeenCalled();
-        expect(wrapper.findAll('[role="tab"]')[0].classes()).toContain('tab-active');
+        expect(confirmSpy).not.toHaveBeenCalled();
+        expect(wrapper.findAll('[role="tab"]')[1].classes()).toContain('tab-active');
         confirmSpy.mockRestore();
     });
 
-    it('flushSave envoie le PATCH lorsque dirty', async () => {
-        axios.patch.mockResolvedValueOnce({
+    it('flushSave envoie le PUT bulk lorsque dirty', async () => {
+        axios.put.mockResolvedValueOnce({
             data: {
                 data: {
                     degrees: [baseDegree({ properties: { pa: '4', po_min: '2', po_max: '8' } })],
@@ -203,13 +181,27 @@ describe('SpellDegreesEditor', () => {
         });
         const wrapper = mountEditor();
         await flushPromises();
-        await wrapper.find('button.btn-ghost').trigger('click');
-        await wrapper.find('[data-cy="spell-degree-po-range"]').setValue('2-8');
+        await wrapper.find('[data-cy="spell-cast-po-range"]').setValue('2-8');
         const ok = await wrapper.vm.flushSave();
         expect(ok).toBe(true);
-        expect(axios.patch).toHaveBeenCalled();
-        const body = axios.patch.mock.calls[0][1];
-        expect(body.po_min).toBe('2');
-        expect(body.po_max).toBe('8');
+        expect(axios.put).toHaveBeenCalled();
+        const body = axios.put.mock.calls[0][1];
+        expect(body.degrees[0].po_min).toBe('2');
+        expect(body.degrees[0].po_max).toBe('8');
+    });
+
+    it('affiche un badge hérité quand properties_source = spell', async () => {
+        const wrapper = mountEditor([
+            baseDegree({
+                properties_source: 'spell',
+                properties: { pa: '9', po_min: '9', po_max: '9' },
+            }),
+        ], {
+            spell: { pa: '3', po_min: '1', po_max: '2', area: 'circle-0-1' },
+        });
+        await flushPromises();
+        expect(wrapper.text()).toContain('Hérité du sort de base');
+        expect(wrapper.find('[data-cy="spell-cast-po-range"]').exists()).toBe(false);
+        expect(wrapper.text()).toContain('3');
     });
 });

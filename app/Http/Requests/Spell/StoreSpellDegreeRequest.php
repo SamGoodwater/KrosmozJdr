@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Spell;
 
+use App\Models\SpellDegree;
 use App\Rules\ValidAreaNotation;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * Création / mise à jour d’un degré de sort.
@@ -26,6 +28,7 @@ class StoreSpellDegreeRequest extends FormRequest
         return array_merge([
             'required_level' => 'nullable|integer|min:0|max:65535',
             'inherits_effects' => 'nullable|boolean',
+            'properties_source' => ['nullable', 'string', Rule::in(SpellDegree::PROPERTIES_SOURCES)],
             'area' => ['nullable', 'string', 'max:64', new ValidAreaNotation],
             'pa' => 'nullable|string|max:64',
             'po_min' => 'nullable|string|max:64',

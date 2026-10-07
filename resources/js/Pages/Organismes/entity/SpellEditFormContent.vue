@@ -1,12 +1,10 @@
 <script setup>
 /**
- * Corps de la fiche d’édition d’un sort (toolbar, formulaire, effets).
+ * Corps de la fiche d’édition d’un sort (toolbar, formulaire, degrés).
  *
  * @description
  * Partagé entre la page {@link Pages/entity/spell/Edit} et {@link SpellEditModal}.
- * — Barre d’options en haut (fiche, suppression, retour liste).
- * — Formulaire en grille responsive + pied d’actions fixe via {@link EntityEditForm} (lecture / écriture dans la carte Métadonnées ; effets enregistrés sur le même « Mettre à jour »).
- * — Les classes liées au sort se gèrent depuis la fiche classe (pas depuis ici).
+ * Enregistrement unique : degrés (bulk) puis formulaire sort.
  */
 import { computed, ref } from "vue";
 import { router } from "@inertiajs/vue3";
@@ -17,7 +15,8 @@ import SpellDegreesEditor from "@/Pages/Organismes/entity/SpellDegreesEditor.vue
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import EntityListBackButton from "@/Pages/Atoms/action/EntityListBackButton.vue";
-import Collapse from "@/Pages/Atoms/data-display/Collapse.vue";
+import EntityEditContainer from "@/Pages/Molecules/entity/shared/EntityEditContainer.vue";
+import SpellHoldersPanel from "@/Pages/Molecules/entity/spell/SpellHoldersPanel.vue";
 import {
     buildSpellFormFieldsConfig,
     SPELL_FORM_FIELD_SECTIONS_EDIT,
@@ -54,21 +53,35 @@ const fieldsConfig = computed(() =>
     ),
 );
 
-const fieldSections = SPELL_FORM_FIELD_SECTIONS_EDIT;
+const forceShowBaseCast = ref(false);
+const localDegreesCount = ref(
+    Array.isArray(props.spellDegrees?.degrees) ? props.spellDegrees.degrees.length : 0,
+);
+
+const hasDegrees = computed(() => localDegreesCount.value > 0);
+
+const fieldSections = computed(() => {
+    const sections = SPELL_FORM_FIELD_SECTIONS_EDIT.map((s) => ({ ...s }));
+    if (hasDegrees.value && !forceShowBaseCast.value) {
+        return sections.filter((s) => s.id !== "base_cast_properties");
+    }
+    if (hasDegrees.value && forceShowBaseCast.value) {
+        return sections.map((s) =>
+            s.id === "base_cast_properties"
+                ? {
+                      ...s,
+                      collapsedByDefault: false,
+                      subtitle:
+                          "Les degrés définissent déjà ces valeurs. Ces champs ne s’appliquent qu’en l’absence de degrés.",
+                  }
+                : s,
+        );
+    }
+    return sections;
+});
 
 const spellModel = computed(() =>
     props.spell instanceof Spell ? props.spell : new Spell(props.spell),
-);
-
-const holderGroups = computed(() => [
-    { key: "monsters", label: "Monstres", items: props.spellHolders?.monsters || [] },
-    { key: "npcs", label: "PNJ", items: props.spellHolders?.npcs || [] },
-    { key: "creatures", label: "Créatures", items: props.spellHolders?.creatures || [] },
-    { key: "breeds", label: "Classes", items: props.spellHolders?.breeds || [] },
-].filter((group) => group.items.length > 0));
-
-const holderCount = computed(() =>
-    holderGroups.value.reduce((total, group) => total + group.items.length, 0),
 );
 
 /**
@@ -78,10 +91,11 @@ const holderCount = computed(() =>
 const fixedFooterInsetClass = "left-0 right-0";
 
 const spellDegreesEditorRef = ref(null);
+const entityEditFormRef = ref(null);
 
-/** PATCH degrés puis le formulaire entité (via {@link EntityEditForm}). */
+/** PATCH degrés (bulk) puis le formulaire entité. */
 async function beforeSpellSubmitAsync() {
-    const fn = spellDegreesEditorRef.value?.flushSave;
+    const fn = spellDegreesEditorRef.value?.flushAll || spellDegreesEditorRef.value?.flushSave;
     if (typeof fn !== "function") {
         return true;
     }
@@ -118,12 +132,23 @@ async function handleOptionsAction(actionKey) {
     if (actionKey === "copy-link") {
         const href = route("entities.spells.show", { spell: spellModel.value.id });
         await navigator.clipboard?.writeText(new URL(href, window.location.origin).toString());
+        return;
     }
+    if (actionKey === "refresh" || actionKey === "view-dofusdb") {
+        const dispatch = entityEditFormRef.value?.dispatchEntityAction;
+        if (typeof dispatch === "function") {
+            await dispatch(actionKey, spellModel.value);
+        }
+    }
+}
+
+function onDegreesChanged(payload) {
+    localDegreesCount.value = Array.isArray(payload?.degrees) ? payload.degrees.length : 0;
 }
 </script>
 
 <template>
-    <div class="spell-edit-form-content space-y-6">
+    <div class="spell-edit-form-content space-y-4">
         <div
             class="sticky top-0 z-20 px-3 py-1 bg-glass-3xl backdrop-blur-md border-glass-b-md sm:px-4"
             style="--bg-color: var(--color-base-100)"
@@ -133,7 +158,7 @@ async function handleOptionsAction(actionKey) {
                     <h1 class="truncate text-md font-bold text-base-content sm:text-lg">
                         {{ spellModel.name || "Sort sans nom" }}
                     </h1>
-                    <p class="text-xs text-base-content/60">
+                    <p class="text-xs text-base-content/70">
                         Édition · ID {{ spellModel.id }}
                     </p>
                 </div>
@@ -153,8 +178,19 @@ async function handleOptionsAction(actionKey) {
                         <i class="fa-solid fa-book-open" aria-hidden="true"></i>
                         Fiche
                     </Btn>
+                    <EntityActions
+                        entity-type="spells"
+                        :entity="spellModel"
+                        format="buttons"
+                        display="icon-text"
+                        size="sm"
+                        color="neutral"
+                        :whitelist="['refresh', 'view-dofusdb']"
+                        :context="embeddedInModal ? { inModal: true, modalMode: 'edit' } : { inPage: true, pageMode: 'edit' }"
+                    />
+                    <SpellHoldersPanel :spell-holders="spellHolders" />
                     <div class="flex items-center gap-1">
-                        <span class="text-xs text-base-content/60">Options</span>
+                        <span class="text-xs text-base-content/70">Options</span>
                         <EntityActions
                             entity-type="spells"
                             :entity="spellModel"
@@ -162,7 +198,7 @@ async function handleOptionsAction(actionKey) {
                             display="icon-text"
                             size="sm"
                             color="neutral"
-                            :whitelist="['view', 'view-dofusdb', 'copy-link']"
+                            :whitelist="['view', 'view-dofusdb', 'refresh', 'copy-link']"
                             :context="embeddedInModal ? { inModal: true, modalMode: 'edit' } : { inPage: true, pageMode: 'edit' }"
                             @action="handleOptionsAction"
                         />
@@ -183,34 +219,22 @@ async function handleOptionsAction(actionKey) {
             </div>
         </div>
 
-        <details
-            v-if="holderCount"
-            class="rounded-box border border-base-300 bg-base-100/50 px-3 py-2"
+        <p
+            v-if="hasDegrees && !forceShowBaseCast"
+            class="text-xs text-base-content/70 px-1"
         >
-            <summary class="cursor-pointer list-none text-sm font-medium [&::-webkit-details-marker]:hidden">
-                Utilisé par {{ holderCount }} entité{{ holderCount > 1 ? "s" : "" }}
-                <span class="ml-1 text-xs font-normal text-base-content/55">Afficher</span>
-            </summary>
-            <div class="mt-2 flex flex-wrap gap-2">
-                <template v-for="group in holderGroups" :key="group.key">
-                    <a
-                        v-for="holder in group.items"
-                        :key="`${group.key}-${holder.id}`"
-                        :href="holder.href"
-                        class="badge badge-outline gap-1.5 border-base-300 hover:border-base-content/40"
-                        :title="group.label"
-                    >
-                        <i v-if="group.key === 'monsters'" class="fa-solid fa-dragon" aria-hidden="true"></i>
-                        <i v-else-if="group.key === 'npcs'" class="fa-solid fa-user" aria-hidden="true"></i>
-                        <i v-else-if="group.key === 'creatures'" class="fa-solid fa-paw" aria-hidden="true"></i>
-                        <i v-else class="fa-solid fa-hat-wizard" aria-hidden="true"></i>
-                        {{ holder.name }}
-                    </a>
-                </template>
-            </div>
-        </details>
+            Les propriétés de lancement du sort de base sont masquées car des degrés existent.
+            <button
+                type="button"
+                class="link link-hover ml-1"
+                @click="forceShowBaseCast = true"
+            >
+                Afficher quand même
+            </button>
+        </p>
 
         <EntityEditForm
+            ref="entityEditFormRef"
             :entity="spellModel"
             entity-type="spell"
             :fields-config="fieldsConfig"
@@ -228,19 +252,26 @@ async function handleOptionsAction(actionKey) {
             :before-submit-async="beforeSpellSubmitAsync"
             @cancel="emit('cancel')"
             @submit="emit('saved')"
-        />
-
-        <Collapse arrow :default-open="true" bg-off="bg-base-100" class="border border-base-300">
-            <template #title>Degrés & effets</template>
-            <template #content>
-                <SpellDegreesEditor
-                    ref="spellDegreesEditorRef"
-                    :spell-id="Number(spellModel.id)"
-                    :spell-degrees="spellDegrees"
-                    :effect-form-options="effectFormOptions"
-                    :embedded-in-modal="embeddedInModal"
-                />
+        >
+            <template #after-sections>
+                <EntityEditContainer
+                    title="Degrés & effets"
+                    subtitle="Onglets par niveau, propriétés de lancement et sous-effets."
+                    icon="fa-solid fa-layer-group"
+                    :span="3"
+                    root-class="mt-3"
+                >
+                    <SpellDegreesEditor
+                        ref="spellDegreesEditorRef"
+                        :spell-id="Number(spellModel.id)"
+                        :spell="spellModel"
+                        :spell-degrees="spellDegrees"
+                        :effect-form-options="effectFormOptions"
+                        :embedded-in-modal="embeddedInModal"
+                        @changed="onDegreesChanged"
+                    />
+                </EntityEditContainer>
             </template>
-        </Collapse>
+        </EntityEditForm>
     </div>
 </template>

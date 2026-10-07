@@ -19,7 +19,7 @@ final class SpellDegreeService
     ) {}
 
     /**
-     * Crée un degré en copiant les propriétés effectives du précédent (ou du sort).
+     * Crée un degré en copiant les propriétés et effets du précédent (pré-remplissage éditable).
      *
      * @param  array<string, mixed>  $overrides
      */
@@ -37,9 +37,15 @@ final class SpellDegreeService
                 'position' => $position,
                 'required_level' => $overrides['required_level']
                     ?? (($previous !== null ? ($previous->required_level ?? 0) : 0) + 1),
+                // Nouveau degré = copie matérialisée éditable (pas d’héritage d’effets par défaut).
                 'inherits_effects' => array_key_exists('inherits_effects', $overrides)
                     ? (bool) $overrides['inherits_effects']
-                    : ($previous !== null),
+                    : false,
+                'properties_source' => array_key_exists('properties_source', $overrides)
+                    ? $this->normalizePropertiesSource($overrides['properties_source'])
+                    : ($previous !== null
+                        ? ($previous->properties_source ?: SpellDegree::PROPERTIES_SOURCE_OWN)
+                        : SpellDegree::PROPERTIES_SOURCE_OWN),
             ];
 
             foreach (SpellDegree::PROPERTY_KEYS as $key) {
@@ -50,13 +56,12 @@ final class SpellDegreeService
                 }
             }
 
-            if ($previous === null) {
-                $payload['inherits_effects'] = false;
-            }
-
             $degree = SpellDegree::query()->create($payload);
 
-            if (! $degree->inherits_effects && $previous !== null && empty($overrides['skip_copy_effects'])) {
+            $shouldCopyEffects = ! $degree->inherits_effects
+                && $previous !== null
+                && empty($overrides['skip_copy_effects']);
+            if ($shouldCopyEffects) {
                 $this->copyEffectsFromSource($spell, $previous, $degree);
             }
 
@@ -70,12 +75,18 @@ final class SpellDegreeService
     public function updateDegree(SpellDegree $degree, array $data): SpellDegree
     {
         return DB::transaction(function () use ($degree, $data): SpellDegree {
-            $allowed = array_merge(['required_level', 'inherits_effects'], SpellDegree::PROPERTY_KEYS);
+            $allowed = array_merge(
+                ['required_level', 'inherits_effects', 'properties_source'],
+                SpellDegree::PROPERTY_KEYS
+            );
             $payload = [];
             foreach ($allowed as $key) {
-                if (array_key_exists($key, $data)) {
-                    $payload[$key] = $data[$key];
+                if (! array_key_exists($key, $data)) {
+                    continue;
                 }
+                $payload[$key] = $key === 'properties_source'
+                    ? $this->normalizePropertiesSource($data[$key])
+                    : $data[$key];
             }
 
             if (array_key_exists('inherits_effects', $payload) && $payload['inherits_effects'] === true) {
@@ -85,6 +96,37 @@ final class SpellDegreeService
             $degree->update($payload);
 
             return $degree->fresh(['effects.subEffect']) ?? $degree;
+        });
+    }
+
+    /**
+     * Synchronise plusieurs degrés en une transaction (enregistrement unique UI).
+     *
+     * @param  list<array<string, mixed>>  $degreesPayload
+     */
+    public function syncDegreesBulk(Spell $spell, array $degreesPayload): Spell
+    {
+        return DB::transaction(function () use ($spell, $degreesPayload): Spell {
+            $spell->loadMissing('degrees');
+            $byId = $spell->degrees->keyBy('id');
+
+            foreach ($degreesPayload as $item) {
+                $id = isset($item['id']) ? (int) $item['id'] : 0;
+                if ($id <= 0 || ! $byId->has($id)) {
+                    continue;
+                }
+                /** @var SpellDegree $degree */
+                $degree = $byId->get($id);
+                $effects = $item['effects'] ?? null;
+                unset($item['effects'], $item['id'], $item['position'], $item['rows']);
+
+                $this->updateDegree($degree, $item);
+                if (is_array($effects)) {
+                    $this->syncEffects($degree->fresh() ?? $degree, $effects);
+                }
+            }
+
+            return $spell->fresh(['degrees.effects.subEffect']) ?? $spell;
         });
     }
 
@@ -228,5 +270,15 @@ final class SpellDegreeService
         }
 
         return $out;
+    }
+
+    private function normalizePropertiesSource(mixed $raw): string
+    {
+        $value = is_string($raw) ? trim($raw) : SpellDegree::PROPERTIES_SOURCE_OWN;
+        if (! in_array($value, SpellDegree::PROPERTIES_SOURCES, true)) {
+            return SpellDegree::PROPERTIES_SOURCE_OWN;
+        }
+
+        return $value;
     }
 }

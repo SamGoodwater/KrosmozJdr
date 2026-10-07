@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Édition des sorts condensée
+
+L’édition d’un sort est regroupée en blocs (description, propriétés hors degrés, lancement, degrés & effets, métadonnées). Les degrés restent en onglets : un nouveau degré copie le précédent. On peut faire hériter tout le bloc de propriétés du degré précédent ou du sort de base. La zone se choisit par icônes de formes avec aperçu. Chaque effet a une valeur normale et une valeur critique. Les porteurs du sort (monstres, PNJ, classes) s’ouvrent rapidement avec un aperçu, et la source Dofus est accessible depuis l’éditeur. Un seul bouton enregistre le sort et tous les degrés.
+
 ## Octobre 2026 — Degrés de sorts simplifiés
 
 L’édition d’un sort ne passe plus par plusieurs « définitions d’effet ». On ajoute des **degrés** (niveaux) : chacun porte les propriétés de lancement (PA, portée, ligne de vue, zone, relance, limites et incantation) et des **effets** (frapper, soigner…). Un degré peut reprendre les effets du précédent pour éviter de tout ressaisir. Les effets proposent le bon outil selon l’action : élément, caractéristique recherchable, créature ou état, avec une durée propre. La portée se saisit simplement sous la forme `4` ou `2-8` et la zone retrouve son aperçu et son aide de notation. Le ciblage, la résolution et l’utilisation en réaction restent des propriétés globales du sort. À l’affichage, des onglets de niveau mettent à jour les propriétés visibles. L’éditeur montre aussi les monstres, PNJ et classes qui utilisent le sort.

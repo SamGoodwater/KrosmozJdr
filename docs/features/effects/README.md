@@ -6,20 +6,20 @@ Le système d'effets décrit les effets de sorts et d'objets : degrés, effets (
 
 - Modèles : `SpellDegree`, `SpellDegreeEffect` (catalogue technique `SubEffect`).
 - Un sort a **une** progression de degrés. Vocabulaire UI : **effet** (ex-sous-effet).
-- Propriétés de lancement (PA, PO, LdV, zone…) : défauts sur `Spell` ; surcharge par degré.
+- Propriétés de lancement (PA, PO, LdV, zone…) : défauts sur `Spell` ; surcharge par degré via
+  `properties_source` (`own` | `previous` | `spell`).
   Le ciblage, le mode de résolution et l’utilisation en réaction restent globaux au sort.
-- `inherits_effects` : un nouveau degré reprend les effets du précédent sans duplication.
+- Création d’un degré : copie matérialisée du précédent (propriétés + effets éditables).
+  `inherits_effects` reste disponible pour réutiliser les effets du précédent sans duplication.
 - Services : `SpellDegreeResolver`, `SpellDegreeService`, `SpellDegreesSerializer`, `SpellDegreeLegacyMigrator`.
 - Commande : `php artisan spells:migrate-degrees [--dry-run] [--spell=]`.
-- API : `/api/spells/{spell}/degrees` (+ materialize / sync effets).
-- UI : `SpellDegreesEditor` (édition), `SpellEffectsJournal` (onglets niveau à l’affichage).
-- L’éditeur présente un champ de portée unique (`4` ou `2-8`) tout en conservant `po_min` / `po_max`
-  en stockage. Chaque degré expose les contraintes de lancement, puis autant d’effets que nécessaire.
-- La zone utilise partout le même champ assisté : aperçu graphique, validation et rappel des notations
-  (`point`, `line-1xL`, `circle-a-b`, etc.).
-- Les lignes d’effet sont spécialisées : élément pour dégâts/soins/vol de vie, catalogue complet des
-  caractéristiques pour bonus/malus/vol, recherche de créature pour invocation et recherche d’état.
-  La durée (`duration_formula`) appartient à chaque effet.
+- API : `/api/spells/{spell}/degrees` (CRUD + `PUT` bulk + materialize / sync effets).
+- UI édition : containers thématiques (`EntityEditContainer`), `SpellDegreesEditor`,
+  `SpellCastPropertiesGrid`, `AreaShapePicker`, `SpellEffectEditorRow` ; un seul Enregistrer
+  (bulk degrés puis sort). Affichage : `SpellEffectsJournal`.
+- Portée unique (`4` ou `2-8`) ; zone par icônes de formes + paramètres numériques (notation Krosmoz).
+- Effets : élément / caractéristique (icônes et couleurs), créature, état ; `value_formula` et
+  `value_formula_crit` ; durée (`duration_formula`) par effet.
 - Une invocation manuelle stocke `params.creature_id`. `params.monster_id` reste lu pour la
   compatibilité avec les imports et données antérieures.
 - Scraping : après intégration legacy, miroir via `rebuildFromLegacy`.

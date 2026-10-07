@@ -39,7 +39,7 @@ const iconSource = computed(() => meta.value?.icon || props.icon);
             </span>
         </div>
         <slot />
-        <p v-if="helper" class="mt-1 text-[0.7rem] leading-snug text-base-content/60">
+        <p v-if="helper" class="mt-1 text-xs leading-snug text-base-content/70">
             {{ helper }}
         </p>
     </div>

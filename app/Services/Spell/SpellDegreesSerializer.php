@@ -59,13 +59,23 @@ final class SpellDegreesSerializer
             $effects = $this->resolver->resolveEffects($spell, $degree);
             $source = $this->resolver->effectsSourceDegree($spell, $degree);
 
+            $propertiesSource = in_array(
+                (string) $degree->properties_source,
+                SpellDegree::PROPERTIES_SOURCES,
+                true
+            )
+                ? (string) $degree->properties_source
+                : SpellDegree::PROPERTIES_SOURCE_OWN;
+
             return [
                 'id' => $degree->id,
                 'position' => $degree->position,
                 'required_level' => $degree->required_level,
                 'inherits_effects' => (bool) $degree->inherits_effects,
+                'properties_source' => $propertiesSource,
                 'effects_source_degree_id' => $source?->id,
                 'properties' => $this->publicProperties($properties),
+                'resolved_properties' => $this->publicProperties($properties),
                 'property_sources' => $this->propertySources($properties),
                 'area' => $properties['area'] ?? null,
                 'rows' => $effects->map(function (SpellDegreeEffect $pivot) use (

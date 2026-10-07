@@ -8,14 +8,21 @@
   - `app/Models/SpellDegree.php`, `SpellDegreeEffect.php`
   - `app/Services/Spell/SpellDegreeResolver.php`, `SpellDegreeService.php`, `SpellDegreesSerializer.php`
   - `php artisan spells:migrate-degrees` (+ `--dry-run`, `--spell=`) : legacy `effect_spell` → `spell_degrees`
-  - API : `GET/POST /api/spells/{spell}/degrees`, PATCH/DELETE degré, `materialize-effects`, sync effets
-  - UI : `SpellDegreesEditor.vue` (édition), `SpellEffectsJournal.vue` (affichage onglets niveau)
+  - API : `GET/POST /api/spells/{spell}/degrees`, `PUT` bulk (`sync-bulk`), PATCH/DELETE degré,
+    `materialize-effects`, sync effets
+  - `properties_source` sur `spell_degrees` : `own` | `previous` | `spell` (résolu par
+    `SpellDegreeResolver`). Création de degré = copie matérialisée (props + effets, pas d’héritage
+    d’effets par défaut).
+  - UI édition : `SpellEditFormContent` + `SpellDegreesEditor` + `SpellCastPropertiesGrid` +
+    `AreaShapePicker` + `SpellEffectEditorRow` ; enregistrement unique (bulk degrés puis sort).
+    Conteneurs partagés : `EntityEditGrid` / `EntityEditContainer`. Porteurs enrichis +
+    `SpellHoldersPanel`. Affichage lecture : `SpellEffectsJournal.vue`.
   - Portée UI compacte `x` / `x-y` (`po_min` + `po_max` en stockage) ; propriétés effectives du
     degré actif dans Full, premier degré dans Minimal/Line/table
   - `target_type`, résolution et `allows_reaction` restent globaux sur `Spell`; `area` existe aussi
-    sur `Spell` comme repli sans degré. Champ zone partagé avec aperçu + validation de notation.
-  - Effets spécialisés : élément, caractéristique recherchable, créature (`params.creature_id`),
-    état et `duration_formula`; `monster_id` reste compatible legacy
+    sur `Spell` comme repli sans degré. Zone : sélecteur de formes + notation Krosmoz.
+  - Effets : élément/carac (icônes couleurs), créature (`params.creature_id`), état,
+    `value_formula` + `value_formula_crit`, `duration_formula`; `monster_id` legacy OK
   - Vocabulaire UI : **effet** (= ancien sous-effet) ; catalogue technique `SubEffect` conservé
 - `app/Models/Effect*.php`, `app/Models/ObjectEffect.php` — encore utilisés objets + legacy sorts
 - `GET /api/object-effects` — liste par fiche ; `view` sur le parent + `visibleToUser` sur le monstre invoqué (session `web`)

@@ -607,13 +607,6 @@
     "file": "feedback/FeedbackFab.vue"
   },
   {
-    "name": "SpellEffectsUnifiedSection",
-    "description": "Panneau unifié « effets du sort » : liaison pivot effect_spell, édition par définition (degrés + seuils).",
-    "props": [],
-    "slots": [],
-    "file": "entity/SpellEffectsUnifiedSection.vue"
-  },
-  {
     "name": "SpellEditModal",
     "description": "Modal d’édition sort : même contenu que la page {@link Pages/entity/spell/Edit} (données chargées via JSON pour rester sur la liste).",
     "props": [],
@@ -978,5 +971,20 @@
     ],
     "slots": [],
     "file": "data-display/CharacteristicsCard.vue"
+  },
+  {
+    "name": "SpellEffectEditorRow",
+    "description": "Ligne d’effet d’un degré de sort (action, contexte, valeur, critique, durée).",
+    "file": "entity/SpellEffectEditorRow.vue",
+    "props": [
+      "row",
+      "index",
+      "options"
+    ],
+    "emits": [
+      "dirty",
+      "duplicate",
+      "remove"
+    ]
   }
 ]

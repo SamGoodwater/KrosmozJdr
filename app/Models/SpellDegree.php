@@ -21,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property int $position
  * @property int|null $required_level
  * @property bool $inherits_effects
+ * @property string $properties_source
  * @property string|null $pa
  * @property string|null $po_min
  * @property string|null $po_max
@@ -87,11 +88,26 @@ class SpellDegree extends Model
         'ritual_available',
     ];
 
+    /** Sources du bloc de propriétés de lancement. */
+    public const PROPERTIES_SOURCE_OWN = 'own';
+
+    public const PROPERTIES_SOURCE_PREVIOUS = 'previous';
+
+    public const PROPERTIES_SOURCE_SPELL = 'spell';
+
+    /** @var list<string> */
+    public const PROPERTIES_SOURCES = [
+        self::PROPERTIES_SOURCE_OWN,
+        self::PROPERTIES_SOURCE_PREVIOUS,
+        self::PROPERTIES_SOURCE_SPELL,
+    ];
+
     protected $fillable = [
         'spell_id',
         'position',
         'required_level',
         'inherits_effects',
+        'properties_source',
         'pa',
         'po_min',
         'po_max',
@@ -124,6 +140,7 @@ class SpellDegree extends Model
         'position' => 'integer',
         'required_level' => 'integer',
         'inherits_effects' => 'boolean',
+        'properties_source' => 'string',
         'po_editable' => 'boolean',
         'sight_line' => 'boolean',
         'cast_in_line' => 'boolean',

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, afterEach } from 'vitest';
 import { mount } from '@vue/test-utils';
-import SpellDegreeEffectRow from '@/Pages/Organismes/entity/SpellDegreeEffectRow.vue';
+import SpellDegreeEffectRow from '@/Pages/Organismes/entity/SpellEffectEditorRow.vue';
 
 vi.mock('@/Composables/store/useNotificationStore', () => ({
     useNotificationStore: () => ({
@@ -93,11 +93,12 @@ function mountRow(row, index = 0) {
         props: { row, index, options },
         global: {
             stubs: {
-                SelectSearchField: {
+                EffectContextCharacteristic: {
                     props: ['label', 'options', 'modelValue'],
                     template:
-                        '<div data-cy="char-select">{{ label }}|{{ (options || []).map(o => o.value).join(",") }}</div>',
+                        '<div data-cy="char-select">{{ label }}|{{ (options || []).map(o => o.value || o.key).join(",") }}</div>',
                 },
+                SelectSearchField: true,
                 EntityPickerCore: {
                     props: ['entityType'],
                     template: '<div data-cy="entity-picker">{{ entityType }}</div>',
@@ -117,6 +118,7 @@ describe('SpellDegreeEffectRow', () => {
         expect(wrapper.find('[data-cy="char-select"]').text()).not.toContain('agi');
         expect(wrapper.text()).toContain('Vol de vie');
         expect(wrapper.text()).toContain('Durée de l’effet');
+        expect(wrapper.text()).toContain('Valeur critique');
     });
 
     it('utilise characteristics_object pour booster', () => {

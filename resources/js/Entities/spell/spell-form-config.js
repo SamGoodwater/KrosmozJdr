@@ -301,25 +301,24 @@ export function buildSpellFormFieldsConfig(options = {}) {
     };
 }
 
-/** Sections formulaire — édition : identité, propriétés globales, repli sans degrés, puis admin. */
+/** Sections formulaire — édition : description, globales, cast de base (si pas de degrés), métadonnées. */
 export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
-        title: 'Identité & description',
-        subtitle: 'Nom, texte et illustration du sort.',
-        fieldKeys: ['name', 'description', 'image'],
+        title: 'Description du sort',
+        subtitle: 'Nom, texte et illustration.',
+        fieldKeys: ['name', 'description', 'image', 'effect'],
     },
     {
-        id: 'spell_properties',
-        title: 'Propriétés du sort',
-        subtitle: 'Informations globales qui ne sont pas redéfinies par les degrés.',
+        id: 'global_properties',
+        title: 'Propriétés hors degrés',
+        subtitle: 'Catégorie, types, résolution — non surchargées par les degrés.',
         fieldKeys: [
             'category',
             'state',
             'spellTypes',
             'is_magic',
             'target_type',
-            'area',
             'allows_reaction',
             'resolution_mode',
             'attack_characteristic_key',
@@ -330,19 +329,19 @@ export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
         ],
     },
     {
-        id: 'fallback_properties',
-        title: 'Propriétés sans degrés ni effets',
+        id: 'base_cast_properties',
+        title: 'Propriétés de lancement (sort de base)',
         subtitle:
-            'Ces valeurs servent uniquement aux sorts descriptifs qui ne possèdent aucun degré ni effet structuré.',
+            'Utilisées uniquement si le sort n’a aucun degré. Masquées automatiquement dès qu’un degré existe.',
         collapsedByDefault: true,
-        collapsedActionLabel: 'À remplir uniquement si le sort n’a ni degrés ni effets',
-        expandedActionLabel: 'Masquer ces propriétés',
+        collapsedActionLabel: 'Afficher (sort sans degrés)',
+        expandedActionLabel: 'Masquer',
         fieldKeys: [
             'level',
             'pa',
-            'effect',
             'po_min',
             'po_editable',
+            'area',
             'element',
             'sight_line',
             'cast_in_line',
@@ -358,8 +357,8 @@ export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
         ],
     },
     {
-        id: 'admin',
-        title: 'Métadonnées & droits',
+        id: 'metadata',
+        title: 'Métadonnées',
         subtitle: 'Identifiants externes, synchro, niveaux d’accès et horodatage.',
         fieldKeys: [
             'official_id',

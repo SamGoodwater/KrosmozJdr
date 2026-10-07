@@ -25,6 +25,7 @@ class SpellDegreeFactory extends Factory
             'position' => 1,
             'required_level' => 1,
             'inherits_effects' => false,
+            'properties_source' => SpellDegree::PROPERTIES_SOURCE_OWN,
             'pa' => '3',
             'po_min' => '1',
             'po_max' => '6',

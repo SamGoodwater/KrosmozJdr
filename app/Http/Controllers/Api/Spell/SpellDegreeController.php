@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\Spell;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Spell\StoreSpellDegreeRequest;
 use App\Http\Requests\Spell\SyncSpellDegreeEffectsRequest;
+use App\Http\Requests\Spell\SyncSpellDegreesBulkRequest;
 use App\Http\Requests\Spell\UpdateSpellDegreeRequest;
 use App\Models\Entity\Spell;
 use App\Models\SpellDegree;
@@ -49,6 +50,19 @@ class SpellDegreeController extends Controller
             'data' => $this->serializer->serialize($spell->fresh()),
             'degree_id' => $degree->id,
         ], 201);
+    }
+
+    /**
+     * Enregistrement groupé de tous les degrés modifiés (un seul bouton Enregistrer).
+     */
+    public function syncBulk(SyncSpellDegreesBulkRequest $request, Spell $spell): JsonResponse
+    {
+        $this->authorize('update', $spell);
+        $this->service->syncDegreesBulk($spell, $request->validated('degrees') ?? []);
+
+        return response()->json([
+            'data' => $this->serializer->serialize($spell->fresh()),
+        ]);
     }
 
     public function update(UpdateSpellDegreeRequest $request, Spell $spell, SpellDegree $degree): JsonResponse

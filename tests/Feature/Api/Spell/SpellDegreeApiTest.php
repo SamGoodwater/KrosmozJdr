@@ -80,14 +80,9 @@ final class SpellDegreeApiTest extends TestCase
         $secondId = (int) $second->json('degree_id');
         $degrees = $second->json('data.degrees');
         $this->assertCount(2, $degrees);
-        $this->assertTrue($degrees[1]['inherits_effects']);
+        $this->assertFalse($degrees[1]['inherits_effects']);
+        $this->assertSame('own', $degrees[1]['properties_source']);
         $this->assertCount(1, $degrees[1]['rows']);
-
-        $materialized = $this->actingAs($gm)->postJson(
-            "/api/spells/{$spell->id}/degrees/{$secondId}/materialize-effects"
-        );
-        $materialized->assertOk();
-        $this->assertFalse($materialized->json('data.degrees.1.inherits_effects'));
 
         $this->actingAs($gm)->putJson("/api/spells/{$spell->id}/degrees/{$secondId}/effects", [
             'effects' => [
@@ -101,5 +96,53 @@ final class SpellDegreeApiTest extends TestCase
         $index = $this->actingAs($gm)->getJson("/api/spells/{$spell->id}/degrees");
         $index->assertOk();
         $this->assertSame('4d6', $index->json('data.degrees.1.rows.0.params.value_formula'));
+    }
+
+    public function test_game_master_can_sync_degrees_bulk(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $spell = Spell::factory()->create(['created_by' => $gm->id, 'write_level' => 0, 'pa' => '3']);
+        $sub = SubEffect::query()->create([
+            'slug' => 'frapper-bulk-'.uniqid(),
+            'type_slug' => 'frapper',
+            'template_text' => 'Dégâts [value].',
+            'variables_allowed' => ['value'],
+            'param_schema' => [],
+        ]);
+
+        $first = $this->actingAs($gm)->postJson("/api/spells/{$spell->id}/degrees", [
+            'required_level' => 1,
+            'inherits_effects' => false,
+            'pa' => '3',
+            'area' => 'point',
+            'effects' => [[
+                'sub_effect_id' => $sub->id,
+                'params' => ['value_formula' => '1d6'],
+            ]],
+        ]);
+        $first->assertCreated();
+        $degreeId = (int) $first->json('degree_id');
+
+        $bulk = $this->actingAs($gm)->putJson("/api/spells/{$spell->id}/degrees", [
+            'degrees' => [[
+                'id' => $degreeId,
+                'required_level' => 2,
+                'properties_source' => 'spell',
+                'pa' => '5',
+                'inherits_effects' => false,
+                'effects' => [[
+                    'sub_effect_id' => $sub->id,
+                    'params' => [
+                        'value_formula' => '2d6',
+                        'value_formula_crit' => '3d6',
+                    ],
+                ]],
+            ]],
+        ]);
+        $bulk->assertOk();
+        $this->assertSame(2, $bulk->json('data.degrees.0.required_level'));
+        $this->assertSame('spell', $bulk->json('data.degrees.0.properties_source'));
+        $this->assertSame('2d6', $bulk->json('data.degrees.0.rows.0.params.value_formula'));
+        $this->assertSame('3d6', $bulk->json('data.degrees.0.rows.0.params.value_formula_crit'));
     }
 }

@@ -50,42 +50,56 @@ final class SpellDegreeResolver
     }
 
     /**
-     * Propriétés de lancement effectives (degré puis repli sur le sort).
-     * Sans degré : propriétés du sort uniquement (area reste null sauf si déjà sur le sort via accessor legacy).
+     * Propriétés de lancement effectives selon `properties_source` du degré.
+     *
+     * - `spell` : valeurs du sort de base
+     * - `previous` : résolution du degré précédent (ou sort si premier)
+     * - `own` (défaut) : valeur du degré si non null, sinon repli sort
      *
      * @return array<string, mixed>
      */
     public function resolveProperties(Spell $spell, ?SpellDegree $degree): array
     {
-        $out = [];
-        foreach (SpellDegree::PROPERTY_KEYS as $key) {
-            if ($key === 'area') {
-                $value = $degree?->area;
-                if ($value === null || $value === '') {
-                    $storedArea = $spell->getRawOriginal('area');
-                    $value = is_string($storedArea) && $storedArea !== '' ? $storedArea : null;
-                }
-                $out[$key] = $value;
-                $out[$key.'_source'] = $degree !== null && $degree->area !== null && $degree->area !== ''
-                    ? 'degree'
-                    : ($value !== null ? 'spell' : 'none');
-
-                continue;
-            }
-
-            $degreeValue = $degree?->getAttribute($key);
-            if ($degree !== null && $degreeValue !== null) {
-                $out[$key] = $degreeValue;
-                $out[$key.'_source'] = 'degree';
-
-                continue;
-            }
-
-            $out[$key] = $spell->getAttribute($key);
-            $out[$key.'_source'] = 'spell';
+        if ($degree === null) {
+            return $this->propertiesFromSpell($spell, 'spell');
         }
 
-        return $out;
+        $source = $this->normalizePropertiesSource($degree->properties_source);
+
+        if ($source === SpellDegree::PROPERTIES_SOURCE_SPELL) {
+            return $this->propertiesFromSpell($spell, 'spell');
+        }
+
+        if ($source === SpellDegree::PROPERTIES_SOURCE_PREVIOUS) {
+            $previous = $this->previousDegree($spell, $degree);
+            if ($previous === null) {
+                return $this->propertiesFromSpell($spell, 'spell');
+            }
+
+            $resolved = $this->resolveProperties($spell, $previous);
+
+            return $this->retagSources($resolved, 'previous');
+        }
+
+        return $this->resolveOwnProperties($spell, $degree);
+    }
+
+    /**
+     * Degré immédiatement précédent (position inférieure).
+     */
+    public function previousDegree(Spell $spell, SpellDegree $degree): ?SpellDegree
+    {
+        $spell->loadMissing('degrees');
+        $ordered = $spell->degrees->sortBy('position')->values();
+        $idx = $ordered->search(fn (SpellDegree $d) => $d->id === $degree->id);
+        if ($idx === false || $idx < 1) {
+            return null;
+        }
+
+        /** @var SpellDegree $previous */
+        $previous = $ordered[(int) $idx - 1];
+
+        return $previous;
     }
 
     /**
@@ -156,6 +170,7 @@ final class SpellDegreeResolver
                 'position' => $degree->position,
                 'required_level' => $degree->required_level,
                 'inherits_effects' => (bool) $degree->inherits_effects,
+                'properties_source' => $this->normalizePropertiesSource($degree->properties_source),
             ],
             'properties' => $this->resolveProperties($spell, $degree),
             'effects' => $effects->map(fn (SpellDegreeEffect $row) => $this->serializeEffectRow($row))->all(),
@@ -195,5 +210,91 @@ final class SpellDegreeResolver
             ] : null,
             'sub_effect_id' => $row->sub_effect_id,
         ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function resolveOwnProperties(Spell $spell, SpellDegree $degree): array
+    {
+        $out = [];
+        foreach (SpellDegree::PROPERTY_KEYS as $key) {
+            if ($key === 'area') {
+                $value = $degree->area;
+                if ($value === null || $value === '') {
+                    $storedArea = $spell->getRawOriginal('area');
+                    $value = is_string($storedArea) && $storedArea !== '' ? $storedArea : null;
+                }
+                $out[$key] = $value;
+                $out[$key.'_source'] = $degree->area !== null && $degree->area !== ''
+                    ? 'degree'
+                    : ($value !== null ? 'spell' : 'none');
+
+                continue;
+            }
+
+            $degreeValue = $degree->getAttribute($key);
+            if ($degreeValue !== null) {
+                $out[$key] = $degreeValue;
+                $out[$key.'_source'] = 'degree';
+
+                continue;
+            }
+
+            $out[$key] = $spell->getAttribute($key);
+            $out[$key.'_source'] = 'spell';
+        }
+
+        return $out;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function propertiesFromSpell(Spell $spell, string $sourceTag): array
+    {
+        $out = [];
+        foreach (SpellDegree::PROPERTY_KEYS as $key) {
+            if ($key === 'area') {
+                $storedArea = $spell->getRawOriginal('area');
+                $value = is_string($storedArea) && $storedArea !== '' ? $storedArea : null;
+                $out[$key] = $value;
+                $out[$key.'_source'] = $value !== null ? $sourceTag : 'none';
+
+                continue;
+            }
+
+            $out[$key] = $spell->getAttribute($key);
+            $out[$key.'_source'] = $sourceTag;
+        }
+
+        return $out;
+    }
+
+    /**
+     * @param  array<string, mixed>  $properties
+     * @return array<string, mixed>
+     */
+    private function retagSources(array $properties, string $sourceTag): array
+    {
+        foreach (SpellDegree::PROPERTY_KEYS as $key) {
+            $srcKey = $key.'_source';
+            if (($properties[$srcKey] ?? null) === 'none') {
+                continue;
+            }
+            $properties[$srcKey] = $sourceTag;
+        }
+
+        return $properties;
+    }
+
+    private function normalizePropertiesSource(mixed $raw): string
+    {
+        $value = is_string($raw) ? trim($raw) : SpellDegree::PROPERTIES_SOURCE_OWN;
+        if (! in_array($value, SpellDegree::PROPERTIES_SOURCES, true)) {
+            return SpellDegree::PROPERTIES_SOURCE_OWN;
+        }
+
+        return $value;
     }
 }

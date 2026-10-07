@@ -21,6 +21,13 @@
 - `vite.config.js` `manualChunks` : uniquement `node_modules` (`vendor` / `cally` / `utils`). Ne pas extraire `Main.vue` ni `Utils/Formatters` : cycle de chunks au boot.
 - Écran de chargement (`SiteLoadingOverlay`) : astuces bas centrées (`loadingTips` via `shareOnce`, table `loading_tips`, admin `/admin/loading-tips`). Tirage pondéré `pickLoadingTip` (featured ×3) ; `duration_seconds` (2–30, défaut 8) ; lien optionnel nouvel onglet.
 
+## Édition d’entité (pattern)
+
+- Conteneurs thématiques : `EntityEditContainer` + grille `EntityEditGrid`
+  (`Molecules/entity/shared/`). Référence d’usage : édition sort
+  (`SpellEditFormContent`, slot `after-sections` sur `EntityEditForm`).
+- À généraliser ensuite aux fiches monstre / objet.
+
 ## Descendre
 
 - [inertia/_ai.md](inertia/_ai.md)

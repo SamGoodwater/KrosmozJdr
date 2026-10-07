@@ -19,6 +19,8 @@ Route::prefix('spells')->group(function () {
     Route::middleware(['web', 'auth', 'role:game_master'])->group(function () {
         Route::post('{spell}/degrees', [SpellDegreeController::class, 'store'])
             ->name('spells.degrees.store');
+        Route::put('{spell}/degrees', [SpellDegreeController::class, 'syncBulk'])
+            ->name('spells.degrees.sync-bulk');
         Route::match(['put', 'patch'], '{spell}/degrees/{degree}', [SpellDegreeController::class, 'update'])
             ->name('spells.degrees.update');
         Route::delete('{spell}/degrees/{degree}', [SpellDegreeController::class, 'destroy'])

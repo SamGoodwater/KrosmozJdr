@@ -282,16 +282,16 @@ function spellSectionColClass(sec) {
         return '';
     }
     if (sec.id === 'general') {
-        return 'min-w-0 lg:col-span-1 xl:col-span-2';
+        return 'min-w-0 lg:col-span-1';
     }
-    if (sec.id === 'spell_properties') {
-        return 'min-w-0 lg:col-span-2 xl:col-span-2';
+    if (sec.id === 'spell_properties' || sec.id === 'global_properties') {
+        return 'min-w-0 lg:col-span-1';
     }
-    if (sec.id === 'fallback_properties') {
-        return 'min-w-0 md:col-span-2 lg:col-span-3 xl:col-span-4';
+    if (sec.id === 'fallback_properties' || sec.id === 'base_cast_properties') {
+        return 'min-w-0 lg:col-span-2 2xl:col-span-1';
     }
-    if (sec.id === 'admin') {
-        return 'min-w-0 md:col-span-2 lg:col-span-3 xl:col-span-4';
+    if (sec.id === 'admin' || sec.id === 'metadata') {
+        return 'min-w-0 lg:col-span-2 2xl:col-span-1';
     }
     return '';
 }
@@ -1194,6 +1194,11 @@ async function handleEditPageAction(actionKey) {
     await dispatchEntityAction(actionKey, props.entity);
 }
 
+defineExpose({
+    dispatchEntityAction: (actionKey, entity = props.entity) =>
+        dispatchEntityAction(actionKey, entity),
+});
+
 </script>
 
 <template>
@@ -1322,6 +1327,9 @@ async function handleEditPageAction(actionKey) {
                     </div>
                 </template>
             </div>
+
+            <!-- Contenu métier entre les sections et le pied (ex. degrés de sort). -->
+            <slot name="after-sections" />
 
             <!-- Dock flottant (pas de barre pleine largeur) vs pied classique -->
             <template v-if="useEditActionDock">

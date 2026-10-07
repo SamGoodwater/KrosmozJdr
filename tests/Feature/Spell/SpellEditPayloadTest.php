@@ -43,7 +43,14 @@ final class SpellEditPayloadTest extends TestCase
         $response->assertOk()
             ->assertJsonPath('spellHolders.monsters.0.id', $monster->id)
             ->assertJsonPath('spellHolders.npcs.0.id', $npc->id)
-            ->assertJsonPath('spellHolders.breeds.0.id', $breed->id);
+            ->assertJsonPath('spellHolders.breeds.0.id', $breed->id)
+            ->assertJsonStructure([
+                'spellHolders' => [
+                    'monsters' => [['id', 'name', 'href', 'level', 'stats', 'accessible_degree', 'monster']],
+                    'npcs' => [['id', 'name', 'href', 'stats']],
+                    'breeds' => [['id', 'name', 'href']],
+                ],
+            ]);
     }
 
     private function createCreature(string $name, int $creatorId): int
