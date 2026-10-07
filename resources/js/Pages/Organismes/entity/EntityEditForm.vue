@@ -1184,9 +1184,12 @@ const submit = async () => {
             emit('submit', form.data());
         },
         onError: (errors) => {
+            const first = Object.values(errors || {})
+                .flat()
+                .find((msg) => typeof msg === 'string' && msg.trim() !== '');
             notificationStore.error(
-                'Erreur lors de la sauvegarde',
-                { duration: 5000, placement: 'top-right' }
+                first || 'Erreur lors de la sauvegarde',
+                { duration: 8000, placement: 'top-right' }
             );
             console.error('Erreurs de validation:', errors);
         },

@@ -181,6 +181,7 @@ defineExpose({
     flushSave: () => flushAll(),
     flushAll,
     isDirty: dirty,
+    errorMessage,
     reloadDegrees,
     hasDegrees: computed(() => degrees.value.length > 0),
 });

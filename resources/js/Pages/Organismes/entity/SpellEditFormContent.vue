@@ -85,11 +85,21 @@ const headerSaveLabel = computed(
 
 /** PATCH degrés (bulk) puis le formulaire entité. */
 async function beforeSpellSubmitAsync() {
-    const fn = spellDegreesEditorRef.value?.flushAll || spellDegreesEditorRef.value?.flushSave;
+    const editor = spellDegreesEditorRef.value;
+    const fn = editor?.flushAll || editor?.flushSave;
     if (typeof fn !== "function") {
         return true;
     }
-    return fn();
+    const ok = await fn();
+    if (ok === false) {
+        const detail =
+            editor?.errorMessage?.value ||
+            editor?.errorMessage ||
+            "Enregistrement des degrés impossible.";
+        // Remonter une erreur explicite (sinon le submit s’arrête sans toast).
+        throw new Error(typeof detail === "string" ? detail : "Enregistrement des degrés impossible.");
+    }
+    return true;
 }
 
 function confirmDelete() {

@@ -236,8 +236,13 @@ export function useSpellDegreesDraft(options) {
             required_level: deg.required_level,
             inherits_effects: Boolean(deg.inherits_effects),
             properties_source: deg.properties_source || 'own',
-            ...props,
         };
+        // Uniquement les clés de lancement du degré (évite element/target_type/ritual résiduels).
+        for (const key of SPELL_DEGREE_PROPERTY_KEYS) {
+            if (Object.prototype.hasOwnProperty.call(props, key)) {
+                body[key] = props[key];
+            }
+        }
         if (!deg.inherits_effects) {
             body.effects = (deg.rows || []).map((row, i) => serializeEffectRowForApi(row, i));
         }
