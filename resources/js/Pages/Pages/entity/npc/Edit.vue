@@ -110,7 +110,14 @@ setPageTitle(`Modifier le PNJ : ${npcName.value}`);
             route-param-key="npc"
             :can-delete="canDelete"
             delete-confirm-message="Supprimer ce PNJ ? Il sera placé en corbeille (récupération possible côté admin)."
-        />
+        >
+            <template #subtitle>
+                Édition · #{{ npc.id }}
+                <span v-if="npc.creature">
+                    · Créature : {{ npc.creature.name }}
+                </span>
+            </template>
+        </EntityEditHeader>
 
         <EntityEditForm
             ref="entityEditFormRef"

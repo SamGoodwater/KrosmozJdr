@@ -86,8 +86,10 @@ async function beforeSpellSubmitAsync() {
     return true;
 }
 
-function onDegreesChanged() {
-    // Compteur local retiré : le container des propriétés communes reste toujours visible.
+function onHeaderDeleted() {
+    if (props.embeddedInModal) {
+        emit('cancel');
+    }
 }
 </script>
 
@@ -107,7 +109,7 @@ function onDegreesChanged() {
             header-data-cy="spell-edit-header"
             delete-confirm-message="Supprimer ce sort ? Il sera placé en corbeille (récupération possible côté admin)."
             @cancel="emit('cancel')"
-            @deleted="embeddedInModal ? emit('cancel') : undefined"
+            @deleted="onHeaderDeleted"
         >
             <template #left>
                 <SpellHoldersPanel :spell-holders="spellHolders" />
@@ -154,7 +156,6 @@ function onDegreesChanged() {
                         :spell-degrees="spellDegrees"
                         :effect-form-options="effectFormOptions"
                         :embedded-in-modal="embeddedInModal"
-                        @changed="onDegreesChanged"
                     />
                 </EntityEditContainer>
             </template>

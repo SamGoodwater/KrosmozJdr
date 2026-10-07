@@ -11,7 +11,11 @@ vi.mock('@inertiajs/vue3', () => ({
 const wrappers = [];
 
 beforeEach(() => {
-    global.route = vi.fn((name, params) => `/${name}/${params ? Object.values(params).join('/') : ''}`);
+    global.route = vi.fn((name, params, absolute) => {
+        const path = `/${name}/${params ? Object.values(params).join('/') : ''}`;
+        if (absolute === false) return path;
+        return `http://example.test${path}`;
+    });
 });
 
 afterEach(() => {
@@ -96,5 +100,24 @@ describe('EntityEditHeader', () => {
         await flushPromises();
         expect(wrapper.find('[data-cy="entity-edit-delete"]').exists()).toBe(false);
         expect(wrapper.text()).not.toContain('Supprimer');
+    });
+
+    it('supprime via une URL relative Ziggy', async () => {
+        const { router } = await import('@inertiajs/vue3');
+        vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+        const { wrapper } = mountHeader();
+        await flushPromises();
+        await wrapper.find('[data-cy="entity-edit-delete"]').trigger('click');
+
+        expect(global.route).toHaveBeenCalledWith(
+            'entities.items.delete',
+            { item: 42 },
+            false,
+        );
+        expect(router.delete).toHaveBeenCalledWith(
+            '/entities.items.delete/42',
+            expect.objectContaining({ onSuccess: expect.any(Function) }),
+        );
     });
 });

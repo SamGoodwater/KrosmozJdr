@@ -26,7 +26,7 @@ const props = defineProps({
     /** Segment pluriel (ex. `spells`, `items`) pour EntityActions. */
     entityType: { type: String, required: true },
     entity: { type: Object, required: true },
-    /** Ref vers EntityEditForm (expose submit, form, stateField…). */
+    /** Instance exposée d’EntityEditForm (submit, form, stateField…). */
     formRef: { type: Object, default: null },
     title: { type: String, default: '' },
     subtitle: { type: String, default: '' },
@@ -55,9 +55,13 @@ const formApi = computed(() => props.formRef ?? null);
 
 const headerStateField = computed(() => formApi.value?.stateField ?? null);
 const headerForm = computed(() => formApi.value?.form ?? null);
-const headerProcessing = computed(() =>
-    Boolean(formApi.value?.processing?.value ?? formApi.value?.processing),
-);
+const headerProcessing = computed(() => {
+    const processing = formApi.value?.processing;
+    if (processing && typeof processing === 'object' && 'value' in processing) {
+        return Boolean(processing.value);
+    }
+    return Boolean(processing);
+});
 const headerSaveLabel = computed(
     () => formApi.value?.primarySaveLabel ?? ACTION.save.label,
 );
@@ -66,16 +70,35 @@ const resolvedShowRoute = computed(
     () => props.showRouteName || `entities.${props.entityType}.show`,
 );
 
-const entityId = computed(() => props.entity?.id ?? null);
+const entityId = computed(() => {
+    const id = props.entity?.id;
+    if (id == null || id === '') return null;
+    return id;
+});
 
 const displayTitle = computed(
     () => props.title || props.entity?.name || 'Sans nom',
 );
 
+const canShowDelete = computed(
+    () => Boolean(props.canDelete && props.deleteRouteName && entityId.value),
+);
+
+/**
+ * URL relative Ziggy (évite cross-origin localhost ≠ 127.0.0.1).
+ *
+ * @param {string} name
+ * @param {Record<string, unknown>} params
+ * @returns {string}
+ */
+function relativeRoute(name, params) {
+    return route(name, params, false);
+}
+
 function goToShow() {
     const id = entityId.value;
     if (!id) return;
-    router.visit(route(resolvedShowRoute.value, { [props.routeParamKey]: id }));
+    router.visit(relativeRoute(resolvedShowRoute.value, { [props.routeParamKey]: id }));
 }
 
 async function handleOptionsAction(actionKey) {
@@ -84,12 +107,18 @@ async function handleOptionsAction(actionKey) {
         return;
     }
     if (actionKey === 'copy-link') {
-        const href = route(resolvedShowRoute.value, {
-            [props.routeParamKey]: entityId.value,
-        });
-        await navigator.clipboard?.writeText(
-            new URL(href, window.location.origin).toString(),
-        );
+        const id = entityId.value;
+        if (!id || typeof navigator?.clipboard?.writeText !== 'function') return;
+        try {
+            const href = relativeRoute(resolvedShowRoute.value, {
+                [props.routeParamKey]: id,
+            });
+            await navigator.clipboard.writeText(
+                new URL(href, window.location.origin).toString(),
+            );
+        } catch {
+            // Presse-papiers indisponible (permissions / contexte non sécurisé).
+        }
         return;
     }
     if (actionKey === 'refresh' || actionKey === 'view-dofusdb') {
@@ -101,13 +130,13 @@ async function handleOptionsAction(actionKey) {
 }
 
 function confirmDelete() {
+    if (!canShowDelete.value) return;
     const id = entityId.value;
-    if (!id || !props.deleteRouteName) return;
     const message =
-        props.deleteConfirmMessage ||
-        'Supprimer cette fiche ? Elle sera placée en corbeille (récupération possible côté admin).';
+        props.deleteConfirmMessage
+        || 'Supprimer cette fiche ? Elle sera placée en corbeille (récupération possible côté admin).';
     if (!window.confirm(message)) return;
-    router.delete(route(props.deleteRouteName, { [props.routeParamKey]: id }), {
+    router.delete(relativeRoute(props.deleteRouteName, { [props.routeParamKey]: id }), {
         onSuccess: () => emit('deleted'),
     });
 }
@@ -126,7 +155,10 @@ function onHeaderReset() {
 }
 
 function onHeaderSave() {
-    formApi.value?.submit?.();
+    if (headerProcessing.value) return;
+    const submit = formApi.value?.submit;
+    if (typeof submit !== 'function') return;
+    submit();
 }
 </script>
 
@@ -247,7 +279,7 @@ function onHeaderSave() {
                 </div>
 
                 <Btn
-                    v-if="canDelete && deleteRouteName"
+                    v-if="canShowDelete"
                     color="error"
                     variant="outline"
                     size="xs"
@@ -265,7 +297,7 @@ function onHeaderSave() {
                     size="sm"
                     type="button"
                     class="gap-1.5"
-                    :disabled="headerProcessing"
+                    :disabled="headerProcessing || !formApi"
                     :data-cy="saveDataCy"
                     @click="onHeaderSave"
                 >
