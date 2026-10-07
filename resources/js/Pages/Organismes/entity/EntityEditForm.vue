@@ -1168,7 +1168,8 @@ const submit = async () => {
         form.redirect_after_create = 'edit';
     }
 
-    form[method](route(routeName, routeParams), {
+    // URL relative : évite le cross-origin si Ziggy.url (APP_URL) ≠ host navigateur (localhost vs 127.0.0.1).
+    form[method](route(routeName, routeParams, false), {
         preserveScroll: true,
         onSuccess: () => {
             notificationStore.success(
@@ -1188,7 +1189,7 @@ const submit = async () => {
                 .flat()
                 .find((msg) => typeof msg === 'string' && msg.trim() !== '');
             notificationStore.error(
-                first || 'Erreur lors de la sauvegarde',
+                first || 'Erreur lors de la sauvegarde (réseau, session ou validation).',
                 { duration: 8000, placement: 'top-right' }
             );
             console.error('Erreurs de validation:', errors);

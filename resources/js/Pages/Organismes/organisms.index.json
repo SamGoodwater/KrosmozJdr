@@ -607,6 +607,13 @@
     "file": "feedback/FeedbackFab.vue"
   },
   {
+    "name": "SpellEffectEditorRow",
+    "description": "Ligne d’effet d’un degré — action, contexte dynamique, valeur / valeur critique, durée.",
+    "props": [],
+    "slots": [],
+    "file": "entity/SpellEffectEditorRow.vue"
+  },
+  {
     "name": "SpellEditModal",
     "description": "Modal d’édition sort : même contenu que la page {@link Pages/entity/spell/Edit} (données chargées via JSON pour rester sur la liste).",
     "props": [],
@@ -615,21 +622,21 @@
   },
   {
     "name": "SpellEditFormContent",
-    "description": "Corps de la fiche d’édition d’un sort (toolbar, formulaire, effets).",
+    "description": "Corps de la fiche d’édition d’un sort (header compact, formulaire, degrés).",
     "props": [],
     "slots": [],
     "file": "entity/SpellEditFormContent.vue"
   },
   {
     "name": "SpellDegreesEditor",
-    "description": "Éditeur compact des degrés d’un sort (onglets niveau, propriétés, effets).",
+    "description": "Éditeur compact des degrés d’un sort (onglets, propriétés, effets). Enregistrement via flushAll (bulk) — pas de confirm au changement d’onglet.",
     "props": [],
     "slots": [],
     "file": "entity/SpellDegreesEditor.vue"
   },
   {
     "name": "SpellDegreeEffectRow",
-    "description": "Ligne d’effet d’un degré de sort — champs adaptés à l’action (SubEffect).",
+    "description": "",
     "props": [],
     "slots": [],
     "file": "entity/SpellDegreeEffectRow.vue"
@@ -971,20 +978,5 @@
     ],
     "slots": [],
     "file": "data-display/CharacteristicsCard.vue"
-  },
-  {
-    "name": "SpellEffectEditorRow",
-    "description": "Ligne d’effet d’un degré de sort (action, contexte, valeur, critique, durée).",
-    "file": "entity/SpellEffectEditorRow.vue",
-    "props": [
-      "row",
-      "index",
-      "options"
-    ],
-    "emits": [
-      "dirty",
-      "duplicate",
-      "remove"
-    ]
   }
 ]

@@ -1424,6 +1424,7 @@ erDiagram
     position : tinyint(3) unsigned
     required_level : smallint(5) unsigned
     inherits_effects : tinyint(1)
+    properties_source : varchar(16)
     pa : varchar(64)
     po_min : varchar(64)
     po_max : varchar(64)
@@ -1431,8 +1432,6 @@ erDiagram
     sight_line : tinyint(1)
     cast_in_line : tinyint(1)
     cast_in_diagonal : tinyint(1)
-    target_type : varchar(16)
-    element : int(11)
     area : varchar(64)
     cast_per_turn : varchar(64)
     cast_per_target : varchar(64)
@@ -1442,7 +1441,6 @@ erDiagram
     duration : varchar(255)
     allows_reaction : tinyint(1)
     casting_time : varchar(255)
-    ritual_available : tinyint(1)
     resolution_mode : varchar(32)
     attack_characteristic_key : varchar(64)
     save_characteristic_key : varchar(64)

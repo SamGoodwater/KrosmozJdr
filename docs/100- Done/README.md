@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Enregistrement des sorts fiable (localhost / 127.0.0.1)
+
+Le toast « Erreur lors de la sauvegarde » sans détail venait d’un écart d’adresse : le site ouvert en `127.0.0.1` alors que les routes JS pointaient encore vers `localhost`. L’enregistrement partait « ailleurs » et échouait sans message utile. Les routes suivent maintenant l’adresse réellement utilisée dans le navigateur.
+
 ## Octobre 2026 — Édition des sorts : props globales et header
 
 Éléments, type de ciblage et disponibilité rituelle appartiennent au sort, plus aux degrés. Les propriétés communes restent éditables dans un container toujours visible mais replié. La portée de jeu d’un effet n’est plus cachée dans « Avancé ». Disposition en deux colonnes (descriptif / hors degrés, puis communes / métadonnées repliés, puis degrés & effets). Header compact : retour et porteurs à gauche, titre cliquable au centre, aide formules / état / options / annuler / supprimer / enregistrer à droite.

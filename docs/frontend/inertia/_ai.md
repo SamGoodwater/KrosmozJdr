@@ -16,5 +16,5 @@
 - Formulaires : `useForm` ; `processing` redevient `false` dans `onFinish`.
 - Axios (`bootstrap.js`) : XHR métier seulement. 419 Inertia → Laravel `Inertia::location` (`bootstrap/app.php`).
 - `shareOnce` : `permissions`, `oauth_enabled_providers`, `loadingTips` — mémorisés côté client après la 1re visite.
-- Ziggy : `resources/js/ziggy.js` (bundle) + prop `ziggy_location` à chaque visite ; pas de prop `ziggy` Inertia.
+- Ziggy : `resources/js/ziggy.js` (bundle) + prop `ziggy_location` ; `ziggy-global.js` / `Utils/ziggy-origin.js` synchronisent `Ziggy.url`+`port` sur l’origine courante (`localhost` ≠ `127.0.0.1` sinon PATCH cross-origin). `EntityEditForm` soumet en URL relative. Pas de prop `ziggy` Inertia.
 - Pas de `@inertiajs/vite` : `laravel-vite-plugin` + Vite 6.

@@ -12,4 +12,4 @@ Le fichier `resources/js/ssr.js` compile avec Vite. Le SSR Inertia est désactiv
 
 ## Routing JS
 
-Ziggy expose `route()` côté Vue via le catalogue généré `resources/js/ziggy.js` (bundle Vite). Le plugin `resources/js/Plugins/inertia-ziggy.js` met à jour l’URL courante avec `ziggy_location` à chaque navigation Inertia.
+Ziggy expose `route()` côté Vue via le catalogue généré `resources/js/ziggy.js` (bundle Vite). Le plugin `resources/js/Plugins/inertia-ziggy.js` et `resources/js/ziggy-global.js` réalignent **`Ziggy.url` / `port`** (pas seulement `location`) sur l’origine du navigateur via `ziggy_location` / `window.location` — sinon un écart `localhost` vs `127.0.0.1` (APP_URL du bundle) envoie les PATCH Inertia en cross-origin et produit un toast « Erreur lors de la sauvegarde » sans erreurs de validation. Les soumissions d’`EntityEditForm` utilisent une URL relative (`route(..., false)`) en filet de sécurité.

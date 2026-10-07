@@ -1031,6 +1031,13 @@
     "file": "entity/spell/SpellLineRow.vue"
   },
   {
+    "name": "SpellHoldersPanel",
+    "description": "Porteurs d’un sort : liste compacte + aperçu minimal (monstres).",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellHoldersPanel.vue"
+  },
+  {
     "name": "SpellElementPrimariesField",
     "description": "Multi-sélection des éléments primaires (Neutre → Vitalité) avec SelectSearchField. `v-model` : `null` = aucun élément ; sinon masque 1–127 (combinaison de primaires).",
     "props": [],
@@ -1101,11 +1108,60 @@
     "file": "entity/spell/SpellEffectChipTooltipContent.vue"
   },
   {
+    "name": "SpellDegreeTabs",
+    "description": "Onglets de degrés + sélecteur de source des propriétés.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellDegreeTabs.vue"
+  },
+  {
     "name": "SpellDegreePropertyField",
     "description": "Habillage d’une propriété de degré, aligné sur les champs généraux du sort.",
     "props": [],
     "slots": [],
     "file": "entity/spell/SpellDegreePropertyField.vue"
+  },
+  {
+    "name": "SpellCastPropertiesGrid",
+    "description": "Grille dense des propriétés de lancement (sort de base ou degré).",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellCastPropertiesGrid.vue"
+  },
+  {
+    "name": "EffectContextMove",
+    "description": "Contexte déplacement (cases, type, téléport).",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/EffectContextMove.vue"
+  },
+  {
+    "name": "EffectContextCreature",
+    "description": "Contexte créature invoquée.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/EffectContextCreature.vue"
+  },
+  {
+    "name": "EffectContextCondition",
+    "description": "Contexte état (condition) pour appliquer-état.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/EffectContextCondition.vue"
+  },
+  {
+    "name": "EffectContextCharacteristic",
+    "description": "Contexte caractéristique / élément pour un sous-effet de sort.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/EffectContextCharacteristic.vue"
+  },
+  {
+    "name": "AreaShapePicker",
+    "description": "Sélecteur de zone par icône de forme + paramètres numériques + aperçu.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/AreaShapePicker.vue"
   },
   {
     "name": "AreaDisplay",
@@ -1501,6 +1557,20 @@
     "props": [],
     "slots": [],
     "file": "entity/shared/EntityFieldTooltip.vue"
+  },
+  {
+    "name": "EntityEditGrid",
+    "description": "Grille responsive pour les containers d’édition d’entité.",
+    "props": [],
+    "slots": [],
+    "file": "entity/shared/EntityEditGrid.vue"
+  },
+  {
+    "name": "EntityEditContainer",
+    "description": "Conteneur thématique d’édition d’entité (titre, icône, repli optionnel).",
+    "props": [],
+    "slots": [],
+    "file": "entity/shared/EntityEditContainer.vue"
   },
   {
     "name": "ScenarioViewText",
