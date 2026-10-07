@@ -13,7 +13,7 @@ alwaysApply: false
 | **line** | Liste dense tableau | `*LineRow.vue` |
 | **texte** | Inline + overlay | `*ViewText.vue` |
 | **full** | Détail page **ou** modal | `*ViewFull.vue` (fusion ex-Large + ex-Compact) |
-| **edit** | Édition | `EntityEditForm`, pages `Edit.vue` |
+| **edit** | Édition | `EntityEditForm` + `EntityEditHeader`, pages `Edit.vue` |
 
 **Ne plus créer** `ViewLarge` ni `ViewCompact`. Résolution : `resolveEntityViewComponent(type, 'full')`.
 
@@ -22,6 +22,7 @@ alwaysApply: false
 - **Page full** : `EntityViewHeader mode="full"` + `EntityActions format="buttons"`. Sous `md` : titre → image → infos ; dès `md` : image à gauche.
 - **Modal full** : `inModal` sur `ViewFull` → header `mode="compact"` (même empilement mobile que full).
 - **Minimal** : `mode="minimal"` ; `displayMode` hover / compact / extended inchangé.
+- **Page edit** : `EntityEditHeader` (sticky) — retour + slot left | titre cliquable + « Édition · #id » | état / options / annuler / supprimer / enregistrer. `EntityEditForm` en `layout-profile="sheet"` (2 cols ; `spell` = alias), `hideTopToolbar` + `hideActionDock`. Sous-éditeurs dans `#after-sections` via `EntityEditContainer :span="2"`. Capacité : même header, grille `capability` inchangée. Créature : hors `EntityEditForm` (traits seulement).
 
 ## Ouverture
 

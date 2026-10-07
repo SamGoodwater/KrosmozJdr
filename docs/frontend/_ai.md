@@ -23,12 +23,12 @@
 
 ## Édition d’entité (pattern)
 
-- Conteneurs thématiques : `EntityEditContainer` + grille `EntityEditGrid`
-  (`Molecules/entity/shared/`). Référence d’usage : édition sort
-  (`SpellEditFormContent`, slot `after-sections` sur `EntityEditForm`).
-- Sort : grille 2 cols (`layout-profile="spell"`) ; props `hideTopToolbar` /
-  `hideActionDock` + `defineExpose(submit/resetForm/cancel/…)` pour header externe.
-- À généraliser ensuite aux fiches monstre / objet.
+- Header compact : `EntityEditHeader` (`Molecules/entity/shared/`) — état, options,
+  annuler, supprimer, enregistrer ; `formRef` → `EntityEditForm` exposé.
+- Grille : `layout-profile="sheet"` (2 cols, `span: 2` ; `spell` = alias). Capacité
+  garde `capability`. Conteneurs : `EntityEditContainer` + `EntityEditGrid`.
+- Pages `entity/*/Edit.vue` : header + sheet + dock masqué ; managers en
+  `#after-sections`. Sous-éditeurs gardent leur propre enregistrement.
 
 ## Descendre
 

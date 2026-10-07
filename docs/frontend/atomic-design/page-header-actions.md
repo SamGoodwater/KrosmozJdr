@@ -30,7 +30,9 @@ Termes à ne plus utiliser : « Sauvegarder », « Valider » (pour enregistrer)
 
 - **Un seul « Enregistrer » par page**, dans l’en-tête. Il envoie tous les formulaires modifiés.
 - Exceptions qui gardent leur propre bouton : **mot de passe** (carte dédiée), **actions par ligne** de tableau, **modales** (pied de modale : « Fermer » + action).
-- Fiches d’entités : `EntityEditForm` et le dock flottant `EditActionDock` restent en place, avec le lexique.
+- Fiches d’entités : `EntityEditHeader` + `EntityEditForm` (`layout-profile="sheet"`) ;
+  le dock flottant `EditActionDock` reste disponible pour les formulaires qui ne
+  masquent pas encore la barre (`hideActionDock`). Lexique inchangé.
 - Pages de tâche (sauvegarde, mise à jour, nettoyage) : l’action principale de l’en-tête est « Lancer… » via le slot `primary`.
 
 ## Composants

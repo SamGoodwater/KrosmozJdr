@@ -8,9 +8,17 @@ Les vues d'entités standardisent l'affichage des fiches JDR.
 | `line` | ligne dense de table | `*LineRow.vue` |
 | `text` | inline + overlay | `*ViewText.vue` |
 | `full` | détail page ou modal | `*ViewFull.vue` |
-| `edit` | édition | `EntityEditForm` |
+| `edit` | édition | `EntityEditHeader` + `EntityEditForm` (`sheet`) |
 
 Ne pas créer `ViewLarge` ni `ViewCompact`. Utiliser `resolveEntityViewComponent(type, 'full')`.
+
+## Édition (pattern sheet)
+
+Pages `entity/*/Edit.vue` : header sticky (`EntityEditHeader`) + formulaire
+`layout-profile="sheet"` (2 colonnes ; `spell` = alias). Toolbar et dock masqués ;
+état dans le header. Sous-éditeurs (relations, effets, traits) dans
+`#after-sections` via `EntityEditContainer :span="2"`. Capacité : même header,
+grille `capability`. Créature : hors `EntityEditForm`.
 
 ## Sorts (usage unifié)
 

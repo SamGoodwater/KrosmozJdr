@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Édition d’entité : header compact et grille deux colonnes
+
+Toutes les fiches d’édition (équipements, monstres, PNJ, classes, panoplies, etc.) reprennent le header compact des sorts : retour, titre vers la fiche, état, options, annuler, supprimer et enregistrer restent visibles en haut. Le formulaire s’affiche en deux colonnes ; les métadonnées sont repliées par défaut. Les blocs de relations (recette, sorts, traits…) restent dans des panneaux séparés sous le formulaire. Les capacités gardent leur grille dédiée, avec le même header.
+
 ## Octobre 2026 — Enregistrement des sorts fiable (localhost / 127.0.0.1)
 
 Le toast « Erreur lors de la sauvegarde » sans détail venait d’un écart d’adresse : le site ouvert en `127.0.0.1` alors que les routes JS pointaient encore vers `localhost`. L’enregistrement partait « ailleurs » et échouait sans message utile. Les routes suivent maintenant l’adresse réellement utilisée dans le navigateur.
