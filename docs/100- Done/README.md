@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Édition des sorts : props globales et header
+
+Éléments, type de ciblage et disponibilité rituelle appartiennent au sort, plus aux degrés. Les propriétés communes restent éditables dans un container toujours visible mais replié. La portée de jeu d’un effet n’est plus cachée dans « Avancé ». Disposition en deux colonnes (descriptif / hors degrés, puis communes / métadonnées repliés, puis degrés & effets). Header compact : retour et porteurs à gauche, titre cliquable au centre, aide formules / état / options / annuler / supprimer / enregistrer à droite.
+
 ## Octobre 2026 — Édition des sorts condensée
 
 L’édition d’un sort est regroupée en blocs (description, propriétés hors degrés, lancement, degrés & effets, métadonnées). Les degrés restent en onglets : un nouveau degré copie le précédent. On peut faire hériter tout le bloc de propriétés du degré précédent ou du sort de base. La zone se choisit par icônes de formes avec aperçu. Chaque effet a une valeur normale et une valeur critique. Les porteurs du sort (monstres, PNJ, classes) s’ouvrent rapidement avec un aperçu, et la source Dofus est accessible depuis l’éditeur. Un seul bouton enregistre le sort et tous les degrés.

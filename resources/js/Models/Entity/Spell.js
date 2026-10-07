@@ -204,7 +204,7 @@ export class Spell extends BaseModel {
     }
 
     get targetType() {
-        return this._effectiveDegreeProperty('target_type') || null;
+        return this._data.target_type || null;
     }
 
     get maxStack() {
@@ -220,7 +220,7 @@ export class Spell extends BaseModel {
     }
 
     get element() {
-        const v = this._effectiveDegreeProperty('element');
+        const v = this._data.element;
         return v === undefined || v === null ? null : v;
     }
 
@@ -308,9 +308,9 @@ export class Spell extends BaseModel {
         return Spell.summonMonstersFromEffectsDefinitionsPayload(this.effectsDefinitions);
     }
 
-    /** Utilisable en rituel — présent si la colonne existe côté API. */
+    /** Utilisable en rituel — propriété du sort (pas des degrés). */
     get ritualAvailable() {
-        return this._effectiveDegreeProperty('ritual_available') ?? null;
+        return this._data.ritual_available ?? null;
     }
 
     /**
@@ -321,7 +321,7 @@ export class Spell extends BaseModel {
         if (this._data.is_ritual === true) {
             return true;
         }
-        if (this._effectiveDegreeProperty('ritual_available') === true) {
+        if (this._data.ritual_available === true) {
             return true;
         }
         return false;

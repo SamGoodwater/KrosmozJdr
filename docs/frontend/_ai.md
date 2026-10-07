@@ -26,6 +26,8 @@
 - Conteneurs thématiques : `EntityEditContainer` + grille `EntityEditGrid`
   (`Molecules/entity/shared/`). Référence d’usage : édition sort
   (`SpellEditFormContent`, slot `after-sections` sur `EntityEditForm`).
+- Sort : grille 2 cols (`layout-profile="spell"`) ; props `hideTopToolbar` /
+  `hideActionDock` + `defineExpose(submit/resetForm/cancel/…)` pour header externe.
 - À généraliser ensuite aux fiches monstre / objet.
 
 ## Descendre

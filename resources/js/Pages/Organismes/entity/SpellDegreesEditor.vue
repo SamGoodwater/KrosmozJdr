@@ -10,9 +10,7 @@ import { useSpellDegreesDraft } from '@/Composables/entity/useSpellDegreesDraft.
 import SpellDegreeTabs from '@/Pages/Molecules/entity/spell/SpellDegreeTabs.vue';
 import SpellCastPropertiesGrid from '@/Pages/Molecules/entity/spell/SpellCastPropertiesGrid.vue';
 import SpellEffectEditorRow from '@/Pages/Organismes/entity/SpellEffectEditorRow.vue';
-import SpellElementPrimariesField from '@/Pages/Molecules/entity/spell/SpellElementPrimariesField.vue';
 import SpellDegreePropertyField from '@/Pages/Molecules/entity/spell/SpellDegreePropertyField.vue';
-import { SPELL_TARGET_TYPE_OPTIONS } from '@/Entities/spell/spell-descriptors';
 
 const props = defineProps({
     spellId: { type: Number, required: true },
@@ -59,7 +57,6 @@ watch(
 );
 
 const subEffectOptions = computed(() => props.effectFormOptions?.sub_effects ?? []);
-const targetTypeOptions = SPELL_TARGET_TYPE_OPTIONS();
 
 const propertiesReadonly = computed(() => {
     const src = active.value?.properties_source || 'own';
@@ -261,47 +258,11 @@ defineExpose({
                     @dirty="markDirty"
                 />
 
-                <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 border-t border-base-300 pt-3">
-                    <SpellDegreePropertyField
-                        characteristic-key="element"
-                        label="Élément(s)"
-                        icon="fa-solid fa-fire"
-                        helper="Éléments primaires associés à ce degré."
-                    >
-                        <SpellElementPrimariesField
-                            v-model="ensureProperties(active).element"
-                            label=""
-                            size="sm"
-                            :disabled="propertiesReadonly"
-                            @update:model-value="markDirty"
-                        />
-                    </SpellDegreePropertyField>
-                    <SpellDegreePropertyField
-                        characteristic-key="target_type"
-                        label="Type de ciblage"
-                        icon="fa-solid fa-location-crosshairs"
-                        helper="Direct, piège ou glyphe."
-                    >
-                        <select
-                            v-model="ensureProperties(active).target_type"
-                            class="select select-bordered select-sm w-full"
-                            :disabled="propertiesReadonly"
-                            @change="markDirty"
-                        >
-                            <option
-                                v-for="option in targetTypeOptions"
-                                :key="option.value"
-                                :value="option.value || null"
-                            >
-                                {{ option.label }}
-                            </option>
-                        </select>
-                    </SpellDegreePropertyField>
+                <div class="grid gap-2 sm:grid-cols-2 border-t border-base-300 pt-3">
                     <SpellDegreePropertyField
                         v-for="toggle in [
                             ['cast_in_line', 'Lancer en ligne'],
                             ['cast_in_diagonal', 'Lancer en diagonale'],
-                            ['ritual_available', 'Rituel disponible'],
                         ]"
                         :key="toggle[0]"
                         :characteristic-key="toggle[0]"

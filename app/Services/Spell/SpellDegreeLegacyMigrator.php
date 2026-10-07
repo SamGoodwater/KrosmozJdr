@@ -245,9 +245,12 @@ final class SpellDegreeLegacyMigrator
 
             $props = $this->propertiesFromSpell($spell);
             $props['area'] = $area;
-            $props['target_type'] = $props['target_type']
-                ?? $effects->first()->target_type
-                ?? Effect::TARGET_DIRECT;
+
+            // target_type appartient au sort : renseigner depuis le premier effet legacy si absent.
+            if (($spell->target_type === null || $spell->target_type === '') && $effects->isNotEmpty()) {
+                $inferredTarget = $effects->first()->target_type ?: Effect::TARGET_DIRECT;
+                $spell->forceFill(['target_type' => $inferredTarget])->save();
+            }
 
             // Héritage : si mêmes effets que le degré précédent, cocher inherits.
             $inherits = false;

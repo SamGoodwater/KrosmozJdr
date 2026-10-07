@@ -105,7 +105,6 @@ function mountEditor(degrees = [baseDegree()], extra = {}) {
                     template:
                         '<div data-cy="spell-degree-effect-row" class="effect-stub">{{ row.sub_effect_id }}</div>',
                 },
-                SpellElementPrimariesField: true,
                 SpellZonePreview: true,
             },
         },
@@ -133,6 +132,10 @@ describe('SpellDegreesEditor', () => {
         expect(wrapper.text()).toContain('Temps d’incantation');
         expect(wrapper.text()).not.toContain('Mode de résolution');
         expect(wrapper.text()).not.toContain('Utilisable en réaction');
+        expect(wrapper.text()).not.toContain('Élément(s)');
+        expect(wrapper.text()).not.toContain('Type de ciblage');
+        expect(wrapper.text()).not.toContain('Rituel disponible');
+        expect(wrapper.text()).toContain('Lancer en ligne');
         expect(wrapper.find('[data-cy="area-shape-picker"]').exists()).toBe(true);
     });
 

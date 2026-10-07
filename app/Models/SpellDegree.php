@@ -29,8 +29,6 @@ use Illuminate\Support\Carbon;
  * @property bool|null $sight_line
  * @property bool|null $cast_in_line
  * @property bool|null $cast_in_diagonal
- * @property string|null $target_type
- * @property int|null $element
  * @property string|null $area
  * @property string|null $cast_per_turn
  * @property string|null $cast_per_target
@@ -40,7 +38,6 @@ use Illuminate\Support\Carbon;
  * @property string|null $duration
  * @property bool|null $allows_reaction
  * @property string|null $casting_time
- * @property bool|null $ritual_available
  * @property string|null $resolution_mode
  * @property string|null $attack_characteristic_key
  * @property string|null $save_characteristic_key
@@ -75,8 +72,6 @@ class SpellDegree extends Model
         'sight_line',
         'cast_in_line',
         'cast_in_diagonal',
-        'target_type',
-        'element',
         'area',
         'cast_per_turn',
         'cast_per_target',
@@ -85,7 +80,6 @@ class SpellDegree extends Model
         'max_stack',
         'duration',
         'casting_time',
-        'ritual_available',
     ];
 
     /** Sources du bloc de propriétés de lancement. */
@@ -115,8 +109,6 @@ class SpellDegree extends Model
         'sight_line',
         'cast_in_line',
         'cast_in_diagonal',
-        'target_type',
-        'element',
         'area',
         'cast_per_turn',
         'cast_per_target',
@@ -126,7 +118,6 @@ class SpellDegree extends Model
         'duration',
         'allows_reaction',
         'casting_time',
-        'ritual_available',
         'resolution_mode',
         'attack_characteristic_key',
         'save_characteristic_key',
@@ -145,11 +136,9 @@ class SpellDegree extends Model
         'sight_line' => 'boolean',
         'cast_in_line' => 'boolean',
         'cast_in_diagonal' => 'boolean',
-        'element' => 'integer',
         'global_cooldown' => 'integer',
         'max_stack' => 'integer',
         'allows_reaction' => 'boolean',
-        'ritual_available' => 'boolean',
         'auto_success_if_willing_target' => 'boolean',
     ];
 

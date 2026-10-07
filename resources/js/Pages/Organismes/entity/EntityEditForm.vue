@@ -187,6 +187,22 @@ const props = defineProps({
         type: Function,
         default: null,
     },
+    /**
+     * Masque la barre du haut (aide formules + état + actions lecture).
+     * Utile quand le parent (ex. header sort) reprend ces contrôles.
+     */
+    hideTopToolbar: {
+        type: Boolean,
+        default: false,
+    },
+    /**
+     * Masque le dock / pied d’actions (Enregistrer, Annuler…).
+     * Utile quand le parent expose ces boutons dans son propre header.
+     */
+    hideActionDock: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const emit = defineEmits(['submit', 'cancel']);
@@ -249,6 +265,9 @@ const sectionsContainerClass = computed(() => {
     if (isCapabilityLayout.value) {
         return 'capability-edit-sections grid w-full min-w-0 grid-cols-1 gap-4 md:grid-cols-6 md:gap-x-4 md:gap-y-5 md:items-stretch';
     }
+    if (props.layoutProfile === 'spell') {
+        return 'grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start';
+    }
     return isSpellLayout.value
         ? 'grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
         : 'space-y-5';
@@ -280,6 +299,9 @@ function spellSectionColClass(sec) {
             return 'min-w-0 md:col-span-2';
         }
         return '';
+    }
+    if (props.layoutProfile === 'spell') {
+        return 'min-w-0 lg:col-span-1 self-start';
     }
     if (sec.id === 'general') {
         return 'min-w-0 lg:col-span-1';
@@ -331,6 +353,7 @@ const rootFormClass = computed(() => {
  */
 const useEditActionDock = computed(
     () =>
+        !props.hideActionDock &&
         (props.fixedFooterActions || props.floatingSaveButton) &&
         !props.embeddedInModal,
 );
@@ -1194,16 +1217,32 @@ async function handleEditPageAction(actionKey) {
     await dispatchEntityAction(actionKey, props.entity);
 }
 
+const exposedIsDirty = computed(() => Boolean(form.isDirty));
+const exposedProcessing = computed(() => Boolean(form.processing));
+
 defineExpose({
     dispatchEntityAction: (actionKey, entity = props.entity) =>
         dispatchEntityAction(actionKey, entity),
+    submit,
+    resetForm,
+    cancel,
+    form,
+    stateField,
+    markDirty,
+    getFieldLabel,
+    getFieldValidation,
+    isDirty: exposedIsDirty,
+    processing: exposedProcessing,
+    primarySaveLabel,
+    primaryAction,
+    cancelAction,
 });
 
 </script>
 
 <template>
     <Container :class="rootFormClass">
-        <div class="flex flex-col gap-3 mb-4">
+        <div v-if="!hideTopToolbar" class="flex flex-col gap-3 mb-4">
             <div class="top-tools-row">
                 <div class="top-tools-row__formula rounded-(--radius-field) border border-base-300 bg-base-100/60 px-3 py-2">
                     <FormulaHelpHint placement="bottom-start" />
@@ -1367,7 +1406,7 @@ defineExpose({
                 />
             </template>
 
-            <div v-else :class="footerWrapperClass">
+            <div v-else-if="!hideActionDock" :class="footerWrapperClass">
                 <div :class="footerBarClass">
                     <div
                         v-if="accessLevelFields.length"

@@ -5,11 +5,12 @@ import {
 } from '@/Entities/spell/spell-form-config';
 
 describe('sections du formulaire de sort', () => {
-    it('sépare les propriétés globales des propriétés de repli', () => {
-        const global = SPELL_FORM_FIELD_SECTIONS_EDIT.find((section) => section.id === 'spell_properties');
-        const fallback = SPELL_FORM_FIELD_SECTIONS_EDIT.find(
-            (section) => section.id === 'fallback_properties',
+    it('sépare les propriétés globales des propriétés communes avec les degrés', () => {
+        const global = SPELL_FORM_FIELD_SECTIONS_EDIT.find((section) => section.id === 'global_properties');
+        const baseCast = SPELL_FORM_FIELD_SECTIONS_EDIT.find(
+            (section) => section.id === 'base_cast_properties',
         );
+        const metadata = SPELL_FORM_FIELD_SECTIONS_EDIT.find((section) => section.id === 'metadata');
 
         expect(global.fieldKeys).toEqual(
             expect.arrayContaining([
@@ -17,28 +18,33 @@ describe('sections du formulaire de sort', () => {
                 'state',
                 'spellTypes',
                 'is_magic',
+                'element',
                 'target_type',
-                'area',
+                'ritual_available',
                 'allows_reaction',
                 'resolution_mode',
             ]),
         );
         expect(global.fieldKeys).not.toContain('pa');
 
-        expect(fallback.collapsedByDefault).toBe(true);
-        expect(fallback.collapsedActionLabel).toContain('ni degrés ni effets');
-        expect(fallback.fieldKeys).toEqual(
-            expect.arrayContaining(['pa', 'po_min', 'element', 'effect', 'cast_per_turn']),
+        expect(baseCast.collapsedByDefault).toBe(true);
+        expect(baseCast.fieldKeys).toEqual(
+            expect.arrayContaining(['pa', 'po_min', 'cast_per_turn', 'area']),
         );
-        expect(fallback.fieldKeys).not.toContain('resolution_mode');
-        expect(fallback.fieldKeys).not.toContain('allows_reaction');
+        expect(baseCast.fieldKeys).not.toContain('element');
+        expect(baseCast.fieldKeys).not.toContain('ritual_available');
+        expect(baseCast.fieldKeys).not.toContain('target_type');
+        expect(baseCast.fieldKeys).not.toContain('resolution_mode');
+        expect(baseCast.fieldKeys).not.toContain('allows_reaction');
+
+        expect(metadata.collapsedByDefault).toBe(true);
     });
 
     it('conserve la séparation lors de la création', () => {
         expect(SPELL_FORM_FIELD_SECTIONS_CREATE.map((section) => section.id)).toEqual([
             'general',
-            'spell_properties',
-            'fallback_properties',
+            'global_properties',
+            'base_cast_properties',
             'admin',
         ]);
     });

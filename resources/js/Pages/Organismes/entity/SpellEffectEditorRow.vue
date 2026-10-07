@@ -6,7 +6,7 @@
  * <SpellEffectEditorRow :row="row" :index="0" :options="effectFormOptions" @dirty="markDirty" />
  */
 /* eslint-disable vue/no-mutating-props -- brouillon mutable détenu par SpellDegreesEditor */
-import { computed, ref, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { formatSubEffectSelectLabel } from '@/Utils/Entity/subEffectLabels.js';
 import EffectContextCharacteristic from '@/Pages/Molecules/entity/spell/EffectContextCharacteristic.vue';
 import EffectContextCreature from '@/Pages/Molecules/entity/spell/EffectContextCreature.vue';
@@ -20,8 +20,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['dirty', 'duplicate', 'remove']);
-
-const advancedOpen = ref(false);
 
 const LEGACY_CHAR_TO_OBJECT_KEY = Object.freeze({
     action_points: 'action_points_object',
@@ -421,26 +419,21 @@ watch(
                 <p class="text-xs text-base-content/70">{{ durationHelp }}</p>
             </div>
 
-            <details class="text-xs" :open="advancedOpen" @toggle="advancedOpen = $event.target.open">
-                <summary class="cursor-pointer text-base-content/70 select-none">
-                    Avancé — portée de jeu
-                </summary>
-                <div class="mt-2 w-40">
-                    <label class="text-xs font-medium text-base-content/70">Portée de jeu</label>
-                    <select
-                        v-model="row.scope"
-                        class="select select-bordered select-sm w-full mt-0.5"
-                        @change="markDirty"
-                    >
-                        <option v-for="sc in scopes" :key="sc.value" :value="sc.value">
-                            {{ sc.label }}
-                        </option>
-                    </select>
-                    <p class="mt-1 text-xs text-base-content/70">
-                        Général, combat uniquement, ou hors combat.
-                    </p>
-                </div>
-            </details>
+            <div class="space-y-1 max-w-xs">
+                <label class="text-xs font-medium text-base-content/80">Portée de jeu</label>
+                <select
+                    v-model="row.scope"
+                    class="select select-bordered select-sm w-full"
+                    @change="markDirty"
+                >
+                    <option v-for="sc in scopes" :key="sc.value" :value="sc.value">
+                        {{ sc.label }}
+                    </option>
+                </select>
+                <p class="text-xs text-base-content/70">
+                    Général, combat uniquement, ou hors combat.
+                </p>
+            </div>
         </div>
     </div>
 </template>

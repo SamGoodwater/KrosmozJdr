@@ -119,6 +119,8 @@ describe('SpellDegreeEffectRow', () => {
         expect(wrapper.text()).toContain('Vol de vie');
         expect(wrapper.text()).toContain('Durée de l’effet');
         expect(wrapper.text()).toContain('Valeur critique');
+        expect(wrapper.text()).toContain('Portée de jeu');
+        expect(wrapper.text()).not.toContain('Avancé');
     });
 
     it('utilise characteristics_object pour booster', () => {

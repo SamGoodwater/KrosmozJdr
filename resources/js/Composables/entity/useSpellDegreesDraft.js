@@ -20,8 +20,6 @@ export const SPELL_DEGREE_PROPERTY_KEYS = Object.freeze([
     'sight_line',
     'cast_in_line',
     'cast_in_diagonal',
-    'target_type',
-    'element',
     'area',
     'cast_per_turn',
     'cast_per_target',
@@ -30,7 +28,6 @@ export const SPELL_DEGREE_PROPERTY_KEYS = Object.freeze([
     'max_stack',
     'duration',
     'casting_time',
-    'ritual_available',
 ]);
 
 /**

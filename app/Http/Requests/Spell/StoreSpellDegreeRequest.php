@@ -37,8 +37,6 @@ class StoreSpellDegreeRequest extends FormRequest
             'sight_line' => 'nullable|boolean',
             'cast_in_line' => 'nullable|boolean',
             'cast_in_diagonal' => 'nullable|boolean',
-            'target_type' => 'nullable|string|in:direct,trap,glyph',
-            'element' => 'nullable|integer|min:0|max:127',
             'cast_per_turn' => 'nullable|string|max:64',
             'cast_per_target' => 'nullable|string|max:64',
             'number_between_two_cast' => 'nullable|string|max:64',
@@ -46,7 +44,6 @@ class StoreSpellDegreeRequest extends FormRequest
             'max_stack' => 'nullable|integer|min:0|max:255',
             'duration' => 'nullable|string|max:255',
             'casting_time' => 'nullable|string|max:255',
-            'ritual_available' => 'nullable|boolean',
         ], $this->effectsRules());
     }
 

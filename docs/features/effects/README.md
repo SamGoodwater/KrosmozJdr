@@ -8,7 +8,8 @@ Le système d'effets décrit les effets de sorts et d'objets : degrés, effets (
 - Un sort a **une** progression de degrés. Vocabulaire UI : **effet** (ex-sous-effet).
 - Propriétés de lancement (PA, PO, LdV, zone…) : défauts sur `Spell` ; surcharge par degré via
   `properties_source` (`own` | `previous` | `spell`).
-  Le ciblage, le mode de résolution et l’utilisation en réaction restent globaux au sort.
+  Élément(s), type de ciblage, rituel disponible, mode de résolution et utilisation en réaction
+  restent globaux au sort (jamais sur `spell_degrees`).
 - Création d’un degré : copie matérialisée du précédent (propriétés + effets éditables).
   `inherits_effects` reste disponible pour réutiliser les effets du précédent sans duplication.
 - Services : `SpellDegreeResolver`, `SpellDegreeService`, `SpellDegreesSerializer`, `SpellDegreeLegacyMigrator`.
@@ -16,10 +17,11 @@ Le système d'effets décrit les effets de sorts et d'objets : degrés, effets (
 - API : `/api/spells/{spell}/degrees` (CRUD + `PUT` bulk + materialize / sync effets).
 - UI édition : containers thématiques (`EntityEditContainer`), `SpellDegreesEditor`,
   `SpellCastPropertiesGrid`, `AreaShapePicker`, `SpellEffectEditorRow` ; un seul Enregistrer
-  (bulk degrés puis sort). Affichage : `SpellEffectsJournal`.
+  (bulk degrés puis sort). Grille 2 colonnes + header compact (aide formules, état, options,
+  annuler / reset / supprimer / enregistrer). Affichage : `SpellEffectsJournal`.
 - Portée unique (`4` ou `2-8`) ; zone par icônes de formes + paramètres numériques (notation Krosmoz).
 - Effets : élément / caractéristique (icônes et couleurs), créature, état ; `value_formula` et
-  `value_formula_crit` ; durée (`duration_formula`) par effet.
+  `value_formula_crit` ; durée (`duration_formula`) ; portée de jeu (`scope`) au même niveau.
 - Une invocation manuelle stocke `params.creature_id`. `params.monster_id` reste lu pour la
   compatibilité avec les imports et données antérieures.
 - Scraping : après intégration legacy, miroir via `rebuildFromLegacy`.

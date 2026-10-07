@@ -19,10 +19,15 @@
     `SpellHoldersPanel`. Affichage lecture : `SpellEffectsJournal.vue`.
   - Portée UI compacte `x` / `x-y` (`po_min` + `po_max` en stockage) ; propriétés effectives du
     degré actif dans Full, premier degré dans Minimal/Line/table
-  - `target_type`, résolution et `allows_reaction` restent globaux sur `Spell`; `area` existe aussi
-    sur `Spell` comme repli sans degré. Zone : sélecteur de formes + notation Krosmoz.
+  - Globaux sur `Spell` (pas sur les degrés) : `element`, `target_type`, `ritual_available`,
+    résolution, `allows_reaction`. `area` existe aussi sur `Spell` comme repli sans degré.
+    Zone : sélecteur de formes + notation Krosmoz.
+  - UI layout : grille 2 cols (descriptif | hors degrés ; communes | métadonnées repliés ;
+    degrés & effets pleine largeur). Header compact (retour, porteurs, vue texte, formules,
+    état, options, annuler/reset, supprimer, enregistrer).
   - Effets : élément/carac (icônes couleurs), créature (`params.creature_id`), état,
-    `value_formula` + `value_formula_crit`, `duration_formula`; `monster_id` legacy OK
+    `value_formula` + `value_formula_crit`, `duration_formula`, `scope` visible (pas dans Avancé);
+    `monster_id` legacy OK
   - Vocabulaire UI : **effet** (= ancien sous-effet) ; catalogue technique `SubEffect` conservé
 - `app/Models/Effect*.php`, `app/Models/ObjectEffect.php` — encore utilisés objets + legacy sorts
 - `GET /api/object-effects` — liste par fiche ; `view` sur le parent + `visibleToUser` sur le monstre invoqué (session `web`)
