@@ -196,9 +196,6 @@ const handleTableAction = async (actionKey, entity, row) => {
             openSpellEditModal(entityId);
             break;
 
-            openSpellEditModal(entityId);
-            break;
-
         case 'copy-link': {
             const cfg = getEntityRouteConfig('spell');
             const url = resolveEntityRouteUrl('spell', 'show', entityId, cfg);
@@ -212,7 +209,15 @@ const handleTableAction = async (actionKey, entity, row) => {
             // TODO: Implémenter le téléchargement PDF
             break;
         case 'delete':
-            // TODO: Implémenter la suppression avec confirmation
+            if (window.confirm('Supprimer ce sort ? Il sera placé en corbeille (récupération possible côté admin).')) {
+                router.delete(route('entities.spells.delete', { spell: entityId }, false), {
+                    replace: true,
+                    onSuccess: () => {
+                        refreshToken.value++;
+                        closeModal();
+                    },
+                });
+            }
             break;
     }
 };
@@ -245,8 +250,8 @@ const handleModalRefresh = () => {
     closeModal();
 };
 
-const handleModalDelete = (_entity) => {
-    // TODO: Implémenter la suppression avec confirmation
+const handleModalDelete = () => {
+    refreshToken.value++;
 };
 </script>
 

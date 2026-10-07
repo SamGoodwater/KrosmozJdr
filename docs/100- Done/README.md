@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Suppression de sort sans « Page introuvable »
+
+Après suppression depuis l’édition, le bouton Précédent du navigateur ne rouvre plus la fiche déjà mise en corbeille (404). Les liens des notifications pointent vers les bonnes URLs `/entities/…`, et après suppression vers la liste plutôt que la fiche disparue. Depuis une modal d’édition, la suppression reste sur la liste.
+
 ## Octobre 2026 — Édition d’entité : header compact et grille deux colonnes
 
 Toutes les fiches d’édition (équipements, monstres, PNJ, classes, panoplies, etc.) reprennent le header compact des sorts : retour, titre vers la fiche, état, options, annuler, supprimer et enregistrer restent visibles en haut. Le formulaire s’affiche en deux colonnes ; les métadonnées sont repliées par défaut. Les blocs de relations (recette, sorts, traits…) restent dans des panneaux séparés sous le formulaire. Les capacités gardent leur grille dédiée, avec le même header.

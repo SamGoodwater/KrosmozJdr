@@ -7,6 +7,7 @@
 - `app/Support/Notifications/NotificationCatalog.php`
 - `app/Notifications/` (`ScrappingJobProgressNotification`, `ProjectConsoleJobProgressNotification` : synchrone, visibles tout de suite)
 - File `notifications` (`QueuesOnNotifications`) : maintenance, connexion, entité modifiée, etc. Invisibles dans le centre tant que le worker n’a pas écrit la table `notifications`. Un worker ponctuel part à la fin de la requête.
+- Liens entité : `NotificationService::entityUrl` → `/entities/{type}/{id}` (pas `/spells/…`). Après soft/force delete : `entityIndexUrl` (la fiche show est 404).
 - `resources/js/Composables/notifications/`
 - `resources/js/Composables/admin/useProjectConsoleJob.js`
 - `resources/js/Pages/Pages/notifications/Index.vue`

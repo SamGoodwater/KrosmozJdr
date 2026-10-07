@@ -12,7 +12,10 @@ use App\Notifications\NewUserCreatedNotification;
 use App\Notifications\ProfileModifiedNotification;
 use App\Notifications\ProjectMaintenanceNotification;
 use App\Notifications\UserDeletedNotification;
+use App\Support\EntityModelRegistry;
 use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -285,7 +288,8 @@ class NotificationService
         $typeAdmin = $isPageOrSection ? 'page_section_deleted_admin' : 'entity_deleted_admin';
         $changes = ['action' => ['old' => null, 'new' => $message]];
 
-        $entityUrl = self::entityUrl($entity);
+        // Corbeille : la fiche show/edit renvoie 404 — lien vers l’index (ou la page CMS).
+        $entityUrl = $isPageOrSection ? self::entityUrl($entity) : self::entityIndexUrl($entity);
         $notifyOne = function (User $user, string $type) use ($entityType, $entityId, $entityName, $deleter, $message, $entityUrl) {
             $channels = $user->getChannelsForNotificationType($type);
             if (empty($channels)) {
@@ -427,7 +431,7 @@ class NotificationService
                 $forcer,
                 $channels,
                 ['action' => ['old' => null, 'new' => $message]],
-                self::entityUrl($entity),
+                self::entityIndexUrl($entity),
                 'entity_force_deleted'
             ));
         }
@@ -450,9 +454,63 @@ class NotificationService
 
             return $page ? url('/pages/'.($page->slug ?? $page->id)) : url('/pages');
         }
+
+        $typeKey = self::resolveEntityTypeKey($entity);
+        if ($typeKey !== null && $entity instanceof Model) {
+            $showRoute = "entities.{$typeKey}.show";
+            if (Route::has($showRoute)) {
+                return route($showRoute, $entity);
+            }
+
+            return url('/entities/'.$typeKey.'/'.$entity->getKey());
+        }
+
         $type = strtolower(class_basename($entity));
 
-        return url('/'.$type.'s/'.($entity->id ?? ''));
+        return url('/entities/'.$type.'s/'.($entity->id ?? ''));
+    }
+
+    /**
+     * URL de liste pour une entité JDR (après soft/force delete : la fiche show renvoie 404).
+     *
+     * @param  object  $entity
+     */
+    public static function entityIndexUrl($entity): string
+    {
+        if ($entity instanceof Page && ! empty($entity->slug)) {
+            return url('/pages');
+        }
+        if ($entity instanceof Section) {
+            return url('/pages');
+        }
+
+        $typeKey = self::resolveEntityTypeKey($entity);
+        if ($typeKey !== null) {
+            $indexRoute = "entities.{$typeKey}.index";
+            if (Route::has($indexRoute)) {
+                return route($indexRoute);
+            }
+
+            return url('/entities/'.$typeKey);
+        }
+
+        $type = strtolower(class_basename($entity));
+
+        return url('/entities/'.$type.'s');
+    }
+
+    /**
+     * Clé plurielle registre (`spells`, `creature-traits`…) ou null.
+     */
+    private static function resolveEntityTypeKey(object $entity): ?string
+    {
+        foreach (EntityModelRegistry::modelMap() as $key => $class) {
+            if ($entity instanceof $class) {
+                return $key;
+            }
+        }
+
+        return null;
     }
 
     /**

@@ -15,6 +15,7 @@
  */
 import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
+import axios from 'axios';
 import { ACTION } from '@/Utils/atomic-design/actionLabels';
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -129,14 +130,35 @@ async function handleOptionsAction(actionKey) {
     }
 }
 
-function confirmDelete() {
+async function confirmDelete() {
     if (!canShowDelete.value) return;
     const id = entityId.value;
     const message =
         props.deleteConfirmMessage
         || 'Supprimer cette fiche ? Elle sera placée en corbeille (récupération possible côté admin).';
     if (!window.confirm(message)) return;
+
+    // Modal : API JSON pour rester sur la liste (évite une navigation Inertia + historique cassé).
+    if (props.embeddedInModal) {
+        try {
+            await axios.delete(
+                `/api/entities/${encodeURIComponent(props.entityType)}/${encodeURIComponent(String(id))}`,
+                { headers: { Accept: 'application/json' } },
+            );
+            emit('deleted');
+        } catch (error) {
+            const detail =
+                error?.response?.data?.message
+                || Object.values(error?.response?.data?.errors || {})?.flat()?.[0]
+                || 'Impossible de placer l’entité en corbeille.';
+            window.alert(typeof detail === 'string' ? detail : 'Impossible de placer l’entité en corbeille.');
+        }
+        return;
+    }
+
+    // Page édition : replace évite « Précédent » → fiche soft-deleted → 404 « Page introuvable ».
     router.delete(relativeRoute(props.deleteRouteName, { [props.routeParamKey]: id }), {
+        replace: true,
         onSuccess: () => emit('deleted'),
     });
 }

@@ -117,7 +117,10 @@ describe('EntityEditHeader', () => {
         );
         expect(router.delete).toHaveBeenCalledWith(
             '/entities.items.delete/42',
-            expect.objectContaining({ onSuccess: expect.any(Function) }),
+            expect.objectContaining({
+                replace: true,
+                onSuccess: expect.any(Function),
+            }),
         );
     });
 });

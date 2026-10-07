@@ -85,7 +85,7 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        $linkUrl = $this->url ?? url("/{$this->entityType}/{$this->entityId}");
+        $linkUrl = $this->url ?? url('/entities/'.strtolower($this->entityType).'s/'.$this->entityId);
         $lines = ["L'entité {$this->entityType} : '{$this->entityName}' (ID: {$this->entityId}) a été modifiée par {$this->modifier->name}."];
         if (! empty($this->changes)) {
             $lines[] = 'Changements principaux :';
@@ -139,7 +139,7 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
             $displayed++;
         }
         $more_changes = count($this->changes) > 3;
-        $linkUrl = $this->url ?? url("/{$this->entityType}/{$this->entityId}");
+        $linkUrl = $this->url ?? url('/entities/'.strtolower($this->entityType).'s/'.$this->entityId);
 
         return [
             'config_type' => $this->configType,
