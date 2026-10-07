@@ -155,13 +155,13 @@ export function buildCapabilityFormFieldsConfig(options = {}) {
     };
 }
 
-/** Sections formulaire — édition (fiche). */
+/** Sections formulaire — édition (fiche capacité ; état dans le header). */
 export const CAPABILITY_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
         title: 'Généralités',
-        subtitle: 'Nom, description, visuel, état et élément.',
-        fieldKeys: ['name', 'description', 'image', 'state', 'element'],
+        subtitle: 'Nom, description, visuel et élément.',
+        fieldKeys: ['name', 'description', 'image', 'element'],
     },
     {
         id: 'cost_effect',
@@ -194,6 +194,9 @@ export const CAPABILITY_FORM_FIELD_SECTIONS_EDIT = [
         id: 'admin',
         title: 'Métadonnées & droits',
         subtitle: 'Niveaux d’accès et horodatage.',
+        collapsedByDefault: true,
+        collapsedActionLabel: 'Afficher',
+        expandedActionLabel: 'Masquer',
         fieldKeys: ['read_level', 'write_level', 'id', 'created_at', 'updated_at'],
     },
 ];

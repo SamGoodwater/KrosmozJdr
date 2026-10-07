@@ -69,18 +69,21 @@ export function buildPanoplyFormFieldsConfig(options = {}) {
     };
 }
 
-/** Sections formulaire — édition (grille dense). */
+/** Sections formulaire — édition (grille sheet 2 cols ; état dans le header). */
 export const PANOPLY_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
         title: 'Identité',
-        subtitle: 'Nom, description et état du set.',
-        fieldKeys: ['name', 'description', 'state'],
+        subtitle: 'Nom et description du set.',
+        fieldKeys: ['name', 'description'],
     },
     {
         id: 'admin',
         title: 'Métadonnées & droits',
         subtitle: 'Identifiant externe, niveaux d’accès et horodatage.',
+        collapsedByDefault: true,
+        collapsedActionLabel: 'Afficher',
+        expandedActionLabel: 'Masquer',
         fieldKeys: ['dofusdb_id', 'read_level', 'write_level', 'id', 'created_at', 'updated_at'],
     },
 ];

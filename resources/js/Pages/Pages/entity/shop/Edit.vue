@@ -3,18 +3,18 @@
  * Shop Edit Page
  *
  * @description
- * Édition dense d’un hôtel de vente : grille fieldSections + inventaire en collapses.
+ * Édition sheet (header compact + grille 2 colonnes) + inventaire en containers.
  */
-import { computed } from 'vue';
-import { Head, router, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { Shop } from '@/Models/Entity/Shop';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
-import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
-import Btn from '@/Pages/Atoms/action/Btn.vue';
-import EntityListBackButton from '@/Pages/Atoms/action/EntityListBackButton.vue';
+import EntityEditHeader from '@/Pages/Molecules/entity/shared/EntityEditHeader.vue';
+import EntityEditContainer from '@/Pages/Molecules/entity/shared/EntityEditContainer.vue';
 import {
     buildShopFormFieldsConfig,
     SHOP_FORM_FIELD_SECTIONS_EDIT,
@@ -22,6 +22,7 @@ import {
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
+const { canDeleteAny, isAdmin } = usePermissions();
 
 const props = defineProps({
     shop: {
@@ -47,6 +48,8 @@ const fieldsConfig = computed(() =>
 );
 const fieldSections = SHOP_FORM_FIELD_SECTIONS_EDIT;
 const fixedFooterInsetClass = 'left-0 right-0';
+const entityEditFormRef = ref(null);
+const canDelete = computed(() => canDeleteAny('shops') || isAdmin.value);
 
 const shop = computed(() => {
     const shopData = props.shop || page.props.shop || {};
@@ -54,49 +57,26 @@ const shop = computed(() => {
 });
 
 setPageTitle(`Modifier la hotel de vente : ${shop.value.name || 'Nouvelle hotel de vente'}`);
-
-function goToShow() {
-    const id = shop.value?.id;
-    if (!id) return;
-    router.visit(route('entities.shops.show', { shop: id }));
-}
 </script>
 
 <template>
     <Head :title="`Modifier la hotel de vente : ${shop?.name || 'Nouvelle hotel de vente'}`" />
 
     <Container class="space-y-4">
-        <div
-            class="sticky top-0 z-20 px-3 py-1 bg-glass-3xl backdrop-blur-md border-glass-b-md sm:px-4"
-            style="--bg-color: var(--color-base-100)"
-        >
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div class="min-w-0 flex-1">
-                    <h1 class="truncate text-md font-bold text-base-content sm:text-lg">
-                        {{ shop.name || 'Hôtel de vente sans nom' }}
-                    </h1>
-                    <p class="text-xs text-base-content/60">
-                        Édition · ID {{ shop.id }}
-                    </p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <EntityListBackButton route-name="entities.shops.index" />
-                    <Btn
-                        color="neutral"
-                        variant="outline"
-                        size="xs"
-                        type="button"
-                        class="gap-1.5"
-                        @click="goToShow"
-                    >
-                        <i class="fa-solid fa-book-open" aria-hidden="true"></i>
-                        Fiche
-                    </Btn>
-                </div>
-            </div>
-        </div>
+        <EntityEditHeader
+            entity-type="shops"
+            :entity="shop"
+            :form-ref="entityEditFormRef"
+            :title="shop.name || 'Hôtel de vente sans nom'"
+            list-route-name="entities.shops.index"
+            delete-route-name="entities.shops.delete"
+            route-param-key="shop"
+            :can-delete="canDelete"
+            delete-confirm-message="Supprimer cet hôtel de vente ? Il sera placé en corbeille (récupération possible côté admin)."
+        />
 
         <EntityEditForm
+            ref="entityEditFormRef"
             :entity="shop"
             entity-type="shop"
             :fields-config="fieldsConfig"
@@ -104,65 +84,74 @@ function goToShow() {
             :field-sections="fieldSections"
             :show-state-toolbar="true"
             :show-access-levels-in-footer="false"
-            layout-profile="dense"
-            :fixed-footer-actions="true"
+            layout-profile="sheet"
+            :hide-top-toolbar="true"
+            :hide-action-dock="true"
+            :fixed-footer-actions="false"
             :fixed-footer-inset-class="fixedFooterInsetClass"
             :compact-access-levels="true"
-        />
+            redirect-after-update="edit"
+        >
+            <template #after-sections>
+                <EntityEditContainer
+                    title="Inventaire (objets, conso, ressources)"
+                    icon="fa-solid fa-basket-shopping"
+                    :span="2"
+                    collapsible
+                    :default-open="false"
+                    root-class="mt-3 lg:col-span-2"
+                >
+                    <div class="space-y-4">
+                        <EntityRelationsManager
+                            :relations="shop.items || []"
+                            :available-items="availableItems"
+                            :entity-id="shop.id"
+                            entity-type="shops"
+                            relation-type="items"
+                            relation-name="Objets vendus dans la hotel de vente"
+                            :config="{
+                                displayFields: ['name', 'description', 'level'],
+                                searchFields: ['name', 'description'],
+                                pivotFields: ['quantity', 'price', 'comment'],
+                                itemLabel: 'objet',
+                                itemLabelPlural: 'objets',
+                            }"
+                        />
 
-        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
-            <template #title>Inventaire (objets, conso, ressources)</template>
-            <template #content>
-                <div class="space-y-4">
-                    <EntityRelationsManager
-                        :relations="shop.items || []"
-                        :available-items="availableItems"
-                        :entity-id="shop.id"
-                        entity-type="shops"
-                        relation-type="items"
-                        relation-name="Objets vendus dans la hotel de vente"
-                        :config="{
-                            displayFields: ['name', 'description', 'level'],
-                            searchFields: ['name', 'description'],
-                            pivotFields: ['quantity', 'price', 'comment'],
-                            itemLabel: 'objet',
-                            itemLabelPlural: 'objets'
-                        }"
-                    />
+                        <EntityRelationsManager
+                            :relations="shop.consumables || []"
+                            :available-items="availableConsumables"
+                            :entity-id="shop.id"
+                            entity-type="shops"
+                            relation-type="consumables"
+                            relation-name="Consommables vendus dans la hotel de vente"
+                            :config="{
+                                displayFields: ['name', 'description', 'level'],
+                                searchFields: ['name', 'description'],
+                                pivotFields: ['quantity', 'price', 'comment'],
+                                itemLabel: 'consommable',
+                                itemLabelPlural: 'consommables',
+                            }"
+                        />
 
-                    <EntityRelationsManager
-                        :relations="shop.consumables || []"
-                        :available-items="availableConsumables"
-                        :entity-id="shop.id"
-                        entity-type="shops"
-                        relation-type="consumables"
-                        relation-name="Consommables vendus dans la hotel de vente"
-                        :config="{
-                            displayFields: ['name', 'description', 'level'],
-                            searchFields: ['name', 'description'],
-                            pivotFields: ['quantity', 'price', 'comment'],
-                            itemLabel: 'consommable',
-                            itemLabelPlural: 'consommables'
-                        }"
-                    />
-
-                    <EntityRelationsManager
-                        :relations="shop.resources || []"
-                        :available-items="availableResources"
-                        :entity-id="shop.id"
-                        entity-type="shops"
-                        relation-type="resources"
-                        relation-name="Ressources vendues dans la hotel de vente"
-                        :config="{
-                            displayFields: ['name', 'description', 'level'],
-                            searchFields: ['name', 'description'],
-                            pivotFields: ['quantity', 'price', 'comment'],
-                            itemLabel: 'ressource',
-                            itemLabelPlural: 'ressources'
-                        }"
-                    />
-                </div>
+                        <EntityRelationsManager
+                            :relations="shop.resources || []"
+                            :available-items="availableResources"
+                            :entity-id="shop.id"
+                            entity-type="shops"
+                            relation-type="resources"
+                            relation-name="Ressources vendues dans la hotel de vente"
+                            :config="{
+                                displayFields: ['name', 'description', 'level'],
+                                searchFields: ['name', 'description'],
+                                pivotFields: ['quantity', 'price', 'comment'],
+                                itemLabel: 'ressource',
+                                itemLabelPlural: 'ressources',
+                            }"
+                        />
+                    </div>
+                </EntityEditContainer>
             </template>
-        </Collapse>
+        </EntityEditForm>
     </Container>
 </template>

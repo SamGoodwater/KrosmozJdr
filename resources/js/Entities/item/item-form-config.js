@@ -155,13 +155,13 @@ export function buildItemFormFieldsConfig(options = {}) {
     };
 }
 
-/** Sections formulaire — édition (grille dense). */
+/** Sections formulaire — édition (grille sheet 2 cols ; état dans le header). */
 export const ITEM_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
         title: 'Généralités',
-        subtitle: 'Nom, description, visuel et état.',
-        fieldKeys: ['name', 'description', 'image', 'state'],
+        subtitle: 'Nom, description et visuel.',
+        fieldKeys: ['name', 'description', 'image'],
     },
     {
         id: 'gameplay',
@@ -173,6 +173,9 @@ export const ITEM_FORM_FIELD_SECTIONS_EDIT = [
         id: 'admin',
         title: 'Métadonnées & droits',
         subtitle: 'Identifiants externes, synchro, niveaux d’accès et horodatage.',
+        collapsedByDefault: true,
+        collapsedActionLabel: 'Afficher',
+        expandedActionLabel: 'Masquer',
         fieldKeys: [
             'official_id',
             'dofusdb_id',

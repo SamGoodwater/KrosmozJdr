@@ -1,18 +1,17 @@
 <script setup>
 /**
- * Corps de la fiche d’édition d’une capacité (toolbar + formulaire unique).
+ * Corps de la fiche d’édition d’une capacité (header compact + formulaire unique).
  *
  * @description
  * Partagé entre {@link Pages/entity/capability/Edit} et {@link CapabilityEditModal}.
+ * Grille `capability` inchangée ; header partagé via EntityEditHeader.
  */
-import { computed } from "vue";
-import { router } from "@inertiajs/vue3";
+import { computed, ref } from "vue";
 import { Capability } from "@/Models/Entity/Capability";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
 import ConditionsEditor from "@/Pages/Organismes/entity/ConditionsEditor.vue";
-import Btn from "@/Pages/Atoms/action/Btn.vue";
-import EntityListBackButton from "@/Pages/Atoms/action/EntityListBackButton.vue";
+import EntityEditHeader from "@/Pages/Molecules/entity/shared/EntityEditHeader.vue";
 import {
     buildCapabilityFormFieldsConfig,
     CAPABILITY_FORM_FIELD_SECTIONS_EDIT,
@@ -49,78 +48,38 @@ const capabilityModel = computed(() =>
  */
 const fixedFooterInsetClass = "left-0 right-0";
 
-function goToShow() {
-    const id = capabilityModel.value?.id;
-    if (!id) return;
-    router.visit(route("entities.capabilities.show", { capability: id }));
-}
+const entityEditFormRef = ref(null);
 
-function confirmDelete() {
+function onDeleted() {
     const id = capabilityModel.value?.id;
-    if (!id) return;
-    const ok = window.confirm(
-        "Supprimer cette capacité ? Elle sera placée en corbeille (récupération possible côté admin).",
-    );
-    if (!ok) return;
-    router.delete(route("entities.capabilities.delete", { capability: id }), {
-        onSuccess: () => {
-            invalidateKrefEntityPreviewCache("capabilities", id);
-            if (props.embeddedInModal) {
-                emit("cancel");
-            }
-        },
-    });
+    if (id) {
+        invalidateKrefEntityPreviewCache("capabilities", id);
+    }
+    if (props.embeddedInModal) {
+        emit("cancel");
+    }
 }
 </script>
 
 <template>
-    <div class="capability-edit-form-content space-y-6">
-        <div
-            class="sticky top-0 z-20 px-3 py-1 bg-glass-3xl backdrop-blur-md border-glass-b-md sm:px-4"
-            style="--bg-color: var(--color-base-100)"
-        >
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div class="min-w-0 flex-1">
-                    <h1 class="truncate text-md font-bold text-base-content sm:text-lg">
-                        {{ capabilityModel.name || "Capacité sans nom" }}
-                    </h1>
-                    <p class="text-xs text-base-content/60">
-                        Édition · ID {{ capabilityModel.id }}
-                    </p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <EntityListBackButton
-                        v-if="!embeddedInModal"
-                        route-name="entities.capabilities.index"
-                    />
-                    <Btn
-                        color="neutral"
-                        variant="outline"
-                        size="xs"
-                        type="button"
-                        class="gap-1.5"
-                        @click="goToShow"
-                    >
-                        <i class="fa-solid fa-book-open" aria-hidden="true"></i>
-                        Fiche
-                    </Btn>
-                    <Btn
-                        v-if="canDeleteCapability"
-                        color="error"
-                        variant="outline"
-                        size="xs"
-                        type="button"
-                        class="gap-1.5"
-                        @click="confirmDelete"
-                    >
-                        <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
-                        Supprimer
-                    </Btn>
-                </div>
-            </div>
-        </div>
+    <div class="capability-edit-form-content space-y-4">
+        <EntityEditHeader
+            entity-type="capabilities"
+            :entity="capabilityModel"
+            :form-ref="entityEditFormRef"
+            :title="capabilityModel.name || 'Capacité sans nom'"
+            list-route-name="entities.capabilities.index"
+            delete-route-name="entities.capabilities.delete"
+            route-param-key="capability"
+            :can-delete="canDeleteCapability"
+            :embedded-in-modal="embeddedInModal"
+            delete-confirm-message="Supprimer cette capacité ? Elle sera placée en corbeille (récupération possible côté admin)."
+            @cancel="emit('cancel')"
+            @deleted="onDeleted"
+        />
 
         <EntityEditForm
+            ref="entityEditFormRef"
             :entity="capabilityModel"
             entity-type="capability"
             :fields-config="fieldsConfig"
@@ -128,11 +87,13 @@ function confirmDelete() {
             :field-sections="fieldSections"
             :show-state-toolbar="true"
             :show-access-levels-in-footer="false"
+            :hide-top-toolbar="true"
+            :hide-action-dock="true"
             characteristics-group="capability"
             layout-profile="capability"
-            :fixed-footer-actions="true"
+            :fixed-footer-actions="false"
             :fixed-footer-inset-class="fixedFooterInsetClass"
-            :floating-save-button="true"
+            :floating-save-button="false"
             :embedded-in-modal="embeddedInModal"
             :redirect-after-update="redirectAfterUpdate || undefined"
             :shortcuts-active="!embeddedInModal"

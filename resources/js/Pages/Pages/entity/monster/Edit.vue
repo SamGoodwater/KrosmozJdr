@@ -3,13 +3,14 @@
  * Monster Edit Page
  *
  * @description
- * Édition dense d’un monstre : coquille dense + sous-managers créature en collapses.
+ * Édition sheet (header compact + grille 2 colonnes) + sous-managers créature en containers.
  *
  * @props {Object} monster - Données du monstre à éditer
  */
-import { computed } from 'vue';
-import { Head, router, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { Monster } from '@/Models/Entity/Monster';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
@@ -17,9 +18,8 @@ import EntityLanguagesEditor from '@/Pages/Organismes/entity/EntityLanguagesEdit
 import CreatureTraitsEditor from '@/Pages/Organismes/entity/CreatureTraitsEditor.vue';
 import CreatureComposableCharacteristicsEditor from '@/Pages/Organismes/entity/CreatureComposableCharacteristicsEditor.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
-import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
-import Btn from '@/Pages/Atoms/action/Btn.vue';
-import EntityListBackButton from '@/Pages/Atoms/action/EntityListBackButton.vue';
+import EntityEditHeader from '@/Pages/Molecules/entity/shared/EntityEditHeader.vue';
+import EntityEditContainer from '@/Pages/Molecules/entity/shared/EntityEditContainer.vue';
 import {
     buildMonsterFormFieldsConfig,
     MONSTER_FORM_FIELD_SECTIONS_EDIT,
@@ -27,6 +27,7 @@ import {
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
+const { canDeleteAny, isAdmin } = usePermissions();
 
 const props = defineProps({
     monster: {
@@ -58,6 +59,8 @@ const props = defineProps({
 const fieldsConfig = computed(() => buildMonsterFormFieldsConfig());
 const fieldSections = MONSTER_FORM_FIELD_SECTIONS_EDIT;
 const fixedFooterInsetClass = 'left-0 right-0';
+const entityEditFormRef = ref(null);
+const canDelete = computed(() => canDeleteAny('monsters') || isAdmin.value);
 
 const monster = computed(() => {
     const monsterData = props.monster || page.props.monster || {};
@@ -69,73 +72,37 @@ const monsterName = computed(() => {
 });
 
 setPageTitle(`Modifier le monstre : ${monsterName.value}`);
-
-function goToShow() {
-    const id = monster.value?.id;
-    if (!id) return;
-    router.visit(route('entities.monsters.show', { monster: id }));
-}
 </script>
 
 <template>
     <Head :title="`Modifier le monstre : ${monsterName}`" />
 
     <Container class="space-y-4">
-        <div
-            class="sticky top-0 z-20 px-3 py-1 bg-glass-3xl backdrop-blur-md border-glass-b-md sm:px-4"
-            style="--bg-color: var(--color-base-100)"
+        <EntityEditHeader
+            entity-type="monsters"
+            :entity="monster"
+            :form-ref="entityEditFormRef"
+            :title="monsterName"
+            list-route-name="entities.monsters.index"
+            delete-route-name="entities.monsters.delete"
+            route-param-key="monster"
+            :can-delete="canDelete"
+            delete-confirm-message="Supprimer ce monstre ? Il sera placé en corbeille (récupération possible côté admin)."
         >
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div class="min-w-0 flex-1">
-                    <h1 class="truncate text-md font-bold text-base-content sm:text-lg">
-                        {{ monsterName }}
-                    </h1>
-                    <p class="text-xs text-base-content/60">
-                        Édition · ID {{ monster.id }}
-                        <span v-if="monster.creature">
-                            · Créature : {{ monster.creature.name }}
-                        </span>
-                    </p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <EntityListBackButton route-name="entities.monsters.index" />
-                    <Btn
-                        color="neutral"
-                        variant="outline"
-                        size="xs"
-                        type="button"
-                        class="gap-1.5"
-                        @click="goToShow"
-                    >
-                        <i class="fa-solid fa-book-open" aria-hidden="true"></i>
-                        Fiche
-                    </Btn>
-                </div>
-            </div>
-        </div>
+            <template #subtitle>
+                Édition · #{{ monster.id }}
+                <span v-if="monster.creature">
+                    · Créature : {{ monster.creature.name }}
+                </span>
+            </template>
+        </EntityEditHeader>
 
         <p class="text-xs text-base-content/60 px-1">
             Nom et statistiques (totaux / bonus) sont portés par la créature associée.
         </p>
 
-        <Collapse
-            v-if="monster.creature && monster.id"
-            arrow
-            bg-off="bg-base-100"
-            class="border border-base-300"
-        >
-            <template #title>Caractéristiques (totaux &amp; contexte)</template>
-            <template #content>
-                <CreatureComposableCharacteristicsEditor
-                    :creature="monster.creature"
-                    :entity-id="monster.id"
-                    update-route-name="entities.monsters.update"
-                    update-route-param-name="monster"
-                />
-            </template>
-        </Collapse>
-
         <EntityEditForm
+            ref="entityEditFormRef"
             :entity="monster"
             entity-type="monster"
             :fields-config="fieldsConfig"
@@ -143,98 +110,136 @@ function goToShow() {
             :field-sections="fieldSections"
             :show-state-toolbar="true"
             :show-access-levels-in-footer="false"
-            layout-profile="dense"
-            :fixed-footer-actions="true"
+            layout-profile="sheet"
+            :hide-top-toolbar="true"
+            :hide-action-dock="true"
+            :fixed-footer-actions="false"
             :fixed-footer-inset-class="fixedFooterInsetClass"
             :compact-access-levels="true"
-        />
-
-        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
-            <template #title>Langues &amp; traits</template>
-            <template #content>
-                <div class="space-y-4">
-                    <EntityLanguagesEditor
-                        v-if="monster.id"
-                        entity-type="monster"
-                        :relations="monster.languages || []"
-                        :available-items="availableLanguages"
+            redirect-after-update="edit"
+        >
+            <template #after-sections>
+                <EntityEditContainer
+                    v-if="monster.creature && monster.id"
+                    title="Caractéristiques (totaux & contexte)"
+                    icon="fa-solid fa-chart-simple"
+                    :span="2"
+                    collapsible
+                    :default-open="false"
+                    root-class="mt-3 lg:col-span-2"
+                >
+                    <CreatureComposableCharacteristicsEditor
+                        :creature="monster.creature"
                         :entity-id="monster.id"
+                        update-route-name="entities.monsters.update"
+                        update-route-param-name="monster"
                     />
+                </EntityEditContainer>
 
-                    <CreatureTraitsEditor
-                        v-if="monster.id"
-                        :relations="monster.creature?.creatureTraits || monster.creatureTraits || []"
-                        :available-items="availableCreatureTraits"
-                        :entity-id="monster.id"
-                        route-name="entities.monsters.updateCreatureTraits"
-                        route-param-name="monster"
-                        title="Traits du monstre"
-                        help="Traits innés du monstre. Ces traits sont attachés directement à sa créature et n'ont pas de niveau d'activation."
-                    />
-                </div>
-            </template>
-        </Collapse>
+                <EntityEditContainer
+                    title="Langues & traits"
+                    icon="fa-solid fa-comments"
+                    :span="2"
+                    collapsible
+                    :default-open="false"
+                    :root-class="
+                        monster.creature && monster.id
+                            ? 'lg:col-span-2'
+                            : 'mt-3 lg:col-span-2'
+                    "
+                >
+                    <div class="space-y-4">
+                        <EntityLanguagesEditor
+                            v-if="monster.id"
+                            entity-type="monster"
+                            :relations="monster.languages || []"
+                            :available-items="availableLanguages"
+                            :entity-id="monster.id"
+                        />
 
-        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
-            <template #title>Sorts d'invocation</template>
-            <template #content>
-                <EntityRelationsManager
-                    :relations="monster.spellInvocations || []"
-                    :available-items="availableSpells"
-                    :entity-id="monster.id"
-                    entity-type="monsters"
-                    relation-type="spellInvocations"
-                    relation-name="Sorts d'invocation du monstre"
-                    :config="{
-                        displayFields: ['name', 'description', 'level'],
-                        searchFields: ['name', 'description'],
-                        routeName: 'entities.monsters.updateSpellInvocations',
-                        itemLabel: 'sort',
-                        itemLabelPlural: 'sorts',
-                        relatedEntityType: 'spells',
-                        searchApiEntityType: 'spells',
-                    }"
-                />
-            </template>
-        </Collapse>
+                        <CreatureTraitsEditor
+                            v-if="monster.id"
+                            :relations="monster.creature?.creatureTraits || monster.creatureTraits || []"
+                            :available-items="availableCreatureTraits"
+                            :entity-id="monster.id"
+                            route-name="entities.monsters.updateCreatureTraits"
+                            route-param-name="monster"
+                            title="Traits du monstre"
+                            help="Traits innés du monstre. Ces traits sont attachés directement à sa créature et n'ont pas de niveau d'activation."
+                        />
+                    </div>
+                </EntityEditContainer>
 
-        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
-            <template #title>Scénarios &amp; campagnes</template>
-            <template #content>
-                <div class="space-y-4">
+                <EntityEditContainer
+                    title="Sorts d'invocation"
+                    icon="fa-solid fa-wand-sparkles"
+                    :span="2"
+                    collapsible
+                    :default-open="false"
+                    root-class="lg:col-span-2"
+                >
                     <EntityRelationsManager
-                        :relations="monster.scenarios || []"
-                        :available-items="availableScenarios"
+                        :relations="monster.spellInvocations || []"
+                        :available-items="availableSpells"
                         :entity-id="monster.id"
                         entity-type="monsters"
-                        relation-type="scenarios"
-                        relation-name="Scénarios du monstre"
+                        relation-type="spellInvocations"
+                        relation-name="Sorts d'invocation du monstre"
                         :config="{
-                            displayFields: ['name', 'description'],
+                            displayFields: ['name', 'description', 'level'],
                             searchFields: ['name', 'description'],
-                            itemLabel: 'scénario',
-                            itemLabelPlural: 'scénarios',
-                            searchApiEntityType: 'scenarios',
+                            routeName: 'entities.monsters.updateSpellInvocations',
+                            itemLabel: 'sort',
+                            itemLabelPlural: 'sorts',
+                            relatedEntityType: 'spells',
+                            searchApiEntityType: 'spells',
                         }"
                     />
+                </EntityEditContainer>
 
-                    <EntityRelationsManager
-                        :relations="monster.campaigns || []"
-                        :available-items="availableCampaigns"
-                        :entity-id="monster.id"
-                        entity-type="monsters"
-                        relation-type="campaigns"
-                        relation-name="Campagnes du monstre"
-                        :config="{
-                            displayFields: ['name', 'description'],
-                            searchFields: ['name', 'description'],
-                            itemLabel: 'campagne',
-                            itemLabelPlural: 'campagnes',
-                            searchApiEntityType: 'campaigns',
-                        }"
-                    />
-                </div>
+                <EntityEditContainer
+                    title="Scénarios & campagnes"
+                    icon="fa-solid fa-map"
+                    :span="2"
+                    collapsible
+                    :default-open="false"
+                    root-class="lg:col-span-2"
+                >
+                    <div class="space-y-4">
+                        <EntityRelationsManager
+                            :relations="monster.scenarios || []"
+                            :available-items="availableScenarios"
+                            :entity-id="monster.id"
+                            entity-type="monsters"
+                            relation-type="scenarios"
+                            relation-name="Scénarios du monstre"
+                            :config="{
+                                displayFields: ['name', 'description'],
+                                searchFields: ['name', 'description'],
+                                itemLabel: 'scénario',
+                                itemLabelPlural: 'scénarios',
+                                searchApiEntityType: 'scenarios',
+                            }"
+                        />
+
+                        <EntityRelationsManager
+                            :relations="monster.campaigns || []"
+                            :available-items="availableCampaigns"
+                            :entity-id="monster.id"
+                            entity-type="monsters"
+                            relation-type="campaigns"
+                            relation-name="Campagnes du monstre"
+                            :config="{
+                                displayFields: ['name', 'description'],
+                                searchFields: ['name', 'description'],
+                                itemLabel: 'campagne',
+                                itemLabelPlural: 'campagnes',
+                                searchApiEntityType: 'campaigns',
+                            }"
+                        />
+                    </div>
+                </EntityEditContainer>
             </template>
-        </Collapse>
+        </EntityEditForm>
     </Container>
 </template>

@@ -5,13 +5,13 @@
  * @module Entities/breed/breed-form-config
  */
 
-/** Sections formulaire — édition (grille dense). */
+/** Sections formulaire — édition (grille sheet 2 cols ; état dans le header). */
 export const BREED_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
         title: 'Généralités',
-        subtitle: 'Nom, descriptions et état.',
-        fieldKeys: ['name', 'description_fast', 'description', 'state'],
+        subtitle: 'Nom et descriptions.',
+        fieldKeys: ['name', 'description_fast', 'description'],
     },
     {
         id: 'gameplay',
@@ -38,6 +38,9 @@ export const BREED_FORM_FIELD_SECTIONS_EDIT = [
         id: 'admin',
         title: 'Métadonnées & droits',
         subtitle: 'Identifiants externes, synchro, niveaux d’accès.',
+        collapsedByDefault: true,
+        collapsedActionLabel: 'Afficher',
+        expandedActionLabel: 'Masquer',
         fieldKeys: [
             'dofusdb_id',
             'dofus_version',

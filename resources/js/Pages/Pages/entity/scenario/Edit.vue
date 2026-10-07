@@ -3,20 +3,20 @@
  * Scenario Edit Page
  *
  * @description
- * Édition dense d’un scénario : grille fieldSections + relations en collapses.
+ * Édition sheet (header compact + grille 2 colonnes) + relations en containers.
  *
  * @props {Object} scenario - Données du scénario à éditer
  */
-import { computed } from 'vue';
-import { Head, router, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { Scenario } from '@/Models/Entity/Scenario';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
-import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
-import Btn from '@/Pages/Atoms/action/Btn.vue';
-import EntityListBackButton from '@/Pages/Atoms/action/EntityListBackButton.vue';
+import EntityEditHeader from '@/Pages/Molecules/entity/shared/EntityEditHeader.vue';
+import EntityEditContainer from '@/Pages/Molecules/entity/shared/EntityEditContainer.vue';
 import {
     buildScenarioFormFieldsConfig,
     SCENARIO_FORM_FIELD_SECTIONS_EDIT,
@@ -24,6 +24,7 @@ import {
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
+const { canDeleteAny, isAdmin } = usePermissions();
 
 const props = defineProps({
     scenario: {
@@ -57,6 +58,8 @@ const fieldsConfig = computed(() =>
 );
 const fieldSections = SCENARIO_FORM_FIELD_SECTIONS_EDIT;
 const fixedFooterInsetClass = 'left-0 right-0';
+const entityEditFormRef = ref(null);
+const canDelete = computed(() => canDeleteAny('scenarios') || isAdmin.value);
 
 const scenario = computed(() => {
     const scenarioData = props.scenario || page.props.scenario || {};
@@ -64,49 +67,26 @@ const scenario = computed(() => {
 });
 
 setPageTitle(`Modifier le scénario : ${scenario.value.name || 'Nouveau scénario'}`);
-
-function goToShow() {
-    const id = scenario.value?.id;
-    if (!id) return;
-    router.visit(route('entities.scenarios.show', { scenario: id }));
-}
 </script>
 
 <template>
     <Head :title="`Modifier le scénario : ${scenario?.name || 'Nouveau scénario'}`" />
 
     <Container class="space-y-4">
-        <div
-            class="sticky top-0 z-20 px-3 py-1 bg-glass-3xl backdrop-blur-md border-glass-b-md sm:px-4"
-            style="--bg-color: var(--color-base-100)"
-        >
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div class="min-w-0 flex-1">
-                    <h1 class="truncate text-md font-bold text-base-content sm:text-lg">
-                        {{ scenario.name || 'Scénario sans nom' }}
-                    </h1>
-                    <p class="text-xs text-base-content/60">
-                        Édition · ID {{ scenario.id }}
-                    </p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <EntityListBackButton route-name="entities.scenarios.index" />
-                    <Btn
-                        color="neutral"
-                        variant="outline"
-                        size="xs"
-                        type="button"
-                        class="gap-1.5"
-                        @click="goToShow"
-                    >
-                        <i class="fa-solid fa-book-open" aria-hidden="true"></i>
-                        Fiche
-                    </Btn>
-                </div>
-            </div>
-        </div>
+        <EntityEditHeader
+            entity-type="scenarios"
+            :entity="scenario"
+            :form-ref="entityEditFormRef"
+            :title="scenario.name || 'Scénario sans nom'"
+            list-route-name="entities.scenarios.index"
+            delete-route-name="entities.scenarios.delete"
+            route-param-key="scenario"
+            :can-delete="canDelete"
+            delete-confirm-message="Supprimer ce scénario ? Il sera placé en corbeille (récupération possible côté admin)."
+        />
 
         <EntityEditForm
+            ref="entityEditFormRef"
             :entity="scenario"
             entity-type="scenario"
             :fields-config="fieldsConfig"
@@ -114,92 +94,102 @@ function goToShow() {
             :field-sections="fieldSections"
             :show-state-toolbar="true"
             :show-access-levels-in-footer="false"
-            layout-profile="dense"
-            :fixed-footer-actions="true"
+            layout-profile="sheet"
+            :hide-top-toolbar="true"
+            :hide-action-dock="true"
+            :fixed-footer-actions="false"
             :fixed-footer-inset-class="fixedFooterInsetClass"
             :compact-access-levels="true"
-        />
+            redirect-after-update="edit"
+        >
+            <template #after-sections>
+                <EntityEditContainer
+                    title="Contenu lié"
+                    subtitle="Objets, consommables, sorts et panoplies."
+                    icon="fa-solid fa-boxes-stacked"
+                    :span="2"
+                    collapsible
+                    :default-open="false"
+                    root-class="mt-3 lg:col-span-2"
+                >
+                    <div class="space-y-4">
+                        <EntityRelationsManager
+                            :relations="scenario.items || []"
+                            :available-items="availableItems"
+                            :entity-id="scenario.id"
+                            entity-type="scenarios"
+                            relation-type="items"
+                            relation-name="Objets du scénario"
+                            :config="{
+                                displayFields: ['name', 'description', 'level'],
+                                searchFields: ['name', 'description'],
+                                itemLabel: 'objet',
+                                itemLabelPlural: 'objets',
+                            }"
+                        />
 
-        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
-            <template #title>Contenu lié</template>
-            <template #content>
-                <div class="space-y-4">
-                    <EntityRelationsManager
-                        :relations="scenario.items || []"
-                        :available-items="availableItems"
-                        :entity-id="scenario.id"
-                        entity-type="scenarios"
-                        relation-type="items"
-                        relation-name="Objets du scénario"
-                        :config="{
-                            displayFields: ['name', 'description', 'level'],
-                            searchFields: ['name', 'description'],
-                            itemLabel: 'objet',
-                            itemLabelPlural: 'objets'
-                        }"
-                    />
+                        <EntityRelationsManager
+                            :relations="scenario.consumables || []"
+                            :available-items="availableConsumables"
+                            :entity-id="scenario.id"
+                            entity-type="scenarios"
+                            relation-type="consumables"
+                            relation-name="Consommables du scénario"
+                            :config="{
+                                displayFields: ['name', 'description', 'level'],
+                                searchFields: ['name', 'description'],
+                                itemLabel: 'consommable',
+                                itemLabelPlural: 'consommables',
+                            }"
+                        />
 
-                    <EntityRelationsManager
-                        :relations="scenario.consumables || []"
-                        :available-items="availableConsumables"
-                        :entity-id="scenario.id"
-                        entity-type="scenarios"
-                        relation-type="consumables"
-                        relation-name="Consommables du scénario"
-                        :config="{
-                            displayFields: ['name', 'description', 'level'],
-                            searchFields: ['name', 'description'],
-                            itemLabel: 'consommable',
-                            itemLabelPlural: 'consommables'
-                        }"
-                    />
+                        <EntityRelationsManager
+                            :relations="scenario.resources || []"
+                            :available-items="availableResources"
+                            :entity-id="scenario.id"
+                            entity-type="scenarios"
+                            relation-type="resources"
+                            relation-name="Ressources du scénario"
+                            :config="{
+                                displayFields: ['name', 'description', 'level'],
+                                searchFields: ['name', 'description'],
+                                itemLabel: 'ressource',
+                                itemLabelPlural: 'ressources',
+                            }"
+                        />
 
-                    <EntityRelationsManager
-                        :relations="scenario.resources || []"
-                        :available-items="availableResources"
-                        :entity-id="scenario.id"
-                        entity-type="scenarios"
-                        relation-type="resources"
-                        relation-name="Ressources du scénario"
-                        :config="{
-                            displayFields: ['name', 'description', 'level'],
-                            searchFields: ['name', 'description'],
-                            itemLabel: 'ressource',
-                            itemLabelPlural: 'ressources'
-                        }"
-                    />
+                        <EntityRelationsManager
+                            :relations="scenario.spells || []"
+                            :available-items="availableSpells"
+                            :entity-id="scenario.id"
+                            entity-type="scenarios"
+                            relation-type="spells"
+                            relation-name="Sorts du scénario"
+                            :config="{
+                                displayFields: ['name', 'description', 'level'],
+                                searchFields: ['name', 'description'],
+                                itemLabel: 'sort',
+                                itemLabelPlural: 'sorts',
+                            }"
+                        />
 
-                    <EntityRelationsManager
-                        :relations="scenario.spells || []"
-                        :available-items="availableSpells"
-                        :entity-id="scenario.id"
-                        entity-type="scenarios"
-                        relation-type="spells"
-                        relation-name="Sorts du scénario"
-                        :config="{
-                            displayFields: ['name', 'description', 'level'],
-                            searchFields: ['name', 'description'],
-                            itemLabel: 'sort',
-                            itemLabelPlural: 'sorts'
-                        }"
-                    />
-
-                    <EntityRelationsManager
-                        :relations="scenario.panoplies || []"
-                        :available-items="availablePanoplies"
-                        :entity-id="scenario.id"
-                        entity-type="scenarios"
-                        relation-type="panoplies"
-                        relation-name="Panoplies du scénario"
-                        :config="{
-                            displayFields: ['name', 'description'],
-                            searchFields: ['name', 'description'],
-                            itemLabel: 'panoplie',
-                            itemLabelPlural: 'panoplies'
-                        }"
-                    />
-                </div>
+                        <EntityRelationsManager
+                            :relations="scenario.panoplies || []"
+                            :available-items="availablePanoplies"
+                            :entity-id="scenario.id"
+                            entity-type="scenarios"
+                            relation-type="panoplies"
+                            relation-name="Panoplies du scénario"
+                            :config="{
+                                displayFields: ['name', 'description'],
+                                searchFields: ['name', 'description'],
+                                itemLabel: 'panoplie',
+                                itemLabelPlural: 'panoplies',
+                            }"
+                        />
+                    </div>
+                </EntityEditContainer>
             </template>
-        </Collapse>
+        </EntityEditForm>
     </Container>
 </template>

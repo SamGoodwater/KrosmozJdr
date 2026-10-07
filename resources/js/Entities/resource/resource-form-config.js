@@ -5,13 +5,13 @@
  * @module Entities/resource/resource-form-config
  */
 
-/** Sections formulaire — édition (grille dense). */
+/** Sections formulaire — édition (grille sheet 2 cols ; état dans le header). */
 export const RESOURCE_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
         title: 'Généralités',
-        subtitle: 'Nom, description, visuel, type et état.',
-        fieldKeys: ['name', 'description', 'image', 'resource_type_id', 'state'],
+        subtitle: 'Nom, description, visuel et type.',
+        fieldKeys: ['name', 'description', 'image', 'resource_type_id'],
     },
     {
         id: 'gameplay',
@@ -23,6 +23,9 @@ export const RESOURCE_FORM_FIELD_SECTIONS_EDIT = [
         id: 'admin',
         title: 'Métadonnées & droits',
         subtitle: 'Identifiants externes, synchro, niveaux d’accès.',
+        collapsedByDefault: true,
+        collapsedActionLabel: 'Afficher',
+        expandedActionLabel: 'Masquer',
         fieldKeys: [
             'official_id',
             'dofusdb_id',

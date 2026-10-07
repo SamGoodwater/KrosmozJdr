@@ -1,10 +1,11 @@
 <script setup>
 /**
- * Page d’édition dense d’un PNJ : identité + kit de jeu en collapses.
+ * Page d’édition sheet d’un PNJ : identité + kit de jeu en containers.
  */
-import { computed } from 'vue';
-import { Head, router, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { Npc } from '@/Models/Entity/Npc';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
@@ -12,9 +13,8 @@ import EntityLanguagesEditor from '@/Pages/Organismes/entity/EntityLanguagesEdit
 import CreatureTraitsEditor from '@/Pages/Organismes/entity/CreatureTraitsEditor.vue';
 import CreatureComposableCharacteristicsEditor from '@/Pages/Organismes/entity/CreatureComposableCharacteristicsEditor.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
-import Collapse from '@/Pages/Atoms/data-display/Collapse.vue';
-import Btn from '@/Pages/Atoms/action/Btn.vue';
-import EntityListBackButton from '@/Pages/Atoms/action/EntityListBackButton.vue';
+import EntityEditHeader from '@/Pages/Molecules/entity/shared/EntityEditHeader.vue';
+import EntityEditContainer from '@/Pages/Molecules/entity/shared/EntityEditContainer.vue';
 import {
     buildNpcFormFieldsConfig,
     NPC_FORM_FIELD_SECTIONS_EDIT,
@@ -22,6 +22,7 @@ import {
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
+const { canDeleteAny, isAdmin } = usePermissions();
 
 const props = defineProps({
     npc: {
@@ -75,6 +76,8 @@ const fieldsConfig = computed(() =>
 
 const fieldSections = NPC_FORM_FIELD_SECTIONS_EDIT;
 const fixedFooterInsetClass = 'left-0 right-0';
+const entityEditFormRef = ref(null);
+const canDelete = computed(() => canDeleteAny('npcs') || isAdmin.value);
 
 const npc = computed(() => {
     const npcData = props.npc || page.props.npc || {};
@@ -91,66 +94,26 @@ const creatureItems = computed(
 );
 
 setPageTitle(`Modifier le PNJ : ${npcName.value}`);
-
-function goToShow() {
-    const id = npc.value?.id;
-    if (!id) return;
-    router.visit(route('entities.npcs.show', { npc: id }));
-}
 </script>
 
 <template>
     <Head :title="`Modifier le PNJ : ${npcName}`" />
 
     <Container class="space-y-4">
-        <div
-            class="sticky top-0 z-20 px-3 py-1 bg-glass-3xl backdrop-blur-md border-glass-b-md sm:px-4"
-            style="--bg-color: var(--color-base-100)"
-        >
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div class="min-w-0 flex-1">
-                    <h1 class="truncate text-md font-bold text-base-content sm:text-lg">
-                        {{ npcName }}
-                    </h1>
-                    <p class="text-xs text-base-content/60">
-                        Édition · ID {{ npc.id }}
-                    </p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <EntityListBackButton route-name="entities.npcs.index" />
-                    <Btn
-                        color="neutral"
-                        variant="outline"
-                        size="xs"
-                        type="button"
-                        class="gap-1.5"
-                        @click="goToShow"
-                    >
-                        <i class="fa-solid fa-book-open" aria-hidden="true"></i>
-                        Fiche
-                    </Btn>
-                </div>
-            </div>
-        </div>
-
-        <Collapse
-            v-if="npc.creature && npc.id"
-            arrow
-            bg-off="bg-base-100"
-            class="border border-base-300"
-        >
-            <template #title>Caractéristiques (totaux &amp; contexte)</template>
-            <template #content>
-                <CreatureComposableCharacteristicsEditor
-                    :creature="npc.creature"
-                    :entity-id="npc.id"
-                    update-route-name="entities.npcs.update"
-                    update-route-param-name="npc"
-                />
-            </template>
-        </Collapse>
+        <EntityEditHeader
+            entity-type="npcs"
+            :entity="npc"
+            :form-ref="entityEditFormRef"
+            :title="npcName"
+            list-route-name="entities.npcs.index"
+            delete-route-name="entities.npcs.delete"
+            route-param-key="npc"
+            :can-delete="canDelete"
+            delete-confirm-message="Supprimer ce PNJ ? Il sera placé en corbeille (récupération possible côté admin)."
+        />
 
         <EntityEditForm
+            ref="entityEditFormRef"
             :entity="npc"
             entity-type="npc"
             :fields-config="fieldsConfig"
@@ -158,152 +121,196 @@ function goToShow() {
             :field-sections="fieldSections"
             :show-state-toolbar="true"
             :show-access-levels-in-footer="false"
-            layout-profile="dense"
-            :fixed-footer-actions="true"
+            layout-profile="sheet"
+            :hide-top-toolbar="true"
+            :hide-action-dock="true"
+            :fixed-footer-actions="false"
             :fixed-footer-inset-class="fixedFooterInsetClass"
             :compact-access-levels="true"
-        />
-
-        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
-            <template #title>Langues &amp; traits</template>
-            <template #content>
-                <div class="space-y-4">
-                    <EntityLanguagesEditor
-                        v-if="npc.id"
-                        entity-type="npc"
-                        :relations="npc.languages || []"
-                        :available-items="availableLanguages"
+            redirect-after-update="edit"
+        >
+            <template #after-sections>
+                <EntityEditContainer
+                    v-if="npc.creature && npc.id"
+                    title="Caractéristiques (totaux & contexte)"
+                    icon="fa-solid fa-chart-simple"
+                    :span="2"
+                    collapsible
+                    :default-open="false"
+                    root-class="mt-3 lg:col-span-2"
+                >
+                    <CreatureComposableCharacteristicsEditor
+                        :creature="npc.creature"
                         :entity-id="npc.id"
+                        update-route-name="entities.npcs.update"
+                        update-route-param-name="npc"
                     />
-                    <CreatureTraitsEditor
-                        v-if="npc.id"
-                        :relations="npc.creature?.creatureTraits || []"
-                        :available-items="availableCreatureTraits"
-                        :entity-id="npc.id"
-                        route-name="entities.npcs.updateCreatureTraits"
-                        route-param-name="npc"
-                        title="Traits du PNJ"
-                        help="Traits innés du PNJ, attachés à sa créature."
-                    />
-                </div>
-            </template>
-        </Collapse>
+                </EntityEditContainer>
 
-        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
-            <template #title>Sorts</template>
-            <template #content>
-                <div class="space-y-4">
+                <EntityEditContainer
+                    title="Langues & traits"
+                    icon="fa-solid fa-comments"
+                    :span="2"
+                    collapsible
+                    :default-open="false"
+                    :root-class="
+                        npc.creature && npc.id ? 'lg:col-span-2' : 'mt-3 lg:col-span-2'
+                    "
+                >
+                    <div class="space-y-4">
+                        <EntityLanguagesEditor
+                            v-if="npc.id"
+                            entity-type="npc"
+                            :relations="npc.languages || []"
+                            :available-items="availableLanguages"
+                            :entity-id="npc.id"
+                        />
+                        <CreatureTraitsEditor
+                            v-if="npc.id"
+                            :relations="npc.creature?.creatureTraits || []"
+                            :available-items="availableCreatureTraits"
+                            :entity-id="npc.id"
+                            route-name="entities.npcs.updateCreatureTraits"
+                            route-param-name="npc"
+                            title="Traits du PNJ"
+                            help="Traits innés du PNJ, attachés à sa créature."
+                        />
+                    </div>
+                </EntityEditContainer>
+
+                <EntityEditContainer
+                    title="Sorts"
+                    icon="fa-solid fa-wand-sparkles"
+                    :span="2"
+                    collapsible
+                    :default-open="false"
+                    root-class="lg:col-span-2"
+                >
+                    <div class="space-y-4">
+                        <EntityRelationsManager
+                            :relations="creatureSpells"
+                            :available-items="availableSpells"
+                            :entity-id="npc.id"
+                            entity-type="npcs"
+                            relation-type="spells"
+                            relation-name="Sorts du PNJ"
+                            :config="{
+                                displayFields: ['name', 'description', 'level'],
+                                searchFields: ['name', 'description'],
+                                routeName: 'entities.npcs.updateSpells',
+                                itemLabel: 'sort',
+                                itemLabelPlural: 'sorts',
+                                relatedEntityType: 'spells',
+                                searchApiEntityType: 'spells',
+                            }"
+                        />
+                        <p v-if="npc.breedId" class="text-xs text-base-content/60">
+                            La liste proposée est préfiltrée sur la classe du PNJ ; la recherche catalogue
+                            permet d’ajouter d’autres sorts.
+                        </p>
+                    </div>
+                </EntityEditContainer>
+
+                <EntityEditContainer
+                    title="Équipements"
+                    icon="fa-solid fa-shield-halved"
+                    :span="2"
+                    collapsible
+                    :default-open="false"
+                    root-class="lg:col-span-2"
+                >
+                    <div class="space-y-4">
+                        <EntityRelationsManager
+                            :relations="creatureItems"
+                            :available-items="availableItems"
+                            :entity-id="npc.id"
+                            entity-type="npcs"
+                            relation-type="items"
+                            relation-name="Équipement porté"
+                            :config="{
+                                displayFields: ['name', 'description', 'level'],
+                                searchFields: ['name', 'description'],
+                                routeName: 'entities.npcs.updateItems',
+                                itemLabel: 'objet',
+                                itemLabelPlural: 'objets',
+                                relatedEntityType: 'items',
+                                searchApiEntityType: 'items',
+                            }"
+                        />
+                        <p class="text-xs text-base-content/60">
+                            Un objet par emplacement (deux anneaux). Les types hors équipement sont refusés.
+                        </p>
+                    </div>
+                </EntityEditContainer>
+
+                <EntityEditContainer
+                    title="Panoplies"
+                    icon="fa-solid fa-layer-group"
+                    :span="2"
+                    collapsible
+                    :default-open="false"
+                    root-class="lg:col-span-2"
+                >
                     <EntityRelationsManager
-                        :relations="creatureSpells"
-                        :available-items="availableSpells"
+                        :relations="npc.panoplies || []"
+                        :available-items="availablePanoplies"
                         :entity-id="npc.id"
                         entity-type="npcs"
-                        relation-type="spells"
-                        relation-name="Sorts du PNJ"
-                        :config="{
-                            displayFields: ['name', 'description', 'level'],
-                            searchFields: ['name', 'description'],
-                            routeName: 'entities.npcs.updateSpells',
-                            itemLabel: 'sort',
-                            itemLabelPlural: 'sorts',
-                            relatedEntityType: 'spells',
-                            searchApiEntityType: 'spells',
-                        }"
-                    />
-                    <p v-if="npc.breedId" class="text-xs text-base-content/60">
-                        La liste proposée est préfiltrée sur la classe du PNJ ; la recherche catalogue
-                        permet d’ajouter d’autres sorts.
-                    </p>
-                </div>
-            </template>
-        </Collapse>
-
-        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
-            <template #title>Équipements</template>
-            <template #content>
-                <div class="space-y-4">
-                    <EntityRelationsManager
-                        :relations="creatureItems"
-                        :available-items="availableItems"
-                        :entity-id="npc.id"
-                        entity-type="npcs"
-                        relation-type="items"
-                        relation-name="Équipement porté"
-                        :config="{
-                            displayFields: ['name', 'description', 'level'],
-                            searchFields: ['name', 'description'],
-                            routeName: 'entities.npcs.updateItems',
-                            itemLabel: 'objet',
-                            itemLabelPlural: 'objets',
-                            relatedEntityType: 'items',
-                            searchApiEntityType: 'items',
-                        }"
-                    />
-                    <p class="text-xs text-base-content/60">
-                        Un objet par emplacement (deux anneaux). Les types hors équipement sont refusés.
-                    </p>
-                </div>
-            </template>
-        </Collapse>
-
-        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
-            <template #title>Panoplies</template>
-            <template #content>
-                <EntityRelationsManager
-                    :relations="npc.panoplies || []"
-                    :available-items="availablePanoplies"
-                    :entity-id="npc.id"
-                    entity-type="npcs"
-                    relation-type="panoplies"
-                    relation-name="Panoplies du PNJ"
-                    :config="{
-                        displayFields: ['name', 'description'],
-                        searchFields: ['name', 'description'],
-                        itemLabel: 'panoplie',
-                        itemLabelPlural: 'panoplies',
-                        searchApiEntityType: 'panoplies',
-                    }"
-                />
-            </template>
-        </Collapse>
-
-        <Collapse arrow bg-off="bg-base-100" class="border border-base-300">
-            <template #title>Scénarios &amp; campagnes</template>
-            <template #content>
-                <div class="space-y-4">
-                    <EntityRelationsManager
-                        :relations="npc.scenarios || []"
-                        :available-items="availableScenarios"
-                        :entity-id="npc.id"
-                        entity-type="npcs"
-                        relation-type="scenarios"
-                        relation-name="Scénarios du PNJ"
+                        relation-type="panoplies"
+                        relation-name="Panoplies du PNJ"
                         :config="{
                             displayFields: ['name', 'description'],
                             searchFields: ['name', 'description'],
-                            itemLabel: 'scénario',
-                            itemLabelPlural: 'scénarios',
-                            searchApiEntityType: 'scenarios',
+                            itemLabel: 'panoplie',
+                            itemLabelPlural: 'panoplies',
+                            searchApiEntityType: 'panoplies',
                         }"
                     />
+                </EntityEditContainer>
 
-                    <EntityRelationsManager
-                        :relations="npc.campaigns || []"
-                        :available-items="availableCampaigns"
-                        :entity-id="npc.id"
-                        entity-type="npcs"
-                        relation-type="campaigns"
-                        relation-name="Campagnes du PNJ"
-                        :config="{
-                            displayFields: ['name', 'description'],
-                            searchFields: ['name', 'description'],
-                            itemLabel: 'campagne',
-                            itemLabelPlural: 'campagnes',
-                            searchApiEntityType: 'campaigns',
-                        }"
-                    />
-                </div>
+                <EntityEditContainer
+                    title="Scénarios & campagnes"
+                    icon="fa-solid fa-map"
+                    :span="2"
+                    collapsible
+                    :default-open="false"
+                    root-class="lg:col-span-2"
+                >
+                    <div class="space-y-4">
+                        <EntityRelationsManager
+                            :relations="npc.scenarios || []"
+                            :available-items="availableScenarios"
+                            :entity-id="npc.id"
+                            entity-type="npcs"
+                            relation-type="scenarios"
+                            relation-name="Scénarios du PNJ"
+                            :config="{
+                                displayFields: ['name', 'description'],
+                                searchFields: ['name', 'description'],
+                                itemLabel: 'scénario',
+                                itemLabelPlural: 'scénarios',
+                                searchApiEntityType: 'scenarios',
+                            }"
+                        />
+
+                        <EntityRelationsManager
+                            :relations="npc.campaigns || []"
+                            :available-items="availableCampaigns"
+                            :entity-id="npc.id"
+                            entity-type="npcs"
+                            relation-type="campaigns"
+                            relation-name="Campagnes du PNJ"
+                            :config="{
+                                displayFields: ['name', 'description'],
+                                searchFields: ['name', 'description'],
+                                itemLabel: 'campagne',
+                                itemLabelPlural: 'campagnes',
+                                searchApiEntityType: 'campaigns',
+                            }"
+                        />
+                    </div>
+                </EntityEditContainer>
             </template>
-        </Collapse>
+        </EntityEditForm>
     </Container>
 </template>

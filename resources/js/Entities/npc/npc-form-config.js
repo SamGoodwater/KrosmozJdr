@@ -129,13 +129,13 @@ export function buildNpcFormFieldsConfig(options = {}) {
     };
 }
 
-/** Sections formulaire — édition (grille dense). */
+/** Sections formulaire — édition (grille sheet 2 cols ; état dans le header). */
 export const NPC_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
         title: 'Identité',
         subtitle: 'Nom, lieu, niveau, rôle et hostilité.',
-        fieldKeys: ['name', 'location', 'level', 'hostility', 'intimidation_ability', 'npc_role', 'state'],
+        fieldKeys: ['name', 'location', 'level', 'hostility', 'intimidation_ability', 'npc_role'],
     },
     {
         id: 'profile',
@@ -153,6 +153,9 @@ export const NPC_FORM_FIELD_SECTIONS_EDIT = [
         id: 'admin',
         title: 'Métadonnées & droits',
         subtitle: 'Niveaux d’accès et identifiant.',
+        collapsedByDefault: true,
+        collapsedActionLabel: 'Afficher',
+        expandedActionLabel: 'Masquer',
         fieldKeys: ['read_level', 'write_level', 'id'],
     },
 ];

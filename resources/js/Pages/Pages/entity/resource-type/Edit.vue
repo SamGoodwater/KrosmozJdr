@@ -3,22 +3,22 @@
  * Page d'édition d'un type de ressource.
  *
  * @description
- * Utilise le formulaire générique descriptor-driven pour aligner page et quick edit.
- *
- * @example
- * <EntityEditForm entity-type="resource-type" :entity="resourceType" />
+ * Édition sheet (header compact + formulaire descriptor-driven).
  */
-import { computed } from "vue";
-import { Head, usePage } from "@inertiajs/vue3";
-import { usePageTitle } from "@/Composables/layout/usePageTitle";
-import { ResourceType } from "@/Models/Entity/ResourceType";
-import { getResourceTypeFieldDescriptors } from "@/Entities/resource-type/resource-type-descriptors";
-import { createFieldsConfigFromDescriptors } from "@/Utils/entity/descriptor-form";
-import Container from "@/Pages/Atoms/data-display/Container.vue";
-import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
+import { computed, ref } from 'vue';
+import { Head, usePage } from '@inertiajs/vue3';
+import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { usePermissions } from '@/Composables/permissions/usePermissions';
+import { ResourceType } from '@/Models/Entity/ResourceType';
+import { getResourceTypeFieldDescriptors } from '@/Entities/resource-type/resource-type-descriptors';
+import { createFieldsConfigFromDescriptors } from '@/Utils/entity/descriptor-form';
+import Container from '@/Pages/Atoms/data-display/Container.vue';
+import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
+import EntityEditHeader from '@/Pages/Molecules/entity/shared/EntityEditHeader.vue';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
+const { canDeleteAny, isAdmin } = usePermissions();
 
 const props = defineProps({
     resourceType: {
@@ -37,19 +37,43 @@ const fieldsConfig = computed(() => {
     return createFieldsConfigFromDescriptors(getResourceTypeFieldDescriptors(ctx), ctx);
 });
 
-setPageTitle(`Modifier le type de ressource : ${resourceType.value.name || "Sans nom"}`);
+const fixedFooterInsetClass = 'left-0 right-0';
+const entityEditFormRef = ref(null);
+const canDelete = computed(() => canDeleteAny('resource-types') || isAdmin.value);
+
+setPageTitle(`Modifier le type de ressource : ${resourceType.value.name || 'Sans nom'}`);
 </script>
 
 <template>
     <Head :title="`Modifier le type de ressource : ${resourceType?.name || 'Sans nom'}`" />
 
-    <Container class="space-y-6 pb-32 md:pb-36">
+    <Container class="space-y-4">
+        <EntityEditHeader
+            entity-type="resource-types"
+            :entity="resourceType"
+            :form-ref="entityEditFormRef"
+            :title="resourceType.name || 'Type sans nom'"
+            list-route-name="entities.resource-types.index"
+            delete-route-name="entities.resource-types.delete"
+            route-param-key="resourceType"
+            :can-delete="canDelete"
+            delete-confirm-message="Supprimer ce type de ressource ? Il sera placé en corbeille (récupération possible côté admin)."
+        />
+
         <EntityEditForm
+            ref="entityEditFormRef"
             :entity="resourceType"
             entity-type="resource-type"
             :fields-config="fieldsConfig"
             route-name-base="entities.resource-types"
             route-param-key="resourceType"
+            :is-updating="true"
+            :show-state-toolbar="true"
+            layout-profile="sheet"
+            :hide-top-toolbar="true"
+            :hide-action-dock="true"
+            :fixed-footer-actions="false"
+            :fixed-footer-inset-class="fixedFooterInsetClass"
             redirect-after-update="edit"
         />
     </Container>

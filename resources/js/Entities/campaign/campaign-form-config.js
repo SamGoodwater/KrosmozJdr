@@ -88,13 +88,13 @@ export function buildCampaignFormFieldsConfig(options = {}) {
     };
 }
 
-/** Sections formulaire — édition (grille dense). */
+/** Sections formulaire — édition (grille sheet 2 cols ; état dans le header). */
 export const CAMPAIGN_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
         title: 'Identité',
         subtitle: 'Nom, description, visuel et publication.',
-        fieldKeys: ['name', 'description', 'image', 'is_public', 'state'],
+        fieldKeys: ['name', 'description', 'image', 'is_public'],
     },
     {
         id: 'meta',
@@ -106,6 +106,9 @@ export const CAMPAIGN_FORM_FIELD_SECTIONS_EDIT = [
         id: 'admin',
         title: 'Métadonnées & droits',
         subtitle: 'Niveaux d’accès et horodatage.',
+        collapsedByDefault: true,
+        collapsedActionLabel: 'Afficher',
+        expandedActionLabel: 'Masquer',
         fieldKeys: ['read_level', 'write_level', 'id', 'created_at', 'updated_at'],
     },
 ];
