@@ -12,6 +12,8 @@ Le système d'effets décrit les effets de sorts et d'objets : degrés, effets (
 - Services : `SpellDegreeResolver`, `SpellDegreeService`, `SpellDegreesSerializer`, `SpellDegreeLegacyMigrator`.
 - Commande : `php artisan spells:migrate-degrees [--dry-run] [--spell=]`.
 - API : `/api/spells/{spell}/degrees` (+ materialize / sync effets).
+  Supprimer un degré qui porte les effets copie d’abord ces lignes sur le degré suivant
+  s’il héritait — sinon les onglets restants n’auraient plus de source.
 - UI : `SpellDegreesEditor` (édition), `SpellEffectsJournal` (onglets niveau à l’affichage).
 - L’éditeur présente un champ de portée unique (`4` ou `2-8`) tout en conservant `po_min` / `po_max`
   en stockage. Chaque degré expose les contraintes de lancement, puis autant d’effets que nécessaire.
