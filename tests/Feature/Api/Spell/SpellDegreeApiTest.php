@@ -102,4 +102,48 @@ final class SpellDegreeApiTest extends TestCase
         $index->assertOk();
         $this->assertSame('4d6', $index->json('data.degrees.1.rows.0.params.value_formula'));
     }
+
+    public function test_deleting_source_degree_keeps_inherited_effects_on_remaining_degrees(): void
+    {
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $spell = Spell::factory()->create(['created_by' => $gm->id, 'write_level' => 0, 'pa' => '3']);
+        $sub = SubEffect::query()->create([
+            'slug' => 'frapper-del-'.uniqid(),
+            'type_slug' => 'frapper',
+            'template_text' => 'Dégâts [value].',
+            'variables_allowed' => ['value'],
+            'param_schema' => [],
+        ]);
+
+        $create = $this->actingAs($gm)->postJson("/api/spells/{$spell->id}/degrees", [
+            'required_level' => 1,
+            'inherits_effects' => false,
+            'effects' => [
+                [
+                    'sub_effect_id' => $sub->id,
+                    'params' => ['value_formula' => '2d6'],
+                ],
+            ],
+        ]);
+        $create->assertCreated();
+        $sourceId = (int) $create->json('degree_id');
+
+        $this->actingAs($gm)->postJson("/api/spells/{$spell->id}/degrees", [
+            'required_level' => 10,
+        ])->assertCreated();
+        $this->actingAs($gm)->postJson("/api/spells/{$spell->id}/degrees", [
+            'required_level' => 16,
+        ])->assertCreated();
+
+        $deleted = $this->actingAs($gm)->deleteJson("/api/spells/{$spell->id}/degrees/{$sourceId}");
+        $deleted->assertOk();
+
+        $degrees = $deleted->json('data.degrees');
+        $this->assertCount(2, $degrees);
+        $this->assertFalse($degrees[0]['inherits_effects']);
+        $this->assertSame('2d6', $degrees[0]['rows'][0]['params']['value_formula']);
+        $this->assertTrue($degrees[1]['inherits_effects']);
+        $this->assertSame('2d6', $degrees[1]['rows'][0]['params']['value_formula']);
+        $this->assertSame($degrees[0]['id'], $degrees[1]['effects_source_degree_id']);
+    }
 }

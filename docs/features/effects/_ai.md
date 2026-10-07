@@ -9,6 +9,7 @@
   - `app/Services/Spell/SpellDegreeResolver.php`, `SpellDegreeService.php`, `SpellDegreesSerializer.php`
   - `php artisan spells:migrate-degrees` (+ `--dry-run`, `--spell=`) : legacy `effect_spell` → `spell_degrees`
   - API : `GET/POST /api/spells/{spell}/degrees`, PATCH/DELETE degré, `materialize-effects`, sync effets
+  - DELETE d’un degré source : matérialise les effets sur le successeur héritant avant cascade
   - UI : `SpellDegreesEditor.vue` (édition), `SpellEffectsJournal.vue` (affichage onglets niveau)
   - Portée UI compacte `x` / `x-y` (`po_min` + `po_max` en stockage) ; propriétés effectives du
     degré actif dans Full, premier degré dans Minimal/Line/table
