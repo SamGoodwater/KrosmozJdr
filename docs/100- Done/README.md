@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Enregistrement d’un sort ne perd plus les dégâts chiffrés
+
+Sur les sorts venus de l’ancien modèle, certains effets stockent encore les dégâts en dés ou en min–max plutôt qu’en formule. Un enregistrement (même pour changer seulement le coût PA ou le niveau d’un degré) renvoyait les effets sans ces chiffres : ils disparaissaient de la fiche. L’enregistrement renvoie maintenant ces valeurs telles quelles.
+
 ## Octobre 2026 — Suppression de sort sans « Page introuvable »
 
 Après suppression depuis l’édition, le bouton Précédent du navigateur ne rouvre plus la fiche déjà mise en corbeille (404). Les liens des notifications pointent vers les bonnes URLs `/entities/…`, et après suppression vers la liste plutôt que la fiche disparue. Depuis une modal d’édition, la suppression reste sur la liste.
