@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — L’auteur d’un sort peut enregistrer ses degrés
+
+Un auteur (même simple utilisateur) qui a le droit de modifier sa fiche peut aussi enregistrer les degrés et effets. Avant, l’API exigeait le rôle MJ : l’éditeur s’ouvrait, mais le bouton Enregistrer échouait dès qu’un degré était modifié.
+
 ## Octobre 2026 — Suppression de sort sans « Page introuvable »
 
 Après suppression depuis l’édition, le bouton Précédent du navigateur ne rouvre plus la fiche déjà mise en corbeille (404). Les liens des notifications pointent vers les bonnes URLs `/entities/…`, et après suppression vers la liste plutôt que la fiche disparue. Depuis une modal d’édition, la suppression reste sur la liste.
