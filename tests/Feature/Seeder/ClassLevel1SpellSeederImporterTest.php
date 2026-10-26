@@ -84,8 +84,9 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
 
         $concentration = Spell::query()->where('dofusdb_id', '30767')->first();
         $this->assertNotNull($concentration);
-        $this->assertStringContainsString('+2 aux jets d’attaque', (string) $concentration->effect);
+        $this->assertStringContainsString('jets d’attaque', (string) $concentration->effect);
         $this->assertStringNotContainsString('1d4', (string) $concentration->effect);
+        $this->assertStringNotContainsString('+2', (string) $concentration->effect);
 
         $this->assertSame(6, Spell::query()->where('state', Spell::STATE_AUTO)->count());
         $this->assertGreaterThan(0, $pression->effects()->count());
@@ -922,9 +923,11 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
 
         $pression = Spell::query()->where('dofusdb_id', '13106')->first();
         $this->assertNotNull($pression);
-        $this->assertStringContainsString('1d6 + Force', (string) $pression->effect);
+        // Texte libre = commentaire optionnel ; les dés sont dans les sous-effets structurés.
+        $this->assertSame('', (string) $pression->effect);
+        $this->assertStringNotContainsString('Montée', (string) $pression->description);
 
-        $pression->load(['effects.degrees.effectSubEffects']);
+        $pression->load(['effects.degrees.effectSubEffects', 'degrees.effects']);
         $degrees = $pression->effects->first()?->degrees->sortBy('degree')->values();
         $this->assertNotNull($degrees);
         $this->assertCount(4, $degrees);
@@ -933,6 +936,8 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame(16, (int) $degrees[2]->required_creature_level);
         $this->assertSame(20, (int) $degrees[3]->required_creature_level);
         $this->assertSame('2d6+[strong]', $degrees[1]->effectSubEffects->first()?->params['value_formula'] ?? null);
+        $this->assertCount(4, $pression->degrees);
+        $this->assertSame('1d6+[strong]', $degrees[0]->effectSubEffects->first()?->params['value_formula'] ?? null);
     }
 
     private function seedSpellTypes(): void

@@ -654,6 +654,13 @@
     "file": "feedback/FeedbackFab.vue"
   },
   {
+    "name": "SpellEffectsUnifiedSection",
+    "description": "Panneau unifié « effets du sort » : liaison pivot effect_spell, édition par définition (degrés + seuils).",
+    "props": [],
+    "slots": [],
+    "file": "entity/SpellEffectsUnifiedSection.vue"
+  },
+  {
     "name": "SpellEffectEditorRow",
     "description": "Ligne d’effet d’un degré — action, contexte dynamique, valeur / valeur critique, durée.",
     "props": [],
@@ -847,6 +854,13 @@
     ],
     "slots": [],
     "file": "entity/EntityEditForm.vue"
+  },
+  {
+    "name": "EntityEditEmbedBridge",
+    "description": "Re-provide le contexte d’édition embarquée **à l’intérieur** du Modal (Teleport).",
+    "props": [],
+    "slots": [],
+    "file": "entity/EntityEditEmbedBridge.vue"
   },
   {
     "name": "EntityActions",

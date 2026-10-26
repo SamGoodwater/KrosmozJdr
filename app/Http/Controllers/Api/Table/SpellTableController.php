@@ -10,6 +10,7 @@ use App\Models\Type\SpellType;
 use App\Services\Effect\SpellEffectDefinitionsSerializer;
 use App\Services\Effect\SpellEffectUsagesDataService;
 use App\Services\Spell\SpellDegreeResolver;
+use App\Services\Spell\SpellDegreesSerializer;
 use App\Support\AreaConstants;
 use App\Support\ElementBitmask;
 use Illuminate\Database\Eloquent\Builder;
@@ -75,11 +76,13 @@ class SpellTableController extends Controller
     private function buildSpellTableDisplayPayload(Spell $spell): array
     {
         $effectUsagesData = $this->spellEffectUsagesDataService->build($spell);
+        $spell->loadMissing(['degrees.effects.subEffect', 'effects.degrees.effectSubEffects.subEffect']);
 
         return [
             'effect_usages_summary' => $effectUsagesData['summary'],
             'effect_usages_chips' => $effectUsagesData['chips'],
             'effects_definitions' => $this->spellEffectDefinitionsSerializer->serialize($spell->effects ?? collect()),
+            'spell_degrees' => app(SpellDegreesSerializer::class)->serialize($spell),
             'po_min' => $spell->po_min,
             'po_max' => $spell->po_max,
             'resolution_mode' => (string) ($spell->resolution_mode ?? 'attack_roll'),

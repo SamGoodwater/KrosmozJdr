@@ -8,7 +8,7 @@
         "descriptions": "Sauvegarde d’Intelligence : tenir tête aux illusions et aux machinations.",
         "icon": "saveIntel.webp",
         "icon_false": null,
-        "color": "orange",
+        "color": "red",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

@@ -8,7 +8,7 @@
         "descriptions": "Bonus de dommage fixe Air conféré par l'équipement (armes). S’ajoutent aux dégâts de l’élément sur l’arme ; plafonds selon les règles (2.2.2, 4.3.4).",
         "icon": "dmgAir.webp",
         "icon_false": null,
-        "color": "cyan",
+        "color": "green",
         "value_overrides": null,
         "hide_when_empty": true,
         "hide_when_false": false,

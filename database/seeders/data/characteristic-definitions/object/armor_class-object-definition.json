@@ -8,7 +8,7 @@
         "descriptions": "Bonus de classe d'armure conféré par l'équipement (boucliers). Il s’ajoute à ta CA selon les règles de combat (2.2.2).",
         "icon": "armorClass.webp",
         "icon_false": null,
-        "color": "brown",
+        "color": "gray",
         "value_overrides": null,
         "hide_when_empty": true,
         "hide_when_false": false,

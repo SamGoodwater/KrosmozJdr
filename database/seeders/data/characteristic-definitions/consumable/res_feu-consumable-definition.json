@@ -8,7 +8,7 @@
         "descriptions": "Résistance relative temporaire exprimée exclusivement avec les paliers Krosmoz −100, −50, 0, 50 ou 100.",
         "icon": "resFire.webp",
         "icon_false": null,
-        "color": "orange",
+        "color": "red",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

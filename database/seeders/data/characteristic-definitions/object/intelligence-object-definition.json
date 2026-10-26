@@ -8,7 +8,7 @@
         "descriptions": "Bonus d’Intelligence donné par les capes. S’ajoute au score sur la fiche, dans la limite des règles (2.2.1).",
         "icon": "fire.webp",
         "icon_false": null,
-        "color": "orange",
+        "color": "red",
         "value_overrides": null,
         "hide_when_empty": true,
         "hide_when_false": false,

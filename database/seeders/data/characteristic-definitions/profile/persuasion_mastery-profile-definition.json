@@ -8,7 +8,7 @@
         "descriptions": null,
         "icon": "skillChance.webp",
         "icon_false": null,
-        "color": "violet",
+        "color": "blue",
         "value_overrides": [
             {
                 "value": 0,

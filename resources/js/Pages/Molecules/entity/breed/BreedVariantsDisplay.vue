@@ -203,7 +203,7 @@ const variantTitle = (g) => breedVariantGroupTitle(g);
                         >
                             <SpellViewMinimal
                                 :spell="asSpellModel(s)"
-                                :display-mode="'extended'"
+                                display-mode="hover"
                                 :characteristic-runtime="characteristicRuntime"
                                 :show-actions="true"
                             />
@@ -251,7 +251,7 @@ const variantTitle = (g) => breedVariantGroupTitle(g);
                             <li v-for="s in group.spells || []" :key="`vc-sp-${s.id}`" class="min-w-0">
                                 <SpellViewMinimal
                                     :spell="asSpellModel(s)"
-                                    :display-mode="'extended'"
+                                    display-mode="hover"
                                     :characteristic-runtime="characteristicRuntime"
                                     :show-actions="true"
                                 />

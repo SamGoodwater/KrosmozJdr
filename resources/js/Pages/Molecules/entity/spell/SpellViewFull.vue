@@ -9,7 +9,7 @@
  * @props {Spell} spell - Instance du modèle Spell
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
@@ -20,7 +20,9 @@ import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.v
 import ImageViewer from '@/Pages/Molecules/data-display/ImageViewer.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import SpellEffectsJournal from '@/Pages/Molecules/entity/spell/SpellEffectsJournal.vue';
+import SpellDegreeTabs from '@/Pages/Molecules/entity/spell/SpellDegreeTabs.vue';
 import SpellUsageBlock from '@/Pages/Molecules/entity/spell/SpellUsageBlock.vue';
+import SpellResolutionFormula from '@/Pages/Molecules/entity/spell/SpellResolutionFormula.vue';
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
@@ -29,17 +31,15 @@ import EntityDofusdbRefreshPanel from '@/Pages/Molecules/entity/EntityDofusdbRef
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { getSpellFieldDescriptors } from '@/Entities/spell/spell-descriptors';
-import { getByCharacteristicKey } from '@/Composables/store/useCharacteristicsStore';
 import { getCharacteristicColorStyle, resolveDef } from '@/Composables/entity/useCharacteristicDisplay';
-import { resolveSpellCharacteristicKey } from '@/Composables/entity/useSpellAbilityCharacteristic';
 import { provideCharacteristicRuntime } from '@/Composables/entity/characteristicRuntimeContext';
 import { spellTypesCellHasRenderableContent } from '@/Utils/Entity/spellTypeVisual.js';
-
-const RESOLUTION_LABELS = Object.freeze({
-    attack_roll: "Jet d'attaque (vs CA)",
-    saving_throw: 'Jet de sauvegarde',
-    auto_success: 'Réussite automatique',
-});
+import { spellHasDegreePayload, useSpellDisplayDegrees } from '@/Composables/entity/useSpellDisplayDegrees';
+import { fetchEntityModelById } from '@/Composables/entity/useEntityTableFetch';
+import {
+    resolveSpellEffectsDisplayCell,
+    spellEffectsCellHasContent,
+} from '@/Composables/entity/useSpellEffectsDisplayCell';
 
 const props = defineProps({
     spell: {
@@ -93,6 +93,28 @@ const { dispatchEntityAction, refreshConfirm, confirmPendingRefresh, cancelPendi
 const { downloadPdf } = useDownloadPdf('spell');
 const permissions = usePermissions();
 
+/** Payload table/liste parfois sans `spell_degrees` — hydrate pour les onglets. */
+const hydratedSpell = ref(null);
+const spell = computed(() => hydratedSpell.value || props.spell);
+
+watch(
+    () => props.spell,
+    async (incoming) => {
+        hydratedSpell.value = null;
+        const id = incoming?.id ?? incoming?._data?.id;
+        if (!id || spellHasDegreePayload(incoming)) return;
+        try {
+            const full = await fetchEntityModelById('spells', id);
+            if (full && spellHasDegreePayload(full)) {
+                hydratedSpell.value = full;
+            }
+        } catch {
+            /* payload allégé en repli */
+        }
+    },
+    { immediate: true },
+);
+
 const ctx = computed(() => {
     const capabilities = {
         viewAny: permissions.can('spells', 'viewAny'),
@@ -107,7 +129,7 @@ const ctx = computed(() => {
 const descriptors = computed(() => getSpellFieldDescriptors(ctx.value));
 
 const autoUpdateValue = computed(() => {
-    const v = props.spell?.auto_update ?? props.spell?._data?.auto_update;
+    const v = spell.value?.auto_update ?? spell.value?._data?.auto_update;
     return typeof v === 'boolean' ? v : null;
 });
 
@@ -156,7 +178,7 @@ const getFieldIconStyle = (fieldKey) => {
 };
 
 const getCell = (fieldKey) =>
-    props.spell.toCell(fieldKey, {
+    spell.value.toCell(fieldKey, {
         size: 'lg',
         context: 'extended',
     });
@@ -201,20 +223,34 @@ const asTextCell = (cell) => {
 };
 
 const magicDef = computed(() =>
-    resolveDef('is_magic_spell', props.spell?.isMagic, { sourceGroups: ['spell'] }),
+    resolveDef('is_magic_spell', spell.value?.isMagic, { sourceGroups: ['spell'] }),
 );
 
 const effectsDefinitions = computed(() =>
-    Array.isArray(props.spell?.effectsDefinitions) ? props.spell.effectsDefinitions : [],
+    Array.isArray(spell.value?.effectsDefinitions) ? spell.value.effectsDefinitions : [],
 );
 
-const spellDegreesPayload = computed(() => props.spell?.spellDegrees || { degrees: [], default_degree_id: null });
+const spellDegreesPayload = computed(() => spell.value?.spellDegrees || { degrees: [], default_degree_id: null });
 
-const activeDegree = ref(null);
+const { degrees: displayDegrees, hasDegrees } = useSpellDisplayDegrees(spell);
 
-function onActiveDegreeChange(deg) {
-    activeDegree.value = deg;
-}
+const activeDegreeIndex = ref(0);
+
+const activeDegree = computed(() => displayDegrees.value[activeDegreeIndex.value] || null);
+
+watch(
+    displayDegrees,
+    (list) => {
+        if (!list.length) {
+            activeDegreeIndex.value = 0;
+            return;
+        }
+        if (activeDegreeIndex.value >= list.length) {
+            activeDegreeIndex.value = 0;
+        }
+    },
+    { immediate: true },
+);
 
 /**
  * Entité pour la méta PA/PO/LoS : clone Spell avec `_data` surchargé par le degré actif.
@@ -222,7 +258,7 @@ function onActiveDegreeChange(deg) {
  * @returns {import('@/Models/Entity/Spell').Spell|object}
  */
 const usageEntity = computed(() => {
-    const base = props.spell;
+    const base = spell.value;
     const propsDeg = activeDegree.value?.properties;
     if (!base || !propsDeg) {
         return base;
@@ -246,27 +282,9 @@ const usageEntity = computed(() => {
     return { ...base, _data: merged, ...merged };
 });
 
-const resolutionLabel = computed(() => {
-    const mode = usageEntity.value?.resolutionMode;
-    return RESOLUTION_LABELS[mode] || mode;
-});
-
-const attackCharKeyResolved = computed(() =>
-    resolveSpellCharacteristicKey(usageEntity.value?.attackCharacteristicKey, 'attack'),
-);
-
-const saveCharKeyResolved = computed(() =>
-    resolveSpellCharacteristicKey(usageEntity.value?.saveCharacteristicKey, 'save'),
-);
-
-const attackCharDef = computed(() => {
-    const k = attackCharKeyResolved.value;
-    return k ? getByCharacteristicKey('spell', k) : null;
-});
-
-const saveCharDef = computed(() => {
-    const k = saveCharKeyResolved.value;
-    return k ? getByCharacteristicKey('spell', k) : null;
+const freeEffectComment = computed(() => {
+    const t = spell.value?.effect != null ? String(spell.value.effect).trim() : '';
+    return t;
 });
 
 const ritualDef = computed(() =>
@@ -338,23 +356,36 @@ const showSpellTypesCell = computed(() =>
     spellTypesCellHasRenderableContent(getCell('spell_types')),
 );
 
-const hasStructuredEffects = computed(() => effectsDefinitions.value.length > 0);
-const hasLegacyEffectText = computed(
-    () => props.spell?.effect != null && String(props.spell.effect).trim() !== '',
+const activeDegreeHasRows = computed(() => {
+    const rows = activeDegree.value?.rows;
+    return Array.isArray(rows) && rows.length > 0;
+});
+
+/** Chips structurés uniquement (pas le fallback texte `effect`, pour éviter la répétition). */
+const hasSummaryChips = computed(() =>
+    spellEffectsCellHasContent(
+        resolveSpellEffectsDisplayCell(usageEntity.value, {
+            size: 'xs',
+            context: 'minimal',
+            structuredOnly: true,
+        }),
+    ),
 );
 
+const hasLegacyEffectText = computed(() => freeEffectComment.value !== '');
+
 const handleAction = async (actionKey) => {
-    const spellId = props.spell.id;
+    const spellId = spell.value.id;
     if (!spellId) return;
 
     switch (actionKey) {
         case 'view':
             router.visit(route('entities.spells.show', { spell: spellId }));
-            emit('view', props.spell);
+            emit('view', spell.value);
             break;
         case 'edit':
-            await dispatchEntityAction("edit", props.spell, { context: actionsContext.value });
-            emit('edit', props.spell);
+            await dispatchEntityAction("edit", spell.value, { context: actionsContext.value });
+            emit('edit', spell.value);
             break;
         
         case 'copy-link': {
@@ -363,26 +394,26 @@ const handleAction = async (actionKey) => {
             if (url) {
                 await copyToClipboard(`${window.location.origin}${url}`, 'Lien du sort copié !');
             }
-            emit('copy-link', props.spell);
+            emit('copy-link', spell.value);
             break;
         }
         case 'download-pdf':
             await downloadPdf(spellId);
-            emit('download-pdf', props.spell);
+            emit('download-pdf', spell.value);
             break;
         case 'refresh': {
-            await dispatchEntityAction('refresh', props.spell);
+            await dispatchEntityAction('refresh', spell.value);
             break;
         }
         case 'delete':
-            emit('delete', props.spell);
+            emit('delete', spell.value);
             break;
     }
 };
 </script>
 
 <template>
-    <div class="space-y-4">
+    <div class="space-y-3">
         <EntityViewHeader :mode="headerMode">
             <template #media>
                 <div class="group relative w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56">
@@ -424,10 +455,8 @@ const handleAction = async (actionKey) => {
                 </component>
             </template>
 
-            <template #subtitle />
-
             <template #mainInfos>
-                <div v-if="identityFieldKeys.length > 0" class="mt-3 flex flex-wrap gap-3 items-start">
+                <div v-if="identityFieldKeys.length > 0" class="mt-1.5 flex flex-wrap gap-3 items-start">
                     <EntityPropertyDisplay
                         v-for="fieldKey in identityFieldKeys"
                         :key="fieldKey"
@@ -442,7 +471,7 @@ const handleAction = async (actionKey) => {
                     />
                 </div>
 
-                <div class="mt-4 flex flex-wrap items-center gap-4">
+                <div class="mt-2 flex flex-wrap items-center gap-4">
                     <Tooltip
                         v-if="typeof spell.isMagic === 'boolean' && magicDef"
                         :content="magicDef._resolvedSubtitle || characteristicTooltipText(magicDef) || 'Orientation du sort.'"
@@ -517,13 +546,20 @@ const handleAction = async (actionKey) => {
             </template>
         </EntityViewHeader>
 
-        <section v-if="spell.description" class="space-y-2">
+        <section v-if="spell.description" class="space-y-1.5">
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Description</h3>
             <p class="text-primary-200 whitespace-pre-wrap break-words leading-relaxed">{{ spell.description }}</p>
         </section>
 
-        <section class="space-y-3">
-            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Utilisation</h3>
+        <section class="space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Utilisation</h3>
+                <SpellDegreeTabs
+                    v-if="hasDegrees"
+                    v-model="activeDegreeIndex"
+                    :degrees="displayDegrees"
+                />
+            </div>
             <div class="p-3 bg-base-200 entity-radius-box min-w-0">
                 <SpellUsageBlock
                     parts="meta"
@@ -531,6 +567,8 @@ const handleAction = async (actionKey) => {
                     :entity="usageEntity"
                     :can-show-field="canShowField"
                     :show-spell-types-cell="showSpellTypesCell"
+                    :area="activeDegree?.area || ''"
+                    show-area-schema
                     property-size="sm"
                     row-class="gap-2 text-sm text-primary-100"
                     hover-inner-gap-class="gap-2"
@@ -539,112 +577,48 @@ const handleAction = async (actionKey) => {
             </div>
         </section>
 
-        <section class="space-y-3">
+        <section class="space-y-1.5">
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Résolution</h3>
-            <div class="p-4 bg-base-200 entity-radius-box space-y-3">
-                <p class="text-primary-100 font-medium">{{ resolutionLabel }}</p>
-
-                <Tooltip
-                    v-if="usageEntity.resolutionMode === 'attack_roll' && attackCharDef"
-                    :content="
-                        characteristicTooltipText(attackCharDef) ||
-                        'Caractéristique utilisée pour le jet d’attaque de ce sort.'
-                    "
-                    placement="top"
-                >
-                    <div
-                        class="inline-flex flex-wrap items-center gap-2 text-sm text-primary-200 cursor-default"
-                        :style="attackCharDef.color ? getCharacteristicColorStyle(attackCharDef.color) : undefined"
-                    >
-                        <Icon
-                            v-if="attackCharDef.icon"
-                            :source="attackCharDef.icon"
-                            :alt="attackCharDef.short_name || ''"
-                            size="sm"
-                        />
-                        <span>{{ attackCharDef.short_name || attackCharDef.name }}</span>
-                    </div>
-                </Tooltip>
-
-                <div v-if="usageEntity.resolutionMode === 'saving_throw'" class="space-y-2">
-                    <Tooltip
-                        v-if="saveCharDef"
-                        :content="
-                            characteristicTooltipText(saveCharDef) ||
-                            'Caractéristique de sauvegarde ciblée par ce sort.'
-                        "
-                        placement="top"
-                    >
-                        <div
-                            class="inline-flex flex-wrap items-center gap-2 text-sm text-primary-200 cursor-default"
-                            :style="saveCharDef.color ? getCharacteristicColorStyle(saveCharDef.color) : undefined"
-                        >
-                            <Icon
-                                v-if="saveCharDef.icon"
-                                :source="saveCharDef.icon"
-                                :alt="saveCharDef.short_name || ''"
-                                size="sm"
-                            />
-                            <span>{{ saveCharDef.short_name || saveCharDef.name }}</span>
-                        </div>
-                    </Tooltip>
-                    <p v-if="usageEntity.saveDcFormula" class="text-sm text-primary-200 break-words">
-                        <span class="text-primary-400 font-semibold">DD : </span>
-                        <span class="font-mono">{{ usageEntity.saveDcFormula }}</span>
-                    </p>
-                    <p v-if="usageEntity.saveSuccessNote" class="text-sm text-primary-300 whitespace-pre-wrap break-words">
-                        <span class="text-primary-400 font-semibold">Si réussite : </span>
-                        {{ usageEntity.saveSuccessNote }}
-                    </p>
-                </div>
-            </div>
+            <SpellResolutionFormula :entity="usageEntity" variant="full" class="text-sm text-primary-100" />
+            <p v-if="usageEntity.saveSuccessNote" class="text-sm text-primary-300 whitespace-pre-wrap break-words">
+                <span class="text-primary-400 font-semibold">Si réussite : </span>
+                {{ usageEntity.saveSuccessNote }}
+            </p>
         </section>
 
-        <section class="space-y-3">
+        <section class="space-y-2">
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Effets</h3>
-            <div
-                v-if="hasStructuredEffects || hasLegacyEffectText"
-                class="p-3 bg-base-200/70 entity-radius-box space-y-2"
-            >
-                <SpellUsageBlock
-                    parts="effects"
-                    :entity="spell"
-                    :descriptors="descriptors"
-                    :table-meta="tableMeta"
-                    :can-show-field="canShowField"
-                    :max-effect-rows="6"
-                    flush-effects
-                    notes-class="mb-2 text-sm leading-snug text-primary-200/80"
-                    resolution-class="mb-1 text-sm text-primary-200/80"
-                    cell-class="text-sm leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
-                />
-                <p
-                    v-if="hasStructuredEffects"
-                    class="text-xs text-primary-400"
-                >
-                    Détail par degré ci-dessous.
-                </p>
-            </div>
             <SpellEffectsJournal
-                v-if="hasStructuredEffects"
+                v-if="activeDegreeHasRows"
+                v-model="activeDegreeIndex"
+                hide-tabs
                 :spell-degrees="spellDegreesPayload"
                 :definitions="effectsDefinitions"
                 sub-effect-layout="large"
-                @active-degree-change="onActiveDegreeChange"
             />
-            <div
-                v-else-if="hasLegacyEffectText"
-                class="rounded-box border border-dashed border-base-300 bg-base-200/40 p-3 space-y-1"
+            <SpellUsageBlock
+                v-else-if="hasSummaryChips"
+                parts="effects"
+                :entity="usageEntity"
+                :descriptors="descriptors"
+                :table-meta="tableMeta"
+                :can-show-field="canShowField"
+                :max-effect-rows="6"
+                flush-effects
+                :show-empty-effects="false"
+                free-effect-comment=""
+                notes-class="mb-2 text-sm leading-snug text-primary-200/80"
+                cell-class="text-sm leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
+            />
+            <p
+                v-if="hasLegacyEffectText"
+                class="text-xs leading-snug text-primary-300/70 whitespace-pre-wrap wrap-break-word"
+                data-cy="spell-free-effect-comment"
             >
-                <p class="text-xs font-medium text-primary-300">
-                    Texte d’effet libre (non structuré)
-                </p>
-                <p class="text-sm text-primary-200 whitespace-pre-wrap wrap-break-word">
-                    {{ spell.effect }}
-                </p>
-            </div>
+                {{ freeEffectComment }}
+            </p>
             <div
-                v-else
+                v-else-if="!activeDegreeHasRows && !hasSummaryChips"
                 class="rounded-box border border-dashed border-base-300 bg-base-200/30 p-4 text-sm text-primary-400"
             >
                 <p class="font-medium text-primary-300">Aucun effet renseigné</p>

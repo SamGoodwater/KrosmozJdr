@@ -156,6 +156,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static Builder<static>|Breed whereSleightOfHandMastery($value)
  * @method static Builder<static>|Breed whereStealthMastery($value)
  * @method static Builder<static>|Breed whereSurvivalMastery($value)
+ * @method static Builder<static>|Breed whereMechanics($value)
  * @mixin \Eloquent
  */
 class Breed extends Model implements HasMedia

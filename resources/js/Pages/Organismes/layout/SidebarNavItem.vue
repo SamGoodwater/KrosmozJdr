@@ -34,6 +34,8 @@ const props = defineProps({
     iconBasePath: { type: String, default: '/storage/images/icons/caracteristics' },
     /** Afficher le title natif sur le sous-texte (liste dense groupée) */
     secondaryTitle: { type: Boolean, default: false },
+    /** Nom teinté avec la couleur de l’item (menu des caractéristiques). */
+    colorizeLabel: { type: Boolean, default: false },
 });
 
 function resolveIconUrl() {
@@ -57,6 +59,13 @@ const rowVisual = computed(() =>
 const rowStripStyle = computed(() =>
     accentStripStyleFromItem(props.item, props.getItemColor)
 );
+
+/** Couleur du nom : la teinte de la caractéristique, pas le blanc du menu. */
+const labelStyle = computed(() => {
+    if (!props.colorizeLabel) return undefined;
+    const color = props.getItemColor(props.item);
+    return color ? { color } : undefined;
+});
 </script>
 
 <template>
@@ -78,28 +87,33 @@ const rowStripStyle = computed(() =>
             :class="accentGlassClass"
             aria-hidden="true"
         />
-        <span class="flex min-w-0 flex-1 items-center gap-2 py-2 pr-2 pl-1.5">
-            <img
-                v-if="resolveIconUrl()"
-                :src="resolveIconUrl()"
-                :alt="getItemLabel(item)"
-                class="h-5 w-5 shrink-0 object-contain"
-                @error="($e) => ($e.target.style.display = 'none')"
-            />
-            <Icon
-                v-else-if="isFaIcon()"
-                :source="getItemIcon(item)"
-                :alt="getItemLabel(item)"
-                size="sm"
-                class="shrink-0"
-            />
-            <span
-                v-else-if="getItemColor(item)"
-                class="h-2.5 w-2.5 shrink-0 rounded-full"
-                :style="{ backgroundColor: getItemColor(item) }"
-            />
-            <span class="min-w-0 flex flex-col flex-1 truncate">
-                <span class="truncate leading-tight">{{ getItemLabel(item) }}</span>
+        <span class="flex min-w-0 flex-1 items-center gap-2 py-1.5 pr-2 pl-1.5">
+            <span class="relative inline-flex h-5 w-5 shrink-0 items-center justify-center">
+                <img
+                    v-if="resolveIconUrl()"
+                    :src="resolveIconUrl()"
+                    :alt="getItemLabel(item)"
+                    class="h-5 w-5 object-contain"
+                    @error="($e) => ($e.target.style.display = 'none')"
+                />
+                <Icon
+                    v-else-if="isFaIcon()"
+                    :source="getItemIcon(item)"
+                    :alt="getItemLabel(item)"
+                    size="sm"
+                    class="shrink-0"
+                />
+                <span
+                    v-else-if="getItemColor(item)"
+                    class="h-2.5 w-2.5 rounded-full"
+                    :style="{ backgroundColor: getItemColor(item) }"
+                />
+                <span class="absolute -left-1 -top-1 z-10 leading-none">
+                    <slot name="icon-badge" :item="item" />
+                </span>
+            </span>
+            <span class="min-w-0 flex flex-col flex-1">
+                <span class="truncate leading-tight" :style="labelStyle">{{ getItemLabel(item) }}</span>
                 <span
                     v-if="getItemLabelSecondary(item)"
                     class="truncate text-xs leading-snug text-base-content/65 not-italic"

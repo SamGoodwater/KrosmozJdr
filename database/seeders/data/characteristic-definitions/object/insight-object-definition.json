@@ -8,7 +8,7 @@
         "descriptions": "Bonus de Perspicacité conféré par l'équipement (chapeau ou cape). Il s’ajoute à la compétence ; les plafonds sont dans les règles d’équipement et de forgemagie (2.2.2).",
         "icon": "skillWisdom.webp",
         "icon_false": null,
-        "color": "purple",
+        "color": "indigo",
         "value_overrides": null,
         "hide_when_empty": true,
         "hide_when_false": false,

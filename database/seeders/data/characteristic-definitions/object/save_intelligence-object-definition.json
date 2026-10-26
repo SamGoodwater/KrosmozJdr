@@ -8,7 +8,7 @@
         "descriptions": "Bonus de sauvegarde en Intelligence conféré par l'équipement (capes). S’ajoute à ton jet de sauvegarde habituel ; les limites viennent des règles d’équipement (2.2.2).",
         "icon": "saveIntel.webp",
         "icon_false": null,
-        "color": "orange",
+        "color": "red",
         "value_overrides": null,
         "hide_when_empty": true,
         "hide_when_false": false,

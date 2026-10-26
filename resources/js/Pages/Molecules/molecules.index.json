@@ -897,7 +897,7 @@
   },
   {
     "name": "SpellViewMinimal",
-    "description": "SpellViewMinimal — Vue Minimal pour Spell",
+    "description": "Carte minimale sort : image + pile de niveaux, coût/incantation, identité au survol, effets dessous",
     "props": [
       {
         "name": "spell",
@@ -941,6 +941,13 @@
     "file": "entity/spell/SpellUsageBlock.vue"
   },
   {
+    "name": "SpellUsageAreaColumn",
+    "description": "Colonne zone d’un degré : icône + libellé, schéma visible ou en infobulle.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellUsageAreaColumn.vue"
+  },
+  {
     "name": "SpellTypesMultiField",
     "description": "Multi-sélection des types de sort (pivot) — `v-model` : tableau d'IDs. Utilise SelectSearchField en mode multiple pour un affichage compact.",
     "props": [],
@@ -953,6 +960,13 @@
     "props": [],
     "slots": [],
     "file": "entity/spell/SpellTypeBadge.vue"
+  },
+  {
+    "name": "SpellSummonMonsterMinimal",
+    "description": "Monstre invoqué en vue minimale (page / modal de sort).",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellSummonMonsterMinimal.vue"
   },
   {
     "name": "SpellSummonMonsterInline",
@@ -1005,7 +1019,7 @@
   },
   {
     "name": "SpellSubEffectActionPresentation",
-    "description": "Rendu structuré d’un sous-effet (modèle unifié définition ou chip).",
+    "description": "Rendu structuré d’un sous-effet. Ligne 1 : badge d’action (gris), badge d’élément coloré s’il y en a un, flèche, formule. Le critique reste tel quel et passe à la ligne suivante quand la largeur manque. Ligne 2 : durée et portée.",
     "props": [
       {
         "name": "model",
@@ -1015,6 +1029,13 @@
     ],
     "slots": [],
     "file": "entity/spell/SpellSubEffectActionPresentation.vue"
+  },
+  {
+    "name": "SpellResolutionFormula",
+    "description": "Affichage du mode de résolution d’un sort. - `variant=\"full\"` : libellé coloré + formule (vs séparé) + valeurs si runtime. - `variant=\"compact\"` : libellé cliquable → popover avec la formule (et valeurs).",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellResolutionFormula.vue"
   },
   {
     "name": "SpellMinimalUsageMetaRow",
@@ -1038,6 +1059,13 @@
     "file": "entity/spell/SpellHoldersPanel.vue"
   },
   {
+    "name": "SpellFormulaPartsInline",
+    "description": "Rend une formule découpée en texte, puces caractéristique et mot « Bonus ».",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellFormulaPartsInline.vue"
+  },
+  {
     "name": "SpellElementPrimariesField",
     "description": "Multi-sélection des éléments primaires (Neutre → Vitalité) avec SelectSearchField. `v-model` : `null` = aucun élément ; sinon masque 1–127 (combinaison de primaires).",
     "props": [],
@@ -1046,7 +1074,7 @@
   },
   {
     "name": "SpellEffectsJournal",
-    "description": "Progression des degrés d’un sort : onglets niveau + effets + propriétés actives. Préfère `spellDegrees` (canal natif) ; repli sur `effects_definitions` legacy.",
+    "description": "Progression des degrés d’un sort : effets du degré actif (+ onglets optionnels). Préfère `spellDegrees` (canal natif) ; repli sur `effects_definitions` legacy.",
     "props": [],
     "slots": [],
     "file": "entity/spell/SpellEffectsJournal.vue"
@@ -1109,7 +1137,7 @@
   },
   {
     "name": "SpellDegreeTabs",
-    "description": "Onglets de degrés + sélecteur de source des propriétés.",
+    "description": "Onglets de niveau d’un sort (« Niv 1 », « Niv 5 », … selon les degrés).",
     "props": [],
     "slots": [],
     "file": "entity/spell/SpellDegreeTabs.vue"
@@ -1120,6 +1148,13 @@
     "props": [],
     "slots": [],
     "file": "entity/spell/SpellDegreePropertyField.vue"
+  },
+  {
+    "name": "SpellCharacteristicHoverLink",
+    "description": "Libellé de caractéristique d’effet avec fiche au survol (vue « lien »).",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellCharacteristicHoverLink.vue"
   },
   {
     "name": "SpellCastPropertiesGrid",
@@ -1162,6 +1197,13 @@
     "props": [],
     "slots": [],
     "file": "entity/spell/AreaShapePicker.vue"
+  },
+  {
+    "name": "AreaNotationEditor",
+    "description": "Éditeur de zone : choix de forme par icône, puis nombres, aperçu et notation brute.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/AreaNotationEditor.vue"
   },
   {
     "name": "AreaDisplay",
@@ -1559,6 +1601,13 @@
     "file": "entity/shared/EntityFieldTooltip.vue"
   },
   {
+    "name": "EntityEditOptionsAnchor",
+    "description": "Ancre du menu Options sur une page Modifier.",
+    "props": [],
+    "slots": [],
+    "file": "entity/shared/EntityEditOptionsAnchor.vue"
+  },
+  {
     "name": "EntityEditHeader",
     "description": "Header compact d’édition d’entité (retour, titre, état, options, annuler, supprimer, enregistrer).",
     "props": [],
@@ -1578,13 +1627,6 @@
     "props": [],
     "slots": [],
     "file": "entity/shared/EntityEditContainer.vue"
-  },
-  {
-    "name": "EntityEditOptionsAnchor",
-    "description": "Ancre du menu Options sur une page Modifier.",
-    "props": [],
-    "slots": [],
-    "file": "entity/shared/EntityEditOptionsAnchor.vue"
   },
   {
     "name": "ScenarioViewText",
@@ -2440,17 +2482,22 @@
   },
   {
     "name": "BreedViewMinimal",
-    "description": "BreedViewMinimal — Vue Minimal pour Breed",
+    "description": "BreedViewMinimal — Vue Minimal pour Breed (classe).",
     "props": [
       {
         "name": "breed",
-        "type": "Breed",
-        "desc": "- Instance du modèle Breed"
+        "type": "Object",
+        "desc": "- Instance Breed ou payload"
       },
       {
         "name": "showActions",
         "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
+        "desc": "- Menu d’actions (slot étendu)"
+      },
+      {
+        "name": "displayMode",
+        "type": "'compact'|'hover'|'extended'",
+        "desc": ""
       }
     ],
     "slots": [],

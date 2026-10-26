@@ -8,7 +8,7 @@
         "descriptions": "Résistance relative : -100 % vulnérable, -50 % faiblesse, 0 % normale, 50 % résistante, 100 % invulnérable.",
         "icon": "resFire.webp",
         "icon_false": null,
-        "color": "orange",
+        "color": "red",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

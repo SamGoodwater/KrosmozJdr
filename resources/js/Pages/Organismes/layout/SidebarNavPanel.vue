@@ -33,6 +33,7 @@ const props = defineProps({
     getItemLabelSecondary: { type: Function, required: true },
     getItemKey: { type: Function, required: true },
     iconBasePath: { type: String, default: '/storage/images/icons/caracteristics' },
+    colorizeLabel: { type: Boolean, default: false },
     accentGlassBorder: {
         type: String,
         default: 'md',
@@ -93,7 +94,11 @@ function resolveHref(item) {
                         :get-item-color="getItemColor"
                         :get-item-css-classes="getItemCssClasses"
                         :icon-base-path="iconBasePath"
+                        :colorize-label="colorizeLabel"
                     >
+                        <template #icon-badge="slotProps">
+                            <slot name="icon-badge" v-bind="slotProps" />
+                        </template>
                         <template #item-suffix="slotProps">
                             <slot name="item-suffix" v-bind="slotProps" />
                         </template>
@@ -156,8 +161,12 @@ function resolveHref(item) {
                                         :get-item-color="getItemColor"
                                         :get-item-css-classes="getItemCssClasses"
                                         :icon-base-path="iconBasePath"
+                                        :colorize-label="colorizeLabel"
                                         secondary-title
                                     >
+                                        <template #icon-badge="slotProps">
+                                            <slot name="icon-badge" v-bind="slotProps" />
+                                        </template>
                                         <template #item-suffix="slotProps">
                                             <slot name="item-suffix" v-bind="slotProps" />
                                         </template>
@@ -192,7 +201,11 @@ function resolveHref(item) {
                                     :get-item-color="getItemColor"
                                     :get-item-css-classes="getItemCssClasses"
                                     :icon-base-path="iconBasePath"
+                                    :colorize-label="colorizeLabel"
                                 >
+                                    <template #icon-badge="slotProps">
+                                        <slot name="icon-badge" v-bind="slotProps" />
+                                    </template>
                                     <template #item-suffix="slotProps">
                                         <slot name="item-suffix" v-bind="slotProps" />
                                     </template>

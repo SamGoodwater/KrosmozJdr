@@ -8,7 +8,7 @@
         "descriptions": "Augmente ou diminue temporairement la Vitalité tant que l’effet de sort dure. Liée à l’élément Vitalité et aux points de vie. Sur une fiche, ce score reste en pratique entre 6 et 24 (2.2.1).",
         "icon": "vitality.webp",
         "icon_false": null,
-        "color": "emerald",
+        "color": "amber",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

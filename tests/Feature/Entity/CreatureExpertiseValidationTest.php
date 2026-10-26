@@ -20,7 +20,7 @@ final class CreatureExpertiseValidationTest extends TestCase
     #[Test]
     public function monster_update_persists_profile_masteries_on_monster(): void
     {
-        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $admin = User::factory()->createOne(['role' => User::ROLE_ADMIN]);
         $monster = Monster::factory()->create();
 
         $this->actingAs($admin)
@@ -40,7 +40,7 @@ final class CreatureExpertiseValidationTest extends TestCase
     #[Test]
     public function monster_update_rejects_mastery_above_its_tier_limit(): void
     {
-        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $admin = User::factory()->createOne(['role' => User::ROLE_ADMIN]);
         $monster = Monster::factory()->create();
 
         $this->actingAs($admin)

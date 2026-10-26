@@ -190,7 +190,7 @@ const handleAction = async (actionKey) => {
                             <span
                                 v-if="lifeDiceLabel"
                                 class="inline-flex items-center gap-0.5 tabular-nums shrink-0"
-                                :title="`Dé de vie : ${lifeDiceLabel}`"
+                                :title="`Dé de classe : ${lifeDiceLabel}`"
                             >
                                 <Image
                                     v-if="lifeDiceIcon"
@@ -281,7 +281,7 @@ const handleAction = async (actionKey) => {
                             <span
                                 v-if="lifeDiceLabel"
                                 class="inline-flex items-center gap-0.5 tabular-nums shrink-0"
-                                :title="`Dé de vie : ${lifeDiceLabel}`"
+                                :title="`Dé de classe : ${lifeDiceLabel}`"
                             >
                                 <Image
                                     v-if="lifeDiceIcon"

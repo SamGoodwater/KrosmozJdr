@@ -8,7 +8,7 @@
         "descriptions": null,
         "icon": "saveAgi.webp",
         "icon_false": null,
-        "color": "cyan",
+        "color": "green",
         "value_overrides": [
             {
                 "value": 0,

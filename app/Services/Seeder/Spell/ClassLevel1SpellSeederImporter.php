@@ -9,8 +9,10 @@ use App\Models\EffectDegree;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
+use App\Models\SpellDegree;
 use App\Models\SubEffect;
 use App\Models\Type\SpellType;
+use App\Services\Spell\SpellDegreeLegacyMigrator;
 use App\Support\ElementBitmask;
 use Illuminate\Support\Facades\DB;
 
@@ -144,6 +146,7 @@ final class ClassLevel1SpellSeederImporter
 
                 $this->syncTypes($spell, $entry['types'], $skipped);
                 $this->syncJdrEffect($spell, $entry, $skipped);
+                $this->syncNativeDegrees($spell, $entry);
                 $this->syncInvocations($spell, $entry, $skipped);
 
                 $kitSpellIds[] = $spell->id;
@@ -328,7 +331,8 @@ final class ClassLevel1SpellSeederImporter
             if ($tier['required_creature_level'] <= $entry['character_level']) {
                 continue;
             }
-            if ($tier['effect'] === '—' || $tier['sub_effects'] === []) {
+            // Palier vide = pas de sous-effets (le commentaire libre seul ne crée pas de degré).
+            if ($tier['sub_effects'] === []) {
                 continue;
             }
             $degreeNumber++;
@@ -406,6 +410,61 @@ final class ClassLevel1SpellSeederImporter
                 'crit_only' => false,
                 'duration_formula' => $durationFormula,
             ]);
+        }
+    }
+
+    /**
+     * Reconstruit les degrés natifs depuis les EffectDegree, puis applique
+     * les écarts d’utilisation déclarés sur les paliers d’intensification.
+     *
+     * @param  array<string, mixed>  $entry
+     */
+    private function syncNativeDegrees(Spell $spell, array $entry): void
+    {
+        $spell->load(['effects.degrees.effectSubEffects']);
+        if ($spell->effects->isEmpty()) {
+            SpellDegree::query()->where('spell_id', $spell->id)->delete();
+
+            return;
+        }
+
+        app(SpellDegreeLegacyMigrator::class)->rebuildFromLegacy($spell, false);
+
+        $spell->load('degrees');
+        $usageKeys = SpellDegree::PROPERTY_KEYS;
+        $overridesByLevel = [];
+
+        foreach ((new SpellIntensificationCran)->tiersFor($entry) as $tier) {
+            $level = (int) ($tier['required_creature_level'] ?? 0);
+            if ($level <= 0) {
+                continue;
+            }
+            $patch = [];
+            foreach ($usageKeys as $key) {
+                if (! array_key_exists($key, $tier)) {
+                    continue;
+                }
+                $patch[$key] = $tier[$key];
+            }
+            if ($patch === []) {
+                continue;
+            }
+            $overridesByLevel[$level] = $patch;
+        }
+
+        if ($overridesByLevel === []) {
+            return;
+        }
+
+        foreach ($spell->degrees as $degree) {
+            $level = (int) ($degree->required_level ?? 0);
+            if (! isset($overridesByLevel[$level])) {
+                continue;
+            }
+            $patch = $overridesByLevel[$level];
+            $patch['properties_source'] = SpellDegree::PROPERTIES_SOURCE_OWN;
+            $degree->fill($patch);
+            $degree->save();
         }
     }
 

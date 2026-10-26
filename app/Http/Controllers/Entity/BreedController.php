@@ -120,6 +120,11 @@ class BreedController extends Controller
             'elementOrientations',
             'spells' => fn ($q) => $q
                 ->visibleToUser($viewer)
+                ->with([
+                    'spellTypes',
+                    'effects.degrees.effectSubEffects.subEffect',
+                    'degrees.effects.subEffect',
+                ])
                 ->orderBy('breed_spell.character_level')
                 ->orderBy('breed_spell.slot_index')
                 ->orderBy('breed_spell.choice_order')

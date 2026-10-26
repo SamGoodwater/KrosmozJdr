@@ -8,7 +8,7 @@
         "descriptions": "Le sort augmente ou diminue un moment ton jet de sauvegarde en Agilité. Les règles habituelles des sauvegardes s’appliquent ; l’effet reste limité (2.2.2).",
         "icon": "saveAgi.webp",
         "icon_false": null,
-        "color": "cyan",
+        "color": "green",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

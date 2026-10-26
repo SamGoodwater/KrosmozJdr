@@ -8,7 +8,7 @@
         "descriptions": "Bonus de résistance fixe Air conféré par l'équipement (boucliers). Réduit les dégâts fixes de l’élément concerné ; plafonds selon équipement et forgemagie (2.2.2).",
         "icon": "resAir.webp",
         "icon_false": null,
-        "color": "cyan",
+        "color": "green",
         "value_overrides": null,
         "hide_when_empty": true,
         "hide_when_false": false,

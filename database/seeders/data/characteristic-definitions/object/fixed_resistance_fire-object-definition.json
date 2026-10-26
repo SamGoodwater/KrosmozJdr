@@ -8,7 +8,7 @@
         "descriptions": "Bonus de résistance fixe Feu conféré par l'équipement (boucliers). Réduit les dégâts fixes de l’élément concerné ; plafonds selon équipement et forgemagie (2.2.2).",
         "icon": "resFire.webp",
         "icon_false": null,
-        "color": "orange",
+        "color": "red",
         "value_overrides": null,
         "hide_when_empty": true,
         "hide_when_false": false,

@@ -104,13 +104,36 @@ final class SpellIntensificationCran
                     $subs[] = $sub;
                 }
             }
-            $effect = trim((string) ($row['effect'] ?? '—'));
-            $tiers[] = [
+            $effect = trim((string) ($row['effect'] ?? ''));
+            // Un palier sans commentaire libre mais avec sous-effets reste valide.
+            $tier = [
                 'tier' => $meta['tier'],
                 'required_creature_level' => $meta['required_creature_level'],
-                'effect' => $effect !== '' ? $effect : '—',
-                'sub_effects' => $effect === '—' ? [] : $subs,
+                'effect' => $effect,
+                'sub_effects' => $subs,
             ];
+            foreach ([
+                'pa',
+                'po_min',
+                'po_max',
+                'po_editable',
+                'sight_line',
+                'cast_in_line',
+                'cast_in_diagonal',
+                'area',
+                'cast_per_turn',
+                'cast_per_target',
+                'number_between_two_cast',
+                'global_cooldown',
+                'max_stack',
+                'duration',
+                'casting_time',
+            ] as $usageKey) {
+                if (array_key_exists($usageKey, $row)) {
+                    $tier[$usageKey] = $row[$usageKey];
+                }
+            }
+            $tiers[] = $tier;
         }
 
         return $tiers;

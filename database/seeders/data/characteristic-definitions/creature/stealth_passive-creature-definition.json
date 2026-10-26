@@ -8,7 +8,7 @@
         "descriptions": "Ta capacité à passer pour un élément du décor.",
         "icon": "skillAgility.webp",
         "icon_false": null,
-        "color": "neutral",
+        "color": "green",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

@@ -8,7 +8,7 @@
         "descriptions": "Réduction fixe dégâts Air. 0–10 (équip. +10, forgemagie +3) (2.2.2).",
         "icon": "resAir.webp",
         "icon_false": null,
-        "color": "cyan",
+        "color": "green",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

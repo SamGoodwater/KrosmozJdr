@@ -8,7 +8,7 @@
         "descriptions": "Bonus dommages fixes Feu. 0–10 (équip. +10, forgemagie +5) (2.2.2).",
         "icon": "dmgFire.webp",
         "icon_false": null,
-        "color": "orange",
+        "color": "red",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

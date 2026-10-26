@@ -22,7 +22,7 @@
             "attack_characteristic_key": "strong",
             "is_magic": false,
             "powerful": 3,
-            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour, PO 1.",
+            "effect": "",
             "description": "Tu frappes net, d’un coup de Wakfu terreux, à bout portant.",
             "sub_effects": [
                 {
@@ -42,7 +42,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "2d6 + Force (Terre). Physique, 3 PA, 2×/tour, PO 1.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -61,7 +61,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "3d6 + Force (Terre). Physique, 3 PA, 2×/tour, PO 1.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -80,7 +80,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "4d6 + Force (Terre). Physique, 3 PA, 2×/tour, PO 1.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -118,7 +118,7 @@
             "attack_characteristic_key": "intel",
             "is_magic": false,
             "powerful": 3,
-            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour, PO 1–4 adapté.",
+            "effect": "",
             "description": "Tu concentres le Wakfu autour de toi et tu l’envoies en traits de feu.",
             "sub_effects": [
                 {
@@ -138,7 +138,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "2d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour, PO 1–4 adapté.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -157,7 +157,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "3d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour, PO 1–4 adapté.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -176,7 +176,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "4d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour, PO 1–4 adapté.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -212,7 +212,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "powerful": 3,
-            "effect": "1d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+            "effect": "",
             "description": "Tu lances une lame d’air, même budget que Pression : 1d6 + Agilité.",
             "sub_effects": [
                 {
@@ -234,7 +234,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "2d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -253,7 +253,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -272,7 +272,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "4d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -309,7 +309,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "powerful": 3,
-            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+            "effect": "",
             "description": "Tu frappes d’une lame d’eau gelée, même budget que Pression : 1d6 + Chance.",
             "sub_effects": [
                 {
@@ -331,7 +331,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "2d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -350,7 +350,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -369,7 +369,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "4d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -407,7 +407,7 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 3,
-            "effect": "Téléportation 1–4 cases, pas de ligne de vue. Action bonus, 3 PA, 1×/tour.",
+            "effect": "Téléportation sans ligne de vue.",
             "description": "Tu disparais et tu réapparais plus loin. Assez pour coller Pression dans le même tour.",
             "sub_effects": [
                 {
@@ -425,7 +425,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "Téléportation 1–5 cases, pas de ligne de vue. Action bonus, 3 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "déplacer",
@@ -442,7 +442,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "Téléportation 1–6 cases, pas de ligne de vue. Action bonus, 3 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "déplacer",
@@ -459,7 +459,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "Téléportation 1–7 cases, pas de ligne de vue. Action bonus, 3 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "déplacer",
@@ -497,7 +497,7 @@
             "is_magic": true,
             "powerful": 3,
             "duration": "jusqu’à la fin de ton prochain tour",
-            "effect": "+2 aux jets d’attaque jusqu’à la fin de ton prochain tour. Pas de bonus de dégâts (la Fureur s’en charge). Pas de cumul. 3 PA, 1×/tour.",
+            "effect": "Bonus aux jets d’attaque jusqu’à la fin de ton prochain tour.",
             "description": "Tu serres les dents, tu vises juste. Ce n’est pas un dé de plus : tu touches mieux.",
             "sub_effects": [
                 {
@@ -517,19 +517,19 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 }
             ]

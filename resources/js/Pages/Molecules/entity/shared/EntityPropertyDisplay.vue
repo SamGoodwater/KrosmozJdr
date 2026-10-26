@@ -67,6 +67,12 @@ const props = defineProps({
         default: "inline",
         validator: (v) => ["badge", "icon", "inline"].includes(v),
     },
+    /** Style du badge élément (`badge` plein ou `outline`). */
+    elementVariant: {
+        type: String,
+        default: "badge",
+        validator: (v) => ["badge", "chip", "inline", "outline"].includes(v),
+    },
     size: {
         type: String,
         default: "sm",
@@ -276,7 +282,12 @@ const statePropertyTextSizeClass = computed(() => {
         class="entity-property-display inline-flex min-w-0 max-w-full"
         :class="wrapCharacteristicValue ? 'w-full items-start' : 'items-center'"
     >
-    <ElementDisplay v-if="isElementField" :element="elementValue" :size="size" />
+    <ElementDisplay
+        v-if="isElementField"
+        :element="elementValue"
+        :size="size"
+        :variant="elementVariant"
+    />
 
     <CharacteristicProperty
         v-else-if="isConditionDissipableField"

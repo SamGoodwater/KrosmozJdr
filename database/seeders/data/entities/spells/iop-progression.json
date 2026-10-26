@@ -21,7 +21,7 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 3,
-            "effect": "+1d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+            "effect": "Bonus aux dégâts de tes sorts jusqu’à la fin de ton prochain tour.",
             "description": "Puissance : tu te prépares. Le prochain élan frappe plus fort.",
             "sub_effects": [
                 {
@@ -46,7 +46,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "+2d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "booster",
@@ -66,7 +66,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "+3d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "booster",
@@ -86,7 +86,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "+4d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "booster",
@@ -124,7 +124,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "powerful": 3,
-            "effect": "Attirance de 2 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
+            "effect": "Attirance sans dégâts.",
             "description": "Duel : tu ramènes la cible.",
             "sub_effects": [
                 {
@@ -143,7 +143,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "Attirance de 3 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "déplacer",
@@ -159,7 +159,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "Attirance de 4 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "déplacer",
@@ -175,7 +175,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "Attirance de 5 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "déplacer",
@@ -212,7 +212,7 @@
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
             "is_magic": true,
             "powerful": 5,
-            "effect": "1d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+            "effect": "",
             "description": "Tu abats une lame de Wakfu autour de toi. Ceux qui ne s’écartent pas prennent le choc.",
             "sub_effects": [
                 {
@@ -232,7 +232,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "2d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -251,7 +251,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "3d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -270,7 +270,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "4d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -309,7 +309,7 @@
             "attack_characteristic_key": "agi",
             "is_magic": false,
             "powerful": 4,
-            "effect": "1d6 + Agilité (Air) et poussée de 1 case. Physique, 4 PA, 2×/tour, PO 1.",
+            "effect": "",
             "description": "Un coup sec qui fait reculer. L’air vibre, la cible cède le pas.",
             "sub_effects": [
                 {
@@ -340,7 +340,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "2d6 + Agilité (Air) et poussée de 1 case. Physique, 4 PA, 2×/tour, PO 1.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -370,7 +370,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "3d6 + Agilité (Air) et poussée de 1 case. Physique, 4 PA, 2×/tour, PO 1.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -400,7 +400,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "4d6 + Agilité (Air) et poussée de 1 case. Physique, 4 PA, 2×/tour, PO 1.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -449,7 +449,7 @@
             "resolution_mode": "saving_throw",
             "is_magic": true,
             "powerful": 5,
-            "effect": "2d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+            "effect": "",
             "description": "Épée de Iop : sort fort de palier 5.",
             "sub_effects": [
                 {
@@ -473,7 +473,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "3d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -492,7 +492,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "4d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -511,7 +511,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "5d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -548,7 +548,7 @@
             "resolution_mode": "saving_throw",
             "is_magic": true,
             "powerful": 5,
-            "effect": "2d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+            "effect": "",
             "description": "Épée Céleste : sort fort de palier 5.",
             "sub_effects": [
                 {
@@ -572,7 +572,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "3d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -591,7 +591,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "4d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -610,7 +610,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "5d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -647,7 +647,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "powerful": 8,
-            "effect": "2d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+            "effect": "",
             "description": "Épée Destructrice : attaque simple, même budget que le emplacement 6.",
             "sub_effects": [
                 {
@@ -669,7 +669,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -688,7 +688,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "4d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -707,7 +707,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "5d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -744,7 +744,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "powerful": 8,
-            "effect": "2d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+            "effect": "",
             "description": "Fracture : attaque simple, même budget que le emplacement 6.",
             "sub_effects": [
                 {
@@ -766,7 +766,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "3d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -785,7 +785,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "4d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -804,7 +804,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "5d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -841,7 +841,7 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "2d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+            "effect": "Points de bouclier jusqu’à la fin de ton prochain tour.",
             "description": "Vitalité : une couche de Wakfu avant les PV.",
             "sub_effects": [
                 {
@@ -864,7 +864,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "3d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "protéger",
@@ -882,7 +882,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "4d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "protéger",
@@ -900,7 +900,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "5d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "protéger",
@@ -936,7 +936,7 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "Avantage à tes jets d’attaque de mêlée de classe jusqu’à la fin de ton prochain tour. Pas de bonus de dégâts (la Fureur s’en charge). 3 PA, 1×/tour.",
+            "effect": "Avantage aux jets d’attaque de mêlée de classe.",
             "description": "Détermination : tu vises juste. Ce n’est pas un second dé de Fureur.",
             "sub_effects": [
                 {
@@ -958,19 +958,19 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 }
             ]
@@ -994,7 +994,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "powerful": 5,
-            "effect": "2d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+            "effect": "",
             "description": "Menace : attaque simple, même budget que le palier 8.",
             "sub_effects": [
                 {
@@ -1016,7 +1016,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "3d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1035,7 +1035,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "4d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1054,7 +1054,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "5d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1091,7 +1091,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "powerful": 5,
-            "effect": "2d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+            "effect": "",
             "description": "Tannée : attaque simple, même budget que le palier 8.",
             "sub_effects": [
                 {
@@ -1113,7 +1113,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1132,7 +1132,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "4d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1151,7 +1151,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "5d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1188,7 +1188,7 @@
             "resolution_mode": "saving_throw",
             "is_magic": true,
             "powerful": 5,
-            "effect": "3d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+            "effect": "",
             "description": "Colère de Iop : sort fort de palier 10.",
             "sub_effects": [
                 {
@@ -1212,7 +1212,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "4d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1231,7 +1231,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "5d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1250,7 +1250,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 }
             ]
@@ -1274,7 +1274,7 @@
             "resolution_mode": "saving_throw",
             "is_magic": true,
             "powerful": 5,
-            "effect": "3d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+            "effect": "",
             "description": "Souffle : sort fort de palier 10.",
             "sub_effects": [
                 {
@@ -1298,7 +1298,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "4d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1317,7 +1317,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "5d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1336,7 +1336,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 }
             ]
@@ -1360,7 +1360,7 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 8,
-            "effect": "+3d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+            "effect": "Bonus aux dégâts de tes sorts jusqu’à la fin de ton prochain tour.",
             "description": "Précipitation : tu te prépares. Le prochain élan frappe plus fort.",
             "sub_effects": [
                 {
@@ -1385,7 +1385,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "+4d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "booster",
@@ -1405,7 +1405,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "+5d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "booster",
@@ -1425,7 +1425,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 }
             ]
@@ -1449,7 +1449,7 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 8,
-            "effect": "+3d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+            "effect": "Bonus aux dégâts de tes sorts jusqu’à la fin de ton prochain tour.",
             "description": "Accumulation : tu te prépares. Le prochain élan frappe plus fort.",
             "sub_effects": [
                 {
@@ -1474,7 +1474,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "+4d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "booster",
@@ -1494,7 +1494,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "+5d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "booster",
@@ -1514,7 +1514,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 }
             ]
@@ -1538,7 +1538,7 @@
             "resolution_mode": "saving_throw",
             "is_magic": true,
             "powerful": 5,
-            "effect": "4d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+            "effect": "",
             "description": "Tempête de Puissance : signature de l’emplacement 12.",
             "sub_effects": [
                 {
@@ -1562,7 +1562,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "5d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1581,13 +1581,13 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 }
             ]
@@ -1611,7 +1611,7 @@
             "resolution_mode": "saving_throw",
             "is_magic": true,
             "powerful": 5,
-            "effect": "4d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
+            "effect": "",
             "description": "Zénith : signature de l’emplacement 12.",
             "sub_effects": [
                 {
@@ -1635,7 +1635,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "5d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1654,13 +1654,13 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 }
             ]

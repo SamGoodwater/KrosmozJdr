@@ -110,6 +110,10 @@ export function resolveCharacteristicUiColor(color) {
     const shade = lower === 'brown' ? '600' : lower.slice('brown-'.length);
     t = `amber-${shade}`;
   }
+  // Le thème n’émet que `--color-purple-500`. Sans ça, « purple » (initiative) reste invisible.
+  if (lower === 'purple' || lower === 'purple-400') {
+    t = 'purple-500';
+  }
   if (t.includes('-')) return `var(--color-${t})`;
   const low = t.toLowerCase();
   if (CHARACTERISTIC_PALETTE_NAMES.has(low)) {

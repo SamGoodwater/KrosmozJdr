@@ -8,7 +8,7 @@
         "descriptions": "Bonus temporaire au DD de sauvegarde de Intelligence (2.2.2). Base : 10 + mod. Int + arme. Équipement +5. Effet temporaire max +5.",
         "icon": "DD de save Intel.webp",
         "icon_false": null,
-        "color": "orange",
+        "color": "red",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

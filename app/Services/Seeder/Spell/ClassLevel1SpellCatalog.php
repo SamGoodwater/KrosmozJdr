@@ -320,12 +320,35 @@ final class ClassLevel1SpellCatalog
                     'params' => $params,
                 ];
             }
-            $tiers[] = [
+            $tier = [
                 'tier' => trim((string) ($row['tier'] ?? '')),
                 'required_creature_level' => max(1, (int) ($row['required_creature_level'] ?? 13)),
                 'effect' => (string) ($row['effect'] ?? ''),
                 'sub_effects' => $subs,
             ];
+            // Écarts d’utilisation par palier (PA, PO, lancers…) → SpellDegree.
+            foreach ([
+                'pa',
+                'po_min',
+                'po_max',
+                'po_editable',
+                'sight_line',
+                'cast_in_line',
+                'cast_in_diagonal',
+                'area',
+                'cast_per_turn',
+                'cast_per_target',
+                'number_between_two_cast',
+                'global_cooldown',
+                'max_stack',
+                'duration',
+                'casting_time',
+            ] as $usageKey) {
+                if (array_key_exists($usageKey, $row)) {
+                    $tier[$usageKey] = $row[$usageKey];
+                }
+            }
+            $tiers[] = $tier;
         }
 
         return $tiers;

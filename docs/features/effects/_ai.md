@@ -20,7 +20,9 @@
     `dice_side` / `logic_group` : `syncEffects` recrée les lignes, omettre ces clés les
     nullifie (dégâts migrés / legacy).
     Conteneurs partagés : `EntityEditGrid` / `EntityEditContainer`. Porteurs enrichis +
-    `SpellHoldersPanel`. Affichage lecture : `SpellEffectsJournal.vue`.
+    `SpellHoldersPanel`. Affichage lecture : `SpellEffectsJournal.vue` (effets du degré) ;
+    zone dans Utilisation (`SpellUsageAreaColumn`) ; formules `spellFormulaDisplay.js` +
+    `SpellFormulaPartsInline` (Bonus au survol, critique dés doublés si absent sur Frapper).
   - Portée UI compacte `x` / `x-y` (`po_min` + `po_max` en stockage) ; propriétés effectives du
     degré actif dans Full, premier degré dans Minimal/Line/table
   - Globaux sur `Spell` (pas sur les degrés) : `element`, `target_type`, `ritual_available`,

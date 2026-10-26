@@ -8,7 +8,7 @@
         "descriptions": null,
         "icon": "saveVitality.webp",
         "icon_false": null,
-        "color": "emerald",
+        "color": "amber",
         "value_overrides": [
             {
                 "value": 0,

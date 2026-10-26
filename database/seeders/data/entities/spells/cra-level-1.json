@@ -23,8 +23,8 @@
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
             "is_magic": false,
-            "effect": "1d4 + Agilité (Air). 2×/tour.",
-            "description": "Tu décoches une flèche très rapide, sans ligne de vue. Sa portée te permet de harceler une cible sans t'exposer. Montée : niv. 5, 2d4 ; niv. 10, 2d6 ; niv. 15, 2d8 et 3 fois par tour ; niv. 20, 3d8.",
+            "effect": "",
+            "description": "Tu décoches une flèche très rapide, sans ligne de vue. Sa portée te permet de harceler une cible sans t'exposer.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -43,7 +43,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "2d6 + Agilité (Air).",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -62,7 +62,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "2d8 + Agilité (Air). 3×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -76,12 +76,13 @@
                                 "effect_direction": "action"
                             }
                         }
-                    ]
+                    ],
+                    "cast_per_turn": "3"
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "3d8 + Agilité (Air). 3×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -95,7 +96,8 @@
                                 "effect_direction": "action"
                             }
                         }
-                    ]
+                    ],
+                    "cast_per_turn": "3"
                 }
             ],
             "element": "air",
@@ -122,8 +124,8 @@
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
             "is_magic": false,
-            "effect": "1d4 + Intelligence (Feu). Zone 1 case.",
-            "description": "Tu tires une flèche embrasée. Elle inflige des dégâts de Feu. Montée : niv. 5, 2d4, ligne 1×2, repousse 1 ; niv. 10, 2d6, ligne 1×3 ; niv. 15, 2d8, ligne 1×4 ; niv. 20, ligne 1×5.",
+            "effect": "",
+            "description": "Tu tires une flèche embrasée. Elle inflige des dégâts de Feu.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -142,7 +144,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "2d6 + Intelligence (Feu). Ligne 1×3, repousse de 1.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -170,7 +172,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "2d8 + Intelligence (Feu). Ligne 1×4, repousse de 1.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -198,7 +200,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "2d8 + Intelligence (Feu). Ligne 1×5, repousse de 1.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -249,8 +251,8 @@
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
             "is_magic": false,
-            "effect": "1d4 + Chance (Eau), −1 PM. Le retrait de PM se résout contre l'esquive PM.",
-            "description": "Tu retires des PM à la cible et tu ralentis sa fuite. Montée : niv. 5, 2d4 et 2 fois par cible ; niv. 10, 2d6 et −2 PM ; niv. 15, 2d8 et 3 fois par tour.",
+            "effect": "Le retrait de PM se résout contre l’esquive PM.",
+            "description": "Tu retires des PM à la cible et tu ralentis sa fuite.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -278,7 +280,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "2d6 + Chance (Eau), −2 PM.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -306,7 +308,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "2d8 + Chance (Eau), −2 PM. 3×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -329,12 +331,13 @@
                                 "value": "2"
                             }
                         }
-                    ]
+                    ],
+                    "cast_per_turn": "3"
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "2d8 + Chance (Eau), −2 PM. 3×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -357,7 +360,8 @@
                                 "value": "2"
                             }
                         }
-                    ]
+                    ],
+                    "cast_per_turn": "3"
                 }
             ],
             "element": "water",
@@ -384,8 +388,8 @@
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
             "is_magic": false,
-            "effect": "1d6 + Force (Terre).",
-            "description": "Tu infliges des dégâts de Terre. En montant de niveau, la flèche repousse aussi la cible. Montée : niv. 5, 2d8 et repousse de 1 ; niv. 10, 2d12 et repousse de 2 ; niv. 15, 4d8 et repousse de 3 ; niv. 20, 3d12 et repousse de 4.",
+            "effect": "",
+            "description": "Tu infliges des dégâts de Terre.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -404,7 +408,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "2d12 + Force (Terre), repousse de 2.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -432,7 +436,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "4d8 + Force (Terre), repousse de 3.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -460,7 +464,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "3d12 + Force (Terre), repousse de 4.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -511,8 +515,8 @@
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
             "is_magic": false,
-            "effect": "1d4 neutre. Tu t'éloignes de 1 et tu repousses de 1. L'éloignement est automatique.",
-            "description": "Tu t'éloignes de la cible et tu la repousses. Les créatures ennemies touchées subissent des dégâts neutres. Montée : niv. 9, 1d6, portée 2–8, 2 fois par tour, éloignement et repousse de 2.",
+            "effect": "Tu t’éloignes et tu repousses la cible. Les allié·e·s ne sont pas blessé·e·s.",
+            "description": "Tu t'éloignes de la cible et tu la repousses. Les créatures ennemies touchées subissent des dégâts neutres.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -549,7 +553,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "1d6 neutre. PO 2–8, 2×/tour. Tu t'éloignes de 2 et tu repousses de 2.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -581,12 +585,14 @@
                                 "movement_kind": "movement"
                             }
                         }
-                    ]
+                    ],
+                    "cast_per_turn": "2",
+                    "po_max": "8"
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "1d6 neutre. PO 2–8, 2×/tour. Tu t'éloignes de 2 et tu repousses de 2.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -618,12 +624,14 @@
                                 "movement_kind": "movement"
                             }
                         }
-                    ]
+                    ],
+                    "cast_per_turn": "2",
+                    "po_max": "8"
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "1d6 neutre. PO 2–8, 2×/tour. Tu t'éloignes de 2 et tu repousses de 2.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -655,7 +663,9 @@
                                 "movement_kind": "movement"
                             }
                         }
-                    ]
+                    ],
+                    "cast_per_turn": "2",
+                    "po_max": "8"
                 }
             ],
             "official_id": "jdr:cra:fleche-evasive",
@@ -681,8 +691,8 @@
             "cast_in_line": false,
             "resolution_mode": "auto_success",
             "is_magic": false,
-            "effect": "Tu te repousses d'au plus 3 cases.",
-            "description": "Tu t'éloignes de la cible en profitant du recul du tir. Tu romps le contact sans renoncer à agir. Montée : niv. 9, jusqu'à 4 cases.",
+            "effect": "Tu te repousses sans infliger de dégâts.",
+            "description": "Tu t'éloignes de la cible en profitant du recul du tir. Tu romps le contact sans renoncer à agir.",
             "sub_effects": [
                 {
                     "slug": "déplacer",
@@ -698,7 +708,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "Tu te repousses d'au plus 4 cases.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "déplacer",
@@ -714,7 +724,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "Tu te repousses d'au plus 4 cases.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "déplacer",
@@ -730,7 +740,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "Tu te repousses d'au plus 4 cases.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "déplacer",
@@ -766,8 +776,8 @@
             "cast_in_line": false,
             "resolution_mode": "auto_success",
             "is_magic": false,
-            "effect": "+5 PO pendant 2 tours. Cibles : modificateur d'Intelligence + 2.",
-            "description": "Tu augmentes la portée de tes tirs, ou celle d'un·e allié·e. Si plusieurs allié·e·s sont dans la zone, tu peux en affecter plusieurs. Montée : niv. 7, 2 PA, +10 PO et modificateur d'Intelligence + 4 cibles ; niv. 14, +20 PO et + 5 cibles.",
+            "effect": "Augmente la portée de tes tirs ou celle d’un·e allié·e dans la zone.",
+            "description": "Tu augmentes la portée de tes tirs, ou celle d'un·e allié·e. Si plusieurs allié·e·s sont dans la zone, tu peux en affecter plusieurs.",
             "sub_effects": [
                 {
                     "slug": "booster",
@@ -784,7 +794,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "+10 PO pendant 2 tours. 2 PA. Cibles : modificateur d'Intelligence + 4.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "booster",
@@ -801,7 +811,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "+20 PO pendant 2 tours. Cibles : modificateur d'Intelligence + 5.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "booster",
@@ -818,7 +828,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "+20 PO pendant 2 tours. Cibles : modificateur d'Intelligence + 5.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "booster",
@@ -856,8 +866,8 @@
             "cast_in_line": false,
             "resolution_mode": "auto_success",
             "is_magic": false,
-            "effect": "+ modificateur de Force aux dégâts de Terre pendant 2 tours.",
-            "description": "Tu concentres tes prochains tirs. Pendant 2 tours, tes attaques à distance infligent des dégâts supplémentaires liés à la Terre. Montée : niv. 7, modificateur de Force + 2 ; niv. 14, modificateur de Force + 5.",
+            "effect": "Bonus de dégâts de Terre pendant 2 tours.",
+            "description": "Tu concentres tes prochains tirs. Pendant 2 tours, tes attaques à distance infligent des dégâts supplémentaires liés à la Terre.",
             "sub_effects": [
                 {
                     "slug": "booster",
@@ -874,7 +884,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "+ modificateur de Force + 2 pendant 2 tours.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "booster",
@@ -891,7 +901,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "+ modificateur de Force + 5 pendant 2 tours.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "booster",
@@ -908,7 +918,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "+ modificateur de Force + 5 pendant 2 tours.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "booster",

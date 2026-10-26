@@ -419,23 +419,18 @@ const spellPoIsCac = computed(() => isPoCac(poDisplayForCac.value));
                 </span>
             </span>
         </Tooltip>
-        <div
+        <EntityPropertyDisplay
             v-if="canShowField('element')"
-            class="grid max-w-full grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out group-hover/entity-minimal:grid-rows-[1fr]"
-        >
-            <div class="min-h-0 overflow-hidden group-hover/entity-minimal:overflow-visible">
-                <EntityPropertyDisplay
-                    field-key="element"
-                    :entity="entity"
-                    entity-type="spell"
-                    :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                    :descriptors="descriptors"
-                    :table-meta="tableMeta"
-                    :size="propertySize"
-                    class="min-w-0"
-                />
-            </div>
-        </div>
+            field-key="element"
+            :entity="entity"
+            entity-type="spell"
+            :display-mode="PROPERTY_DISPLAY_MODES.compact"
+            :descriptors="descriptors"
+            :table-meta="tableMeta"
+            :size="propertySize"
+            element-variant="outline"
+            class="min-w-0"
+        />
         <div
             v-if="
                 (canShowField('spell_types') && showSpellTypesCell) ||

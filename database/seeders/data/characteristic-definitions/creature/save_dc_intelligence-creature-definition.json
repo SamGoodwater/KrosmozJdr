@@ -8,7 +8,7 @@
         "descriptions": "Quand un effet demande une sauvegarde de Intelligence, on compare le jet de la cible à ton DD de sauvegarde de Intelligence (10 + modificateur + équipement, plus les bonus temporaires).",
         "icon": "DD de save Intel.webp",
         "icon_false": null,
-        "color": "orange",
+        "color": "red",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

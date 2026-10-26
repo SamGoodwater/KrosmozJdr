@@ -8,7 +8,7 @@
         "descriptions": "L’Intelligence, liée au Feu, mesure la vivacité d’esprit et la culture. Elle sert aux sorts et armes de Feu et à l’initiative au combat.",
         "icon": "fire.webp",
         "icon_false": null,
-        "color": "orange",
+        "color": "red",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

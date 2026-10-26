@@ -8,7 +8,7 @@
         "descriptions": "Représentation : spectacle, musique, discours marquants. Liée à la Chance.",
         "icon": "skillChance.webp",
         "icon_false": null,
-        "color": "violet",
+        "color": "blue",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

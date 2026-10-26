@@ -25,7 +25,7 @@ final class SpellDegreeApiTest extends TestCase
 
     public function test_game_master_can_create_update_and_materialize_degrees(): void
     {
-        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $gm = User::factory()->createOne(['role' => User::ROLE_GAME_MASTER]);
         $spell = Spell::factory()->create(['created_by' => $gm->id, 'write_level' => 0, 'pa' => '3']);
         $creatureId = DB::table('creatures')->insertGetId([
             'name' => 'Invocation test',
@@ -100,7 +100,7 @@ final class SpellDegreeApiTest extends TestCase
 
     public function test_game_master_can_sync_degrees_bulk(): void
     {
-        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $gm = User::factory()->createOne(['role' => User::ROLE_GAME_MASTER]);
         $spell = Spell::factory()->create(['created_by' => $gm->id, 'write_level' => 0, 'pa' => '3']);
         $sub = SubEffect::query()->create([
             'slug' => 'frapper-bulk-'.uniqid(),
@@ -146,14 +146,13 @@ final class SpellDegreeApiTest extends TestCase
         $this->assertSame('3d6', $bulk->json('data.degrees.0.rows.0.params.value_formula_crit'));
     }
 
-
     /**
      * SpellPolicy::update autorise l’auteur (rôle user) : l’API degrés doit suivre,
      * sinon l’enregistrement unique de l’éditeur échoue en 403.
      */
     public function test_author_user_can_create_and_sync_degrees(): void
     {
-        $author = User::factory()->create(['role' => User::ROLE_USER]);
+        $author = User::factory()->createOne(['role' => User::ROLE_USER]);
         $spell = Spell::factory()->create(['created_by' => $author->id, 'write_level' => 0, 'pa' => '3']);
         $sub = SubEffect::query()->create([
             'slug' => 'frapper-author-'.uniqid(),
@@ -194,8 +193,8 @@ final class SpellDegreeApiTest extends TestCase
 
     public function test_non_author_user_cannot_mutate_degrees(): void
     {
-        $owner = User::factory()->create(['role' => User::ROLE_USER]);
-        $other = User::factory()->create(['role' => User::ROLE_USER]);
+        $owner = User::factory()->createOne(['role' => User::ROLE_USER]);
+        $other = User::factory()->createOne(['role' => User::ROLE_USER]);
         $spell = Spell::factory()->create(['created_by' => $owner->id, 'write_level' => 0, 'pa' => '3']);
 
         $this->actingAs($other)->postJson("/api/spells/{$spell->id}/degrees", [
@@ -206,7 +205,7 @@ final class SpellDegreeApiTest extends TestCase
 
     public function test_bulk_sync_preserves_numeric_effect_fields_when_round_tripped(): void
     {
-        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $gm = User::factory()->createOne(['role' => User::ROLE_GAME_MASTER]);
         $spell = Spell::factory()->create(['created_by' => $gm->id, 'write_level' => 0]);
         $sub = SubEffect::query()->create([
             'slug' => 'frapper-numeric-'.uniqid(),
@@ -259,7 +258,7 @@ final class SpellDegreeApiTest extends TestCase
 
     public function test_bulk_sync_without_numeric_effect_fields_clears_them(): void
     {
-        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $gm = User::factory()->createOne(['role' => User::ROLE_GAME_MASTER]);
         $spell = Spell::factory()->create(['created_by' => $gm->id, 'write_level' => 0]);
         $sub = SubEffect::query()->create([
             'slug' => 'frapper-wipe-'.uniqid(),
@@ -305,7 +304,7 @@ final class SpellDegreeApiTest extends TestCase
 
     public function test_deleting_source_degree_keeps_inherited_effects_on_remaining_degrees(): void
     {
-        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $gm = User::factory()->createOne(['role' => User::ROLE_GAME_MASTER]);
         $spell = Spell::factory()->create(['created_by' => $gm->id, 'write_level' => 0, 'pa' => '3']);
         $sub = SubEffect::query()->create([
             'slug' => 'frapper-del-'.uniqid(),
@@ -348,5 +347,4 @@ final class SpellDegreeApiTest extends TestCase
         $this->assertSame('2d6', $degrees[1]['rows'][0]['params']['value_formula']);
         $this->assertSame($degrees[0]['id'], $degrees[1]['effects_source_degree_id']);
     }
-
 }

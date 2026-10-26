@@ -21,5 +21,7 @@ defineProps({
     entity-prop="spell"
     :minimal-component="SpellViewMinimal"
     fallback-icon="fa-solid fa-wand-magic-sparkles"
+    hydrate-type="spells"
+    :show-actions-on-hover="true"
   />
 </template>

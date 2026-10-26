@@ -27,7 +27,7 @@
  *   <template #actions>...</template>
  * </EntityViewHeader>
  */
-import { computed } from "vue";
+import { computed, useSlots } from "vue";
 
 const props = defineProps({
   mode: {
@@ -37,8 +37,11 @@ const props = defineProps({
   },
 });
 
+const slots = useSlots();
 const isMinimal = computed(() => props.mode === "minimal");
 const isCompact = computed(() => props.mode === "compact");
+/** Évite une rangée vide (gap) quand aucun sous-titre n’est fourni. */
+const hasSubtitleSlot = computed(() => Boolean(slots.subtitle));
 
 /**
  * Grille responsive : mobile = titre → media → infos ; md+ = media | contenu.
@@ -47,10 +50,14 @@ const isCompact = computed(() => props.mode === "compact");
 const stackLayoutClass = computed(() =>
   [
     "grid w-full min-w-0 items-start",
-    isCompact.value ? "gap-3" : "gap-4",
-    "[grid-template-areas:'title'_'media'_'infos'_'subtitle']",
+    isCompact.value ? "gap-2" : "gap-3",
+    hasSubtitleSlot.value
+      ? "[grid-template-areas:'title'_'media'_'infos'_'subtitle']"
+      : "[grid-template-areas:'title'_'media'_'infos']",
     "md:grid-cols-[auto_minmax(0,1fr)]",
-    "md:[grid-template-areas:'media_title'_'media_infos'_'media_subtitle']",
+    hasSubtitleSlot.value
+      ? "md:[grid-template-areas:'media_title'_'media_infos'_'media_subtitle']"
+      : "md:[grid-template-areas:'media_title'_'media_infos']",
   ].join(" "),
 );
 </script>
@@ -103,7 +110,7 @@ const stackLayoutClass = computed(() =>
         <slot name="mainInfos" />
       </div>
 
-      <div class="[grid-area:subtitle] min-w-0">
+      <div v-if="hasSubtitleSlot" class="[grid-area:subtitle] min-w-0">
         <slot name="subtitle" />
       </div>
     </div>

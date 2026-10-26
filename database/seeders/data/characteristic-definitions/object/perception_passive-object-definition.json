@@ -8,24 +8,24 @@
         "descriptions": "Bonus passif à Perception conféré par l'équipement (chapeaux) : améliore le score passif lorsqu’aucun jet n’est demandé pour cette compétence (2.2.2.4). Les limites viennent de l’équipement et de la forgemagie (2.2.2).",
         "icon": "skillWisdom.webp",
         "icon_false": null,
-        "color": "purple",
+        "color": "indigo",
         "value_overrides": [
             {
                 "value": 0,
                 "icon": "skillWisdom.webp",
-                "color": "purple",
+                "color": "indigo",
                 "subtitle": "non maitrisé"
             },
             {
                 "value": 1,
                 "icon": "skillWisdom.webp",
-                "color": "purple",
+                "color": "indigo",
                 "subtitle": "maitrise"
             },
             {
                 "value": 2,
                 "icon": "skillWisdom.webp",
-                "color": "purple",
+                "color": "indigo",
                 "subtitle": "Expertise"
             }
         ],

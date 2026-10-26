@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Log;
 final class CharacteristicMetaByDbColumnService
 {
     /** Clé de cache pour le share Inertia `characteristics` (invalidée à la sauvegarde des pivots / masters). */
-    public const FRONTEND_CACHE_KEY = 'characteristics:frontend:v7';
+    public const FRONTEND_CACHE_KEY = 'characteristics:frontend:v8';
 
     /**
      * Mapping db_column → définition pour PJ / PNJ (entity `*` uniquement).
@@ -325,6 +325,48 @@ final class CharacteristicMetaByDbColumnService
     }
 
     /**
+     * Caractéristiques de sort sans colonne SQL (badges d’action, montants d’effet…).
+     * Indexées par clé métier pour le frontend.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public function buildSpellByCharacteristicKey(): array
+    {
+        $out = [];
+        try {
+            $charRows = CharacteristicSpell::query()
+                ->whereIn('entity', [CharacteristicSpell::ENTITY_ALL, CharacteristicSpell::ENTITY_SPELL])
+                ->whereNull('db_column')
+                ->with(['characteristic.masterCharacteristic', 'characteristic.intrinsicCharacteristic'])
+                ->get();
+
+            $sorted = $this->sortPivotRowsEntityOverlayLast($charRows);
+
+            foreach ($sorted as $row) {
+                $characteristic = $row->characteristic;
+                if (! $characteristic instanceof Characteristic) {
+                    continue;
+                }
+                $entry = $this->rowToDefinitionFromCharacteristic($characteristic, array_merge(
+                    $this->pivotLimitExtra($row),
+                    ['value_available' => $row->value_available],
+                ));
+                if ($entry === null) {
+                    continue;
+                }
+                $key = is_string($entry['key'] ?? null) ? $entry['key'] : '';
+                if ($key !== '') {
+                    $out[$key] = $entry;
+                }
+            }
+        } catch (\Throwable $e) {
+            $this->reportMetaBuildFailure('buildSpellByCharacteristicKey', $e);
+        }
+
+        return $out;
+    }
+
+    /**
      * Métadonnées pour champs propres au modèle Monster (taille, race), indexés comme en UI (`size`, `monster_race`).
      *
      * @return array<string, array{key: string, db_column: string, name: string, short_name: string|null, helper: string|null, descriptions: array|null, icon: string|null, color: string|null, unit: string|null, type: string|null}>
@@ -376,6 +418,7 @@ final class CharacteristicMetaByDbColumnService
     {
         return Cache::remember(self::FRONTEND_CACHE_KEY, 3600, function () {
             $spellByDbColumn = $this->buildSpellByDbColumn();
+            $spellByCharacteristicKey = $this->buildSpellByCharacteristicKey();
 
             return [
                 'creature' => [
@@ -386,9 +429,11 @@ final class CharacteristicMetaByDbColumnService
                 ],
                 'spell' => [
                     'byDbColumn' => $spellByDbColumn,
+                    'byCharacteristicKey' => $spellByCharacteristicKey,
                 ],
                 'capability' => [
                     'byDbColumn' => $spellByDbColumn,
+                    'byCharacteristicKey' => $spellByCharacteristicKey,
                 ],
                 'item' => [
                     'byDbColumn' => $this->buildObjectByDbColumn(CharacteristicObject::ENTITY_ITEM),

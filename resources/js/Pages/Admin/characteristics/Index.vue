@@ -833,6 +833,21 @@ const conversionTableCharacteristicOptions = [
     { id: 'level', name: 'Niveau JDR (level)' },
 ];
 
+/**
+ * Deuxième ligne du menu : nature, puis clé formule.
+ *
+ * @param {object} item
+ * @returns {string|null}
+ *
+ * @example characteristicMenuSecondary({ nature_label: 'Intrinsèque', id: 'agility_creature' })
+ */
+function characteristicMenuSecondary(item) {
+    const nature = String(item?.nature_label || '').trim();
+    const key = String(item?.id || '').trim();
+    if (nature && key) return `${nature} · ${key}`;
+    return nature || key || null;
+}
+
 /** Retourne la valeur CSS pour afficher la couleur (hex, token avec nuance, ou nom de palette Tailwind). */
 function displayColor(val) {
     const css = resolveCharacteristicUiColor(val);
@@ -1050,7 +1065,8 @@ function submitConvertToLinked() {
             :get-item-color="(c) => displayColor(c.color)"
             :get-item-icon="(c) => c.icon || null"
             :get-item-label="(c) => c.name || c.id"
-            :get-item-label-secondary="(c) => (c.id ? `[${c.id}]` : null)"
+            :get-item-label-secondary="characteristicMenuSecondary"
+            colorize-label
             icon-base-path="/storage/images/icons/caracteristics"
         >
             <template #nav-before>
@@ -1064,14 +1080,13 @@ function submitConvertToLinked() {
                     </select>
                 </label>
             </template>
-            <template #item-suffix="{ item }">
-                <span v-if="item?.nature_label" class="badge badge-ghost badge-xs mr-1">{{ item.nature_label }}</span>
+            <template #icon-badge="{ item }">
                 <Tooltip
                     :content="characteristicStatusDotMap[item?.status]?.label ?? 'À valider'"
-                    placement="left"
+                    placement="right"
                 >
                     <span
-                        class="inline-block h-2.5 w-2.5 rounded-full ring-1 ring-base-300/80"
+                        class="block h-1.5 w-1.5 rounded-full ring-1 ring-base-100"
                         :class="characteristicStatusDotMap[item?.status]?.class ?? 'bg-slate-500'"
                         aria-hidden="true"
                     />

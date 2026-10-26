@@ -8,48 +8,48 @@
         "descriptions": "Bonus de coup critique conféré par l’amulette ; chaque palier est décrit dans les sous-textes (2.2.2, 5.3.1).",
         "icon": "critical.webp",
         "icon_false": null,
-        "color": "red",
+        "color": "orange",
         "value_overrides": [
             {
                 "value": -3,
                 "icon": "critical.webp",
-                "color": "red",
+                "color": "orange",
                 "subtitle": "Malus critique maximal (zone critique réduite de trois crans)."
             },
             {
                 "value": -2,
                 "icon": "critical.webp",
-                "color": "red",
+                "color": "orange",
                 "subtitle": "Malus critique de deux crans."
             },
             {
                 "value": -1,
                 "icon": "critical.webp",
-                "color": "red",
+                "color": "orange",
                 "subtitle": "Malus critique d’un cran."
             },
             {
                 "value": 0,
                 "icon": "critical.webp",
-                "color": "red",
+                "color": "orange",
                 "subtitle": "Critique uniquement sur le meilleur résultat naturel du dé."
             },
             {
                 "value": 1,
                 "icon": "critical.webp",
-                "color": "red",
+                "color": "orange",
                 "subtitle": "La zone de coup critique s’élargit d’un cran (19)."
             },
             {
                 "value": 2,
                 "icon": "critical.webp",
-                "color": "red",
+                "color": "orange",
                 "subtitle": "La zone de coup critique s’élargit encore (18)."
             },
             {
                 "value": 3,
                 "icon": "critical.webp",
-                "color": "red",
+                "color": "orange",
                 "subtitle": "La zone de coup critique est la plus large pour cet objet (17)."
             }
         ],

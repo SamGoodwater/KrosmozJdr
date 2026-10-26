@@ -1,12 +1,12 @@
 <script setup>
 /**
- * Progression des degrés d’un sort : onglets niveau + effets + propriétés actives.
+ * Progression des degrés d’un sort : effets du degré actif (+ onglets optionnels).
  * Préfère `spellDegrees` (canal natif) ; repli sur `effects_definitions` legacy.
  */
 import { computed, ref, watch } from 'vue';
-import AreaDisplay from '@/Pages/Molecules/entity/spell/AreaDisplay.vue';
-import { getAreaHumanReadable } from '@/Utils/Entity/Areas';
+import SpellDegreeTabs from '@/Pages/Molecules/entity/spell/SpellDegreeTabs.vue';
 import { segmentSpellEffectRows } from '@/Composables/entity/useSpellEffectRowSegments';
+import { buildSpellDisplayDegrees } from '@/Composables/entity/useSpellDisplayDegrees';
 import SpellSubEffectTypeRouter from '@/Pages/Molecules/entity/spell/SpellSubEffectTypeRouter.vue';
 
 const props = defineProps({
@@ -23,56 +23,48 @@ const props = defineProps({
     subEffectLayout: {
         type: String,
         default: 'large',
-        validator: (v) => ['large', 'compact'].includes(v),
+        validator: (v) => ['large', 'compact', 'line', 'minimal'].includes(v),
+    },
+    /** Panneau sans bordure / padding (carte minimale). */
+    flush: {
+        type: Boolean,
+        default: false,
+    },
+    /** Masque la barre d’onglets (contrôlée par le parent). */
+    hideTabs: {
+        type: Boolean,
+        default: false,
+    },
+    /** Index du degré actif (contrôlé). */
+    modelValue: {
+        type: Number,
+        default: undefined,
     },
 });
 
-const emit = defineEmits(['active-degree-change']);
+const emit = defineEmits(['active-degree-change', 'update:modelValue']);
 
-const activeIndex = ref(0);
+const internalIndex = ref(0);
 
-const nativeDegrees = computed(() => {
-    const list = props.spellDegrees?.degrees;
-    return Array.isArray(list) ? list : [];
+const isControlled = computed(() => props.modelValue !== undefined && props.modelValue !== null);
+
+const activeIndex = computed({
+    get() {
+        return isControlled.value ? Number(props.modelValue) || 0 : internalIndex.value;
+    },
+    set(v) {
+        const idx = Number(v) || 0;
+        if (isControlled.value) {
+            emit('update:modelValue', idx);
+        } else {
+            internalIndex.value = idx;
+        }
+    },
 });
 
-const useNative = computed(() => nativeDegrees.value.length > 0);
-
-/** Degrés unifiés pour l’UI (natif ou legacy aplati). */
-const displayDegrees = computed(() => {
-    if (useNative.value) {
-        return nativeDegrees.value.map((d) => ({
-            id: d.id,
-            required_level: d.required_level,
-            position: d.position,
-            area: d.area ?? d.properties?.area,
-            properties: d.properties || {},
-            rows: d.rows || [],
-        }));
-    }
-
-    // Legacy : aplatit la première définition (ou fusionne tous les degrés du 1er effet).
-    const defs = Array.isArray(props.definitions) ? props.definitions : [];
-    if (!defs.length) return [];
-    const def = defs[0];
-    return (def.degrees || []).map((deg) => ({
-        id: deg.id,
-        required_level: deg.required_creature_level,
-        position: deg.degree,
-        area: deg.area,
-        properties: { area: deg.area },
-        rows: deg.rows || [],
-    }));
-});
-
-function degreeTitle(deg) {
-    const lvl = Number(deg?.required_level);
-    if (lvl === 13) return 'Palier I (perso 13)';
-    if (lvl === 16) return 'Palier II (perso 16)';
-    if (lvl === 20) return 'Palier III (perso 20)';
-    if (!Number.isNaN(lvl) && lvl > 0) return `Niveau ${lvl}`;
-    return `Degré ${deg?.position ?? '?'}`;
-}
+const displayDegrees = computed(() =>
+    buildSpellDisplayDegrees(props.spellDegrees, props.definitions),
+);
 
 function segmentsForDegree(deg) {
     return segmentSpellEffectRows(Array.isArray(deg?.rows) ? [...deg.rows] : []);
@@ -82,7 +74,9 @@ watch(
     displayDegrees,
     (list) => {
         if (!list.length) {
-            activeIndex.value = 0;
+            if (!isControlled.value) {
+                internalIndex.value = 0;
+            }
             emit('active-degree-change', null);
             return;
         }
@@ -99,43 +93,28 @@ watch(activeIndex, (idx) => {
 });
 
 const hasContent = computed(() => displayDegrees.value.length > 0);
+
+const activeDegree = computed(() => displayDegrees.value[activeIndex.value] || null);
 </script>
 
 <template>
     <section v-if="hasContent" class="space-y-4" data-cy="spell-degrees-journal">
-        <div role="tablist" class="tabs tabs-boxed flex-wrap gap-1 bg-base-200/60 p-1">
-            <button
-                v-for="(deg, idx) in displayDegrees"
-                :key="deg.id ?? idx"
-                type="button"
-                role="tab"
-                class="tab tab-sm"
-                :class="{ 'tab-active': activeIndex === idx }"
-                @click="activeIndex = idx"
-            >
-                {{ degreeTitle(deg) }}
-            </button>
-        </div>
+        <SpellDegreeTabs
+            v-if="!hideTabs"
+            v-model="activeIndex"
+            :degrees="displayDegrees"
+        />
 
         <div
-            v-for="(deg, idx) in displayDegrees"
-            v-show="activeIndex === idx"
-            :key="`panel-${deg.id ?? idx}`"
-            class="rounded-box border border-base-300 bg-base-200/30 p-4 space-y-4 overflow-visible"
+            v-if="activeDegree"
+            class="space-y-2 overflow-visible"
+            :class="flush ? '' : 'rounded-box border border-base-300 bg-base-200/30 p-4 space-y-4'"
         >
-            <div
-                v-if="deg.area"
-                class="flex flex-wrap items-center gap-2 text-sm text-primary-200"
-            >
-                <AreaDisplay :area="deg.area" icon-size="sm" />
-                <span class="text-primary-300">{{ getAreaHumanReadable(deg.area) }}</span>
-            </div>
-
-            <div class="space-y-0">
-                <template v-for="(seg, si) in segmentsForDegree(deg)" :key="`seg-${si}`">
+            <div class="space-y-2">
+                <template v-for="(seg, si) in segmentsForDegree(activeDegree)" :key="`seg-${si}`">
                     <div
                         v-if="seg.type === 'or'"
-                        class="rounded-lg border border-secondary/50 bg-secondary/5 p-3 space-y-1"
+                        class="rounded-lg border border-secondary/50 bg-secondary/5 p-3 space-y-2"
                     >
                         <template v-for="(r, ri) in seg.rows" :key="`or-${ri}-${r.order}`">
                             <p
@@ -147,17 +126,17 @@ const hasContent = computed(() => displayDegrees.value.length > 0);
                             <SpellSubEffectTypeRouter
                                 :row="r"
                                 :layout="subEffectLayout"
-                                :degree-area="deg.area"
+                                :degree-area="activeDegree.area"
                             />
                         </template>
                     </div>
-                    <div v-else class="space-y-0">
+                    <div v-else class="space-y-2">
                         <SpellSubEffectTypeRouter
                             v-for="r in seg.rows"
                             :key="`seq-${r.order}`"
                             :row="r"
                             :layout="subEffectLayout"
-                            :degree-area="deg.area"
+                            :degree-area="activeDegree.area"
                         />
                     </div>
                 </template>

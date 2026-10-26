@@ -8,7 +8,7 @@
         "descriptions": "Sauvegarde d’Agilité : plier sans rompre face aux pièges et effets vifs.",
         "icon": "saveAgi.webp",
         "icon_false": null,
-        "color": "cyan",
+        "color": "green",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

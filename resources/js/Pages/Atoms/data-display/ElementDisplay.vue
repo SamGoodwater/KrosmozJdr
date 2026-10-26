@@ -10,7 +10,7 @@
  * @props {String} size - Taille du badge (xs, sm, md, lg, xl)
  * @props {Boolean} showIcon - Afficher l'icône (défaut: true)
  * @props {Boolean} showLabel - Afficher le libellé (défaut: true)
- * @props {String} variant - Style (badge, chip, inline)
+ * @props {String} variant - Style (badge plein, chip, inline, outline)
  *
  * @example
  * <ElementDisplay :element="8" />
@@ -23,6 +23,7 @@ import {
   getElementIconForValue,
   normalizeElementStorageValue,
   getElementBadgeStyle,
+  elementOutlineBadgeStyle,
 } from '@/Utils/Entity/Elements.js';
 
 const props = defineProps({
@@ -46,7 +47,7 @@ const props = defineProps({
   variant: {
     type: String,
     default: 'badge',
-    validator: (v) => ['badge', 'chip', 'inline'].includes(v),
+    validator: (v) => ['badge', 'chip', 'inline', 'outline'].includes(v),
   },
 });
 
@@ -68,11 +69,19 @@ const iconSource = computed(() => {
   return getElementIconForValue(maskValue.value);
 });
 
-const badgeStyle = computed(() => (maskValue.value === null ? {} : getElementBadgeStyle(maskValue.value)));
+const isOutline = computed(() => props.variant === 'outline' && maskValue.value !== null);
 
-const badgeClass = computed(() =>
-  maskValue.value === null ? 'element-badge element-badge--empty' : 'element-badge element-badge--dynamic',
-);
+const badgeStyle = computed(() => {
+  if (maskValue.value === null) return {};
+  if (isOutline.value) return elementOutlineBadgeStyle(maskValue.value);
+  return getElementBadgeStyle(maskValue.value);
+});
+
+const badgeClass = computed(() => {
+  if (maskValue.value === null) return 'element-badge element-badge--empty';
+  if (isOutline.value) return 'badge-outline border font-medium';
+  return 'element-badge element-badge--dynamic';
+});
 
 const sizeClass = computed(() => {
   const map = { xs: 'badge-xs', sm: 'badge-sm', md: 'badge-md', lg: 'badge-lg', xl: 'badge-xl' };

@@ -98,7 +98,12 @@ function entityAlreadyHasEffects(entity) {
     entity.effectsDefinitions ??
     entity._data?.effects_definitions ??
     entity.effects_definitions;
-  return Array.isArray(defs) && defs.length > 0;
+  if (Array.isArray(defs) && defs.length > 0) return true;
+  const degrees =
+    entity.spellDegrees?.degrees ??
+    entity._data?.spell_degrees?.degrees ??
+    entity.spell_degrees?.degrees;
+  return Array.isArray(degrees) && degrees.some((d) => Array.isArray(d?.rows) && d.rows.length > 0);
 }
 
 function buildMinimalProps(entity) {

@@ -8,7 +8,7 @@
         "descriptions": "Bonus de dommage fixe Feu conféré par l'équipement (armes). S’ajoutent aux dégâts de l’élément sur l’arme ; plafonds selon les règles (2.2.2, 4.3.4).",
         "icon": "dmgFire.webp",
         "icon_false": null,
-        "color": "orange",
+        "color": "red",
         "value_overrides": null,
         "hide_when_empty": true,
         "hide_when_false": false,

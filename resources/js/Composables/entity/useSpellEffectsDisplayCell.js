@@ -13,10 +13,13 @@ export function resolveSpellEffectsDisplayCell(spell, options = {}) {
     if (!spell || typeof spell.toCell !== "function") {
         return null;
     }
-    const { maxEffectRows, ...toCellOpts } = options;
+    const { maxEffectRows, structuredOnly = false, ...toCellOpts } = options;
     const summary = spell.toCell("effect_summary", toCellOpts);
     if (summary?.type === "spell_effects" && (summary.params?.items?.length ?? 0) > 0) {
         return summary;
+    }
+    if (structuredOnly) {
+        return null;
     }
     const effectOpts = {
         ...toCellOpts,

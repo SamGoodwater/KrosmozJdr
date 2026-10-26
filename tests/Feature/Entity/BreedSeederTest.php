@@ -22,7 +22,7 @@ class BreedSeederTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         Characteristic::create([
             'key' => 'life_dice_creature',
-            'name' => 'Dé de vie',
+            'name' => 'Dé de classe',
             'type' => 'int',
             'sort_order' => 0,
             'group' => 'creature',
@@ -46,11 +46,11 @@ class BreedSeederTest extends TestCase
 
         $titles = $breed->sections()->pluck('title')->all();
         $this->assertContains('Spécificité', $titles);
-        $this->assertContains('Dé de vie', $titles);
+        $this->assertContains('Dé de classe', $titles);
         $this->assertNotContains('Capacités', $titles);
         $this->assertContains('Évolution', $titles);
 
-        $lifeSection = $breed->sections()->where('title', 'Dé de vie')->first();
+        $lifeSection = $breed->sections()->where('title', 'Dé de classe')->first();
         $this->assertNotNull($lifeSection);
         $content = (string) ($lifeSection->data['content'] ?? '');
         $this->assertStringContainsString('kref--nav', $content);

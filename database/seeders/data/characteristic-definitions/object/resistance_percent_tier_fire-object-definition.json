@@ -8,7 +8,7 @@
         "descriptions": "Réduction en pourcentage pour cet élément, portée par le bouclier. La fiche indique le palier ; le détail est dans les sous-textes et les règles de résistance.",
         "icon": null,
         "icon_false": null,
-        "color": "orange",
+        "color": "red",
         "value_overrides": [
             {
                 "value": -2,
@@ -25,13 +25,13 @@
             {
                 "value": 1,
                 "icon": "resFireResistance.webp",
-                "color": "orange",
+                "color": "red",
                 "subtitle": "Résistance (50 %)"
             },
             {
                 "value": 2,
                 "icon": "resFireInvulnerability.webp",
-                "color": "orange",
+                "color": "red",
                 "subtitle": "Invulnérabilité (100 %)"
             }
         ],

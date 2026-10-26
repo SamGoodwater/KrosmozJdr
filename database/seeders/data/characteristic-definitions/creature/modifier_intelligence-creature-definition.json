@@ -8,7 +8,7 @@
         "descriptions": "S’applique aux jets basés sur l’Intelligence, dans les limites de ton niveau.",
         "icon": "modIntel.webp",
         "icon_false": null,
-        "color": "orange",
+        "color": "red",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

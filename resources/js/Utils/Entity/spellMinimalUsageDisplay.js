@@ -166,6 +166,116 @@ export function buildSpellCastUsagePresentation(entity) {
     };
 }
 
+/** Une round de combat = 6 secondes. */
+export const SPELL_CASTING_SECONDS_PER_TURN = 6;
+
+/**
+ * Normalise un temps d’incantation pour l’UI.
+ * Vide / 0 / 1 tour / 6 s → masqué. Sans unité → tours. Unité temporelle → tours si multiple de 6 s.
+ *
+ * @param {unknown} raw
+ * @returns {{ show: boolean, displayText: string, rawText: string, tooltip: string }}
+ *
+ * @example
+ * normalizeSpellCastingTime("6s") // { show: false, … }
+ * normalizeSpellCastingTime("12") // { show: true, displayText: "12 tours", … }
+ * normalizeSpellCastingTime("4s") // { show: true, displayText: "4 s", … }
+ */
+export function normalizeSpellCastingTime(raw) {
+    const empty = { show: false, displayText: "", rawText: "", tooltip: "" };
+    if (raw == null) return empty;
+    const rawText = String(raw).trim();
+    if (rawText === "") return empty;
+
+    const lower = rawText.toLowerCase().replace(",", ".");
+    const bare = Number.parseFloat(lower);
+    if (Number.isFinite(bare) && /^-?\d+(?:\.\d+)?$/.test(lower)) {
+        if (bare <= 1) return { ...empty, rawText };
+        const n = Math.trunc(bare);
+        const tourWord = n === 1 ? "tour" : "tours";
+        const displayText = `${n} ${tourWord}`;
+        return {
+            show: true,
+            displayText,
+            rawText,
+            tooltip: `Temps d'incantation : ${rawText} (${displayText})`,
+        };
+    }
+
+    const unitMatch = lower.match(
+        /^(-?\d+(?:\.\d+)?)\s*(s|sec|secs|seconde|secondes|m|min|mins|minute|minutes|h|hr|hrs|heure|heures|j|jour|jours|t|tour|tours)\.?$/i,
+    );
+    if (!unitMatch) {
+        return {
+            show: true,
+            displayText: rawText,
+            rawText,
+            tooltip: `Temps d'incantation : ${rawText}`,
+        };
+    }
+
+    const amount = Number.parseFloat(unitMatch[1]);
+    const unit = unitMatch[2].toLowerCase();
+    if (!Number.isFinite(amount) || amount <= 0) {
+        return { ...empty, rawText };
+    }
+
+    const isTour = ["t", "tour", "tours"].includes(unit);
+    if (isTour) {
+        if (amount <= 1) return { ...empty, rawText };
+        const n = Math.trunc(amount);
+        const displayText = `${n} ${n === 1 ? "tour" : "tours"}`;
+        return {
+            show: true,
+            displayText,
+            rawText,
+            tooltip: `Temps d'incantation : ${rawText}`,
+        };
+    }
+
+    let seconds = amount;
+    if (["m", "min", "mins", "minute", "minutes"].includes(unit)) {
+        seconds = amount * 60;
+    } else if (["h", "hr", "hrs", "heure", "heures"].includes(unit)) {
+        seconds = amount * 3600;
+    } else if (["j", "jour", "jours"].includes(unit)) {
+        seconds = amount * 86400;
+    }
+
+    if (seconds <= SPELL_CASTING_SECONDS_PER_TURN) {
+        return { ...empty, rawText };
+    }
+
+    const turnsExact = seconds / SPELL_CASTING_SECONDS_PER_TURN;
+    if (Number.isInteger(turnsExact)) {
+        const displayText = `${turnsExact} ${turnsExact === 1 ? "tour" : "tours"}`;
+        return {
+            show: true,
+            displayText,
+            rawText,
+            tooltip: `Temps d'incantation : ${rawText} (= ${displayText})`,
+        };
+    }
+
+    let displayText = rawText;
+    if (["s", "sec", "secs", "seconde", "secondes"].includes(unit)) {
+        displayText = `${amount} s`;
+    } else if (["m", "min", "mins", "minute", "minutes"].includes(unit)) {
+        displayText = `${amount} min`;
+    } else if (["h", "hr", "hrs", "heure", "heures"].includes(unit)) {
+        displayText = `${amount} h`;
+    } else if (["j", "jour", "jours"].includes(unit)) {
+        displayText = `${amount} j`;
+    }
+
+    return {
+        show: true,
+        displayText,
+        rawText,
+        tooltip: `Temps d'incantation : ${rawText}`,
+    };
+}
+
 /**
  * Incantation (texte) + indicateur rituel pour les vues compactes.
  *
@@ -174,8 +284,7 @@ export function buildSpellCastUsagePresentation(entity) {
  */
 export function buildSpellCastingRitualPresentation(entity) {
     const ctRaw = readSpellField(entity, "castingTime", "casting_time");
-    const ctStr =
-        ctRaw != null && String(ctRaw).trim() !== "" ? String(ctRaw).trim() : "";
+    const castingNorm = normalizeSpellCastingTime(ctRaw);
 
     const ritualRaw = readSpellField(entity, "ritualAvailable", "ritual_available");
     const isRitualLegacy = readSpellField(entity, "isRitual", "is_ritual");
@@ -183,7 +292,7 @@ export function buildSpellCastingRitualPresentation(entity) {
     const ritualDefined = ritualRaw !== null && ritualRaw !== undefined;
     const ritualOn = ritualDefined ? Boolean(ritualRaw) : Boolean(isRitualLegacy);
 
-    const showCasting = ctStr.length > 0;
+    const showCasting = castingNorm.show;
     /** N’afficher le rituel en UI que lorsqu’il est disponible (pas d’icône « non rituel »). */
     const showRitual = ritualOn === true;
 
@@ -207,7 +316,7 @@ export function buildSpellCastingRitualPresentation(entity) {
 
     const lines = [];
     if (showCasting) {
-        lines.push(`Temps d'incantation : ${ctStr}`);
+        lines.push(castingNorm.tooltip || `Temps d'incantation : ${castingNorm.displayText}`);
     }
     if (showRitual) {
         lines.push("Rituel disponible");
@@ -216,7 +325,8 @@ export function buildSpellCastingRitualPresentation(entity) {
     return {
         show: true,
         showCasting,
-        castingText: ctStr,
+        castingText: castingNorm.displayText,
+        castingRawText: castingNorm.rawText,
         castingVisual,
         showRitual,
         ritualOn,

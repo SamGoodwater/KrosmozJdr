@@ -32,6 +32,8 @@ Les termes `buff_debuff` d'une formule créature sont **éphémères** : ils val
 
 `creature`, `object` (équipements + panoplies), `spell`, **`consumable`**, **`profile`** (maîtrises classe / spécialisation / monstre). Les ressources ne font plus partie du système.
 
+Les **actions d’effet** sont une seule caractéristique `descriptif` du groupe sort, `actions_spell`, sans colonne ni barème. Chaque action est une surcharge (`value` = slug, icône, couleur, sous-texte = libellé du badge). Les montants (dégâts, soin, distances) restent des `action_value` distinctes.
+
 ## Backend
 
 - Définitions et lecture : `app/Services/Characteristics/`, `app/Support/Characteristics/`.

@@ -2,33 +2,33 @@
     "_schema_version": "1",
     "characteristic": {
         "key": "life_dice_creature",
-        "name": "Dé de vie",
-        "short_name": "Dé vie",
-        "helper": "Type de dé utilisé pour les points de vie de la classe (Krosmoz).",
-        "descriptions": "Le dé de vie définit la progression des PV avec la Vitalité. Chaque valeur correspond à un dé standard (ex. 1d8).",
+        "name": "Dé de classe",
+        "short_name": "Dé classe",
+        "helper": "Dé fixé par la classe (1d4 à 1d12). Distinct des Dés de vie, qui sont le nombre de dés comptés dans les points de vie.",
+        "descriptions": "Le dé de classe est le type de dé de la classe (ex. 1d8, 1d10). Il ne compte pas les dés déjà acquis : ça, ce sont les Dés de vie.",
         "icon": "life.webp",
         "icon_false": null,
         "color": "amber",
         "value_overrides": [
             {
                 "value": "1d4",
-                "subtitle": "Dé de vie d4 — classes fragiles."
+                "subtitle": "Dé de classe d4 — classes fragiles."
             },
             {
                 "value": "1d6",
-                "subtitle": "Dé de vie d6."
+                "subtitle": "Dé de classe d6."
             },
             {
                 "value": "1d8",
-                "subtitle": "Dé de vie d8 — standard."
+                "subtitle": "Dé de classe d8 — standard."
             },
             {
                 "value": "1d10",
-                "subtitle": "Dé de vie d10 — robuste."
+                "subtitle": "Dé de classe d10 — robuste."
             },
             {
                 "value": "1d12",
-                "subtitle": "Dé de vie d12 — très robuste."
+                "subtitle": "Dé de classe d12 — très robuste."
             }
         ],
         "hide_when_empty": false,

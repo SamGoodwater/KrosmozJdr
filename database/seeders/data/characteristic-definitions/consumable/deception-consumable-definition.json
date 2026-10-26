@@ -8,7 +8,7 @@
         "descriptions": "Bonus temporaire de Supercherie accordé par un effet de sort (booster / retirer / vol). S’ajoute à la compétence créature pendant la durée de l’effet ; plafond ±5 (aligné équipement, sans forgemagie). Distinct du bonus d’équipement (`deception_object`).",
         "icon": "skillChance.webp",
         "icon_false": null,
-        "color": "violet",
+        "color": "blue",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

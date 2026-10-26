@@ -8,7 +8,7 @@
         "descriptions": "Augmente ou diminue temporairement l’Intelligence tant que l’effet de sort dure. Lié à l’élément Feu. Sur une fiche, ce score reste en pratique entre 6 et 24 (2.2.1).",
         "icon": "fire.webp",
         "icon_false": null,
-        "color": "orange",
+        "color": "red",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

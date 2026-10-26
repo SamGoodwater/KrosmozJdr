@@ -1,5 +1,25 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Onglets et formules de sort
+
+Sur la fiche d’un sort, les onglets reprennent les niveaux de ses degrés (`Niv 1`, `Niv 13`…). Chaque degré montre l’utilisation (zone à part, schéma visible en page), la résolution sans fond sur les libellés de jet, puis les effets en deux lignes. Les formules d’attaque affichent les dés, le modificateur et le mot Bonus ; le survol donne la formule complète. Un critique manquant sur Frapper double les dés.
+
+## Octobre 2026 — Dé de classe
+
+Le dé fixé par la classe (1d8, 1d10…) s’appelle **Dé de classe**. Les **Dés de vie** restent le nombre de dés qui entre dans les points de vie. Les deux ne se confondent plus dans le tableau des caractéristiques ni sur la fiche de classe.
+
+## Octobre 2026 — Couleurs des caractéristiques et menu
+
+La Vitalité (sauf les points de vie et les soins) est ambre, l’Air et les sauvegardes d’Agilité sont verts, l’Intelligence et le Feu sont rouges, l’Initiative est violette, la classe d’armure est grise et le bonus de critique est orange. Dans le menu d’administration, le nom reprend cette couleur ; la nature et la clé sont sur une seconde ligne, et le point d’état est un petit repère sur l’icône.
+
+## Octobre 2026 — Couleurs des compétences
+
+Chaque compétence reprend la couleur de sa caractéristique, y compris le passif et les bonus (équipement, sort, consommable, maîtrise). Agilité en vert, Intelligence en rouge, Chance en bleu, Sagesse en indigo, Force en brun.
+
+## Octobre 2026 — Nom de la classe dans le titre
+
+Ouvrir une classe (ou une spécialisation) depuis les bibliothèques affiche son nom dans l’en-tête et dans l’onglet du navigateur. Avant, ces pages indiquaient seulement « Page ».
+
 ## Octobre 2026 — Effets de sort, sur la fiche
 
 L’édition des effets d’un sort reste sur la page du sort : fond neutre, liste des monstres, PNJ et classes qui le possèdent, et création d’un effet avec ses sous-effets dès le formulaire d’ajout, sans passer par l’administration des effets.

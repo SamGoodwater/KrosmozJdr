@@ -9,6 +9,7 @@ import BreedViewFull from "@/Pages/Molecules/entity/breed/BreedViewFull.vue";
 import SpecializationViewFull from "@/Pages/Molecules/entity/specialization/SpecializationViewFull.vue";
 import EntitySectionsRenderer from "@/Pages/Organismes/entity/EntitySectionsRenderer.vue";
 import BreedWriteMetaPanel from "@/Pages/Molecules/entity/breed/BreedWriteMetaPanel.vue";
+import { Page } from "@/Models";
 import { Breed } from "@/Models/Entity/Breed";
 import { Specialization } from "@/Models/Entity/Specialization";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
@@ -25,10 +26,6 @@ const props = defineProps({
 
 const user = computed(() => inertiaPage.props.auth?.user || null);
 
-const pageTitle = computed(() => props.page?.title || props.linkedEntity?.name || "Page");
-
-watch(pageTitle, (t) => setPageTitle(t || "Page"), { immediate: true });
-
 const breed = computed(() => {
     if (props.linkedEntityType !== "breed") return null;
     const raw = props.linkedEntity;
@@ -40,6 +37,25 @@ const specialization = computed(() => {
     const raw = props.linkedEntity;
     return raw instanceof Specialization ? raw : new Specialization(raw);
 });
+
+/**
+ * Titre d’onglet et du header : nom de la fiche.
+ * Les resources Inertia sont enveloppées (`{ data: { name, title } }`) :
+ * lire `page.title` ou `linkedEntity.name` à la racine retombe sur « Page ».
+ *
+ * @returns {string}
+ */
+const pageTitle = computed(() => {
+    const entityName = String(breed.value?.name || specialization.value?.name || "").trim();
+    if (entityName) {
+        return entityName;
+    }
+
+    const cmsTitle = String(new Page(props.page).title || "").trim();
+    return cmsTitle || "Page";
+});
+
+watch(pageTitle, (t) => setPageTitle(t || "Page"), { immediate: true });
 
 const cmsSections = computed(() => props.page?.sections ?? []);
 const hasCmsSections = computed(() => Array.isArray(cmsSections.value) && cmsSections.value.length > 0);

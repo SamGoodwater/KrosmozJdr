@@ -8,7 +8,7 @@
         "descriptions": "Sauvegarde de Vitalité : tenir face aux poisons, maladies et chocs.",
         "icon": "saveVitality.webp",
         "icon_false": null,
-        "color": "emerald",
+        "color": "amber",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

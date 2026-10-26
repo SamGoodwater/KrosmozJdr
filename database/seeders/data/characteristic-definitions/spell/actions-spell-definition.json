@@ -1,0 +1,134 @@
+{
+    "_schema_version": "1",
+    "characteristic": {
+        "key": "actions_spell",
+        "name": "Actions",
+        "short_name": "Action",
+        "helper": "Repère visuel d’une action d’effet. Chaque surcharge (valeur = slug) porte l’icône, la couleur et le libellé du badge.",
+        "descriptions": "Une seule caractéristique pour toutes les actions de sort. La valeur est le slug (frapper, soigner…). Le sous-texte de la surcharge est le libellé affiché.",
+        "icon": "fa-solid fa-wand-magic-sparkles",
+        "icon_false": null,
+        "color": "zinc",
+        "value_overrides": [
+            {
+                "value": "frapper",
+                "icon": "fa-solid fa-burst",
+                "color": "pink",
+                "subtitle": "Attaque"
+            },
+            {
+                "value": "soigner",
+                "icon": "fa-solid fa-heart",
+                "color": "teal",
+                "subtitle": "Soin"
+            },
+            {
+                "value": "protéger",
+                "icon": "fa-solid fa-shield-halved",
+                "color": "sky",
+                "subtitle": "Bouclier"
+            },
+            {
+                "value": "donner-pv-temporaires",
+                "icon": "fa-solid fa-heart-pulse",
+                "color": "emerald",
+                "subtitle": "PV temp."
+            },
+            {
+                "value": "booster",
+                "icon": "fa-solid fa-plus",
+                "color": "violet",
+                "subtitle": "Ajout"
+            },
+            {
+                "value": "retirer",
+                "icon": "fa-solid fa-minus",
+                "color": "orange",
+                "subtitle": "Retrait"
+            },
+            {
+                "value": "voler-caracteristiques",
+                "icon": "fa-solid fa-right-left",
+                "color": "indigo",
+                "subtitle": "Vol"
+            },
+            {
+                "value": "déplacer",
+                "icon": "fa-solid fa-person-walking",
+                "color": "cyan",
+                "subtitle": "Déplacement"
+            },
+            {
+                "value": "invoquer",
+                "icon": "fa-solid fa-ghost",
+                "color": "purple",
+                "subtitle": "Invocation"
+            },
+            {
+                "value": "appliquer-etat",
+                "icon": "fa-solid fa-link",
+                "color": "amber",
+                "subtitle": "État"
+            },
+            {
+                "value": "s-appliquer-etat",
+                "icon": "fa-solid fa-user",
+                "color": "yellow",
+                "subtitle": "État soi"
+            },
+            {
+                "value": "autre",
+                "icon": "fa-solid fa-wand-magic-sparkles",
+                "color": "zinc",
+                "subtitle": "Effet"
+            }
+        ],
+        "hide_when_empty": false,
+        "hide_when_false": false,
+        "unit": null,
+        "type": "string",
+        "status": "validee",
+        "sort_order": 218,
+        "group": "spell",
+        "nature": "descriptif",
+        "linked_to_key": null,
+        "intrinsic_key": null
+    },
+    "entities": {
+        "*": {
+            "dofusdb_characteristic_id": null,
+            "db_column": null,
+            "min": null,
+            "max": null,
+            "formula": null,
+            "formula_display": null,
+            "default_value": null,
+            "conversion_formula": null,
+            "conversion_function": null,
+            "conversion_dofus_sample": null,
+            "conversion_krosmoz_sample": null,
+            "conversion_sample_rows": null,
+            "norms_grid": null,
+            "norms_formula": null,
+            "norms_power_coefficients": null,
+            "norms_conditions": null,
+            "norms_description": "Pas de barème : les surcharges portent seulement le badge de chaque action.",
+            "norms_help_section_id": null,
+            "value_available": [
+                "frapper",
+                "soigner",
+                "protéger",
+                "donner-pv-temporaires",
+                "booster",
+                "retirer",
+                "voler-caracteristiques",
+                "déplacer",
+                "invoquer",
+                "appliquer-etat",
+                "s-appliquer-etat",
+                "autre"
+            ]
+        }
+    },
+    "relations": null
+}

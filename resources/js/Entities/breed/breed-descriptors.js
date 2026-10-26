@@ -259,7 +259,7 @@ export function getBreedFieldDescriptors(ctx = {}) {
     },
     life_dice: {
       key: "life_dice",
-      label: "Dé de vie",
+      label: "Dé de classe",
       icon: "fa-solid fa-dice",
       visibleIf: hideLegacyBreedProgressionFields,
       table: {
@@ -280,7 +280,7 @@ export function getBreedFieldDescriptors(ctx = {}) {
         form: {
           type: "text",
           group: "Caractéristiques",
-          placeholder: "Ex: 1d8 (voir réf. caractéristique dé de vie)",
+          placeholder: "Ex: 1d8 (dé de la classe, pas le nombre de dés de vie)",
           required: false,
           showInCompact: true,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },

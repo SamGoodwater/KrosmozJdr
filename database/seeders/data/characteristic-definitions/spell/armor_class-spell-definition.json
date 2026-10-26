@@ -8,7 +8,7 @@
         "descriptions": "CA temporaire (2.2.2). Base : 10 + mod Vitalité + bouclier. Équipement +5. Effet sort max +5.",
         "icon": "armorClass.webp",
         "icon_false": null,
-        "color": "brown",
+        "color": "gray",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

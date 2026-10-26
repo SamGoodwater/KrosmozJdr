@@ -8,7 +8,7 @@
         "descriptions": "Bonus conféré par l’arme au DD de sauvegarde de Intelligence que tu imposes aux cibles.",
         "icon": "DD de save Intel.webp",
         "icon_false": null,
-        "color": "orange",
+        "color": "red",
         "value_overrides": null,
         "hide_when_empty": true,
         "hide_when_false": false,

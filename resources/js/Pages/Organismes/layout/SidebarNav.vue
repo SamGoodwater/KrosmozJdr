@@ -36,6 +36,8 @@ const props = defineProps({
     getItemKey: { type: Function, default: (item) => item.id ?? item.key ?? JSON.stringify(item) },
     getItemClick: { type: Function, default: null },
     iconBasePath: { type: String, default: '/storage/images/icons/caracteristics' },
+    /** Teinte le libellé avec getItemColor (menu caractéristiques). */
+    colorizeLabel: { type: Boolean, default: false },
     accentGlassBorder: {
         type: String,
         default: 'md',
@@ -134,6 +136,7 @@ const panelBind = computed(() => ({
     getItemKey: props.getItemKey,
     iconBasePath: props.iconBasePath,
     accentGlassBorder: props.accentGlassBorder,
+    colorizeLabel: props.colorizeLabel,
 }));
 
 const mobileTriggerLabel = computed(() => {
@@ -172,6 +175,9 @@ const mobileTriggerLabel = computed(() => {
                 </template>
                 <template #item-suffix="slotProps">
                     <slot name="item-suffix" v-bind="slotProps" />
+                </template>
+                <template #icon-badge="slotProps">
+                    <slot name="icon-badge" v-bind="slotProps" />
                 </template>
                 <template
                     v-for="g in groups"
@@ -224,6 +230,9 @@ const mobileTriggerLabel = computed(() => {
                             </template>
                             <template #item-suffix="slotProps">
                                 <slot name="item-suffix" v-bind="slotProps" />
+                            </template>
+                            <template #icon-badge="slotProps">
+                                <slot name="icon-badge" v-bind="slotProps" />
                             </template>
                             <template
                                 v-for="g in groups"

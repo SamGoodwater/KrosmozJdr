@@ -24,8 +24,8 @@
             "cast_in_line": false,
             "resolution_mode": "saving_throw",
             "is_magic": false,
-            "effect": "Avantage et +1d6 dégâts pendant 3 tours.",
-            "description": "Tu désignes une créature. Pendant 3 tours, tes attaques contre elle gagnent un avantage et des dégâts supplémentaires. Montée : niv. 5, +1d8 ; niv. 13, +2d6.",
+            "effect": "Avantage et bonus de dégâts pendant 3 tours.",
+            "description": "Tu désignes une créature. Pendant 3 tours, tes attaques contre elle gagnent un avantage et des dégâts supplémentaires.",
             "sub_effects": [
                 {
                     "slug": "booster",
@@ -51,7 +51,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "Avantage et +2d6 dégâts pendant 3 tours.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "booster",
@@ -77,7 +77,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "Avantage et +2d6 dégâts pendant 3 tours.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "booster",
@@ -103,7 +103,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "Avantage et +2d6 dégâts pendant 3 tours.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "booster",
@@ -155,8 +155,8 @@
             "cast_in_line": false,
             "resolution_mode": "auto_success",
             "is_magic": false,
-            "effect": "En réaction, repousse l'attaquant de 1 pendant 2 tours.",
-            "description": "Tu protèges une créature, toi y compris, pendant 2 tours. Quand on l'attaque, tu repousses l'attaquant en réaction. Montée : niv. 9, repousse de 2 ; niv. 19, repousse de 3.",
+            "effect": "Réaction : repousse l’attaquant pendant 2 tours.",
+            "description": "Tu protèges une créature, toi y compris, pendant 2 tours. Quand on l'attaque, tu repousses l'attaquant en réaction.",
             "sub_effects": [
                 {
                     "slug": "déplacer",
@@ -172,7 +172,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "En réaction, repousse l'attaquant de 2 pendant 2 tours.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "déplacer",
@@ -188,7 +188,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "En réaction, repousse l'attaquant de 2 pendant 2 tours.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "déplacer",
@@ -204,7 +204,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "En réaction, repousse l'attaquant de 3 pendant 2 tours.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "déplacer",
@@ -242,8 +242,8 @@
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
             "is_magic": false,
-            "effect": "1d6 + Agilité (Air), repousse de 2. 1×/cible. Les allié·e·s ne subissent pas les dégâts.",
-            "description": "Tu infliges des dégâts et tu repousses la cible. Les allié·e·s ne subissent pas les dégâts. Montée : niv. 9, 2d6, repousse 3, 2×/cible ; niv. 14, 2d8, repousse 4, 3×/cible et 3×/tour ; niv. 19, repousse 5.",
+            "effect": "Les allié·e·s ne sont pas blessé·e·s par le recul.",
+            "description": "Tu infliges des dégâts et tu repousses la cible. Les allié·e·s ne subissent pas les dégâts.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -271,7 +271,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "2d6 + Agilité (Air), repousse de 3. 2×/cible.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -294,12 +294,13 @@
                                 "movement_kind": "push"
                             }
                         }
-                    ]
+                    ],
+                    "cast_per_target": "2"
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "2d8 + Agilité (Air), repousse de 4. 3×/cible, 3×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -322,12 +323,14 @@
                                 "movement_kind": "push"
                             }
                         }
-                    ]
+                    ],
+                    "cast_per_turn": "3",
+                    "cast_per_target": "3"
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "2d8 + Agilité (Air), repousse de 5. 3×/cible, 3×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -350,7 +353,9 @@
                                 "movement_kind": "push"
                             }
                         }
-                    ]
+                    ],
+                    "cast_per_turn": "3",
+                    "cast_per_target": "3"
                 }
             ],
             "element": "air",
@@ -377,8 +382,8 @@
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
             "is_magic": false,
-            "effect": "2d4 + Intelligence (Feu). Vol de la moitié des dégâts finaux. 1×/tour.",
-            "description": "Tu voles une partie des points de vie de la cible. Montée : niv. 9, 3d4 et 2 fois par tour ; niv. 14, 4d4 ; niv. 19, 5d4.",
+            "effect": "Vol de la moitié des dégâts finaux.",
+            "description": "Tu voles une partie des points de vie de la cible.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -398,7 +403,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "3d4 + Intelligence (Feu). Vol de la moitié des dégâts finaux. 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -413,12 +418,13 @@
                                 "life_steal_formula": "1/2 des dégâts finaux"
                             }
                         }
-                    ]
+                    ],
+                    "cast_per_turn": "2"
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "4d4 + Intelligence (Feu). Vol de la moitié des dégâts finaux. 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -433,12 +439,13 @@
                                 "life_steal_formula": "1/2 des dégâts finaux"
                             }
                         }
-                    ]
+                    ],
+                    "cast_per_turn": "2"
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "5d4 + Intelligence (Feu). Vol de la moitié des dégâts finaux. 2×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -453,7 +460,8 @@
                                 "life_steal_formula": "1/2 des dégâts finaux"
                             }
                         }
-                    ]
+                    ],
+                    "cast_per_turn": "2"
                 }
             ],
             "element": "fire",
@@ -481,8 +489,8 @@
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
             "is_magic": false,
-            "effect": "1d4 + Chance (Eau), zone 2×2. Aveugle et révèle l'invisible. Les allié·e·s ne sont pas touché·e·s.",
-            "description": "Tu troubles une zone. Les ennemis sont aveuglés et les invisibles sont révélés. Les allié·e·s ne sont pas touché·e·s. Montée : niv. 9, 1d6, zone 2×3 ; niv. 14, 2d4, zone 3×3 ; niv. 19, zone 4×4.",
+            "effect": "Aveugle et révèle l’invisible.",
+            "description": "Tu troubles une zone. Les ennemis sont aveuglés et les invisibles sont révélés. Les allié·e·s ne sont pas touché·e·s.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -509,7 +517,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "1d6 + Chance (Eau), zone 2×3.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -536,7 +544,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "2d4 + Chance (Eau), zone 3×3.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -563,7 +571,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "2d4 + Chance (Eau), zone 4×4.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -613,8 +621,8 @@
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
             "is_magic": false,
-            "effect": "1d6 + Force (Terre). +3 dégâts par cumul, 3 cumuls, non dissipable.",
-            "description": "Tu prépares un tir de Terre au contact. Si tu le relances à chacun de tes tours, ses dégâts augmentent, jusqu'à 3 cumuls. Ce bonus n'est pas dissipable. Montée : niv. 9, 2d6 et +6 ; niv. 14, 3d6 et +8 ; niv. 19, 4d6 et +10.",
+            "effect": "Cumuls de dégâts supplémentaires, non dissipables.",
+            "description": "Tu prépares un tir de Terre au contact. Si tu le relances à chacun de tes tours, ses dégâts augmentent, jusqu'à 3 cumuls. Ce bonus n'est pas dissipable.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -642,7 +650,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "2d6 + Force (Terre). +6 dégâts par cumul.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -670,7 +678,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "3d6 + Force (Terre). +8 dégâts par cumul.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -698,7 +706,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "4d6 + Force (Terre). +10 dégâts par cumul.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -749,8 +757,8 @@
             "cast_in_line": false,
             "resolution_mode": "auto_success",
             "is_magic": false,
-            "effect": "Pendant 2 tours, critique à 19 et +2d4 en cas de critique.",
-            "description": "Pendant 2 tours, tes coups critiques se déclenchent plus tôt. Un critique inflige des dégâts supplémentaires. Montée : niv. 15, critique à 18 et +3d4.",
+            "effect": "Critique facilité et dégâts critiques bonus pendant 2 tours.",
+            "description": "Pendant 2 tours, tes coups critiques se déclenchent plus tôt. Un critique inflige des dégâts supplémentaires.",
             "sub_effects": [
                 {
                     "slug": "autre",
@@ -766,13 +774,13 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "Pendant 2 tours, critique à 18 et +3d4 en cas de critique.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "autre",
@@ -788,7 +796,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "Pendant 2 tours, critique à 18 et +3d4 en cas de critique.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "autre",
@@ -825,8 +833,8 @@
             "cast_in_line": false,
             "resolution_mode": "saving_throw",
             "is_magic": false,
-            "effect": "−1 PM par attaque qui la blesse, pendant 1 tour.",
-            "description": "Tu marques une créature. Chaque fois qu'une attaque la blesse, elle perd des PM. La marque dure 1 tour, puis 2 tours en montant de niveau. Montée : niv. 14, la marque dure 2 tours.",
+            "effect": "Retire des PM à chaque attaque qui blesse la cible.",
+            "description": "Tu marques une créature. Chaque fois qu'une attaque la blesse, elle perd des PM. La marque dure 1 tour, puis 2 tours",
             "sub_effects": [
                 {
                     "slug": "retirer",
@@ -843,13 +851,13 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "−1 PM par attaque qui la blesse, pendant 2 tours.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "retirer",
@@ -866,7 +874,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "−1 PM par attaque qui la blesse, pendant 2 tours.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "retirer",
@@ -908,7 +916,7 @@
             "cast_in_line": false,
             "resolution_mode": "auto_success",
             "is_magic": false,
-            "effect": "Balise 1 tour. Elle relance un de tes sorts comme s'il partait d'elle.",
+            "effect": "La balise relance un de tes sorts comme s’il partait de sa case.",
             "description": "Tu poses une balise pendant 1 tour. Elle gêne les créatures ennemies proches et peut relancer un de tes sorts comme s'il partait d'elle, avec les mêmes propriétés. Tes propres dégâts ne la blessent pas.",
             "sub_effects": [
                 {
@@ -924,19 +932,19 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 }
             ],
@@ -963,7 +971,7 @@
             "cast_in_line": false,
             "resolution_mode": "auto_success",
             "is_magic": false,
-            "effect": "Au début de ton prochain tour, tu échanges ta place avec la balise, puis elle disparaît.",
+            "effect": "Au début de ton prochain tour, tu échanges ta place avec la balise.",
             "description": "Tu poses une balise. Au début de ton prochain tour, tu échanges ta place avec elle, puis elle disparaît.",
             "sub_effects": [
                 {
@@ -979,19 +987,19 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 }
             ],
@@ -1018,8 +1026,8 @@
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
             "is_magic": false,
-            "effect": "2d6 + Agilité (Air), −1 PM. Rebondit sur 3 créatures à 4 PO ou moins. Le retrait de PM se résout contre l'esquive PM.",
-            "description": "Ta flèche rebondit d'une créature à l'autre. Chaque créature ennemie touchée subit des dégâts et perd des PM. Elle peut rebondir sur un·e allié·e sans lui infliger de dégâts. Montée : niv. 13, 2d8 et 4 rebonds ; niv. 18, 2d10 et 5 rebonds.",
+            "effect": "Rebondit sur plusieurs créatures à portée.",
+            "description": "Ta flèche rebondit d'une créature à l'autre. Chaque créature ennemie touchée subit des dégâts et perd des PM. Elle peut rebondir sur un·e allié·e sans lui infliger de dégâts.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1055,7 +1063,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "2d8 + Agilité (Air), −1 PM. Rebondit sur 4 créatures.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1091,7 +1099,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "2d8 + Agilité (Air), −1 PM. Rebondit sur 4 créatures.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1127,7 +1135,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "2d10 + Agilité (Air), −1 PM. Rebondit sur 5 créatures.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1186,8 +1194,8 @@
             "cast_in_line": false,
             "resolution_mode": "saving_throw",
             "is_magic": false,
-            "effect": "2d8 + Intelligence (Feu), zone 2×3. + modificateur d'Intelligence aux dégâts de Feu pendant 1 tour.",
-            "description": "Ta flèche explose à l'impact et blesse une zone. L'explosion renforce tes prochains dégâts de Feu pendant 1 tour. Montée : niv. 13, 2d10 et zone 3×3 ; niv. 18, 2d12 et zone 3×4.",
+            "effect": "Zone ; bonus lié au modificateur d’Intelligence.",
+            "description": "Ta flèche explose à l'impact et blesse une zone. L'explosion renforce tes prochains dégâts de Feu pendant 1 tour.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1216,7 +1224,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "2d10 + Intelligence (Feu), zone 3×3.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1245,7 +1253,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "2d10 + Intelligence (Feu), zone 3×3.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1274,7 +1282,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "2d12 + Intelligence (Feu), zone 3×4.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1329,8 +1337,8 @@
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
             "is_magic": false,
-            "effect": "2d6 + Chance (Eau), −1 PA, pas de réaction pendant 1 tour. Le retrait de PA se résout contre l'esquive PA.",
-            "description": "Tu infliges des dégâts et tu retires des PA. La cible ne peut pas utiliser sa réaction pendant 1 tour. Montée : niv. 13, 2d8 et 3 fois par tour ; niv. 18, 3d6 et −2 PA.",
+            "effect": "Retire des PA ; la cible ne peut pas réagir pendant 1 tour.",
+            "description": "Tu infliges des dégâts et tu retires des PA. La cible ne peut pas utiliser sa réaction pendant 1 tour.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1368,7 +1376,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "2d8 + Chance (Eau), −1 PA, 3×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1401,12 +1409,13 @@
                             },
                             "duration_formula": "1"
                         }
-                    ]
+                    ],
+                    "cast_per_turn": "3"
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "2d8 + Chance (Eau), −1 PA, 3×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1439,12 +1448,13 @@
                             },
                             "duration_formula": "1"
                         }
-                    ]
+                    ],
+                    "cast_per_turn": "3"
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "3d6 + Chance (Eau), −2 PA, 3×/tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1477,7 +1487,8 @@
                             },
                             "duration_formula": "1"
                         }
-                    ]
+                    ],
+                    "cast_per_turn": "3"
                 }
             ],
             "element": "water",
@@ -1504,8 +1515,8 @@
             "cast_in_line": false,
             "resolution_mode": "saving_throw",
             "is_magic": false,
-            "effect": "n d4 + Force (Terre), croix 1. n = créatures dans la zone.",
-            "description": "Tu frappes une zone. Les dégâts valent n dés : n est le nombre de créatures dans la zone. Montée : niv. 13, croix 2 ; niv. 18, n d6.",
+            "effect": "n dés : n = nombre de créatures dans la zone.",
+            "description": "Tu frappes une zone. Les dégâts valent n dés : n est le nombre de créatures dans la zone.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1524,7 +1535,7 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "n d4 + Force (Terre), croix 2.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1543,7 +1554,7 @@
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "n d4 + Force (Terre), croix 2.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1562,7 +1573,7 @@
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "n d6 + Force (Terre), croix 2.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -1606,7 +1617,7 @@
             "cast_in_line": false,
             "resolution_mode": "saving_throw",
             "is_magic": false,
-            "effect": "Applique Indéplaçable dans une zone 2×3, allié·e·s compris.",
+            "effect": "Applique Indéplaçable (allié·e·s compris).",
             "description": "Tu appliques l'état Indéplaçable dans une zone. Les créatures touchées ne peuvent plus se téléporter ni être déplacées par certains effets. Les allié·e·s dans la zone le subissent aussi.",
             "sub_effects": [
                 {
@@ -1622,19 +1633,19 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 }
             ],
@@ -1682,19 +1693,19 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 }
             ],
@@ -1722,8 +1733,8 @@
             "cast_in_line": false,
             "resolution_mode": "auto_success",
             "is_magic": false,
-            "effect": "Téléportation sur la case visée (PO 0–1) et +1 PM.",
-            "description": "Tu te téléportes sur la case visée et tu gagnes 1 PM. Montée : niv. 15, portée 0–2 ; niv. 20, portée 0–3.",
+            "effect": "Téléportation sur la case visée et +1 PM.",
+            "description": "Tu te téléportes sur la case visée et tu gagnes 1 PM.",
             "sub_effects": [
                 {
                     "slug": "déplacer",
@@ -1749,13 +1760,13 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "PO 0–2, téléportation et +1 PM.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "déplacer",
@@ -1776,12 +1787,13 @@
                                 "value": "1"
                             }
                         }
-                    ]
+                    ],
+                    "po_max": "2"
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "PO 0–3, téléportation et +1 PM.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "déplacer",
@@ -1802,7 +1814,8 @@
                                 "value": "1"
                             }
                         }
-                    ]
+                    ],
+                    "po_max": "3"
                 }
             ],
             "dofusdb_id": "32464"
@@ -1827,8 +1840,8 @@
             "cast_in_line": false,
             "resolution_mode": "saving_throw",
             "is_magic": false,
-            "effect": "Pendant 1 tour, tes retraits de PA et de PM contre la cible réussissent automatiquement. Relance 4.",
-            "description": "Tu empoisonnes la cible pendant 1 tour. Tant que le poison agit, tes retraits de PA et de PM contre elle réussissent automatiquement. Montée : niv. 14, relance 3 ; niv. 20, relance 2.",
+            "effect": "Tes retraits de PA et de PM contre la cible sont renforcés.",
+            "description": "Tu empoisonnes la cible pendant 1 tour. Tant que le poison agit, tes retraits de PA et de PM contre elle réussissent automatiquement.",
             "sub_effects": [
                 {
                     "slug": "autre",
@@ -1844,13 +1857,13 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "Même poison. Relance 3.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "autre",
@@ -1861,12 +1874,13 @@
                             },
                             "duration_formula": "1"
                         }
-                    ]
+                    ],
+                    "number_between_two_cast": "3"
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "Même poison. Relance 2.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "autre",
@@ -1877,7 +1891,8 @@
                             },
                             "duration_formula": "1"
                         }
-                    ]
+                    ],
+                    "number_between_two_cast": "2"
                 }
             ],
             "dofusdb_id": "13060",
@@ -1907,7 +1922,7 @@
             "cast_in_line": false,
             "resolution_mode": "auto_success",
             "is_magic": false,
-            "effect": "Avantage aux jets de touche, +1d8 dégâts et +5 PO. Perdu au premier déplacement.",
+            "effect": "Avantage, dégâts et portée bonus ; perdu au déplacement.",
             "description": "Tu te poses en sentinelle : avantage aux jets de touche, +1d8 de dégâts et +5 de portée. Tu ne bouges plus. Au premier déplacement, tu perds l'effet.",
             "sub_effects": [
                 {
@@ -1941,19 +1956,19 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 }
             ],
@@ -1979,7 +1994,7 @@
             "cast_in_line": false,
             "resolution_mode": "auto_success",
             "is_magic": false,
-            "effect": "Lie deux créatures pendant 2 tours. L'une se soigne de la moitié des dégâts finaux subis par l'autre.",
+            "effect": "Lie deux créatures : l’une se soigne de la moitié des dégâts reçus par l’autre.",
             "description": "Tu lies deux créatures, toi y compris si tu le veux, pendant 2 tours. Quand l'une subit des dégâts, l'autre récupère la moitié des dégâts finaux.",
             "sub_effects": [
                 {
@@ -1996,19 +2011,19 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 }
             ],
@@ -2036,8 +2051,8 @@
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
             "is_magic": false,
-            "effect": "2d8 + Agilité (Air), zone 3×3. −5 esquive PM pendant 1 tour.",
-            "description": "Tu couvres une zone d'une pluie de flèches. Les créatures touchées perdent aussi de l'esquive PM pendant 1 tour. Montée : niv. 17, 3d8 et −10 esquive PM.",
+            "effect": "Zone ; réduit l’esquive PM pendant 1 tour.",
+            "description": "Tu couvres une zone d'une pluie de flèches. Les créatures touchées perdent aussi de l'esquive PM pendant 1 tour.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -2066,19 +2081,19 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "3d8 + Agilité (Air), zone 3×3. −10 esquive PM pendant 1 tour.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -2130,8 +2145,8 @@
             "cast_in_line": false,
             "resolution_mode": "saving_throw",
             "is_magic": false,
-            "effect": "3d8 + Intelligence (Feu). Poison : +2d6 Feu pendant 2 tours à chaque déplacement subi.",
-            "description": "Tu marques une créature. Elle subit des dégâts, puis un poison de Feu chaque fois qu'elle est déplacée contre son gré, pendant 2 tours. Montée : niv. 17, 4d8 et poison +3d6.",
+            "effect": "Applique un poison de Feu sur plusieurs tours.",
+            "description": "Tu marques une créature. Elle subit des dégâts, puis un poison de Feu chaque fois qu'elle est déplacée contre son gré, pendant 2 tours.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -2159,19 +2174,19 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "4d8 + Intelligence (Feu). Poison : +3d6 Feu pendant 2 tours.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -2226,8 +2241,8 @@
             "cast_in_line": false,
             "resolution_mode": "saving_throw",
             "is_magic": false,
-            "effect": "2d12 + Chance (Eau), croix 2. −1 PA, −1 PM et désavantage aux jets d'attaque.",
-            "description": "Tu infliges des dégâts dans une croix. La cible perd 1 PA et 1 PM à son prochain tour, et subit un désavantage à ses jets d'attaque pendant 1 tour. Montée : niv. 17, 4d8.",
+            "effect": "Retire PA et PM ; désavantage aux jets de la cible.",
+            "description": "Tu infliges des dégâts dans une croix. La cible perd 1 PA et 1 PM à son prochain tour, et subit un désavantage à ses jets d'attaque pendant 1 tour.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -2273,19 +2288,19 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "4d8 + Chance (Eau), croix 2. −1 PA, −1 PM et désavantage aux jets d'attaque.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -2357,8 +2372,8 @@
             "cast_in_line": true,
             "resolution_mode": "attack_roll",
             "is_magic": false,
-            "effect": "2d12 + Force (Terre), zone 2×2 en ligne. Vol du modificateur de Force aux dégâts pendant 2 tours.",
-            "description": "Tu infliges de lourds dégâts de Terre. Pendant 2 tours, la cible perd son modificateur de Force aux dégâts, et tu le gagnes. Montée : niv. 17, 4d8, 2 fois par tour, vol cumulable et non dissipable.",
+            "effect": "Vol du modificateur de Force (cumulable).",
+            "description": "Tu infliges de lourds dégâts de Terre. Pendant 2 tours, la cible perd son modificateur de Force aux dégâts, et tu le gagnes.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -2387,19 +2402,19 @@
                 {
                     "tier": "I",
                     "required_creature_level": 13,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "II",
                     "required_creature_level": 16,
-                    "effect": "—",
+                    "effect": "",
                     "sub_effects": []
                 },
                 {
                     "tier": "III",
                     "required_creature_level": 20,
-                    "effect": "4d8 + Force (Terre). 2×/tour. Vol de Force cumulable, non dissipable.",
+                    "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
@@ -2431,7 +2446,8 @@
                                 "value": "Cumulable, non dissipable."
                             }
                         }
-                    ]
+                    ],
+                    "cast_per_turn": "2"
                 }
             ],
             "element": "earth",

@@ -6,8 +6,11 @@ import { describe, expect, it } from "vitest";
 import {
     buildCastUsageSummary,
     buildResolutionSummary,
+    buildSpellCastingRitualPresentation,
     buildSpellCastUsagePresentation,
+    normalizeSpellCastingTime,
 } from "@/Utils/Entity/spellMinimalUsageDisplay";
+import { buildSpellResolutionFormula } from "@/Utils/Entity/spellResolutionFormula";
 
 describe("spellMinimalUsageDisplay", () => {
     it("résumé lancers : masque max cible si C absent, 0 ou égal à N ; délai 0/1/null → « / tour »", () => {
@@ -57,5 +60,67 @@ describe("spellMinimalUsageDisplay", () => {
                 save_dc_formula: "8 + mod FOR",
             }).text,
         ).toBe("Jet de sauvegarde (Force) · DD 8 + mod FOR");
+    });
+
+    it("durée d’incantation : masque le défaut 1 tour / 6 s ; convertit les multiples", () => {
+        expect(normalizeSpellCastingTime("").show).toBe(false);
+        expect(normalizeSpellCastingTime("0").show).toBe(false);
+        expect(normalizeSpellCastingTime("1").show).toBe(false);
+        expect(normalizeSpellCastingTime("1 tour").show).toBe(false);
+        expect(normalizeSpellCastingTime("6s").show).toBe(false);
+        expect(normalizeSpellCastingTime("6 secondes").show).toBe(false);
+
+        const twelve = normalizeSpellCastingTime("12");
+        expect(twelve.show).toBe(true);
+        expect(twelve.displayText).toBe("12 tours");
+
+        const twelveSec = normalizeSpellCastingTime("12s");
+        expect(twelveSec.show).toBe(true);
+        expect(twelveSec.displayText).toBe("2 tours");
+
+        // ≤ 6 s = défaut d’un tour : masqué (plan : « inférieur à 1 tour ou entre 0 et 6 s »)
+        expect(normalizeSpellCastingTime("4s").show).toBe(false);
+
+        const eightSec = normalizeSpellCastingTime("8s");
+        expect(eightSec.show).toBe(true);
+        expect(eightSec.displayText).toBe("8 s");
+
+        const ritualOnly = buildSpellCastingRitualPresentation({
+            casting_time: "6s",
+            ritual_available: true,
+        });
+        expect(ritualOnly.showCasting).toBe(false);
+        expect(ritualOnly.showRitual).toBe(true);
+        expect(ritualOnly.show).toBe(true);
+
+        const longCast = buildSpellCastingRitualPresentation({ casting_time: "12" });
+        expect(longCast.showCasting).toBe(true);
+        expect(longCast.castingText).toBe("12 tours");
+    });
+
+    it("formule publique : élément nommé, vs séparé, sans fiche de personnage", () => {
+        const attack = buildSpellResolutionFormula({
+            resolution_mode: "attack_roll",
+            attack_characteristic_key: "agi",
+        });
+        expect(attack.headline).toBe("Jet d'attaque Air vs CA");
+        expect(attack.elementLabel).toBe("Air");
+        expect(attack.leftParts.map((part) => part.key || part.text).join("")).toBe(
+            "1d20 + modifier_agility_creature + hit_bonus_creature",
+        );
+        expect(attack.rightParts.map((part) => part.key || part.text).join("")).toBe("CA");
+
+        const save = buildSpellResolutionFormula({
+            resolution_mode: "saving_throw",
+            save_characteristic_key: "intel",
+        });
+        expect(save.headline).toBe("Degré de difficulté Feu vs jet de sauvegarde Feu");
+        expect(save.elementLabel).toBe("Feu");
+        expect(save.leftParts.map((part) => part.key || part.text).join("")).toBe(
+            "DD save_dc_intelligence_creature",
+        );
+        expect(save.rightParts.map((part) => part.key || part.text).join("")).toBe(
+            "1d20 + save_intelligence_creature",
+        );
     });
 });

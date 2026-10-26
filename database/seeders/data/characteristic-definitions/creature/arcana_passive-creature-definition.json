@@ -8,7 +8,7 @@
         "descriptions": "Ce que tu sais reconnaître d’un sort ou d’un symbole.",
         "icon": "skillIntelligence.webp",
         "icon_false": null,
-        "color": "orange",
+        "color": "red",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

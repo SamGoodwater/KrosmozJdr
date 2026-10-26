@@ -226,6 +226,46 @@ export function getElementColor(primaryIndex) {
 }
 
 /**
+ * Style lisible pour un libellé d’élément sur fond sombre (résolution de sort).
+ * Fond teinté + texte éclairci (color-mix vers blanc), pas le token *-600 trop sombre.
+ *
+ * @param {number|null|undefined} primaryIndex
+ * @returns {Record<string, string>|undefined}
+ *
+ * @example
+ * getElementAccentStyle(3) // Air — fond vert léger, texte clair
+ */
+export function getElementAccentStyle(primaryIndex) {
+  if (primaryIndex == null || Number.isNaN(Number(primaryIndex))) {
+    return undefined;
+  }
+  const cssVar = ELEMENT_PRIMARY_CSS_VARS[Number(primaryIndex)]
+    ?? ELEMENT_PRIMARY_CSS_VARS[0];
+  return {
+    color: `color-mix(in srgb, ${cssVar} 45%, white)`,
+    backgroundColor: `color-mix(in srgb, ${cssVar} 28%, transparent)`,
+    borderColor: `color-mix(in srgb, ${cssVar} 45%, transparent)`,
+  };
+}
+
+/**
+ * Couleur d’élément sans fond (libellés Jet d’attaque / sauvegarde / DD).
+ *
+ * @param {number|null|undefined} primaryIndex
+ * @returns {Record<string, string>|undefined}
+ */
+export function getElementTextStyle(primaryIndex) {
+  if (primaryIndex == null || Number.isNaN(Number(primaryIndex))) {
+    return undefined;
+  }
+  const cssVar = ELEMENT_PRIMARY_CSS_VARS[Number(primaryIndex)]
+    ?? ELEMENT_PRIMARY_CSS_VARS[0];
+  return {
+    color: `color-mix(in srgb, ${cssVar} 45%, white)`,
+  };
+}
+
+/**
  * Valeur élément d’une fiche sort / capacité.
  *
  * @param {{ element?: unknown, _data?: { element?: unknown } }|null|undefined} entity
@@ -325,6 +365,31 @@ export function getElementBadgeStyle(raw) {
   return {
     background,
     boxShadow: `0 0 10px 2px color-mix(in srgb, ${first} 40%, transparent)`,
+  };
+}
+
+/**
+ * Badge élément en contour : fond transparent, texte et bordure éclaircis.
+ * Distinct d’un badge d’action plein.
+ *
+ * @param {unknown} raw - Masque 7 bits ou index primaire.
+ * @returns {{ color?: string, borderColor?: string, backgroundColor?: string }}
+ *
+ * @example
+ * elementOutlineBadgeStyle(8) // Air
+ */
+export function elementOutlineBadgeStyle(raw) {
+  const mask = normalizeElementStorageValue(raw);
+  const primaries = maskToPrimaries(mask);
+  if (primaries.length === 0) {
+    return {};
+  }
+  const cssVar = ELEMENT_PRIMARY_CSS_VARS[primaries[0]] ?? ELEMENT_PRIMARY_CSS_VARS[0];
+  const tone = `color-mix(in srgb, ${cssVar} 58%, white)`;
+  return {
+    color: tone,
+    borderColor: tone,
+    backgroundColor: "transparent",
   };
 }
 

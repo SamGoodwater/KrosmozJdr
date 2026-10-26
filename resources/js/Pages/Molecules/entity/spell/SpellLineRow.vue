@@ -175,6 +175,8 @@ const elementRingClass = computed(() => getElementSurfaceRingClass(elementSurfac
             :can-show-field="canShowField"
             :max-effect-rows="5"
             :show-rule-notes="false"
+            show-resolution-compact
+            :free-effect-comment="entity?.effect || ''"
             resolution-class="mb-1 text-sm text-base-content/75"
             effects-wrapper-class="spell-effects-line w-full pt-2 mt-1 border-t border-base-300"
             cell-class="leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"

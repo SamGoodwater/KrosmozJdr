@@ -9,10 +9,12 @@ import { computed } from "vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
 import {
+    getCharacteristicColorStyle,
     resolveDef,
     SPELL_EFFECT_CHIP_SOURCE_GROUPS,
 } from "@/Composables/entity/useCharacteristicDisplay";
 import { getElementIcon, getElementLabel, getElementPrimaries } from "@/Utils/Entity/Elements";
+import { SPELL_ACTIONS_CHARACTERISTIC_KEY } from "@/Utils/Entity/spellActionCharacteristics";
 import { colord } from "colord";
 import {
     resolvePresentationActionSlug,
@@ -62,13 +64,25 @@ const TOOLTIP_ACTION_LABELS = Object.freeze({
 
 const actionKey = computed(() => resolvePresentationActionSlug(m.value.actionSlug));
 
+const actionDef = computed(() =>
+    resolveDef(SPELL_ACTIONS_CHARACTERISTIC_KEY, actionKey.value, { sourceGroups: ["spell"] }),
+);
+
 const actionTitle = computed(() => {
+    const subtitle = actionDef.value?._resolvedSubtitle;
+    if (typeof subtitle === "string" && subtitle.trim() !== "") {
+        return subtitle.trim();
+    }
     const k = actionKey.value;
     if (k && TOOLTIP_ACTION_LABELS[k]) {
         return TOOLTIP_ACTION_LABELS[k];
     }
     return "Effet";
 });
+
+const actionTitleStyle = computed(() =>
+    getCharacteristicColorStyle(actionDef.value?._resolvedColor ?? actionDef.value?.color),
+);
 
 const charDef = computed(() => {
     const key = m.value.characteristic;
@@ -248,7 +262,10 @@ const hasAreaSchema = computed(() => areaNotation.value !== "");
             </div>
 
             <div class="flex min-w-0 flex-1 flex-col gap-1.5">
-                <div class="text-base font-bold leading-tight tracking-tight">
+                <div
+                    class="text-base font-bold leading-tight tracking-tight"
+                    :style="actionTitleStyle"
+                >
                     {{ actionTitle }}
                 </div>
                 <p v-if="conditionLine" class="text-sm font-medium leading-snug text-white/85">

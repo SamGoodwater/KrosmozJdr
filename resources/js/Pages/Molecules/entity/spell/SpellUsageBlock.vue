@@ -9,11 +9,13 @@
 import { computed } from "vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import SpellMinimalUsageMetaRow from "@/Pages/Molecules/entity/spell/SpellMinimalUsageMetaRow.vue";
+import SpellUsageAreaColumn from "@/Pages/Molecules/entity/spell/SpellUsageAreaColumn.vue";
 import {
     resolveSpellEffectsDisplayCell,
     spellEffectsCellHasContent,
 } from "@/Composables/entity/useSpellEffectsDisplayCell";
-import { buildResolutionSummary } from "@/Utils/Entity/spellMinimalUsageDisplay";
+import { buildSpellResolutionFormula } from "@/Utils/Entity/spellResolutionFormula";
+import SpellResolutionFormula from "@/Pages/Molecules/entity/spell/SpellResolutionFormula.vue";
 import { spellTypeRuleNotes } from "@/Utils/Entity/spellTypeRuleNotes";
 
 const props = defineProps({
@@ -63,10 +65,23 @@ const props = defineProps({
         type: String,
         default: "mt-1 text-xs leading-snug opacity-80",
     },
+    /**
+     * Affiche le mode de résolution en compact (popover) avant les effets.
+     * La vue full ne doit pas l’utiliser : la résolution vit dans sa section.
+     */
+    showResolutionCompact: { type: Boolean, default: false },
+    /** Commentaire libre (`spell.effect`) sous les effets structurés, sans titre. */
+    freeEffectComment: { type: String, default: "" },
+    /** Zone du degré actif (affichée en colonne à droite de la méta). */
+    area: { type: String, default: "" },
+    /** true = schéma de zone visible (page / modal). */
+    showAreaSchema: { type: Boolean, default: false },
 });
 
 const showMeta = computed(() => props.parts === "all" || props.parts === "meta");
 const showEffectsPart = computed(() => props.parts === "all" || props.parts === "effects");
+const areaValue = computed(() => (props.area != null ? String(props.area).trim() : ""));
+const showAreaColumn = computed(() => showMeta.value && areaValue.value !== "");
 
 const effectDisplayCell = computed(() =>
     resolveSpellEffectsDisplayCell(props.entity, {
@@ -78,13 +93,24 @@ const effectDisplayCell = computed(() =>
 );
 
 const hasEffects = computed(() => spellEffectsCellHasContent(effectDisplayCell.value));
-const resolutionUsage = computed(() => buildResolutionSummary(props.entity));
+const resolutionUsage = computed(() => buildSpellResolutionFormula(props.entity));
 const ruleNotes = computed(() => (props.showRuleNotes ? spellTypeRuleNotes(props.entity) : []));
+const freeComment = computed(() => {
+    const t = props.freeEffectComment != null ? String(props.freeEffectComment).trim() : "";
+    return t;
+});
+
+const showCompactResolution = computed(
+    () => props.showResolutionCompact && resolutionUsage.value.show,
+);
 
 const showEffectsBlock = computed(
     () =>
         showEffectsPart.value &&
-        (hasEffects.value || resolutionUsage.value.show || props.showEmptyEffects),
+        (hasEffects.value ||
+            showCompactResolution.value ||
+            freeComment.value !== "" ||
+            props.showEmptyEffects),
 );
 
 const effectsClass = computed(() =>
@@ -94,19 +120,44 @@ const effectsClass = computed(() =>
 
 <template>
     <div class="spell-usage-block min-w-0">
-        <SpellMinimalUsageMetaRow
-            v-if="showMeta"
-            :entity="entity"
-            :descriptors="descriptors"
-            :table-meta="tableMeta"
-            :can-show-field="canShowField"
-            :show-spell-types-cell="showSpellTypesCell"
-            :property-size="propertySize"
-            :row-class="rowClass"
-            :hover-inner-gap-class="hoverInnerGapClass"
-        />
         <div
-            v-if="ruleNotes.length"
+            v-if="showMeta"
+            class="flex min-w-0 items-start gap-3"
+            :class="{ 'justify-between': showAreaColumn }"
+        >
+            <div class="min-w-0 flex-1">
+                <SpellMinimalUsageMetaRow
+                    :entity="entity"
+                    :descriptors="descriptors"
+                    :table-meta="tableMeta"
+                    :can-show-field="canShowField"
+                    :show-spell-types-cell="showSpellTypesCell"
+                    :property-size="propertySize"
+                    :row-class="rowClass"
+                    :hover-inner-gap-class="hoverInnerGapClass"
+                />
+                <div
+                    v-if="ruleNotes.length"
+                    data-cy="spell-rule-notes"
+                    class="spell-rule-notes"
+                >
+                    <p
+                        v-for="note in ruleNotes"
+                        :key="note"
+                        :class="notesClass"
+                    >
+                        {{ note }}
+                    </p>
+                </div>
+            </div>
+            <SpellUsageAreaColumn
+                v-if="showAreaColumn"
+                :area="areaValue"
+                :show-schema="showAreaSchema"
+            />
+        </div>
+        <div
+            v-else-if="ruleNotes.length"
             data-cy="spell-rule-notes"
             class="spell-rule-notes"
         >
@@ -119,9 +170,12 @@ const effectsClass = computed(() =>
             </p>
         </div>
         <div v-if="showEffectsBlock" :class="effectsClass">
-            <p v-if="resolutionUsage.show" :class="resolutionClass">
-                {{ resolutionUsage.text }}
-            </p>
+            <SpellResolutionFormula
+                v-if="showCompactResolution"
+                :entity="entity"
+                variant="compact"
+                :class="resolutionClass"
+            />
             <CellRenderer
                 v-if="hasEffects"
                 :cell="effectDisplayCell"
@@ -129,7 +183,14 @@ const effectsClass = computed(() =>
                 :class="cellClass"
             />
             <p
-                v-else-if="showEmptyEffects && !resolutionUsage.show"
+                v-if="freeComment"
+                class="mt-1 text-xs leading-snug text-base-content/75 whitespace-pre-wrap"
+                data-cy="spell-free-effect-comment"
+            >
+                {{ freeComment }}
+            </p>
+            <p
+                v-else-if="showEmptyEffects && !hasEffects && !showCompactResolution"
                 class="text-sm italic text-base-content/55"
             >
                 {{ emptyEffectsText }}

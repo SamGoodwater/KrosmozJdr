@@ -8,7 +8,7 @@
         "descriptions": "Bonus ou malus temporaire appliqué au seuil du jet critique, de −5 à +5.",
         "icon": "critical.webp",
         "icon_false": null,
-        "color": "red",
+        "color": "orange",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

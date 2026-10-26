@@ -120,7 +120,7 @@ const DISPLAY_SPEC = [
 
     // Principal — essentielles
     { category: "Principal", label: "Points de vie", creatureKey: "life_points", objectKey: "life_points_max" },
-    { category: "Principal", label: "Dé de vie", creatureKey: "life_dice", objectKey: "life_dice" },
+    { category: "Principal", label: "Dé de classe", creatureKey: "life_dice", objectKey: "life_dice" },
     { category: "Principal", label: "Dés de vie", creatureKey: "hit_dice", objectKey: "hit_dice" },
     { category: "Principal", label: "PA", creatureKey: "action_points", objectKey: "action_points" },
     { category: "Principal", label: "PM", creatureKey: "movement_points", objectKey: "movement_points" },

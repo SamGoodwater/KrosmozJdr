@@ -137,9 +137,9 @@ class BreedSeeder extends Seeder
         $lifeDice = trim((string) ($breed->life_dice ?? ''));
         if ($lifeDice !== '') {
             $parsed[] = [
-                'title' => 'Dé de vie',
+                'title' => 'Dé de classe',
                 'level' => $level++,
-                'content' => $importer->buildCharacteristicKrefParagraph('life_dice_creature', 'Dé de vie', $lifeDice),
+                'content' => $importer->buildCharacteristicKrefParagraph('life_dice_creature', 'Dé de classe', $lifeDice),
             ];
         }
 

@@ -8,7 +8,7 @@
         "descriptions": "La classe d’armure résume ta protection passive : ton sang-froid, ton bouclier et l’équipement qui te couvre.",
         "icon": "armorClass.webp",
         "icon_false": null,
-        "color": "brown",
+        "color": "gray",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,
