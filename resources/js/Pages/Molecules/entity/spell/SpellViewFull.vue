@@ -3,8 +3,8 @@
  * SpellViewFull — Vue Full pour Spell
  *
  * @description
- * Fiche sort : en-tête (image, niveau, nom), identité (types, catégorie, élément, magie/physique, rituel, réaction),
- * description, utilisation, résolution, effets structurés (journal), puis métadonnées techniques.
+ * Fiche sort condensée : image (élément) | nom / méta / description ;
+ * utilisation (colonnes étiquetées), résolution + effets, métadonnées.
  *
  * @props {Spell} spell - Instance du modèle Spell
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
@@ -22,6 +22,7 @@ import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import SpellEffectsJournal from '@/Pages/Molecules/entity/spell/SpellEffectsJournal.vue';
 import SpellDegreeTabs from '@/Pages/Molecules/entity/spell/SpellDegreeTabs.vue';
 import SpellUsageBlock from '@/Pages/Molecules/entity/spell/SpellUsageBlock.vue';
+import SpellMinimalDegreeFacts from '@/Pages/Molecules/entity/spell/SpellMinimalDegreeFacts.vue';
 import SpellResolutionFormula from '@/Pages/Molecules/entity/spell/SpellResolutionFormula.vue';
 import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
@@ -40,6 +41,13 @@ import {
     resolveSpellEffectsDisplayCell,
     spellEffectsCellHasContent,
 } from '@/Composables/entity/useSpellEffectsDisplayCell';
+import {
+    ELEMENT_PRIMARY_LABELS,
+    getElementIcon,
+    getElementPrimaries,
+    resolveEntityElementValue,
+} from '@/Utils/Entity/Elements';
+import { spellTypeRuleNotes } from '@/Utils/Entity/spellTypeRuleNotes';
 
 const props = defineProps({
     spell: {
@@ -147,10 +155,6 @@ const canShowField = (fieldKey) => {
     }
     return true;
 };
-
-const identityFieldKeys = computed(() =>
-    ['spell_types', 'category', 'element'].filter(canShowField),
-);
 
 const userCanEditFields = computed(() => ['auto_update', 'read_level', 'write_level'].filter(canShowField));
 
@@ -300,49 +304,6 @@ const ritualTooltipText = computed(() => {
     return t || 'Ce sort peut être lancé comme un rituel (incantation prolongée).';
 });
 
-const reactionDef = computed(() => {
-    const val = typeof usageEntity.value?.allowsReaction === 'boolean'
-        ? usageEntity.value.allowsReaction
-        : Boolean(usageEntity.value?._data?.allows_reaction);
-    return resolveDef('allows_reaction_spell', val, { sourceGroups: ['spell'] });
-});
-
-const showReactionBadge = computed(() => {
-    const s = usageEntity.value;
-    if (typeof s?.allowsReaction === 'boolean') {
-        return s.allowsReaction === true;
-    }
-    return Boolean(s?._data?.allows_reaction);
-});
-
-/** Contenu structuré pour l’infobulle « réaction » (règles PA / round). */
-const reactionTooltipBlocks = computed(() => {
-    const d = reactionDef.value;
-    const title = d?.short_name || d?.name || 'Réaction';
-    const lines = [];
-    if (d?._resolvedSubtitle) {
-        lines.push(d._resolvedSubtitle);
-    }
-    const helper = typeof d?.helper === 'string' && d.helper.trim() !== '' ? d.helper.trim() : '';
-    if (helper && helper !== d?._resolvedSubtitle) {
-        lines.push(helper);
-    }
-    const descRaw = d?.descriptions;
-    const desc =
-        Array.isArray(descRaw) ? descRaw.map((p) => String(p).trim()).filter(Boolean).join(' ') : String(descRaw || '').trim();
-    if (desc && desc !== helper && desc !== d?._resolvedSubtitle) {
-        lines.push(desc);
-    }
-    if (lines.length === 0) {
-        lines.push(
-            'Ce sort peut être lancé en réaction pendant un round de combat.',
-            'Chaque créature dispose d’une réaction par round, utilisable à tout moment du round.',
-            'Les PA dépensés pour une réaction ne sont pas réattribués au début du tour suivant.',
-        );
-    }
-    return { title, lines };
-});
-
 function characteristicTooltipText(meta) {
     if (!meta) return '';
     return (
@@ -355,6 +316,34 @@ function characteristicTooltipText(meta) {
 const showSpellTypesCell = computed(() =>
     spellTypesCellHasRenderableContent(getCell('spell_types')),
 );
+
+/** Identité sans élément (icône sur l’image) ni types vides. */
+const identityFieldKeys = computed(() => {
+    const keys = [];
+    if (canShowField('spell_types') && showSpellTypesCell.value) {
+        keys.push('spell_types');
+    }
+    if (canShowField('category')) {
+        keys.push('category');
+    }
+    return keys;
+});
+
+const elementOverlay = computed(() => {
+    const primaries = getElementPrimaries(resolveEntityElementValue(spell.value));
+    if (!primaries.length) return null;
+    const first = primaries[0];
+    if (first === 0 && primaries.length === 1) return null;
+    return {
+        icon: getElementIcon(first),
+        label: ELEMENT_PRIMARY_LABELS[first] ?? '',
+    };
+});
+
+const ruleNotes = computed(() => spellTypeRuleNotes(usageEntity.value ?? spell.value));
+
+/** Pastille niveau sort masquée si les onglets de degré portent déjà le niveau. */
+const showLevelBadgeOnImage = computed(() => !hasDegrees.value);
 
 const activeDegreeHasRows = computed(() => {
     const rows = activeDegree.value?.rows;
@@ -416,8 +405,14 @@ const handleAction = async (actionKey) => {
     <div class="space-y-3">
         <EntityViewHeader :mode="headerMode">
             <template #media>
-                <div class="group relative w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56">
-                    <div class="absolute top-2 right-2 z-20 transition-opacity duration-150 group-hover:opacity-0">
+                <div
+                    class="group relative size-24 shrink-0 sm:size-28 md:size-32"
+                    data-cy="spell-full-media"
+                >
+                    <div
+                        v-if="showLevelBadgeOnImage"
+                        class="absolute top-1.5 left-1.5 z-20 transition-opacity duration-150 group-hover:opacity-0"
+                    >
                         <Badge
                             :color="getBadgeColor('level')"
                             :auto-label="getBadgeAutoParams('level').autoLabel"
@@ -436,27 +431,40 @@ const handleAction = async (actionKey) => {
                         :caption="spell.name || ''"
                         preload="hover"
                         :image-props="{
-                            size: 'xl',
+                            size: 'lg',
                             rounded: 'lg',
                             fit: 'cover',
                             class: 'w-full h-full',
                         }"
                     />
 
-                    <div v-else class="w-full h-full flex items-center justify-center bg-base-200 entity-radius-box">
-                        <Icon source="fa-solid fa-wand-magic-sparkles" :alt="spell.name" size="xl" />
+                    <div v-else class="flex size-full items-center justify-center bg-base-200 entity-radius-box">
+                        <Icon source="fa-solid fa-wand-magic-sparkles" :alt="spell.name" size="lg" />
                     </div>
+
+                    <span
+                        v-if="elementOverlay"
+                        class="pointer-events-none absolute top-1.5 right-1.5 z-20 inline-flex size-7 items-center justify-center rounded-full bg-base-100/90 shadow-sm ring-1 ring-base-content/15"
+                        data-cy="spell-full-element-overlay"
+                    >
+                        <Icon
+                            :source="elementOverlay.icon"
+                            :alt="elementOverlay.label"
+                            size="xs"
+                            class="shrink-0"
+                        />
+                    </span>
                 </div>
             </template>
 
             <template #title>
-                <component :is="titleTag" class="text-2xl font-bold text-primary-100 break-words">
+                <component :is="titleTag" class="text-xl font-bold break-words text-primary-100 md:text-2xl">
                     {{ spell.name }}
                 </component>
             </template>
 
             <template #mainInfos>
-                <div v-if="identityFieldKeys.length > 0" class="mt-1.5 flex flex-wrap gap-3 items-start">
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
                     <EntityPropertyDisplay
                         v-for="fieldKey in identityFieldKeys"
                         :key="fieldKey"
@@ -464,21 +472,20 @@ const handleAction = async (actionKey) => {
                         :entity="spell"
                         entity-type="spell"
                         display-mode="extended"
+                        :presentation="fieldKey === 'spell_types' ? 'spell-types-icons-only' : 'default'"
                         :descriptors="descriptors"
                         :table-meta="tableMeta"
                         size="sm"
                         class="max-w-[20rem] whitespace-normal break-words"
                     />
-                </div>
 
-                <div class="mt-2 flex flex-wrap items-center gap-4">
                     <Tooltip
                         v-if="typeof spell.isMagic === 'boolean' && magicDef"
                         :content="magicDef._resolvedSubtitle || characteristicTooltipText(magicDef) || 'Orientation du sort.'"
                         placement="top"
                     >
                         <span
-                            class="inline-flex items-center gap-2 text-sm font-medium cursor-default"
+                            class="inline-flex cursor-default items-center gap-1.5 text-sm font-medium"
                             :style="(magicDef._resolvedColor || magicDef.color) ? getCharacteristicColorStyle(magicDef._resolvedColor || magicDef.color) : undefined"
                         >
                             <Icon
@@ -493,7 +500,7 @@ const handleAction = async (actionKey) => {
 
                     <Tooltip v-if="showRitualBadge" :content="ritualTooltipText" placement="top">
                         <span
-                            class="inline-flex items-center gap-2 text-sm cursor-default"
+                            class="inline-flex cursor-default items-center gap-1.5 text-sm"
                             :style="(ritualDef?._resolvedColor || ritualDef?.color) ? getCharacteristicColorStyle(ritualDef._resolvedColor || ritualDef.color) : undefined"
                         >
                             <Icon
@@ -504,30 +511,16 @@ const handleAction = async (actionKey) => {
                             <span>{{ ritualDef?.short_name || ritualDef?.name || 'Rituel' }}</span>
                         </span>
                     </Tooltip>
-
-                    <Tooltip v-if="showReactionBadge" placement="top">
-                        <template #content>
-                            <div class="max-w-xs text-left text-sm space-y-2 text-base-content">
-                                <p class="font-semibold leading-snug">{{ reactionTooltipBlocks.title }}</p>
-                                <p v-for="(line, idx) in reactionTooltipBlocks.lines" :key="idx" class="leading-snug">
-                                    {{ line }}
-                                </p>
-                            </div>
-                        </template>
-                        <span
-                            class="inline-flex items-center gap-2 text-sm font-medium cursor-default"
-                            :style="(reactionDef?._resolvedColor || reactionDef?.color) ? getCharacteristicColorStyle(reactionDef._resolvedColor || reactionDef.color) : undefined"
-                        >
-                            <Icon
-                                :source="reactionDef?._resolvedIcon || reactionDef?.icon || 'icons/caracteristics/is_reaction.webp'"
-                                :alt="reactionDef?.short_name || 'Réaction'"
-                                size="sm"
-                            />
-                            <span>{{ reactionDef?.short_name || reactionDef?.name || 'Réaction' }}</span>
-                        </span>
-                    </Tooltip>
-
                 </div>
+            </template>
+
+            <template v-if="spell.description" #subtitle>
+                <p
+                    class="text-sm leading-relaxed whitespace-pre-wrap break-words text-primary-200 md:text-base"
+                    data-cy="spell-full-description"
+                >
+                    {{ spell.description }}
+                </p>
             </template>
 
             <template #actions>
@@ -546,11 +539,6 @@ const handleAction = async (actionKey) => {
             </template>
         </EntityViewHeader>
 
-        <section v-if="spell.description" class="space-y-1.5">
-            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Description</h3>
-            <p class="text-primary-200 whitespace-pre-wrap break-words leading-relaxed">{{ spell.description }}</p>
-        </section>
-
         <section class="space-y-2">
             <div class="flex flex-wrap items-center justify-between gap-2">
                 <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Utilisation</h3>
@@ -558,74 +546,83 @@ const handleAction = async (actionKey) => {
                     v-if="hasDegrees"
                     v-model="activeDegreeIndex"
                     :degrees="displayDegrees"
+                    appearance="buttons"
+                    size="sm"
                 />
             </div>
-            <div class="p-3 bg-base-200 entity-radius-box min-w-0">
-                <SpellUsageBlock
-                    parts="meta"
-                    :descriptors="descriptors"
+            <div class="min-w-0 space-y-2 p-3 bg-base-200 entity-radius-box">
+                <SpellMinimalDegreeFacts
                     :entity="usageEntity"
+                    :descriptors="descriptors"
+                    :table-meta="tableMeta"
                     :can-show-field="canShowField"
-                    :show-spell-types-cell="showSpellTypesCell"
                     :area="activeDegree?.area || ''"
+                    layout="labeled"
                     show-area-schema
                     property-size="sm"
-                    row-class="gap-2 text-sm text-primary-100"
-                    hover-inner-gap-class="gap-2"
-                    notes-class="mt-1.5 text-sm leading-snug text-primary-200/80"
                 />
+                <ul
+                    v-if="ruleNotes.length"
+                    class="space-y-0.5 text-sm leading-snug text-primary-200/80"
+                    data-cy="spell-full-rule-notes"
+                >
+                    <li v-for="note in ruleNotes" :key="note">{{ note }}</li>
+                </ul>
             </div>
         </section>
 
-        <section class="space-y-1.5">
-            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Résolution</h3>
-            <SpellResolutionFormula :entity="usageEntity" variant="full" class="text-sm text-primary-100" />
-            <p v-if="usageEntity.saveSuccessNote" class="text-sm text-primary-300 whitespace-pre-wrap break-words">
-                <span class="text-primary-400 font-semibold">Si réussite : </span>
-                {{ usageEntity.saveSuccessNote }}
-            </p>
-        </section>
-
-        <section class="space-y-2">
-            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Effets</h3>
-            <SpellEffectsJournal
-                v-if="activeDegreeHasRows"
-                v-model="activeDegreeIndex"
-                hide-tabs
-                :spell-degrees="spellDegreesPayload"
-                :definitions="effectsDefinitions"
-                sub-effect-layout="large"
-            />
-            <SpellUsageBlock
-                v-else-if="hasSummaryChips"
-                parts="effects"
-                :entity="usageEntity"
-                :descriptors="descriptors"
-                :table-meta="tableMeta"
-                :can-show-field="canShowField"
-                :max-effect-rows="6"
-                flush-effects
-                :show-empty-effects="false"
-                free-effect-comment=""
-                notes-class="mb-2 text-sm leading-snug text-primary-200/80"
-                cell-class="text-sm leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
-            />
-            <p
-                v-if="hasLegacyEffectText"
-                class="text-xs leading-snug text-primary-300/70 whitespace-pre-wrap wrap-break-word"
-                data-cy="spell-free-effect-comment"
-            >
-                {{ freeEffectComment }}
-            </p>
-            <div
-                v-else-if="!activeDegreeHasRows && !hasSummaryChips"
-                class="rounded-box border border-dashed border-base-300 bg-base-200/30 p-4 text-sm text-primary-400"
-            >
-                <p class="font-medium text-primary-300">Aucun effet renseigné</p>
-                <p class="mt-1 text-xs leading-relaxed">
-                    Pas de degré ni de texte libre. Ajoutez des degrés depuis l’édition du sort, ou
-                    saisissez un résumé dans le champ description des effets.
+        <section class="space-y-3">
+            <div class="space-y-1.5">
+                <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Résolution</h3>
+                <SpellResolutionFormula :entity="usageEntity" variant="full" class="text-sm text-primary-100" />
+                <p v-if="usageEntity.saveSuccessNote" class="text-sm whitespace-pre-wrap break-words text-primary-300">
+                    <span class="font-semibold text-primary-400">Si réussite : </span>
+                    {{ usageEntity.saveSuccessNote }}
                 </p>
+            </div>
+
+            <div class="space-y-1.5">
+                <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Effets</h3>
+                <SpellEffectsJournal
+                    v-if="activeDegreeHasRows"
+                    v-model="activeDegreeIndex"
+                    hide-tabs
+                    :spell-degrees="spellDegreesPayload"
+                    :definitions="effectsDefinitions"
+                    sub-effect-layout="large"
+                />
+                <SpellUsageBlock
+                    v-else-if="hasSummaryChips"
+                    parts="effects"
+                    :entity="usageEntity"
+                    :descriptors="descriptors"
+                    :table-meta="tableMeta"
+                    :can-show-field="canShowField"
+                    :max-effect-rows="6"
+                    flush-effects
+                    :show-empty-effects="false"
+                    :show-rule-notes="false"
+                    free-effect-comment=""
+                    notes-class="mb-2 text-sm leading-snug text-primary-200/80"
+                    cell-class="text-sm leading-snug [&_.inline-flex]:max-w-full [&_.inline-flex]:flex-wrap"
+                />
+                <p
+                    v-if="hasLegacyEffectText"
+                    class="text-xs leading-snug whitespace-pre-wrap wrap-break-word text-primary-300/70"
+                    data-cy="spell-free-effect-comment"
+                >
+                    {{ freeEffectComment }}
+                </p>
+                <div
+                    v-else-if="!activeDegreeHasRows && !hasSummaryChips"
+                    class="rounded-box border border-dashed border-base-300 bg-base-200/30 p-4 text-sm text-primary-400"
+                >
+                    <p class="font-medium text-primary-300">Aucun effet renseigné</p>
+                    <p class="mt-1 text-xs leading-relaxed">
+                        Pas de degré ni de texte libre. Ajoutez des degrés depuis l’édition du sort, ou
+                        saisissez un résumé dans le champ description des effets.
+                    </p>
+                </div>
             </div>
         </section>
 

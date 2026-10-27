@@ -44,22 +44,35 @@ const isCompact = computed(() => props.mode === "compact");
 const hasSubtitleSlot = computed(() => Boolean(slots.subtitle));
 
 /**
- * Grille responsive : mobile = titre → media → infos ; md+ = media | contenu.
+ * Grille responsive.
+ * - compact (modal) : image | contenu dès le mobile (dense).
+ * - full (page) : mobile = titre → media → infos ; md+ = media | contenu.
  * Underscores Tailwind = espaces dans `grid-template-areas`.
  */
-const stackLayoutClass = computed(() =>
-  [
+const stackLayoutClass = computed(() => {
+  const gap = isCompact.value ? "gap-2" : "gap-3";
+  if (isCompact.value) {
+    return [
+      "grid w-full min-w-0 items-start gap-2",
+      "grid-cols-[auto_minmax(0,1fr)]",
+      hasSubtitleSlot.value
+        ? "[grid-template-areas:'media_title'_'media_infos'_'media_subtitle']"
+        : "[grid-template-areas:'media_title'_'media_infos']",
+    ].join(" ");
+  }
+  return [
     "grid w-full min-w-0 items-start",
-    isCompact.value ? "gap-2" : "gap-3",
+    gap,
+    // Très étroit : titre puis image. Dès sm : image | contenu (3 rangées).
     hasSubtitleSlot.value
       ? "[grid-template-areas:'title'_'media'_'infos'_'subtitle']"
       : "[grid-template-areas:'title'_'media'_'infos']",
-    "md:grid-cols-[auto_minmax(0,1fr)]",
+    "sm:grid-cols-[auto_minmax(0,1fr)]",
     hasSubtitleSlot.value
-      ? "md:[grid-template-areas:'media_title'_'media_infos'_'media_subtitle']"
-      : "md:[grid-template-areas:'media_title'_'media_infos']",
-  ].join(" "),
-);
+      ? "sm:[grid-template-areas:'media_title'_'media_infos'_'media_subtitle']"
+      : "sm:[grid-template-areas:'media_title'_'media_infos']",
+  ].join(" ");
+});
 </script>
 
 <template>
@@ -93,7 +106,10 @@ const stackLayoutClass = computed(() =>
 
     <!-- Compact (modal) + Full (page) : même empilement mobile -->
     <div v-else :class="stackLayoutClass">
-      <div class="[grid-area:media] mx-auto w-fit max-w-full shrink-0 justify-self-center md:mx-0 md:justify-self-start">
+      <div
+        class="[grid-area:media] w-fit max-w-full shrink-0 justify-self-start"
+        :class="isCompact ? 'mx-0' : 'mx-auto justify-self-center sm:mx-0 sm:justify-self-start'"
+      >
         <slot name="media" />
       </div>
 
