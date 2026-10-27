@@ -120,14 +120,21 @@ onUnmounted(() => {
 });
 
 watch(
-    () => [props.sectionId, props.defaultOpen],
+    () => props.sectionId,
     () => initState(),
 );
 
+// Ouvre la section de la page courante sans refermer les autres (pas de reset du menu).
 watch(
     () => props.defaultOpen,
     (open) => {
-        if (open && !props.sectionId) isOpen.value = true;
+        if (!open || isOpen.value) {
+            return;
+        }
+        if (props.sectionId && getPersistedState(props.sectionId) === false) {
+            return;
+        }
+        isOpen.value = true;
     },
 );
 

@@ -177,7 +177,7 @@ const groupedMenuItems = computed(() => {
 
 <template>
     <div class="dynamic-menu">
-        <div v-if="loading" class="dynamic-menu-loading">
+        <div v-if="loading && formattedMenuItems.length === 0" class="dynamic-menu-loading">
             <div class="loading loading-spinner loading-sm"></div>
             <span class="text-sm text-base-content/50">Chargement…</span>
         </div>

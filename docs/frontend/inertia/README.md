@@ -8,7 +8,7 @@ Le fichier `resources/js/ssr.js` compile avec Vite. Le SSR Inertia est désactiv
 
 ## Props partagées
 
-`app/Http/Middleware/HandleInertiaRequests.php` partage notamment : utilisateur connecté, flash messages, permissions, confirmation de mot de passe, `ziggy_location`. `permissions`, `oauth_enabled_providers` et `loadingTips` passent par `shareOnce` : le client les mémorise après la première visite.
+`app/Http/Middleware/HandleInertiaRequests.php` partage notamment : utilisateur connecté, flash messages, permissions, confirmation de mot de passe, `ziggy_location`, `menu_revision`. `permissions`, `oauth_enabled_providers` et `loadingTips` passent par `shareOnce` : le client les mémorise après la première visite. `menu_revision` est un entier toujours renvoyé (`Inertia::always`) : le menu Aside ne recharge son arbre que lorsque ce jeton change.
 
 ## Routing JS
 

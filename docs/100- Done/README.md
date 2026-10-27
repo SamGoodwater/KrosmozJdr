@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Octobre 2026 — Le menu reste en place quand on change de page
+
+Le menu de gauche se charge une fois, puis se contente de surligner la page en cours. Il ne se reconstruit plus à chaque clic. Il se met à jour si on se connecte, si le rôle change, ou si une page du site est créée ou modifiée. L’en-tête et le pied de page fonctionnaient déjà ainsi : seul le titre de la page (et le compte, s’il change) bougent.
+
 ## Octobre 2026 — Onglets et formules de sort
 
 Sur la fiche d’un sort, les onglets reprennent les niveaux de ses degrés (`Niv 1`, `Niv 13`…). Chaque degré montre l’utilisation (zone à part, schéma visible en page), la résolution sans fond sur les libellés de jet, puis les effets en deux lignes. Les formules d’attaque affichent les dés, le modificateur et le mot Bonus ; le survol donne la formule complète. Un critique manquant sur Frapper double les dés.

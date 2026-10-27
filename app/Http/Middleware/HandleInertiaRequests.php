@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Http\Resources\UserLightResource;
 use App\Models\DataSubjectRequest;
 use App\Models\LoadingTip;
+use App\Services\PageService;
 use App\Support\EntityPermissions\EntityPermissionService;
 use App\Support\OAuthConfig;
 use Illuminate\Http\Request;
@@ -33,7 +34,7 @@ class HandleInertiaRequests extends Middleware
     }
 
     /**
-     * Props recalculées à chaque requête Inertia (auth, flash, URL courante pour Ziggy).
+     * Props recalculées à chaque requête Inertia (auth, flash, URL courante pour Ziggy, révision du menu).
      *
      * @return array<string, mixed>
      */
@@ -84,6 +85,8 @@ class HandleInertiaRequests extends Middleware
                 'info' => fn () => session('info'),
                 'status' => fn () => session('status'),
             ]),
+            // Entier : le menu Aside ne refetch que si cette révision change (pas à chaque URL).
+            'menu_revision' => Inertia::always(fn () => PageService::menuRevision()),
         ];
     }
 

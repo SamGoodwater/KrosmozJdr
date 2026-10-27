@@ -37,6 +37,11 @@ class PageService
     private const CACHE_KEY_PAGES_SELECT = 'pages_select_list';
 
     /**
+     * Jeton partagé Inertia : le client ne recharge l’arbre du menu que s’il change.
+     */
+    public const MENU_CACHE_REVISION_KEY = 'menu.pages.cache_revision';
+
+    /**
      * Liste légère des pages (id, title, slug) pour les selects — tableaux uniquement (L13 cache).
      *
      * @return array<int, array{id: int, title: string, slug: string}>
@@ -395,6 +400,9 @@ class PageService
      */
     public static function clearMenuCache(?User $user = null): void
     {
+        // Lire avant un éventuel flush : sinon le jeton retombe à 1 et le client ne voit pas le changement.
+        $nextRevision = self::menuRevision() + 1;
+
         if ($user) {
             Cache::forget('menu_pages_'.$user->id);
         } else {
@@ -409,6 +417,21 @@ class PageService
 
         // OPTIMISATION : Invalider le cache de la liste des pages (utilisé dans les selects)
         Cache::forget('pages_select_list');
+
+        Cache::forever(self::MENU_CACHE_REVISION_KEY, $nextRevision);
+    }
+
+    /**
+     * Révision du menu (0 tant qu’aucune invalidation n’a eu lieu).
+     *
+     * Incrémentée par `clearMenuCache()`. Le front s’en sert pour ne recharger
+     * `GET /pages/menu` qu’après un vrai changement de structure.
+     *
+     * @example PageService::menuRevision(); // 0, puis 1 après clearMenuCache()
+     */
+    public static function menuRevision(): int
+    {
+        return max(0, (int) Cache::get(self::MENU_CACHE_REVISION_KEY, 0));
     }
 
     /**
