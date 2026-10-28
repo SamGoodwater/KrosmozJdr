@@ -3,7 +3,7 @@
  * CreatureTraitViewMinimal — Vue minimal (CreatureTrait)
  *
  * @description
- * EntityMinimalCard : image + nom ; description en déployé.
+ * EntityMinimalCard : image + nom ; description toujours visible (compact + déployé).
  */
 import { computed } from "vue";
 import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
@@ -85,6 +85,12 @@ const hasDescription = computed(() => {
                 <EntityThumb size="xs" :src="imageUrl || ''" :label="displayName" />
                 <div class="min-w-0 flex-1">
                     <EntityMinimalTitle :label="displayName" @open="openQuickView" />
+                    <div
+                        v-if="hasDescription"
+                        class="prose prose-sm prose-invert mt-1 max-w-none text-[11px] leading-snug text-primary-300/90"
+                    >
+                        <CellRenderer :cell="descriptionCell" ui-color="primary" />
+                    </div>
                 </div>
             </div>
         </template>
@@ -110,13 +116,13 @@ const hasDescription = computed(() => {
                                 />
                             </div>
                         </div>
+                        <div
+                            v-if="hasDescription"
+                            class="prose prose-sm prose-invert mt-1 max-w-none text-xs leading-snug text-primary-300/90"
+                        >
+                            <CellRenderer :cell="descriptionCell" ui-color="primary" />
+                        </div>
                     </div>
-                </div>
-                <div
-                    v-if="hasDescription"
-                    class="prose prose-sm prose-invert max-w-none border-t border-base-300/80 pt-1.5 text-xs leading-snug text-primary-300/90"
-                >
-                    <CellRenderer :cell="descriptionCell" ui-color="primary" />
                 </div>
             </div>
         </template>

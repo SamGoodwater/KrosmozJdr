@@ -57,15 +57,17 @@ const hasAnyRelation = computed(() =>
 
 <template>
     <section v-if="hasAnyRelation" class="space-y-6" aria-label="Progression par niveau">
-        <h2 class="text-lg font-semibold">Progression par niveau</h2>
+        <h2 class="text-xs font-semibold uppercase tracking-wide text-primary-300">
+            Progression par niveau
+        </h2>
 
         <div
             v-for="block in relationBlocks"
             :key="block.key"
             v-show="block.withLevel.length || block.withoutLevel.length"
-            class="space-y-4 rounded-box border border-base-300 bg-base-100/40 p-4"
+            class="space-y-3 rounded-box border border-base-300 bg-base-100/40 p-4"
         >
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">
                 {{ block.label }}
             </h3>
 

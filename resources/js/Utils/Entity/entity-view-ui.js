@@ -304,7 +304,7 @@ export function resolveEntityBadgeUi(options = {}) {
       autoTone: "mid",
     };
   }
-  if (fieldKey === "level" && cell?.value) {
+  if ((fieldKey === "level" || fieldKey === "creature_level") && cell?.value) {
     return {
       color,
       autoLabel: String(cell.value),

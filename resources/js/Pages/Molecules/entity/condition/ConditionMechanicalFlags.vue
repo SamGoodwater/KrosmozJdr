@@ -30,7 +30,7 @@ const flags = computed(() => listActiveMechanicalFlags(props.condition));
         <span
             v-for="flag in flags"
             :key="flag.key"
-            class="badge badge-outline border-warning/50 bg-warning/10 text-warning-content"
+            class="badge border border-warning/50 bg-warning/15 font-medium text-warning"
             :class="size === 'xs' ? 'badge-xs' : 'badge-sm'"
         >
             {{ flag.label }}

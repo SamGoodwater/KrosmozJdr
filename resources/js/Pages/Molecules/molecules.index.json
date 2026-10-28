@@ -897,7 +897,7 @@
   },
   {
     "name": "SpellViewMinimal",
-    "description": "Carte minimale sort : image + pile de niveaux, coût/incantation, identité au survol, effets dessous",
+    "description": "SpellViewMinimal — Vue Minimal pour Spell",
     "props": [
       {
         "name": "spell",
@@ -1045,6 +1045,13 @@
     "file": "entity/spell/SpellMinimalUsageMetaRow.vue"
   },
   {
+    "name": "SpellMinimalDegreeFacts",
+    "description": "Faits du degré actif : coût puis incantation. `layout=\"inline\"` (défaut, carte minimale) : deux lignes sans intertitre. `layout=\"labeled\"` (fiche full) : colonnes Coût / Portée / Zone puis Lancers / Durée.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellMinimalDegreeFacts.vue"
+  },
+  {
     "name": "SpellLineRow",
     "description": "SpellLineRow — Une ligne de la vue Line pour Spell",
     "props": [],
@@ -1137,7 +1144,7 @@
   },
   {
     "name": "SpellDegreeTabs",
-    "description": "Onglets de niveau d’un sort (« Niv 1 », « Niv 5 », … selon les degrés).",
+    "description": "Onglets / pastilles de niveau d’un sort (« Niv 1 », « Niv 5 », …). - Plusieurs degrés : pastilles cliquables (outline = inactif, plein = actif), couleur via schéma `level`. - Un seul degré : badge plein au même emplacement (pas d’onglets vides).",
     "props": [],
     "slots": [],
     "file": "entity/spell/SpellDegreeTabs.vue"

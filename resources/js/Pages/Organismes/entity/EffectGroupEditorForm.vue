@@ -58,6 +58,13 @@ const props = defineProps({
      * Sinon : Inertia + redirection « retour » côté serveur (pas vers une autre page fixe).
      */
     saveWithoutInertia: { type: Boolean, default: false },
+    /**
+     * État partagé `{ name, description, target_type }` (réactif) — ex. fiche sort
+     * qui affiche nom/description avant les degrés natifs.
+     */
+    commonModel: { type: Object, default: null },
+    /** Masque la carte « Données communes » (champs rendus par le parent). */
+    hideCommonCard: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['dirty-change']);
@@ -73,11 +80,14 @@ watch(
     { immediate: true, deep: true },
 );
 
-const common = reactive({
+const fallbackCommon = reactive({
     name: '',
     description: '',
     target_type: 'direct',
 });
+
+/** @type {{ name: string, description: string, target_type: string }} */
+const common = props.commonModel ?? fallbackCommon;
 
 const degreeForms = ref([]);
 const activeTab = ref(0);
@@ -863,7 +873,10 @@ defineExpose({
             </span>
         </div>
         <form class="space-y-6" @submit.prevent="submitGroup">
-            <div class="card bg-base-100 shadow border border-base-300">
+            <div
+                v-if="!hideCommonCard"
+                class="card bg-base-100 shadow border border-base-300"
+            >
                 <div class="card-body">
                     <div class="flex flex-wrap items-center gap-2">
                         <h2 class="card-title text-lg">Données communes au groupe</h2>

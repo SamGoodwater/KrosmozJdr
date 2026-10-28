@@ -12,6 +12,7 @@ import { useEntityEditEmbed } from '@/Composables/entity/useEntityEditEmbed';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { CreatureTrait } from '@/Models/Entity/CreatureTrait';
 import { getCreatureTraitFieldDescriptors } from '@/Entities/creature-trait/creature-trait-descriptors';
+import { CREATURE_TRAIT_FORM_FIELD_SECTIONS_EDIT } from '@/Entities/creature-trait/creature-trait-form-config';
 import { createFieldsConfigFromDescriptors } from '@/Utils/entity/descriptor-form';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
@@ -45,6 +46,7 @@ const fieldsConfig = computed(() => {
     return createFieldsConfigFromDescriptors(getCreatureTraitFieldDescriptors(ctx), ctx);
 });
 
+const fieldSections = CREATURE_TRAIT_FORM_FIELD_SECTIONS_EDIT;
 const fixedFooterInsetClass = 'left-0 right-0';
 const entityEditFormRef = ref(null);
 const canDelete = computed(() => canDeleteAny('creature-traits') || isAdmin.value);
@@ -74,12 +76,15 @@ setPageTitle(`Modifier le trait : ${creatureTrait.value.name || 'Sans nom'}`);
             entity-type="creature-trait"
             :fields-config="fieldsConfig"
             :is-updating="true"
+            :field-sections="fieldSections"
             :show-state-toolbar="true"
+            :show-access-levels-in-footer="false"
             layout-profile="sheet"
             :hide-top-toolbar="true"
             :hide-action-dock="true"
             :fixed-footer-actions="false"
             :fixed-footer-inset-class="fixedFooterInsetClass"
+            :compact-access-levels="true"
             :embedded-in-modal="isEmbeddedInModal"
             :redirect-after-update="resolvedRedirectAfterUpdate"
         />

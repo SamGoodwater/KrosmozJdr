@@ -137,7 +137,7 @@ export function buildConsumableFormFieldsConfig(options = {}) {
     };
 }
 
-/** Sections formulaire — édition (grille sheet 2 cols ; état dans le header). */
+/** Sections formulaire — édition (grille sheet 2 cols ; liens pleine largeur). */
 export const CONSUMABLE_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
@@ -146,10 +146,29 @@ export const CONSUMABLE_FORM_FIELD_SECTIONS_EDIT = [
         fieldKeys: ['name', 'description', 'image'],
     },
     {
-        id: 'gameplay',
-        title: 'Consommable',
-        subtitle: 'Niveau, rareté, type, effet et bonus.',
-        fieldKeys: ['level', 'rarity', 'consumable_type_id', 'effect', 'bonus', 'recipe'],
+        id: 'stats',
+        title: 'Caractéristiques',
+        subtitle: 'Niveau et rareté.',
+        fieldKeys: ['level', 'rarity'],
+    },
+    {
+        id: 'links',
+        title: 'Type de consommable',
+        subtitle: 'Lien vers le type.',
+        span: 2,
+        columns: 1,
+        fieldKeys: ['consumable_type_id'],
+    },
+    {
+        id: 'advanced',
+        title: 'Effet, bonus & recette',
+        subtitle: 'Texte d’effet, bonus structurés et notes de craft.',
+        span: 2,
+        columns: 1,
+        collapsedByDefault: true,
+        collapsedActionLabel: 'Afficher',
+        expandedActionLabel: 'Masquer',
+        fieldKeys: ['effect', 'bonus', 'recipe'],
     },
     {
         id: 'admin',

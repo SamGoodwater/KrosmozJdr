@@ -5,13 +5,24 @@
  * @module Entities/specialization/specialization-form-config
  */
 
-/** Sections formulaire — édition (grille sheet 2 cols ; état dans le header). */
+/** Sections formulaire — édition (grille sheet 2 cols ; descriptions longues repliables). */
 export const SPECIALIZATION_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
         title: 'Identité',
-        subtitle: 'Nom, descriptions et visuel.',
-        fieldKeys: ['name', 'short_description', 'description', 'image'],
+        subtitle: 'Nom, accroche et visuel.',
+        fieldKeys: ['name', 'short_description', 'image'],
+    },
+    {
+        id: 'narrative',
+        title: 'Description longue',
+        subtitle: 'Texte détaillé de la spécialisation.',
+        span: 2,
+        columns: 1,
+        collapsedByDefault: true,
+        collapsedActionLabel: 'Afficher',
+        expandedActionLabel: 'Masquer',
+        fieldKeys: ['description'],
     },
     {
         id: 'admin',

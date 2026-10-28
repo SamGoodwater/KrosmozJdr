@@ -81,7 +81,21 @@ const props = defineProps({
     },
     /**
      * Sections du formulaire (cartes avec titre). Ordre des `fieldKeys` = ordre d’affichage.
-     * @type {Array<{ id: string, title: string, subtitle?: string, fieldKeys: string[] }>|null}
+     * `span: 2` = pleine largeur grille ; `columns: 1|2` = colonnes de champs (défaut :
+     * 1 si span 2 / spell / capability, 2 si sheet). `collapsedByDefault` pour blocs avancés.
+     * Liens d’entités → `span: 2` + `columns: 1`.
+     *
+     * @type {Array<{
+     *   id: string,
+     *   title: string,
+     *   subtitle?: string,
+     *   fieldKeys: string[],
+     *   span?: 1|2,
+     *   columns?: 1|2,
+     *   collapsedByDefault?: boolean,
+     *   collapsedActionLabel?: string,
+     *   expandedActionLabel?: string,
+     * }>|null}
      */
     fieldSections: {
         type: Array,
@@ -836,19 +850,41 @@ const mainFieldSections = computed(() => {
     if (!props.fieldSections?.length) return null;
     const mf = mainFields.value;
     const byKey = new Map(mf.map((f) => [f.key, f]));
-    return props.fieldSections.map((sec) => ({
-        id: sec.id,
-        title: sec.title,
-        subtitle: sec.subtitle,
-        span: sec.span ?? 1,
-        collapsedByDefault: Boolean(sec.collapsedByDefault),
-        collapsedActionLabel: sec.collapsedActionLabel || 'Afficher',
-        expandedActionLabel: sec.expandedActionLabel || 'Replier',
-        fields: (sec.fieldKeys || [])
-            .map((k) => byKey.get(k))
-            .filter(Boolean)
-            .filter((f) => isFieldVisible(f.key, f.config)),
-    })).filter((sec) => sec.fields.length > 0);
+    return props.fieldSections.map((sec) => {
+        const span = sec.span ?? 1;
+        /**
+         * Colonnes de champs dans la carte :
+         * - explicite via `columns`
+         * - sinon `span: 2` (liens / pleine largeur) → 1 col
+         * - sinon sheet → 2 cols dès md ; sort/capability → 1 col (labels longs)
+         */
+        let columns = sec.columns;
+        if (columns == null) {
+            if (Number(span) === 2) {
+                columns = 1;
+            } else if (props.layoutProfile === "spell" || isCapabilityLayout.value) {
+                columns = 1;
+            } else if (isSheetLayout.value) {
+                columns = 2;
+            } else {
+                columns = 1;
+            }
+        }
+        return {
+            id: sec.id,
+            title: sec.title,
+            subtitle: sec.subtitle,
+            span,
+            columns: Number(columns) === 2 ? 2 : 1,
+            collapsedByDefault: Boolean(sec.collapsedByDefault),
+            collapsedActionLabel: sec.collapsedActionLabel || "Afficher",
+            expandedActionLabel: sec.expandedActionLabel || "Replier",
+            fields: (sec.fieldKeys || [])
+                .map((k) => byKey.get(k))
+                .filter(Boolean)
+                .filter((f) => isFieldVisible(f.key, f.config)),
+        };
+    }).filter((sec) => sec.fields.length > 0);
 });
 
 const visibleMainFields = computed(() =>
@@ -1342,7 +1378,14 @@ defineExpose({
                                 </span>
                             </div>
                         </summary>
-                        <div class="form-fields">
+                        <div
+                            class="form-fields"
+                            :class="
+                                sec.columns === 2
+                                    ? 'form-fields--cols-2'
+                                    : 'form-fields--cols-1'
+                            "
+                        >
                             <template v-for="field in sec.fields" :key="field.key">
                                 <div v-if="field?.config" :class="getFieldWrapperClass(field.key)">
                                     <EntityEditFormFieldBody
@@ -1765,23 +1808,41 @@ defineExpose({
     }
 
     /**
-     * Sort : champs empilés verticalement dans chaque section.
-     * Évite les labels longs (ex. « Coût PA ») qui empiètent sur la colonne suivante
-     * quand plusieurs .form-field étaient côte à côte (50 % / 33 %).
+     * Layout dense (sheet / sort / capacité) :
+     * - `form-fields--cols-1` : empilement (liens entités, sort, labels longs)
+     * - `form-fields--cols-2` : 2 colonnes dès md (propriétés compactes)
      */
     &--spell-layout {
-        .form-fields {
+        .form-fields--cols-1 {
             flex-direction: column;
             flex-wrap: nowrap;
+
+            > .form-field,
+            > .form-field--meta-pair,
+            > .form-field--wide,
+            > .form-field--full {
+                width: 100%;
+                max-width: 100%;
+                flex: 1 1 100%;
+            }
         }
 
-        .form-field,
-        .form-field--meta-pair,
-        .form-field--wide,
-        .form-field--full {
-            width: 100%;
-            max-width: 100%;
-            flex: 1 1 100%;
+        .form-fields--cols-2 {
+            flex-direction: row;
+            flex-wrap: wrap;
+
+            @media (min-width: 768px) {
+                > .form-field {
+                    flex: 1 1 calc(50% - 0.625rem);
+                    max-width: calc(50% - 0.625rem);
+                }
+
+                > .form-field--full,
+                > .form-field--wide {
+                    flex-basis: 100%;
+                    max-width: 100%;
+                }
+            }
         }
     }
 

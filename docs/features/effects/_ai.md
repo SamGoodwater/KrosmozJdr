@@ -14,8 +14,11 @@
   - `properties_source` sur `spell_degrees` : `own` | `previous` | `spell` (résolu par
     `SpellDegreeResolver`). Création de degré = copie matérialisée (props + effets, pas d’héritage
     d’effets par défaut).
-  - UI édition : `SpellEditFormContent` + `SpellDegreesEditor` + `SpellCastPropertiesGrid` +
-    `AreaShapePicker` + `SpellEffectEditorRow` ; enregistrement unique (bulk degrés puis sort).
+  - UI édition : `SpellEditFormContent` — section **Effet** (`SpellDegreesEditor` +
+    `SpellDegreeEditTabs` : onglets niveau + **+ Degré**) puis sous-effets
+    (`SpellEffectEditorRow`, bouton **+ Sous-effet**). Définitions legacy
+    (`SpellEffectsUnifiedSection` : recherche / lier / créer) en collapse fermé
+    « Définitions liées (avancé) » après les degrés. Enregistrement unique (bulk degrés puis sort).
     `serializeEffectRowForApi` round-trippe aussi `value_min` / `value_max` / `dice_num` /
     `dice_side` / `logic_group` : `syncEffects` recrée les lignes, omettre ces clés les
     nullifie (dégâts migrés / legacy).
@@ -23,6 +26,8 @@
     `SpellHoldersPanel`. Affichage lecture : `SpellEffectsJournal.vue` (effets du degré) ;
     zone dans Utilisation (`SpellUsageAreaColumn`) ; formules `spellFormulaDisplay.js` +
     `SpellFormulaPartsInline` (Bonus au survol, critique dés doublés si absent sur Frapper).
+    Minimal : pastilles degré en `stack` ; compact = niveau actif seul (`collapseInactive`,
+    sans révélation hover) ; étendu = toute la pile.
   - Portée UI compacte `x` / `x-y` (`po_min` + `po_max` en stockage) ; propriétés effectives du
     degré actif dans Full, premier degré dans Minimal/Line/table
   - Globaux sur `Spell` (pas sur les degrés) : `element`, `target_type`, `ritual_available`,

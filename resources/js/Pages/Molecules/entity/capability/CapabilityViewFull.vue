@@ -3,7 +3,7 @@
  * CapabilityViewFull — Vue Full pour Capability
  *
  * @description
- * Alignée sur SpellViewFull / PanoplyViewFull : EntityViewHeader, métas, grille détail, paramètres niveaux.
+ * Alignée sur SpellViewFull : header dense, niveau unique sur l’image, usage étiqueté, effets si renseignés.
  *
  * @props {Capability} capability - Instance du modèle Capability
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
@@ -28,6 +28,13 @@ import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
 import ConditionBadges from "@/Pages/Molecules/entity/condition/ConditionBadges.vue";
+import CapabilityMinimalUsageMetaRow from "@/Pages/Molecules/entity/capability/CapabilityMinimalUsageMetaRow.vue";
+import {
+    ELEMENT_PRIMARY_LABELS,
+    getElementIcon,
+    getElementPrimaries,
+    resolveEntityElementValue,
+} from "@/Utils/Entity/Elements";
 
 const props = defineProps({
     capability: {
@@ -115,27 +122,24 @@ const canShowField = (fieldKey) => {
     return true;
 };
 
-const headlineFields = computed(() => ["level"].filter(canShowField));
+/** Niveau uniquement sur l’image (pas dans la grille méta). */
+const showLevelBadgeOnImage = computed(() => canShowField("level"));
 
-const metaFields = computed(() =>
-    [
-        "is_passive",
-        "pa",
-        "po",
-        "po_editable",
-        "element",
-        "casting_time",
-        "duration",
-        "time_before_use_again",
-        "is_magic",
-        "ritual_available",
-        "powerful",
-    ]
-        .filter(canShowField)
-        .filter((k) => !headlineFields.value.includes(k))
+/** Chips d’identité hors coût/portée/timing (déjà dans UsageMetaRow). */
+const identityMetaFields = computed(() =>
+    ["is_passive", "is_magic", "powerful"].filter(canShowField),
 );
 
-const displayMetaFields = computed(() => [...headlineFields.value, ...metaFields.value]);
+const elementOverlay = computed(() => {
+    const primaries = getElementPrimaries(resolveEntityElementValue(props.capability));
+    if (!primaries.length) return null;
+    const first = primaries[0];
+    if (first === 0 && primaries.length === 1) return null;
+    return {
+        icon: getElementIcon(first),
+        label: ELEMENT_PRIMARY_LABELS[first] ?? "",
+    };
+});
 
 const userCanEditFields = computed(() => ["read_level", "write_level"].filter(canShowField));
 
@@ -280,25 +284,26 @@ const handleAction = async (actionKey) => {
 </script>
 
 <template>
-    <div class="space-y-4">
+    <div class="space-y-3">
         <EntityViewHeader :mode="headerMode">
             <template #media>
-                <div class="group relative w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56">
+                <div
+                    class="group relative size-24 shrink-0 sm:size-28 md:size-32"
+                    data-cy="capability-full-media"
+                >
                     <div
-                        v-if="headlineFields.length > 0"
-                        class="absolute top-2 right-2 z-20 flex flex-wrap gap-1 justify-end max-w-[75%] transition-opacity duration-150 group-hover:opacity-0"
+                        v-if="showLevelBadgeOnImage"
+                        class="absolute top-1.5 left-1.5 z-20 transition-opacity duration-150 group-hover:opacity-0"
                     >
-                        <template v-for="fieldKey in headlineFields" :key="fieldKey">
-                            <Badge
-                                :color="getBadgeColor(fieldKey)"
-                                :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
-                                :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
-                                :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
-                                size="sm"
-                            >
-                                <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
-                            </Badge>
-                        </template>
+                        <Badge
+                            :color="getBadgeColor('level')"
+                            :auto-label="getBadgeAutoParams('level').autoLabel"
+                            :auto-scheme="getBadgeAutoParams('level').autoScheme"
+                            :auto-tone="getBadgeAutoParams('level').autoTone"
+                            size="sm"
+                        >
+                            <CellRenderer :cell="asTextCell(getCell('level'))" ui-color="primary" />
+                        </Badge>
                     </div>
 
                     <ImageViewer
@@ -308,35 +313,42 @@ const handleAction = async (actionKey) => {
                         :caption="capability.name || ''"
                         preload="hover"
                         :image-props="{
-                            size: 'xl',
+                            size: 'lg',
                             rounded: 'lg',
                             fit: 'cover',
                             class: 'w-full h-full',
                         }"
                     />
 
-                    <div v-else class="w-full h-full flex items-center justify-center bg-base-200 entity-radius-box">
-                        <Icon source="fa-solid fa-bolt" :alt="capability.name" size="xl" />
+                    <div v-else class="flex size-full items-center justify-center bg-base-200 entity-radius-box">
+                        <Icon source="fa-solid fa-bolt" :alt="capability.name" size="lg" />
                     </div>
+
+                    <span
+                        v-if="elementOverlay"
+                        class="pointer-events-none absolute top-1.5 right-1.5 z-20 inline-flex size-7 items-center justify-center rounded-full bg-base-100/90 shadow-sm ring-1 ring-base-content/15"
+                        data-cy="capability-full-element-overlay"
+                    >
+                        <Icon
+                            :source="elementOverlay.icon"
+                            :alt="elementOverlay.label"
+                            size="xs"
+                            class="shrink-0"
+                        />
+                    </span>
                 </div>
             </template>
 
             <template #title>
-                <component :is="titleTag" class="text-2xl font-bold text-primary-100 wrap-break-word">
+                <component :is="titleTag" class="text-xl font-bold break-words text-primary-100 md:text-2xl">
                     {{ capability.name }}
                 </component>
             </template>
 
-            <template #subtitle>
-                <p v-if="capability.description" class="text-primary-300 mt-2 wrap-break-word">
-                    {{ capability.description }}
-                </p>
-            </template>
-
             <template #mainInfos>
-                <div v-if="displayMetaFields.length > 0" class="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                <div v-if="identityMetaFields.length > 0" class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
                     <EntityPropertyDisplay
-                        v-for="fieldKey in displayMetaFields"
+                        v-for="fieldKey in identityMetaFields"
                         :key="fieldKey"
                         :field-key="fieldKey"
                         :entity="capability"
@@ -345,11 +357,16 @@ const handleAction = async (actionKey) => {
                         :descriptors="descriptors"
                         :table-meta="tableMeta"
                         :variant="fieldKey === 'is_passive' ? 'icon' : 'inline'"
-                        :hide-characteristic-icon="fieldKey === 'po_editable'"
                         size="sm"
-                        class="max-w-[18rem] whitespace-normal wrap-break-word"
+                        class="max-w-[18rem] whitespace-normal break-words"
                     />
                 </div>
+            </template>
+
+            <template v-if="capability.description" #subtitle>
+                <p class="text-sm leading-relaxed whitespace-pre-wrap break-words text-primary-200 md:text-base">
+                    {{ capability.description }}
+                </p>
             </template>
 
             <template #actions>
@@ -368,12 +385,27 @@ const handleAction = async (actionKey) => {
             </template>
         </EntityViewHeader>
 
+        <section class="space-y-2">
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Utilisation</h3>
+            <div class="min-w-0 space-y-2 p-3 bg-base-200 entity-radius-box">
+                <CapabilityMinimalUsageMetaRow
+                    :entity="capability"
+                    :descriptors="descriptors"
+                    :table-meta="tableMeta"
+                    :can-show-field="canShowField"
+                    property-size="sm"
+                    row-class="text-sm gap-x-3 gap-y-2"
+                    hover-inner-gap-class="gap-1.5"
+                />
+            </div>
+        </section>
+
         <div
             v-if="invocationMonsters.length > 0"
             class="flex flex-wrap items-center gap-2 rounded-xl border border-base-300/60 bg-glass-2xl p-3 text-sm"
             style="--bg-color: var(--color-base-100)"
         >
-            <span class="text-primary-300 font-semibold">Invocation :</span>
+            <span class="text-xs font-semibold uppercase tracking-wide text-primary-300">Invocation</span>
             <MonsterViewText
                 v-for="monster in invocationMonsters"
                 :key="monster.id ?? monster.name"
@@ -389,7 +421,7 @@ const handleAction = async (actionKey) => {
             style="--bg-color: var(--color-base-100)"
         >
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Relations</h3>
-            <div v-if="specializationLinks.length > 0" class="flex flex-wrap gap-2 items-center">
+            <div class="flex flex-wrap gap-2 items-center">
                 <span class="text-xs text-primary-400 shrink-0">Spécialisations</span>
                 <Link
                     v-for="s in specializationLinks"
@@ -402,11 +434,10 @@ const handleAction = async (actionKey) => {
             </div>
         </section>
 
-        <section v-if="canShowField('effect')" class="space-y-3">
+        <section v-if="effectHtml" class="space-y-3">
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Effets</h3>
             <!-- eslint-disable-next-line vue/no-v-html -- contenu éditeur riche, sanitizé côté client -->
-            <article v-if="effectHtml" class="prose prose-sm prose-invert max-w-none text-primary-100 capability-effect-prose" v-html="effectHtml" />
-            <p v-else class="text-sm text-primary-400 italic">Aucun effet décrit (texte riche).</p>
+            <article class="prose prose-sm prose-invert max-w-none text-primary-100 capability-effect-prose" v-html="effectHtml" />
         </section>
 
         <section v-if="hasLinkedConditions" class="space-y-3">

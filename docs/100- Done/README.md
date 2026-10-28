@@ -64,6 +64,10 @@ Les types de sort affichés sur les fiches (et en infobulle) portent les mêmes 
 
 Sur la fiche d’une classe, les sorts s’affichent en cartes de même largeur, avec le menu d’options (afficher, modifier) et l’ouverture au double-clic. Le passif de classe se distingue visuellement des sorts. Modifier une entité depuis une carte ou une fiche en modal ouvre l’éditeur dans une modal, sans quitter la page en cours ; depuis la page de l’entité, l’édition reste en page pleine. Après enregistrement en modal, on reste sur la page d’origine (le modal se ferme) pour toutes les entités, y compris les capacités.
 
+## Octobre 2026 — L’Ecaflip est jouable
+
+La classe Ecaflip peut se jouer : 32 sorts (quatre voies + généraux), passif **La pièce** (1 PA pour Pile ou Face), mécanique documentée sur la fiche, et invocation **Chaton d’Ecaflip** via Griffe invocatrice. Feu soigne, Eau tape, Terre entrave, Air place. Les sorts à deux faces lisent Sans état / Pile / Face / Consommation (niv. 7+).
+
 ## Octobre 2026 — Le Crâ est jouable
 
 La classe Crâ peut se jouer : ses 12 choix de sorts (les quatre voies et les sorts généraux de la fiche) sont sur la classe, ainsi que le passif Flèche guidée par le Wakfu. Une flèche imprégnée contourne un obstacle, une fois entre deux repos longs, puis une fois entre deux repos courts à partir du niveau 10. Chaque sort du kit a une icône, reprise de DofusDB quand le sort existe.
@@ -140,7 +144,11 @@ Après suppression depuis l’édition, le bouton Précédent du navigateur ne r
 
 ## Octobre 2026 — Édition d’entité : header compact et grille deux colonnes
 
-Toutes les fiches d’édition (équipements, monstres, PNJ, classes, panoplies, etc.) reprennent le header compact des sorts : retour, titre vers la fiche, état, options, annuler, supprimer et enregistrer restent visibles en haut. Le formulaire s’affiche en deux colonnes ; les métadonnées sont repliées par défaut. Les blocs de relations (recette, sorts, traits…) restent dans des panneaux séparés sous le formulaire. Les capacités gardent leur grille dédiée, avec le même header.
+Toutes les fiches d’édition (équipements, monstres, PNJ, classes, panoplies, états, traits, etc.) reprennent le header compact des sorts : retour, titre vers la fiche, état, options, annuler, supprimer et enregistrer restent visibles en haut. Les propriétés sont groupées en panneaux repliables ; sur écran large elles passent en deux colonnes, sauf les **liens entre entités** (type, race, classe…) et les textes longs, qui restent sur une colonne pleine largeur. Les blocs de relations (recette, sorts, traits…) sont sous le formulaire, fermés par défaut. Les sorts et capacités restent en une colonne (libellés longs).
+
+## Octobre 2026 — Édition des effets de sort par degrés
+
+Sur un sort, on commence par le nom et la description de l’effet, puis on gère les **degrés** (niveaux) et leurs sous-effets. Un bouton ajoute un degré en recopiant le précédent. Les outils legacy (lier / créer une définition d’effet) restent dans un panneau « avancé » fermé. Sur la carte minimale, seul le niveau actif apparaît en compact ; la pile complète s’ouvre avec le panneau étendu.
 
 ## Octobre 2026 — Enregistrement des sorts à la bonne adresse
 

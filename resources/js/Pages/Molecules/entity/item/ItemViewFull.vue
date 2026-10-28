@@ -14,6 +14,7 @@ import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import CellRenderer from '@/Pages/Atoms/data-display/CellRenderer.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from '@/Pages/Molecules/entity/shared/EntityViewHeader.vue';
@@ -163,10 +164,25 @@ const getBadgeColor = (fieldKey) => {
     }).color;
 };
 
-const levelDisplay = computed(() => {
-    const v = props.item?.level ?? props.item?._data?.level;
-    return v !== null && v !== undefined && v !== '' ? String(v) : '-';
-});
+const getBadgeAutoParams = (fieldKey) => {
+    const { autoLabel, autoScheme, autoTone } = resolveEntityBadgeUi({
+        fieldKey,
+        cell: getCell(fieldKey),
+        fieldUi: getFieldUi(fieldKey),
+    });
+    return { autoLabel, autoScheme, autoTone };
+};
+
+const asTextCell = (cell) => {
+    if (!cell) return { type: 'text', value: '-', params: {} };
+    const v = cell?.value;
+    return {
+        type: 'text',
+        value: v === null || typeof v === 'undefined' || String(v) === '' ? '-' : String(v),
+        params: cell?.params || {},
+    };
+};
+
 const typeDisplay = computed(() => {
     const it = props.item?.itemType ?? props.item?._data?.itemType;
     return it?.name ?? it?.label ?? '-';
@@ -250,98 +266,98 @@ const handleAction = async (actionKey) => {
 </script>
 
 <template>
-    <div class="space-y-4">
+    <div class="space-y-3">
         <EntityViewHeader :mode="headerMode">
             <template #media>
-                <div class="group relative w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56">
+                <div class="group relative size-24 shrink-0 sm:size-28 md:size-32">
                     <ImageViewer
                         v-if="item.image"
                         :src="item.image"
                         :alt="item.name || 'Équipement'"
                         :caption="item.name || ''"
                         preload="hover"
-                        :image-props="{ size: 'xl', rounded: 'lg', fit: 'cover', class: 'w-full h-full' }"
+                        :image-props="{ size: 'lg', rounded: 'lg', fit: 'cover', class: 'w-full h-full' }"
                     />
-                    <div v-else class="w-full h-full flex items-center justify-center bg-base-200 entity-radius-box">
-                        <Icon source="fa-solid fa-sword" :alt="item.name" size="xl" />
+                    <div v-else class="flex size-full items-center justify-center bg-base-200 entity-radius-box">
+                        <Icon source="fa-solid fa-sword" :alt="item.name" size="lg" />
                     </div>
                 </div>
             </template>
 
             <template #title>
-                <div class="space-y-1">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <h2 class="text-2xl font-bold text-primary-100 break-words">{{ item.name }}</h2>
-                        <template v-if="canShowField('level')">
-                            <EntityFieldTooltip
-                                field-key="level"
-                                entity-type="item"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
+                <h2 class="text-xl font-bold break-words text-primary-100 md:text-2xl">{{ item.name }}</h2>
+            </template>
+
+            <template #mainInfos>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                    <template v-if="canShowField('level')">
+                        <EntityFieldTooltip
+                            field-key="level"
+                            entity-type="item"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                        >
+                            <Badge
+                                :color="getBadgeColor('level')"
+                                :auto-label="getBadgeAutoParams('level').autoLabel"
+                                :auto-scheme="getBadgeAutoParams('level').autoScheme"
+                                :auto-tone="getBadgeAutoParams('level').autoTone"
+                                size="sm"
                             >
-                                <Badge
-                                    :color="getBadgeColor('level')"
-                                    :auto-label="levelDisplay"
-                                    auto-scheme="level"
-                                    auto-tone="mid"
-                                    size="sm"
-                                >
-                                    Nvx {{ levelDisplay }}
-                                </Badge>
-                            </EntityFieldTooltip>
-                        </template>
-                        <template v-if="canShowField('item_type')">
-                            <EntityFieldTooltip
-                                field-key="item_type"
-                                entity-type="item"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
+                                <CellRenderer :cell="asTextCell(getCell('level'))" ui-color="primary" />
+                            </Badge>
+                        </EntityFieldTooltip>
+                    </template>
+                    <template v-if="canShowField('item_type')">
+                        <EntityFieldTooltip
+                            field-key="item_type"
+                            entity-type="item"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                        >
+                            <Badge
+                                color="auto"
+                                :auto-label="typeDisplay"
+                                auto-scheme="labelHash"
+                                auto-tone="light"
+                                size="sm"
                             >
-                                <Badge
-                                    color="auto"
-                                    :auto-label="typeDisplay"
-                                    auto-scheme="labelHash"
-                                    auto-tone="light"
-                                    size="sm"
-                                >
-                                    {{ typeDisplay }}
-                                </Badge>
-                            </EntityFieldTooltip>
-                        </template>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-                        <template v-if="canShowField('rarity')">
-                            <EntityFieldTooltip
-                                field-key="rarity"
-                                entity-type="item"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
+                                {{ typeDisplay }}
+                            </Badge>
+                        </EntityFieldTooltip>
+                    </template>
+                    <template v-if="canShowField('rarity')">
+                        <EntityFieldTooltip
+                            field-key="rarity"
+                            entity-type="item"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                        >
+                            <Badge
+                                :color="rarityBadgeColor"
+                                :auto-label="String(item.rarity ?? 0)"
+                                auto-scheme="rarity"
+                                auto-tone="mid"
+                                size="sm"
                             >
-                                <Badge
-                                    :color="rarityBadgeColor"
-                                    :auto-label="String(item.rarity ?? 0)"
-                                    auto-scheme="rarity"
-                                    auto-tone="mid"
-                                    size="sm"
-                                >
-                                    {{ rarityDisplay }}
-                                </Badge>
-                            </EntityFieldTooltip>
-                        </template>
-                        <template v-if="canShowField('weight')">
-                            <Tooltip :content="getFieldTooltip('weight')" placement="top">
-                                <span class="inline-flex items-center gap-1" :style="getFieldIconStyle('weight')">
-                                    <Icon :source="getFieldIcon('weight')" :alt="getFieldLabel('weight')" size="xs" />
-                                    <span class="font-semibold">{{ getFieldLabel('weight') }}</span><span> {{ item.weight ?? '-' }}{{ getFieldUnit('weight') ? ` ${getFieldUnit('weight')}` : '' }}</span>
-                                </span>
-                            </Tooltip>
-                        </template>
-                        <template v-if="canShowField('price') && (priceKamasDisplay != null || canRecalculatePrice)">
-                            <span class="inline-flex items-center gap-1">
+                                {{ rarityDisplay }}
+                            </Badge>
+                        </EntityFieldTooltip>
+                    </template>
+                    <template v-if="canShowField('weight')">
+                        <Tooltip :content="getFieldTooltip('weight')" placement="top">
+                            <span class="inline-flex items-center gap-1 text-sm" :style="getFieldIconStyle('weight')">
+                                <Icon :source="getFieldIcon('weight')" :alt="getFieldLabel('weight')" size="xs" />
+                                <span class="font-semibold">{{ getFieldLabel('weight') }}</span><span> {{ item.weight ?? '-' }}{{ getFieldUnit('weight') ? ` ${getFieldUnit('weight')}` : '' }}</span>
+                            </span>
+                        </Tooltip>
+                    </template>
+                    <template v-if="canShowField('price') && (priceKamasDisplay != null || canRecalculatePrice)">
+                        <span class="inline-flex items-center gap-1">
                             <Tooltip :content="getFieldTooltip('price')" placement="top">
-                                <span class="inline-flex items-center gap-1" :style="getFieldIconStyle('price')">
+                                <span class="inline-flex items-center gap-1 text-sm" :style="getFieldIconStyle('price')">
                                     <Icon :source="getFieldIcon('price')" :alt="getFieldLabel('price')" size="xs" />
-                                    <span class="font-semibold">{{ getFieldLabel('price') }}</span><span> {{ priceKamasDisplay ?? 0 }}{{ getFieldUnit('price') ? ` ${getFieldUnit('price')}` : '' }}</span>
+                                    <span class="font-semibold">{{ getFieldLabel('price') }}</span><span v-if="priceKamasDisplay != null"> {{ priceKamasDisplay }}{{ getFieldUnit('price') ? ` ${getFieldUnit('price')}` : '' }}</span>
                                 </span>
                             </Tooltip>
                             <Tooltip v-if="canRecalculatePrice" content="Actualiser le prix automatique" placement="top">
@@ -356,15 +372,17 @@ const handleAction = async (actionKey) => {
                                     <i class="fa-solid fa-rotate" aria-hidden="true"></i>
                                 </Btn>
                             </Tooltip>
-                            </span>
-                        </template>
-                    </div>
+                        </span>
+                    </template>
                 </div>
             </template>
-
-            <template #mainInfos />
             <template #subtitle>
-                <p v-if="item.description" class="text-primary-300 mt-2 break-words">{{ item.description }}</p>
+                <p
+                    v-if="item.description"
+                    class="text-sm leading-relaxed whitespace-pre-wrap break-words text-primary-200 md:text-base"
+                >
+                    {{ item.description }}
+                </p>
                 <EntityRuleNotes
                     :notes="ruleNotes"
                     notes-class="mt-1.5 text-sm leading-snug text-primary-200/80"
@@ -390,7 +408,7 @@ const handleAction = async (actionKey) => {
 
         <!-- Effet (texte riche éventuel) -->
         <div v-if="canShowField('effect') && effectHtml" class="space-y-2">
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">Effet</h3>
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Effet</h3>
             <div class="text-primary-200 p-3 rounded-lg bg-base-200/50 entity-radius-box">
                 <RichTextReadonlyView
                     :html="effectHtml"
@@ -401,7 +419,7 @@ const handleAction = async (actionKey) => {
 
         <!-- Bonus -->
         <div v-if="canShowField('bonus') && bonusItems.length > 0" class="space-y-2">
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">Bonus</h3>
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Bonus</h3>
             <div class="text-primary-200 p-3 rounded-lg bg-base-200/50 entity-radius-box">
                 <CharacteristicEffectsGrid :items="bonusItems" label-mode="full" />
             </div>
@@ -412,7 +430,7 @@ const handleAction = async (actionKey) => {
 
         <!-- Ingrédients -->
         <div v-if="ingredients.length > 0" class="space-y-2">
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">Ingrédients</h3>
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Ingrédients</h3>
             <ResourceIngredientsList :ingredients="ingredients" />
         </div>
 

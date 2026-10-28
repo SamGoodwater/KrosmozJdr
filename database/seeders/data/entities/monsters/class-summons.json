@@ -261,20 +261,20 @@
             }
         },
         {
-            "key": "ecaflip-griffe-joueuse",
-            "name": "Griffe Joueuse",
+            "key": "ecaflip-chaton",
+            "name": "Chaton d'Ecaflip",
             "image": "https://api.dofusdb.fr/img/monsters/90.png",
             "breed": "Ecaflip",
-            "character_level": 7,
+            "character_level": 11,
             "size": 1,
             "primary": "chance",
-            "description": "Griffe Joueuse : une invocation. Fragile, mais elle occupe.",
-            "other_info": "Invocation de classe. Agit à l’initiative du lanceur. Au plus 1 invocation à la fois.",
+            "description": "Familier de sort. Trois tours, agit juste après toi. Sans état : mêlé (Griffe ou Léchouille 1d4). Pile : enragé (Griffe 1d6). Face : affectueux (Léchouille 1d6). Consommation : les deux au dé augmenté. Palier 17 : PV 16, CA 13, dés 1d6/1d8.",
+            "other_info": "Un seul chaton. Disparaît à 0 PV, à 3 tours, ou au relancement.",
             "action": {
-                "name": "Griffure",
+                "name": "Griffe",
                 "kind": "frapper",
                 "element": "water",
-                "value": "1d6",
+                "value": "1d4",
                 "attack_characteristic_key": "chance",
                 "resolution_mode": "attack_roll",
                 "is_magic": false

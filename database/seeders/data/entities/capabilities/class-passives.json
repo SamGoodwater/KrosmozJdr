@@ -43,11 +43,12 @@
         },
         {
             "breed": "Ecaflip",
-            "name": "Chance",
+            "previous_name": "Chance",
+            "name": "La pièce",
             "engine": "etat",
             "is_magic": false,
-            "description": "Une veine par combat. Les cartes, plus tard, et seulement si tu les veux.",
-            "effect": "<p><strong>Niveau 1.</strong> 1 fois par combat, relance un jet d’attaque ou de sauvegarde (le tien).</p><p><strong>Montée.</strong> Niveau 7 : cartes optionnelles (Pile ou Face sur un sort : +1d4 ou −1d4). Niveau 11 : 2 relances / combat.</p><p><strong>Moteur.</strong> État perso « veine ». Les cartes ne sont jamais obligatoires.</p>"
+            "description": "Pour 1 PA, tu lances la pièce. Pair : Pile. Impair : Face. Certains sorts lisent les deux faces.",
+            "effect": "<p><strong>Niveau 1.</strong> Une fois par tour, pour 1 PA, tu lances 1d4. Pair : Pile. Impair : Face. Si tu ne lances pas, tu gardes l’état. Avant le premier lancer, tu n’as pas d’état.</p><p><strong>Montée.</strong> Niveau 7 : tu peux consommer l’état en lançant un sort qui a les deux branches Pile et Face (les deux s’appliquent, puis l’état est retiré). Niveau 11 : une fois entre deux repos longs, tu peux relancer le dé de Tarot, de Roulette ou de Rekop avant d’accepter le résultat.</p><p><strong>Moteur.</strong> État perso Pile / Face (hors catalogue). Consommation = les deux branches, pas une Mise qui annule un malus.</p>"
         },
         {
             "breed": "Eniripsa",

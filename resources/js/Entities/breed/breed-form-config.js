@@ -5,7 +5,7 @@
  * @module Entities/breed/breed-form-config
  */
 
-/** Sections formulaire — édition (grille sheet 2 cols ; état dans le header). */
+/** Sections formulaire — édition (grille sheet 2 cols ; visuels pleine largeur). */
 export const BREED_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
@@ -23,6 +23,11 @@ export const BREED_FORM_FIELD_SECTIONS_EDIT = [
         id: 'visuals',
         title: 'Visuels',
         subtitle: 'Images et symboles de la classe.',
+        span: 2,
+        columns: 1,
+        collapsedByDefault: true,
+        collapsedActionLabel: 'Afficher',
+        expandedActionLabel: 'Masquer',
         fieldKeys: [
             'image',
             'icon',

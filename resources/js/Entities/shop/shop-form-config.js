@@ -94,6 +94,9 @@ export const SHOP_FORM_FIELD_SECTIONS_EDIT = [
         id: 'commerce',
         title: 'Commerce',
         subtitle: 'Prix de référence de l’hôtel.',
+        collapsedByDefault: true,
+        collapsedActionLabel: 'Afficher',
+        expandedActionLabel: 'Masquer',
         fieldKeys: ['price'],
     },
     {

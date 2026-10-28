@@ -25,8 +25,11 @@
 
 - Header compact : `EntityEditHeader` (`Molecules/entity/shared/`) — état, options,
   annuler, supprimer, enregistrer ; `formRef` → `EntityEditForm` exposé.
-- Grille : `layout-profile="sheet"` (2 cols, `span: 2` ; `spell` = alias). Capacité
-  garde `capability`. Conteneurs : `EntityEditContainer` + `EntityEditGrid`.
+- Grille : `layout-profile="sheet"` (2 cols sections, champs 2 cols dès `md`) ;
+  `spell` / `capability` = champs 1 col (labels longs). Section `span: 2` +
+  `columns: 1` = pleine largeur pour **liens d’entités** (type, race, classe…).
+  `collapsedByDefault` sur blocs avancés / métadonnées. Conteneurs relations :
+  `EntityEditContainer` `span="2"` + `collapsible` + `default-open="false"`.
 - Pages `entity/*/Edit.vue` : header + sheet + dock masqué ; managers en
   `#after-sections`. Sous-éditeurs gardent leur propre enregistrement.
 - Modal globale : `EntitySurfaceHost` + `useEntitySurfaceStore` (affichage / édition,

@@ -70,41 +70,14 @@ const canShowField = (fieldKey) => {
     return true;
 };
 
-const importantFields = computed(() => ["capabilities_count"].filter(canShowField));
+const COUNT_CHIP_KEYS = ["capabilities_count", "spells_count"];
 
-const technicalFieldsOrder = [
-    "id",
-    "slug",
-    "state",
-    "is_public",
-    "read_level",
-    "write_level",
-    "created_at",
-    "updated_at",
-    "deleted_at",
-];
-const technicalFieldRank = new Map(technicalFieldsOrder.map((key, index) => [key, index]));
-
-const expandedFields = computed(() => {
-    const excluded = new Set(["name", "image", "state", "capabilities_count"]);
-    const fields = Object.keys(descriptors.value || {}).filter(
-        (key) => canShowField(key) && !excluded.has(key),
-    );
-    return [...fields].sort((a, b) => {
-        const rankA = technicalFieldRank.has(a) ? technicalFieldRank.get(a) : -1;
-        const rankB = technicalFieldRank.has(b) ? technicalFieldRank.get(b) : -1;
-        if (rankA === -1 && rankB === -1) return 0;
-        if (rankA === -1) return -1;
-        if (rankB === -1) return 1;
-        return rankA - rankB;
-    });
-});
-
-const linkedCreatureTraits = computed(() => {
-    const raw = props.specialization?._data?.creatureTraits ?? props.specialization?.creatureTraits;
-    return Array.isArray(raw) ? raw : [];
-});
-const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length > 0);
+const cellHasContent = (cell) => {
+    const v = cell?.value;
+    if (v === null || typeof v === "undefined") return false;
+    const s = String(v).trim();
+    return s !== "" && s !== "-";
+};
 
 const getFieldIcon = (fieldKey) => descriptors.value?.[fieldKey]?.icon || "fa-solid fa-info-circle";
 
@@ -113,12 +86,28 @@ const getCell = (fieldKey) =>
 
 const tooltipForField = (fieldKey, cell) => {
     const label = descriptors.value?.[fieldKey]?.general?.label || fieldKey;
-    const value =
-        cell?.value === null || typeof cell?.value === "undefined" || String(cell?.value) === ""
-            ? "-"
-            : cell.value;
+    const value = cellHasContent(cell) ? cell.value : "—";
     return `${label} : ${value}`;
 };
+
+const chipFields = computed(() =>
+    COUNT_CHIP_KEYS.filter((key) => canShowField(key) && cellHasContent(getCell(key))),
+);
+
+const shortPitch = computed(() => {
+    const raw =
+        props.specialization?.shortDescription ??
+        props.specialization?._data?.short_description ??
+        props.specialization?.short_description;
+    const s = String(raw ?? "").trim();
+    return s.length ? s : "";
+});
+
+const linkedCreatureTraits = computed(() => {
+    const raw = props.specialization?._data?.creatureTraits ?? props.specialization?.creatureTraits;
+    return Array.isArray(raw) ? raw : [];
+});
+const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length > 0);
 
 const {
     minimalActionsContext,
@@ -158,8 +147,8 @@ const imageUrl = computed(() => {
                     <EntityThumb size="compact" :src="imageUrl || ''" :label="displayName" />
                     <div class="min-w-0 flex-1">
                         <EntityMinimalTitle :label="displayName" @open="openQuickView" />
-                        <div class="mt-1 flex flex-wrap gap-1.5">
-                            <template v-for="field in importantFields" :key="field">
+                        <div v-if="chipFields.length" class="mt-1 flex flex-wrap gap-1.5">
+                            <template v-for="field in chipFields" :key="field">
                                 <Tooltip :content="tooltipForField(field, getCell(field))" placement="top">
                                     <div class="inline-flex items-center gap-1 rounded bg-base-200 px-1.5 py-0.5">
                                         <Icon :source="getFieldIcon(field)" size="xs" class="text-primary-400" />
@@ -196,8 +185,8 @@ const imageUrl = computed(() => {
                                 />
                             </div>
                         </div>
-                        <div class="mt-1 flex flex-wrap gap-1.5">
-                            <template v-for="field in importantFields" :key="field">
+                        <div v-if="chipFields.length" class="mt-1 flex flex-wrap gap-1.5">
+                            <template v-for="field in chipFields" :key="field">
                                 <Tooltip :content="tooltipForField(field, getCell(field))" placement="top">
                                     <div class="inline-flex items-center gap-1 rounded bg-base-200 px-1.5 py-0.5">
                                         <Icon :source="getFieldIcon(field)" size="xs" class="text-primary-400" />
@@ -208,38 +197,25 @@ const imageUrl = computed(() => {
                                 </Tooltip>
                             </template>
                         </div>
+                        <p
+                            v-if="shortPitch"
+                            class="mt-1 text-[11px] leading-snug italic text-base-content/55"
+                            :title="shortPitch"
+                        >
+                            {{ shortPitch }}
+                        </p>
                     </div>
                 </div>
 
                 <div
-                    v-if="hasLinkedCreatureTraits || expandedFields.length"
+                    v-if="hasLinkedCreatureTraits"
                     class="space-y-1.5 border-t border-base-300/80 pt-1.5 text-xs"
                 >
                     <CreatureTraitBadges
-                        v-if="hasLinkedCreatureTraits"
                         :traits="linkedCreatureTraits"
                         show-level
                         size="xs"
                     />
-                    <div
-                        v-for="key in expandedFields"
-                        :key="key"
-                        class="flex items-start gap-2"
-                    >
-                        <Icon
-                            :source="getFieldIcon(key)"
-                            size="xs"
-                            class="mt-0.5 shrink-0 text-primary-400"
-                        />
-                        <div class="min-w-0 flex-1">
-                            <div class="font-semibold text-primary-400">
-                                {{ descriptors?.[key]?.general?.label || descriptors?.[key]?.label || key }}
-                            </div>
-                            <div class="truncate text-primary-200">
-                                <CellRenderer :cell="getCell(key)" ui-color="primary" />
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </template>

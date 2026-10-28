@@ -155,7 +155,7 @@ export function buildItemFormFieldsConfig(options = {}) {
     };
 }
 
-/** Sections formulaire — édition (grille sheet 2 cols ; état dans le header). */
+/** Sections formulaire — édition (grille sheet 2 cols ; liens pleine largeur). */
 export const ITEM_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
@@ -164,10 +164,29 @@ export const ITEM_FORM_FIELD_SECTIONS_EDIT = [
         fieldKeys: ['name', 'description', 'image'],
     },
     {
-        id: 'gameplay',
-        title: 'Équipement',
-        subtitle: 'Niveau, rareté, type, effet et bonus.',
-        fieldKeys: ['level', 'rarity', 'item_type_id', 'effect', 'bonus', 'recipe'],
+        id: 'stats',
+        title: 'Caractéristiques',
+        subtitle: 'Niveau et rareté.',
+        fieldKeys: ['level', 'rarity'],
+    },
+    {
+        id: 'links',
+        title: 'Type d’objet',
+        subtitle: 'Lien vers le type d’équipement.',
+        span: 2,
+        columns: 1,
+        fieldKeys: ['item_type_id'],
+    },
+    {
+        id: 'advanced',
+        title: 'Effet, bonus & recette',
+        subtitle: 'Texte d’effet, bonus structurés et notes de craft.',
+        span: 2,
+        columns: 1,
+        collapsedByDefault: true,
+        collapsedActionLabel: 'Afficher',
+        expandedActionLabel: 'Masquer',
+        fieldKeys: ['effect', 'bonus', 'recipe'],
     },
     {
         id: 'admin',

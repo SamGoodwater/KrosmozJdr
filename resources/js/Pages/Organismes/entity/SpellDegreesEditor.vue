@@ -7,7 +7,7 @@ import { computed, watch } from 'vue';
 import { getAreaHumanReadable } from '@/Utils/Entity/Areas';
 import { formatPoRange } from '@/Utils/Entity/poRange.js';
 import { useSpellDegreesDraft } from '@/Composables/entity/useSpellDegreesDraft.js';
-import SpellDegreeTabs from '@/Pages/Molecules/entity/spell/SpellDegreeTabs.vue';
+import SpellDegreeEditTabs from '@/Pages/Molecules/entity/spell/SpellDegreeEditTabs.vue';
 import SpellCastPropertiesGrid from '@/Pages/Molecules/entity/spell/SpellCastPropertiesGrid.vue';
 import SpellEffectEditorRow from '@/Pages/Organismes/entity/SpellEffectEditorRow.vue';
 import SpellDegreePropertyField from '@/Pages/Molecules/entity/spell/SpellDegreePropertyField.vue';
@@ -190,15 +190,15 @@ defineExpose({
 <template>
     <div class="space-y-3" data-cy="spell-degrees-editor">
         <p class="text-sm text-base-content/70 max-w-2xl">
-            Un onglet = un niveau. Les propriétés (PA, PO, zone…) changent avec le degré ; les effets
-            décrivent ce que fait le sort. Un nouveau degré copie le précédent.
+            Un onglet = un degré (niveau). Propriétés de lancement + sous-effets par degré.
+            « + Degré » copie le précédent (champs et sous-effets).
         </p>
 
         <p v-if="errorMessage" class="text-sm text-error">{{ errorMessage }}</p>
 
         <div v-if="!degrees.length" class="rounded-box border border-dashed border-base-300 p-4 text-sm">
-            Aucun degré. Les propriétés du sort s’appliquent telles quelles. Cliquez sur « + Degré »
-            pour définir une progression.
+            Aucun degré. Les propriétés du sort s’appliquent telles quelles. Ajoutez un premier degré
+            pour définir la progression.
             <div class="mt-2">
                 <button
                     type="button"
@@ -213,7 +213,7 @@ defineExpose({
         </div>
 
         <template v-else>
-            <SpellDegreeTabs
+            <SpellDegreeEditTabs
                 :degrees="degrees"
                 :active-index="activeIndex"
                 :dirty-ids="dirtyDegreeIds"
@@ -285,7 +285,9 @@ defineExpose({
 
                 <div class="border-t border-base-300 pt-3 space-y-2">
                     <div class="flex flex-wrap items-center justify-between gap-2">
-                        <h4 class="text-sm font-semibold">Effets</h4>
+                        <h4 class="text-xs font-semibold uppercase tracking-wide text-primary-300">
+                            Sous-effets
+                        </h4>
                         <div class="flex flex-wrap gap-2">
                             <label
                                 v-if="activeIndex > 0"
@@ -297,7 +299,7 @@ defineExpose({
                                     class="checkbox checkbox-sm"
                                     @change="markDirty"
                                 />
-                                Reprendre les effets du degré précédent
+                                Reprendre les sous-effets du degré précédent
                             </label>
                             <button
                                 v-if="active.inherits_effects"
@@ -306,7 +308,7 @@ defineExpose({
                                 :disabled="saving"
                                 @click="materializeEffects"
                             >
-                                Personnaliser les effets
+                                Personnaliser les sous-effets
                             </button>
                             <button
                                 v-else
@@ -314,21 +316,21 @@ defineExpose({
                                 class="btn btn-primary btn-xs"
                                 @click="addEffectRow"
                             >
-                                + Effet
+                                + Sous-effet
                             </button>
                         </div>
                     </div>
 
                     <p v-if="active.inherits_effects" class="text-xs text-base-content/70">
-                        Ce degré réutilise les effets du niveau précédent. Personnalisez pour les
-                        modifier.
+                        Ce degré réutilise les sous-effets du niveau précédent. Personnalisez pour
+                        les modifier.
                     </p>
 
                     <div
                         v-else-if="!(active.rows || []).length"
                         class="text-xs text-base-content/70 py-2"
                     >
-                        Aucun effet. Ajoutez une action (frapper, soigner…).
+                        Aucun sous-effet. Ajoutez une action (frapper, soigner…).
                     </div>
 
                     <div v-else class="space-y-2">

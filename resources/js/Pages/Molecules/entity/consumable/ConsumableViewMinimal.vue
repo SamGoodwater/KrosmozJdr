@@ -82,6 +82,15 @@ const canShowField = (fieldKey) => {
 
 const entity = computed(() => props.consumable);
 
+const showPriceKamas = computed(() => {
+    const raw = entity.value?.price ?? entity.value?._data?.price;
+    if (raw === null || raw === undefined || raw === '') {
+        return false;
+    }
+    const n = Math.round(Number(raw));
+    return Number.isFinite(n) && n > 0;
+});
+
 const levelValue = computed(() => entity.value?.level ?? entity.value?._data?.level ?? null);
 
 const typeName = computed(
@@ -211,7 +220,7 @@ const handleAction = async (actionKey) => {
                                 </Badge>
                             </EntityFieldTooltip>
                             <EntityPropertyDisplay
-                                v-if="canShowField('price')"
+                                v-if="canShowField('price') && showPriceKamas"
                                 field-key="price"
                                 :entity="entity"
                                 entity-type="consumable"
@@ -220,6 +229,7 @@ const handleAction = async (actionKey) => {
                                 :table-meta="tableMeta"
                                 size="xs"
                                 class="min-w-0"
+                                hide-field-label
                             />
                         </div>
                         <EntityRuleNotes
@@ -308,7 +318,7 @@ const handleAction = async (actionKey) => {
                                 </Badge>
                             </EntityFieldTooltip>
                             <EntityPropertyDisplay
-                                v-if="canShowField('price')"
+                                v-if="canShowField('price') && showPriceKamas"
                                 field-key="price"
                                 :entity="entity"
                                 entity-type="consumable"
@@ -317,6 +327,7 @@ const handleAction = async (actionKey) => {
                                 :table-meta="tableMeta"
                                 size="xs"
                                 class="min-w-0"
+                                hide-field-label
                             />
                         </div>
                         <p

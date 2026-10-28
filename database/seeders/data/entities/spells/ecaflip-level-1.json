@@ -1,220 +1,991 @@
 {
     "_schema_version": "1",
     "breed": "Ecaflip",
+    "state": "playable",
     "entries": [
         {
-            "key": "topkaj",
-            "name": "Topkaj",
-            "dofusdb_id": "12846",
+            "cast_per_target": "0",
+            "number_between_two_cast": "0",
+            "cast_in_line": false,
+            "po_editable": true,
+            "sight_line": true,
+            "is_magic": false,
+            "effect": "Sans état : dégâts seuls. Pile : après le coup, tu sautes en t'éloignant (1 case ; 2 dès le palier 13). Face : après le coup, tu sautes vers la cible. Consommation (niv. 7+) : tu sautes d'abord vers la cible, puis en t'éloignant ; l'état est retiré.",
+            "resolution_mode": "attack_roll",
+            "key": "reflexes",
+            "name": "Réflexes",
             "slot_index": 1,
             "choice_order": 0,
+            "character_level": 1,
             "types": [
+                "Placement",
+                "Dégâts"
+            ],
+            "element": "air",
+            "pa": "3",
+            "po_min": "1",
+            "po_max": "3",
+            "cast_per_turn": "2",
+            "attack_characteristic_key": "agi",
+            "description": "Tu frappes du plat de la patte. Le corps peut suivre, selon la face de la pièce.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "order": 0,
+                    "params": {
+                        "characteristic": "air",
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
+                        "effect_direction": "action"
+                    }
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "order": 1,
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "jump"
+                    }
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "jump"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "jump"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8",
+                                "value_formula": "2d8",
+                                "dice_formula": "2d8",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "jump"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "official_id": "jdr:ecaflip:reflexes"
+        },
+        {
+            "cast_per_target": "0",
+            "number_between_two_cast": "0",
+            "cast_in_line": false,
+            "po_editable": true,
+            "sight_line": true,
+            "is_magic": false,
+            "effect": "Sur un·e allié·e : soin de Feu. Sur un ennemi : dégâts de Feu. Automatique sur allié·e consentant·e ; jet d'attaque (Intelligence) vs CA sur ennemi.",
+            "resolution_mode": "attack_roll",
+            "key": "langue-rapeuse",
+            "name": "Langue râpeuse",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 1,
+            "types": [
+                "Soin",
                 "Dégâts"
             ],
             "element": "fire",
             "pa": "3",
             "po_min": "1",
             "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
             "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
             "attack_characteristic_key": "intel",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour, PO 1–4 adapté.",
-            "description": "Un coup de patte en feu. Pas de carte à piocher : tu vises, tu tapes.",
+            "description": "Sur un·e allié·e elle ferme la plaie. Sur un ennemi elle arrache juste de quoi piquer.",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
+                    "order": 0,
                     "params": {
                         "characteristic": "fire",
-                        "value": "1d6+Intelligence",
-                        "value_formula": "1d6+[intel]",
-                        "dice_formula": "1d6+[intel]",
-                        "value_formula_crit": "2d6+[intel]",
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
+                        "effect_direction": "action"
+                    }
+                },
+                {
+                    "slug": "soigner",
+                    "area": "point",
+                    "order": 1,
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
                         "effect_direction": "action"
                     }
                 }
-            ]
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "1d6",
+                                "value_formula": "1d6",
+                                "dice_formula": "1d6",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "3d4",
+                                "value_formula": "3d4",
+                                "dice_formula": "3d4",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "1d8",
+                                "value_formula": "1d8",
+                                "dice_formula": "1d8",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "3d6",
+                                "value_formula": "3d6",
+                                "dice_formula": "3d6",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "official_id": "jdr:ecaflip:langue-rapeuse"
         },
         {
-            "key": "yams",
-            "name": "Yams",
-            "dofusdb_id": "29680",
+            "cast_per_target": "0",
+            "number_between_two_cast": "0",
+            "cast_in_line": false,
+            "po_editable": true,
+            "sight_line": true,
+            "is_magic": false,
+            "effect": "Dégâts d'Eau au contact. Deux fois par tour.",
+            "resolution_mode": "attack_roll",
+            "key": "griffe-joueuse",
+            "name": "Griffe joueuse",
             "slot_index": 1,
-            "choice_order": 1,
+            "choice_order": 2,
+            "character_level": 1,
             "types": [
                 "Dégâts"
             ],
             "element": "water",
             "pa": "3",
             "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
+            "po_max": "1",
             "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
             "attack_characteristic_key": "chance",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour, PO 1–4 adapté.",
-            "description": "Les dés claquent. Même cadence que Topkaj, autre voie.",
+            "description": "La griffe de base, au contact. Elle part souvent, elle ne mise pas.",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
+                    "order": 0,
                     "params": {
                         "characteristic": "water",
-                        "value": "1d6+Chance",
-                        "value_formula": "1d6+[chance]",
-                        "dice_formula": "1d6+[chance]",
-                        "value_formula_crit": "2d6+[chance]",
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
                         "effect_direction": "action"
                     }
                 }
-            ]
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8",
+                                "value_formula": "2d8",
+                                "dice_formula": "2d8",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d12",
+                                "value_formula": "2d12",
+                                "dice_formula": "2d12",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "water",
+                                "value": "4d6",
+                                "value_formula": "4d6",
+                                "dice_formula": "4d6",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "official_id": "jdr:ecaflip:griffe-joueuse"
         },
         {
-            "key": "ecaflip-griffe-invocatrice",
-            "name": "Griffe Invocatrice",
+            "cast_per_target": "0",
+            "number_between_two_cast": "0",
+            "cast_in_line": false,
+            "po_editable": true,
+            "sight_line": true,
+            "is_magic": false,
+            "effect": "Sans état : dégâts seuls. Pile : −PA (1 ; 2 dès le palier 16). Face : −PM (même montant). Consommation (niv. 7+) : −PA et −PM ; l'état est retiré. Le retrait ne se cumule pas sur une même cible.",
+            "resolution_mode": "attack_roll",
+            "key": "lapement",
+            "name": "Lapement",
             "slot_index": 1,
-            "choice_order": 2,
+            "choice_order": 3,
+            "character_level": 1,
             "types": [
+                "Entrave",
                 "Dégâts"
             ],
             "element": "earth",
             "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Griffe Invocatrice : attaque simple, même budget que le palier 4.",
+            "po_min": "0",
+            "po_max": "5",
+            "cast_per_turn": "1",
+            "attack_characteristic_key": "strong",
+            "description": "Tu lapes le poignet ou la cheville. Le coup mord, et la pièce décide si c'est le geste ou le pas qui se coupe.",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
+                    "order": 0,
                     "params": {
                         "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
+                        "value": "1d8",
+                        "value_formula": "1d8",
+                        "dice_formula": "1d8",
                         "effect_direction": "action"
+                    }
+                },
+                {
+                    "slug": "retirer",
+                    "area": "point",
+                    "order": 1,
+                    "params": {
+                        "characteristic": "pa",
+                        "value": "1"
+                    }
+                },
+                {
+                    "slug": "retirer",
+                    "area": "point",
+                    "order": 2,
+                    "params": {
+                        "characteristic": "pm",
+                        "value": "1"
                     }
                 }
             ],
-            "dofusdb_id": "12856",
-            "attack_characteristic_key": "strong"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1"
+                            }
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "order": 2,
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1"
+                            }
+                        }
+                    ],
+                    "cast_per_turn": "2"
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8",
+                                "value_formula": "2d8",
+                                "dice_formula": "2d8",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "2"
+                            }
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "order": 2,
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "2"
+                            }
+                        }
+                    ],
+                    "cast_per_turn": "3"
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "3d6",
+                                "value_formula": "3d6",
+                                "dice_formula": "3d6",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "2"
+                            }
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "order": 2,
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "2"
+                            }
+                        }
+                    ],
+                    "cast_per_turn": "3"
+                }
+            ],
+            "official_id": "jdr:ecaflip:lapement"
         },
         {
-            "key": "ecaflip-langue-rapeuse",
-            "name": "Langue Râpeuse",
-            "slot_index": 1,
-            "choice_order": 3,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
+            "cast_per_target": "0",
+            "number_between_two_cast": "0",
+            "cast_in_line": false,
             "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
             "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Langue Râpeuse : attaque simple, même budget que le palier 4.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "1d6+Chance",
-                        "value_formula": "1d6+[chance]",
-                        "dice_formula": "1d6+[chance]",
-                        "value_formula_crit": "2d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "14709",
-            "attack_characteristic_key": "chance"
-        },
-        {
+            "effect": "Saut. Une fois par tour. Pas de dégâts.",
+            "resolution_mode": "automatic",
             "key": "bond-du-felin",
-            "name": "Bond du Félin",
-            "dofusdb_id": "12844",
+            "name": "Bond du félin",
             "slot_index": 2,
             "choice_order": 0,
+            "character_level": 1,
             "types": [
                 "Placement"
             ],
-            "element": null,
-            "pa": "3",
+            "pa": "2",
             "po_min": "1",
-            "po_max": "4",
-            "po_editable": false,
-            "sight_line": false,
+            "po_max": "2",
             "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "Téléportation 1–4 cases, pas de ligne de vue. Action bonus, 3 PA, 1×/tour.",
-            "description": "Tu bondis. Assez pour coller Topkaj dans le même tour.",
+            "description": "Tu plies les jarrets et tu te poses plus loin. La case d'arrivée doit être libre. Ce sort ne lit pas la pièce.",
             "sub_effects": [
                 {
                     "slug": "déplacer",
                     "area": "point",
+                    "order": 0,
                     "params": {
-                        "cells_formula": "4",
-                        "teleport": true,
-                        "movement_kind": "teleport",
-                        "effect_direction": "action"
+                        "cells_formula": "2",
+                        "movement_kind": "jump"
                     }
                 }
-            ]
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "cells_formula": "3",
+                                "movement_kind": "jump"
+                            }
+                        }
+                    ],
+                    "po_max": "3"
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "cells_formula": "3",
+                                "movement_kind": "jump"
+                            }
+                        }
+                    ],
+                    "po_max": "3"
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "cells_formula": "3",
+                                "movement_kind": "jump"
+                            }
+                        }
+                    ],
+                    "po_max": "3"
+                }
+            ],
+            "official_id": "jdr:ecaflip:bond-du-felin"
         },
         {
+            "cast_per_target": "0",
+            "number_between_two_cast": "0",
+            "cast_in_line": false,
+            "po_editable": true,
+            "sight_line": true,
+            "is_magic": false,
+            "effect": "Échange de place avec une créature à très courte portée.",
+            "resolution_mode": "saving_throw",
             "key": "entrechat",
             "name": "Entrechat",
-            "dofusdb_id": "12865",
-            "slot_index": 3,
-            "choice_order": 0,
+            "slot_index": 2,
+            "choice_order": 1,
+            "character_level": 1,
             "types": [
                 "Placement"
             ],
-            "element": "air",
-            "pa": "3",
+            "pa": "2",
             "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
+            "po_max": "2",
             "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "Échange de position avec la cible. Magique, 3 PA, 1×/tour, PO 1–4 adapté.",
-            "description": "Un pas de chat. Vous changez de place.",
+            "attack_characteristic_key": "agi",
+            "save_characteristic_key": "agi",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, l'échange n'a pas lieu. Automatique si la cible est consentante.",
+            "description": "Tu croises quelqu'un de tout près et vous finissez à la place l'un de l'autre. Ce sort ne lit pas la pièce.",
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
+                    "order": 0,
                     "params": {
-                        "value": "Échange de position avec la cible.",
-                        "effect_direction": "action"
+                        "value": "Échange de place avec la cible."
                     }
                 }
-            ]
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "value": "Échange de place avec la cible."
+                            }
+                        }
+                    ],
+                    "po_max": "3"
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "value": "Échange de place avec la cible."
+                            }
+                        }
+                    ],
+                    "po_max": "3"
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "value": "Échange de place avec la cible."
+                            }
+                        }
+                    ],
+                    "po_max": "3"
+                }
+            ],
+            "official_id": "jdr:ecaflip:entrechat"
+        },
+        {
+            "cast_per_target": "0",
+            "number_between_two_cast": "3",
+            "cast_in_line": false,
+            "po_editable": true,
+            "sight_line": true,
+            "is_magic": false,
+            "effect": "Sans état : zone 2×2 (3×3 dès le palier 16), soin 1d4 (1d6 dès 13), révèle l'invisible. Pile : zone agrandie d'un cran. Face : soin du palier suivant. Consommation (niv. 7+) : zone agrandie et soin du palier suivant ; l'état est retiré.",
+            "resolution_mode": "automatic",
+            "key": "perception",
+            "name": "Perception",
+            "slot_index": 3,
+            "choice_order": 0,
+            "character_level": 1,
+            "types": [
+                "Soin"
+            ],
+            "pa": "3",
+            "po_min": "0",
+            "po_max": "4",
+            "cast_per_turn": "1",
+            "description": "Tu humes l'air. Les silhouettes cachées reprennent un contour, et une plaie proche se ferme un peu.",
+            "sub_effects": [
+                {
+                    "slug": "soigner",
+                    "area": "rect-2x2",
+                    "order": 0,
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
+                        "effect_direction": "action"
+                    }
+                },
+                {
+                    "slug": "autre",
+                    "area": "rect-2x2",
+                    "order": 1,
+                    "params": {
+                        "value": "Révèle les créatures invisibles dans la zone."
+                    }
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "soigner",
+                            "area": "rect-2x2",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "1d6",
+                                "value_formula": "1d6",
+                                "dice_formula": "1d6",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "rect-2x2",
+                            "order": 1,
+                            "params": {
+                                "value": "Révèle les créatures invisibles dans la zone."
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "soigner",
+                            "area": "rect-3x3",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "1d6",
+                                "value_formula": "1d6",
+                                "dice_formula": "1d6",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "rect-3x3",
+                            "order": 1,
+                            "params": {
+                                "value": "Révèle les créatures invisibles dans la zone."
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "soigner",
+                            "area": "rect-3x3",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "1d8",
+                                "value_formula": "1d8",
+                                "dice_formula": "1d8",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "rect-3x3",
+                            "order": 1,
+                            "params": {
+                                "value": "Révèle les créatures invisibles dans la zone."
+                            }
+                        }
+                    ]
+                }
+            ],
+            "official_id": "jdr:ecaflip:perception"
+        },
+        {
+            "cast_per_target": "0",
+            "number_between_two_cast": "3",
+            "cast_in_line": false,
+            "po_editable": true,
+            "sight_line": true,
+            "is_magic": false,
+            "effect": "Pendant 1 tour, critiques sur 19 ou 20. La première fois que tu subis des dégâts pendant cette durée, ils augmentent de 1d4.",
+            "resolution_mode": "automatic",
+            "key": "trefle",
+            "name": "Trèfle",
+            "slot_index": 3,
+            "choice_order": 1,
+            "character_level": 1,
+            "types": [
+                "Amélioration"
+            ],
+            "pa": "2",
+            "po_min": "0",
+            "po_max": "0",
+            "cast_per_turn": "1",
+            "description": "Tu coinces un trèfle sous la langue. Les coups portent plus juste. Le premier choc que tu prends te trouve aussi plus facilement. Ce sort ne lit pas la pièce.",
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "order": 0,
+                    "params": {
+                        "value": "Critiques sur 19 ou 20."
+                    },
+                    "duration_formula": "1"
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "order": 1,
+                    "params": {
+                        "value": "+1d4 au premier dégât subi pendant la durée."
+                    },
+                    "duration_formula": "1"
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "value": "Critiques sur 19 ou 20."
+                            },
+                            "duration_formula": "2"
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "value": "+1d4 au premier dégât subi pendant la durée."
+                            },
+                            "duration_formula": "2"
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 16,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "value": "Critiques sur 19 ou 20."
+                            },
+                            "duration_formula": "2"
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "value": "+1d4 au premier dégât subi pendant la durée."
+                            },
+                            "duration_formula": "2"
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "value": "Critiques sur 19 ou 20."
+                            },
+                            "duration_formula": "2"
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "value": "+1d4 au premier dégât subi pendant la durée."
+                            },
+                            "duration_formula": "2"
+                        }
+                    ]
+                }
+            ],
+            "official_id": "jdr:ecaflip:trefle"
         }
     ]
 }

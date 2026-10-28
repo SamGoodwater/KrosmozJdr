@@ -238,10 +238,10 @@ const handleAction = async (actionKey) => {
 </script>
 
 <template>
-    <div class="space-y-4">
+    <div class="space-y-3">
         <EntityViewHeader :mode="headerMode">
             <template #media>
-                <div class="w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56 overflow-hidden rounded-box border border-base-300/60 bg-base-200">
+                <div class="size-24 shrink-0 overflow-hidden rounded-box border border-base-300/60 bg-base-200 sm:size-28 md:size-32">
                     <PanoplyThumb
                         size="fill"
                         :items="linkedItems"
@@ -251,8 +251,20 @@ const handleAction = async (actionKey) => {
             </template>
 
             <template #title>
-                <div class="flex flex-wrap items-center gap-2">
-                    <h2 class="text-2xl font-bold text-primary-100 wrap-break-word">{{ panoply.name }}</h2>
+                <h2 class="text-xl font-bold wrap-break-word text-primary-100 md:text-2xl">{{ panoply.name }}</h2>
+            </template>
+
+            <template #subtitle>
+                <p
+                    v-if="panoply.description"
+                    class="text-sm leading-relaxed whitespace-pre-wrap wrap-break-word text-primary-200 md:text-base"
+                >
+                    {{ panoply.description }}
+                </p>
+            </template>
+
+            <template #mainInfos>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
                     <EntityFieldTooltip
                         v-if="canShowField('level') && levelDisplay"
                         field-key="level"
@@ -262,27 +274,20 @@ const handleAction = async (actionKey) => {
                     >
                         <Badge
                             :color="getBadgeColor('level')"
-                            :auto-label="levelDisplay"
-                            auto-scheme="level"
-                            auto-tone="mid"
+                            :auto-label="getBadgeAutoParams('level').autoLabel"
+                            :auto-scheme="getBadgeAutoParams('level').autoScheme"
+                            :auto-tone="getBadgeAutoParams('level').autoTone"
                             size="sm"
                         >
-                            Nvx {{ levelDisplay }}
+                            <CellRenderer :cell="asTextCell(getCell('level'))" ui-color="primary" />
                         </Badge>
                     </EntityFieldTooltip>
                 </div>
-            </template>
-
-            <template #subtitle>
-                <p v-if="panoply.description" class="text-primary-300 mt-2 wrap-break-word">{{ panoply.description }}</p>
-            </template>
-
-            <template #mainInfos>
                 <div
                     v-if="linkedItems.length"
                     class="mt-3"
                 >
-                    <div class="text-[0.625rem] font-semibold uppercase tracking-wide text-base-content/60 mb-1">
+                    <div class="mb-1 text-xs font-semibold uppercase tracking-wide text-primary-300">
                         Équipements
                     </div>
                     <PanoplyEquipmentTextList :items="linkedItems" :table-meta="tableMeta" />
@@ -292,7 +297,7 @@ const handleAction = async (actionKey) => {
                     class="mt-3"
                     data-cy="panoply-full-bonus"
                 >
-                    <div class="text-[0.625rem] font-semibold uppercase tracking-wide text-base-content/60 mb-2">
+                    <div class="mb-2 text-xs font-semibold uppercase tracking-wide text-primary-300">
                         Bonus de panoplie
                     </div>
                     <PanoplyBonusTiers

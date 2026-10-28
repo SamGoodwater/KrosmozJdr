@@ -570,11 +570,12 @@ export function convertToTailwind(color, intensity = null, options = {}) {
  * - Extrait d'abord le **premier token** exploitable : lettres A-Z ou chiffres 0-9.
  * - Ignore espaces et ponctuation.
  * - Supporte un mode de mapping **stable** (mêmes entrées => mêmes couleurs) et un mode **ordonné**.
- * - Supporte les nombres **jusqu'à 20** (utile pour un effet de progression sur des niveaux 1..20).
+ * - Scheme `level` : nombres **1..30** → tokens custom `level-N` (`--color-level-N`, noir au 30).
  *
  * ⚠️ Note sur les nuances Tailwind:
  * - `200/300` = plus clair
  * - `700/800` = plus foncé
+ * - Les tokens `level-N` ne passent pas par le remapping `tone` (rampe fixe).
  *
  * @param {string|number|null|undefined} input
  * @param {Object} options
@@ -587,11 +588,12 @@ export function convertToTailwind(color, intensity = null, options = {}) {
  * @param {number} [options.maxNumber=20] - Support des nombres 1..maxNumber (en mode numericProgression)
  * @param {string} [options.baseColor="blue"] - Couleur de base pour numericProgression / shadeProgression
  * @param {string} [options.fallback="blue-500"] - Token de fallback
- * @returns {string} token tailwind `color-shade`
+ * @returns {string} token tailwind `color-shade` (ou `level-N` pour le scheme level)
  *
  * @example
  * getTailwindTokenFromLabel("Alice") // "emerald-500" (stable)
  * getTailwindTokenFromLabel("9", { mode: "numericProgression" }) // ex: "blue-600"
+ * getTailwindTokenFromLabel("12", { scheme: "level" }) // "level-12"
  * getTailwindTokenFromLabel("Niveau 12", { mode: "numericProgression", baseColor: "violet" })
  */
 export function getTailwindTokenFromLabel(input, options = {}) {
@@ -708,30 +710,6 @@ export function getTailwindTokenFromLabel(input, options = {}) {
   // réinventer la config à chaque endroit.
   const s = String(scheme || "mixed");
 
-  // 1..20 : progression niveau (gris -> bleu/violet, intensité croissante)
-  const levelRamp = Object.freeze([
-    "zinc-300",  // 1
-    "zinc-400",  // 2
-    "slate-400", // 3
-    "slate-500", // 4
-    "sky-500",   // 5
-    "sky-600",   // 6
-    "blue-500",  // 7
-    "blue-600",  // 8
-    "indigo-500",// 9
-    "indigo-600",// 10
-    "violet-500",// 11
-    "violet-600",// 12
-    "violet-600",// 13
-    "violet-700",// 14
-    "purple-600",// 15
-    "purple-700",// 16
-    "fuchsia-600",// 17
-    "fuchsia-700",// 18
-    "fuchsia-800",// 19
-    "fuchsia-800",// 20
-  ]);
-
   // 1..6 : progression rareté (gris -> rouge, intensité croissante)
   const rarityRamp = Object.freeze([
     "zinc-400",  // 1 Commun
@@ -742,9 +720,15 @@ export function getTailwindTokenFromLabel(input, options = {}) {
     "red-700",   // 6 Unique
   ]);
 
+  /** Palette CSS `@theme` : `--color-level-1` … `--color-level-30` (noir). */
+  const LEVEL_TOKEN_MAX = 30;
+
   if (s === SCHEMES.level && first.kind === "number") {
     const n = Number(first.value);
-    if (Number.isFinite(n) && n >= 1 && n <= 20) return applyToneToToken(levelRamp[n - 1], tone);
+    if (Number.isFinite(n)) {
+      const clamped = Math.min(LEVEL_TOKEN_MAX, Math.max(1, Math.round(n)));
+      return `level-${clamped}`;
+    }
   }
 
   if (s === SCHEMES.rarity && first.kind === "number") {

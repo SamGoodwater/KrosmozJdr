@@ -11,6 +11,7 @@
  */
 import { computed } from "vue";
 import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import CharacteristicEffectsGrid from "@/Pages/Molecules/data-display/CharacteristicEffectsGrid.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
@@ -23,7 +24,13 @@ import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
-import { getElementGlassSurfaceStyle, resolveEntityElementValue } from "@/Utils/Entity/Elements";
+import {
+    ELEMENT_PRIMARY_LABELS,
+    getElementGlassSurfaceStyle,
+    getElementIcon,
+    getElementPrimaries,
+    resolveEntityElementValue,
+} from "@/Utils/Entity/Elements";
 import ConditionBadges from "@/Pages/Molecules/entity/condition/ConditionBadges.vue";
 
 const props = defineProps({
@@ -176,6 +183,17 @@ const elementSurfaceStyle = computed(() => {
     return getElementGlassSurfaceStyle(resolveEntityElementValue(entity.value));
 });
 
+const elementOverlay = computed(() => {
+    const primaries = getElementPrimaries(resolveEntityElementValue(entity.value));
+    if (!primaries.length) return null;
+    const first = primaries[0];
+    if (first === 0 && primaries.length === 1) return null;
+    return {
+        icon: getElementIcon(first),
+        label: ELEMENT_PRIMARY_LABELS[first] ?? "",
+    };
+});
+
 const cardRootClass = computed(() =>
     props.surfaceTone === "passive" ? "capability-minimal--passive" : "",
 );
@@ -196,11 +214,25 @@ const cardRootClass = computed(() =>
                 class="relative p-2 flex flex-col gap-1.5 transition-colors"
             >
                 <div class="flex gap-2">
-                    <EntityThumb
-                        size="compact"
-                        :src="imageUrl || ''"
-                        :label="entity?.name ?? 'Capacité'"
-                    />
+                    <div class="relative shrink-0">
+                        <EntityThumb
+                            size="compact"
+                            :src="imageUrl || ''"
+                            :label="entity?.name ?? 'Capacité'"
+                        />
+                        <span
+                            v-if="elementOverlay"
+                            class="pointer-events-none absolute -left-0.5 -top-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-base-100/90 shadow-sm ring-1 ring-base-content/15"
+                            data-cy="capability-minimal-element-overlay"
+                        >
+                            <Icon
+                                :source="elementOverlay.icon"
+                                :alt="elementOverlay.label"
+                                size="xs"
+                                class="shrink-0"
+                            />
+                        </span>
+                    </div>
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex items-center gap-1.5">
                             <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />
@@ -266,11 +298,25 @@ const cardRootClass = computed(() =>
                 class="relative p-2 flex flex-col gap-1.5 transition-colors"
             >
                 <div class="flex gap-2">
-                    <EntityThumb
-                        size="compact"
-                        :src="imageUrl || ''"
-                        :label="entity?.name ?? 'Capacité'"
-                    />
+                    <div class="relative shrink-0">
+                        <EntityThumb
+                            size="compact"
+                            :src="imageUrl || ''"
+                            :label="entity?.name ?? 'Capacité'"
+                        />
+                        <span
+                            v-if="elementOverlay"
+                            class="pointer-events-none absolute -left-0.5 -top-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-base-100/90 shadow-sm ring-1 ring-base-content/15"
+                            data-cy="capability-minimal-element-overlay"
+                        >
+                            <Icon
+                                :source="elementOverlay.icon"
+                                :alt="elementOverlay.label"
+                                size="xs"
+                                class="shrink-0"
+                            />
+                        </span>
+                    </div>
                     <div class="flex-1 min-w-0 flex flex-col gap-1 pl-0.5">
                         <div class="flex w-full min-w-0 items-center gap-1.5">
                             <LevelBadge v-if="levelValue != null" :level="levelValue" size="xs" class="shrink-0" />

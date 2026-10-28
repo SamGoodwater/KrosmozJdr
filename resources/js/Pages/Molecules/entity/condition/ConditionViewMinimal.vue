@@ -3,7 +3,7 @@
  * ConditionViewMinimal — Vue minimal (Condition)
  *
  * @description
- * EntityMinimalCard : image, nom, dissipable ; description en déployé.
+ * EntityMinimalCard : image + dissipable (icône sous vignette), nom ; description toujours visible.
  */
 import { computed } from "vue";
 import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
@@ -89,14 +89,21 @@ const hasDescription = computed(() => {
         <template #compact>
             <div data-cy="entity-minimal-card-compact" class="flex flex-col gap-1.5 p-2">
                 <div class="flex items-start gap-2">
-                    <EntityThumb size="xs" :src="imageUrl || ''" :label="displayName" />
+                    <div class="flex shrink-0 flex-col items-center gap-0.5">
+                        <EntityThumb size="xs" :src="imageUrl || ''" :label="displayName" />
+                        <ConditionDissipableHighlight
+                            :dissipable="dissipableValue"
+                            variant="caption-hover"
+                        />
+                    </div>
                     <div class="min-w-0 flex-1">
                         <EntityMinimalTitle :label="displayName" @open="openQuickView" />
-                        <ConditionDissipableHighlight
-                            class="mt-1"
-                            :dissipable="dissipableValue"
-                            variant="block"
-                        />
+                        <div
+                            v-if="hasDescription"
+                            class="prose prose-sm prose-invert mt-1 max-w-none text-[11px] leading-snug text-primary-300/90"
+                        >
+                            <CellRenderer :cell="descriptionCell" ui-color="primary" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -104,7 +111,13 @@ const hasDescription = computed(() => {
         <template #expanded>
             <div data-cy="entity-minimal-card-expanded" class="flex flex-col gap-1.5 p-2">
                 <div class="flex items-start gap-2">
-                    <EntityThumb size="xs" :src="imageUrl || ''" :label="displayName" />
+                    <div class="flex shrink-0 flex-col items-center gap-0.5">
+                        <EntityThumb size="xs" :src="imageUrl || ''" :label="displayName" />
+                        <ConditionDissipableHighlight
+                            :dissipable="dissipableValue"
+                            variant="caption-hover"
+                        />
+                    </div>
                     <div class="min-w-0 flex-1">
                         <div class="flex w-full min-w-0 items-start gap-1.5">
                             <div class="min-w-0">
@@ -123,23 +136,18 @@ const hasDescription = computed(() => {
                                 />
                             </div>
                         </div>
-                        <ConditionDissipableHighlight
-                            class="mt-1"
-                            :dissipable="dissipableValue"
-                            variant="block"
-                        />
                         <ConditionMechanicalFlags
                             class="mt-1"
                             :condition="entity"
                             size="xs"
                         />
+                        <div
+                            v-if="hasDescription"
+                            class="prose prose-sm prose-invert mt-1 max-w-none text-xs leading-snug text-primary-300/90"
+                        >
+                            <CellRenderer :cell="descriptionCell" ui-color="primary" />
+                        </div>
                     </div>
-                </div>
-                <div
-                    v-if="hasDescription"
-                    class="prose prose-sm prose-invert max-w-none border-t border-base-300/80 pt-1.5 text-xs leading-snug text-primary-300/90"
-                >
-                    <CellRenderer :cell="descriptionCell" ui-color="primary" />
                 </div>
             </div>
         </template>

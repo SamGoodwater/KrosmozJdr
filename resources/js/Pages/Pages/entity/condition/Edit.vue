@@ -12,6 +12,7 @@ import { useEntityEditEmbed } from '@/Composables/entity/useEntityEditEmbed';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { Condition } from '@/Models/Entity/Condition';
 import { getConditionFieldDescriptors } from '@/Entities/condition/condition-descriptors';
+import { CONDITION_FORM_FIELD_SECTIONS_EDIT } from '@/Entities/condition/condition-form-config';
 import { createFieldsConfigFromDescriptors } from '@/Utils/entity/descriptor-form';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
@@ -45,6 +46,7 @@ const fieldsConfig = computed(() => {
     return createFieldsConfigFromDescriptors(getConditionFieldDescriptors(ctx), ctx);
 });
 
+const fieldSections = CONDITION_FORM_FIELD_SECTIONS_EDIT;
 const fixedFooterInsetClass = 'left-0 right-0';
 const entityEditFormRef = ref(null);
 const canDelete = computed(() => canDeleteAny('conditions') || isAdmin.value);
@@ -74,12 +76,15 @@ setPageTitle(`Modifier l'état : ${condition.value.name || 'Sans nom'}`);
             entity-type="condition"
             :fields-config="fieldsConfig"
             :is-updating="true"
+            :field-sections="fieldSections"
             :show-state-toolbar="true"
+            :show-access-levels-in-footer="false"
             layout-profile="sheet"
             :hide-top-toolbar="true"
             :hide-action-dock="true"
             :fixed-footer-actions="false"
             :fixed-footer-inset-class="fixedFooterInsetClass"
+            :compact-access-levels="true"
             :embedded-in-modal="isEmbeddedInModal"
             :redirect-after-update="resolvedRedirectAfterUpdate"
         />

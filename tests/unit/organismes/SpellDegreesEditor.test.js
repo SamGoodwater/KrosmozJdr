@@ -154,8 +154,8 @@ describe('SpellDegreesEditor', () => {
         const tabs = wrapper.findAll('[role="tab"]');
         expect(tabs).toHaveLength(2);
         await tabs[1].trigger('click');
-        expect(wrapper.text()).toContain('Reprendre les effets du degré précédent');
-        expect(wrapper.text()).toContain('réutilise les effets');
+        expect(wrapper.text()).toContain('Reprendre les sous-effets du degré précédent');
+        expect(wrapper.text()).toContain('réutilise les sous-effets');
     });
 
     it('change d’onglet sans confirmation même si dirty', async () => {
@@ -169,7 +169,7 @@ describe('SpellDegreesEditor', () => {
         await po.setValue('2-8');
         await wrapper.findAll('[role="tab"]')[1].trigger('click');
         expect(confirmSpy).not.toHaveBeenCalled();
-        expect(wrapper.findAll('[role="tab"]')[1].classes()).toContain('tab-active');
+        expect(wrapper.findAll('[role="tab"]')[1].attributes('aria-selected')).toBe('true');
         confirmSpy.mockRestore();
     });
 

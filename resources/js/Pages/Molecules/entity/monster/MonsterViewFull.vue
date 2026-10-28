@@ -114,8 +114,11 @@ const canShowField = (fieldKey) => {
     return true;
 };
 
+/** Niveau uniquement sur l’image (badge auto-scheme level). */
+const showLevelBadgeOnImage = computed(() => canShowField("creature_level"));
+
 const headlineFields = computed(() =>
-    ["creature_level", "monster_race", "size", "state"].filter(canShowField),
+    ["monster_race", "size", "state"].filter(canShowField),
 );
 
 const isBoss = computed(() =>
@@ -349,10 +352,27 @@ const handleAction = async (actionKey) => {
 </script>
 
 <template>
-    <div class="space-y-4">
+    <div class="space-y-3">
         <EntityViewHeader :mode="headerMode">
             <template #media>
-                <div class="group relative w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56">
+                <div
+                    class="group relative size-24 shrink-0 sm:size-28 md:size-32"
+                    data-cy="monster-full-media"
+                >
+                    <div
+                        v-if="showLevelBadgeOnImage"
+                        class="absolute top-1.5 left-1.5 z-20 transition-opacity duration-150 group-hover:opacity-0"
+                    >
+                        <Badge
+                            :color="getBadgeColor('creature_level')"
+                            :auto-label="getBadgeAutoParams('creature_level').autoLabel"
+                            :auto-scheme="getBadgeAutoParams('creature_level').autoScheme"
+                            :auto-tone="getBadgeAutoParams('creature_level').autoTone"
+                            size="sm"
+                        >
+                            <CellRenderer :cell="asTextCell(getCell('creature_level'))" ui-color="primary" />
+                        </Badge>
+                    </div>
                     <ImageViewer
                         v-if="monster.creature?.image"
                         :src="monster.creature.image"
@@ -360,7 +380,7 @@ const handleAction = async (actionKey) => {
                         :caption="monster.creature?.name || ''"
                         preload="hover"
                         :image-props="{
-                            size: 'xl',
+                            size: 'lg',
                             rounded: 'lg',
                             fit: 'cover',
                             class: 'w-full h-full',
@@ -368,9 +388,9 @@ const handleAction = async (actionKey) => {
                     />
                     <div
                         v-else
-                        class="w-full h-full entity-radius-box bg-base-200 flex items-center justify-center border border-base-300"
+                        class="flex size-full items-center justify-center border border-base-300 bg-base-200 entity-radius-box"
                     >
-                        <Icon source="fa-solid fa-dragon" :alt="monster.creature?.name || 'Monstre'" size="xl" class="text-primary-400" />
+                        <Icon source="fa-solid fa-dragon" :alt="monster.creature?.name || 'Monstre'" size="lg" class="text-primary-400" />
                     </div>
                 </div>
             </template>
@@ -384,7 +404,7 @@ const handleAction = async (actionKey) => {
                         size-class="h-10 w-10"
                         class="mt-1 shrink-0"
                     />
-                    <h2 class="min-w-0 flex-1 break-words text-2xl font-bold text-primary-100">
+                    <h2 class="min-w-0 flex-1 break-words text-xl font-bold text-primary-100 md:text-2xl">
                         <CellRenderer :cell="getCell('creature_name')" ui-color="primary" />
                     </h2>
                 </div>
@@ -428,8 +448,8 @@ const handleAction = async (actionKey) => {
                 </div>
             </template>
 
-            <template #subtitle>
-                <p v-if="monster.creature?.description" class="text-primary-300 mt-2 break-words">
+            <template v-if="monster.creature?.description" #subtitle>
+                <p class="text-sm leading-relaxed whitespace-pre-wrap break-words text-primary-200 md:text-base">
                     {{ monster.creature.description }}
                 </p>
             </template>
@@ -459,13 +479,6 @@ const handleAction = async (actionKey) => {
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Traits</h3>
             <CreatureTraitBadges :traits="linkedCreatureTraits" size="sm" />
         </div>
-        <div
-            v-else
-            class="rounded-box border border-dashed border-base-300/70 bg-base-100/20 px-4 py-3 text-sm text-primary-300/80"
-            role="status"
-        >
-            Aucun trait renseigné pour ce monstre.
-        </div>
 
         <div
             v-if="hasLinkedLanguages"
@@ -476,17 +489,9 @@ const handleAction = async (actionKey) => {
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Langues</h3>
             <EntityLanguagesInline :languages="linkedLanguages" :show-label="false" />
         </div>
-        <div
-            v-else
-            class="rounded-box border border-dashed border-base-300/70 bg-base-100/20 px-4 py-3 text-sm text-primary-300/80"
-            role="status"
-        >
-            Aucune langue renseignée.
-        </div>
 
-        <!-- Carte caractéristiques complète (mode étendu) -->
-        <section v-if="hasCreatureCharacteristics" class="pt-4 border-t border-base-300">
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300 mb-3">
+        <section v-if="hasCreatureCharacteristics" class="pt-3 border-t border-base-300">
+            <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-primary-300">
                 Caractéristiques
             </h3>
             <CharacteristicsCard
@@ -496,23 +501,14 @@ const handleAction = async (actionKey) => {
                 :runtime="creatureRuntimeStats"
             />
         </section>
-        <section
-            v-else
-            class="pt-4 border-t border-base-300"
-            role="status"
-        >
-            <p class="text-sm text-primary-300/80">
-                Pas de créature associée — les caractéristiques ne peuvent pas être affichées.
-            </p>
-        </section>
 
         <section
             v-if="competenceGroups.length"
-            class="pt-4 border-t border-base-300"
+            class="pt-3 border-t border-base-300"
             role="region"
             aria-label="Compétences"
         >
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300 mb-3">
+            <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-primary-300">
                 Compétences
             </h3>
             <CharacteristicsCard
@@ -524,27 +520,20 @@ const handleAction = async (actionKey) => {
         </section>
 
         <section
-            class="pt-4 border-t border-base-300 space-y-3"
+            v-if="hasLinkedSpells"
+            class="pt-3 border-t border-base-300 space-y-3"
             role="region"
             aria-label="Sorts de la créature"
         >
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">
                 Sorts
             </h3>
             <MonsterCreatureSpellsList
-                v-if="hasLinkedSpells"
                 :creature="creatureData"
                 :table-meta="tableMeta"
                 :characteristic-runtime="characteristicRuntime || creatureRuntimeStats"
                 section-class="rounded-box border border-base-300 bg-base-100/40 p-4"
             />
-            <p
-                v-else
-                class="rounded-box border border-dashed border-base-300/70 bg-base-100/20 px-4 py-3 text-sm text-primary-300/80"
-                role="status"
-            >
-                Aucun sort lié à la créature de ce monstre.
-            </p>
         </section>
 
         <section
@@ -553,7 +542,7 @@ const handleAction = async (actionKey) => {
             role="region"
             aria-label="Équipements de la créature"
         >
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">
                 Équipements
             </h3>
             <MonsterCreatureItemsList

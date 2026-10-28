@@ -14,6 +14,7 @@ import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import CellRenderer from '@/Pages/Atoms/data-display/CellRenderer.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
 import EntityPropertyDisplay from '@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue';
 import EntityFieldTooltip from '@/Pages/Molecules/entity/shared/EntityFieldTooltip.vue';
@@ -163,10 +164,6 @@ const getBadgeAutoParams = (fieldKey) => {
     return { autoLabel, autoScheme, autoTone };
 };
 
-const levelDisplay = computed(() => {
-    const v = props.resource?.level ?? props.resource?._data?.level;
-    return v !== null && v !== undefined && v !== '' ? String(v) : '-';
-});
 const typeDisplay = computed(() => {
     const rt = props.resource?.resourceType ?? props.resource?._data?.resourceType;
     return rt?.name ?? rt?.label ?? '-';
@@ -231,115 +228,117 @@ const handleAction = async (actionKey) => {
 </script>
 
 <template>
-    <div class="space-y-4">
+    <div class="space-y-3">
         <EntityViewHeader :mode="headerMode">
             <template #media>
-                <div class="group relative w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56">
+                <div class="group relative size-24 shrink-0 sm:size-28 md:size-32">
                     <ImageViewer
                         v-if="resource.image"
                         :src="resource.image"
                         :alt="resource.name || 'Ressource'"
                         :caption="resource.name || ''"
                         preload="hover"
-                        :image-props="{ size: 'xl', rounded: 'lg', fit: 'cover', class: 'w-full h-full' }"
+                        :image-props="{ size: 'lg', rounded: 'lg', fit: 'cover', class: 'w-full h-full' }"
                     />
-                    <div v-else class="w-full h-full flex items-center justify-center bg-base-200 entity-radius-box">
-                        <Icon source="fa-solid fa-gem" :alt="resource.name" size="xl" />
+                    <div v-else class="flex size-full items-center justify-center bg-base-200 entity-radius-box">
+                        <Icon source="fa-solid fa-gem" :alt="resource.name" size="lg" />
                     </div>
                 </div>
             </template>
 
             <template #title>
-                <div class="space-y-1">
-                    <!-- Ligne 1 : Nom + Niveau (badge Nvx+val) + Type (badge sans icône) -->
-                    <div class="flex flex-wrap items-center gap-2">
-                        <h2 class="text-2xl font-bold text-primary-100 break-words">{{ resource.name }}</h2>
-                        <template v-if="canShowField('level')">
-                            <EntityFieldTooltip
-                                field-key="level"
-                                entity-type="resource"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
-                            >
-                                <Badge
-                                    :color="getBadgeColor('level')"
-                                    :auto-label="levelDisplay"
-                                    auto-scheme="level"
-                                    auto-tone="mid"
-                                    size="sm"
-                                >
-                                    Nvx {{ levelDisplay }}
-                                </Badge>
-                            </EntityFieldTooltip>
-                        </template>
-                        <template v-if="canShowField('resource_type')">
-                            <EntityFieldTooltip
-                                field-key="resource_type"
-                                entity-type="resource"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
-                            >
-                                <Badge
-                                    color="auto"
-                                    :auto-label="typeDisplay"
-                                    auto-scheme="labelHash"
-                                    auto-tone="light"
-                                    size="sm"
-                                >
-                                    {{ typeDisplay }}
-                                </Badge>
-                            </EntityFieldTooltip>
-                        </template>
-                    </div>
-                    <!-- Ligne 2 : Rareté (badge), Poids, Prix (texte, pas de badge, collés au label) -->
-                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-                        <template v-if="canShowField('rarity')">
-                            <EntityFieldTooltip
-                                field-key="rarity"
-                                entity-type="resource"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
-                            >
-                                <Badge
-                                    :color="rarityBadgeColor"
-                                    :auto-label="String(resource.rarity ?? 0)"
-                                    auto-scheme="rarity"
-                                    auto-tone="mid"
-                                    size="sm"
-                                >
-                                    {{ rarityDisplay }}
-                                </Badge>
-                            </EntityFieldTooltip>
-                        </template>
-                        <template v-if="canShowField('weight')">
-                            <EntityPropertyDisplay
-                                field-key="weight"
-                                :entity="resource"
-                                entity-type="resource"
-                                display-mode="extended"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
-                                size="sm"
-                            />
-                        </template>
-                        <template v-if="canShowField('price')">
-                            <EntityPropertyDisplay
-                                field-key="price"
-                                :entity="resource"
-                                entity-type="resource"
-                                display-mode="extended"
-                                :descriptors="descriptors"
-                                :table-meta="tableMeta"
-                                size="sm"
-                            />
-                        </template>
-                    </div>
-                </div>
+                <h2 class="text-xl font-bold break-words text-primary-100 md:text-2xl">{{ resource.name }}</h2>
             </template>
 
-            <template #mainInfos />
+            <template #mainInfos>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                    <template v-if="canShowField('level')">
+                        <EntityFieldTooltip
+                            field-key="level"
+                            entity-type="resource"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                        >
+                            <Badge
+                                :color="getBadgeColor('level')"
+                                :auto-label="getBadgeAutoParams('level').autoLabel"
+                                :auto-scheme="getBadgeAutoParams('level').autoScheme"
+                                :auto-tone="getBadgeAutoParams('level').autoTone"
+                                size="sm"
+                            >
+                                <CellRenderer :cell="asTextCell(getCell('level'))" ui-color="primary" />
+                            </Badge>
+                        </EntityFieldTooltip>
+                    </template>
+                    <template v-if="canShowField('resource_type')">
+                        <EntityFieldTooltip
+                            field-key="resource_type"
+                            entity-type="resource"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                        >
+                            <Badge
+                                color="auto"
+                                :auto-label="typeDisplay"
+                                auto-scheme="labelHash"
+                                auto-tone="light"
+                                size="sm"
+                            >
+                                {{ typeDisplay }}
+                            </Badge>
+                        </EntityFieldTooltip>
+                    </template>
+                    <template v-if="canShowField('rarity')">
+                        <EntityFieldTooltip
+                            field-key="rarity"
+                            entity-type="resource"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                        >
+                            <Badge
+                                :color="rarityBadgeColor"
+                                :auto-label="String(resource.rarity ?? 0)"
+                                auto-scheme="rarity"
+                                auto-tone="mid"
+                                size="sm"
+                            >
+                                {{ rarityDisplay }}
+                            </Badge>
+                        </EntityFieldTooltip>
+                    </template>
+                    <template v-if="canShowField('weight')">
+                        <EntityPropertyDisplay
+                            field-key="weight"
+                            :entity="resource"
+                            entity-type="resource"
+                            display-mode="extended"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                            size="sm"
+                            class="max-w-[20rem] whitespace-normal break-words"
+                        />
+                    </template>
+                    <template v-if="canShowField('price')">
+                        <EntityPropertyDisplay
+                            field-key="price"
+                            :entity="resource"
+                            entity-type="resource"
+                            display-mode="extended"
+                            :descriptors="descriptors"
+                            :table-meta="tableMeta"
+                            size="sm"
+                            class="max-w-[20rem] whitespace-normal break-words"
+                        />
+                    </template>
+                </div>
+            </template>
             <template #subtitle>
-                <p v-if="resource.description" class="text-primary-300 mt-2 break-words">{{ resource.description }}</p>
+                <p
+                    v-if="resource.description"
+                    class="text-sm leading-relaxed whitespace-pre-wrap break-words text-primary-200 md:text-base"
+                >
+                    {{ resource.description }}
+                </p>
             </template>
 
             <template #actions>
@@ -361,13 +360,13 @@ const handleAction = async (actionKey) => {
 
         <!-- Ingrédients (colonne) -->
         <div v-if="ingredients.length > 0" class="space-y-2">
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">Ingrédients</h3>
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Ingrédients</h3>
             <ResourceIngredientsList :ingredients="ingredients" />
         </div>
 
         <!-- Autres relations (colonne) -->
         <div v-if="hasOtherRelations" class="space-y-2">
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">Autres relations</h3>
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Autres relations</h3>
             <div class="flex flex-col gap-2 text-sm">
                 <div v-if="consumables.length > 0" class="space-y-1">
                     <span class="text-xs uppercase text-primary-300 font-semibold">Utilisé dans des recettes (consommables)</span>

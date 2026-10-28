@@ -3,59 +3,70 @@
  * SpecializationViewFull — Vue Full pour Specialization
  *
  * @description
- * Mise en page dédiée spécialisation : texte à gauche (nom, accroche, description),
- * visuel à droite. L’état reste dans les actions. Le bandeau « Rédaction » est rendu
- * en fin de page dans `Show.vue` (après les sections CMS).
+ * Alignée Breed : EntityViewHeader (image | nom / accroche / corps), traits et
+ * relations en sections `v-if` (SpecializationRelationsByLevel).
  *
  * @props {Specialization} specialization - Instance du modèle Specialization
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
-import { computed } from 'vue';
-import { router } from '@inertiajs/vue3';
-import Image from '@/Pages/Atoms/data-display/Image.vue';
+import { computed } from "vue";
+import { router } from "@inertiajs/vue3";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
-import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
-import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
-import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
+import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
+import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
+import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
+import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
+import SpecializationRelationsByLevel from "@/Pages/Molecules/entity/specialization/SpecializationRelationsByLevel.vue";
 
 const props = defineProps({
     specialization: {
         type: Object,
-        required: true
+        required: true,
     },
     showActions: {
         type: Boolean,
-        default: true
+        default: true,
     },
-
     inModal: {
         type: Boolean,
         default: false,
     },
     titleTag: {
         type: String,
-        default: 'h2',
-        validator: (v) => ['h1', 'h2', 'h3'].includes(v),
+        default: "h2",
+        validator: (v) => ["h1", "h2", "h3"].includes(v),
     },
     tableMeta: {
         type: Object,
-        default: () => ({})
-    }
+        default: () => ({}),
+    },
 });
 
 const actionsContext = computed(() =>
     props.inModal
-        ? { inPanel: false, inModal: true, surface: 'modal', viewMode: 'full', modalMode: 'view' }
-        : { inPanel: false, inPage: true, surface: 'page', viewMode: 'full' },
+        ? { inPanel: false, inModal: true, surface: "modal", viewMode: "full", modalMode: "view" }
+        : { inPanel: false, inPage: true, surface: "page", viewMode: "full" },
 );
 
+const headerMode = computed(() => (props.inModal ? "compact" : "full"));
 
-const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'delete', 'action']);
+const emit = defineEmits([
+    "edit",
+    "copy-link",
+    "download-pdf",
+    "refresh",
+    "view",
+    "quick-view",
+    "delete",
+    "action",
+]);
 
 const { copyToClipboard } = useCopyToClipboard();
-const { downloadPdf } = useDownloadPdf('specialization');
+const { downloadPdf } = useDownloadPdf("specialization");
 
 const linkedCreatureTraits = computed(() => {
     const raw = props.specialization?._data?.creatureTraits ?? props.specialization?.creatureTraits;
@@ -63,134 +74,134 @@ const linkedCreatureTraits = computed(() => {
 });
 
 const hasLinkedCreatureTraits = computed(() => linkedCreatureTraits.value.length > 0);
-const linkedCapabilities = computed(() => props.specialization?._data?.capabilities ?? props.specialization?.capabilities ?? []);
-const linkedSpells = computed(() => props.specialization?._data?.spells ?? props.specialization?.spells ?? []);
-const linkedItems = computed(() => props.specialization?._data?.items ?? props.specialization?.items ?? []);
-const linkedResources = computed(() => props.specialization?._data?.resources ?? props.specialization?.resources ?? []);
-const linkedConsumables = computed(() => props.specialization?._data?.consumables ?? props.specialization?.consumables ?? []);
-const linkedSections = computed(() => props.specialization?._data?.sections ?? props.specialization?.sections ?? []);
 
 const shortPitch = computed(() => {
     const raw =
-        props.specialization?.shortDescription
-        ?? props.specialization?._data?.short_description
-        ?? props.specialization?.short_description;
-    const s = String(raw ?? '').trim();
-    return s.length ? s : '';
+        props.specialization?.shortDescription ??
+        props.specialization?._data?.short_description ??
+        props.specialization?.short_description;
+    const s = String(raw ?? "").trim();
+    return s.length ? s : "";
 });
 
 const longDescription = computed(() => {
     const raw = props.specialization?.description ?? props.specialization?._data?.description;
-    const s = String(raw ?? '').trim();
-    return s.length ? s : '';
+    const s = String(raw ?? "").trim();
+    return s.length ? s : "";
 });
 
-const heroImageSrc = computed(() => {
+const mediaSrc = computed(() => {
     const raw = props.specialization?.image ?? props.specialization?._data?.image;
-    return String(raw ?? '').trim();
+    return String(raw ?? "").trim();
 });
 
-const getCell = (fieldKey) => {
-    return props.specialization.toCell(fieldKey, {
-        size: 'lg',
-        context: 'extended',
+const getCell = (fieldKey) =>
+    props.specialization.toCell(fieldKey, {
+        size: "lg",
+        context: "extended",
     });
-};
 
 const handleAction = async (actionKey) => {
     const specializationId = props.specialization.id;
     if (!specializationId) return;
 
     switch (actionKey) {
-        case 'view':
-            router.visit(route('entities.specializations.show', { specialization: specializationId }));
-            emit('view', props.specialization);
+        case "view":
+            router.visit(route("entities.specializations.show", { specialization: specializationId }));
+            emit("view", props.specialization);
             break;
-        case 'edit':
-            router.visit(route('entities.specializations.edit', { specialization: specializationId }));
-            emit('edit', props.specialization);
+        case "edit":
+            router.visit(route("entities.specializations.edit", { specialization: specializationId }));
+            emit("edit", props.specialization);
             break;
-        
-        case 'copy-link': {
-            const cfg = getEntityRouteConfig('specialization');
-            const url = resolveEntityRouteUrl('specialization', 'show', specializationId, cfg);
+        case "copy-link": {
+            const cfg = getEntityRouteConfig("specialization");
+            const url = resolveEntityRouteUrl("specialization", "show", specializationId, cfg);
             if (url) {
                 await copyToClipboard(url, "Lien de la spécialisation copié !");
             }
-            emit('copy-link', props.specialization);
+            emit("copy-link", props.specialization);
             break;
         }
-        case 'download-pdf':
+        case "download-pdf":
             await downloadPdf(specializationId);
-            emit('download-pdf', props.specialization);
+            emit("download-pdf", props.specialization);
             break;
-        case 'refresh':
-            router.reload({ only: ['specializations'] });
-            emit('refresh', props.specialization);
+        case "refresh":
+            router.reload({ only: ["specializations"] });
+            emit("refresh", props.specialization);
             break;
-        case 'delete':
-            emit('delete', props.specialization);
+        case "delete":
+            emit("delete", props.specialization);
             break;
     }
 };
 </script>
 
 <template>
-    <div class="space-y-4">
-        <!-- Bloc héros : contenu à gauche, visuel à droite (desktop) -->
-        <div class="flex flex-col gap-6 md:flex-row md:items-start md:justify-between md:gap-8">
-            <div class="min-w-0 flex-1 space-y-4">
-                <div class="flex w-full min-w-0 items-start gap-3">
-                    <h2 class="min-w-0 text-2xl font-bold text-primary-100 wrap-break-word md:text-3xl">
-                        <CellRenderer
-                            :cell="getCell('name')"
-                            ui-color="primary"
-                        />
-                    </h2>
-                    <div v-if="showActions" class="ml-auto flex min-w-8 flex-1 justify-end pt-0.5">
-                        <EntityActions
-                            entity-type="specializations"
-                            :entity="specialization"
-                            format="buttons"
-                            display="icon-only"
-                            size="sm"
-                            color="primary"
-                            :context="actionsContext"
-                            @action="handleAction"
-                        />
+    <div class="space-y-3">
+        <EntityViewHeader :mode="headerMode">
+            <template #media>
+                <div class="group relative size-24 shrink-0 sm:size-28 md:size-32">
+                    <ImageViewer
+                        v-if="mediaSrc"
+                        :source="mediaSrc"
+                        :alt="specialization.name || 'Spécialisation'"
+                        :caption="specialization.name || ''"
+                        preload="hover"
+                        :image-props="{
+                            size: 'lg',
+                            rounded: 'lg',
+                            fit: 'cover',
+                            class: 'w-full h-full',
+                        }"
+                    />
+                    <div
+                        v-else
+                        class="flex size-full items-center justify-center bg-base-200 entity-radius-box"
+                    >
+                        <Icon source="fa-solid fa-compass" :alt="specialization.name" size="lg" />
                     </div>
                 </div>
+            </template>
 
-                <p
-                    v-if="shortPitch"
-                    class="specialization-pitch text-lg font-semibold leading-snug text-primary-50 wrap-break-word md:text-xl"
-                >
+            <template #title>
+                <component :is="titleTag" class="text-xl font-bold break-words text-primary-100 md:text-2xl">
+                    <CellRenderer :cell="getCell('name')" ui-color="primary" />
+                </component>
+            </template>
+
+            <template v-if="shortPitch" #mainInfos>
+                <p class="specialization-pitch text-base font-semibold leading-snug text-primary-50 break-words md:text-lg">
                     {{ shortPitch }}
                 </p>
+            </template>
 
-                <div
-                    v-if="longDescription"
-                    class="specialization-body text-base leading-relaxed text-primary-200/95 wrap-break-word whitespace-pre-wrap"
-                >
+            <template v-if="longDescription" #subtitle>
+                <p class="text-sm leading-relaxed whitespace-pre-wrap break-words text-primary-200 md:text-base">
                     {{ longDescription }}
-                </div>
-            </div>
+                </p>
+            </template>
 
-            <aside
-                v-if="heroImageSrc"
-                class="specialization-hero-aside mx-auto w-full max-w-[16rem] shrink-0 md:mx-0 md:max-w-[min(40%,20rem)]"
-            >
-                <Image
-                    :src="heroImageSrc"
-                    :alt="specialization.name || 'Spécialisation'"
-                    class="specialization-hero-image entity-radius-box h-auto w-full object-cover shadow-lg"
-                />
-            </aside>
-        </div>
+            <template #actions>
+                <div v-if="showActions">
+                    <EntityActions
+                        entity-type="specializations"
+                        :entity="specialization"
+                        format="buttons"
+                        display="icon-only"
+                        size="sm"
+                        color="primary"
+                        :context="actionsContext"
+                        @action="handleAction"
+                    />
+                </div>
+            </template>
+        </EntityViewHeader>
 
         <div
             v-if="hasLinkedCreatureTraits"
-            class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-2"
+            class="space-y-2 rounded-box border border-base-300 bg-base-100/40 p-4"
             role="region"
             aria-label="Traits de spécialisation"
         >
@@ -198,6 +209,7 @@ const handleAction = async (actionKey) => {
             <CreatureTraitBadges :traits="linkedCreatureTraits" show-level size="sm" />
         </div>
 
+        <SpecializationRelationsByLevel :specialization="specialization" />
     </div>
 </template>
 
@@ -210,16 +222,5 @@ const handleAction = async (actionKey) => {
     border-left: 3px solid color-mix(in oklch, hsl(var(--p)) 65%, transparent);
     padding-left: 0.85rem;
     margin-left: 0.1rem;
-}
-
-.specialization-hero-image {
-    aspect-ratio: 1 / 1;
-}
-
-@media (min-width: 768px) {
-    .specialization-hero-aside {
-        position: sticky;
-        top: 1rem;
-    }
 }
 </style>

@@ -100,6 +100,9 @@ export const CAMPAIGN_FORM_FIELD_SECTIONS_EDIT = [
         id: 'meta',
         title: 'Référencement',
         subtitle: 'Slug et mot-clé.',
+        collapsedByDefault: true,
+        collapsedActionLabel: 'Afficher',
+        expandedActionLabel: 'Masquer',
         fieldKeys: ['slug', 'keyword'],
     },
     {

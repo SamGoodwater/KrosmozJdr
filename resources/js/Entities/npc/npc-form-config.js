@@ -129,7 +129,7 @@ export function buildNpcFormFieldsConfig(options = {}) {
     };
 }
 
-/** Sections formulaire — édition (grille sheet 2 cols ; état dans le header). */
+/** Sections formulaire — édition (grille sheet 2 cols ; liens pleine largeur). */
 export const NPC_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
@@ -140,13 +140,26 @@ export const NPC_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'profile',
         title: 'Profil',
-        subtitle: 'Taille, âge, classe et spécialisation.',
-        fieldKeys: ['size', 'age', 'breed_id', 'specialization_id'],
+        subtitle: 'Taille et âge.',
+        fieldKeys: ['size', 'age'],
+    },
+    {
+        id: 'links',
+        title: 'Classe & spécialisation',
+        subtitle: 'Liens vers la classe et la voie.',
+        span: 2,
+        columns: 1,
+        fieldKeys: ['breed_id', 'specialization_id'],
     },
     {
         id: 'narrative',
         title: 'Narratif',
         subtitle: 'Histoire, historique et description.',
+        span: 2,
+        columns: 1,
+        collapsedByDefault: true,
+        collapsedActionLabel: 'Afficher',
+        expandedActionLabel: 'Masquer',
         fieldKeys: ['story', 'historical', 'description'],
     },
     {

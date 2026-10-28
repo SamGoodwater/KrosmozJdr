@@ -173,6 +173,9 @@ export const CAPABILITY_FORM_FIELD_SECTIONS_EDIT = [
         id: 'gameplay',
         title: 'Déroulé & spécificités',
         subtitle: 'Relance, incantation, durée, magie, rituel, passif, puissance.',
+        collapsedByDefault: true,
+        collapsedActionLabel: 'Afficher',
+        expandedActionLabel: 'Masquer',
         fieldKeys: [
             'time_before_use_again',
             'casting_time',
@@ -186,8 +189,9 @@ export const CAPABILITY_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'effect_richtext',
         title: 'Effets (texte riche)',
-        subtitle:
-            'Environ les deux tiers de la ligne sur tablette et plus ; les métadonnées occupent le tiers restant.',
+        subtitle: 'Description mécanique en texte riche.',
+        span: 2,
+        columns: 1,
         fieldKeys: ['effect'],
     },
     {

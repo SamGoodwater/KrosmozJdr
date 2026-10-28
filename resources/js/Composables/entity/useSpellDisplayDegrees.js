@@ -7,6 +7,25 @@
 import { computed, unref } from "vue";
 
 /**
+ * Niveau numérique d’un degré (pour couleur `auto-scheme="level"`).
+ *
+ * @param {object|null|undefined} deg
+ * @param {number} index
+ * @returns {number}
+ */
+export function spellDegreeLevelNumber(deg, index = 0) {
+    const lvl = Number(deg?.required_level);
+    if (!Number.isNaN(lvl) && lvl > 0) {
+        return lvl;
+    }
+    const pos = Number(deg?.position);
+    if (!Number.isNaN(pos) && pos > 0) {
+        return pos;
+    }
+    return index + 1;
+}
+
+/**
  * Libellé d’onglet : « Niv {required_level} » (niveaux lus sur les degrés du sort).
  *
  * @param {object|null|undefined} deg
@@ -14,15 +33,7 @@ import { computed, unref } from "vue";
  * @returns {string}
  */
 export function spellDegreeTabLabel(deg, index = 0) {
-    const lvl = Number(deg?.required_level);
-    if (!Number.isNaN(lvl) && lvl > 0) {
-        return `Niv ${lvl}`;
-    }
-    const pos = Number(deg?.position);
-    if (!Number.isNaN(pos) && pos > 0) {
-        return `Niv ${pos}`;
-    }
-    return `Niv ${index + 1}`;
+    return `Niv ${spellDegreeLevelNumber(deg, index)}`;
 }
 
 /**

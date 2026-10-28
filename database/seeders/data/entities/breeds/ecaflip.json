@@ -4,13 +4,14 @@
     "dofusdb_id": "6",
     "description_fast": "Combattant imprévisible",
     "description": "Les Ecaflips sont des guerriers joueurs qui se fourrent dans les endroits où l'on peut gagner gros, et perdre beaucoup... Un Ecaflip bien dans sa peau parie sans arrêt, pour tout et pour rien. Mais attention, il prend le jeu très au sérieux et ira même ju",
+    "mechanics": "<p><strong>La pièce</strong> — Mécanique centrale, indépendante des voies.</p><p>Une fois par tour, pour <strong>1 PA</strong>, tu lances 1d4. Pair : <strong>Pile</strong>. Impair : <strong>Face</strong>. Si tu ne lances pas, tu gardes l’état et tu ne dépenses rien. Avant le premier lancer, tu n’as pas d’état. Un seul état à la fois. Obtenir un état et le changer coûtent tous les deux 1 PA.</p><p>Certains sorts ont quatre lectures : <strong>Sans état</strong>, <strong>Pile</strong>, <strong>Face</strong>, et (à partir du niveau 7) <strong>Consommation</strong> — les deux branches, puis l’état est retiré.</p><p>À partir du niveau 11, une fois entre deux repos longs, tu peux relancer le dé de Tarot, de Roulette ou de Rekop avant d’accepter le résultat.</p>",
     "dofus_version": "3",
-    "state": "draft",
+    "state": "playable",
     "read_level": 0,
     "write_level": 3,
     "element_orientations": {
         "fire": "soin",
-        "earth": "amelioration",
+        "earth": "entrave",
         "water": "degats",
         "air": "placement"
     }

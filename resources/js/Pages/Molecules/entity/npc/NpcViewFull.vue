@@ -106,8 +106,11 @@ const canShowField = (fieldKey) => {
     return true;
 };
 
+/** Niveau uniquement sur l’image (badge auto-scheme level). */
+const showLevelBadgeOnImage = computed(() => canShowField("creature_level"));
+
 const headlineFields = computed(() =>
-    ["creature_level", "breed", "npc_role", "size", "state"].filter(canShowField),
+    ["breed", "npc_role", "size", "state"].filter(canShowField),
 );
 
 const metaFields = computed(() =>
@@ -314,10 +317,27 @@ const handleAction = async (actionKey) => {
 </script>
 
 <template>
-    <div class="space-y-4">
+    <div class="space-y-3">
         <EntityViewHeader :mode="headerMode">
             <template #media>
-                <div class="group relative w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56">
+                <div
+                    class="group relative size-24 shrink-0 sm:size-28 md:size-32"
+                    data-cy="npc-full-media"
+                >
+                    <div
+                        v-if="showLevelBadgeOnImage"
+                        class="absolute top-1.5 left-1.5 z-20 transition-opacity duration-150 group-hover:opacity-0"
+                    >
+                        <Badge
+                            :color="getBadgeColor('creature_level')"
+                            :auto-label="getBadgeAutoParams('creature_level').autoLabel"
+                            :auto-scheme="getBadgeAutoParams('creature_level').autoScheme"
+                            :auto-tone="getBadgeAutoParams('creature_level').autoTone"
+                            size="sm"
+                        >
+                            <CellRenderer :cell="asTextCell(getCell('creature_level'))" ui-color="primary" />
+                        </Badge>
+                    </div>
                     <ImageViewer
                         v-if="npc.creature?.image"
                         :src="npc.creature.image"
@@ -325,7 +345,7 @@ const handleAction = async (actionKey) => {
                         :caption="npc.creature?.name || ''"
                         preload="hover"
                         :image-props="{
-                            size: 'xl',
+                            size: 'lg',
                             rounded: 'lg',
                             fit: 'cover',
                             class: 'w-full h-full',
@@ -333,15 +353,15 @@ const handleAction = async (actionKey) => {
                     />
                     <div
                         v-else
-                        class="entity-radius-box flex h-full w-full items-center justify-center border border-base-300 bg-base-200"
+                        class="entity-radius-box flex size-full items-center justify-center border border-base-300 bg-base-200"
                     >
-                        <Icon source="fa-solid fa-user" :alt="npc.creature?.name || 'PNJ'" size="xl" class="text-primary-400" />
+                        <Icon source="fa-solid fa-user" :alt="npc.creature?.name || 'PNJ'" size="lg" class="text-primary-400" />
                     </div>
                 </div>
             </template>
 
             <template #title>
-                <component :is="titleTag" class="min-w-0 flex-1 break-words text-2xl font-bold text-primary-100">
+                <component :is="titleTag" class="min-w-0 flex-1 break-words text-xl font-bold text-primary-100 md:text-2xl">
                     <CellRenderer :cell="getCell('creature_name')" ui-color="primary" />
                 </component>
             </template>
@@ -390,8 +410,8 @@ const handleAction = async (actionKey) => {
                 </div>
             </template>
 
-            <template #subtitle>
-                <p v-if="npc.creature?.description" class="mt-2 break-words text-primary-300">
+            <template v-if="npc.creature?.description" #subtitle>
+                <p class="text-sm leading-relaxed whitespace-pre-wrap break-words text-primary-200 md:text-base">
                     {{ npc.creature.description }}
                 </p>
             </template>
@@ -421,13 +441,6 @@ const handleAction = async (actionKey) => {
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Traits</h3>
             <CreatureTraitBadges :traits="linkedCreatureTraits" size="sm" />
         </div>
-        <div
-            v-else
-            class="rounded-box border border-dashed border-base-300/70 bg-base-100/20 px-4 py-3 text-sm text-primary-300/80"
-            role="status"
-        >
-            Aucun trait renseigné pour ce PNJ.
-        </div>
 
         <div
             v-if="hasLinkedLanguages"
@@ -438,25 +451,18 @@ const handleAction = async (actionKey) => {
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Langues</h3>
             <EntityLanguagesInline :languages="linkedLanguages" :show-label="false" />
         </div>
-        <div
-            v-else
-            class="rounded-box border border-dashed border-base-300/70 bg-base-100/20 px-4 py-3 text-sm text-primary-300/80"
-            role="status"
-        >
-            Aucune langue renseignée.
-        </div>
 
-        <section v-if="storyText" class="space-y-2 border-t border-base-300 pt-4" aria-label="Histoire">
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">Histoire</h3>
+        <section v-if="storyText" class="space-y-2 border-t border-base-300 pt-3" aria-label="Histoire">
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Histoire</h3>
             <p class="whitespace-pre-wrap break-words text-sm text-primary-100">{{ storyText }}</p>
         </section>
         <section v-if="historicalText" class="space-y-2" aria-label="Historique">
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">Historique</h3>
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Historique</h3>
             <p class="whitespace-pre-wrap break-words text-sm text-primary-100">{{ historicalText }}</p>
         </section>
 
-        <section v-if="hasCreatureCharacteristics" class="border-t border-base-300 pt-4">
-            <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-primary-300">
+        <section v-if="hasCreatureCharacteristics" class="border-t border-base-300 pt-3">
+            <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-primary-300">
                 Caractéristiques
             </h3>
             <CharacteristicsCard
@@ -466,19 +472,14 @@ const handleAction = async (actionKey) => {
                 :runtime="effectiveRuntime"
             />
         </section>
-        <section v-else class="border-t border-base-300 pt-4" role="status">
-            <p class="text-sm text-primary-300/80">
-                Pas de créature associée — les caractéristiques ne peuvent pas être affichées.
-            </p>
-        </section>
 
         <section
             v-if="competenceGroups.length"
-            class="border-t border-base-300 pt-4"
+            class="border-t border-base-300 pt-3"
             role="region"
             aria-label="Compétences"
         >
-            <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-primary-300">
+            <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-primary-300">
                 Compétences
             </h3>
             <CharacteristicsCard
@@ -489,31 +490,28 @@ const handleAction = async (actionKey) => {
             />
         </section>
 
-        <section class="space-y-3 border-t border-base-300 pt-4" role="region" aria-label="Sorts de la créature">
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">Sorts</h3>
+        <section
+            v-if="hasLinkedSpells"
+            class="space-y-3 border-t border-base-300 pt-3"
+            role="region"
+            aria-label="Sorts de la créature"
+        >
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Sorts</h3>
             <MonsterCreatureSpellsList
-                v-if="hasLinkedSpells"
                 :creature="creatureData"
                 :table-meta="tableMeta"
                 :characteristic-runtime="effectiveRuntime"
                 section-class="rounded-box border border-base-300 bg-base-100/40 p-4"
             />
-            <p
-                v-else
-                class="rounded-box border border-dashed border-base-300/70 bg-base-100/20 px-4 py-3 text-sm text-primary-300/80"
-                role="status"
-            >
-                Aucun sort lié à ce PNJ.
-            </p>
         </section>
 
         <section
             v-if="hasLinkedItems"
-            class="space-y-3 border-t border-base-300 pt-4"
+            class="space-y-3 border-t border-base-300 pt-3"
             role="region"
             aria-label="Équipements de la créature"
         >
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">Équipements</h3>
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Équipements</h3>
             <MonsterCreatureItemsList
                 :creature="creatureData"
                 :table-meta="tableMeta"
@@ -528,7 +526,7 @@ const handleAction = async (actionKey) => {
             role="region"
             aria-label="Panoplies"
         >
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">Panoplies</h3>
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Panoplies</h3>
             <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
                 <li v-for="panoply in linkedPanoplies" :key="panoply.id">
                     <PanoplyViewText :panoply="panoply" />
@@ -542,7 +540,7 @@ const handleAction = async (actionKey) => {
             role="region"
             aria-label="Boutique"
         >
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300">Boutique</h3>
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Boutique</h3>
             <ShopViewText :shop="linkedShop" />
         </section>
 

@@ -44,6 +44,12 @@ const props = defineProps({
      * Nom proposé pour une nouvelle définition (en général le nom du sort).
      */
     suggestedEffectName: { type: String, default: '' },
+    /**
+     * État partagé nom / description / type de cible (réactif), édité hors de cette section.
+     */
+    commonModel: { type: Object, default: null },
+    /** Masque la carte « Données communes » dans {@link EffectGroupEditorForm}. */
+    hideCommonCard: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['effects-changed']);
@@ -876,6 +882,8 @@ defineExpose({
             :hide-submit-button="hideEffectGroupSubmitButton"
             :save-without-inertia="embeddedInModal"
             :embedded-in-modal="embeddedInModal"
+            :common-model="commonModel"
+            :hide-common-card="hideCommonCard"
             @dirty-change="onEffectGroupDirtyChange"
         />
 

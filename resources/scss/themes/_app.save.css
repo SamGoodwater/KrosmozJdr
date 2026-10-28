@@ -36,6 +36,45 @@
   --color-comment-dark: var(--color-slate-700);
 }
 
+/*
+ * Niveaux d’entité / degrés de sort (scheme `level` → token `level-N`).
+ * `@theme static` : toujours émis (sinon Tailwind purge les niveaux non cités en classe).
+ * Arc : acier → ciel → bleu → indigo → pourpre → cramoisi → charbon → noir (30).
+ * Utilisable comme Tailwind : bg-level-12, text-level-12, border-level-12.
+ */
+@theme static {
+  --color-level-1: #9aa8bc;
+  --color-level-2: #86a7c3;
+  --color-level-3: #73a6cb;
+  --color-level-4: #5fa4d2;
+  --color-level-5: #4ba3d9;
+  --color-level-6: #4899da;
+  --color-level-7: #458edc;
+  --color-level-8: #4184dd;
+  --color-level-9: #3e79df;
+  --color-level-10: #3b6fe0;
+  --color-level-11: #4569e2;
+  --color-level-12: #4e62e3;
+  --color-level-13: #585ce5;
+  --color-level-14: #6155e6;
+  --color-level-15: #6b4fe8;
+  --color-level-16: #7750eb;
+  --color-level-17: #8351ee;
+  --color-level-18: #9053f1;
+  --color-level-19: #9c54f4;
+  --color-level-20: #a855f7;
+  --color-level-21: #ae49d1;
+  --color-level-22: #b43eab;
+  --color-level-23: #ba3284;
+  --color-level-24: #c0265e;
+  --color-level-25: #a92451;
+  --color-level-26: #912143;
+  --color-level-27: #7a1f36;
+  --color-level-28: #521c27;
+  --color-level-29: #2a1818;
+  --color-level-30: #0a0a0a;
+}
+
 @plugin "daisyui";
 @plugin "daisyui/theme" {
   name: "light";

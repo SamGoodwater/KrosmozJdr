@@ -12,6 +12,7 @@ import { useEntityEditEmbed } from '@/Composables/entity/useEntityEditEmbed';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { ResourceType } from '@/Models/Entity/ResourceType';
 import { getResourceTypeFieldDescriptors } from '@/Entities/resource-type/resource-type-descriptors';
+import { RESOURCE_TYPE_FORM_FIELD_SECTIONS_EDIT } from '@/Entities/resource-type/resource-type-form-config';
 import { createFieldsConfigFromDescriptors } from '@/Utils/entity/descriptor-form';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
@@ -45,6 +46,7 @@ const fieldsConfig = computed(() => {
     return createFieldsConfigFromDescriptors(getResourceTypeFieldDescriptors(ctx), ctx);
 });
 
+const fieldSections = RESOURCE_TYPE_FORM_FIELD_SECTIONS_EDIT;
 const fixedFooterInsetClass = 'left-0 right-0';
 const entityEditFormRef = ref(null);
 const canDelete = computed(() => canDeleteAny('resource-types') || isAdmin.value);
@@ -76,12 +78,15 @@ setPageTitle(`Modifier le type de ressource : ${resourceType.value.name || 'Sans
             route-name-base="entities.resource-types"
             route-param-key="resourceType"
             :is-updating="true"
+            :field-sections="fieldSections"
             :show-state-toolbar="true"
+            :show-access-levels-in-footer="false"
             layout-profile="sheet"
             :hide-top-toolbar="true"
             :hide-action-dock="true"
             :fixed-footer-actions="false"
             :fixed-footer-inset-class="fixedFooterInsetClass"
+            :compact-access-levels="true"
             :embedded-in-modal="isEmbeddedInModal"
             :redirect-after-update="resolvedRedirectAfterUpdate"
         />

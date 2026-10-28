@@ -77,13 +77,21 @@ export function buildMonsterFormFieldsConfig() {
     };
 }
 
-/** Sections formulaire — édition (grille sheet 2 cols ; état dans le header). */
+/** Sections formulaire — édition (grille sheet 2 cols ; liens pleine largeur). */
 export const MONSTER_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
         title: 'Coquille monstre',
         subtitle: 'Taille, boss et PA légendaires. Nom / stats sur la créature liée.',
-        fieldKeys: ['size', 'is_boss', 'boss_pa', 'monster_race_id'],
+        fieldKeys: ['size', 'is_boss', 'boss_pa'],
+    },
+    {
+        id: 'links',
+        title: 'Race',
+        subtitle: 'Lien vers la race de monstre.',
+        span: 2,
+        columns: 1,
+        fieldKeys: ['monster_race_id'],
     },
     {
         id: 'admin',

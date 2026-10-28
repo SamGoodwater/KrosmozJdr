@@ -111,16 +111,16 @@ return [
     ],
     [
         'name' => 'Ecaflip',
-        'passive' => 'Chance',
-        'identity' => 'En tant qu’Ecaflip, tu relances. Une veine par combat, des cartes si tu les veux. On te cherche pour le risque, pas pour la moyenne.',
-        'focus' => 'Relances, pile ou face, mêlée opportuniste',
-        'characteristics' => 'Chance (Eau) d’abord. Force (Terre) si tu griffes. Agilité (Air) pour sauter.',
+        'passive' => 'La pièce',
+        'identity' => 'En tant qu’Ecaflip, tu joues la pièce. Pour 1 PA tu lances Pile ou Face, et certains sorts lisent les deux. On te cherche pour le risque, pas pour la moyenne.',
+        'focus' => 'Pièce Pile/Face, mêlée opportuniste, griffes et soins',
+        'characteristics' => 'Chance (Eau) pour taper. Intelligence (Feu) pour soigner. Force (Terre) pour entraver. Agilité (Air) pour placer.',
         'idealFor' => 'Artiste, Négociant·e, tout groupe qui supporte qu’un jet change tout.',
-        'difference' => 'L’Ecaflip n’est pas un Artiste. Tes cartes tapent, elles ne tiennent pas une salle. Chance, c’est une relance, pas un spectacle obligatoire.',
+        'difference' => 'L’Ecaflip n’est pas un Artiste. La pièce coûte 1 PA et se consomme : ce n’est pas une relance gratuite ni un spectacle obligatoire.',
         'synergies' => [
             'Artiste' => 'Le dé et la scène : deux publics, même bluff.',
             'Négociant·e' => 'Tu relances le prix, iel signe.',
-            'Iop' => 'Tu relances, iel enfonce. Le 20 arrive parfois.',
+            'Iop' => 'Tu lances la pièce, iel enfonce. Le 20 arrive parfois.',
         ],
     ],
     [
