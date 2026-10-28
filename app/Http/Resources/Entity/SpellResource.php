@@ -79,6 +79,19 @@ class SpellResource extends JsonResource
             'updated_at' => $this->updated_at?->toISOString(),
             'deleted_at' => $this->deleted_at?->toISOString(),
 
+            // Pivot N:N (breed_spell, specialization_spell, …). Sans ça, l’édition
+            // de classe réinitialise tous les emplacements à 1/1 au prochain sync.
+            'pivot' => $this->when($this->pivot !== null, function () {
+                $pivot = $this->pivot;
+
+                return [
+                    'character_level' => isset($pivot->character_level) ? (int) $pivot->character_level : null,
+                    'slot_index' => isset($pivot->slot_index) ? (int) $pivot->slot_index : null,
+                    'choice_order' => isset($pivot->choice_order) ? (int) $pivot->choice_order : null,
+                    'level' => isset($pivot->level) ? (int) $pivot->level : null,
+                ];
+            }),
+
             // Relations
             'createdBy' => $this->whenLoaded('createdBy'),
             'creatures' => $this->whenLoaded('creatures'),
