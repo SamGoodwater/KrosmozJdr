@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "On peut modifier une fiche de classe et enregistrer sans que ses sorts retombent tous au premier choix. Chacun reste au niveau et à la place où on l’avait mis."
+    "description": "Enregistrer une classe gardait le nom et le reste, mais rangeait tous les sorts au premier emplacement. Les choix suivants disparaissaient. Chaque sort reste à sa place."
   },
   {
     "path": "backend/_ai.md",
