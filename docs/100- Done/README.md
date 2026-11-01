@@ -1,32 +1,28 @@
 # Ce qui a été fait
 
-## Novembre 2026 — Spécialisations : tous les coûts passent par la réserve
+## Novembre 2026 — Enregistrer une classe ne mélange plus ses sorts
 
-Les derniers coûts des spécialisations notés « N PA » ou « N PA en combat » indiquent maintenant aussi « depuis la réserve de Wakfu », avec leur nombre de PA affiché sur la fiche. Une capacité sans coût affiche « 0 PA », sans l’icône de la réserve.
+Enregistrer une classe gardait le nom et le reste, mais rangeait tous les sorts au premier emplacement. Les choix suivants disparaissaient. Chaque sort reste à sa place.
 
-## Novembre 2026 — Spécialisations : coûts en PA depuis la réserve de Wakfu
+## Novembre 2026 — Capacités : les PA viennent de la réserve
 
-Les 11 spécialisations jouables n’écrivent plus « 1 réserve de Wakfu » : chaque capacité indique un coût en PA pris dans la réserve, affiché avec l’icône PA et celle de la réserve. Le barème suit le palier (2 PA jusqu’au palier 6, 3 PA aux paliers 9 et 12, 4 PA au palier 15, 6 PA au palier 20), avec des coûts réduits pour les petites actions de combat. La règle des capacités et le guide de création reprennent ce repère.
+Capacités de classe et de spécialisation se paient en PA pris dans la réserve de Wakfu, et non plus avec les PA du tour. La fiche montre le coût à côté de l’icône de la réserve. Une capacité gratuite affiche simplement « 0 PA ».
 
-## Novembre 2026 — Règles et L’Essentiel : les fichiers font foi, sans écraser le CMS
+## Novembre 2026 — Règles et L’Essentiel suivent le livre, sans écraser le site
 
-Les règles (`.md`) et L’Essentiel (fichier de seed) sont la source : le PDF en est compilé, et le site les suit désormais à chaque import. Une section modifiée dans le CMS n’est plus jamais écrasée en silence : l’import la signale en conflit et la garde, jusqu’à ce qu’on décide d’imposer le fichier. Le plan (sections créées, mises à jour, à jour, en conflit) se consulte avant d’appliquer. Les 61 sections de règles et 6 sections de L’Essentiel en retard ont été remises à jour après vérification qu’aucune ne contenait d’édition faite dans le CMS.
-
-## Novembre 2026 — Coût des capacités et mécanique du Crâ
-
-Le coût d’une capacité s’écrit « x PA depuis la réserve de Wakfu ». Sur les fiches, il s’affiche avec l’icône PA, le nombre, puis « PA » chevauché par l’icône de la réserve ; le survol rappelle que les PA du tour ne paient que les sorts de classe. Les règles 3.4.2, 3.4.3 et 2.4.4 ne disent plus qu’une capacité se paie en PA du tour en combat. Le Crâ retrouve une mécanique : pas de règle en plus, une façon de jouer (portée longue, prendre du champ, tenir l’ennemi à distance). Un mode de résolution inconnu dans un fichier de sorts bloque désormais l’import au lieu de passer en silence.
+Le livre et L’Essentiel restent la source : le site et le PDF les suivent à chaque mise à jour. Une section déjà retouchée sur le site n’est plus écrasée en silence : on la voit en conflit, et on décide. On peut consulter le plan avant d’appliquer.
 
 ## Novembre 2026 — Voies, variantes et réserve de Wakfu
 
-Les règles et L’Essentiel s’alignent sur les fiches de classe : chaque voie a l’orientation écrite sur la fiche (tableau des 19 classes en 2.3.3), un choix de sort a 1 à 4 variantes (souvent 2, environ 8 au niveau 1). La réserve de Wakfu est explicite partout : en combat, seuls les sorts de classe profitent des PA rendus par les dieux ; capacités et sorts appris puisent toujours dans la réserve. Le chapitre MJ liste les 12 choix validés du Crâ, de l’Iop et de l’Ecaflip.
+Les règles et L’Essentiel s’alignent sur les fiches : chaque voie porte l’orientation de la classe, un choix de sort peut avoir plusieurs variantes. En combat, seuls les sorts de classe profitent des PA rendus par les dieux ; capacités et sorts appris puisent dans la réserve.
 
 ## Novembre 2026 — Crâ, Iop et Ecaflip : le modèle de classe
 
-Une classe, c’est désormais 12 sorts, une mécanique, un vrai passif toujours actif et des capacités de classe aux niveaux 3, 9 et 14. Les anciens passifs deviennent la capacité du niveau 3 : Flèche guidée par le Wakfu, Fureur, Pièce truquée. Les nouveaux passifs : **Œil de Crâ** (portée longue : les flèches tirent jusqu’au double de leur portée, avec désavantage), **Tête brûlée** (ni peur ni terreur, une taille au-dessus pour empoigner et porter), **Retomber sur ses pattes** (pas de dégâts de chute jusqu’à 6 m, jamais À terre). L’Iop enchaîne ses Préparations, l’Ecaflip lit Pile pour soi et Face pour l’autre. Quelques sorts gagnent avantage, désavantage ou un état, et les zones Iop se sauvegardent en Agilité. La fiche de classe affiche les capacités par niveau, et la présentation devient un texte court pour imaginer son personnage.
+Une classe, c’est un kit de sorts, une mécanique, un passif toujours actif et des capacités aux niveaux 3, 9 et 14. Les anciens passifs deviennent la capacité du niveau 3. Les nouveaux : **Œil de Crâ** (tirer plus loin, avec désavantage), **Tête brûlée** (ni peur ni terreur), **Retomber sur ses pattes** (chutes sans mal jusqu’à une certaine hauteur). L’Iop enchaîne ses Préparations, l’Ecaflip lit Pile pour soi et Face pour l’autre. La fiche affiche les capacités par niveau, et la présentation tient en quelques phrases.
 
 ## Octobre 2026 — Guide du Monde des Douze (an 646)
 
-Le chapitre d’univers (4.1.1–4.1.2) décrit le Monde des Douze en 646, ère de Dofus : dieux, cités, régions, classes hors panthéon, sans inventer ce que les chroniques ne tranchent pas. Un PDF public, **Le monde des Douze - guide des aventurier·ère·s**, est compilé avec le livre de règles et L’Essentiel. Le calendrier du header affiche l’an 646 (année civile moins 1380).
+Le chapitre d’univers décrit le Monde des Douze en 646, ère de Dofus : dieux, cités, régions, classes hors panthéon, sans inventer ce que les chroniques ne tranchent pas. Un PDF public, **Le monde des Douze - guide des aventurier·ère·s**, est compilé avec le livre de règles et L’Essentiel. Le calendrier en haut de page affiche l’an 646.
 
 ## Octobre 2026 — Le menu reste en place quand on change de page
 
@@ -34,7 +30,7 @@ Le menu de gauche se charge une fois, puis se contente de surligner la page en c
 
 ## Octobre 2026 — Onglets et formules de sort
 
-Sur la fiche d’un sort, les onglets reprennent les niveaux de ses degrés (`Niv 1`, `Niv 13`…). Chaque degré montre l’utilisation (zone à part, schéma visible en page), la résolution sans fond sur les libellés de jet, puis les effets en deux lignes. Les formules d’attaque affichent les dés, le modificateur et le mot Bonus ; le survol donne la formule complète. Un critique manquant sur Frapper double les dés.
+Sur la fiche d’un sort, les onglets reprennent les niveaux de ses degrés (Niv 1, Niv 13…). Chaque degré montre l’utilisation (zone à part, schéma visible en page), la résolution sans fond sur les libellés de jet, puis les effets en deux lignes. Les formules d’attaque affichent les dés, le modificateur et le mot Bonus ; le survol donne la formule complète. Un critique manquant sur Frapper double les dés.
 
 ## Octobre 2026 — Dé de classe
 
@@ -51,10 +47,10 @@ Chaque compétence reprend la couleur de sa caractéristique, y compris le passi
 ## Octobre 2026 — Nom de la classe dans le titre
 
 Ouvrir une classe (ou une spécialisation) depuis les bibliothèques affiche son nom dans l’en-tête et dans l’onglet du navigateur. Avant, ces pages indiquaient seulement « Page ».
+
 ## Octobre 2026 — Enregistrer un sort ne perd plus les degrés
 
-Sur la page Modifier d’un sort (pas la fenêtre), « Mettre à jour » enregistrait d’abord le bloc d’effets lié, ce qui rechargeait la page et effaçait les changements encore en mémoire dans « Degrés & effets ». Les degrés et les dégâts revus n’étaient pas écrits, alors que le sort affichait un succès. L’enregistrement écrit d’abord les degrés, puis le bloc d’effets sans quitter la page.
-
+Sur la page Modifier d’un sort, « Mettre à jour » pouvait afficher un succès sans garder les degrés et les dégâts encore en cours d’édition. L’enregistrement les écrit maintenant, sans quitter la page.
 
 ## Octobre 2026 — Effets de sort, sur la fiche
 

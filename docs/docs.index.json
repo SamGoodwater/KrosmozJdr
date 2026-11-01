@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Les derniers coûts des spécialisations notés « N PA » ou « N PA en combat » indiquent maintenant aussi « depuis la réserve de Wakfu », avec leur nombre de PA affiché sur la fiche. Une capacité sans coût affiche « 0 PA », sans l’icône de la réserve."
+    "description": "Enregistrer une classe gardait le nom et le reste, mais rangeait tous les sorts au premier emplacement. Les choix suivants disparaissaient. Chaque sort reste à sa place."
   },
   {
     "path": "backend/_ai.md",
