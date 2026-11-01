@@ -48,7 +48,7 @@ final class ClassLevel1SpellCatalogTest extends TestCase
         $this->assertSame('2', $entries[0]['cast_per_turn']);
         $this->assertSame('1', $entries[2]['cast_per_target']);
         $this->assertSame('chance', $entries[2]['attack_characteristic_key']);
-        $this->assertSame('vitality', $entries[4]['attack_characteristic_key']);
+        $this->assertSame('agi', $entries[4]['attack_characteristic_key']);
         $this->assertSame('3', $entries[4]['pa']);
         $this->assertSame([0, 1, 2, 3], array_column(array_slice($entries, 0, 4), 'choice_order'));
         $this->assertSame(2, $entries[4]['slot_index']);

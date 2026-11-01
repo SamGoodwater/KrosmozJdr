@@ -10,7 +10,13 @@ use App\Support\Cms\RulesCharacteristicKrefReplacementCatalog;
  * Transforme une fiche classe rédigée en une section CMS de présentation.
  *
  * Le passif, les voies et les sorts restent sur {@see BreedViewFull} ;
- * ce texte raconte comment on joue la classe, avec le passif en kref.
+ * ce texte raconte comment on joue la classe.
+ *
+ * Gabarit validé : clé `presentation` (quelques paragraphes simples, sans intertitres).
+ * Ancien gabarit, tant qu’une fiche n’est pas réécrite : `identity` + Repères,
+ * « Ce que cette classe n’est pas » et Synergies.
+ *
+ * @example (new ClassSheetContentRenderer)->sections(['name' => 'Iop', 'passive' => 'Tête brûlée', 'presentation' => ['…']]);
  */
 final class ClassSheetContentRenderer
 {
@@ -37,6 +43,19 @@ final class ClassSheetContentRenderer
      */
     private function presentationHtml(array $sheet): string
     {
+        $presentation = $sheet['presentation'] ?? null;
+        if (is_array($presentation) && $presentation !== []) {
+            $paragraphs = array_filter(array_map(
+                static fn (mixed $text): string => trim((string) $text),
+                $presentation,
+            ));
+
+            return implode('', array_map(
+                fn (string $text): string => '<p>'.$this->richText($text).'</p>',
+                $paragraphs,
+            ));
+        }
+
         $parts = [];
 
         $identity = trim((string) ($sheet['identity'] ?? ''));

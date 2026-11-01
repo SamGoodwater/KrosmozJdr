@@ -43,12 +43,44 @@
         },
         {
             "breed": "Ecaflip",
-            "previous_name": "Chance",
-            "name": "La pièce",
-            "engine": "etat",
+            "name": "Retomber sur ses pattes",
+            "engine": "",
             "is_magic": false,
-            "description": "Pour 1 PA, tu lances la pièce. Pair : Pile. Impair : Face. Certains sorts lisent les deux faces.",
-            "effect": "<p><strong>Niveau 1.</strong> Une fois par tour, pour 1 PA, tu lances 1d4. Pair : Pile. Impair : Face. Si tu ne lances pas, tu gardes l’état. Avant le premier lancer, tu n’as pas d’état.</p><p><strong>Montée.</strong> Niveau 7 : tu peux consommer l’état en lançant un sort qui a les deux branches Pile et Face (les deux s’appliquent, puis l’état est retiré). Niveau 11 : une fois entre deux repos longs, tu peux relancer le dé de Tarot, de Roulette ou de Rekop avant d’accepter le résultat.</p><p><strong>Moteur.</strong> État perso Pile / Face (hors catalogue). Consommation = les deux branches, pas une Mise qui annule un malus.</p>"
+            "description": "Comme tout bon chat, tu retombes toujours sur tes pattes.",
+            "effect": "<p>Tu ne subis aucun dégât pour une chute de 6 m ou moins ; au-delà, tu comptes la chute à partir de 6 m. Une chute ou une poussée ne te met jamais À terre. Tu as l’avantage aux tests d’Acrobaties pour garder l’équilibre.</p>",
+            "capabilities": [
+                {
+                    "name": "Pièce truquée",
+                    "previous_name": "La pièce",
+                    "level": 3,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "De temps en temps, la pièce tombe du bon côté.",
+                    "effect": "<p><strong>En combat.</strong> Une fois par repos court, quand tu lances la pièce (1 PA, comme d’habitude), tu choisis Pile ou Face au lieu de lancer le dé.</p><p><strong>Hors combat.</strong> Pour 1 réserve de Wakfu, tu as l’avantage à un test d’Escamotage ou de Tromperie pour tricher à un jeu de hasard.</p>"
+                },
+                {
+                    "name": "Relance du destin",
+                    "level": 9,
+                    "pa": "0",
+                    "is_magic": true,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Le dé ne t’a pas plu ? Tu le relances.",
+                    "effect": "<p>Une fois par repos court, après avoir lancé le dé d’un de tes sorts de hasard (Tarot, Roulette, Rekop, Bluff, Chance d’Ecaflip, Roue de la fortune), tu le relances et tu gardes le résultat de ton choix.</p>"
+                },
+                {
+                    "name": "Lecture du destin",
+                    "level": 14,
+                    "pa": "0",
+                    "is_magic": true,
+                    "duration": "jusqu’au repos long",
+                    "time_before_use_again": "repos long",
+                    "description": "Tu as déjà vu deux des jets de la journée.",
+                    "effect": "<p>Après un repos long, lance 2d20 et note les deux résultats. Jusqu’à ton prochain repos long, tu peux remplacer le d20 d’un jet d’attaque, de sauvegarde ou de caractéristique, fait par toi ou par une créature que tu vois, par l’un de ces résultats. Tu le décides avant que le jet soit lancé. Chaque résultat ne sert qu’une fois.</p>"
+                }
+            ]
         },
         {
             "breed": "Eniripsa",
@@ -60,20 +92,83 @@
         },
         {
             "breed": "Iop",
-            "name": "Fureur",
-            "engine": "etat",
+            "name": "Tête brûlée",
+            "engine": "",
             "is_magic": false,
-            "description": "Tu frappes, tu restes chaud. Un +1, pas un dé — Concentration ne s’y empile pas.",
-            "effect": "<p><strong>Niveau 1.</strong> Si tu as infligé des dégâts depuis ton dernier tour, tes attaques de mêlée de classe font +1 dégât (pas un dé). Ne se cumule pas avec un sort qui ajoute un dé de dégâts du même type (ex. un ancien +1d4 « Concentration »).</p><p><strong>Montée.</strong> Niveau 7 : +1d4. Niveau 11 : le bonus survit 1 tour même sans avoir touché.</p><p><strong>Moteur.</strong> État perso binaire (Fureur oui/non). Pas de piles à 10.</p>"
+            "description": "Tu n’as pas peur, et tu as la carrure qui va avec.",
+            "effect": "<p>Tu ne peux pas être Effrayé·e ni Terrorisé·e. Tu comptes comme une taille au-dessus de la tienne pour Empoigner, Bousculer, porter et soulever.</p>",
+            "capabilities": [
+                {
+                    "name": "Fureur",
+                    "level": 3,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "combat",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu entres en Fureur : tant que tu frappes, tu restes chaud.",
+                    "effect": "<p><strong>En combat.</strong> Une fois par repos court, sans dépenser de PA, tu entres en Fureur jusqu’à la fin du combat. Tes attaques de mêlée de classe infligent +2 dégâts (pas un dé) et tu as l’avantage aux tests de Force (Athlétisme). La Fureur s’arrête si tu termines ton tour sans avoir infligé de dégâts depuis la fin de ton tour précédent.</p><p><strong>Hors combat.</strong> Pour 1 réserve de Wakfu, tu as l’avantage aux tests de Force (Athlétisme) pendant 1 minute : enfoncer une porte, soulever une herse, tenir un pont.</p>"
+                },
+                {
+                    "name": "Cri de guerre",
+                    "level": 9,
+                    "pa": "2",
+                    "is_magic": false,
+                    "duration": "1 tour",
+                    "time_before_use_again": "repos court",
+                    "description": "Un cri, et ceux d’en face hésitent.",
+                    "effect": "<p><strong>En combat.</strong> Une fois par repos court, pour 2 PA, chaque ennemi à 3 cases ou moins qui t’entend fait une sauvegarde de Sagesse (DD 8 + ton modificateur de Force + ton bonus de maîtrise). En cas d’échec, il est Effrayé jusqu’à la fin de son prochain tour.</p><p><strong>Hors combat.</strong> Pour 1 réserve de Wakfu, tu as l’avantage à un test d’Intimidation.</p>"
+                },
+                {
+                    "name": "Sursaut héroïque",
+                    "level": 14,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "1 tour",
+                    "time_before_use_again": "repos long",
+                    "description": "Quand il le faut, tu en fais encore plus.",
+                    "effect": "<p>Une fois par repos long, pendant ton tour, tu gagnes 3 PA supplémentaires jusqu’à la fin de ce tour.</p>"
+                }
+            ]
         },
         {
             "breed": "Crâ",
-            "previous_name": "Œil",
-            "name": "Flèche guidée par le Wakfu",
-            "engine": "ligne-de-vue",
+            "name": "Œil de Crâ",
+            "engine": "",
             "is_magic": false,
-            "description": "Une fois entre deux repos longs, une de tes flèches contourne un obstacle.",
-            "effect": "<p><strong>Niveau 1.</strong> Une fois entre deux repos longs, tu imprègnes une flèche de Wakfu. Elle contourne un obstacle et atteint une cible que tu ne vois pas.</p><p><strong>Montée.</strong> À partir du niveau 10, tu peux le refaire une fois entre deux repos courts.</p>"
+            "description": "Ton œil voit à travers la mêlée et porte loin.",
+            "effect": "<p>Tes attaques à distance ignorent le désavantage dû à un obstacle partiel (une créature ou un·e allié·e entre toi et ta cible). Tu as l’avantage aux tests de Perception qui reposent sur la vue.</p>",
+            "capabilities": [
+                {
+                    "name": "Flèche guidée par le Wakfu",
+                    "level": 3,
+                    "pa": "1",
+                    "is_magic": true,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Une flèche contourne l’obstacle et trouve sa cible.",
+                    "effect": "<p><strong>En combat.</strong> Une fois par repos court, quand tu lances un sort de flèche, tu paies 1 PA de plus : le sort ignore la ligne de vue et peut toucher une créature que tu ne vois pas, si tu sais sur quelle case elle se trouve. La portée du sort ne change pas.</p><p><strong>Hors combat.</strong> Pour 1 réserve de Wakfu, tu fais passer une flèche (un message, une corde) derrière un obstacle ou au détour d’un angle.</p>"
+                },
+                {
+                    "name": "Pistage",
+                    "level": 9,
+                    "pa": "0",
+                    "is_magic": true,
+                    "duration": "24 heures",
+                    "time_before_use_again": "0",
+                    "description": "Une fois repérée, ta proie ne t’échappe plus vraiment.",
+                    "effect": "<p>Hors combat, pour 1 réserve de Wakfu, tu désignes une créature que tu vois. Pendant 24 heures, tu connais sa direction et sa distance approximative, et tu as l’avantage aux tests de Survie pour suivre sa piste. Une seule créature pistée à la fois.</p>"
+                },
+                {
+                    "name": "Tir parfait",
+                    "level": 14,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos long",
+                    "description": "Une fois par jour, la flèche part exactement là où tu l’as voulue.",
+                    "effect": "<p>Une fois par repos long, quand une de tes flèches de classe touche, tu transformes le coup en coup critique. Tu le décides après avoir vu que le jet touche.</p>"
+                }
+            ]
         },
         {
             "breed": "Sadida",

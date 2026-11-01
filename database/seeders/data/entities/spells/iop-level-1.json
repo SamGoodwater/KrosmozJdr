@@ -22,7 +22,7 @@
             "attack_characteristic_key": "strong",
             "is_magic": false,
             "powerful": 3,
-            "effect": "",
+            "effect": "Dégâts de Terre au contact. Deux fois par tour.",
             "description": "Tu frappes net, d’un coup de Wakfu terreux, à bout portant.",
             "sub_effects": [
                 {
@@ -96,7 +96,8 @@
                         }
                     ]
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "attaque-naturelle",
@@ -118,7 +119,7 @@
             "attack_characteristic_key": "intel",
             "is_magic": false,
             "powerful": 3,
-            "effect": "",
+            "effect": "Dégâts de Feu jusqu’à 4 cases. Deux fois par tour.",
             "description": "Tu concentres le Wakfu autour de toi et tu l’envoies en traits de feu.",
             "sub_effects": [
                 {
@@ -192,7 +193,8 @@
                         }
                     ]
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "epee-divine",
@@ -212,8 +214,8 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "powerful": 3,
-            "effect": "",
-            "description": "Tu lances une lame d’air, même budget que Pression : 1d6 + Agilité.",
+            "effect": "Dégâts d’Air au contact. Deux fois par tour.",
+            "description": "Tu fends l’air d’un revers : la lame part avant que la cible ait bougé.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -289,7 +291,8 @@
                     ]
                 }
             ],
-            "official_id": "jdr:epee-divine"
+            "official_id": "jdr:epee-divine",
+            "state": "playable"
         },
         {
             "key": "epee-de-givre",
@@ -297,7 +300,8 @@
             "slot_index": 1,
             "choice_order": 3,
             "types": [
-                "Dégâts"
+                "Dégâts",
+                "Protection"
             ],
             "element": "water",
             "pa": "3",
@@ -309,8 +313,8 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "powerful": 3,
-            "effect": "",
-            "description": "Tu frappes d’une lame d’eau gelée, même budget que Pression : 1d6 + Chance.",
+            "effect": "Dégâts d’Eau au contact. Tu gagnes des points de bouclier égaux à ton modificateur de Chance (minimum 1) jusqu’au début de ton prochain tour. Deux fois par tour.",
+            "description": "Tu frappes d’une lame d’eau gelée. Le givre reste sur toi comme une armure.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -323,6 +327,18 @@
                         "value_formula_crit": "2d6+[chance]",
                         "effect_direction": "action"
                     }
+                },
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "Chance",
+                        "value_formula": "[chance]",
+                        "effect_direction": "self",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
                 }
             ],
             "dofusdb_id": "13115",
@@ -344,6 +360,18 @@
                                 "value_formula_crit": "3d6+[chance]",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "Chance",
+                                "value_formula": "[chance]",
+                                "effect_direction": "self",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
                         }
                     ]
                 },
@@ -363,6 +391,18 @@
                                 "value_formula_crit": "4d6+[chance]",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "Chance",
+                                "value_formula": "[chance]",
+                                "effect_direction": "self",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
                         }
                     ]
                 },
@@ -382,11 +422,24 @@
                                 "value_formula_crit": "5d6+[chance]",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "Chance",
+                                "value_formula": "[chance]",
+                                "effect_direction": "self",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
                         }
                     ]
                 }
             ],
-            "official_id": "jdr:epee-de-givre"
+            "official_id": "jdr:epee-de-givre",
+            "state": "playable"
         },
         {
             "key": "bond",
@@ -473,7 +526,8 @@
                         }
                     ]
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "concentration",
@@ -497,7 +551,7 @@
             "is_magic": true,
             "powerful": 3,
             "duration": "jusqu’à la fin de ton prochain tour",
-            "effect": "Bonus aux jets d’attaque jusqu’à la fin de ton prochain tour.",
+            "effect": "Préparation. Bonus aux jets d’attaque jusqu’à la fin de ton prochain tour.",
             "description": "Tu serres les dents, tu vises juste. Ce n’est pas un dé de plus : tu touches mieux.",
             "sub_effects": [
                 {
@@ -532,7 +586,8 @@
                     "effect": "",
                     "sub_effects": []
                 }
-            ]
+            ],
+            "state": "playable"
         }
     ]
 }

@@ -22,7 +22,7 @@
             "cast_per_target": "0",
             "number_between_two_cast": "3",
             "cast_in_line": false,
-            "resolution_mode": "saving_throw",
+            "resolution_mode": "auto_success",
             "is_magic": false,
             "effect": "Avantage et bonus de dégâts pendant 3 tours.",
             "description": "Tu désignes une créature. Pendant 3 tours, tes attaques contre elle gagnent un avantage et des dégâts supplémentaires.",
@@ -128,10 +128,6 @@
                 }
             ],
             "official_id": "jdr:cra:vendetta",
-            "attack_characteristic_key": "sagesse",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
             "duration": "3 tours"
         },
         {
@@ -916,8 +912,8 @@
             "cast_in_line": false,
             "resolution_mode": "auto_success",
             "is_magic": false,
-            "effect": "La balise relance un de tes sorts comme s’il partait de sa case.",
-            "description": "Tu poses une balise pendant 1 tour. Elle gêne les créatures ennemies proches et peut relancer un de tes sorts comme s'il partait d'elle, avec les mêmes propriétés. Tes propres dégâts ne la blessent pas.",
+            "effect": "Cases adjacentes à la balise : terrain difficile pour les ennemis. La balise relance un de tes sorts comme s’il partait de sa case.",
+            "description": "Tu poses une balise pendant 1 tour. Les cases adjacentes sont un terrain difficile pour les ennemis. La balise peut relancer un de tes sorts comme s’il partait d’elle, avec les mêmes propriétés. Tes propres dégâts ne la blessent pas.",
             "sub_effects": [
                 {
                     "slug": "autre",
@@ -926,6 +922,15 @@
                     "params": {
                         "value": "Relance un de tes sorts depuis la balise pendant 1 tour."
                     }
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Cases adjacentes à la balise : terrain difficile pour les ennemis."
+                    },
+                    "duration_formula": "1",
+                    "order": 1
                 }
             ],
             "intensification": [
@@ -1840,8 +1845,8 @@
             "cast_in_line": false,
             "resolution_mode": "saving_throw",
             "is_magic": false,
-            "effect": "Tes retraits de PA et de PM contre la cible sont renforcés.",
-            "description": "Tu empoisonnes la cible pendant 1 tour. Tant que le poison agit, tes retraits de PA et de PM contre elle réussissent automatiquement.",
+            "effect": "État Empoisonné pendant 1 tour. Tes retraits de PA et de PM contre la cible réussissent automatiquement.",
+            "description": "Tu empoisonnes la cible pendant 1 tour : elle est Empoisonnée, et tes retraits de PA et de PM contre elle réussissent automatiquement.",
             "sub_effects": [
                 {
                     "slug": "autre",
@@ -1851,6 +1856,15 @@
                         "value": "Retraits de PA et de PM automatiques contre la cible."
                     },
                     "duration_formula": "1"
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "État Empoisonné."
+                    },
+                    "duration_formula": "1",
+                    "order": 1
                 }
             ],
             "intensification": [
@@ -1873,6 +1887,15 @@
                                 "value": "Retraits de PA et de PM automatiques contre la cible."
                             },
                             "duration_formula": "1"
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "État Empoisonné."
+                            },
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ],
                     "number_between_two_cast": "3"
@@ -1890,6 +1913,15 @@
                                 "value": "Retraits de PA et de PM automatiques contre la cible."
                             },
                             "duration_formula": "1"
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "État Empoisonné."
+                            },
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ],
                     "number_between_two_cast": "2"
@@ -1938,7 +1970,7 @@
                     "area": "point",
                     "order": 1,
                     "params": {
-                        "characteristic": "earth",
+                        "characteristic": "dommages_spell",
                         "value": "1d8"
                     }
                 },

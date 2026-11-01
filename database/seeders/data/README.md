@@ -76,11 +76,11 @@ Un JSON unique `healing-out-of-combat.json` décrit 11 paliers × 4 types (pain,
 
 Un JSON par classe (`feca.json` … `forgelance.json`, 19 fiches, ids Dofus 1–18 et 20) : nom, résumé Dofus, **4 voix** (Feu/Terre/Eau/Air) du tableau *Généralités Classes*. Foggernaut = Steamer (pas une 20ᵉ classe). Upsert sur `dofusdb_id`, `official_id` ou `name`. `auto_update = false`. L’état n’est posé qu’à la création (`draft`). Description tronquée à 255 caractères.
 
-- **Seed** : `Database\Seeders\Entity\ClassBreedSeeder`, **avant** `CapabilitySeeder` puis `MonsterSeeder` puis `SpellSeeder`. `BreedSeeder` pose ensuite la section CMS « Texte » depuis `playable-breeds.php` (19 fiches d’identité, passif en kref).
+- **Seed** : `Database\Seeders\Entity\ClassBreedSeeder`, **avant** `CapabilitySeeder` puis `MonsterSeeder` puis `SpellSeeder`. `BreedSeeder` pose ensuite la section CMS « Texte » depuis `playable-breeds.php` (19 fiches d’identité ; clé `presentation` = paragraphes libres, sinon gabarit historique).
 
 ## Passifs de classe (`entities/capabilities/`)
 
-Un JSON unique `class-passives.json` : 19 capacités passives (une par classe), `playable`, `is_passive`, PA 0. Upsert sur le nom parmi les passifs du catalogue. Liaison `breed_capability` sans détacher les autres capacités d’une classe.
+Un JSON unique `class-passives.json` : 19 capacités passives (une par classe), `playable`, `is_passive`, PA 0. Clé optionnelle `capabilities` par classe : capacités de classe actives (`level` 3 / 9 / 14, `pa`, `time_before_use_again`, `previous_name` pour convertir un ancien passif). Upsert sur le nom (repli `previous_name`). En overwrite, la liaison `breed_capability` détache les anciens passifs du catalogue et les capacités actives absentes de la fiche.
 
 - **Seed** : `Database\Seeders\Entity\CapabilitySeeder` (`project:seed` / `project:init` / `DatabaseSeeder`), après `ClassBreedSeeder`.
 

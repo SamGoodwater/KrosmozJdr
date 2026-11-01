@@ -21,8 +21,8 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 3,
-            "effect": "Bonus aux dégâts de tes sorts jusqu’à la fin de ton prochain tour.",
-            "description": "Puissance : tu te prépares. Le prochain élan frappe plus fort.",
+            "effect": "Préparation. Bonus aux dégâts de tes sorts jusqu’à la fin de ton prochain tour.",
+            "description": "Tu prends ton élan. Le prochain coup part plus lourd.",
             "sub_effects": [
                 {
                     "slug": "booster",
@@ -103,7 +103,8 @@
                         }
                     ]
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "iop-duel",
@@ -112,7 +113,8 @@
             "choice_order": 1,
             "character_level": 2,
             "types": [
-                "Dégâts"
+                "Placement",
+                "Entrave"
             ],
             "element": null,
             "pa": "3",
@@ -124,8 +126,8 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "powerful": 3,
-            "effect": "Attirance sans dégâts.",
-            "description": "Duel : tu ramènes la cible.",
+            "effect": "Attire la cible de 2 cases. Jusqu’à la fin de son prochain tour, elle a le désavantage aux jets d’attaque contre une autre créature que toi.",
+            "description": "Tu attrapes la cible du regard et tu la tires vers toi : c’est entre vous deux, maintenant.",
             "sub_effects": [
                 {
                     "slug": "déplacer",
@@ -135,6 +137,15 @@
                         "movement_kind": "pull",
                         "effect_direction": "action"
                     }
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Désavantage aux jets d’attaque contre une autre créature que le lanceur."
+                    },
+                    "duration_formula": "1",
+                    "order": 1
                 }
             ],
             "dofusdb_id": "13165",
@@ -153,6 +164,15 @@
                                 "movement_kind": "pull",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Désavantage aux jets d’attaque contre une autre créature que le lanceur."
+                            },
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ]
                 },
@@ -169,6 +189,15 @@
                                 "movement_kind": "pull",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Désavantage aux jets d’attaque contre une autre créature que le lanceur."
+                            },
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ]
                 },
@@ -185,10 +214,20 @@
                                 "movement_kind": "pull",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Désavantage aux jets d’attaque contre une autre créature que le lanceur."
+                            },
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ]
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "fendoir",
@@ -207,12 +246,12 @@
             "sight_line": false,
             "cast_per_turn": "1",
             "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
+            "save_characteristic_key": "agi",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
             "is_magic": true,
             "powerful": 5,
-            "effect": "",
+            "effect": "Dégâts de Terre sur les cases autour de toi. Sauvegarde d’Agilité : réussie, aucun dégât.",
             "description": "Tu abats une lame de Wakfu autour de toi. Ceux qui ne s’écartent pas prennent le choc.",
             "sub_effects": [
                 {
@@ -287,7 +326,8 @@
                     ]
                 }
             ],
-            "character_level": 4
+            "character_level": 4,
+            "state": "playable"
         },
         {
             "key": "intimidation",
@@ -296,7 +336,8 @@
             "slot_index": 1,
             "choice_order": 1,
             "types": [
-                "Dégâts"
+                "Dégâts",
+                "Placement"
             ],
             "element": "air",
             "pa": "4",
@@ -309,7 +350,7 @@
             "attack_characteristic_key": "agi",
             "is_magic": false,
             "powerful": 4,
-            "effect": "",
+            "effect": "Dégâts d’Air au contact et repousse de 1 case. La cible a le désavantage à son prochain jet d’attaque. Deux fois par tour.",
             "description": "Un coup sec qui fait reculer. L’air vibre, la cible cède le pas.",
             "sub_effects": [
                 {
@@ -334,6 +375,15 @@
                         "movement_kind": "push",
                         "effect_direction": "action"
                     }
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Désavantage au prochain jet d’attaque de la cible."
+                    },
+                    "duration_formula": "1",
+                    "order": 2
                 }
             ],
             "intensification": [
@@ -364,6 +414,15 @@
                                 "movement_kind": "push",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Désavantage au prochain jet d’attaque de la cible."
+                            },
+                            "duration_formula": "1",
+                            "order": 2
                         }
                     ]
                 },
@@ -394,6 +453,15 @@
                                 "movement_kind": "push",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Désavantage au prochain jet d’attaque de la cible."
+                            },
+                            "duration_formula": "1",
+                            "order": 2
                         }
                     ]
                 },
@@ -424,11 +492,21 @@
                                 "movement_kind": "push",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Désavantage au prochain jet d’attaque de la cible."
+                            },
+                            "duration_formula": "1",
+                            "order": 2
                         }
                     ]
                 }
             ],
-            "character_level": 4
+            "character_level": 4,
+            "state": "playable"
         },
         {
             "key": "iop-epee-de-iop",
@@ -449,8 +527,8 @@
             "resolution_mode": "saving_throw",
             "is_magic": true,
             "powerful": 5,
-            "effect": "",
-            "description": "Épée de Iop : sort fort de palier 5.",
+            "effect": "Dégâts de Terre sur les cases autour de toi. Sauvegarde d’Agilité : réussie, aucun dégât.",
+            "description": "Tu abats une épée de Wakfu immense. Le sol tremble tout autour de toi.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -466,7 +544,7 @@
                 }
             ],
             "dofusdb_id": "13125",
-            "save_characteristic_key": "sagesse",
+            "save_characteristic_key": "agi",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
             "intensification": [
@@ -527,7 +605,8 @@
                         }
                     ]
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "iop-epee-celeste",
@@ -548,8 +627,8 @@
             "resolution_mode": "saving_throw",
             "is_magic": true,
             "powerful": 5,
-            "effect": "",
-            "description": "Épée Céleste : sort fort de palier 5.",
+            "effect": "Dégâts de Air sur les cases autour de toi. Sauvegarde d’Agilité : réussie, aucun dégât.",
+            "description": "Tu fais tournoyer une lame d’air autour de toi.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -565,7 +644,7 @@
                 }
             ],
             "dofusdb_id": "13122",
-            "save_characteristic_key": "sagesse",
+            "save_characteristic_key": "agi",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
             "intensification": [
@@ -626,7 +705,8 @@
                         }
                     ]
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "iop-epee-destructrice",
@@ -635,7 +715,8 @@
             "choice_order": 0,
             "character_level": 6,
             "types": [
-                "Dégâts"
+                "Dégâts",
+                "Placement"
             ],
             "element": "air",
             "pa": "3",
@@ -647,8 +728,8 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "powerful": 8,
-            "effect": "",
-            "description": "Épée Destructrice : attaque simple, même budget que le emplacement 6.",
+            "effect": "Dégâts d’Air au contact. Après le coup, tu peux te déplacer de 1 case sans être taclé·e. Deux fois par tour.",
+            "description": "Tu frappes et tu passes : la lame t’ouvre le chemin.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -661,6 +742,14 @@
                         "value_formula_crit": "3d6+[agi]",
                         "effect_direction": "action"
                     }
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Après le coup, le lanceur peut se déplacer de 1 case sans être taclé."
+                    },
+                    "order": 1
                 }
             ],
             "dofusdb_id": "13119",
@@ -682,6 +771,14 @@
                                 "value_formula_crit": "4d6+[agi]",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Après le coup, le lanceur peut se déplacer de 1 case sans être taclé."
+                            },
+                            "order": 1
                         }
                     ]
                 },
@@ -701,6 +798,14 @@
                                 "value_formula_crit": "5d6+[agi]",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Après le coup, le lanceur peut se déplacer de 1 case sans être taclé."
+                            },
+                            "order": 1
                         }
                     ]
                 },
@@ -720,10 +825,19 @@
                                 "value_formula_crit": "5d6+[agi]",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Après le coup, le lanceur peut se déplacer de 1 case sans être taclé."
+                            },
+                            "order": 1
                         }
                     ]
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "iop-fracture",
@@ -732,7 +846,8 @@
             "choice_order": 1,
             "character_level": 6,
             "types": [
-                "Dégâts"
+                "Dégâts",
+                "Entrave"
             ],
             "element": "earth",
             "pa": "3",
@@ -744,8 +859,8 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "powerful": 8,
-            "effect": "",
-            "description": "Fracture : attaque simple, même budget que le emplacement 6.",
+            "effect": "Dégâts de Terre au contact. La cible subit −1 à la CA jusqu’à la fin de ton prochain tour (non cumulable). Deux fois par tour.",
+            "description": "Tu frappes là où l’armure cède déjà.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -758,6 +873,15 @@
                         "value_formula_crit": "3d6+[strong]",
                         "effect_direction": "action"
                     }
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "−1 CA jusqu’à la fin du prochain tour du lanceur (non cumulable)."
+                    },
+                    "duration_formula": "1",
+                    "order": 1
                 }
             ],
             "dofusdb_id": "13139",
@@ -779,6 +903,15 @@
                                 "value_formula_crit": "4d6+[strong]",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "−1 CA jusqu’à la fin du prochain tour du lanceur (non cumulable)."
+                            },
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ]
                 },
@@ -798,6 +931,15 @@
                                 "value_formula_crit": "5d6+[strong]",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "−1 CA jusqu’à la fin du prochain tour du lanceur (non cumulable)."
+                            },
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ]
                 },
@@ -817,10 +959,20 @@
                                 "value_formula_crit": "5d6+[strong]",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "−1 CA jusqu’à la fin du prochain tour du lanceur (non cumulable)."
+                            },
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ]
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "iop-vitalite",
@@ -841,8 +993,8 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "Points de bouclier jusqu’à la fin de ton prochain tour.",
-            "description": "Vitalité : une couche de Wakfu avant les PV.",
+            "effect": "Préparation. Points de bouclier jusqu’à la fin de ton prochain tour.",
+            "description": "Tu gonfles ton Wakfu : une couche d’énergie à percer avant tes PV.",
             "sub_effects": [
                 {
                     "slug": "protéger",
@@ -915,7 +1067,8 @@
                         }
                     ]
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "iop-determination",
@@ -924,7 +1077,7 @@
             "choice_order": 1,
             "character_level": 7,
             "types": [
-                "Amélioration"
+                "Protection"
             ],
             "element": null,
             "pa": "3",
@@ -936,18 +1089,26 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 5,
-            "effect": "Avantage aux jets d’attaque de mêlée de classe.",
-            "description": "Détermination : tu vises juste. Ce n’est pas un second dé de Fureur.",
+            "effect": "Préparation. Jusqu’à la fin de ton prochain tour : état Lourd (tu ne peux être ni poussé·e ni attiré·e) et avantage aux jets de sauvegarde de Force.",
+            "description": "Tu plantes tes pieds dans le sol. Rien ne te fera reculer.",
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
-                    "duration_formula": "1",
                     "params": {
-                        "value": "Avantage aux attaques de mêlée de classe jusqu’à la fin de ton prochain tour.",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
-                    }
+                        "value": "État Lourd."
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Avantage aux jets de sauvegarde de Force."
+                    },
+                    "duration_formula": "1",
+                    "order": 1
                 }
             ],
             "dofusdb_id": "13132",
@@ -973,7 +1134,8 @@
                     "effect": "",
                     "sub_effects": []
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "iop-menace",
@@ -982,7 +1144,8 @@
             "choice_order": 0,
             "character_level": 8,
             "types": [
-                "Dégâts"
+                "Dégâts",
+                "Amélioration"
             ],
             "element": "fire",
             "pa": "3",
@@ -994,8 +1157,8 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "powerful": 5,
-            "effect": "",
-            "description": "Menace : attaque simple, même budget que le palier 8.",
+            "effect": "Dégâts de Feu au contact. La prochaine attaque d’un·e allié·e contre la cible, avant la fin de ton prochain tour, a l’avantage. Deux fois par tour.",
+            "description": "Tu frappes et tu montres la faille à tes allié·e·s.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1008,6 +1171,15 @@
                         "value_formula_crit": "3d6+[intel]",
                         "effect_direction": "action"
                     }
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Avantage à la prochaine attaque d’un·e allié·e contre la cible."
+                    },
+                    "duration_formula": "1",
+                    "order": 1
                 }
             ],
             "dofusdb_id": "13130",
@@ -1029,6 +1201,15 @@
                                 "value_formula_crit": "4d6+[intel]",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Avantage à la prochaine attaque d’un·e allié·e contre la cible."
+                            },
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ]
                 },
@@ -1048,6 +1229,15 @@
                                 "value_formula_crit": "5d6+[intel]",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Avantage à la prochaine attaque d’un·e allié·e contre la cible."
+                            },
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ]
                 },
@@ -1067,10 +1257,20 @@
                                 "value_formula_crit": "5d6+[intel]",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Avantage à la prochaine attaque d’un·e allié·e contre la cible."
+                            },
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ]
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "iop-tannee",
@@ -1079,7 +1279,8 @@
             "choice_order": 1,
             "character_level": 8,
             "types": [
-                "Dégâts"
+                "Dégâts",
+                "Placement"
             ],
             "element": "air",
             "pa": "3",
@@ -1091,8 +1292,8 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "powerful": 5,
-            "effect": "",
-            "description": "Tannée : attaque simple, même budget que le palier 8.",
+            "effect": "Dégâts d’Air au contact et repousse de 1 case. Deux fois par tour.",
+            "description": "Une volée de coups qui fait reculer la cible.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1105,6 +1306,16 @@
                         "value_formula_crit": "3d6+[agi]",
                         "effect_direction": "action"
                     }
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
                 }
             ],
             "dofusdb_id": "13131",
@@ -1126,6 +1337,16 @@
                                 "value_formula_crit": "4d6+[agi]",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
                         }
                     ]
                 },
@@ -1145,6 +1366,16 @@
                                 "value_formula_crit": "5d6+[agi]",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
                         }
                     ]
                 },
@@ -1164,10 +1395,21 @@
                                 "value_formula_crit": "5d6+[agi]",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
                         }
                     ]
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "iop-colere-de-iop",
@@ -1188,8 +1430,8 @@
             "resolution_mode": "saving_throw",
             "is_magic": true,
             "powerful": 5,
-            "effect": "",
-            "description": "Colère de Iop : sort fort de palier 10.",
+            "effect": "Dégâts de Terre sur les cases autour de toi. Sauvegarde d’Agilité : réussie, aucun dégât.",
+            "description": "Toute ta colère retombe d’un coup sur ce qui t’entoure.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1205,7 +1447,7 @@
                 }
             ],
             "dofusdb_id": "15661",
-            "save_characteristic_key": "sagesse",
+            "save_characteristic_key": "agi",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
             "intensification": [
@@ -1253,7 +1495,8 @@
                     "effect": "",
                     "sub_effects": []
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "iop-souffle",
@@ -1262,7 +1505,8 @@
             "choice_order": 1,
             "character_level": 10,
             "types": [
-                "Dégâts"
+                "Dégâts",
+                "Placement"
             ],
             "element": "air",
             "pa": "5",
@@ -1274,8 +1518,8 @@
             "resolution_mode": "saving_throw",
             "is_magic": true,
             "powerful": 5,
-            "effect": "",
-            "description": "Souffle : sort fort de palier 10.",
+            "effect": "Dégâts d’Air sur les cases autour de toi, et repousse de 1 case. Sauvegarde d’Agilité : réussie, aucun effet.",
+            "description": "Un souffle de Wakfu balaie tout autour de toi et repousse ceux qui ne tiennent pas.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1288,10 +1532,20 @@
                         "value_formula_crit": "4d6+[agi]",
                         "effect_direction": "action"
                     }
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "circle-0-1",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
                 }
             ],
             "dofusdb_id": "14062",
-            "save_characteristic_key": "sagesse",
+            "save_characteristic_key": "agi",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
             "intensification": [
@@ -1311,6 +1565,16 @@
                                 "value_formula_crit": "5d6+[agi]",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "circle-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
                         }
                     ]
                 },
@@ -1330,6 +1594,16 @@
                                 "value_formula_crit": "5d6+[agi]",
                                 "effect_direction": "action"
                             }
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "circle-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
                         }
                     ]
                 },
@@ -1339,7 +1613,8 @@
                     "effect": "",
                     "sub_effects": []
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "iop-precipitation",
@@ -1360,21 +1635,27 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 8,
-            "effect": "Bonus aux dégâts de tes sorts jusqu’à la fin de ton prochain tour.",
-            "description": "Précipitation : tu te prépares. Le prochain élan frappe plus fort.",
+            "effect": "Préparation. +2 PA immédiatement (+3 dès le niveau 16). Au début de ton prochain tour, tu es Affaibli (tes dégâts sont divisés par 2) jusqu’à la fin de ce tour.",
+            "description": "Tu forces l’allure : tu en fais plus maintenant, et tu le paies au tour suivant.",
             "sub_effects": [
                 {
                     "slug": "booster",
                     "area": "point",
-                    "duration_formula": "1",
+                    "order": 0,
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "3d4",
-                        "value_formula": "3d4",
-                        "dice_formula": "3d4",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
+                        "characteristic": "pa",
+                        "value": "2",
+                        "effect_direction": "self"
                     }
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "État Affaibli au prochain tour du lanceur."
+                    },
+                    "duration_formula": "1",
+                    "order": 1
                 }
             ],
             "dofusdb_id": "13114",
@@ -1390,15 +1671,21 @@
                         {
                             "slug": "booster",
                             "area": "point",
-                            "duration_formula": "1",
+                            "order": 0,
                             "params": {
-                                "characteristic": "dommages_spell",
-                                "value": "4d4",
-                                "value_formula": "4d4",
-                                "dice_formula": "4d4",
-                                "effect_direction": "self",
-                                "duration_formula": "1"
+                                "characteristic": "pa",
+                                "value": "2",
+                                "effect_direction": "self"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "État Affaibli au prochain tour du lanceur."
+                            },
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ]
                 },
@@ -1410,15 +1697,21 @@
                         {
                             "slug": "booster",
                             "area": "point",
-                            "duration_formula": "1",
+                            "order": 0,
                             "params": {
-                                "characteristic": "dommages_spell",
-                                "value": "5d4",
-                                "value_formula": "5d4",
-                                "dice_formula": "5d4",
-                                "effect_direction": "self",
-                                "duration_formula": "1"
+                                "characteristic": "pa",
+                                "value": "3",
+                                "effect_direction": "self"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "État Affaibli au prochain tour du lanceur."
+                            },
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ]
                 },
@@ -1428,7 +1721,8 @@
                     "effect": "",
                     "sub_effects": []
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "iop-accumulation",
@@ -1449,27 +1743,34 @@
             "resolution_mode": "auto_success",
             "is_magic": true,
             "powerful": 8,
-            "effect": "Bonus aux dégâts de tes sorts jusqu’à la fin de ton prochain tour.",
-            "description": "Accumulation : tu te prépares. Le prochain élan frappe plus fort.",
+            "effect": "Préparation. Chaque tour où tu la lances, ta prochaine attaque de mêlée de classe gagne un dé de dégâts (3 au maximum). Les dés sont consommés par cette attaque.",
+            "description": "Tu charges ton coup, tour après tour.",
             "sub_effects": [
                 {
                     "slug": "booster",
                     "area": "point",
-                    "duration_formula": "1",
+                    "order": 0,
                     "params": {
                         "characteristic": "dommages_spell",
-                        "value": "3d4",
-                        "value_formula": "3d4",
-                        "dice_formula": "3d4",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
+                        "effect_direction": "self"
                     }
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Cumulable 3 fois (un lancer par tour), consommé par la prochaine attaque de mêlée de classe."
+                    },
+                    "order": 1
                 }
             ],
             "dofusdb_id": "30772",
             "auto_success_if_willing_target": true,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1,
+            "duration": "jusqu’à ta prochaine attaque de mêlée de classe",
+            "max_stack": 3,
             "intensification": [
                 {
                     "tier": "I",
@@ -1479,15 +1780,22 @@
                         {
                             "slug": "booster",
                             "area": "point",
-                            "duration_formula": "1",
+                            "order": 0,
                             "params": {
                                 "characteristic": "dommages_spell",
-                                "value": "4d4",
-                                "value_formula": "4d4",
-                                "dice_formula": "4d4",
-                                "effect_direction": "self",
-                                "duration_formula": "1"
+                                "value": "1d6",
+                                "value_formula": "1d6",
+                                "dice_formula": "1d6",
+                                "effect_direction": "self"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Cumulable 3 fois (un lancer par tour), consommé par la prochaine attaque de mêlée de classe."
+                            },
+                            "order": 1
                         }
                     ]
                 },
@@ -1499,15 +1807,22 @@
                         {
                             "slug": "booster",
                             "area": "point",
-                            "duration_formula": "1",
+                            "order": 0,
                             "params": {
                                 "characteristic": "dommages_spell",
-                                "value": "5d4",
-                                "value_formula": "5d4",
-                                "dice_formula": "5d4",
-                                "effect_direction": "self",
-                                "duration_formula": "1"
+                                "value": "1d8",
+                                "value_formula": "1d8",
+                                "dice_formula": "1d8",
+                                "effect_direction": "self"
                             }
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Cumulable 3 fois (un lancer par tour), consommé par la prochaine attaque de mêlée de classe."
+                            },
+                            "order": 1
                         }
                     ]
                 },
@@ -1517,7 +1832,8 @@
                     "effect": "",
                     "sub_effects": []
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "iop-tempete-de-puissance",
@@ -1538,8 +1854,8 @@
             "resolution_mode": "saving_throw",
             "is_magic": true,
             "powerful": 5,
-            "effect": "",
-            "description": "Tempête de Puissance : signature de l’emplacement 12.",
+            "effect": "Dégâts de Air sur les cases autour de toi. Sauvegarde d’Agilité : réussie, aucun dégât.",
+            "description": "Tu déchaînes une tempête de lames autour de toi.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1555,7 +1871,7 @@
                 }
             ],
             "dofusdb_id": "13121",
-            "save_characteristic_key": "sagesse",
+            "save_characteristic_key": "agi",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
             "intensification": [
@@ -1590,7 +1906,8 @@
                     "effect": "",
                     "sub_effects": []
                 }
-            ]
+            ],
+            "state": "playable"
         },
         {
             "key": "iop-zenith",
@@ -1611,8 +1928,8 @@
             "resolution_mode": "saving_throw",
             "is_magic": true,
             "powerful": 5,
-            "effect": "",
-            "description": "Zénith : signature de l’emplacement 12.",
+            "effect": "Dégâts de Feu sur les cases autour de toi. Sauvegarde d’Agilité : réussie, aucun dégât.",
+            "description": "Ta lame s’embrase et retombe comme un soleil.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1628,7 +1945,7 @@
                 }
             ],
             "dofusdb_id": "13145",
-            "save_characteristic_key": "sagesse",
+            "save_characteristic_key": "agi",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
             "intensification": [
@@ -1663,7 +1980,8 @@
                     "effect": "",
                     "sub_effects": []
                 }
-            ]
+            ],
+            "state": "playable"
         }
     ]
 }

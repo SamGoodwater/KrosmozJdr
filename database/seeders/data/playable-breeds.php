@@ -3,40 +3,35 @@
 declare(strict_types=1);
 
 /**
- * Fiches de présentation des 19 classes (gabarit Iop) : identité, pas un dump de passif.
+ * Fiches de présentation des 19 classes : identité, pas un dump de passif.
  *
  * Une section CMS « Texte » par classe. Le passif, les voies et les sorts restent
- * sur la fiche Full ; ici on dit comment on joue, avec le passif en kref.
+ * sur la fiche Full ; ici on fait imaginer au joueur ou à la joueuse un historique,
+ * une façon de jouer, une identité. Gabarit validé (Iop, Crâ, Ecaflip) : `presentation`,
+ * quelques paragraphes simples. Les autres fiches gardent l’ancien gabarit
+ * (identity, Repères, différence, synergies) jusqu’à leur réécriture.
  *
  * @return list<array<string, mixed>>
  */
 return [
     [
         'name' => 'Iop',
-        'passive' => 'Fureur',
-        'identity' => 'En tant qu’Iop, tu charges. Le fer d’abord, la tactique après. On te cherche quand il faut ouvrir une ligne, pas quand il faut attendre derrière un mur.',
-        'focus' => 'Mêlée, pression, premier rang',
-        'characteristics' => 'Force (Terre) ou Agilité (Air). Intelligence si tu prends le Feu d’amélioration.',
-        'idealFor' => 'Milicien·ne, tout groupe qui manque d’un premier rang ; un Iop Érudit qui allie le fer et le livre.',
-        'difference' => 'L’Iop n’est pas un Sacrieur. Tu ne te soignes pas en te tapant. Fureur, c’est +1 après avoir touché, pas un second sort ni une rage à piles.',
-        'synergies' => [
-            'Milicien·ne' => 'Tu ouvres, iel tient. La ligne avance.',
-            'Dévot' => 'Tu charges, quelqu’un ramasse ce qui reste debout.',
-            'Érudit' => 'Le fer et le livre : tu frappes, puis tu expliques pourquoi ça marchait.',
+        'passive' => 'Tête brûlée',
+        'presentation' => [
+            'Les Iops sont les guerrier·ère·s du dieu Iop : fonceur·euse·s, généreux·ses, jamais contre un bon défi. On les dit têtes brûlées ; elles et ils répondent qu’ils n’ont simplement pas peur.',
+            'Ton Iop peut être un·e ancien·ne milicien·ne, un·e champion·ne de tournoi qui cherche plus fort que soi, un·e chevalier·ère errant·e qui défend la veuve et le bouftou, ou simplement quelqu’un qui pense que la plupart des problèmes se règlent en avançant.',
+            'En combat, tu te prépares, tu bondis au contact et tu frappes là où ça fait mal. Ta voie dit comment : la Terre cogne, l’Air bouscule, le Feu galvanise, l’Eau tient la ligne.',
+            'Côté spécialisation, Milicien·ne tient le front et Explorateur·rice va bien à l’aventurier·ère casse-cou. Un Iop Érudit ou Courtisan·e, c’est un beau contre-emploi à jouer.',
         ],
     ],
     [
         'name' => 'Crâ',
-        'passive' => 'Œil',
-        'identity' => 'En tant que Crâ, tu restes à distance et tu vises ce que les autres n’ont pas le temps de voir. Une flèche, un œil, un pas en arrière.',
-        'focus' => 'Tir, portée, placement',
-        'characteristics' => 'Agilité (Air) pour placer. Force (Terre) si tu veux que ça traverse. Intelligence (Feu) pour l’œil magique.',
-        'idealFor' => 'Explorateur·rice, Voleur·euse, tout groupe qui a déjà un Iop au contact.',
-        'difference' => 'Le Crâ n’est pas un Sram. Tes flèches se voient. Œil, c’est +1 PO, pas un piège au sol. Tu ne remplaces pas le Féca pour protéger.',
-        'synergies' => [
-            'Explorateur·rice' => 'Tu vois loin, iel marche devant sans se perdre.',
-            'Sram' => 'Toi tu tires, iel a déjà posé. Deux distances.',
-            'Milicien·ne' => 'Quelqu’un tient le seuil pendant que tu vises.',
+        'passive' => 'Œil de Crâ',
+        'presentation' => [
+            'Les Crâs sont les archer·ère·s du Monde des Douze : fier·ère·s, précis·es, plus à l’aise à trente mètres qu’à bout portant. Leur œil perçant en fait des éclaireur·euse·s, des chasseur·euse·s et des sentinelles recherché·e·s.',
+            'Ton Crâ a peut-être grandi dans une tour de guet, chassé pour nourrir son village ou servi de tireur·euse d’élite dans une milice. Iel observe avant d’agir, choisit sa cible et ne la lâche plus.',
+            'En combat, tu restes en retrait, tu repousses ce qui s’approche et tu tires de loin. Ta voie dit comment : l’Air place, la Terre frappe fort, le Feu renforce tes tirs, l’Eau ralentit. Hors combat, tu es les yeux du groupe.',
+            'Côté spécialisation, Explorateur·rice ou Voleur·euse prolongent l’œil et la discrétion ; Milicien·ne donne un Crâ de garnison, posté au créneau.',
         ],
     ],
     [
@@ -111,16 +106,12 @@ return [
     ],
     [
         'name' => 'Ecaflip',
-        'passive' => 'La pièce',
-        'identity' => 'En tant qu’Ecaflip, tu joues la pièce. Pour 1 PA tu lances Pile ou Face, et certains sorts lisent les deux. On te cherche pour le risque, pas pour la moyenne.',
-        'focus' => 'Pièce Pile/Face, mêlée opportuniste, griffes et soins',
-        'characteristics' => 'Chance (Eau) pour taper. Intelligence (Feu) pour soigner. Force (Terre) pour entraver. Agilité (Air) pour placer.',
-        'idealFor' => 'Artiste, Négociant·e, tout groupe qui supporte qu’un jet change tout.',
-        'difference' => 'L’Ecaflip n’est pas un Artiste. La pièce coûte 1 PA et se consomme : ce n’est pas une relance gratuite ni un spectacle obligatoire.',
-        'synergies' => [
-            'Artiste' => 'Le dé et la scène : deux publics, même bluff.',
-            'Négociant·e' => 'Tu relances le prix, iel signe.',
-            'Iop' => 'Tu lances la pièce, iel enfonce. Le 20 arrive parfois.',
+        'passive' => 'Retomber sur ses pattes',
+        'presentation' => [
+            'Les Ecaflips sont les enfants du dieu-chat Ecaflip : joueur·euse·s, charmeur·euse·s, souvent fauché·e·s, toujours prêt·e·s à parier. Pour elles et eux, la chance ne se subit pas : elle se provoque, et elle se paie.',
+            'Ton Ecaflip a peut-être grandi dans les tripots, tiré les cartes sur les marchés, vécu de paris de taverne ou fui une dette un peu trop grosse. Iel a de l’aplomb, du flair, et ne recule pas devant une mise.',
+            'En combat, tu lances la pièce et tu adaptes ton coup à la face : griffe, langue qui soigne, bond, coup de patte. Certains sorts lancent leur propre dé : tu acceptes de perdre un peu pour gagner gros. Ta voie dit comment : l’Eau frappe, le Feu soigne, la Terre entrave, l’Air place.',
+            'Côté spécialisation, Artiste, Négociant·e ou Voleur·euse prolongent le bluff et le jeu ; Courtisan·e donne un Ecaflip des salons.',
         ],
     ],
     [

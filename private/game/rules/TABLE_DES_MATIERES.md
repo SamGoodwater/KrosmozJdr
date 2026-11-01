@@ -71,7 +71,7 @@ Cette table des matières présente la structure complète du livre de règles K
 
 - **2.3.3** Voies élémentaires
 
-- **2.3.4** Passifs de classe
+- **2.3.4** Passifs, mécaniques et capacités de classe
 
 
 

@@ -849,7 +849,7 @@
             "po_editable": true,
             "sight_line": true,
             "is_magic": false,
-            "effect": "Ce tour : +2 PM et −1 PA (en plus du coût). Au début de ton prochain tour : +1 PA et −2 PM. Pas de second Odorat tant que le premier n'est pas fini.",
+            "effect": "Ce tour : +2 PM et −1 PA (en plus du coût). Au début de ton prochain tour : +1 PA et −2 PM. Pas de second Odorat tant que le premier n'est pas fini. Jusqu'à la fin de ton prochain tour, tu as l'avantage aux tests de Perception qui reposent sur l'odorat.",
             "resolution_mode": "automatic",
             "key": "odorat",
             "name": "Odorat",
@@ -905,6 +905,15 @@
                         "value": "2"
                     },
                     "duration_formula": "1"
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Avantage aux tests de Perception à l'odorat."
+                    },
+                    "duration_formula": "1",
+                    "order": 4
                 }
             ],
             "intensification": [
@@ -952,6 +961,15 @@
                                 "value": "2"
                             },
                             "duration_formula": "1"
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Avantage aux tests de Perception à l'odorat."
+                            },
+                            "duration_formula": "1",
+                            "order": 4
                         }
                     ]
                 },
@@ -999,6 +1017,15 @@
                                 "value": "2"
                             },
                             "duration_formula": "1"
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Avantage aux tests de Perception à l'odorat."
+                            },
+                            "duration_formula": "1",
+                            "order": 4
                         }
                     ]
                 },
@@ -1046,6 +1073,15 @@
                                 "value": "2"
                             },
                             "duration_formula": "1"
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Avantage aux tests de Perception à l'odorat."
+                            },
+                            "duration_formula": "1",
+                            "order": 4
                         }
                     ]
                 }
@@ -1225,7 +1261,7 @@
             "po_editable": true,
             "sight_line": true,
             "is_magic": false,
-            "effect": "Dégâts d'Eau, puis 1d6 : 1–3 tu perds 1d4 PV ; 4–6 +1d6 dégâts si le coup a touché. Le dé se lance même en cas d'échec (coupure oui, surplus non).",
+            "effect": "Avant l'attaque, lance 1d6. 4–6 : tu attaques avec l'avantage. 1–3 : tu attaques avec le désavantage et tu perds 1d4 PV (1d6 dès 13). Dégâts d'Eau.",
             "resolution_mode": "attack_roll",
             "key": "bluff",
             "name": "Bluff",
@@ -1241,7 +1277,7 @@
             "po_max": "4",
             "cast_per_turn": "1",
             "attack_characteristic_key": "chance",
-            "description": "Tu feintes. Si la feinte passe, le coup est lourd. Si elle rate, tu te coupes sur ta propre griffe. Ce sort ne lit pas la pièce : c'est son propre dé.",
+            "description": "Tu feintes avant de frapper. Si la feinte passe, le coup part avec l'avantage. Si elle rate, tu frappes mal et tu te coupes sur ta propre griffe. Ce sort ne lit pas la pièce : c'est son propre dé.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1260,7 +1296,7 @@
                     "area": "point",
                     "order": 1,
                     "params": {
-                        "value": "Dé 1d6 après le jet : coupure 1d4 ou surplus +1d6."
+                        "value": "Dé 1d6 avant l'attaque : 4–6 avantage ; 1–3 désavantage et coupure 1d4."
                     }
                 }
             ],
@@ -1287,7 +1323,7 @@
                             "area": "point",
                             "order": 1,
                             "params": {
-                                "value": "Dé 1d6 : coupure 1d6 ou surplus +2d4."
+                                "value": "Dé 1d6 avant l'attaque : 4–6 avantage ; 1–3 désavantage et coupure 1d6."
                             }
                         }
                     ]
@@ -1314,7 +1350,7 @@
                             "area": "point",
                             "order": 1,
                             "params": {
-                                "value": "Dé 1d6 : coupure 1d6 ou surplus +2d4."
+                                "value": "Dé 1d6 avant l'attaque : 4–6 avantage ; 1–3 désavantage et coupure 1d6."
                             }
                         }
                     ]
@@ -1341,7 +1377,7 @@
                             "area": "point",
                             "order": 1,
                             "params": {
-                                "value": "Dé 1d6 : coupure 1d6 ou surplus +2d4."
+                                "value": "Dé 1d6 avant l'attaque : 4–6 avantage ; 1–3 désavantage et coupure 1d6."
                             }
                         }
                     ]
@@ -1356,7 +1392,7 @@
             "po_editable": true,
             "sight_line": true,
             "is_magic": false,
-            "effect": "Sans état : dégâts en ligne. Pile : dégâts et repousse (3 ; 4 dès 13 ; 5 dès 16). Face : dégâts et saut vers la cible (1 ; 2 dès 16). Consommation : saut puis repousse ; l'état est retiré.",
+            "effect": "Sans état : dégâts en ligne. Pile : dégâts et saut vers la cible (1 ; 2 dès 16). Face : dégâts et repousse (3 ; 4 dès 13 ; 5 dès 16). Consommation : saut puis repousse ; l'état est retiré.",
             "resolution_mode": "attack_roll",
             "key": "toupet",
             "name": "Toupet",
@@ -1373,7 +1409,7 @@
             "po_max": "5",
             "cast_per_turn": "1",
             "attack_characteristic_key": "agi",
-            "description": "Tu lances la griffe tout droit. Selon la pièce, tu chasses la cible ou tu te rapproches.",
+            "description": "Tu lances la griffe tout droit. Selon la pièce, tu te rapproches ou tu chasses la cible.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1528,7 +1564,7 @@
             "po_editable": true,
             "sight_line": true,
             "is_magic": false,
-            "effect": "Sans état : dégâts ennemis. Pile : soin allié·e·s. Face : dégâts + soin perso. Consommation : dégâts et soin allié·e·s ; état retiré. Ligne de 4.",
+            "effect": "Sans état : dégâts ennemis. Pile : dégâts + soin perso. Face : soin allié·e·s. Consommation : dégâts et soin allié·e·s ; état retiré. Ligne de 4.",
             "resolution_mode": "saving_throw",
             "key": "feulement",
             "name": "Feulement",
@@ -1548,7 +1584,7 @@
             "save_characteristic_key": "intel",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "Automatique pour les allié·e·s. Les ennemis font une sauvegarde d'Intelligence.",
-            "description": "Le cri part en ligne. Selon la pièce, il soigne les tiens, te soigne toi, ou les deux en même temps que les dégâts.",
+            "description": "Le cri part en ligne. Selon la pièce, il te soigne toi, il soigne les tiens, ou les deux en même temps que les dégâts.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -2434,7 +2470,7 @@
             "po_editable": true,
             "sight_line": true,
             "is_magic": false,
-            "effect": "Pendant 2 tours : critiques sur 19 ou 20 ; soins reçus d'une autre créature −1d4. Tes propres soins de classe ne sont pas réduits.",
+            "effect": "Pendant 2 tours : tu as l'avantage à tes jets d'attaque, et les jets d'attaque contre toi ont aussi l'avantage.",
             "resolution_mode": "automatic",
             "key": "destin-d-ecaflip",
             "name": "Destin d'Ecaflip",
@@ -2448,14 +2484,14 @@
             "po_min": "0",
             "po_max": "0",
             "cast_per_turn": "1",
-            "description": "Tu prends le destin pour deux tours. Tes coups deviennent plus justes. Les soins des autres glissent. Ce sort ne lit pas la pièce.",
+            "description": "Tu prends le destin à pleines mains pour deux tours. Tes coups trouvent leur cible ; ceux des autres trouvent la tienne. Ce sort ne lit pas la pièce.",
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
                     "order": 0,
                     "params": {
-                        "value": "Critiques sur 19 ou 20."
+                        "value": "Avantage aux jets d'attaque du lanceur."
                     },
                     "duration_formula": "2"
                 },
@@ -2464,7 +2500,7 @@
                     "area": "point",
                     "order": 1,
                     "params": {
-                        "value": "Soins reçus d'autrui −1d4."
+                        "value": "Avantage aux jets d'attaque contre le lanceur."
                     },
                     "duration_formula": "2"
                 }
@@ -2480,7 +2516,7 @@
                             "area": "point",
                             "order": 0,
                             "params": {
-                                "value": "Critiques sur 19 ou 20."
+                                "value": "Avantage aux jets d'attaque du lanceur."
                             },
                             "duration_formula": "2"
                         },
@@ -2489,7 +2525,7 @@
                             "area": "point",
                             "order": 1,
                             "params": {
-                                "value": "Soins reçus d'autrui −1d4."
+                                "value": "Avantage aux jets d'attaque contre le lanceur."
                             },
                             "duration_formula": "2"
                         },
@@ -2514,7 +2550,7 @@
                             "area": "point",
                             "order": 0,
                             "params": {
-                                "value": "Critiques sur 19 ou 20."
+                                "value": "Avantage aux jets d'attaque du lanceur."
                             },
                             "duration_formula": "2"
                         },
@@ -2523,7 +2559,7 @@
                             "area": "point",
                             "order": 1,
                             "params": {
-                                "value": "Soins reçus d'autrui −1d4."
+                                "value": "Avantage aux jets d'attaque contre le lanceur."
                             },
                             "duration_formula": "2"
                         },
@@ -2548,7 +2584,7 @@
                             "area": "point",
                             "order": 0,
                             "params": {
-                                "value": "Critiques sur 19 ou 20."
+                                "value": "Avantage aux jets d'attaque du lanceur."
                             },
                             "duration_formula": "2"
                         },
@@ -2557,7 +2593,7 @@
                             "area": "point",
                             "order": 1,
                             "params": {
-                                "value": "Soins reçus d'autrui −1d4."
+                                "value": "Avantage aux jets d'attaque contre le lanceur."
                             },
                             "duration_formula": "2"
                         },

@@ -1,6 +1,6 @@
 <script setup>
 /**
- * Capacités liées à une classe : passifs en premier, autres capacités ensuite.
+ * Capacités liées à une classe : passifs en premier, puis capacités de classe triées par niveau.
  *
  * @props {object[]} capabilities - Liste brute (CapabilityResource)
  * @props {'text'|'compact'|'full'} density
@@ -26,7 +26,7 @@ const props = defineProps({
         type: Object,
         default: null,
     },
-    /** Afficher la section « autres capacités » (désactivable sur Minimal très compact) */
+    /** Afficher la section « capacités de classe » (désactivable sur Minimal très compact) */
     showOtherSection: {
         type: Boolean,
         default: true,
@@ -140,7 +140,10 @@ function openCapability(entity) {
             v-if="showOtherSection && hasOther"
             class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-3"
         >
-            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Autres capacités</h3>
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Capacités de classe</h3>
+            <p v-if="density === 'full'" class="text-xs text-base-content/70">
+                Apprises en montant de niveau, à activer quand tu le décides.
+            </p>
             <ul v-if="density === 'text' && !lightweight" class="flex flex-wrap gap-x-4 gap-y-2">
                 <li v-for="c in otherList" :key="`o-t-${c.id}`" class="min-w-0 max-w-full">
                     <CapabilityViewText :capability="c" />

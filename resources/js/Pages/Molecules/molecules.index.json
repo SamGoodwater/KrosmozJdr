@@ -2593,7 +2593,7 @@
   },
   {
     "name": "BreedCapabilitiesDisplay",
-    "description": "Capacités liées à une classe : passifs en premier, autres capacités ensuite.",
+    "description": "Capacités liées à une classe : passifs en premier, puis capacités de classe triées par niveau.",
     "props": [
       {
         "name": "capabilities",

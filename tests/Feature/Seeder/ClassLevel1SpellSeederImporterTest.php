@@ -53,7 +53,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $pression = Spell::query()->where('dofusdb_id', '13106')->first();
         $this->assertNotNull($pression);
         $this->assertSame('Pression', $pression->name);
-        $this->assertSame(Spell::STATE_AUTO, $pression->state);
+        $this->assertSame(Spell::STATE_PLAYABLE, $pression->state);
         $this->assertFalse($pression->auto_update);
         $this->assertSame('3', $pression->pa);
         $this->assertSame('2', $pression->cast_per_turn);
@@ -88,7 +88,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertStringNotContainsString('1d4', (string) $concentration->effect);
         $this->assertStringNotContainsString('+2', (string) $concentration->effect);
 
-        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_AUTO)->count());
+        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
         $this->assertGreaterThan(0, $pression->effects()->count());
         $this->assertTrue($pression->spellTypes()->where('name', 'Dégâts')->exists());
 
@@ -117,7 +117,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $second = $importer->import($catalog);
         $this->assertSame([], $second['created']);
         $this->assertCount(6, $second['updated']);
-        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_AUTO)->count());
+        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
         $this->assertSame('3', $pression->fresh()->pa);
     }
 
@@ -176,7 +176,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
 
         $evasive = Spell::query()->where('official_id', 'jdr:cra:fleche-evasive')->first();
         $this->assertSame('Flèche évasive', $evasive?->name);
-        $this->assertSame('vitality', $evasive?->attack_characteristic_key);
+        $this->assertSame('agi', $evasive?->attack_characteristic_key);
         $this->assertSame('3', $evasive?->pa);
         $this->assertSame('2', $evasive?->cast_per_target);
         $this->assertNull($evasive?->element);
@@ -868,7 +868,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $colere = Spell::query()->where('dofusdb_id', '15661')->first();
         $this->assertNotNull($colere);
         $this->assertSame('Colère de Iop', $colere->name);
-        $this->assertSame(Spell::STATE_AUTO, $colere->state);
+        $this->assertSame(Spell::STATE_PLAYABLE, $colere->state);
         $this->assertSame('5', $colere->pa);
         $this->assertSame('10', $colere->level);
         $this->assertSame(Spell::RESOLUTION_SAVING_THROW, $colere->resolution_mode);
@@ -924,7 +924,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $pression = Spell::query()->where('dofusdb_id', '13106')->first();
         $this->assertNotNull($pression);
         // Texte libre = commentaire optionnel ; les dés sont dans les sous-effets structurés.
-        $this->assertSame('', (string) $pression->effect);
+        $this->assertStringNotContainsString('d6', (string) $pression->effect);
         $this->assertStringNotContainsString('Montée', (string) $pression->description);
 
         $pression->load(['effects.degrees.effectSubEffects', 'degrees.effects']);

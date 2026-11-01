@@ -80,7 +80,7 @@ class BreedSeederTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         Capability::factory()->create([
-            'name' => 'Fureur',
+            'name' => 'Tête brûlée',
             'is_passive' => true,
             'created_by' => $admin->id,
         ]);
@@ -98,8 +98,9 @@ class BreedSeederTest extends TestCase
         $this->assertSame(['Texte'], $titles);
 
         $html = (string) ($breed->sections()->first()?->data['content'] ?? '');
-        $this->assertStringContainsString('Fureur', $html);
-        $this->assertStringContainsString('tu charges', $html);
+        $this->assertStringContainsString('tu bondis au contact', $html);
+        $this->assertStringNotContainsString('Repères', $html);
+        $this->assertStringNotContainsString('Synergies', $html);
         $this->assertStringNotContainsString('Capacités disponibles', $html);
         $this->assertStringNotContainsString('Dump périmé', $html);
 

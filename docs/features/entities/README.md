@@ -54,8 +54,8 @@ jets de sauvegarde, compétences). Une seule section par niveau. Le HTML
 d’éventuelles fiches encore en rédaction.
 
 Les **19 classes** ont une section CMS « Texte » rédigée dans `database/seeders/data/playable-breeds.php`
-(`ClassSheetContentRenderer`, `BreedSeeder`) : identité, passif en kref, repères, ce que la classe n’est pas,
-synergies. Le passif, les voies et les sorts restent sur `BreedViewFull`. Plus de dump « Capacités disponibles ».
+(`ClassSheetContentRenderer`, `BreedSeeder`) : paragraphes libres (`presentation`) pour imaginer identité, historique,
+façon de jouer et pistes de spécialisation ; les fiches non migrées gardent le gabarit historique. Le passif, les capacités de classe, les voies et les sorts restent sur `BreedViewFull`. Plus de dump « Capacités disponibles ».
 L’état de la fiche classe (`draft` / `playable`) reste celui du JSON `entities/breeds/*.json`.
 
 ### Métadonnées globales des sorts

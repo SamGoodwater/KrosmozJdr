@@ -101,7 +101,7 @@ return static function (array $k): array {
                     .'<li>Si c’est trop fort chaque tour : baisse les dés, monte le coût, ou ajoute un cooldown.</li>'
                     .'<li>Portée mini 2 sur les flèches (Crâ) : collé, tu recules ou tu prends tes distances — ce n’est pas un sort de mêlée.</li>'
                     .'<li>Invocation = créature fragile (1d4), pas un second PJ.</li>'
-                    .'<li>Ne copie pas un passif de classe dans le sort (la Fureur s’occupe du +1 Iop ; Concentration ne rajoute pas un dé).</li>'
+                    .'<li>Ne copie pas un passif ou une capacité de classe dans le sort (la Fureur de l’Iop est une capacité ; Concentration ne rajoute pas un dé).</li>'
                     .'<li>Sort-créature : 1 attaque calée sur les '.$pa.' Dofus du monstre ; une 2ᵉ option seulement si le monstre a assez de '.$pa.' pour ne pas tout lancer chaque tour.</li>'
                     .'<li>Compare toujours à la charte au niveau du sort, ligne neutre, puis régulateurs.</li>'
                     .'</ul>'

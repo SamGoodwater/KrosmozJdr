@@ -9,7 +9,8 @@ use JsonException;
 use RuntimeException;
 
 /**
- * Catalogue des 19 passifs de classe JDR (JSON `entities/capabilities/class-passives.json`).
+ * Catalogue des 19 passifs de classe JDR (JSON `entities/capabilities/class-passives.json`),
+ * avec les capacités de classe apprises aux niveaux 3, 9 et 14 (clé `capabilities`).
  *
  * @example $catalog = ClassPassiveCatalog::load();
  */
@@ -51,7 +52,18 @@ final class ClassPassiveCatalog
      *     is_magic: bool,
      *     description: string,
      *     effect: string,
-     *     previous_name: string
+     *     previous_name: string,
+     *     capabilities: list<array{
+     *         name: string,
+     *         previous_name: string,
+     *         level: int,
+     *         pa: string,
+     *         is_magic: bool,
+     *         duration: string,
+     *         time_before_use_again: string,
+     *         description: string,
+     *         effect: string
+     *     }>
      * }>
      */
     public function entries(): array
@@ -79,9 +91,45 @@ final class ClassPassiveCatalog
                 'description' => (string) ($row['description'] ?? ''),
                 'effect' => (string) ($row['effect'] ?? ''),
                 'previous_name' => trim((string) ($row['previous_name'] ?? '')),
+                'capabilities' => $this->capabilities($row['capabilities'] ?? []),
             ];
         }
 
         return $entries;
+    }
+
+    /**
+     * @return list<array{name: string, previous_name: string, level: int, pa: string, is_magic: bool, duration: string, time_before_use_again: string, description: string, effect: string}>
+     */
+    private function capabilities(mixed $raw): array
+    {
+        if (! is_array($raw)) {
+            return [];
+        }
+
+        $capabilities = [];
+        foreach ($raw as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $name = trim((string) ($row['name'] ?? ''));
+            $level = (int) ($row['level'] ?? 0);
+            if ($name === '' || $level < 1) {
+                continue;
+            }
+            $capabilities[] = [
+                'name' => $name,
+                'previous_name' => trim((string) ($row['previous_name'] ?? '')),
+                'level' => $level,
+                'pa' => (string) ($row['pa'] ?? '0'),
+                'is_magic' => (bool) ($row['is_magic'] ?? true),
+                'duration' => (string) ($row['duration'] ?? '0'),
+                'time_before_use_again' => (string) ($row['time_before_use_again'] ?? '0'),
+                'description' => (string) ($row['description'] ?? ''),
+                'effect' => (string) ($row['effect'] ?? ''),
+            ];
+        }
+
+        return $capabilities;
     }
 }

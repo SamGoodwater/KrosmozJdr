@@ -669,7 +669,7 @@
                 }
             ],
             "official_id": "jdr:cra:fleche-evasive",
-            "attack_characteristic_key": "vitality"
+            "attack_characteristic_key": "agi"
         },
         {
             "key": "tir-de-repli",

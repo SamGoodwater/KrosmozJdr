@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Guide de création / conversion : capacités (passifs de classe et dons de spé).
+ * Guide de création / conversion : capacités (passifs et capacités de classe, dons de spé).
  *
  * @param  array<string, string>  $k
  * @return array<string, mixed>
@@ -26,7 +26,7 @@ return static function (array $k): array {
                 'html' => '<h2>Capacités</h2>'
                     .'<p>Cette entité couvre trois choses : les <strong>passifs de classe</strong>, les <strong>capacités</strong> de spécialisation (actives, type sort, coût en '.$pa.' ou en Wakfu) et les <strong>aptitudes</strong> de spécialisation (passives ou contextuelles, gratuites). Le champ <code>is_passive</code> fait la différence. '.$k['kCapaLivre'].'.</p>'
                     .'<p>Une capacité, on la <em>lance</em> ; une aptitude, on l’<em>a</em>. Chaque palier de spé (niveaux 1, 3, 6, 9, 12, 15, 20) pose un choix entre les garanties puis un choix entre les options ; les aptitudes tombent automatiquement aux niveaux 3, 9 et 15. Pas de points de caractéristique.</p>'
-                    .'<p>Les 19 classes ont chacune un <strong>passif</strong> dès le niveau 1 (gratuit) et un moteur parmi cinq : zone, invocation, état perso, marque, tempo. Le moteur reste simple au 1 et s’ouvre au 7. Conversion Dofus : on ne recrée pas le kit MMO ; on écrit un passif lisible en trois paliers (1 / 7 / 11).</p>'
+                    .'<p>Une classe, c’est 12 sorts (avec variantes), une <strong>mécanique</strong> (champ <code>mechanics</code> de la classe, parfois très simple), un <strong>passif</strong> dès le niveau 1 et des <strong>capacités de classe</strong> apprises aux niveaux 3, 9 et 14 (niveaux sans nouveau sort). Le passif est un vrai passif, inspiré des traits de D&D : toujours actif, sans déclenchement à choisir (taille, sens, chute, peur…). Tout ce qui se déclenche « une fois par repos » est une capacité de classe, pas un passif. Gabarit validé : Crâ, Iop, Ecaflip.</p>'
                     .'<p>Pas de grille de normes dédiée : pour des dégâts ou un coût, compare aux '.$k['kSortsPage'].', en restant plus faible qu’un sort actif du même niveau (c’est « toujours là »).</p>',
             ],
             [
@@ -36,7 +36,7 @@ return static function (array $k): array {
                     .'<ol>'
                     .'<li><strong>Décide le mode :</strong> passive (toujours), contextuelle (situation), réactive (déclencheur).</li>'
                     .'<li>Si ça ressemble à un sort (dégâts, zone, contrôle), c’est un sort — ou alors baisse nettement et ajoute une condition rare.</li>'
-                    .'<li><strong>Un moteur, pas cinq.</strong> Fureur = +1 (puis +1d4 au 7), pas un dé empilé sur Concentration.</li>'
+                    .'<li><strong>Passif ≠ capacité.</strong> Si le joueur choisit quand ça se déclenche, c’est une capacité de classe (ex. Fureur, Iop niveau 3 : une fois par repos court, +2 dégâts de mêlée de classe).</li>'
                     .'<li>Plafond de bonus de carac ≈ ligne neutre d’un <em>accessoire</em> du même niveau, pas d’une arme + panoplie.</li>'
                     .'<li>Les passifs de classe sont <code>is_passive</code>, liés à la classe, jouables. On ne les duplique pas en trait.</li>'
                     .'<li>Limite de zones / pièges / invocations : 2 au niveau 1, puis la table §3.3.1 (jusqu’à 7).</li>'
@@ -80,11 +80,15 @@ return static function (array $k): array {
                 'title' => 'Exemples',
                 'html' => '<h3>Étalons jouables (passifs de classe)</h3>'
                     .'<ul>'
-                    .'<li><strong>Fureur</strong> (Iop) — si tu as tapé depuis ton dernier tour, +1 dégât de mêlée de classe (pas un dé). Au 7 : +1d4.</li>'
-                    .'<li><strong>Mot</strong> (Eniripsa) — un soin laisse 1 '.$k['pv'].' temporaire (pas de cumul). Soins en d4.</li>'
-                    .'<li><strong>Glyphes</strong> (Féca) — zones visibles, limite 2, alliés ignorent tes dégâts de glyphe.</li>'
-                    .'<li><strong>Pièges</strong> (Sram) — zones cachées, limite 2, Perception pour les voir.</li>'
-                    .'<li><strong>Œil</strong> (Crâ) — +1 '.$po.' sur les sorts de classe, portée mini 2 sur les flèches.</li>'
+                    .'<li><strong>Œil de Crâ</strong> (Crâ) — tes attaques à distance ignorent le désavantage d’un obstacle partiel ; avantage en Perception à la vue.</li>'
+                    .'<li><strong>Tête brûlée</strong> (Iop) — insensible à Effrayé et Terrorisé ; une taille au-dessus pour Empoigner, Bousculer, porter.</li>'
+                    .'<li><strong>Retomber sur ses pattes</strong> (Ecaflip) — pas de dégâts de chute jusqu’à 6 m ; jamais À terre après une chute ou une poussée.</li>'
+                    .'</ul>'
+                    .'<h3>Étalons jouables (capacités de classe)</h3>'
+                    .'<ul>'
+                    .'<li><strong>Fureur</strong> (Iop, niveau 3) — 1 fois par repos court, 0 '.$pa.' : +2 dégâts de mêlée de classe tant que tu frappes.</li>'
+                    .'<li><strong>Flèche guidée par le Wakfu</strong> (Crâ, niveau 3) — 1 fois par repos court, +1 '.$pa.' : la flèche ignore la ligne de vue.</li>'
+                    .'<li><strong>Pièce truquée</strong> (Ecaflip, niveau 3) — 1 fois par repos court, tu choisis la face de la pièce.</li>'
                     .'</ul>'
                     .'<p>Catalogue : [[kref:page:bibliotheque-capability|Capacités]].</p>',
             ],

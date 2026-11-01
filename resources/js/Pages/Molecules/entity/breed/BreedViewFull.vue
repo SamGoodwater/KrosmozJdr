@@ -340,7 +340,6 @@ const handleAction = async (actionKey) => {
             v-if="linkedCapabilities.length"
             :capabilities="linkedCapabilities"
             density="full"
-            :show-other-section="false"
             :characteristic-runtime="characteristicRuntime"
         />
 

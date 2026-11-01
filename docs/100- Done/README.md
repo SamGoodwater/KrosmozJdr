@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Crâ, Iop et Ecaflip : le modèle de classe
+
+Une classe, c’est désormais 12 sorts, une mécanique, un vrai passif toujours actif et des capacités de classe aux niveaux 3, 9 et 14. Les anciens passifs deviennent la capacité du niveau 3 : Flèche guidée par le Wakfu, Fureur, Pièce truquée. Les nouveaux passifs : **Œil de Crâ** (obstacles partiels ignorés, Perception à la vue), **Tête brûlée** (ni peur ni terreur, une taille au-dessus pour empoigner et porter), **Retomber sur ses pattes** (pas de dégâts de chute jusqu’à 6 m, jamais À terre). Le Crâ tire à longue portée, l’Iop enchaîne ses Préparations, l’Ecaflip lit Pile pour soi et Face pour l’autre. Quelques sorts gagnent avantage, désavantage ou un état, et les zones Iop se sauvegardent en Agilité. La fiche de classe affiche les capacités par niveau, et la présentation devient un texte court pour imaginer son personnage.
+
 ## Octobre 2026 — Le menu reste en place quand on change de page
 
 Le menu de gauche se charge une fois, puis se contente de surligner la page en cours. Il ne se reconstruit plus à chaque clic. Il se met à jour si on se connecte, si le rôle change, ou si une page du site est créée ou modifiée. L’en-tête et le pied de page fonctionnaient déjà ainsi : seul le titre de la page (et le compte, s’il change) bougent.
