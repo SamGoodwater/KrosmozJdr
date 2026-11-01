@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Règles et L’Essentiel : les fichiers font foi, sans écraser le CMS
+
+Les règles (`.md`) et L’Essentiel (fichier de seed) sont la source : le PDF en est compilé, et le site les suit désormais à chaque import. Une section modifiée dans le CMS n’est plus jamais écrasée en silence : l’import la signale en conflit et la garde, jusqu’à ce qu’on décide d’imposer le fichier. Le plan (sections créées, mises à jour, à jour, en conflit) se consulte avant d’appliquer. Les 61 sections de règles et 6 sections de L’Essentiel en retard ont été remises à jour après vérification qu’aucune ne contenait d’édition faite dans le CMS.
+
 ## Novembre 2026 — Coût des capacités et mécanique du Crâ
 
 Le coût d’une capacité s’écrit « x PA depuis la réserve de Wakfu ». Sur les fiches, il s’affiche avec l’icône PA, le nombre, puis « PA » chevauché par l’icône de la réserve ; le survol rappelle que les PA du tour ne paient que les sorts de classe. Les règles 3.4.2, 3.4.3 et 2.4.4 ne disent plus qu’une capacité se paie en PA du tour en combat. Le Crâ retrouve une mécanique : pas de règle en plus, une façon de jouer (portée longue, prendre du champ, tenir l’ennemi à distance). Un mode de résolution inconnu dans un fichier de sorts bloque désormais l’import au lieu de passer en silence.

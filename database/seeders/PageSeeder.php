@@ -10,6 +10,7 @@ use App\Models\Section;
 use App\Models\User;
 use App\Services\PageService;
 use App\Support\Cms\KrefShortcodeReplacer;
+use App\Support\Cms\SectionContentSync;
 use App\Support\Seeder\SeedMode;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -722,9 +723,18 @@ HTML;
 
         $attributes = array_merge(['page_id' => $page->id, 'slug' => $slug], $attributes);
 
+        $content = $attributes['data']['content'] ?? null;
+        if (is_string($content)) {
+            $attributes['data'] = SectionContentSync::stamp($attributes['data'], $content);
+            $attributes['params'] = SectionContentSync::stamp(
+                is_array($attributes['params'] ?? null) ? $attributes['params'] : [],
+                $content,
+            );
+        }
+
         if ($section) {
             if (! SeedMode::overwrite()) {
-                return $section;
+                return is_string($content) ? $this->syncSectionContent($section, $content) : $section;
             }
             if ($section->trashed()) {
                 $section->restore();
@@ -736,6 +746,30 @@ HTML;
         }
 
         return Section::create($attributes);
+    }
+
+    /**
+     * Hors --overwrite : le contenu suit le fichier tant que la section n’a pas été éditée dans le CMS.
+     */
+    private function syncSectionContent(Section $section, string $content): Section
+    {
+        $plan = SectionContentSync::plan($section, $content);
+        if ($plan === SectionContentSync::CONFLICT) {
+            $this->command?->warn("  Section « {$section->slug} » modifiée dans le CMS : contenu conservé (project:seed --overwrite pour imposer le fichier).");
+
+            return $section;
+        }
+
+        $data = is_array($section->data) ? $section->data : [];
+        if ($plan === SectionContentSync::SAME && ($data[SectionContentSync::HASH_KEY] ?? null) === SectionContentSync::hash($content)) {
+            return $section;
+        }
+
+        $section->data = SectionContentSync::stamp($data, $content);
+        $section->params = SectionContentSync::stamp(is_array($section->params) ? $section->params : [], $content);
+        $section->save();
+
+        return $section;
     }
 
     private function ensureEntityTableSection(

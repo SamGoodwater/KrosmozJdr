@@ -14,6 +14,7 @@ use App\Support\Cms\RulesMarkdownSectionCompiler;
 use App\Support\Cms\RulesTocPagePlacement;
 use App\Support\Cms\RulesTocParser;
 use App\Support\Cms\RulesTocSlugIndex;
+use App\Support\Cms\SectionContentSync;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -28,13 +29,18 @@ use RecursiveIteratorIterator;
  * - Niveau 2 (###) => sous-page (enfant du niveau 1)
  * - Niveau 3 (liste - x.x.x) => section texte de la page niveau 2
  * - Chapitre 5 => menu Pour les MJ, lecture MJ ; autres chapitres => Règles, lecture invité
+ *
+ * Contenu des sections : synchro sûre ({@see SectionContentSync}). Une section inchangée depuis
+ * son dernier import suit le .md ; une section modifiée dans le CMS est signalée et conservée,
+ * sauf `--accept=<numéros>` ou `--force-content`.
  */
 class PagesImportRulesTocCommand extends Command
 {
     protected $signature = 'pages:import-rules-toc
         {path? : Chemin du fichier TABLE_DES_MATIERES.md}
-        {--dry-run : Affiche le plan sans écrire en base}
-        {--force-content : Remplace le HTML des sections par celui généré depuis les .md (krefs, liens) ; sans ce flag, une section déjà remplie garde son ancien contenu}
+        {--dry-run : Calcule le plan (créations, mises à jour, conflits) puis annule tout}
+        {--accept= : Numéros de règles (ex. 2.3.4,3.4.2) dont les sections en conflit prennent quand même le contenu du .md}
+        {--force-content : Remplace le HTML de toutes les sections par celui des .md, conflits compris}
         {--compile-downloads : Compile ensuite le livre de règles (PDF et ODT)}';
 
     protected $description = 'Crée/maj pages et sections depuis la table des matières des règles.';
@@ -48,8 +54,11 @@ class PagesImportRulesTocCommand extends Command
 
     private bool $forceContent = false;
 
-    /** Nombre de sections existantes où le HTML issu des .md n’a pas été appliqué (contenu CMS déjà présent, sans --force-content). */
-    private int $skippedExistingSectionBodyFromMarkdown = 0;
+    /** @var list<string> Numéros TOC acceptés malgré un conflit (`--accept`). */
+    private array $acceptedNumbers = [];
+
+    /** @var array<string, list<string>> Slugs de sections par résultat de synchro (create, same, update, conflict, forced). */
+    private array $syncReport = [];
 
     private ?RulesTocSlugIndex $rulesTocSlugIndex = null;
 
@@ -58,6 +67,10 @@ class PagesImportRulesTocCommand extends Command
         $path = (string) ($this->argument('path') ?: base_path('private/game/rules/TABLE_DES_MATIERES.md'));
         $dryRun = (bool) $this->option('dry-run');
         $this->forceContent = (bool) $this->option('force-content');
+        $this->acceptedNumbers = array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) ($this->option('accept') ?? ''))
+        )));
 
         if (! is_file($path)) {
             $this->error("Fichier introuvable: {$path}");
@@ -80,24 +93,16 @@ class PagesImportRulesTocCommand extends Command
             count($this->sectionContentByNumber)
         ));
         if ($this->forceContent) {
-            $this->warn('Mode force-content: le contenu existant des sections sera écrasé.');
-        } else {
-            $this->comment(
-                'Sans --force-content, les sections texte déjà remplies en base conservent leur HTML '
-                .'(les changements dans les .md — y compris les [[kref:characteristic:…]] — ne sont appliqués au CMS '
-                .'qu’avec --force-content).'
-            );
+            $this->warn('Mode force-content: le contenu existant des sections sera écrasé, conflits compris.');
         }
 
         if ($dryRun) {
-            $this->info('Mode dry-run: aucun changement en base.');
+            $this->info('Mode dry-run: plan calculé puis annulé, aucun changement en base.');
             $this->printTreePreview($tree);
-
-            return ArtisanExitCode::SUCCESS;
         }
 
         $creatorId = $this->resolveDefaultCreatorId();
-        $this->skippedExistingSectionBodyFromMarkdown = 0;
+        $this->syncReport = [];
 
         DB::beginTransaction();
         try {
@@ -122,6 +127,13 @@ class PagesImportRulesTocCommand extends Command
             $this->keepPlayerDownloadsInRulesMenu();
             $this->hideRetiredRulesAnnexes();
 
+            if ($dryRun) {
+                DB::rollBack();
+                $this->printSyncReport();
+
+                return ArtisanExitCode::SUCCESS;
+            }
+
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -132,14 +144,7 @@ class PagesImportRulesTocCommand extends Command
 
         PageService::clearMenuCache();
         $this->info('Import terminé avec succès.');
-        if (! $this->forceContent && $this->skippedExistingSectionBodyFromMarkdown > 0) {
-            $this->warn(sprintf(
-                '%d section(s) existante(s) : le HTML des fichiers Markdown n’a pas remplacé le contenu déjà '
-                .'enregistré. Pour appliquer les .md (références kref, etc.), relance : '
-                .'php artisan pages:import-rules-toc --force-content',
-                $this->skippedExistingSectionBodyFromMarkdown
-            ));
-        }
+        $this->printSyncReport();
 
         if ((bool) $this->option('compile-downloads')) {
             $this->newLine();
@@ -289,22 +294,18 @@ class PagesImportRulesTocCommand extends Command
             );
             $attributes['settings'] = $mergedSettings;
 
-            // Respecter un éventuel contenu édité à la main: on ne l'écrase pas.
             $existingData = is_array($existing->data) ? $existing->data : [];
             $existingParams = is_array($existing->params) ? $existing->params : [];
-            $hasCustomDataContent = isset($existingData['content']) && trim((string) $existingData['content']) !== '';
-            $hasCustomParamsContent = isset($existingParams['content']) && trim((string) $existingParams['content']) !== '';
+            $plan = SectionContentSync::plan($existing, $content);
+            $forced = $plan === SectionContentSync::CONFLICT
+                && ($this->forceContent || in_array($level3Number, $this->acceptedNumbers, true));
 
-            if ($this->forceContent) {
-                $attributes['data'] = $this->replaceSectionContent($existingData, $content);
-                $attributes['params'] = $this->replaceSectionContent($existingParams, $content);
+            if ($plan === SectionContentSync::CONFLICT && ! $forced) {
+                $this->syncReport[SectionContentSync::CONFLICT][] = $level3Number.' '.$slug;
             } else {
-                $hasMarkdownForNumber = isset($this->sectionContentByNumber[$level3Number]);
-                if ($hasMarkdownForNumber && ($hasCustomDataContent || $hasCustomParamsContent)) {
-                    $this->skippedExistingSectionBodyFromMarkdown++;
-                }
-                $attributes['data'] = $hasCustomDataContent ? $existingData : ['content' => $content];
-                $attributes['params'] = $hasCustomParamsContent ? $existingParams : ['content' => $content];
+                $this->syncReport[$forced ? 'forced' : $plan][] = $level3Number.' '.$slug;
+                $attributes['data'] = SectionContentSync::stamp($existingData, $content);
+                $attributes['params'] = SectionContentSync::stamp($existingParams, $content);
             }
 
             $existing->fill($attributes);
@@ -313,8 +314,9 @@ class PagesImportRulesTocCommand extends Command
             return $existing;
         }
 
-        $attributes['data'] = ['content' => $content];
-        $attributes['params'] = ['content' => $content];
+        $attributes['data'] = SectionContentSync::stamp([], $content);
+        $attributes['params'] = SectionContentSync::stamp([], $content);
+        $this->syncReport[SectionContentSync::CREATE][] = $level3Number.' '.$slug;
 
         return Section::create($attributes);
     }
@@ -341,14 +343,36 @@ class PagesImportRulesTocCommand extends Command
     }
 
     /**
-     * @param  array<string, mixed>  $payload
-     * @return array<string, mixed>
+     * Résumé de la synchro ; liste les conflits (sections modifiées dans le CMS, conservées).
      */
-    private function replaceSectionContent(array $payload, string $content): array
+    private function printSyncReport(): void
     {
-        $payload['content'] = $content;
-
-        return $payload;
+        $labels = [
+            SectionContentSync::CREATE => 'créées',
+            SectionContentSync::UPDATE => 'mises à jour depuis les .md',
+            'forced' => 'forcées malgré un conflit',
+            SectionContentSync::SAME => 'déjà à jour',
+            SectionContentSync::CONFLICT => 'en conflit (conservées)',
+        ];
+        foreach ($labels as $key => $label) {
+            $this->line(sprintf('Sections %s : %d', $label, count($this->syncReport[$key] ?? [])));
+        }
+        foreach (['forced', SectionContentSync::UPDATE] as $key) {
+            foreach ($this->syncReport[$key] ?? [] as $entry) {
+                $this->line('  '.($key === 'forced' ? '! ' : '~ ').$entry);
+            }
+        }
+        $conflicts = $this->syncReport[SectionContentSync::CONFLICT] ?? [];
+        if ($conflicts === []) {
+            return;
+        }
+        foreach ($conflicts as $entry) {
+            $this->warn('  ≠ '.$entry);
+        }
+        $this->warn(
+            'Ces sections diffèrent du .md et ont été modifiées hors import (CMS) ou importées avant les empreintes. '
+            .'Vérifie-les, puis applique le .md avec --accept=<numéros> (ex. --accept=2.3.4,3.4.2).'
+        );
     }
 
     /**

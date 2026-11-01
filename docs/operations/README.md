@@ -27,8 +27,12 @@ php artisan items:seeder-import
 
 `php artisan pages:import-rules-toc` importe `private/game/rules/TABLE_DES_MATIERES.md` vers les pages règles. Appelé par `project:init` / `project:seed`. Le chapitre 5 (équilibrage) va dans **Pour les MJ** (`read_level` MJ). `--compile-downloads` enchaîne la compilation PDF/ODT.
 
+**Source de vérité : les fichiers** (`.md` des règles, `database/seeders/data/essential-pages.php`) ; le PDF est compilé depuis eux. La base suit par **synchro sûre** (`App\Support\Cms\SectionContentSync`) : chaque import mémorise l’empreinte du HTML écrit (`data.source_hash`). Une section inchangée depuis suit le fichier ; une section éditée dans le CMS est signalée **en conflit** et conservée. Pour imposer le fichier : `--accept=<numéros>` (règles) ou `project:seed --overwrite` (L’Essentiel). `--force-content` écrase tout, conflits compris : à éviter.
+
 ```bash
-php artisan pages:import-rules-toc --dry-run
+php artisan pages:import-rules-toc --dry-run          # plan : créées, mises à jour, déjà à jour, conflits
+php artisan pages:import-rules-toc                    # applique les sections non éditées dans le CMS
+php artisan pages:import-rules-toc --accept=2.3.4     # impose le .md sur une section en conflit, après vérification
 php artisan rules:compile-downloads
 ```
 

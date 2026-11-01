@@ -9,6 +9,7 @@ use App\Models\Page;
 use App\Models\Scrapping\ScrappingEntityMapping;
 use App\Models\Section;
 use App\Models\User;
+use App\Support\Cms\SectionContentSync;
 use App\Support\Seeder\SeedMode;
 use Database\Seeders\CriticalPagesSeeder;
 use Database\Seeders\PageSeeder;
@@ -61,6 +62,33 @@ final class SeedModePageAndMappingPreservationTest extends TestCase
             'slug' => 'section-ajoutee-a-la-main',
             'deleted_at' => null,
         ]);
+    }
+
+    public function test_page_seeder_syncs_untouched_text_sections_and_keeps_cms_edits(): void
+    {
+        SeedMode::forceOverwrite(false);
+        $this->seed(CriticalPagesSeeder::class);
+        $this->seed(PageSeeder::class);
+
+        $sections = Section::query()->where('slug', 'like', 'essentiels-%')->get()
+            ->filter(fn (Section $s) => isset($s->data['content']))->values();
+        $this->assertGreaterThan(1, $sections->count());
+        [$untouched, $edited] = [$sections[0], $sections[1]];
+        $fileContent = SectionContentSync::currentContent($untouched);
+
+        $untouched->update([
+            'data' => SectionContentSync::stamp($untouched->data, '<p>Ancienne version du fichier.</p>'),
+            'params' => SectionContentSync::stamp($untouched->params, '<p>Ancienne version du fichier.</p>'),
+        ]);
+        $edited->update([
+            'data' => array_merge($edited->data, ['content' => '<p>Édité dans le CMS.</p>']),
+            'params' => array_merge($edited->params, ['content' => '<p>Édité dans le CMS.</p>']),
+        ]);
+
+        $this->seed(PageSeeder::class);
+
+        $this->assertSame($fileContent, SectionContentSync::currentContent($untouched->refresh()));
+        $this->assertSame('<p>Édité dans le CMS.</p>', SectionContentSync::currentContent($edited->refresh()));
     }
 
     public function test_scrapping_mapping_seeder_skips_when_rows_exist_without_overwrite(): void

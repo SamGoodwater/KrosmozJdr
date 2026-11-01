@@ -444,9 +444,11 @@ cron: false
 
 Importe `private/game/rules/TABLE_DES_MATIERES.md` vers les pages CMS. Appelé par `project:init` / `project:seed`. Le chapitre 5 (équilibrage des entités) est placé dans **Pour les MJ** (`read_level` MJ) ; la page **Ressources** reste dans Règles.
 
+Synchro sûre : une section non éditée dans le CMS suit le `.md` ; une section éditée est listée en conflit et conservée (`--accept=<numéros>` pour imposer le `.md`). `--dry-run` calcule le plan puis annule.
+
 ```bash
 php artisan pages:import-rules-toc --dry-run
-php artisan pages:import-rules-toc --force-content --compile-downloads
+php artisan pages:import-rules-toc --accept=2.3.4,3.4.2 --compile-downloads
 ```
 
 ---
