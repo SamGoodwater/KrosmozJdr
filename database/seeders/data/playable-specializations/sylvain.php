@@ -54,7 +54,8 @@ return [
                 [
                     'name' => 'Langage des bêtes simples',
                     'type' => $guaranteed,
-                    'effect' => 'Tu communiques des intentions simples (danger, nourriture, « pars ») avec un animal non magique. Une scène. 1 PA en combat. Pas d’interrogatoire philosophique.',
+                    'pa' => '1',
+                    'effect' => 'Tu communiques des intentions simples (danger, nourriture, « pars ») avec un animal non magique. Une scène. 1 PA depuis la réserve de Wakfu en combat. Pas d’interrogatoire philosophique.',
                 ],
                 [
                     'name' => 'Sentier lu',
@@ -135,7 +136,8 @@ return [
                 [
                     'name' => 'Racines gênantes',
                     'type' => $freeSlot,
-                    'effect' => 'En nature, 2 PA : une case devient terrain difficile jusqu’à la fin de ton prochain tour. 1×/tour. Pas un mur de Féca.',
+                    'pa' => '2',
+                    'effect' => 'En nature, 2 PA depuis la réserve de Wakfu : une case devient terrain difficile jusqu’à la fin de ton prochain tour. 1×/tour. Pas un mur de Féca.',
                 ],
                 [
                     'name' => 'Nid d’emprunt',
@@ -169,7 +171,8 @@ return [
                 [
                     'name' => 'Sève qui ferme',
                     'type' => $freeSlot,
-                    'effect' => 'Tu fermes une plaie naturelle (pas un sort) : 1d4 PV, ou tu stoppes un saignement. 1 minute hors combat, 2 PA en combat. 1×/créature/jour.',
+                    'pa' => '2',
+                    'effect' => 'Tu fermes une plaie naturelle (pas un sort) : 1d4 PV, ou tu stoppes un saignement. 1 minute hors combat, 2 PA depuis la réserve de Wakfu en combat. 1×/créature/jour.',
                 ],
             ],
         ],

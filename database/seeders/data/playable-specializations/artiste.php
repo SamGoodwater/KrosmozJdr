@@ -54,7 +54,8 @@ return [
                 [
                     'name' => 'Inspiration artistique',
                     'type' => $guaranteed,
-                    'effect' => 'Tu inspires une créature qui t’entend : +1d4 au prochain jet d’attaque, de sauvegarde ou de compétence. Jusqu’à la fin de son prochain tour. 1 PA, 1×/tour. Pas de cumul.',
+                    'pa' => '1',
+                    'effect' => 'Tu inspires une créature qui t’entend : +1d4 au prochain jet d’attaque, de sauvegarde ou de compétence. Jusqu’à la fin de son prochain tour. 1 PA depuis la réserve de Wakfu, 1×/tour. Pas de cumul.',
                 ],
                 [
                     'name' => 'Performance',
@@ -64,7 +65,8 @@ return [
                 [
                     'name' => 'Illusion de scène',
                     'type' => $freeSlot,
-                    'effect' => 'Un son ou une image petite (un objet, une voix, une flamme) dans 6 cases, une minute. Ça ne blesse pas. Un examen attentif (Perspicacité) la perce. 1 PA en combat.',
+                    'pa' => '1',
+                    'effect' => 'Un son ou une image petite (un objet, une voix, une flamme) dans 6 cases, une minute. Ça ne blesse pas. Un examen attentif (Perspicacité) la perce. 1 PA depuis la réserve de Wakfu en combat.',
                 ],
                 [
                     'name' => 'Affiche magique',
@@ -86,12 +88,14 @@ return [
                 [
                     'name' => 'Éclat de rire',
                     'type' => $freeSlot,
-                    'effect' => 'Une créature qui t’entend et te voit : jet de Sagesse ou elle perd son action à rire. 2 PA, 1×/scène. Les bêtes et les morts-vivants s’en fichent.',
+                    'pa' => '2',
+                    'effect' => 'Une créature qui t’entend et te voit : jet de Sagesse ou elle perd son action à rire. 2 PA depuis la réserve de Wakfu, 1×/scène. Les bêtes et les morts-vivants s’en fichent.',
                 ],
                 [
                     'name' => 'Fausse note utile',
                     'type' => $freeSlot,
-                    'effect' => 'Tu rates exprès : un public, une garde ou un hôte détourne le regard. Avantage au prochain test de Discrétion ou d’Escamotage d’un allié. 1 PA, 1×/scène.',
+                    'pa' => '1',
+                    'effect' => 'Tu rates exprès : un public, une garde ou un hôte détourne le regard. Avantage au prochain test de Discrétion ou d’Escamotage d’un allié. 1 PA depuis la réserve de Wakfu, 1×/scène.',
                 ],
             ],
             'aptitudes' => [
@@ -109,7 +113,8 @@ return [
                 [
                     'name' => 'Accroche',
                     'type' => $guaranteed,
-                    'effect' => 'Une créature qui t’entend et te comprend : tu lui souffles une action simple et raisonnable (approche, attends, regarde ailleurs). Jet de Sagesse pour résister. 2 PA, 1×/scène. Pas de suicide, pas de trahison évidente.',
+                    'pa' => '2',
+                    'effect' => 'Une créature qui t’entend et te comprend : tu lui souffles une action simple et raisonnable (approche, attends, regarde ailleurs). Jet de Sagesse pour résister. 2 PA depuis la réserve de Wakfu, 1×/scène. Pas de suicide, pas de trahison évidente.',
                 ],
                 [
                     'name' => 'Image de salle',
@@ -132,7 +137,7 @@ return [
                     'name' => 'Visage d’emprunt',
                     'type' => $guaranteed,
                     'pa' => '3',
-                    'effect' => 'Tu prends l’apparence d’une personne vue. Une heure, ou une scène en combat (2 PA). Les proches ont avantage pour te percer. 3 PA depuis la réserve de Wakfu.',
+                    'effect' => 'Tu prends l’apparence d’une personne vue. Une heure, ou une scène en combat. Les proches ont avantage pour te percer. 3 PA depuis la réserve de Wakfu.',
                 ],
                 [
                     'name' => 'Rêvevin',
@@ -165,12 +170,14 @@ return [
                 [
                     'name' => 'Double de scène',
                     'type' => $freeSlot,
-                    'effect' => 'Tu laisses une image de toi sur place et tu deviens discret (pas invisible magique : on te rate si on ne te cherche pas). 1 minute, 2 PA, 1×/scène.',
+                    'pa' => '2',
+                    'effect' => 'Tu laisses une image de toi sur place et tu deviens discret (pas invisible magique : on te rate si on ne te cherche pas). 1 minute, 2 PA depuis la réserve de Wakfu, 1×/scène.',
                 ],
                 [
                     'name' => 'Ombres de coulisse',
                     'type' => $freeSlot,
-                    'effect' => 'Tu disparais dans un décor, une foule ou un rideau. Jusqu’à ton prochain tour, on t’a perdue de vue. 2 PA, 1×/scène. Tu n’es pas invisible en terrain nu.',
+                    'pa' => '2',
+                    'effect' => 'Tu disparais dans un décor, une foule ou un rideau. Jusqu’à ton prochain tour, on t’a perdue de vue. 2 PA depuis la réserve de Wakfu, 1×/scène. Tu n’es pas invisible en terrain nu.',
                 ],
             ],
         ],
@@ -187,7 +194,8 @@ return [
                 [
                     'name' => 'Salle entière',
                     'type' => $freeSlot,
-                    'effect' => 'Jusqu’à six créatures qui t’entendent : même effet qu’Accroche, un seul jet pour le groupe (le plus haut). 3 PA, 1×/scène.',
+                    'pa' => '3',
+                    'effect' => 'Jusqu’à six créatures qui t’entendent : même effet qu’Accroche, un seul jet pour le groupe (le plus haut). 3 PA depuis la réserve de Wakfu, 1×/scène.',
                 ],
                 [
                     'name' => 'Public conquis',

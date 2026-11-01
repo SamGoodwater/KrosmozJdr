@@ -74,7 +74,7 @@ return [
                     'name' => 'Main du mage',
                     'type' => $freeSlot,
                     'pa' => '1',
-                    'effect' => 'Une main spectrale à portée (9 m), 5 kg, n’attaque pas. Tu ouvres, verses, déplaces. 1 PA depuis la réserve de Wakfu par action en combat. Hors combat : 1 PA depuis la réserve de Wakfu, une scène.',
+                    'effect' => 'Une main spectrale à portée (9 m), 5 kg, n’attaque pas. Tu ouvres, verses, déplaces. 1 PA depuis la réserve de Wakfu : une action en combat, ou une scène entière hors combat.',
                 ],
             ],
         ],
@@ -85,7 +85,8 @@ return [
                 [
                     'name' => 'Analyse',
                     'type' => $guaranteed,
-                    'effect' => 'Sur un objet, une créature ou une scène (1 minute hors combat, 1 PA en combat), tu dégages une propriété utile : faiblesse évidente, mensonge de surface, usage caché d’un outil. Un seul fait, pas une fiche complète.',
+                    'pa' => '1',
+                    'effect' => 'Sur un objet, une créature ou une scène (1 minute hors combat, 1 PA depuis la réserve de Wakfu en combat), tu dégages une propriété utile : faiblesse évidente, mensonge de surface, usage caché d’un outil. Un seul fait, pas une fiche complète.',
                 ],
                 [
                     'name' => 'Localiser un objet',
@@ -163,7 +164,8 @@ return [
                 [
                     'name' => 'Tour silencieux',
                     'type' => $guaranteed,
-                    'effect' => 'Tes sorts de classe et tes capacités d’Érudit n’ont plus besoin de composante vocale. En combat, tu peux aussi dépenser 1 PA pour qu’un sort déjà lancé ne laisse pas d’éclat visible hors de la case cible.',
+                    'pa' => '1',
+                    'effect' => 'Tes sorts de classe et tes capacités d’Érudit n’ont plus besoin de composante vocale. En combat, tu peux aussi dépenser 1 PA depuis la réserve de Wakfu pour qu’un sort déjà lancé ne laisse pas d’éclat visible hors de la case cible.',
                 ],
                 [
                     'name' => 'Zaap de poche',
@@ -174,7 +176,7 @@ return [
                     'name' => 'Télékinésie',
                     'type' => $freeSlot,
                     'pa' => '2',
-                    'effect' => 'Pendant une scène, tu déplaces un objet ou une créature consentante dans un rayon de 12 cases. En combat : 2 PA depuis la réserve de Wakfu, 1×/tour, pas d’attaque. Hors combat : 2 PA depuis la réserve de Wakfu.',
+                    'effect' => 'Pendant une scène, tu déplaces un objet ou une créature consentante dans un rayon de 12 cases. 2 PA depuis la réserve de Wakfu, en combat comme hors combat. En combat : 1×/tour, pas d’attaque.',
                 ],
             ],
         ],
@@ -185,7 +187,8 @@ return [
                 [
                     'name' => 'Analyse profonde',
                     'type' => $guaranteed,
-                    'effect' => 'Comme Analyse, mais tu tires trois faits, y compris une propriété magique cachée ou une faille d’un sort déjà lancé. 1 minute hors combat, 2 PA en combat.',
+                    'pa' => '2',
+                    'effect' => 'Comme Analyse, mais tu tires trois faits, y compris une propriété magique cachée ou une faille d’un sort déjà lancé. 1 minute hors combat, 2 PA depuis la réserve de Wakfu en combat.',
                 ],
                 [
                     'name' => 'Téléportation',

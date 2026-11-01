@@ -54,7 +54,8 @@ return [
                 [
                     'name' => 'Cote du jour',
                     'type' => $guaranteed,
-                    'effect' => 'Dans un marché, tu évalues le prix juste d’un objet courant sans jet. Pour une pièce Rare ou plus : avantage au test d’Intelligence. 10 minutes, ou 1 PA en combat si l’objet est sous tes yeux.',
+                    'pa' => '1',
+                    'effect' => 'Dans un marché, tu évalues le prix juste d’un objet courant sans jet. Pour une pièce Rare ou plus : avantage au test d’Intelligence. 10 minutes, ou 1 PA depuis la réserve de Wakfu en combat si l’objet est sous tes yeux.',
                 ],
                 [
                     'name' => 'Carnet ouvert',
@@ -163,7 +164,8 @@ return [
                 [
                     'name' => 'Offre qu’on n’ose pas refuser',
                     'type' => $freeSlot,
-                    'effect' => 'Social tendu : tu transformes une négociation en test d’Intimidation, ou l’inverse, selon le style. 1 PA en combat si ça se joue à voix haute. Pas un sort de charme.',
+                    'pa' => '1',
+                    'effect' => 'Social tendu : tu transformes une négociation en test d’Intimidation, ou l’inverse, selon le style. 1 PA depuis la réserve de Wakfu en combat si ça se joue à voix haute. Pas un sort de charme.',
                 ],
                 [
                     'name' => 'Entrepôt distant',

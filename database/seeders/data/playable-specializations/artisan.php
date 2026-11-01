@@ -54,7 +54,8 @@ return [
                 [
                     'name' => 'Œil du matériau',
                     'type' => $guaranteed,
-                    'effect' => 'En 10 minutes (1 PA en combat), tu estimes rareté, défauts et usage d’une ressource ou d’un objet non magique. Tu ne lis pas les enchantements volontairement cachés.',
+                    'pa' => '1',
+                    'effect' => 'En 10 minutes (1 PA depuis la réserve de Wakfu en combat), tu estimes rareté, défauts et usage d’une ressource ou d’un objet non magique. Tu ne lis pas les enchantements volontairement cachés.',
                 ],
                 [
                     'name' => 'Établi familier',
@@ -64,7 +65,8 @@ return [
                 [
                     'name' => 'Réparation de fortune',
                     'type' => $freeSlot,
-                    'effect' => 'Avec tes outils, tu remets en état un objet cassé ou usé. Hors combat : 1 heure. En combat : 2 PA, l’objet tient jusqu’à la fin de la scène puis lâche. 1×/scène.',
+                    'pa' => '2',
+                    'effect' => 'Avec tes outils, tu remets en état un objet cassé ou usé. Hors combat : 1 heure. En combat : 2 PA depuis la réserve de Wakfu, l’objet tient jusqu’à la fin de la scène puis lâche. 1×/scène.',
                 ],
                 [
                     'name' => 'Marque d’atelier',
@@ -118,7 +120,8 @@ return [
                 [
                     'name' => 'Coin et colle',
                     'type' => $freeSlot,
-                    'effect' => 'Tu improvises une réparation qui tient une scène (porte, roue, attache). Ensuite ça lâche. 10 minutes hors combat, 2 PA en combat. 1×/scène.',
+                    'pa' => '2',
+                    'effect' => 'Tu improvises une réparation qui tient une scène (porte, roue, attache). Ensuite ça lâche. 10 minutes hors combat, 2 PA depuis la réserve de Wakfu en combat. 1×/scène.',
                 ],
             ],
         ],

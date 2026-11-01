@@ -64,7 +64,8 @@ return [
                 [
                     'name' => 'Détection de pièges',
                     'type' => $freeSlot,
-                    'effect' => 'En avançant à vitesse réduite, tu as l’avantage pour voir les pièges non magiques dans 3 cases. En combat : 1 PA pour inspecter une case adjacente.',
+                    'pa' => '1',
+                    'effect' => 'En avançant à vitesse réduite, tu as l’avantage pour voir les pièges non magiques dans 3 cases. En combat : 1 PA depuis la réserve de Wakfu pour inspecter une case adjacente.',
                 ],
                 [
                     'name' => 'Feu de camp',

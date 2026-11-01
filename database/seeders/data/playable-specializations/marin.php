@@ -59,12 +59,14 @@ return [
                 [
                     'name' => 'Lire le gréement',
                     'type' => $guaranteed,
-                    'effect' => 'Variante de garantie : 10 minutes, tu sais si un navire, un pont de corde ou un filet va tenir la journée. Un défaut évident, pas une fiche complète. 1 PA en combat si tu touches le cordage.',
+                    'pa' => '1',
+                    'effect' => 'Variante de garantie : 10 minutes, tu sais si un navire, un pont de corde ou un filet va tenir la journée. Un défaut évident, pas une fiche complète. 1 PA depuis la réserve de Wakfu en combat si tu touches le cordage.',
                 ],
                 [
                     'name' => 'Nœud qui tient',
                     'type' => $freeSlot,
-                    'effect' => 'Tu attaches, hisses, répares un gréement simple en 10 minutes. Utile pour ponts de corde, filets, sangles. DD 10 hors combat, 2 PA en combat pour sangler une créature consentante ou déjà maîtrisée.',
+                    'pa' => '2',
+                    'effect' => 'Tu attaches, hisses, répares un gréement simple en 10 minutes. Utile pour ponts de corde, filets, sangles. DD 10 hors combat, 2 PA depuis la réserve de Wakfu en combat pour sangler une créature consentante ou déjà maîtrisée.',
                 ],
                 [
                     'name' => 'Gourde salée',
@@ -85,7 +87,8 @@ return [
                 [
                     'name' => 'À l’eau',
                     'type' => $freeSlot,
-                    'effect' => 'Tu nages longtemps (avantage à Athlétisme dans l’eau). Tu aides un·e allié·e à ne pas couler (1 PA en combat, tu partages ta case). Tu récupères un objet à faible profondeur hors combat (1 minute).',
+                    'pa' => '1',
+                    'effect' => 'Tu nages longtemps (avantage à Athlétisme dans l’eau). Tu aides un·e allié·e à ne pas couler (1 PA depuis la réserve de Wakfu en combat, tu partages ta case). Tu récupères un objet à faible profondeur hors combat (1 minute).',
                 ],
                 [
                     'name' => 'Écope',
@@ -108,7 +111,8 @@ return [
                 [
                     'name' => 'Cri de pont',
                     'type' => $guaranteed,
-                    'effect' => 'Une fois par scène, tu donnes un ordre clair à un petit groupe (hisser, abattre, larguer, reculer un chariot, tenir une porte). Jusqu’à 6 créatures qui t’entendent : +1 à leur prochain jet lié à cet ordre. 1 PA.',
+                    'pa' => '1',
+                    'effect' => 'Une fois par scène, tu donnes un ordre clair à un petit groupe (hisser, abattre, larguer, reculer un chariot, tenir une porte). Jusqu’à 6 créatures qui t’entendent : +1 à leur prochain jet lié à cet ordre. 1 PA depuis la réserve de Wakfu.',
                 ],
                 [
                     'name' => 'Sondeur d’épave',
@@ -134,12 +138,14 @@ return [
                 [
                     'name' => 'Grappin de fortune',
                     'type' => $freeSlot,
-                    'effect' => 'Tu lances un grappin (6 cases). 2 PA. Accroche un rebord, un navire, une créature Grande ou plus (jet d’Athlétisme contre elle). 1×/tour.',
+                    'pa' => '2',
+                    'effect' => 'Tu lances un grappin (6 cases). 2 PA depuis la réserve de Wakfu. Accroche un rebord, un navire, une créature Grande ou plus (jet d’Athlétisme contre elle). 1×/tour.',
                 ],
                 [
                     'name' => 'Filet lancé',
                     'type' => $freeSlot,
-                    'effect' => 'Tu entangles une créature à 3 cases (jet d’Athlétisme). Hors combat : tu ramènes un colis à la surface. 2 PA, 1×/scène.',
+                    'pa' => '2',
+                    'effect' => 'Tu entangles une créature à 3 cases (jet d’Athlétisme). Hors combat : tu ramènes un colis à la surface. 2 PA depuis la réserve de Wakfu, 1×/scène.',
                 ],
             ],
             'aptitudes' => [

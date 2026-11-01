@@ -54,22 +54,26 @@ return [
                 [
                     'name' => 'Formation tactique',
                     'type' => $guaranteed,
-                    'effect' => 'Une fois par scène, tu places jusqu’à deux allié·e·s adjacents : chacun gagne +1 CA jusqu’à son prochain tour, ou se décale d’une case sans provoquer d’attaque. 1 PA en combat.',
+                    'pa' => '1',
+                    'effect' => 'Une fois par scène, tu places jusqu’à deux allié·e·s adjacents : chacun gagne +1 CA jusqu’à son prochain tour, ou se décale d’une case sans provoquer d’attaque. 1 PA depuis la réserve de Wakfu en combat.',
                 ],
                 [
                     'name' => 'Cri de ralliement',
                     'type' => $guaranteed,
-                    'effect' => 'Variante de garantie : un cri net. Un allié à 6 cases qui est à terre, apeuré ou figé relance son jet, ou se relève. 1 PA, 1×/scène.',
+                    'pa' => '1',
+                    'effect' => 'Variante de garantie : un cri net. Un allié à 6 cases qui est à terre, apeuré ou figé relance son jet, ou se relève. 1 PA depuis la réserve de Wakfu, 1×/scène.',
                 ],
                 [
                     'name' => 'Garde du seuil',
                     'type' => $freeSlot,
-                    'effect' => 'Tu bloques une porte, un passage d’une case ou un allié au sol. Tant que tu ne bouges pas, la première créature qui passe à travers toi s’arrête. 1 PA pour poser, 0 pour tenir.',
+                    'pa' => '1',
+                    'effect' => 'Tu bloques une porte, un passage d’une case ou un allié au sol. Tant que tu ne bouges pas, la première créature qui passe à travers toi s’arrête. 1 PA depuis la réserve de Wakfu pour poser, rien pour tenir.',
                 ],
                 [
                     'name' => 'Menottes de fortune',
                     'type' => $freeSlot,
-                    'effect' => 'Sur une créature déjà maîtrisée ou consentante : tu l’entraves (mains ou pieds). Hors combat : 1 minute. En combat : 2 PA, jet d’Athlétisme contre elle.',
+                    'pa' => '2',
+                    'effect' => 'Sur une créature déjà maîtrisée ou consentante : tu l’entraves (mains ou pieds). Hors combat : 1 minute. En combat : 2 PA depuis la réserve de Wakfu, jet d’Athlétisme contre elle.',
                 ],
             ],
         ],
@@ -80,7 +84,8 @@ return [
                 [
                     'name' => 'Garde rapprochée',
                     'type' => $guaranteed,
-                    'effect' => 'Tu désignes un allié adjacent. Jusqu’à la fin de ton prochain tour, les attaques qui le visent te visent toi si tu le veux. 1 PA, pas de cumul.',
+                    'pa' => '1',
+                    'effect' => 'Tu désignes un allié adjacent. Jusqu’à la fin de ton prochain tour, les attaques qui le visent te visent toi si tu le veux. 1 PA depuis la réserve de Wakfu, pas de cumul.',
                 ],
                 [
                     'name' => 'Tenir la ligne',
@@ -91,7 +96,8 @@ return [
                 [
                     'name' => 'Épaule contre épaule',
                     'type' => $freeSlot,
-                    'effect' => 'Un allié adjacent gagne +1 aux jets de sauvegarde tant qu’il reste collé à toi. Une scène, ou 1 PA en combat pour tenir jusqu’à ton prochain tour.',
+                    'pa' => '1',
+                    'effect' => 'Un allié adjacent gagne +1 aux jets de sauvegarde tant qu’il reste collé à toi. Une scène, ou 1 PA depuis la réserve de Wakfu en combat pour tenir jusqu’à ton prochain tour.',
                 ],
             ],
             'aptitudes' => [
@@ -131,7 +137,8 @@ return [
                 [
                     'name' => 'Commandement',
                     'type' => $guaranteed,
-                    'effect' => 'Un allié à 6 cases agit tout de suite : une attaque, un déplacement ou une capacité déjà connue, à son coût. 2 PA, 1×/tour. Ce n’est pas ton tour, c’est le sien avancé.',
+                    'pa' => '2',
+                    'effect' => 'Un allié à 6 cases agit tout de suite : une attaque, un déplacement ou une capacité déjà connue, à son coût. 2 PA depuis la réserve de Wakfu, 1×/tour. Ce n’est pas ton tour, c’est le sien avancé.',
                 ],
                 [
                     'name' => 'Insigne levé',
@@ -160,7 +167,8 @@ return [
                 [
                     'name' => 'Phalange',
                     'type' => $guaranteed,
-                    'effect' => 'Toi et jusqu’à deux allié·e·s adjacents : +1 CA et vous ne pouvez pas être séparés de force. Jusqu’à la fin de ton prochain tour. 2 PA, 1×/scène.',
+                    'pa' => '2',
+                    'effect' => 'Toi et jusqu’à deux allié·e·s adjacents : +1 CA et vous ne pouvez pas être séparés de force. Jusqu’à la fin de ton prochain tour. 2 PA depuis la réserve de Wakfu, 1×/scène.',
                 ],
                 [
                     'name' => 'Rempart vivant',
@@ -170,7 +178,8 @@ return [
                 [
                     'name' => 'Recul ordonné',
                     'type' => $freeSlot,
-                    'effect' => 'Toi et jusqu’à deux allié·e·s adjacents reculez de 2 cases sans provoquer d’attaque. 2 PA, 1×/scène.',
+                    'pa' => '2',
+                    'effect' => 'Toi et jusqu’à deux allié·e·s adjacents reculez de 2 cases sans provoquer d’attaque. 2 PA depuis la réserve de Wakfu, 1×/scène.',
                 ],
             ],
         ],
@@ -181,7 +190,8 @@ return [
                 [
                     'name' => 'Ordre de charge',
                     'type' => $guaranteed,
-                    'effect' => 'Jusqu’à trois allié·e·s à 6 cases se déplacent de 3 cases vers une cible que tu nommes et peuvent attaquer s’ils arrivent au contact. 3 PA, 1×/scène. Chacun paie encore ses PA d’attaque.',
+                    'pa' => '3',
+                    'effect' => 'Jusqu’à trois allié·e·s à 6 cases se déplacent de 3 cases vers une cible que tu nommes et peuvent attaquer s’ils arrivent au contact. 3 PA depuis la réserve de Wakfu, 1×/scène. Chacun paie encore ses PA d’attaque.',
                 ],
                 [
                     'name' => 'Ralliement',

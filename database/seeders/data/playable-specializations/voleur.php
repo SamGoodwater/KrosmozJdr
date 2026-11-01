@@ -54,12 +54,14 @@ return [
                 [
                     'name' => 'Crochetage',
                     'type' => $guaranteed,
-                    'effect' => 'Tu ouvres une serrure non magique en 1 minute (hors combat) ou 2 PA (en combat, une tentative). Test d’Escamotage. Un échec ne casse pas l’outil, mais fait du bruit.',
+                    'pa' => '2',
+                    'effect' => 'Tu ouvres une serrure non magique en 1 minute (hors combat) ou 2 PA depuis la réserve de Wakfu (en combat, une tentative). Test d’Escamotage. Un échec ne casse pas l’outil, mais fait du bruit.',
                 ],
                 [
                     'name' => 'Vol à la tire',
                     'type' => $guaranteed,
-                    'effect' => 'Variante de garantie : tu prends un objet accessible (poche, table, ceinture) sans qu’on te voie. Test d’Escamotage contre Perception. En combat : 1 PA, seulement si la cible ne te voit pas ou est occupée.',
+                    'pa' => '1',
+                    'effect' => 'Variante de garantie : tu prends un objet accessible (poche, table, ceinture) sans qu’on te voie. Test d’Escamotage contre Perception. En combat : 1 PA depuis la réserve de Wakfu, seulement si la cible ne te voit pas ou est occupée.',
                 ],
                 [
                     'name' => 'Ombre de ruelle',
@@ -113,12 +115,14 @@ return [
                 [
                     'name' => 'Fuite par les toits',
                     'type' => $freeSlot,
-                    'effect' => 'En ville, tu ouvres une sortie verticale : toit, corniche, gouttière. 1 PA en combat pour toi, 10 minutes pour faire passer le groupe. Test d’Acrobaties si c’est vilain.',
+                    'pa' => '1',
+                    'effect' => 'En ville, tu ouvres une sortie verticale : toit, corniche, gouttière. 1 PA depuis la réserve de Wakfu en combat pour toi, 10 minutes pour faire passer le groupe. Test d’Acrobaties si c’est vilain.',
                 ],
                 [
                     'name' => 'Bruit ailleurs',
                     'type' => $freeSlot,
-                    'effect' => 'Tu crées un bruit à 6 cases (voix, chute, verre). Les regards partent. 1 PA, 1×/scène.',
+                    'pa' => '1',
+                    'effect' => 'Tu crées un bruit à 6 cases (voix, chute, verre). Les regards partent. 1 PA depuis la réserve de Wakfu, 1×/scène.',
                 ],
             ],
         ],

@@ -54,17 +54,20 @@ return [
                 [
                     'name' => 'Bénédiction',
                     'type' => $guaranteed,
-                    'effect' => 'Tu touches une créature consentante : +1 au prochain jet d’attaque, de sauvegarde ou de compétence. Jusqu’à la fin de son prochain tour. 1 PA, 1×/tour. Pas de cumul.',
+                    'pa' => '1',
+                    'effect' => 'Tu touches une créature consentante : +1 au prochain jet d’attaque, de sauvegarde ou de compétence. Jusqu’à la fin de son prochain tour. 1 PA depuis la réserve de Wakfu, 1×/tour. Pas de cumul.',
                 ],
                 [
                     'name' => 'Prière',
                     'type' => $guaranteed,
-                    'effect' => 'Variante de garantie : une minute hors combat (1 PA en combat), tu poses une question simple à ce que tu sers. Le MJ répond par un oui, un non, ou un silence. 1×/scène.',
+                    'pa' => '1',
+                    'effect' => 'Variante de garantie : une minute hors combat (1 PA depuis la réserve de Wakfu en combat), tu poses une question simple à ce que tu sers. Le MJ répond par un oui, un non, ou un silence. 1×/scène.',
                 ],
                 [
                     'name' => 'Guérison mineure',
                     'type' => $freeSlot,
-                    'effect' => 'Tu touches une créature : 1d4 PV. Hors combat, 10 minutes et des bandelettes : 1d4 de plus. 1 PA en combat, 1×/tour. Ce n’est pas un Mot Vivifiant.',
+                    'pa' => '1',
+                    'effect' => 'Tu touches une créature : 1d4 PV. Hors combat, 10 minutes et des bandelettes : 1d4 de plus. 1 PA depuis la réserve de Wakfu en combat, 1×/tour. Ce n’est pas un Mot Vivifiant.',
                 ],
                 [
                     'name' => 'Eau bénite',
@@ -80,7 +83,8 @@ return [
                 [
                     'name' => 'Consolation',
                     'type' => $guaranteed,
-                    'effect' => 'Un allié qui t’entend (6 cases) : fin de peur ou d’un chagrin de scène, et +1 au prochain jet de Sagesse. 1 PA, 1×/scène.',
+                    'pa' => '1',
+                    'effect' => 'Un allié qui t’entend (6 cases) : fin de peur ou d’un chagrin de scène, et +1 au prochain jet de Sagesse. 1 PA depuis la réserve de Wakfu, 1×/scène.',
                 ],
                 [
                     'name' => 'Seuil béni',
@@ -109,7 +113,8 @@ return [
                 [
                     'name' => 'Sacrement',
                     'type' => $guaranteed,
-                    'effect' => 'Tu touches une créature : tu retires Empoisonné, Affaibli ou un mal mineur du même ordre. 10 minutes hors combat, 2 PA en combat. 1×/scène.',
+                    'pa' => '2',
+                    'effect' => 'Tu touches une créature : tu retires Empoisonné, Affaibli ou un mal mineur du même ordre. 10 minutes hors combat, 2 PA depuis la réserve de Wakfu en combat. 1×/scène.',
                 ],
                 [
                     'name' => 'Lumière du rite',
@@ -132,7 +137,8 @@ return [
                 [
                     'name' => 'Bénédiction majeure',
                     'type' => $guaranteed,
-                    'effect' => 'Jusqu’à trois créatures qui t’entendent : +1 aux jets d’attaque et de sauvegarde jusqu’à la fin de ton prochain tour. 2 PA, 1×/scène. Pas de cumul avec Bénédiction.',
+                    'pa' => '2',
+                    'effect' => 'Jusqu’à trois créatures qui t’entendent : +1 aux jets d’attaque et de sauvegarde jusqu’à la fin de ton prochain tour. 2 PA depuis la réserve de Wakfu, 1×/scène. Pas de cumul avec Bénédiction.',
                 ],
                 [
                     'name' => 'Sanctuaire',

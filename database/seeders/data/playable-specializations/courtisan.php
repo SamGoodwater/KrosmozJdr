@@ -108,7 +108,8 @@ return [
                 [
                     'name' => 'Duel de mots',
                     'type' => $guaranteed,
-                    'effect' => 'Tu forces un échange social en public : l’autre doit répondre ou perdre la face. Remplace un jet d’Intimidation maladroit. 1 PA si ça se joue en combat social. Pas un sort de charme.',
+                    'pa' => '1',
+                    'effect' => 'Tu forces un échange social en public : l’autre doit répondre ou perdre la face. Remplace un jet d’Intimidation maladroit. 1 PA depuis la réserve de Wakfu si ça se joue en combat social. Pas un sort de charme.',
                 ],
                 [
                     'name' => 'Faveur mineure',

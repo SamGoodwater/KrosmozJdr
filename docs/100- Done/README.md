@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Spécialisations : tous les coûts passent par la réserve
+
+Les derniers coûts des spécialisations notés « N PA » ou « N PA en combat » indiquent maintenant aussi « depuis la réserve de Wakfu », avec leur nombre de PA affiché sur la fiche. Une capacité sans coût affiche « 0 PA », sans l’icône de la réserve.
+
 ## Novembre 2026 — Spécialisations : coûts en PA depuis la réserve de Wakfu
 
 Les 11 spécialisations jouables n’écrivent plus « 1 réserve de Wakfu » : chaque capacité indique un coût en PA pris dans la réserve, affiché avec l’icône PA et celle de la réserve. Le barème suit le palier (2 PA jusqu’au palier 6, 3 PA aux paliers 9 et 12, 4 PA au palier 15, 6 PA au palier 20), avec des coûts réduits pour les petites actions de combat. La règle des capacités et le guide de création reprennent ce repère.
