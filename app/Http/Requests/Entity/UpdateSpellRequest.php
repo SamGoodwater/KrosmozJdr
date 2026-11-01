@@ -11,6 +11,7 @@ use App\Policies\Entity\SpellPolicy;
 use App\Rules\ValidAreaNotation;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * FormRequest pour la mise à jour d'un Spell.
@@ -85,7 +86,7 @@ class UpdateSpellRequest extends FormRequest
                 ['nullable', 'integer'],
                 $this->characteristicMinMaxRules('powerful', 'spell')
             ),
-            'resolution_mode' => ['nullable', 'string', 'in:attack_roll,saving_throw,auto_success'],
+            'resolution_mode' => ['nullable', 'string', Rule::in(Spell::RESOLUTION_MODES)],
             'attack_characteristic_key' => ['nullable', 'string', 'max:64'],
             'save_characteristic_key' => ['nullable', 'string', 'max:64'],
             'save_dc_formula' => ['nullable', 'string', 'max:255'],

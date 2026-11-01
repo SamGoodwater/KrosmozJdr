@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Seeder\Monster;
 
+use App\Models\Entity\Spell;
 use Illuminate\Support\Facades\File;
 use JsonException;
 use RuntimeException;
@@ -119,7 +120,7 @@ final class ClassSummonCatalog
                     'element' => $this->nullableString($actionRaw['element'] ?? null),
                     'value' => $value,
                     'attack_characteristic_key' => $this->nullableString($actionRaw['attack_characteristic_key'] ?? null),
-                    'resolution_mode' => (string) ($actionRaw['resolution_mode'] ?? 'attack_roll'),
+                    'resolution_mode' => Spell::assertResolutionMode($actionRaw['resolution_mode'] ?? null, $actionName),
                     'is_magic' => (bool) ($actionRaw['is_magic'] ?? false),
                 ],
             ];

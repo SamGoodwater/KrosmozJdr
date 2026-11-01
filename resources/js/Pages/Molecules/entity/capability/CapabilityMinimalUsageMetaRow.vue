@@ -1,6 +1,6 @@
 <script setup>
 /**
- * Ligne méta capacité : PA, PO + portée modifiable, incantation/rituel, durée / relance, élément & magie au survol.
+ * Ligne méta capacité : PA (réserve de Wakfu, {@link CapabilityWakfuCost}), PO + portée modifiable, incantation/rituel, durée / relance, élément & magie au survol.
  *
  * @description
  * Aligné sur {@link SpellMinimalUsageMetaRow} (icônes / couleurs BDD groupe spell+capability), sans ligne de vue ni lancers/tour sorts.
@@ -13,6 +13,7 @@ import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
 import { buildSpellCastingRitualPresentation, readSpellField } from "@/Utils/Entity/spellMinimalUsageDisplay";
 import { buildCapabilityDurationReusePresentation } from "@/Utils/Entity/capabilityMinimalUsageDisplay";
 import SpellUsageCharacteristicTooltipPanel from "@/Pages/Molecules/entity/spell/SpellUsageCharacteristicTooltipPanel.vue";
+import CapabilityWakfuCost from "@/Pages/Molecules/entity/capability/CapabilityWakfuCost.vue";
 import {
     resolveSpellUsageCharacteristicVisual,
     spellUsageIconBackdropStyle,
@@ -103,15 +104,10 @@ const magicAffixMuted = computed(
             hide-field-label
             class="min-w-0 shrink-0"
         />
-        <EntityPropertyDisplay
+        <CapabilityWakfuCost
             v-if="canShowField('pa')"
-            field-key="pa"
-            :entity="entity"
-            entity-type="capability"
-            :display-mode="PROPERTY_DISPLAY_MODES.compact"
-            :descriptors="descriptors"
-            :table-meta="tableMeta"
-            :size="propertySize"
+            :value="readSpellField(entity, 'pa', 'pa')"
+            :icon-px="USAGE_IMG_PX"
             class="min-w-0"
         />
         <div

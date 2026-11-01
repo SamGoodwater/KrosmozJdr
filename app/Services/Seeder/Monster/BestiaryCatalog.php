@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Seeder\Monster;
 
+use App\Models\Entity\Spell;
 use Illuminate\Support\Facades\File;
 use JsonException;
 use RuntimeException;
@@ -194,7 +195,7 @@ final class BestiaryCatalog
                 'po_min' => trim((string) ($row['po_min'] ?? '1')),
                 'po_max' => trim((string) ($row['po_max'] ?? '1')),
                 'attack_characteristic_key' => $this->nullableString($row['attack_characteristic_key'] ?? null),
-                'resolution_mode' => (string) ($row['resolution_mode'] ?? 'attack_roll'),
+                'resolution_mode' => Spell::assertResolutionMode($row['resolution_mode'] ?? null, $name),
                 'is_magic' => (bool) ($row['is_magic'] ?? false),
                 'type' => trim((string) ($row['type'] ?? $this->defaultSpellType($kind))),
                 'life_steal' => $this->nullableString($row['life_steal'] ?? null),

@@ -2423,6 +2423,16 @@
     "file": "entity/capability/CapabilityMinimalUsageMetaRow.vue"
   },
   {
+    "name": "CapabilityWakfuCost",
+    "description": "Coût d'une capacité : icône PA + nombre + « PA » chevauché par l'icône de la réserve de Wakfu, tooltip explicatif.",
+    "props": [
+      { "name": "value", "type": "String|Number", "desc": "- Valeur brute du champ pa" },
+      { "name": "iconPx", "type": "String", "desc": "- Taille des icônes en px (défaut 14)" }
+    ],
+    "slots": [],
+    "file": "entity/capability/CapabilityWakfuCost.vue"
+  },
+  {
     "name": "CapabilityLineRow",
     "description": "CapabilityLineRow — Ligne vue Line pour les capacités",
     "props": [],

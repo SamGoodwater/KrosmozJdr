@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Seeder;
 
+use App\Models\Entity\Spell;
 use App\Services\Seeder\Spell\ClassLevel1SpellCatalog;
 use Tests\TestCase;
 
@@ -303,5 +304,26 @@ final class ClassLevel1SpellCatalogTest extends TestCase
         $this->assertSame('5d6+Agilité', $tempete['intensification'][0]['sub_effects'][0]['params']['value']);
         $this->assertSame([], $tempete['intensification'][1]['sub_effects'] ?? []);
         $this->assertSame([], $tempete['intensification'][2]['sub_effects'] ?? []);
+    }
+
+    public function test_unknown_resolution_mode_is_rejected(): void
+    {
+        $catalog = new ClassLevel1SpellCatalog([
+            'breed' => 'Ecaflip',
+            'entries' => [['key' => 'trefle', 'name' => 'Trèfle', 'resolution_mode' => 'automatic']],
+        ]);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('automatic');
+        $catalog->entries();
+    }
+
+    public function test_all_class_catalogs_use_known_resolution_modes(): void
+    {
+        foreach (ClassLevel1SpellCatalog::loadAllInDirectory() as $catalog) {
+            foreach ($catalog->entries() as $entry) {
+                $this->assertContains($entry['resolution_mode'], Spell::RESOLUTION_MODES, $entry['name']);
+            }
+        }
     }
 }

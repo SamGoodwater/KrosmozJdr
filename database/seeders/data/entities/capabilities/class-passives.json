@@ -58,7 +58,7 @@
                     "duration": "0",
                     "time_before_use_again": "repos court",
                     "description": "De temps en temps, la pièce tombe du bon côté.",
-                    "effect": "<p><strong>En combat.</strong> Une fois par repos court, quand tu lances la pièce (1 PA, comme d’habitude), tu choisis Pile ou Face au lieu de lancer le dé.</p><p><strong>Hors combat.</strong> Pour 1 réserve de Wakfu, tu as l’avantage à un test d’Escamotage ou de Tromperie pour tricher à un jeu de hasard.</p>"
+                    "effect": "<p><strong>En combat.</strong> Une fois par repos court, quand tu lances la pièce (1 PA, comme d’habitude), tu choisis Pile ou Face au lieu de lancer le dé.</p><p><strong>Hors combat.</strong> Pour 1 PA depuis la réserve de Wakfu, tu as l’avantage à un test d’Escamotage ou de Tromperie pour tricher à un jeu de hasard.</p>"
                 },
                 {
                     "name": "Relance du destin",
@@ -106,7 +106,7 @@
                     "duration": "combat",
                     "time_before_use_again": "repos court",
                     "description": "Tu entres en Fureur : tant que tu frappes, tu restes chaud.",
-                    "effect": "<p><strong>En combat.</strong> Une fois par repos court, sans dépenser de PA, tu entres en Fureur jusqu’à la fin du combat. Tes attaques de mêlée de classe infligent +2 dégâts (pas un dé) et tu as l’avantage aux tests de Force (Athlétisme). La Fureur s’arrête si tu termines ton tour sans avoir infligé de dégâts depuis la fin de ton tour précédent.</p><p><strong>Hors combat.</strong> Pour 1 réserve de Wakfu, tu as l’avantage aux tests de Force (Athlétisme) pendant 1 minute : enfoncer une porte, soulever une herse, tenir un pont.</p>"
+                    "effect": "<p><strong>En combat.</strong> Une fois par repos court, sans dépenser de PA (ni ceux du tour ni ceux de la réserve), tu entres en Fureur jusqu’à la fin du combat. Tes attaques de mêlée de classe infligent +2 dégâts (pas un dé) et tu as l’avantage aux tests de Force (Athlétisme). La Fureur s’arrête si tu termines ton tour sans avoir infligé de dégâts depuis la fin de ton tour précédent.</p><p><strong>Hors combat.</strong> Pour 1 PA depuis la réserve de Wakfu, tu as l’avantage aux tests de Force (Athlétisme) pendant 1 minute : enfoncer une porte, soulever une herse, tenir un pont.</p>"
                 },
                 {
                     "name": "Cri de guerre",
@@ -116,7 +116,7 @@
                     "duration": "1 tour",
                     "time_before_use_again": "repos court",
                     "description": "Un cri, et ceux d’en face hésitent.",
-                    "effect": "<p><strong>En combat.</strong> Une fois par repos court, pour 2 PA, chaque ennemi à 3 cases ou moins qui t’entend fait une sauvegarde de Sagesse (DD 8 + ton modificateur de Force + ton bonus de maîtrise). En cas d’échec, il est Effrayé jusqu’à la fin de son prochain tour.</p><p><strong>Hors combat.</strong> Pour 1 réserve de Wakfu, tu as l’avantage à un test d’Intimidation.</p>"
+                    "effect": "<p><strong>En combat.</strong> Une fois par repos court, pour 2 PA depuis la réserve de Wakfu, chaque ennemi à 3 cases ou moins qui t’entend fait une sauvegarde de Sagesse (DD 8 + ton modificateur de Force + ton bonus de maîtrise). En cas d’échec, il est Effrayé jusqu’à la fin de son prochain tour.</p><p><strong>Hors combat.</strong> Pour 1 PA depuis la réserve de Wakfu, tu as l’avantage à un test d’Intimidation.</p>"
                 },
                 {
                     "name": "Sursaut héroïque",
@@ -136,7 +136,7 @@
             "engine": "",
             "is_magic": false,
             "description": "Ton œil porte plus loin que tes flèches.",
-            "effect": "<p>Tes sorts de flèche qui visent une créature ont deux portées : leur portée normale, et une portée longue égale au double de leur portée maximale (bonus de portée compris). Au-delà de la portée normale et jusqu’à la portée longue, tu tires avec le désavantage.</p><p>Les sorts de contact (portée maximale 1) et les sorts de zone n’ont pas de portée longue. Tir éloigné, Œil de lynx et Sentinelle allongent la portée normale, donc la portée longue avec.</p>",
+            "effect": "<p>Tes sorts de flèche qui visent une créature ont deux portées : leur portée normale, et une portée longue égale au double de leur portée maximale (bonus de portée compris). Au-delà de la portée normale et jusqu’à la portée longue, tu tires avec le désavantage.</p><p>Les sorts de contact (portée maximale 1) et les sorts de zone n’ont pas de portée longue. Tir éloigné et Sentinelle allongent la portée normale, donc la portée longue avec.</p>",
             "capabilities": [
                 {
                     "name": "Flèche guidée par le Wakfu",
@@ -146,7 +146,7 @@
                     "duration": "0",
                     "time_before_use_again": "repos court",
                     "description": "Une flèche contourne l’obstacle et trouve sa cible.",
-                    "effect": "<p><strong>En combat.</strong> Une fois par repos court, quand tu lances un sort de flèche, tu paies 1 PA de plus : le sort ignore la ligne de vue et peut toucher une créature que tu ne vois pas, si tu sais sur quelle case elle se trouve. La portée du sort ne change pas.</p><p><strong>Hors combat.</strong> Pour 1 réserve de Wakfu, tu fais passer une flèche (un message, une corde) derrière un obstacle ou au détour d’un angle.</p>"
+                    "effect": "<p><strong>En combat.</strong> Une fois par repos court, quand tu lances un sort de flèche, tu dépenses en plus 1 PA depuis la réserve de Wakfu : le sort ignore la ligne de vue et peut toucher une créature que tu ne vois pas, si tu sais sur quelle case elle se trouve. La portée du sort ne change pas.</p><p><strong>Hors combat.</strong> Pour 1 PA depuis la réserve de Wakfu, tu fais passer une flèche (un message, une corde) derrière un obstacle ou au détour d’un angle.</p>"
                 },
                 {
                     "name": "Pistage",
@@ -156,7 +156,7 @@
                     "duration": "24 heures",
                     "time_before_use_again": "0",
                     "description": "Une fois repérée, ta proie ne t’échappe plus vraiment.",
-                    "effect": "<p>Hors combat, pour 1 réserve de Wakfu, tu désignes une créature que tu vois. Pendant 24 heures, tu connais sa direction et sa distance approximative, et tu as l’avantage aux tests de Survie pour suivre sa piste. Une seule créature pistée à la fois.</p>"
+                    "effect": "<p>Hors combat, pour 1 PA depuis la réserve de Wakfu, tu désignes une créature que tu vois. Pendant 24 heures, tu connais sa direction et sa distance approximative, et tu as l’avantage aux tests de Survie pour suivre sa piste. Une seule créature pistée à la fois.</p>"
                 },
                 {
                     "name": "Tir parfait",

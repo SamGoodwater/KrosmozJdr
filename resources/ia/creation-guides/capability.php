@@ -36,7 +36,7 @@ return static function (array $k): array {
                     .'<ol>'
                     .'<li><strong>Décide le mode :</strong> passive (toujours), contextuelle (situation), réactive (déclencheur).</li>'
                     .'<li>Si ça ressemble à un sort (dégâts, zone, contrôle), c’est un sort — ou alors baisse nettement et ajoute une condition rare.</li>'
-                    .'<li><strong>Coût d’une capacité :</strong> ses '.$pa.' sont toujours pris dans la réserve de Wakfu, en combat comme hors combat. Les dieux n’aident leurs fidèles qu’avec les sorts de leur classe : en combat, seuls les sorts de classe utilisent les '.$pa.' rendus chaque tour. Écris le coût en '.$pa.', pas en points de réserve.</li>'
+                    .'<li><strong>Coût d’une capacité :</strong> ses '.$pa.' sont toujours pris dans la réserve de Wakfu, en combat comme hors combat. Les dieux n’aident leurs fidèles qu’avec les sorts de leur classe : en combat, seuls les sorts de classe utilisent les '.$pa.' rendus chaque tour. Écris le coût « x '.$pa.' depuis la réserve de Wakfu », jamais « 1 réserve de Wakfu » ni en points de réserve.</li>'
                     .'<li><strong>Passif ≠ capacité.</strong> Si le joueur choisit quand ça se déclenche, c’est une capacité de classe (ex. Fureur, Iop niveau 3 : une fois par repos court, +2 dégâts de mêlée de classe).</li>'
                     .'<li>Plafond de bonus de carac ≈ ligne neutre d’un <em>accessoire</em> du même niveau, pas d’une arme + panoplie.</li>'
                     .'<li>Les passifs de classe sont <code>is_passive</code>, liés à la classe, jouables. On ne les duplique pas en trait.</li>'
@@ -88,7 +88,7 @@ return static function (array $k): array {
                     .'<h3>Étalons jouables (capacités de classe)</h3>'
                     .'<ul>'
                     .'<li><strong>Fureur</strong> (Iop, niveau 3) — 1 fois par repos court, 0 '.$pa.' : +2 dégâts de mêlée de classe tant que tu frappes.</li>'
-                    .'<li><strong>Flèche guidée par le Wakfu</strong> (Crâ, niveau 3) — 1 fois par repos court, +1 '.$pa.' : la flèche ignore la ligne de vue.</li>'
+                    .'<li><strong>Flèche guidée par le Wakfu</strong> (Crâ, niveau 3) — 1 fois par repos court, +1 '.$pa.' depuis la réserve de Wakfu : la flèche ignore la ligne de vue.</li>'
                     .'<li><strong>Pièce truquée</strong> (Ecaflip, niveau 3) — 1 fois par repos court, tu choisis la face de la pièce.</li>'
                     .'</ul>'
                     .'<p>Catalogue : [[kref:page:bibliotheque-capability|Capacités]].</p>',

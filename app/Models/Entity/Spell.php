@@ -77,6 +77,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $scenarios_count
  * @property-read Collection<int, SpellType> $spellTypes
  * @property-read int|null $spell_types_count
+ *
  * @method static \Database\Factories\Entity\SpellFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell newQuery()
@@ -114,6 +115,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withoutTrashed()
+ *
  * @property string|null $duration
  * @property-read Collection<int, Breed> $breeds
  * @property-read int|null $breeds_count
@@ -127,6 +129,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $spell_effects_count
  * @property-read Collection<int, Condition> $conditions
  * @property-read int|null $conditions_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAllowsReaction($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAttackCharacteristicKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAutoSuccessIfWillingTarget($value)
@@ -137,14 +140,18 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveCharacteristicKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveDcFormula($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveSuccessNote($value)
+ *
  * @property-read BreedSpellPivot|null $pivot
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereCastInDiagonal($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereCastInLine($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereGlobalCooldown($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereMaxStack($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereTargetType($value)
+ *
  * @property-read Collection<int, SpellDegree> $degrees
  * @property-read int|null $degrees_count
+ *
  * @mixin \Eloquent
  */
 class Spell extends Model implements HasMedia
@@ -175,6 +182,35 @@ class Spell extends Model implements HasMedia
     public const RESOLUTION_SAVING_THROW = 'saving_throw';
 
     public const RESOLUTION_AUTO_SUCCESS = 'auto_success';
+
+    /** @var list<string> Valeurs acceptées par `spells.resolution_mode` (formulaire, validation, seeds). */
+    public const RESOLUTION_MODES = [
+        self::RESOLUTION_ATTACK_ROLL,
+        self::RESOLUTION_SAVING_THROW,
+        self::RESOLUTION_AUTO_SUCCESS,
+    ];
+
+    /**
+     * Valide un mode de résolution venant d'un fichier de seed (sans repli silencieux).
+     *
+     * @example Spell::assertResolutionMode('auto_success', 'Trèfle'); // 'auto_success'
+     *
+     * @throws \InvalidArgumentException si la valeur n'est pas dans RESOLUTION_MODES
+     */
+    public static function assertResolutionMode(mixed $value, string $context): string
+    {
+        $mode = is_string($value) && trim($value) !== '' ? trim($value) : self::RESOLUTION_ATTACK_ROLL;
+        if (! in_array($mode, self::RESOLUTION_MODES, true)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Mode de résolution inconnu « %s » (%s). Valeurs : %s.',
+                $mode,
+                $context,
+                implode(', ', self::RESOLUTION_MODES),
+            ));
+        }
+
+        return $mode;
+    }
 
     /** @deprecated Utiliser AreaConstants::SHAPE_ID_MAP */
     public const AREAS_SHAPE = AreaConstants::SHAPE_ID_MAP;

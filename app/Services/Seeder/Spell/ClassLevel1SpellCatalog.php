@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Seeder\Spell;
 
+use App\Models\Entity\Spell;
 use Illuminate\Support\Facades\File;
 use JsonException;
 use RuntimeException;
@@ -268,7 +269,7 @@ final class ClassLevel1SpellCatalog
                 'cast_in_line' => (bool) ($row['cast_in_line'] ?? false),
                 'state' => $this->spellState($row['state'] ?? $this->payload['state'] ?? null),
                 'max_stack' => max(0, (int) ($row['max_stack'] ?? 0)),
-                'resolution_mode' => (string) ($row['resolution_mode'] ?? 'attack_roll'),
+                'resolution_mode' => Spell::assertResolutionMode($row['resolution_mode'] ?? null, $name),
                 'attack_characteristic_key' => $this->nullableString($row['attack_characteristic_key'] ?? null),
                 'save_characteristic_key' => $this->nullableString($row['save_characteristic_key'] ?? null),
                 'save_dc_formula' => $this->nullableString($row['save_dc_formula'] ?? null),

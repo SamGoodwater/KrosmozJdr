@@ -401,7 +401,7 @@ return [
                     .'<li><strong>Sorts de classe</strong> — 3 au départ, déblocages niv. 2–12 (les 12 sont acquis au niv. 12)</li>'
                     .'<li><strong>Appris</strong> — parchemin ou maître (2 j × niveau, ÷4 avec maître)</li>'
                     .'<li><strong>Parchemin jetable</strong> — une fois ; détruit si le sort réussit</li>'
-                    .'<li><strong>Capacités</strong> — de la spé, et 1 à 3 de la classe (niv. 3, 9, 14) ; leurs [[kref:characteristic:action_points_creature|PA]] sont toujours pris dans la réserve de Wakfu, même en combat</li>'
+                    .'<li><strong>Capacités</strong> — de la spé, et 1 à 3 de la classe (niv. 3, 9, 14) ; leurs [[kref:characteristic:action_points_creature|PA]] sont toujours pris dans la réserve de Wakfu, même en combat (coût noté « x PA depuis la réserve de Wakfu »)</li>'
                     .'<li><strong>Aptitudes</strong> — de la spé ; passives / déclenchées, gratuites, automatiques aux niv. 3, 9, 15</li>'
                     .'</ul>'
                     .'<p>→ [[kref:page:bibliotheque-spell|Sorts]] · [[kref:page:bibliotheque-capability|Capacités]]</p>',

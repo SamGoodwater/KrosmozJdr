@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Coût des capacités et mécanique du Crâ
+
+Le coût d’une capacité s’écrit « x PA depuis la réserve de Wakfu ». Sur les fiches, il s’affiche avec l’icône PA, le nombre, puis « PA » chevauché par l’icône de la réserve ; le survol rappelle que les PA du tour ne paient que les sorts de classe. Les règles 3.4.2, 3.4.3 et 2.4.4 ne disent plus qu’une capacité se paie en PA du tour en combat. Le Crâ retrouve une mécanique : pas de règle en plus, une façon de jouer (portée longue, prendre du champ, tenir l’ennemi à distance). Un mode de résolution inconnu dans un fichier de sorts bloque désormais l’import au lieu de passer en silence.
+
 ## Novembre 2026 — Voies, variantes et réserve de Wakfu
 
 Les règles et L’Essentiel s’alignent sur les fiches de classe : chaque voie a l’orientation écrite sur la fiche (tableau des 19 classes en 2.3.3), un choix de sort a 1 à 4 variantes (souvent 2, environ 8 au niveau 1). La réserve de Wakfu est explicite partout : en combat, seuls les sorts de classe profitent des PA rendus par les dieux ; capacités et sorts appris puisent toujours dans la réserve. Le chapitre MJ liste les 12 choix validés du Crâ, de l’Iop et de l’Ecaflip.
