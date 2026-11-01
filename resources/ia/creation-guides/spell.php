@@ -73,7 +73,8 @@ return static function (array $k): array {
                     .'<li>Buff : durée courte ; pas de cumul du même bonus.</li>'
                     .'</ul>'
                     .'<h3>Kit de classe (rappel)</h3>'
-                    .'<p>24 sorts = 12 emplacements × 2 variantes, 12 appris. Niveau 1 : 3 emplacements (attaque 1d6+mod à 3 '.$pa.', fort 4–5 '.$pa.', identité 2–3 '.$pa.'). Puis 2, 4, 5, 6, 7, 8, 10, 11, 12. Intensification I/II/III aux niveaux perso 13, 16, 20. Soins en <strong>d4</strong>, dégâts en <strong>d6</strong>. Détail : '.$k['kSortsEq'].'.</p>'
+                    .'<p>12 emplacements, 1 à 4 variantes chacun (le plus souvent 2), 12 appris. Un emplacement à 4 variantes (une par voie) est courant : compte environ 8 variantes au niveau 1. Chaque voie suit l’orientation de la fiche de classe (dégâts, soin, placement…), qui fait foi. Niveau 1 : 3 emplacements (attaque 1d6+mod à 3 '.$pa.', fort 4–5 '.$pa.', identité 2–3 '.$pa.'). Puis 2, 4, 5, 6, 7, 8, 10, 11, 12. Intensification I/II/III aux niveaux perso 13, 16, 20. Soins en <strong>d4</strong>, dégâts en <strong>d6</strong>. Détail : '.$k['kSortsEq'].'.</p>'
+                    .'<p><strong>Coût et Wakfu :</strong> en combat significatif, seuls les sorts de classe utilisent les '.$pa.' rendus chaque tour (le don des dieux). Un sort appris (parchemin, maître) ou une capacité puise toujours dans la réserve de Wakfu ; hors combat, tout y puise.</p>'
                     .'<h3>Propriétés de fiche (conversion)</h3>'
                     .'<ul>'
                     .'<li><code>name</code>, <code>description</code>, image — identité, figée si source Dofus.</li>'
@@ -118,7 +119,7 @@ return static function (array $k): array {
                     .'<li><strong>Mot Vivifiant</strong> (Eniripsa, niv. 1) — 3 '.$pa.', 1d4+'.$sagesse.' (soin en d4, pas d6).</li>'
                     .'<li><strong>Béco du Tofu</strong> (Tofu Chimérique) — sort-créature Air, 3 '.$pa.', 1d6, une action. Le monstre n’a pas de grimoire de classe.</li>'
                     .'</ul>'
-                    .'<p>Catalogue : [[kref:page:bibliotheque-spell|Sorts]]. Classes : chaque fiche a ses 24 sorts (dégrossissage à relire).</p>',
+                    .'<p>Catalogue : [[kref:page:bibliotheque-spell|Sorts]]. Classes : chaque fiche a ses 12 emplacements et leurs variantes ; Crâ, Iop et Ecaflip sont validés et servent de modèle.</p>',
             ],
         ],
         'cms_extras' => [

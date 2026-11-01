@@ -30,7 +30,7 @@ final class ClassBreedCatalogTest extends TestCase
             'Enutrof' => ['fire' => 'soin', 'earth' => 'degats', 'water' => 'amelioration', 'air' => 'entrave'],
             'Sram' => ['fire' => 'placement', 'earth' => 'degats', 'water' => 'amelioration', 'air' => 'entrave'],
             'Xélor' => ['fire' => 'amelioration', 'earth' => 'degats', 'water' => 'entrave', 'air' => 'placement'],
-            'Ecaflip' => ['fire' => 'soin', 'earth' => 'amelioration', 'water' => 'degats', 'air' => 'placement'],
+            'Ecaflip' => ['fire' => 'soin', 'earth' => 'entrave', 'water' => 'degats', 'air' => 'placement'],
             'Eniripsa' => ['fire' => 'soin', 'earth' => 'entrave', 'water' => 'protection', 'air' => 'amelioration'],
             'Iop' => ['fire' => 'amelioration', 'earth' => 'degats', 'water' => 'protection', 'air' => 'placement'],
             'Crâ' => ['fire' => 'amelioration', 'earth' => 'degats', 'water' => 'entrave', 'air' => 'placement'],

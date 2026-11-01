@@ -90,7 +90,7 @@ final class ClassLevel1SpellCatalogTest extends TestCase
         $entries = $this->assertIopStyleLevel1Slots(
             $catalog,
             'Xélor',
-            ['Aiguille', 'Gelure', 'Sablier de Xélor', 'Poussière', 'Téléportation', 'Permutation']
+            ['Aiguille', 'Gelure', 'Sablier de Xélor', 'Poussière', 'Placement', 'Permutation']
         );
         $this->assertSame('3', $entries[0]['pa']);
         $this->assertSame('3', $entries[2]['pa']);
@@ -182,17 +182,16 @@ final class ClassLevel1SpellCatalogTest extends TestCase
         $this->assertSame('push', $entries[5]['sub_effects'][0]['params']['movement_kind']);
     }
 
-    public function test_ecaflip_catalog_has_six_spells_in_three_slots(): void
+    public function test_ecaflip_catalog_has_eight_variants_in_three_slots(): void
     {
         $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::ecaflipPath());
         $entries = $this->assertIopStyleLevel1Slots(
             $catalog,
             'Ecaflip',
-            ['Topkaj', 'Yams', 'Griffe Invocatrice', 'Langue Râpeuse', 'Bond du Félin', 'Entrechat']
+            ['Réflexes', 'Langue râpeuse', 'Griffe joueuse', 'Lapement', 'Bond du félin', 'Entrechat', 'Perception', 'Trèfle']
         );
-        $this->assertSame('intel', $entries[0]['attack_characteristic_key']);
-        $this->assertSame('chance', $entries[1]['attack_characteristic_key']);
-        $this->assertSame('auto_success', $entries[4]['resolution_mode']);
+        $this->assertSame(['air', 'fire', 'water', 'earth'], array_column(array_slice($entries, 0, 4), 'element'));
+        $this->assertSame([1, 1, 1, 1, 2, 2, 3, 3], array_column($entries, 'slot_index'));
     }
 
     public function test_added_class_catalogs_have_six_spells_in_three_slots(): void
@@ -231,7 +230,7 @@ final class ClassLevel1SpellCatalogTest extends TestCase
         );
     }
 
-    public function test_progression_catalogs_have_eighteen_spells_on_nine_levels(): void
+    public function test_progression_catalogs_have_one_to_four_variants_on_nine_levels(): void
     {
         $levels = [2, 4, 5, 6, 7, 8, 10, 11, 12];
         $files = glob(ClassLevel1SpellCatalog::directory().'/*-progression.json') ?: [];
@@ -239,21 +238,18 @@ final class ClassLevel1SpellCatalogTest extends TestCase
 
         foreach ($files as $file) {
             $catalog = ClassLevel1SpellCatalog::load($file);
-            $entries = $catalog->entries();
-            $got = [];
-            foreach ($entries as $entry) {
-                $got[] = [$entry['character_level'], $entry['choice_order']];
+            $orders = [];
+            foreach ($catalog->entries() as $entry) {
+                $orders[$entry['character_level']][] = $entry['choice_order'];
             }
-            $elementalLevels = str_ends_with($file, 'cra-progression.json') ? [4, 7, 12] : [];
-            $expected = [];
-            foreach ($levels as $level) {
-                $variants = in_array($level, $elementalLevels, true) ? 4 : 2;
-                for ($order = 0; $order < $variants; $order++) {
-                    $expected[] = [$level, $order];
-                }
+            ksort($orders);
+            $this->assertSame($levels, array_keys($orders), $catalog->breedName());
+            foreach ($orders as $level => $got) {
+                sort($got);
+                $this->assertGreaterThanOrEqual(1, count($got), $catalog->breedName().' niv. '.$level);
+                $this->assertLessThanOrEqual(4, count($got), $catalog->breedName().' niv. '.$level);
+                $this->assertSame(range(0, count($got) - 1), $got, $catalog->breedName().' niv. '.$level);
             }
-            $this->assertCount(count($expected), $entries, $catalog->breedName());
-            $this->assertSame($expected, $got, $catalog->breedName());
         }
     }
 
@@ -265,7 +261,7 @@ final class ClassLevel1SpellCatalogTest extends TestCase
     {
         $this->assertSame($breed, $catalog->breedName());
         $entries = $catalog->entries();
-        $this->assertCount(6, $entries, $breed);
+        $this->assertCount(count($names), $entries, $breed);
 
         $slots = [];
         foreach ($entries as $entry) {
@@ -273,12 +269,11 @@ final class ClassLevel1SpellCatalogTest extends TestCase
         }
         ksort($slots);
         $this->assertSame([1, 2, 3], array_keys($slots), $breed);
-        sort($slots[1]);
-        sort($slots[2]);
-        sort($slots[3]);
-        $this->assertSame([0, 1, 2, 3], $slots[1], $breed);
-        $this->assertSame([0], $slots[2], $breed);
-        $this->assertSame([0], $slots[3], $breed);
+        foreach ($slots as $orders) {
+            sort($orders);
+            $this->assertLessThanOrEqual(4, count($orders), $breed);
+            $this->assertSame(range(0, count($orders) - 1), $orders, $breed);
+        }
         $this->assertSame($names, array_column($entries, 'name'), $breed);
 
         return $entries;
@@ -291,7 +286,7 @@ final class ClassLevel1SpellCatalogTest extends TestCase
         $this->assertCount(3, $pression['intensification']);
         $this->assertSame('I', $pression['intensification'][0]['tier']);
         $this->assertSame(13, $pression['intensification'][0]['required_creature_level']);
-        $this->assertStringContainsString('2d6', $pression['intensification'][0]['effect']);
+        $this->assertSame('2d6+Force', $pression['intensification'][0]['sub_effects'][0]['params']['value']);
 
         $progression = ClassLevel1SpellCatalog::load(
             ClassLevel1SpellCatalog::directory().'/iop-progression.json'
@@ -305,8 +300,8 @@ final class ClassLevel1SpellCatalogTest extends TestCase
         }
         $this->assertNotNull($tempete);
         $this->assertSame(12, $tempete['character_level']);
-        $this->assertSame('5d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.', $tempete['intensification'][0]['effect']);
-        $this->assertSame('—', $tempete['intensification'][1]['effect']);
-        $this->assertSame('—', $tempete['intensification'][2]['effect']);
+        $this->assertSame('5d6+Agilité', $tempete['intensification'][0]['sub_effects'][0]['params']['value']);
+        $this->assertSame([], $tempete['intensification'][1]['sub_effects'] ?? []);
+        $this->assertSame([], $tempete['intensification'][2]['sub_effects'] ?? []);
     }
 }

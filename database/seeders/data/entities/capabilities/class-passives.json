@@ -135,8 +135,8 @@
             "name": "Œil de Crâ",
             "engine": "",
             "is_magic": false,
-            "description": "Ton œil voit à travers la mêlée et porte loin.",
-            "effect": "<p>Tes attaques à distance ignorent le désavantage dû à un obstacle partiel (une créature ou un·e allié·e entre toi et ta cible). Tu as l’avantage aux tests de Perception qui reposent sur la vue.</p>",
+            "description": "Ton œil porte plus loin que tes flèches.",
+            "effect": "<p>Tes sorts de flèche qui visent une créature ont deux portées : leur portée normale, et une portée longue égale au double de leur portée maximale (bonus de portée compris). Au-delà de la portée normale et jusqu’à la portée longue, tu tires avec le désavantage.</p><p>Les sorts de contact (portée maximale 1) et les sorts de zone n’ont pas de portée longue. Tir éloigné, Œil de lynx et Sentinelle allongent la portée normale, donc la portée longue avec.</p>",
             "capabilities": [
                 {
                     "name": "Flèche guidée par le Wakfu",

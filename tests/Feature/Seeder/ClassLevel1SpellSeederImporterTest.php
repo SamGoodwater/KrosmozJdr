@@ -769,20 +769,20 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $catalog = ClassLevel1SpellCatalog::load(ClassLevel1SpellCatalog::ecaflipPath());
         $first = app(ClassLevel1SpellSeederImporter::class)->import($catalog);
 
-        $this->assertCount(6, $first['created']);
+        $this->assertCount(8, $first['created']);
         $this->assertSame([], $first['skipped']);
 
-        $topkaj = Spell::query()->where('dofusdb_id', '12846')->first();
-        $this->assertSame('Topkaj', $topkaj?->name);
-        $this->assertSame('3', $topkaj?->pa);
-        $this->assertSame('intel', $topkaj?->attack_characteristic_key);
+        $reflexes = Spell::query()->where('official_id', 'jdr:ecaflip:reflexes')->first();
+        $this->assertSame('Réflexes', $reflexes?->name);
+        $this->assertSame('3', $reflexes?->pa);
+        $this->assertSame('agi', $reflexes?->attack_characteristic_key);
 
-        $bond = Spell::query()->where('dofusdb_id', '12844')->first();
+        $bond = Spell::query()->where('official_id', 'jdr:ecaflip:bond-du-felin')->first();
         $this->assertSame(Spell::RESOLUTION_AUTO_SUCCESS, $bond?->resolution_mode);
-        $this->assertFalse($bond?->sight_line);
+        $this->assertSame('2', $bond?->pa);
 
         $eca->refresh();
-        $this->assertSame(1, (int) $eca->spells()->where('spells.id', $topkaj->id)->first()?->pivot->slot_index);
+        $this->assertSame(1, (int) $eca->spells()->where('spells.id', $reflexes->id)->first()?->pivot->slot_index);
         $this->assertSame(
             ClassLevel1SpellSeederImporter::EXTRA_CHARACTER_LEVEL,
             (int) $eca->spells()->where('spells.id', $extra->id)->first()?->pivot->character_level

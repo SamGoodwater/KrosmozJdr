@@ -80,13 +80,13 @@ return [
                 'html' => '<table>'
                     .'<thead><tr><th></th><th>Base</th><th>Max</th><th>Combat</th><th>Hors combat</th></tr></thead>'
                     .'<tbody>'
-                    .'<tr><td>[[kref:characteristic:action_points_creature|PA]]</td><td>6</td><td>12</td><td>Full chaque tour</td><td>Via [[kref:characteristic:wakfu_reserve_creature|Wakfu]]</td></tr>'
+                    .'<tr><td>[[kref:characteristic:action_points_creature|PA]]</td><td>6</td><td>12</td><td>Full chaque tour (sorts de classe)</td><td>Via [[kref:characteristic:wakfu_reserve_creature|Wakfu]]</td></tr>'
                     .'<tr><td>[[kref:characteristic:movement_points_creature|PM]]</td><td>3</td><td>6</td><td>Full chaque tour</td><td>Libre</td></tr>'
                     .'<tr><td>[[kref:characteristic:range_creature|PO]]</td><td>0</td><td>6</td><td>Portée + PO</td><td>—</td></tr>'
-                    .'<tr><td>[[kref:characteristic:wakfu_reserve_creature|Wakfu]]</td><td>[[kref:characteristic:mastery_bonus_creature|Maîtrise]] + équipement (max +3)</td><td>—</td><td>Non consommé</td><td>1 pt = 1× tes [[kref:characteristic:action_points_creature|PA]] max</td></tr>'
+                    .'<tr><td>[[kref:characteristic:wakfu_reserve_creature|Wakfu]]</td><td>[[kref:characteristic:mastery_bonus_creature|Maîtrise]] + équipement (max +3)</td><td>—</td><td>Capacités et sorts appris</td><td>1 pt = 1× tes [[kref:characteristic:action_points_creature|PA]] max</td></tr>'
                     .'</tbody></table>'
                     .'<p>Initiative : 1d20 + modificateur d\'[[kref:characteristic:intelligence_creature|Intelligence]] + bonus d\'équipement. [[kref:characteristic:armor_class_creature|CA]] = 10 + <strong>mod.</strong> [[kref:characteristic:vitality_creature|Vitalité]] + bouclier / équipement.</p>'
-                    .'<p>Combat <strong>significatif</strong> (enjeu réel) : PA chaque tour, Wakfu intact. Sinon le MJ coupe la régénération — 1 pt Wakfu = 1× PA max.</p>',
+                    .'<p>Combat <strong>significatif</strong> (enjeu réel) : les dieux rendent tes PA chaque tour, <strong>pour tes sorts de classe seulement</strong>. Capacités et sorts appris puisent toujours dans le Wakfu. Combat sans enjeu : le MJ coupe la régénération — 1 pt Wakfu = 1× PA max.</p>',
             ],
             [
                 'slug' => 'boucle',
@@ -168,7 +168,7 @@ return [
                 'title' => 'La magie',
                 'html' => '<p>Les emplacements de sorts deviennent deux ressources.</p>'
                     .'<ul>'
-                    .'<li><strong>Combat qui compte</strong> — les [[kref:characteristic:action_points_creature|PA]] reviennent chaque tour. Tu relances tes sorts tant que le budget tient.</li>'
+                    .'<li><strong>Combat qui compte</strong> — les [[kref:characteristic:action_points_creature|PA]] reviennent chaque tour, mais seulement pour tes <strong>sorts de classe</strong> : les dieux n’aident qu’avec les sorts qu’ils ont donnés. Une capacité ou un sort appris puise dans la réserve, même en combat.</li>'
                     .'<li><strong>Hors combat</strong> (ou combat sans enjeu) — la [[kref:characteristic:wakfu_reserve_creature|réserve de Wakfu]] paie. Elle vaut le bonus de maîtrise (+3 max d’équipement). <strong>1 point = une fois tes PA max</strong>.</li>'
                     .'</ul>'
                     .'<p>Tu apprends <strong>12 sorts de classe</strong> d’ici le niveau 12 (3 au niveau 1, une variante par emplacement). Aux niv. <strong>13, 16 et 20</strong>, ces sorts s’intensifient tous ensemble : les dés montent, tu n’en apprends pas de nouveau. La concentration n’existe que si la fiche le dit.</p>'
@@ -202,7 +202,7 @@ return [
                 'slug' => 'etapes',
                 'title' => 'Les cinq étapes',
                 'html' => '<ol>'
-                    .'<li><strong>Classe</strong> — <strong>19 classes</strong>, 4 voies, 3 sorts parmi 6, dé de vie → [[kref:page:bibliotheque-breed|Classes]]</li>'
+                    .'<li><strong>Classe</strong> — <strong>19 classes</strong>, 4 voies (une orientation par voie, selon la fiche), 3 sorts au départ parmi 8 variantes environ, un passif, dé de vie → [[kref:page:bibliotheque-breed|Classes]]</li>'
                     .'<li><strong>Spé</strong> — <strong>6 jouables</strong> (11 prévues) ; paliers 1, 3, 6, 9, 12, 15, 20 → [[kref:page:bibliotheque-specialization|Spés]]</li>'
                     .'<li><strong>Caracs</strong> — 6×8, <strong>10 pts</strong> (option : 1 score à 6 → +2 pts). Plafond niv. 1 : score <strong>14</strong> (mod +2)</li>'
                     .'<li><strong>Perso</strong> — alignement, historique, quête</li>'
@@ -220,7 +220,7 @@ return [
             [
                 'slug' => 'classe-spe',
                 'title' => 'Classe et spé',
-                'html' => '<p><strong>Classe</strong> : identité, sorts auto, passifs — [[kref:page:regles-2-3-choisir-sa-classe|Choisir sa classe]].</p>'
+                'html' => '<p><strong>Classe</strong> : identité, 12 choix de sorts, mécanique, passif, capacités de classe (niv. 3, 9, 14) — [[kref:page:regles-2-3-choisir-sa-classe|Choisir sa classe]].</p>'
                     .'<p><strong>Spé</strong> : 6 jouables / 11 prévues ; paliers 1, 3, 6, 9, 12, 15, 20 — à chacun choix entre les garanties, choix entre les options (capacités, ou un trait dès le niv. 12) + 1 compétence (2 si la fiche le dit). Pas de points de carac. Aptitudes automatiques aux niv. 3, 9, 15 — [[kref:page:regles-2-4-choisir-sa-specialisation|Choisir sa spé]].</p>'
                     .'<p><strong>Compétences</strong> : Athlétisme, Acrobaties, Discrétion, Escamotage, Arcanes, Histoire, Investigation, Nature, Religion, Connaissance des créatures, Dressage, Médecine, Perception, Perspicacité, Survie, Herbaliste, Persuasion, Représentation, Supercherie, Intimidation (For ou Cha). → [[kref:page:regles-3-5-competences|3.5.1]]</p>',
             ],
@@ -401,7 +401,7 @@ return [
                     .'<li><strong>Sorts de classe</strong> — 3 au départ, déblocages niv. 2–12 (les 12 sont acquis au niv. 12)</li>'
                     .'<li><strong>Appris</strong> — parchemin ou maître (2 j × niveau, ÷4 avec maître)</li>'
                     .'<li><strong>Parchemin jetable</strong> — une fois ; détruit si le sort réussit</li>'
-                    .'<li><strong>Capacités</strong> — de la spé ; surtout hors combat (Wakfu), parfois en combat ([[kref:characteristic:action_points_creature|PA]])</li>'
+                    .'<li><strong>Capacités</strong> — de la spé, et 1 à 3 de la classe (niv. 3, 9, 14) ; leurs [[kref:characteristic:action_points_creature|PA]] sont toujours pris dans la réserve de Wakfu, même en combat</li>'
                     .'<li><strong>Aptitudes</strong> — de la spé ; passives / déclenchées, gratuites, automatiques aux niv. 3, 9, 15</li>'
                     .'</ul>'
                     .'<p>→ [[kref:page:bibliotheque-spell|Sorts]] · [[kref:page:bibliotheque-capability|Capacités]]</p>',
@@ -415,7 +415,7 @@ return [
             [
                 'slug' => 'wakfu',
                 'title' => 'Wakfu',
-                'html' => '<p>Hors combat (ou combat sans enjeu) : 1 pt de réserve = une fois tes [[kref:characteristic:action_points_creature|PA]] max. Combat sérieux : les [[kref:characteristic:action_points_creature|PA]] reviennent chaque tour, réserve intacte. Soin « gratuit en PA » : seulement tant que le combat a un enjeu. Récup : repos long (plein) ; repos court : 1 pt si une capacité le permet.</p>',
+                'html' => '<p>Hors combat (ou combat sans enjeu) : 1 pt de réserve = une fois tes [[kref:characteristic:action_points_creature|PA]] max. Combat sérieux : les [[kref:characteristic:action_points_creature|PA]] reviennent chaque tour pour tes sorts de classe ; capacités et sorts appris puisent toujours dans la réserve. Soin « gratuit en PA » : seulement tant que le combat a un enjeu. Récup : repos long (plein) ; repos court : 1 pt si une capacité le permet.</p>',
             ],
             [
                 'slug' => 'rappels',

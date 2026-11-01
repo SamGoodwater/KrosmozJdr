@@ -1,8 +1,12 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Voies, variantes et réserve de Wakfu
+
+Les règles et L’Essentiel s’alignent sur les fiches de classe : chaque voie a l’orientation écrite sur la fiche (tableau des 19 classes en 2.3.3), un choix de sort a 1 à 4 variantes (souvent 2, environ 8 au niveau 1). La réserve de Wakfu est explicite partout : en combat, seuls les sorts de classe profitent des PA rendus par les dieux ; capacités et sorts appris puisent toujours dans la réserve. Le chapitre MJ liste les 12 choix validés du Crâ, de l’Iop et de l’Ecaflip.
+
 ## Novembre 2026 — Crâ, Iop et Ecaflip : le modèle de classe
 
-Une classe, c’est désormais 12 sorts, une mécanique, un vrai passif toujours actif et des capacités de classe aux niveaux 3, 9 et 14. Les anciens passifs deviennent la capacité du niveau 3 : Flèche guidée par le Wakfu, Fureur, Pièce truquée. Les nouveaux passifs : **Œil de Crâ** (obstacles partiels ignorés, Perception à la vue), **Tête brûlée** (ni peur ni terreur, une taille au-dessus pour empoigner et porter), **Retomber sur ses pattes** (pas de dégâts de chute jusqu’à 6 m, jamais À terre). Le Crâ tire à longue portée, l’Iop enchaîne ses Préparations, l’Ecaflip lit Pile pour soi et Face pour l’autre. Quelques sorts gagnent avantage, désavantage ou un état, et les zones Iop se sauvegardent en Agilité. La fiche de classe affiche les capacités par niveau, et la présentation devient un texte court pour imaginer son personnage.
+Une classe, c’est désormais 12 sorts, une mécanique, un vrai passif toujours actif et des capacités de classe aux niveaux 3, 9 et 14. Les anciens passifs deviennent la capacité du niveau 3 : Flèche guidée par le Wakfu, Fureur, Pièce truquée. Les nouveaux passifs : **Œil de Crâ** (portée longue : les flèches tirent jusqu’au double de leur portée, avec désavantage), **Tête brûlée** (ni peur ni terreur, une taille au-dessus pour empoigner et porter), **Retomber sur ses pattes** (pas de dégâts de chute jusqu’à 6 m, jamais À terre). L’Iop enchaîne ses Préparations, l’Ecaflip lit Pile pour soi et Face pour l’autre. Quelques sorts gagnent avantage, désavantage ou un état, et les zones Iop se sauvegardent en Agilité. La fiche de classe affiche les capacités par niveau, et la présentation devient un texte court pour imaginer son personnage.
 
 ## Octobre 2026 — Le menu reste en place quand on change de page
 
