@@ -2379,6 +2379,13 @@
     "file": "entity/condition/ConditionDissipableHighlight.vue"
   },
   {
+    "name": "CapabilityWakfuCost",
+    "description": "Coût d'une capacité : « [icône PA] 2 PA [icône réserve de Wakfu] ».",
+    "props": [],
+    "slots": [],
+    "file": "entity/capability/CapabilityWakfuCost.vue"
+  },
+  {
     "name": "CapabilityViewText",
     "description": "CapabilityViewText — Vue Texte pour Capability",
     "props": [
@@ -2424,20 +2431,10 @@
   },
   {
     "name": "CapabilityMinimalUsageMetaRow",
-    "description": "Ligne méta capacité : PA, PO + portée modifiable, incantation/rituel, durée / relance, élément & magie au survol.",
+    "description": "Ligne méta capacité : PA (réserve de Wakfu, {@link CapabilityWakfuCost}), PO + portée modifiable, incantation/rituel, durée / relance, élément & magie au survol.",
     "props": [],
     "slots": [],
     "file": "entity/capability/CapabilityMinimalUsageMetaRow.vue"
-  },
-  {
-    "name": "CapabilityWakfuCost",
-    "description": "Coût d'une capacité : icône PA + nombre + « PA » chevauché par l'icône de la réserve de Wakfu, tooltip explicatif.",
-    "props": [
-      { "name": "value", "type": "String|Number", "desc": "- Valeur brute du champ pa" },
-      { "name": "iconPx", "type": "String", "desc": "- Taille des icônes en px (défaut 14)" }
-    ],
-    "slots": [],
-    "file": "entity/capability/CapabilityWakfuCost.vue"
   },
   {
     "name": "CapabilityLineRow",

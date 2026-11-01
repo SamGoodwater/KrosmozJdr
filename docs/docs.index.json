@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Le chapitre d’univers (4.1.1–4.1.2) décrit le Monde des Douze en 646, ère de Dofus : dieux, cités, régions, classes hors panthéon, sans inventer ce que les chroniques ne tranchent pas. Un PDF public, **Le monde des Douze - guide des aventurier·ère·s**, est compilé avec le livre de règles et L’Essentiel. Le calendrier du header affiche l’an 646 (année civile moins 1380)."
+    "description": "Les derniers coûts des spécialisations notés « N PA » ou « N PA en combat » indiquent maintenant aussi « depuis la réserve de Wakfu », avec leur nombre de PA affiché sur la fiche. Une capacité sans coût affiche « 0 PA », sans l’icône de la réserve."
   },
   {
     "path": "backend/_ai.md",
