@@ -51,6 +51,10 @@ Chaque compétence reprend la couleur de sa caractéristique, y compris le passi
 ## Octobre 2026 — Nom de la classe dans le titre
 
 Ouvrir une classe (ou une spécialisation) depuis les bibliothèques affiche son nom dans l’en-tête et dans l’onglet du navigateur. Avant, ces pages indiquaient seulement « Page ».
+## Octobre 2026 — Enregistrer un sort ne perd plus les degrés
+
+Sur la page Modifier d’un sort (pas la fenêtre), « Mettre à jour » enregistrait d’abord le bloc d’effets lié, ce qui rechargeait la page et effaçait les changements encore en mémoire dans « Degrés & effets ». Les degrés et les dégâts revus n’étaient pas écrits, alors que le sort affichait un succès. L’enregistrement écrit d’abord les degrés, puis le bloc d’effets sans quitter la page.
+
 
 ## Octobre 2026 — Effets de sort, sur la fiche
 

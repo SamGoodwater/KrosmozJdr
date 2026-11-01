@@ -18,7 +18,9 @@
     `SpellDegreeEditTabs` : onglets niveau + **+ Degré**) puis sous-effets
     (`SpellEffectEditorRow`, bouton **+ Sous-effet**). Définitions legacy
     (`SpellEffectsUnifiedSection` : recherche / lier / créer) en collapse fermé
-    « Définitions liées (avancé) » après les degrés. Enregistrement unique (bulk degrés puis sort).
+    « Définitions liées (avancé) » après les degrés. Enregistrement unique (bulk degrés natifs,
+    puis groupe d’effets legacy en JSON sans visite Inertia, puis sort). `submitGroupAsync`
+    n’utilise pas Inertia `back()` : ça réinitialiserait le brouillon des degrés.
     `serializeEffectRowForApi` round-trippe aussi `value_min` / `value_max` / `dice_num` /
     `dice_side` / `logic_group` : `syncEffects` recrée les lignes, omettre ces clés les
     nullifie (dégâts migrés / legacy).
