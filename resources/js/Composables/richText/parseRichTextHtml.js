@@ -41,7 +41,22 @@ const ALLOWED_TAGS = new Set([
 
 const VOID_TAGS = new Set(["br", "img", "hr", "wbr"]);
 
-const SAFE_ATTRS = ["href", "src", "alt", "title", "class", "id", "target", "rel", "colspan", "rowspan", "width", "height"];
+const SAFE_ATTRS = [
+    "href",
+    "src",
+    "alt",
+    "title",
+    "class",
+    "id",
+    "target",
+    "rel",
+    "colspan",
+    "rowspan",
+    "width",
+    "height",
+    // Couleurs TipTap / import règles (déjà passées par DOMPurify côté lecture).
+    "style",
+];
 
 /**
  * @param {HTMLElement} el

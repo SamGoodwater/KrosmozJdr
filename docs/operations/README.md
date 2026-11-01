@@ -36,7 +36,7 @@ php artisan pages:import-rules-toc --accept=2.3.4     # impose le .md sur une se
 php artisan rules:compile-downloads
 ```
 
-Le livre joueur compilé vit dans `storage/app/public/downloads/generated/` (non versionné). L’atelier MJ (`read_level` MJ) est sur le disque privé `storage/app/private/downloads/generated/` : `/storage/…` ne le sert pas. PDF A4, police resserrée, un saut de page par grande partie (pas par fiche). Deux livres : **joueur** (ch. 1–4, public) et **atelier MJ** (ch. 5, rôle MJ). Blocs Sources / Contenu et changelog exclus. Téléchargement : `/telechargements/{key}`. Pages CMS **Ressources** (`ressources-de-jeu`, menu Règles) et **Ressources MJ** (`ressources-mj`, Pour les MJ). Bouton admin : `/admin/content` (file dédiée `rules-downloads` ; un worker ponctuel est lancé avec le bouton, un `queue:listen` persistant n’est pas requis).
+Le livre joueur et le guide compilés vivent dans `storage/app/public/downloads/generated/` (non versionné). L’atelier MJ (`read_level` MJ) est sur le disque privé `storage/app/private/downloads/generated/` : `/storage/…` ne le sert pas. PDF A4, police resserrée, un saut de page par grande partie (pas par fiche). Trois livres publics : **joueur** (ch. 1–4), **guide des aventurier·ère·s** (4.1.1–4.1.2, an 646) et **L’Essentiel** ; plus **atelier MJ** (ch. 5, rôle MJ). Blocs Sources / Contenu et changelog exclus. Téléchargement : `/telechargements/{key}`. Pages CMS **Ressources** (`ressources-de-jeu`, menu Règles) et **Ressources MJ** (`ressources-mj`, Pour les MJ). Bouton admin : `/admin/content` (file dédiée `rules-downloads` ; un worker ponctuel est lancé avec le bouton, un `queue:listen` persistant n’est pas requis).
 
 ## Nettoyage des fichiers orphelins
 

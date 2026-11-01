@@ -18,6 +18,14 @@ describe('sanitizeHtml', () => {
     expect(output).toContain('class="kref kref--nav"');
     expect(output).toContain('title="eyJ0IjoicGFnZSJ9"');
   });
+
+  it('preserves inline color styles used in rules HTML', () => {
+    const input = '<p><span style="color:#5eead4"><strong>Wakfu</strong></span></p>';
+    const output = sanitizeHtml(input);
+
+    expect(output).toContain('style="color:#5eead4"');
+    expect(output).toContain('<strong>Wakfu</strong>');
+  });
 });
 
 

@@ -10,7 +10,7 @@ use RuntimeException;
 /**
  * Compile les livres de règles en PDF et ODT.
  *
- * Livre joueur (ch. 1–4), L’Essentiel (seed CMS), atelier MJ (ch. 5, disque privé) :
+ * Livre joueur (ch. 1–4), guide du Monde des Douze, L’Essentiel (seed CMS), atelier MJ (ch. 5, disque privé) :
  * un `read_level` MJ ne doit pas atterrir sous `/storage/…`.
  * N’est lancé que par la commande Artisan (import / init) ou le bouton admin :
  * jamais à la volée sur une page publique.
@@ -22,9 +22,12 @@ class RulesDownloadCompiler
 {
     public const AUDIENCE_ESSENTIEL = 'essentiel';
 
+    public const AUDIENCE_GUIDE = 'guide';
+
     public function __construct(
         private readonly RulesBookAssembler $assembler,
         private readonly EssentialBookAssembler $essentialAssembler,
+        private readonly GuideBookAssembler $guideAssembler,
         private readonly RulesPdfWriter $pdfWriter,
         private readonly RulesOdtWriter $odtWriter,
         private readonly GameDownloadCatalog $catalog,
@@ -98,6 +101,7 @@ class RulesDownloadCompiler
             $title = match ($audience) {
                 RulesBookAssembler::AUDIENCE_MJ => 'Krosmoz JDR — Atelier MJ',
                 self::AUDIENCE_ESSENTIEL => 'Krosmoz JDR — L’Essentiel',
+                self::AUDIENCE_GUIDE => GuideBookAssembler::TITLE,
                 default => 'Krosmoz JDR — Livre de règles',
             };
             $mime = (string) ($item['mime'] ?? '');
@@ -144,6 +148,10 @@ class RulesDownloadCompiler
     {
         if ($audience === self::AUDIENCE_ESSENTIEL) {
             return $this->essentialAssembler->toHtml();
+        }
+
+        if ($audience === self::AUDIENCE_GUIDE) {
+            return $this->guideAssembler->toHtml();
         }
 
         return $this->assembler->forAudience($audience)->toHtml();

@@ -1157,6 +1157,13 @@
     "file": "entity/spell/SpellDegreePropertyField.vue"
   },
   {
+    "name": "SpellDegreeEditTabs",
+    "description": "Onglets d’édition des degrés : pastilles niveau + bouton « + Degré » + source des propriétés.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellDegreeEditTabs.vue"
+  },
+  {
     "name": "SpellCharacteristicHoverLink",
     "description": "Libellé de caractéristique d’effet avec fiche au survol (vue « lien »).",
     "props": [],
@@ -2359,13 +2366,13 @@
       },
       {
         "name": "variant",
-        "type": "'inline'|'block'|'icon-only'",
+        "type": "'inline'|'block'|'icon-only'|'caption-hover'",
         "desc": "- Densité d’affichage."
       },
       {
         "name": "showLabel",
         "type": "boolean",
-        "desc": "- Libellé texte (masqué si variant = icon-only)."
+        "desc": "- Libellé texte (masqué si variant = icon-only). `caption-hover` : icône seule ; au survol, libellé petit sous l’icône (ex. sous l’image Full)."
       }
     ],
     "slots": [],

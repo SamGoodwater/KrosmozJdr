@@ -17,6 +17,7 @@ import {
     getAlmanaxMonth,
     getAlmanaxMonthIconUrl,
     shiftAlmanaxMonth,
+    toWorldOfTwelveYear,
 } from "@/Utils/layout/almanaxCalendar";
 
 const today = new Date();
@@ -30,8 +31,9 @@ const weeks = computed(() => buildAlmanaxMonthGrid(viewYear.value, viewMonthInde
 const isCurrentMonth = computed(
     () => viewYear.value === today.getFullYear() && viewMonthIndex.value === today.getMonth(),
 );
+const worldYear = computed(() => toWorldOfTwelveYear(viewYear.value));
 const subtitle = computed(
-    () => `${month.value.gregorianMonth} ${viewYear.value} · jours = calendrier réel`,
+    () => `an ${worldYear.value} · jours du calendrier réel`,
 );
 
 function go(delta) {
@@ -72,7 +74,7 @@ function goToday() {
             </span>
             <div class="min-w-0 flex-1">
                 <p class="truncate text-sm font-semibold leading-tight">
-                    {{ month.name }}
+                    {{ month.name }} {{ worldYear }}
                 </p>
                 <p class="truncate text-[11px] text-base-content/60">
                     {{ subtitle }}
@@ -144,7 +146,7 @@ function goToday() {
         </div>
 
         <p class="text-[11px] leading-snug text-base-content/55">
-            Les jours correspondent au calendrier réel. Seuls les mois portent les noms du Monde des Douze.
+            Les jours suivent le calendrier réel. Les mois et l’année (an {{ worldYear }}) sont ceux du Monde des Douze.
         </p>
     </div>
 </template>

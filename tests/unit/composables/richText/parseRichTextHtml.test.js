@@ -22,4 +22,16 @@ describe("parseRichTextHtml", () => {
         });
         expect(kref.krefPayload).toContain("action_points_creature");
     });
+
+    it("conserve les styles de couleur sur les spans (Wakfu, Dofus, etc.)", () => {
+        const tree = parseRichTextHtml(
+            '<p>Le <span style="color:#5eead4"><strong>Wakfu</strong></span> et la <span style="color:#c4b5fd"><strong>Stasis</strong></span>.</p>',
+        );
+
+        expect(tree).toHaveLength(1);
+        const spans = tree[0].children.filter((child) => child.kind === "el" && child.tag === "span");
+        expect(spans).toHaveLength(2);
+        expect(spans[0].attrs.style).toContain("color:#5eead4");
+        expect(spans[1].attrs.style).toContain("color:#c4b5fd");
+    });
 });

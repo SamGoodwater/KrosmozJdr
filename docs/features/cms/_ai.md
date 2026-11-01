@@ -22,7 +22,7 @@
 - **Page « Les métiers »** (`les-metiers`, Bibliothèques) : page documentaire sans entité, seedée depuis `database/seeders/data/jobs-page.php`. Icônes dans `storage/app/public/images/jobs/`, tableau des runes en section `forgemagie_rune_table`.
 - **Chapitre 5 règles** (`regles-5-*`) : équilibrage des entités. Import TOC → `menu_group=Pour les MJ`, `read_level` MJ. PDF dédié `mj-pdf` (page `ressources-mj`, disque privé). Hors PDF joueur et hors `/storage/…`.
 - **Changelog** : page Informations `changelog` (menu **Journal**). Fichiers `storage/app/public/changelog/` (`intro.md`, `X.Y.Z.md`, `roadmap.md`), pas la base. Lecture `/changelog/feed/{semver}` + frise `/changelog/roadmap`. Édition admin : `GET|PUT /changelog/sources`. Hors livre.
-- **Page « Ressources »** (`ressources-de-jeu`) : racine du menu Règles (groupes `regles`, `essentiel`, `fiches`, `identite`). Compilation `rules:compile-downloads` (PDF joueur ch. 1–4 + Essentiel + PDF MJ ch. 5). L’Essentiel (page `essentiels-bien-demarrer`) expose aussi le groupe `essentiel`.
+- **Page « Ressources »** (`ressources-de-jeu`) : racine du menu Règles (groupes `regles`, `guide`, `essentiel`, `fiches`, `identite`). Compilation `rules:compile-downloads` (PDF joueur ch. 1–4 + guide 4.1.1–4.1.2 + Essentiel + PDF MJ ch. 5). L’Essentiel (page `essentiels-bien-demarrer`) expose aussi le groupe `essentiel`.
 - **Sécurité contenu** : Mews\Purifier (profil `section_text`) sur le HTML de section.
 
 ## Fichiers pivots
@@ -35,7 +35,7 @@
 - `database/seeders/data/creation-pages.php`, `database/seeders/CreationPagesSeeder.php` — atelier MJ Création.
 - `app/Support/Cms/CreationPageLegacyRedirects.php` — 301 des anciens slugs `contribution-*`.
 - `resources/js/Pages/Organismes/section/PageRenderer.vue` (+ `SectionRenderer`, `SectionLazyGate`, `templates/index.js`, `composables/useTemplateRegistry.js`).
-- `resources/js/Pages/Molecules/data-input/RichTextEditorField.vue` + `resources/js/Composables/richText/*` (kref).
+- `resources/js/Pages/Molecules/data-input/RichTextEditorField.vue` + `resources/js/Composables/richText/*` (kref). Couleurs TipTap : pastilles **Tailwind 300** (`Constants/richTextColorPresets.js`, hex portables) via `Popover` (Teleport body, hors `overflow` section) + color picker libre + « Retirer ».
 
 ## Descendre
 

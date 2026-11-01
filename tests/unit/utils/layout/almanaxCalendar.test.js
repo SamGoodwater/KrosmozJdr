@@ -6,6 +6,7 @@ import {
     getAlmanaxDate,
     getAlmanaxMonth,
     shiftAlmanaxMonth,
+    toWorldOfTwelveYear,
 } from "@/Utils/layout/almanaxCalendar";
 
 describe("almanaxCalendar", () => {
@@ -16,8 +17,16 @@ describe("almanaxCalendar", () => {
         expect(info.day).toBe(6);
         expect(info.month.name).toBe("Fraouctor");
         expect(info.almanaxLabel).toBe("6 Fraouctor");
+        expect(info.worldYear).toBe(646);
         expect(formatAlmanaxDayLabel(date)).toBe("6 Fraouctor");
         expect(getAlmanaxMonth(date).gregorianMonth).toBe("août");
+        expect(info.tooltip).toContain("an 646");
+    });
+
+    it("convertit l’année civile en année du Monde des Douze", () => {
+        expect(toWorldOfTwelveYear(2026)).toBe(646);
+        expect(toWorldOfTwelveYear(2027)).toBe(647);
+        expect(toWorldOfTwelveYear(2025)).toBe(645);
     });
 
     it("expose 12 mois Almanax", () => {
@@ -37,8 +46,9 @@ describe("almanaxCalendar", () => {
         expect(flat.every((cell) => cell != null)).toBe(true);
     });
 
-    it("décale les mois sans inventer d’année Dofus", () => {
+    it("décale les mois sur l’année civile sous-jacente", () => {
         expect(shiftAlmanaxMonth(2026, 0, -1)).toEqual({ year: 2025, monthIndex: 11 });
         expect(shiftAlmanaxMonth(2026, 11, 1)).toEqual({ year: 2027, monthIndex: 0 });
+        expect(toWorldOfTwelveYear(shiftAlmanaxMonth(2026, 11, 1).year)).toBe(647);
     });
 });

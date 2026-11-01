@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Sur la fiche d’un sort, les onglets reprennent les niveaux de ses degrés (`Niv 1`, `Niv 13`…). Chaque degré montre l’utilisation (zone à part, schéma visible en page), la résolution sans fond sur les libellés de jet, puis les effets en deux lignes. Les formules d’attaque affichent les dés, le modificateur et le mot Bonus ; le survol donne la formule complète. Un critique manquant sur Frapper double les dés."
+    "description": "Le chapitre d’univers (4.1.1–4.1.2) décrit le Monde des Douze en 646, ère de Dofus : dieux, cités, régions, classes hors panthéon, sans inventer ce que les chroniques ne tranchent pas. Un PDF public, **Le monde des Douze - guide des aventurier·ère·s**, est compilé avec le livre de règles et L’Essentiel. Le calendrier du header affiche l’an 646 (année civile moins 1380)."
   },
   {
     "path": "backend/_ai.md",
@@ -207,7 +207,7 @@
   {
     "path": "frontend/entity-views/_ai.md",
     "title": "Entity views — IA",
-    "description": "`resources/js/Utils/entity/resolveEntityViewComponent.js`"
+    "description": "| Famille | Entités | Full | Minimal défaut |"
   },
   {
     "path": "frontend/entity-views/README.md",

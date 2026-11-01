@@ -13,7 +13,7 @@
  * - Titres : H1, H2, H3, H4
  * - Listes : Puces, Numérotées, Tâches
  * - Alignement : Gauche, Centre, Droite, Justifié
- * - Couleurs : Texte, Surlignage
+ * - Couleurs : Texte / surlignage (pastilles Tailwind 300 + color picker libre)
  * - Éléments : Liens, Images, Tableaux, Citations, Code, Ligne horizontale
  * - Utilitaires : Annuler/Refaire, Compteur de caractères, Placeholder
  *
@@ -35,7 +35,9 @@ import { useEditor, EditorContent } from '@tiptap/vue-3'
 import { createRichTextExtensions } from '@/Composables/richText/richTextExtensions'
 import RichTextKrefInteractions from '@/Pages/Molecules/data-display/RichTextKrefInteractions.vue'
 import FieldTemplate from '@/Pages/Molecules/data-input/FieldTemplate.vue'
+import Popover from '@/Pages/Atoms/feedback/Popover.vue'
 import { getInputPropsDefinition } from '@/Utils/atomic-design/inputHelper'
+import { RICH_TEXT_COLOR_PRESETS } from '@/Constants/richTextColorPresets'
 
 const props = defineProps({
   ...getInputPropsDefinition('textarea', 'field'),
@@ -106,8 +108,9 @@ const linkUrl = ref('')
 const linkText = ref('')
 const imageUrl = ref('')
 const imageAlt = ref('')
-const textColor = ref('#000000')
-const highlightColor = ref('#ffff00')
+const textColor = ref('#5eead4')
+const highlightColor = ref('#fde047')
+const richTextColorPresets = RICH_TEXT_COLOR_PRESETS
 const lastEmittedHtml = ref(props.modelValue || '')
 const pendingExternalHtml = ref(null)
 const isFullscreen = ref(false)
@@ -924,19 +927,50 @@ const handleLocalFileSelected = async (event, preferredTarget = 'file') => {
   event.target.value = ''
 }
 
-const setTextColor = () => {
+/**
+ * Applique une couleur de texte (pastille palette ou color picker).
+ *
+ * @param {string} [hex]
+ */
+const applyTextColor = (hex) => {
   if (!editor.value) return
-  editor.value.chain().focus().setColor(textColor.value).run()
+  const next = typeof hex === 'string' && hex.trim() !== '' ? hex.trim() : textColor.value
+  textColor.value = next
+  editor.value.chain().focus().setColor(next).run()
+}
+
+const setTextColor = () => {
+  applyTextColor(textColor.value)
+}
+
+const unsetTextColor = () => {
+  if (!editor.value) return
+  editor.value.chain().focus().unsetColor().run()
+}
+
+/**
+ * Applique un surlignage (pastille palette ou color picker).
+ *
+ * @param {string} [hex]
+ */
+const applyHighlightColor = (hex) => {
+  if (!editor.value) return
+  const next = typeof hex === 'string' && hex.trim() !== '' ? hex.trim() : highlightColor.value
+  highlightColor.value = next
+  if (editor.value.isActive('highlight', { color: next })) {
+    editor.value.chain().focus().unsetHighlight().run()
+    return
+  }
+  editor.value.chain().focus().toggleHighlight({ color: next }).run()
 }
 
 const setHighlightColor = () => {
+  applyHighlightColor(highlightColor.value)
+}
+
+const unsetHighlightColor = () => {
   if (!editor.value) return
-  // Si déjà surligné avec cette couleur, désactiver, sinon activer
-  if (editor.value.isActive('highlight', { color: highlightColor.value })) {
-    editor.value.chain().focus().unsetHighlight().run()
-  } else {
-    editor.value.chain().focus().toggleHighlight({ color: highlightColor.value }).run()
-  }
+  editor.value.chain().focus().unsetHighlight().run()
 }
 
 const insertTable = () => {
@@ -1233,55 +1267,109 @@ const sanitizedPreviewHtml = computed(() => {
 
           <div v-if="!isFocusMode" class="divider divider-horizontal mx-1" />
 
-          <!-- Couleurs et surlignage -->
+          <!-- Couleurs et surlignage (Popover → body : hors overflow de la section) -->
           <div
             v-if="!isFocusMode"
             class="flex gap-1 items-center rounded-md border border-base-300/70 px-1 py-1"
           >
-            <div class="dropdown dropdown-end">
+            <Popover
+              placement="bottom-end"
+              max-width="sm"
+              panel-class="w-64 rounded-box border border-base-300 bg-base-100 p-2 text-base-content shadow-2xl"
+            >
               <button
                 type="button"
-                tabindex="0"
                 class="btn btn-xs btn-ghost"
                 :class="{ 'btn-active': editor?.isActive('textStyle') }"
                 title="Couleur du texte"
               >
                 <i class="fa-solid fa-palette" />
               </button>
-              <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow border border-base-300">
-                <li>
+              <template #content>
+                <p class="mb-1 px-1 text-[10px] font-semibold uppercase tracking-wide text-base-content/60">
+                  Palette Tailwind 300
+                </p>
+                <div class="grid grid-cols-6 gap-1 p-1">
+                  <button
+                    v-for="swatch in richTextColorPresets"
+                    :key="'text-' + swatch.id"
+                    type="button"
+                    class="btn btn-xs h-7 min-h-0 w-full border border-base-300 p-0"
+                    :class="{ 'ring-2 ring-primary ring-offset-1 ring-offset-base-100': textColor.toLowerCase() === swatch.hex.toLowerCase() }"
+                    :style="{ backgroundColor: swatch.hex }"
+                    :title="swatch.label"
+                    :aria-label="swatch.label"
+                    @click="applyTextColor(swatch.hex)"
+                  />
+                </div>
+                <div class="mt-2 flex items-center gap-2 px-1">
                   <input
                     type="color"
                     v-model="textColor"
+                    class="h-8 w-10 cursor-pointer rounded border border-base-300 bg-transparent"
+                    title="Couleur libre"
                     @change="setTextColor"
-                    class="w-full h-8 cursor-pointer"
-                    title="Couleur du texte"
                   />
-                </li>
-              </ul>
-            </div>
-            <div class="dropdown dropdown-end">
+                  <button
+                    type="button"
+                    class="btn btn-xs btn-ghost grow"
+                    title="Retirer la couleur"
+                    @click="unsetTextColor"
+                  >
+                    Retirer
+                  </button>
+                </div>
+              </template>
+            </Popover>
+            <Popover
+              placement="bottom-end"
+              max-width="sm"
+              panel-class="w-64 rounded-box border border-base-300 bg-base-100 p-2 text-base-content shadow-2xl"
+            >
               <button
                 type="button"
-                tabindex="0"
                 class="btn btn-xs btn-ghost"
                 :class="{ 'btn-active': editor?.isActive('highlight') }"
                 title="Surlignage"
               >
                 <i class="fa-solid fa-highlighter" />
               </button>
-              <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow border border-base-300">
-                <li>
+              <template #content>
+                <p class="mb-1 px-1 text-[10px] font-semibold uppercase tracking-wide text-base-content/60">
+                  Palette Tailwind 300
+                </p>
+                <div class="grid grid-cols-6 gap-1 p-1">
+                  <button
+                    v-for="swatch in richTextColorPresets"
+                    :key="'hl-' + swatch.id"
+                    type="button"
+                    class="btn btn-xs h-7 min-h-0 w-full border border-base-300 p-0"
+                    :class="{ 'ring-2 ring-primary ring-offset-1 ring-offset-base-100': highlightColor.toLowerCase() === swatch.hex.toLowerCase() }"
+                    :style="{ backgroundColor: swatch.hex }"
+                    :title="swatch.label"
+                    :aria-label="swatch.label"
+                    @click="applyHighlightColor(swatch.hex)"
+                  />
+                </div>
+                <div class="mt-2 flex items-center gap-2 px-1">
                   <input
                     type="color"
                     v-model="highlightColor"
+                    class="h-8 w-10 cursor-pointer rounded border border-base-300 bg-transparent"
+                    title="Surlignage libre"
                     @change="setHighlightColor"
-                    class="w-full h-8 cursor-pointer"
-                    title="Couleur de surlignage"
                   />
-                </li>
-              </ul>
-            </div>
+                  <button
+                    type="button"
+                    class="btn btn-xs btn-ghost grow"
+                    title="Retirer le surlignage"
+                    @click="unsetHighlightColor"
+                  >
+                    Retirer
+                  </button>
+                </div>
+              </template>
+            </Popover>
           </div>
 
           <div v-if="!isFocusMode" class="divider divider-horizontal mx-1" />

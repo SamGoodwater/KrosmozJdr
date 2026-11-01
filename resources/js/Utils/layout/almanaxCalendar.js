@@ -2,10 +2,12 @@
  * Mapping Almanax / Monde des Douze basé sur la date réelle.
  * Le numéro du jour et la semaine restent ceux du calendrier grégorien ;
  * seuls les noms de mois changent (janvier → Javian, etc.).
+ * L’année affichée est celle du Monde des Douze (année civile − 1380).
  *
  * @example
  * getAlmanaxMonth(new Date("2026-08-06")).name // "Fraouctor"
  * formatAlmanaxDayLabel(new Date("2026-08-06")) // "6 Fraouctor"
+ * toWorldOfTwelveYear(2026) // 646
  */
 
 export const ALMANAX_MONTHS = [
@@ -23,11 +25,23 @@ export const ALMANAX_MONTHS = [
     { name: "Descendre", file: "descendre.png", gregorianMonth: "décembre" },
 ];
 
+/** Année civile − décalage = année du Monde des Douze (2026 → 646). */
+export const WORLD_OF_TWELVE_YEAR_OFFSET = 1380;
+
 /** Libellés courts des jours (lundi → dimanche), alignés sur getDay() JS (0 = dimanche). */
 export const ALMANAX_WEEKDAY_SHORT = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"];
 
 /** Ordre d’affichage calendrier (lundi en premier). */
 export const ALMANAX_WEEKDAY_HEADERS = ["Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di"];
+
+/**
+ * @param {number} gregorianYear
+ * @returns {number}
+ */
+export function toWorldOfTwelveYear(gregorianYear) {
+    const year = Number.isFinite(gregorianYear) ? gregorianYear : new Date().getFullYear();
+    return year - WORLD_OF_TWELVE_YEAR_OFFSET;
+}
 
 /**
  * @param {Date} [date]
@@ -48,12 +62,13 @@ export function getAlmanaxMonthIconUrl(month) {
 }
 
 /**
- * Date Almanax dérivée d’une date réelle (même jour / même année civile).
+ * Date Almanax dérivée d’une date réelle (même jour / mois ; année du Monde des Douze).
  *
  * @param {Date} [date]
  * @returns {{
  *   day: number,
  *   year: number,
+ *   worldYear: number,
  *   weekdayIndex: number,
  *   month: ReturnType<typeof getAlmanaxMonth>,
  *   almanaxLabel: string,
@@ -65,6 +80,7 @@ export function getAlmanaxDate(date = new Date()) {
     const safe = date instanceof Date && !Number.isNaN(date.getTime()) ? date : new Date();
     const day = safe.getDate();
     const year = safe.getFullYear();
+    const worldYear = toWorldOfTwelveYear(year);
     const month = getAlmanaxMonth(safe);
     const almanaxLabel = `${day} ${month.name}`;
     const gregorianLabel = safe.toLocaleDateString("fr-FR", {
@@ -76,11 +92,12 @@ export function getAlmanaxDate(date = new Date()) {
     return {
         day,
         year,
+        worldYear,
         weekdayIndex: safe.getDay(),
         month,
         almanaxLabel,
         gregorianLabel,
-        tooltip: `Aujourd’hui : ${almanaxLabel} (${gregorianLabel})`,
+        tooltip: `Aujourd’hui : ${almanaxLabel} an ${worldYear} (${gregorianLabel})`,
     };
 }
 
@@ -95,7 +112,7 @@ export function formatAlmanaxDayLabel(date = new Date()) {
 /**
  * Construit la grille d’un mois (lundi → dimanche) avec jours du mois voisin en padding.
  *
- * @param {number} year
+ * @param {number} year année civile (grille / jours)
  * @param {number} monthIndex 0–11
  * @returns {Array<Array<{ day: number, inMonth: boolean, date: Date, almanaxLabel: string, isToday: boolean }|null>>}
  */
@@ -153,7 +170,7 @@ function makeCell(date, inMonth, todayKey) {
 }
 
 /**
- * Décale un mois Almanax (année civile, sans inventer d’année Dofus).
+ * Décale un mois Almanax (année civile sous-jacente pour la grille des jours).
  *
  * @param {number} year
  * @param {number} monthIndex

@@ -133,6 +133,19 @@
     text-underline-offset: 0.15em;
   }
 
+  /*
+   * TipTap / HTML importé : <span style="color:…"><strong>…</strong></span>.
+   * Sans ceci, prose/typography force une couleur sur strong et masque la teinte.
+   */
+  span[style*="color"] {
+    strong,
+    b,
+    em,
+    i {
+      color: inherit;
+    }
+  }
+
   table {
     border-collapse: collapse;
     margin: 0.75rem 0;

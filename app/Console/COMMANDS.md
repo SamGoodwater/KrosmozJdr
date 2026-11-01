@@ -621,7 +621,7 @@ cron: false
 admin: /admin/content
 ```
 
-Compile le livre de règles Markdown et L’Essentiel (seed CMS) en PDF et ODT. **Livre joueur** (ch. 1–4) et **L’Essentiel** → `storage/app/public/downloads/generated/`. **Atelier MJ** (ch. 5, `read_level` MJ) → disque privé `storage/app/private/downloads/generated/` (pas d’URL `/storage/…`). Hors livres : Sources / Contenu, changelog. Lancé après `project:init` / `project:seed`, via `pages:import-rules-toc --compile-downloads`, ou depuis le bouton de la gestion du contenu (admin+ ; file `rules-downloads`, worker ponctuel).
+Compile le livre de règles Markdown, le guide du Monde des Douze (4.1.1–4.1.2) et L’Essentiel (seed CMS) en PDF et ODT. **Livre joueur** (ch. 1–4), **guide des aventurier·ère·s** et **L’Essentiel** → `storage/app/public/downloads/generated/`. **Atelier MJ** (ch. 5, `read_level` MJ) → disque privé `storage/app/private/downloads/generated/` (pas d’URL `/storage/…`). Hors livres : Sources / Contenu, changelog. Lancé après `project:init` / `project:seed`, via `pages:import-rules-toc --compile-downloads`, ou depuis le bouton de la gestion du contenu (admin+ ; file `rules-downloads`, worker ponctuel).
 
 ```bash
 php artisan rules:compile-downloads

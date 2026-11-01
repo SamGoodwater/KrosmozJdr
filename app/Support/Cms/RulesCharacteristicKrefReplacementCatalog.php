@@ -204,10 +204,18 @@ final class RulesCharacteristicKrefReplacementCatalog
             return $token;
         };
 
+        // Tableaux d’abord : « Nature », « Force », etc. dans une cellule ≠ caractéristique.
+        // Avant les krefs, pour ne pas imbriquer des jetons (strtr ne re-déploie pas le nid).
+        $out = (string) preg_replace_callback(
+            '/(?:^|\n)(?:\|[^\n]*(?:\n|$))+/u',
+            static fn (array $m) => $next($m[0]),
+            $markdown
+        );
+
         $out = (string) preg_replace_callback(
             '/\[\[kref:[^\]]+\]\]/u',
             static fn (array $m) => $next($m[0]),
-            $markdown
+            $out
         );
 
         $out = (string) preg_replace_callback(
