@@ -238,6 +238,57 @@ class BreedControllerTest extends TestCase
             ->assertRedirect();
     }
 
+    public function test_edit_payload_preserves_breed_spell_slot_pivot(): void
+    {
+        $admin = $this->adminUser();
+        $breed = Breed::factory()->create([
+            'created_by' => $admin->id,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+        $slotOne = Spell::factory()->create(['created_by' => $admin->id, 'name' => 'Flèche']);
+        $slotFour = Spell::factory()->create(['created_by' => $admin->id, 'name' => 'Tir lointain']);
+        $extra = Spell::factory()->create(['created_by' => $admin->id, 'name' => 'Reliquat']);
+        $breed->spells()->attach($slotOne->id, [
+            'character_level' => 1,
+            'slot_index' => 2,
+            'choice_order' => 1,
+        ]);
+        $breed->spells()->attach($slotFour->id, [
+            'character_level' => 4,
+            'slot_index' => 1,
+            'choice_order' => 0,
+        ]);
+        $breed->spells()->attach($extra->id, [
+            'character_level' => 0,
+            'slot_index' => 1,
+            'choice_order' => 0,
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('entities.breeds.edit', $breed))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Pages/entity/breed/Edit')
+                ->has('breed.data.spells', 3)
+                ->where('breed.data.spells', function ($spells) use ($slotOne, $slotFour, $extra) {
+                    $byId = collect($spells)->keyBy('id');
+                    $first = $byId->get($slotOne->id);
+                    $second = $byId->get($slotFour->id);
+                    $third = $byId->get($extra->id);
+
+                    return is_array($first)
+                        && (int) data_get($first, 'pivot.character_level') === 1
+                        && (int) data_get($first, 'pivot.slot_index') === 2
+                        && (int) data_get($first, 'pivot.choice_order') === 1
+                        && is_array($second)
+                        && (int) data_get($second, 'pivot.character_level') === 4
+                        && (int) data_get($second, 'pivot.slot_index') === 1
+                        && is_array($third)
+                        && (int) data_get($third, 'pivot.character_level') === 0
+                        && (int) data_get($third, 'pivot.slot_index') === 1;
+                }));
+    }
+
     public function test_edit_payload_avoids_heavy_catalog_resources(): void
     {
         $admin = $this->adminUser();
