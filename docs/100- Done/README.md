@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Enregistrer une classe garde ses sorts en place
+
+On peut modifier une fiche de classe et enregistrer sans que ses sorts retombent tous au premier choix. Chacun reste au niveau et à la place où on l’avait mis.
+
 ## Novembre 2026 — Spécialisations : tous les coûts passent par la réserve
 
 Les derniers coûts des spécialisations notés « N PA » ou « N PA en combat » indiquent maintenant aussi « depuis la réserve de Wakfu », avec leur nombre de PA affiché sur la fiche. Une capacité sans coût affiche « 0 PA », sans l’icône de la réserve.
