@@ -129,7 +129,8 @@ return [
                 [
                     'name' => 'Masque de cour',
                     'type' => $guaranteed,
-                    'effect' => 'Pendant une scène, tu joues un rôle social (allié·e d’une maison, neutre, envoyé·e). Les PNJ de rang croient le masque tant que personne ne te démasque avec des faits. 1 réserve de Wakfu.',
+                    'pa' => '3',
+                    'effect' => 'Pendant une scène, tu joues un rôle social (allié·e d’une maison, neutre, envoyé·e). Les PNJ de rang croient le masque tant que personne ne te démasque avec des faits. 3 PA depuis la réserve de Wakfu.',
                 ],
                 [
                     'name' => 'Silence de salon',
@@ -211,12 +212,14 @@ return [
                 [
                     'name' => 'Salon de poche',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies un salon pour 8 heures : sièges, lumière, silence extérieur. Rien de créé ne survit. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies un salon pour 8 heures : sièges, lumière, silence extérieur. Rien de créé ne survit. 6 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
                 [
                     'name' => 'Antichambre',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies un salon pour 8 heures : sièges, thé, portes qui ferment. On peut y recevoir. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies un salon pour 8 heures : sièges, thé, portes qui ferment. On peut y recevoir. 6 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],

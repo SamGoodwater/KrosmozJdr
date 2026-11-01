@@ -80,7 +80,8 @@ return [
                 [
                     'name' => 'Déguisement de scène',
                     'type' => $guaranteed,
-                    'effect' => 'En 10 minutes tu changes visage, voix, habits. Ça tient une scène, ou 1 heure si tu ne parles pas trop. Un test de Supercherie contre Perspicacité si on te colle. 1 réserve de Wakfu pour le tenir en combat (1 PA).',
+                    'pa' => '1',
+                    'effect' => 'En 10 minutes tu changes visage, voix, habits. Ça tient une scène, ou 1 heure si tu ne parles pas trop. Un test de Supercherie contre Perspicacité si on te colle. Pour le tenir en combat : 1 PA depuis la réserve de Wakfu.',
                 ],
                 [
                     'name' => 'Éclat de rire',
@@ -113,7 +114,8 @@ return [
                 [
                     'name' => 'Image de salle',
                     'type' => $freeSlot,
-                    'effect' => 'Une image ou un décor dans un cube de 4 cases, une scène. Ça ne blesse pas. Un examen attentif la perce. 1 réserve de Wakfu.',
+                    'pa' => '2',
+                    'effect' => 'Une image ou un décor dans un cube de 4 cases, une scène. Ça ne blesse pas. Un examen attentif la perce. 2 PA depuis la réserve de Wakfu.',
                 ],
                 [
                     'name' => 'Rappel de refrain',
@@ -129,7 +131,8 @@ return [
                 [
                     'name' => 'Visage d’emprunt',
                     'type' => $guaranteed,
-                    'effect' => 'Tu prends l’apparence d’une personne vue. Une heure, ou une scène en combat (2 PA). Les proches ont avantage pour te percer. 1 réserve de Wakfu.',
+                    'pa' => '3',
+                    'effect' => 'Tu prends l’apparence d’une personne vue. Une heure, ou une scène en combat (2 PA). Les proches ont avantage pour te percer. 3 PA depuis la réserve de Wakfu.',
                 ],
                 [
                     'name' => 'Rêvevin',
@@ -178,7 +181,8 @@ return [
                 [
                     'name' => 'Festin des héros',
                     'type' => $guaranteed,
-                    'effect' => 'Une heure de table : mets, boissons, chaleur. Jusqu’à 8 créatures. Chacune ignore un niveau de fatigue et gagne 1d4 PV temporaires jusqu’au prochain repos. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '4',
+                    'effect' => 'Une heure de table : mets, boissons, chaleur. Jusqu’à 8 créatures. Chacune ignore un niveau de fatigue et gagne 1d4 PV temporaires jusqu’au prochain repos. 4 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
                 [
                     'name' => 'Salle entière',
@@ -211,12 +215,14 @@ return [
                 [
                     'name' => 'Théâtre de poche',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies une salle pour 8 heures : planches, lumières, silence extérieur. Rien de créé ne survit. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies une salle pour 8 heures : planches, lumières, silence extérieur. Rien de créé ne survit. 6 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
                 [
                     'name' => 'Loge de poche',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies une loge pour 8 heures : miroir, costumes, silence. Rien de créé ne survit. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies une loge pour 8 heures : miroir, costumes, silence. Rien de créé ne survit. 6 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],

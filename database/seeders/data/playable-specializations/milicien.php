@@ -85,7 +85,8 @@ return [
                 [
                     'name' => 'Tenir la ligne',
                     'type' => $freeSlot,
-                    'effect' => 'Toi et un allié adjacent : vous ne pouvez pas être déplacés de force tant que vous restez côte à côte. Une scène, ou 1 réserve de Wakfu en combat (1 PA).',
+                    'pa' => '1',
+                    'effect' => 'Toi et un allié adjacent : vous ne pouvez pas être déplacés de force tant que vous restez côte à côte. Une scène, ou 1 PA depuis la réserve de Wakfu en combat.',
                 ],
                 [
                     'name' => 'Épaule contre épaule',
@@ -108,7 +109,8 @@ return [
                 [
                     'name' => 'Discipline',
                     'type' => $guaranteed,
-                    'effect' => 'Toi et les allié·e·s qui t’entendent (6 cases) : avantage aux jets contre la peur et le charme jusqu’à la fin de la scène. 1 réserve de Wakfu, 1×/scène.',
+                    'pa' => '2',
+                    'effect' => 'Toi et les allié·e·s qui t’entendent (6 cases) : avantage aux jets contre la peur et le charme jusqu’à la fin de la scène. 2 PA depuis la réserve de Wakfu, 1×/scène.',
                 ],
                 [
                     'name' => 'Ronde',
@@ -139,7 +141,8 @@ return [
                 [
                     'name' => 'Cordon de rue',
                     'type' => $freeSlot,
-                    'effect' => 'Tu fermes un passage d’une case ou une porte. Les passant·e·s s’arrêtent. Forcer le cordon : jet d’Athlétisme contre toi. Une scène, 1 réserve de Wakfu.',
+                    'pa' => '3',
+                    'effect' => 'Tu fermes un passage d’une case ou une porte. Les passant·e·s s’arrêtent. Forcer le cordon : jet d’Athlétisme contre toi. Une scène, 3 PA depuis la réserve de Wakfu.',
                 ],
             ],
             'aptitudes' => [
@@ -183,7 +186,8 @@ return [
                 [
                     'name' => 'Ralliement',
                     'type' => $freeSlot,
-                    'effect' => 'Les allié·e·s à 6 cases qui t’entendent : fin de peur, de charme ou d’étourdissement mineur, et 1d4 PV. 1 réserve de Wakfu, 1×/scène.',
+                    'pa' => '4',
+                    'effect' => 'Les allié·e·s à 6 cases qui t’entendent : fin de peur, de charme ou d’étourdissement mineur, et 1d4 PV. 4 PA depuis la réserve de Wakfu, 1×/scène.',
                 ],
                 [
                     'name' => 'Veille partagée',
@@ -211,7 +215,8 @@ return [
                 [
                     'name' => 'Bannière',
                     'type' => $freeSlot,
-                    'effect' => 'Tu plantes un étendard (1 case). Tant qu’il tient (1 heure ou jusqu’à destruction), les allié·e·s dans 6 cases ont l’avantage contre la peur et +1 aux jets d’attaque. 1 réserve de Wakfu.',
+                    'pa' => '6',
+                    'effect' => 'Tu plantes un étendard (1 case). Tant qu’il tient (1 heure ou jusqu’à destruction), les allié·e·s dans 6 cases ont l’avantage contre la peur et +1 aux jets d’attaque. 6 PA depuis la réserve de Wakfu.',
                 ],
                 [
                     'name' => 'Relève',

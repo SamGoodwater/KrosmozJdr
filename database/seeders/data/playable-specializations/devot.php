@@ -85,7 +85,8 @@ return [
                 [
                     'name' => 'Seuil béni',
                     'type' => $freeSlot,
-                    'effect' => 'Tu marques une porte, une tente ou un lit. Pendant 8 heures, la première créature malveillante qui force l’entrée te réveille et subit désavantage à son premier jet. 1 réserve de Wakfu.',
+                    'pa' => '2',
+                    'effect' => 'Tu marques une porte, une tente ou un lit. Pendant 8 heures, la première créature malveillante qui force l’entrée te réveille et subit désavantage à son premier jet. 2 PA depuis la réserve de Wakfu.',
                 ],
                 [
                     'name' => 'Pain partagé',
@@ -113,12 +114,14 @@ return [
                 [
                     'name' => 'Lumière du rite',
                     'type' => $freeSlot,
-                    'effect' => 'Une lueur dans 3 cases autour de toi, une scène. Les invisibles non magiques apparaissent comme une brume. Les morts-vivants ont désavantage pour se cacher. 1 réserve de Wakfu.',
+                    'pa' => '2',
+                    'effect' => 'Une lueur dans 3 cases autour de toi, une scène. Les invisibles non magiques apparaissent comme une brume. Les morts-vivants ont désavantage pour se cacher. 2 PA depuis la réserve de Wakfu.',
                 ],
                 [
                     'name' => 'Absolution légère',
                     'type' => $freeSlot,
-                    'effect' => 'Tu poses la main : un allié se débarrasse d’une honte, d’un trouble mineur ou d’un cauchemar de la nuit. Ça ne soigne pas les PV. 1 réserve de Wakfu, 1×/scène.',
+                    'pa' => '2',
+                    'effect' => 'Tu poses la main : un allié se débarrasse d’une honte, d’un trouble mineur ou d’un cauchemar de la nuit. Ça ne soigne pas les PV. 2 PA depuis la réserve de Wakfu, 1×/scène.',
                 ],
             ],
         ],
@@ -134,12 +137,14 @@ return [
                 [
                     'name' => 'Sanctuaire',
                     'type' => $freeSlot,
-                    'effect' => 'Tu scelles une pièce ou un campement pour 8 heures : les oreilles indiscrètes et les esprits banals glissent. Une créature qui force l’entrée te réveille. 1 réserve de Wakfu.',
+                    'pa' => '3',
+                    'effect' => 'Tu scelles une pièce ou un campement pour 8 heures : les oreilles indiscrètes et les esprits banals glissent. Une créature qui force l’entrée te réveille. 3 PA depuis la réserve de Wakfu.',
                 ],
                 [
                     'name' => 'Veillée',
                     'type' => $freeSlot,
-                    'effect' => 'Autour de ton symbole, 8 heures : les vivant·e·s qui dorment ici se réveillent si une créature hostile entre. 1 réserve de Wakfu.',
+                    'pa' => '3',
+                    'effect' => 'Autour de ton symbole, 8 heures : les vivant·e·s qui dorment ici se réveillent si une créature hostile entre. 3 PA depuis la réserve de Wakfu.',
                 ],
             ],
             'aptitudes' => [
@@ -167,7 +172,8 @@ return [
                 [
                     'name' => 'Chemin de lanternes',
                     'type' => $freeSlot,
-                    'effect' => 'Tu éclaires un sentier de 12 cases pour une heure. Les allié·e·s dessus ignorent le terrain difficile dû à l’obscurité. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '3',
+                    'effect' => 'Tu éclaires un sentier de 12 cases pour une heure. Les allié·e·s dessus ignorent le terrain difficile dû à l’obscurité. 3 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],
@@ -178,12 +184,14 @@ return [
                 [
                     'name' => 'Dernier souffle',
                     'type' => $guaranteed,
-                    'effect' => 'Tu touches une créature morte depuis moins d’une heure, si le corps est entier. Elle revient à 1 PV, épuisée. 1 réserve de Wakfu, 1×/semaine. Ce n’est pas une résurrection de légende.',
+                    'pa' => '4',
+                    'effect' => 'Tu touches une créature morte depuis moins d’une heure, si le corps est entier. Elle revient à 1 PV, épuisée. 4 PA depuis la réserve de Wakfu, 1×/semaine. Ce n’est pas une résurrection de légende.',
                 ],
                 [
                     'name' => 'Cercle consacré',
                     'type' => $freeSlot,
-                    'effect' => 'Un cercle de 3 cases, 10 minutes. Les allié·e·s dedans ont avantage contre la peur et les effets maléfiques. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '4',
+                    'effect' => 'Un cercle de 3 cases, 10 minutes. Les allié·e·s dedans ont avantage contre la peur et les effets maléfiques. 4 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
                 [
                     'name' => 'Relique portée',
@@ -211,12 +219,14 @@ return [
                 [
                     'name' => 'Temple de poche',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies un intérieur sûr pour 24 heures : lits, silence, eau, un autel. Rien de créé ne survit à la fin. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies un intérieur sûr pour 24 heures : lits, silence, eau, un autel. Rien de créé ne survit à la fin. 6 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
                 [
                     'name' => 'Autel de poche',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies un petit lieu de culte pour 8 heures : silence, eau, place pour prier. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies un petit lieu de culte pour 8 heures : silence, eau, place pour prier. 6 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],

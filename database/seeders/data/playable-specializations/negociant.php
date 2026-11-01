@@ -134,7 +134,8 @@ return [
                 [
                     'name' => 'Commission discrète',
                     'type' => $freeSlot,
-                    'effect' => 'Tu achètes ou vends pour quelqu’un d’autre sans que ton nom apparaisse. 1 réserve de Wakfu, une scène de palabre. Un test de Supercherie si on cherche activement.',
+                    'pa' => '3',
+                    'effect' => 'Tu achètes ou vends pour quelqu’un d’autre sans que ton nom apparaisse. 3 PA depuis la réserve de Wakfu, une scène de palabre. Un test de Supercherie si on cherche activement.',
                 ],
                 [
                     'name' => 'Caution',
@@ -211,12 +212,14 @@ return [
                 [
                     'name' => 'Maison de commerce',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies un comptoir pour 8 heures : balance, coffre, silence des curieux. Rien de créé ne survit. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies un comptoir pour 8 heures : balance, coffre, silence des curieux. Rien de créé ne survit. 6 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
                 [
                     'name' => 'Comptoir de poche',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies un comptoir pour 8 heures : balance, coffre, deux chaises. On peut y conclure. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies un comptoir pour 8 heures : balance, coffre, deux chaises. On peut y conclure. 6 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],

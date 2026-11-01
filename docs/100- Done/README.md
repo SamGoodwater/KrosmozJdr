@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Spécialisations : coûts en PA depuis la réserve de Wakfu
+
+Les 11 spécialisations jouables n’écrivent plus « 1 réserve de Wakfu » : chaque capacité indique un coût en PA pris dans la réserve, affiché avec l’icône PA et celle de la réserve. Le barème suit le palier (2 PA jusqu’au palier 6, 3 PA aux paliers 9 et 12, 4 PA au palier 15, 6 PA au palier 20), avec des coûts réduits pour les petites actions de combat. La règle des capacités et le guide de création reprennent ce repère.
+
 ## Novembre 2026 — Règles et L’Essentiel : les fichiers font foi, sans écraser le CMS
 
 Les règles (`.md`) et L’Essentiel (fichier de seed) sont la source : le PDF en est compilé, et le site les suit désormais à chaque import. Une section modifiée dans le CMS n’est plus jamais écrasée en silence : l’import la signale en conflit et la garde, jusqu’à ce qu’on décide d’imposer le fichier. Le plan (sections créées, mises à jour, à jour, en conflit) se consulte avant d’appliquer. Les 61 sections de règles et 6 sections de L’Essentiel en retard ont été remises à jour après vérification qu’aucune ne contenait d’édition faite dans le CMS.

@@ -157,7 +157,8 @@ return [
                 [
                     'name' => 'Identité volée',
                     'type' => $guaranteed,
-                    'effect' => 'Tu portes le nom et les papiers d’une personne vue. Une journée en ville, avantage à Supercherie contre qui ne la connaît pas vraiment. Les proches ont avantage pour te percer. 1 réserve de Wakfu.',
+                    'pa' => '3',
+                    'effect' => 'Tu portes le nom et les papiers d’une personne vue. Une journée en ville, avantage à Supercherie contre qui ne la connaît pas vraiment. Les proches ont avantage pour te percer. 3 PA depuis la réserve de Wakfu.',
                 ],
                 [
                     'name' => 'Cache d’équipe',
@@ -178,7 +179,8 @@ return [
                 [
                     'name' => 'Disparition',
                     'type' => $guaranteed,
-                    'effect' => 'Tu cesses d’être là pour une minute : pas d’odeur, pas de trace, pas de bruit. On peut encore te percuter. 2 PA, 1 réserve de Wakfu, 1×/scène.',
+                    'pa' => '4',
+                    'effect' => 'Tu cesses d’être là pour une minute : pas d’odeur, pas de trace, pas de bruit. On peut encore te percuter. 4 PA depuis la réserve de Wakfu, 1×/scène.',
                 ],
                 [
                     'name' => 'Réseau de receleurs',
@@ -206,17 +208,20 @@ return [
                 [
                     'name' => 'Coup du siècle',
                     'type' => $guaranteed,
-                    'effect' => 'Une fois par mois, tu ouvres une porte qui ne devrait pas : chambre forte, salle du trône, coffre-fort de légende. Une heure de préparation, 1 réserve de Wakfu. Le MJ pose le prix, jamais un souhait.',
+                    'pa' => '6',
+                    'effect' => 'Une fois par mois, tu ouvres une porte qui ne devrait pas : chambre forte, salle du trône, coffre-fort de légende. Une heure de préparation, 6 PA depuis la réserve de Wakfu. Le MJ pose le prix, jamais un souhait.',
                 ],
                 [
                     'name' => 'Planque',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies un intérieur sûr pour 24 heures : portes, lits, silence, une sortie de plus. Rien de créé ne survit. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies un intérieur sûr pour 24 heures : portes, lits, silence, une sortie de plus. Rien de créé ne survit. 6 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
                 [
                     'name' => 'Trou de souris',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies une planque pour 8 heures : un réduit, deux couchages, une sortie. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies une planque pour 8 heures : un réduit, deux couchages, une sortie. 6 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],

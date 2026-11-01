@@ -65,4 +65,25 @@ final class PlayableSpecializationGabaritTest extends TestCase
             $this->assertSame([3, 9, 15], array_keys($aptitudes), $name.' : aptitudes hors 3 / 9 / 15.');
         }
     }
+
+    /**
+     * Un coût en réserve s’écrit « x PA depuis la réserve de Wakfu » et renseigne `pa`.
+     */
+    public function test_wakfu_costs_are_written_in_pa_from_the_reserve(): void
+    {
+        foreach ($this->sheetPaths() as $path) {
+            $spec = require $path;
+            foreach ($spec['levels'] as $level => $data) {
+                foreach ($data['capacities'] ?? [] as $cap) {
+                    $label = basename($path).' palier '.$level.' — '.($cap['name'] ?? '?');
+                    $effect = (string) ($cap['effect'] ?? '');
+                    $this->assertDoesNotMatchRegularExpression('/\d+\s+réserves?\s+de\s+Wakfu/u', $effect, $label);
+
+                    if (preg_match('/(\d+)\s+PA\s+depuis\s+la\s+réserve\s+de\s+Wakfu/u', $effect, $m) === 1) {
+                        $this->assertSame($m[1], (string) ($cap['pa'] ?? ''), $label.' : champ pa incohérent.');
+                    }
+                }
+            }
+        }
+    }
 }

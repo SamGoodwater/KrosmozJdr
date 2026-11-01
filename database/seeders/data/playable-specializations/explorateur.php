@@ -129,7 +129,8 @@ return [
                 [
                     'name' => 'Camp sûr',
                     'type' => $guaranteed,
-                    'effect' => 'Tu scelles un campement pour 8 heures : les oreilles indiscrètes et les bêtes banales glissent. Une créature qui force l’entrée te réveille. 1 réserve de Wakfu.',
+                    'pa' => '3',
+                    'effect' => 'Tu scelles un campement pour 8 heures : les oreilles indiscrètes et les bêtes banales glissent. Une créature qui force l’entrée te réveille. 3 PA depuis la réserve de Wakfu.',
                 ],
                 [
                     'name' => 'Corde et grappin',
@@ -183,7 +184,8 @@ return [
                 [
                     'name' => 'Traversée impossible',
                     'type' => $freeSlot,
-                    'effect' => 'Une fois par semaine, tu fais passer le groupe (6) un obstacle qui devrait les arrêter : crête, marais, éboulis. Une heure, 1 réserve de Wakfu. Un mur de magie tient encore.',
+                    'pa' => '4',
+                    'effect' => 'Une fois par semaine, tu fais passer le groupe (6) un obstacle qui devrait les arrêter : crête, marais, éboulis. Une heure, 4 PA depuis la réserve de Wakfu. Un mur de magie tient encore.',
                 ],
                 [
                     'name' => 'Relais de piste',
@@ -211,12 +213,14 @@ return [
                 [
                     'name' => 'Refuge de fin de piste',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies un camp sûr pour 24 heures : toiles, feu, silence extérieur. Rien de créé ne survit. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies un camp sûr pour 24 heures : toiles, feu, silence extérieur. Rien de créé ne survit. 6 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
                 [
                     'name' => 'Bivouac de poche',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies un camp sûr pour 8 heures : tentes, feu, silence extérieur. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies un camp sûr pour 8 heures : tentes, feu, silence extérieur. 6 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],

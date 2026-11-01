@@ -129,7 +129,8 @@ return [
                 [
                     'name' => 'Appel discret',
                     'type' => $guaranteed,
-                    'effect' => 'Tu attires un animal local (messager, sentinelle, diversion) pour une scène. Pas un tank de combat. 1 réserve de Wakfu. L’Osamodas reste le roi des invocations.',
+                    'pa' => '3',
+                    'effect' => 'Tu attires un animal local (messager, sentinelle, diversion) pour une scène. Pas un tank de combat. 3 PA depuis la réserve de Wakfu. L’Osamodas reste le roi des invocations.',
                 ],
                 [
                     'name' => 'Racines gênantes',
@@ -157,7 +158,8 @@ return [
                 [
                     'name' => 'Le bois répond',
                     'type' => $guaranteed,
-                    'effect' => 'En forêt, jungle ou marais : racines, brouillard de pollen ou essaim gênant, un cube de 4 cases, 1 minute. Les créatures dans la zone ont désavantage à la Perception. 2 PA, 1 réserve de Wakfu, 1×/scène.',
+                    'pa' => '3',
+                    'effect' => 'En forêt, jungle ou marais : racines, brouillard de pollen ou essaim gênant, un cube de 4 cases, 1 minute. Les créatures dans la zone ont désavantage à la Perception. 3 PA depuis la réserve de Wakfu, 1×/scène.',
                 ],
                 [
                     'name' => 'Piste d’âme',
@@ -178,7 +180,8 @@ return [
                 [
                     'name' => 'Cercle de saison',
                     'type' => $guaranteed,
-                    'effect' => 'Rituel, 1 heure : un camp en nature devient plus sûr pour 8 heures (veille, météo, bêtes curieuses). Pas un mur de Féca. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '4',
+                    'effect' => 'Rituel, 1 heure : un camp en nature devient plus sûr pour 8 heures (veille, météo, bêtes curieuses). Pas un mur de Féca. 4 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
                 [
                     'name' => 'Seigneur·e d’un lieu',
@@ -211,12 +214,14 @@ return [
                 [
                     'name' => 'Canopée de poche',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies un abri vivant pour 8 heures : ombre, fruits, silence des prédateurs. Rien de créé ne survit. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies un abri vivant pour 8 heures : ombre, fruits, silence des prédateurs. Rien de créé ne survit. 6 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
                 [
                     'name' => 'Clairière de poche',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies une clairière pour 8 heures : mousse, eau, silence des arbres. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies une clairière pour 8 heures : mousse, eau, silence des arbres. 6 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],

@@ -211,12 +211,14 @@ return [
                 [
                     'name' => 'Cale de poche',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies une cale sèche pour 8 heures : outils, pompe, silence de la houle. Rien de créé ne survit. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies une cale sèche pour 8 heures : outils, pompe, silence de la houle. Rien de créé ne survit. 6 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
                 [
                     'name' => 'Chaloupe de poche',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies une embarcation pour six, 8 heures, eau calme. Elle n’affronte pas la tempête. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies une embarcation pour six, 8 heures, eau calme. Elle n’affronte pas la tempête. 6 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],

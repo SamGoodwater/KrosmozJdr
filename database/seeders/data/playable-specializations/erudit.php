@@ -57,7 +57,8 @@ return [
                 [
                     'name' => 'Identification',
                     'type' => $guaranteed,
-                    'effect' => 'En 10 minutes (1 PA en combat), tu nommes un objet, un texte ou une trace de Wakfu : usage, rareté, danger évident. Tu ne lis pas les secrets volontairement cachés.',
+                    'pa' => '1',
+                    'effect' => 'En 10 minutes (1 PA depuis la réserve de Wakfu en combat), tu nommes un objet, un texte ou une trace de Wakfu : usage, rareté, danger évident. Tu ne lis pas les secrets volontairement cachés.',
                 ],
                 [
                     'name' => 'Recherche approfondie',
@@ -72,7 +73,8 @@ return [
                 [
                     'name' => 'Main du mage',
                     'type' => $freeSlot,
-                    'effect' => 'Une main spectrale à portée (9 m), 5 kg, n’attaque pas. Tu ouvres, verses, déplaces. 1 PA par action en combat. Hors combat : réserve de Wakfu, une scène.',
+                    'pa' => '1',
+                    'effect' => 'Une main spectrale à portée (9 m), 5 kg, n’attaque pas. Tu ouvres, verses, déplaces. 1 PA depuis la réserve de Wakfu par action en combat. Hors combat : 1 PA depuis la réserve de Wakfu, une scène.',
                 ],
             ],
         ],
@@ -142,7 +144,8 @@ return [
                 [
                     'name' => 'Sanctuaire privé',
                     'type' => $freeSlot,
-                    'effect' => 'Tu scelles une pièce ou un campement pour 8 heures : les oreilles indiscrètes et les scrutations banales glissent. Une créature qui force l’entrée te réveille. 1 réserve de Wakfu.',
+                    'pa' => '3',
+                    'effect' => 'Tu scelles une pièce ou un campement pour 8 heures : les oreilles indiscrètes et les scrutations banales glissent. Une créature qui force l’entrée te réveille. 3 PA depuis la réserve de Wakfu.',
                 ],
             ],
             'aptitudes' => [
@@ -170,7 +173,8 @@ return [
                 [
                     'name' => 'Télékinésie',
                     'type' => $freeSlot,
-                    'effect' => 'Pendant une scène, tu déplaces un objet ou une créature consentante dans un rayon de 12 cases. En combat : 2 PA, 1×/tour, pas d’attaque. Hors combat : réserve de Wakfu.',
+                    'pa' => '2',
+                    'effect' => 'Pendant une scène, tu déplaces un objet ou une créature consentante dans un rayon de 12 cases. En combat : 2 PA depuis la réserve de Wakfu, 1×/tour, pas d’attaque. Hors combat : 2 PA depuis la réserve de Wakfu.',
                 ],
             ],
         ],
@@ -191,7 +195,8 @@ return [
                 [
                     'name' => 'Manoir somptueux',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies un intérieur sûr pour 24 heures : portes, lits, table, silence extérieur. Rien de ce qui est créé ne survit à la fin. 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '4',
+                    'effect' => 'Tu déplies un intérieur sûr pour 24 heures : portes, lits, table, silence extérieur. Rien de ce qui est créé ne survit à la fin. 4 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
             ],
             'aptitudes' => [
@@ -219,7 +224,8 @@ return [
                 [
                     'name' => 'Cabinet de poche',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies un bureau hors du Monde pour 8 heures : table, rayonnages de tes propres livres, silence. Rien de ce qui n’était pas à toi n’y survit. 1 réserve de Wakfu, 1×/semaine.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies un bureau hors du Monde pour 8 heures : table, rayonnages de tes propres livres, silence. Rien de ce qui n’était pas à toi n’y survit. 6 PA depuis la réserve de Wakfu, 1×/semaine.',
                 ],
             ],
         ],

@@ -216,7 +216,8 @@ return [
                 [
                     'name' => 'Établi de poche',
                     'type' => $freeSlot,
-                    'effect' => 'Tu déplies un mini-atelier pour 8 heures. Tes tests d’outils n’ont plus le malus « pas d’établi ». 1 réserve de Wakfu, 1×/jour.',
+                    'pa' => '6',
+                    'effect' => 'Tu déplies un mini-atelier pour 8 heures. Tes tests d’outils n’ont plus le malus « pas d’établi ». 6 PA depuis la réserve de Wakfu, 1×/jour.',
                 ],
             ],
         ],
