@@ -10,7 +10,7 @@ Capacités de classe et de spécialisation se paient en PA pris dans la réserve
 
 ## Novembre 2026 — Règles et L’Essentiel suivent le livre, sans écraser le site
 
-Le livre et L’Essentiel restent la source : le site et le PDF les suivent à chaque mise à jour. Une section déjà retouchée sur le site n’est plus écrasée en silence : on la voit en conflit, et on décide. On peut consulter le plan avant d’appliquer.
+Le livre et L’Essentiel restent la source : le site et le PDF les suivent à chaque mise à jour. Une section déjà retouchée sur le site n’est plus écrasée en silence : on la voit en conflit, et on décide. Renommer un titre dans la table des matières garde la même section (le numéro ne change pas) : le site ne perd plus le texte déjà retouché. On peut consulter le plan avant d’appliquer.
 
 ## Novembre 2026 — Voies, variantes et réserve de Wakfu
 
