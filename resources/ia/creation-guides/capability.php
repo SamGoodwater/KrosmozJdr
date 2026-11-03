@@ -58,7 +58,7 @@ return static function (array $k): array {
                     .'<li><code>effect</code> — HTML court : palier 1, montée, moteur. C’est le texte de table.</li>'
                     .'<li><code>level</code> — niveau d’accès (1 pour le passif de classe).</li>'
                     .'<li><code>is_passive</code> — vrai pour les passifs de classe et les <strong>aptitudes</strong> de spé ; faux pour les <strong>capacités</strong>, qui se lancent.</li>'
-                    .'<li><code>pa</code>, <code>po</code>, <code>po_editable</code> — seulement si ce n’est pas un pur passif.</li>'
+                    .'<li><code>pa</code>, <code>pa_from_wakfu_reserve</code> (défaut true), <code>po</code>, <code>po_editable</code> — seulement si ce n’est pas un pur passif.</li>'
                     .'<li><code>time_before_use_again</code>, <code>casting_time</code>, <code>duration</code>.</li>'
                     .'<li><code>element</code>, <code>is_magic</code>, <code>ritual_available</code>, <code>powerful</code>.</li>'
                     .'<li>Liaisons : <code>breed_capability</code> (classe), spécialisations. En lecture, les brouillons ne fuient pas.</li>'

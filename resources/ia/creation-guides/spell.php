@@ -82,7 +82,7 @@ return static function (array $k): array {
                     .'<li><code>level</code> — niveau d’apprentissage (classe) ou de la créature.</li>'
                     .'<li><code>category</code> — 0 classe · 1 créature · 2 apprenable · 3 consommable.</li>'
                     .'<li><code>element</code> — masque (Terre / Feu / Eau / Air / Neutre), aligné sur les sous-effets.</li>'
-                    .'<li><code>pa</code>, <code>po_min</code>, <code>po_max</code>, <code>po_editable</code> — coût et portée.</li>'
+                    .'<li><code>pa</code>, <code>pa_from_wakfu_reserve</code> (défaut false = PA du tour ; true pour sorts appris / réserve), <code>po_min</code>, <code>po_max</code>, <code>po_editable</code> — coût et portée.</li>'
                     .'<li><code>sight_line</code>, <code>cast_in_line</code>, <code>cast_in_diagonal</code> — géométrie.</li>'
                     .'<li><code>cast_per_turn</code>, <code>cast_per_target</code> — plafonds par tour / par cible.</li>'
                     .'<li><code>target_type</code> — direct, <code>trap</code> ou <code>glyph</code>.</li>'

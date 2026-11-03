@@ -66,4 +66,25 @@ class CapabilityControllerUpdateTest extends TestCase
 
         $response->assertRedirect(route('entities.capabilities.edit', $capability));
     }
+
+    public function test_update_persists_pa_from_wakfu_reserve(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $capability = Capability::factory()->create([
+            'created_by' => $admin->id,
+            'pa_from_wakfu_reserve' => true,
+        ]);
+
+        $response = $this->actingAs($admin)->patch(
+            route('entities.capabilities.update', $capability),
+            [
+                'name' => $capability->name,
+                'pa_from_wakfu_reserve' => false,
+                'redirect_after_update' => 'edit',
+            ]
+        );
+
+        $response->assertSessionHasNoErrors();
+        $this->assertFalse((bool) $capability->fresh()->pa_from_wakfu_reserve);
+    }
 }

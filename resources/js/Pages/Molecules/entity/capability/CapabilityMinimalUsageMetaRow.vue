@@ -1,6 +1,6 @@
 <script setup>
 /**
- * Ligne méta capacité : PA (réserve de Wakfu, {@link CapabilityWakfuCost}), PO + portée modifiable, incantation/rituel, durée / relance, élément & magie au survol.
+ * Ligne méta capacité : PA ({@link ActionPointCost}, réserve selon `pa_from_wakfu_reserve`), PO + portée modifiable, incantation/rituel, durée / relance, élément & magie au survol.
  *
  * @description
  * Aligné sur {@link SpellMinimalUsageMetaRow} (icônes / couleurs BDD groupe spell+capability), sans ligne de vue ni lancers/tour sorts.
@@ -10,10 +10,14 @@ import Image from "@/Pages/Atoms/data-display/Image.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
 import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
-import { buildSpellCastingRitualPresentation, readSpellField } from "@/Utils/Entity/spellMinimalUsageDisplay";
+import {
+    buildSpellCastingRitualPresentation,
+    readPaFromWakfuReserve,
+    readSpellField,
+} from "@/Utils/Entity/spellMinimalUsageDisplay";
 import { buildCapabilityDurationReusePresentation } from "@/Utils/Entity/capabilityMinimalUsageDisplay";
 import SpellUsageCharacteristicTooltipPanel from "@/Pages/Molecules/entity/spell/SpellUsageCharacteristicTooltipPanel.vue";
-import CapabilityWakfuCost from "@/Pages/Molecules/entity/capability/CapabilityWakfuCost.vue";
+import ActionPointCost from "@/Pages/Molecules/entity/shared/ActionPointCost.vue";
 import {
     resolveSpellUsageCharacteristicVisual,
     spellUsageIconBackdropStyle,
@@ -103,6 +107,8 @@ const magicAffixMuted = computed(
         magicUsageVisual.value.hasIcon &&
         !magicUsageVisual.value.hasDistinctFalseIcon,
 );
+
+const paFromWakfuReserve = computed(() => readPaFromWakfuReserve(props.entity, true));
 </script>
 
 <template>
@@ -120,9 +126,10 @@ const magicAffixMuted = computed(
             hide-field-label
             class="min-w-0 shrink-0"
         />
-        <CapabilityWakfuCost
+        <ActionPointCost
             v-if="canShowField('pa')"
             :value="readSpellField(entity, 'pa', 'pa')"
+            :from-wakfu-reserve="paFromWakfuReserve"
             :icon-px="USAGE_IMG_PX"
             class="min-w-0"
         />

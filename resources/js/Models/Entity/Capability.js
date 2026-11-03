@@ -44,6 +44,15 @@ export class Capability extends BaseModel {
         return this._data.pa || null;
     }
 
+    /** PA pris dans la réserve de Wakfu (défaut true pour les capacités). */
+    get paFromWakfuReserve() {
+        const v = this._data.pa_from_wakfu_reserve;
+        if (v === null || v === undefined) {
+            return true;
+        }
+        return Boolean(v);
+    }
+
     get po() {
         return this._data.po || null;
     }
@@ -757,6 +766,7 @@ export class Capability extends BaseModel {
             effect: this.effect,
             level: this.level,
             pa: this.pa,
+            pa_from_wakfu_reserve: this.paFromWakfuReserve,
             po: this.po,
             po_editable: this.poEditable,
             time_before_use_again: this.timeBeforeUseAgain,

@@ -34,6 +34,7 @@ class CapabilityBulkController extends Controller
             // Champs bulk (les clés absentes ne sont pas modifiées)
             'level' => ['sometimes', 'nullable', 'string', 'max:255'],
             'pa' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'pa_from_wakfu_reserve' => ['sometimes', 'nullable', 'boolean'],
             'po' => ['sometimes', 'nullable', 'string', 'max:255'],
             'po_editable' => ['sometimes', 'nullable', 'boolean'],
             'is_passive' => ['sometimes', 'nullable', 'boolean'],
@@ -61,6 +62,7 @@ class CapabilityBulkController extends Controller
         foreach ([
             'level',
             'pa',
+            'pa_from_wakfu_reserve',
             'po',
             'po_editable',
             'is_passive',

@@ -36,6 +36,7 @@ class CapabilityFactory extends Factory
             'effect' => fake()->optional()->sentence(),
             'level' => (string) fake()->numberBetween(1, 200),
             'pa' => (string) fake()->numberBetween(1, 10),
+            'pa_from_wakfu_reserve' => true,
             'po' => (string) fake()->numberBetween(1, 20),
             'po_editable' => fake()->boolean(),
             'time_before_use_again' => (string) fake()->numberBetween(0, 10),

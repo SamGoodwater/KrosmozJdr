@@ -40,6 +40,7 @@ class SpellBulkController extends Controller
             // Champs "métier" utiles en édition multiple (nullable => possibilité de vider)
             'level' => ['sometimes', 'nullable', 'string', 'max:255'],
             'pa' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'pa_from_wakfu_reserve' => ['sometimes', 'nullable', 'boolean'],
             'po_min' => ['sometimes', 'nullable', 'string', 'max:64'],
             'po_max' => ['sometimes', 'nullable', 'string', 'max:64'],
             'description' => ['sometimes', 'nullable', 'string'],
@@ -64,6 +65,7 @@ class SpellBulkController extends Controller
             'auto_update',
             'level',
             'pa',
+            'pa_from_wakfu_reserve',
             'po_min',
             'po_max',
             'description',

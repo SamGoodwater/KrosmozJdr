@@ -15,9 +15,11 @@ import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropert
 import SpellUsageAreaColumn from "@/Pages/Molecules/entity/spell/SpellUsageAreaColumn.vue";
 import SpellUsageCharacteristicTooltipPanel from "@/Pages/Molecules/entity/spell/SpellUsageCharacteristicTooltipPanel.vue";
 import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
+import ActionPointCost from "@/Pages/Molecules/entity/shared/ActionPointCost.vue";
 import {
     buildSpellCastingRitualPresentation,
     buildSpellCastUsagePresentation,
+    readPaFromWakfuReserve,
     readSpellField,
 } from "@/Utils/Entity/spellMinimalUsageDisplay";
 import {
@@ -144,6 +146,10 @@ const poDisplayForCac = computed(() => {
 
 const spellPoIsCac = computed(() => isPoCac(poDisplayForCac.value));
 
+const USAGE_IMG_PX = "14";
+
+const paFromWakfuReserve = computed(() => readPaFromWakfuReserve(props.entity, false));
+
 const areaValue = computed(() => (props.area != null ? String(props.area).trim() : ""));
 
 const showCostGroup = computed(
@@ -190,15 +196,11 @@ const groupBodyClass = "flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 
                 <div v-if="showCostGroup" class="min-w-0" data-cy="spell-facts-cost">
                     <p :class="groupLabelClass">Coût</p>
                     <div :class="groupBodyClass">
-                        <EntityPropertyDisplay
+                        <ActionPointCost
                             v-if="canShowField('pa')"
-                            field-key="pa"
-                            :entity="entity"
-                            entity-type="spell"
-                            :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                            :descriptors="descriptors"
-                            :table-meta="tableMeta"
-                            :size="propertySize"
+                            :value="readSpellField(entity, 'pa', 'pa')"
+                            :from-wakfu-reserve="paFromWakfuReserve"
+                            :icon-px="USAGE_IMG_PX"
                             class="min-w-0"
                         />
                         <span
@@ -516,15 +518,11 @@ const groupBodyClass = "flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 
         <!-- ========== Layout inline (carte minimale) ========== -->
         <template v-else>
             <div class="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs">
-                <EntityPropertyDisplay
+                <ActionPointCost
                     v-if="canShowField('pa')"
-                    field-key="pa"
-                    :entity="entity"
-                    entity-type="spell"
-                    :display-mode="PROPERTY_DISPLAY_MODES.compact"
-                    :descriptors="descriptors"
-                    :table-meta="tableMeta"
-                    :size="propertySize"
+                    :value="readSpellField(entity, 'pa', 'pa')"
+                    :from-wakfu-reserve="paFromWakfuReserve"
+                    :icon-px="USAGE_IMG_PX"
                     class="min-w-0"
                 />
                 <div

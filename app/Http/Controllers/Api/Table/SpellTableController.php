@@ -113,6 +113,7 @@ class SpellTableController extends Controller
             'sight_line' => ['sight_line', 'int'],
             'po_editable' => ['po_editable', 'int'],
             'ritual_available' => ['ritual_available', 'int'],
+            'pa_from_wakfu_reserve' => ['pa_from_wakfu_reserve', 'int'],
             'auto_update' => ['auto_update', 'int'],
         ];
         foreach (['level', 'pa'] as $rangeKey) {
@@ -178,7 +179,7 @@ class SpellTableController extends Controller
     private function applySpellTableSort(Builder $query, Request $request): void
     {
         $allowedSort = [
-            'id', 'name', 'description', 'level', 'pa', 'po', 'area', 'element', 'category',
+            'id', 'name', 'description', 'level', 'pa', 'pa_from_wakfu_reserve', 'po', 'area', 'element', 'category',
             'is_magic', 'allows_reaction', 'casting_time', 'ritual_available', 'cast_per_turn',
             'cast_per_target', 'number_between_two_cast', 'duration', 'sight_line', 'po_editable',
             'state', 'auto_update', 'read_level', 'write_level', 'dofusdb_id', 'created_at', 'updated_at',
@@ -404,6 +405,10 @@ class SpellTableController extends Controller
                 ['value' => '1', 'label' => 'Oui'],
                 ['value' => '0', 'label' => 'Non'],
             ],
+            'pa_from_wakfu_reserve' => [
+                ['value' => '1', 'label' => 'Réserve de Wakfu'],
+                ['value' => '0', 'label' => 'PA du tour'],
+            ],
             'auto_update' => [
                 ['value' => '1', 'label' => 'Oui'],
                 ['value' => '0', 'label' => 'Non'],
@@ -440,6 +445,7 @@ class SpellTableController extends Controller
                     'po_max' => $effective['po_max'] ?? null,
                     'po_editable' => (bool) ($effective['po_editable'] ?? false),
                     'pa' => $effective['pa'] ?? null,
+                    'pa_from_wakfu_reserve' => (bool) ($sp->pa_from_wakfu_reserve ?? false),
                     'casting_time' => $effective['casting_time'] ?? null,
                     'ritual_available' => $effective['ritual_available'] ?? null,
                     'cast_per_turn' => $effective['cast_per_turn'] ?? null,
@@ -728,6 +734,7 @@ class SpellTableController extends Controller
                         'po_max' => $effective['po_max'] ?? null,
                         'po_editable' => (bool) ($effective['po_editable'] ?? false),
                         'pa' => $effective['pa'] ?? null,
+                        'pa_from_wakfu_reserve' => (bool) ($sp->pa_from_wakfu_reserve ?? false),
                         'casting_time' => $effective['casting_time'] ?? null,
                         'ritual_available' => $effective['ritual_available'] ?? null,
                         'cast_per_turn' => $effective['cast_per_turn'] ?? null,

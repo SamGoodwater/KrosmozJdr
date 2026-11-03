@@ -6,7 +6,7 @@
 
 | Famille | Entités | Full | Minimal défaut |
 |---|---|---|---|
-| Action | spell, capability | header dense + usage étiqueté | `hover` |
+| Action | spell, capability | header dense + usage étiqueté ; coût PA via `ActionPointCost` (`pa_from_wakfu_reserve`) | `hover` |
 | Loot | item, consumable, resource, panoply | header dense + chips méta | `extended` |
 | Créature | monster, npc | header dense + sections `v-if` | `extended` |
 | Classe / voie | breed, specialization | immersif type Breed | breed `extended` ; spé alignée |

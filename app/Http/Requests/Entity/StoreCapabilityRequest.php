@@ -43,6 +43,7 @@ class StoreCapabilityRequest extends FormRequest
             'effect' => ['nullable', 'string'],
             'level' => ['nullable', 'string', 'max:255'],
             'pa' => ['nullable', 'string', 'max:255'],
+            'pa_from_wakfu_reserve' => ['nullable', 'boolean'],
             'po' => ['nullable', 'string', 'max:255'],
             'po_editable' => ['nullable', 'boolean'],
             'time_before_use_again' => ['nullable', 'string', 'max:255'],

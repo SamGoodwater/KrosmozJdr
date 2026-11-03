@@ -35,6 +35,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $area Zone par défaut si le sort ne possède aucun degré
  * @property bool $po_editable
  * @property string $pa
+ * @property bool $pa_from_wakfu_reserve PA pris dans la réserve de Wakfu (sinon PA du tour)
  * @property string $cast_per_turn
  * @property string $cast_per_target
  * @property bool $sight_line
@@ -77,7 +78,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $scenarios_count
  * @property-read Collection<int, SpellType> $spellTypes
  * @property-read int|null $spell_types_count
- *
  * @method static \Database\Factories\Entity\SpellFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell newQuery()
@@ -115,7 +115,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withoutTrashed()
- *
  * @property string|null $duration
  * @property-read Collection<int, Breed> $breeds
  * @property-read int|null $breeds_count
@@ -129,7 +128,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $spell_effects_count
  * @property-read Collection<int, Condition> $conditions
  * @property-read int|null $conditions_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAllowsReaction($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAttackCharacteristicKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAutoSuccessIfWillingTarget($value)
@@ -140,18 +138,14 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveCharacteristicKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveDcFormula($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSaveSuccessNote($value)
- *
  * @property-read BreedSpellPivot|null $pivot
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereCastInDiagonal($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereCastInLine($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereGlobalCooldown($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereMaxStack($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereTargetType($value)
- *
  * @property-read Collection<int, SpellDegree> $degrees
  * @property-read int|null $degrees_count
- *
  * @mixin \Eloquent
  */
 class Spell extends Model implements HasMedia
@@ -248,6 +242,7 @@ class Spell extends Model implements HasMedia
         'auto_update' => true,
         'auto_success_if_willing_target' => false,
         'allows_reaction' => false,
+        'pa_from_wakfu_reserve' => false,
         'cast_in_line' => false,
         'cast_in_diagonal' => false,
         'max_stack' => 0,
@@ -271,6 +266,7 @@ class Spell extends Model implements HasMedia
         'area',
         'po_editable',
         'pa',
+        'pa_from_wakfu_reserve',
         'casting_time',
         'ritual_available',
         'cast_per_turn',
@@ -320,6 +316,7 @@ class Spell extends Model implements HasMedia
         'max_stack' => 'integer',
         'global_cooldown' => 'integer',
         'is_magic' => 'boolean',
+        'pa_from_wakfu_reserve' => 'boolean',
         'auto_update' => 'boolean',
         'auto_success_if_willing_target' => 'boolean',
         'allows_reaction' => 'boolean',

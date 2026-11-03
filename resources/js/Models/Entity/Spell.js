@@ -170,6 +170,18 @@ export class Spell extends BaseModel {
         return Number.isFinite(n) ? n : null;
     }
 
+    /**
+     * PA pris dans la réserve de Wakfu (propriété du sort, hors degrés).
+     * Défaut false = PA du tour pour les sorts de classe.
+     */
+    get paFromWakfuReserve() {
+        const v = this._data.pa_from_wakfu_reserve;
+        if (v === null || v === undefined) {
+            return false;
+        }
+        return Boolean(v);
+    }
+
     /** Temps d'incantation (texte libre), chaîne vide si absent. */
     get castingTime() {
         const v = this._effectiveDegreeProperty('casting_time');
@@ -1266,6 +1278,7 @@ export class Spell extends BaseModel {
             po_max: strOrEmpty(this._data.po_max ?? this.poMax),
             po_editable: this._data.po_editable ?? this.poEditable,
             pa: strOrEmpty(this._data.pa ?? this.pa),
+            pa_from_wakfu_reserve: this.paFromWakfuReserve,
             cast_per_turn: strOrEmpty(this._data.cast_per_turn ?? this.castPerTurn),
             cast_per_target: strOrEmpty(this._data.cast_per_target ?? this.castPerTarget),
             sight_line: this._data.sight_line ?? this.sightLine,

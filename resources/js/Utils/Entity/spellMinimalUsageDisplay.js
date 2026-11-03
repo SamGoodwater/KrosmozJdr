@@ -41,6 +41,19 @@ export function readSpellField(entity, camelKey, snakeKey) {
 }
 
 /**
+ * Mode PA réserve de Wakfu (propriété d’entité, hors degrés).
+ *
+ * @param {object|null|undefined} entity
+ * @param {boolean} [defaultValue=false]
+ * @returns {boolean}
+ */
+export function readPaFromWakfuReserve(entity, defaultValue = false) {
+    const raw = readSpellField(entity, "paFromWakfuReserve", "pa_from_wakfu_reserve");
+    if (raw === null || raw === undefined) return defaultValue;
+    return Boolean(raw);
+}
+
+/**
  * @param {unknown} raw
  * @returns {number|null}
  */

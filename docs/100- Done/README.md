@@ -4,6 +4,10 @@
 
 Enregistrer une classe gardait le nom et le reste, mais rangeait tous les sorts au premier emplacement. Les choix suivants disparaissaient. Chaque sort reste à sa place.
 
+## Novembre 2026 — PA du tour ou réserve de Wakfu, au choix
+
+Sur une capacité ou un sort, on peut choisir si le coût en PA vient de la réserve de Wakfu ou des PA du tour. Par défaut, les capacités puisent dans la réserve (icône à côté du coût) et les sorts de classe utilisent les PA du tour. L’icône de réserve est centrée à côté de « PA ».
+
 ## Novembre 2026 — Capacités : les PA viennent de la réserve
 
 Capacités de classe et de spécialisation se paient en PA pris dans la réserve de Wakfu, et non plus avec les PA du tour. La fiche montre le coût à côté de l’icône de la réserve. Une capacité gratuite affiche simplement « 0 PA ».

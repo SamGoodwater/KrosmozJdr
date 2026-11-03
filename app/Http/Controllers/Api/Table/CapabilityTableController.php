@@ -126,6 +126,7 @@ class CapabilityTableController extends Controller
             'ritual_available' => ['ritual_available', 'int'],
             'po_editable' => ['po_editable', 'int'],
             'is_passive' => ['is_passive', 'int'],
+            'pa_from_wakfu_reserve' => ['pa_from_wakfu_reserve', 'int'],
         ];
         foreach (['level', 'pa', 'po'] as $rangeKey) {
             if ($this->hasFilterValue($filters, $rangeKey)) {
@@ -141,7 +142,7 @@ class CapabilityTableController extends Controller
         $this->applyEntityTableIdList($query, $request);
 
         $allowedSort = [
-            'id', 'name', 'description', 'effect', 'level', 'pa', 'po', 'element', 'is_magic', 'ritual_available',
+            'id', 'name', 'description', 'effect', 'level', 'pa', 'pa_from_wakfu_reserve', 'po', 'element', 'is_magic', 'ritual_available',
             'time_before_use_again', 'casting_time', 'duration', 'state', 'po_editable', 'is_passive', 'powerful',
             'read_level', 'write_level',
             'created_at', 'updated_at',
@@ -185,6 +186,10 @@ class CapabilityTableController extends Controller
                 ['value' => '1', 'label' => 'Passif'],
                 ['value' => '0', 'label' => 'Actif'],
             ],
+            'pa_from_wakfu_reserve' => [
+                ['value' => '1', 'label' => 'Réserve de Wakfu'],
+                ['value' => '0', 'label' => 'PA du tour'],
+            ],
         ];
 
         // Mode "entities" : retourner les entités brutes
@@ -199,6 +204,7 @@ class CapabilityTableController extends Controller
                     'effect' => $c->effect,
                     'level' => $c->level,
                     'pa' => $c->pa,
+                    'pa_from_wakfu_reserve' => (bool) ($c->pa_from_wakfu_reserve ?? true),
                     'po' => $c->po,
                     'po_editable' => (bool) $c->po_editable,
                     'time_before_use_again' => $c->time_before_use_again,
@@ -413,6 +419,7 @@ class CapabilityTableController extends Controller
                         'effect' => $c->effect,
                         'level' => $c->level,
                         'pa' => $c->pa,
+                        'pa_from_wakfu_reserve' => (bool) ($c->pa_from_wakfu_reserve ?? true),
                         'po' => $c->po,
                         'po_editable' => (bool) $c->po_editable,
                         'time_before_use_again' => $c->time_before_use_again,

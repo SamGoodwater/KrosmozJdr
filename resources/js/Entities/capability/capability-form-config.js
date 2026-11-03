@@ -65,6 +65,13 @@ export function buildCapabilityFormFieldsConfig(options = {}) {
             required: false,
             showInCompact: true,
         },
+        pa_from_wakfu_reserve: {
+            type: 'checkbox',
+            label: 'PA depuis la réserve de Wakfu',
+            help: 'Coché : le coût est pris dans la réserve (règle habituelle des capacités). Décoché : PA du tour comme un sort de classe.',
+            required: false,
+            showInCompact: true,
+        },
         po: {
             type: 'text',
             label: 'Portée (PO)',
@@ -168,8 +175,8 @@ export const CAPABILITY_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'cost_effect',
         title: 'Coût et portée',
-        subtitle: 'Niveau, PA, PO et portée modulable en jeu.',
-        fieldKeys: ['level', 'pa', 'po', 'po_editable'],
+        subtitle: 'Niveau, PA (réserve ou tour), PO et portée modulable en jeu.',
+        fieldKeys: ['level', 'pa', 'pa_from_wakfu_reserve', 'po', 'po_editable'],
     },
     {
         id: 'gameplay',
@@ -232,6 +239,7 @@ export function getCapabilityCreateDefaultEntity() {
         effect: '',
         level: '1',
         pa: '0',
+        pa_from_wakfu_reserve: true,
         po: '0',
         po_editable: true,
         time_before_use_again: '',

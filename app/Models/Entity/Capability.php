@@ -22,6 +22,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $effect
  * @property string $level
  * @property string $pa
+ * @property bool $pa_from_wakfu_reserve PA pris dans la réserve de Wakfu (sinon PA du tour)
  * @property string $po
  * @property bool $po_editable
  * @property string $time_before_use_again
@@ -118,6 +119,7 @@ class Capability extends Model implements HasMedia
         'effect',
         'level',
         'pa',
+        'pa_from_wakfu_reserve',
         'po',
         'po_editable',
         'time_before_use_again',
@@ -145,6 +147,7 @@ class Capability extends Model implements HasMedia
         'read_level' => 'integer',
         'write_level' => 'integer',
         'po_editable' => 'boolean',
+        'pa_from_wakfu_reserve' => 'boolean',
         'is_magic' => 'boolean',
         'ritual_available' => 'boolean',
         'is_passive' => 'boolean',

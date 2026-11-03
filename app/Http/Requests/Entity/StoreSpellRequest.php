@@ -50,6 +50,7 @@ class StoreSpellRequest extends FormRequest
             'area' => ['nullable', 'string', 'max:64', new ValidAreaNotation],
             'po_editable' => ['nullable', 'boolean'],
             'pa' => ['nullable', 'string', 'max:255'],
+            'pa_from_wakfu_reserve' => ['nullable', 'boolean'],
             'casting_time' => ['nullable', 'string', 'max:255'],
             'ritual_available' => ['nullable', 'boolean'],
             'cast_per_turn' => ['nullable', 'string', 'max:255'],

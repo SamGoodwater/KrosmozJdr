@@ -40,6 +40,7 @@ class SpellFactory extends Factory
             'po_max' => (string) fake()->numberBetween(1, 20),
             'po_editable' => fake()->boolean(),
             'pa' => (string) fake()->numberBetween(1, 12),
+            'pa_from_wakfu_reserve' => false,
             'cast_per_turn' => (string) fake()->numberBetween(1, 5),
             'cast_per_target' => (string) fake()->numberBetween(0, 3),
             'sight_line' => fake()->boolean(70),

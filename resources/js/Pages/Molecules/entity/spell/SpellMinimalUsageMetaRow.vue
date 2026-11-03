@@ -12,9 +12,11 @@ import Image from "@/Pages/Atoms/data-display/Image.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
 import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
+import ActionPointCost from "@/Pages/Molecules/entity/shared/ActionPointCost.vue";
 import {
     buildSpellCastingRitualPresentation,
     buildSpellCastUsagePresentation,
+    readPaFromWakfuReserve,
     readSpellField,
 } from "@/Utils/Entity/spellMinimalUsageDisplay";
 import SpellUsageCharacteristicTooltipPanel from "@/Pages/Molecules/entity/spell/SpellUsageCharacteristicTooltipPanel.vue";
@@ -160,19 +162,19 @@ const poDisplayForCac = computed(() => {
 });
 
 const spellPoIsCac = computed(() => isPoCac(poDisplayForCac.value));
+
+const USAGE_IMG_PX = "14";
+
+const paFromWakfuReserve = computed(() => readPaFromWakfuReserve(props.entity, false));
 </script>
 
 <template>
     <div class="flex flex-wrap items-center" :class="rowClass">
-        <EntityPropertyDisplay
+        <ActionPointCost
             v-if="canShowField('pa')"
-            field-key="pa"
-            :entity="entity"
-            entity-type="spell"
-            :display-mode="PROPERTY_DISPLAY_MODES.compact"
-            :descriptors="descriptors"
-            :table-meta="tableMeta"
-            :size="propertySize"
+            :value="readSpellField(entity, 'pa', 'pa')"
+            :from-wakfu-reserve="paFromWakfuReserve"
+            :icon-px="USAGE_IMG_PX"
             class="min-w-0"
         />
         <div

@@ -57,4 +57,23 @@ final class SpellSaveSmokeTest extends TestCase
         $this->assertTrue((bool) $spell->fresh()->ritual_available);
         $this->assertSame(2, (int) $spell->fresh()->element);
     }
+
+    public function test_update_persists_pa_from_wakfu_reserve(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $spell = Spell::factory()->create([
+            'pa_from_wakfu_reserve' => false,
+            'state' => 'draft',
+        ]);
+
+        $response = $this->actingAs($admin)->from(route('entities.spells.edit', $spell))->patch(route('entities.spells.update', $spell), [
+            'name' => $spell->name,
+            'description' => $spell->description ?? 'Desc',
+            'pa_from_wakfu_reserve' => true,
+            'redirect_after_update' => 'edit',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertTrue((bool) $spell->fresh()->pa_from_wakfu_reserve);
+    }
 }

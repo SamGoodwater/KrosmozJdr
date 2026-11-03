@@ -175,6 +175,37 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
         },
       },
     },
+    pa_from_wakfu_reserve: {
+      key: "pa_from_wakfu_reserve",
+      label: "PA depuis la réserve de Wakfu",
+      icon: "fa-solid fa-gem",
+      table: {
+        order: 152,
+        sortable: true,
+        filterable: { id: "pa_from_wakfu_reserve", type: "boolean", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "checkbox",
+          group: "Métier",
+          required: false,
+          showInCompact: true,
+          defaultValue: true,
+          bulk: { enabled: true, nullable: false, build: (v) => Boolean(v) },
+        },
+      },
+    },
     po: {
       key: "po",
       label: "PO",

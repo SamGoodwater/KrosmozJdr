@@ -26,6 +26,7 @@ class CapabilityResource extends JsonResource
             'effect' => $this->effect,
             'level' => $this->level,
             'pa' => $this->pa,
+            'pa_from_wakfu_reserve' => (bool) ($this->pa_from_wakfu_reserve ?? true),
             'po' => $this->po,
             'po_editable' => $this->po_editable,
             'time_before_use_again' => $this->time_before_use_again,
