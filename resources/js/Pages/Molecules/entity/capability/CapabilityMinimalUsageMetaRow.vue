@@ -31,6 +31,16 @@ const props = defineProps({
     descriptors: { type: Object, default: () => ({}) },
     tableMeta: { type: Object, default: () => ({}) },
     canShowField: { type: Function, required: true },
+    /**
+     * Affiche la puce Wakfu / Physique (carte minimale).
+     * False sur la fiche full : la nature est déjà dans le header.
+     */
+    showMagicKind: { type: Boolean, default: true },
+    /**
+     * True dans le panneau étendu / mode `extended` : puce toujours visible.
+     * False en compact `hover` : révélée au survol de la carte.
+     */
+    magicKindAlwaysVisible: { type: Boolean, default: false },
     propertySize: {
         type: String,
         default: "xs",
@@ -39,6 +49,12 @@ const props = defineProps({
     rowClass: { type: String, default: "text-xs gap-1.5" },
     hoverInnerGapClass: { type: String, default: "gap-1.5" },
 });
+
+const magicKindRevealClass = computed(() =>
+    props.magicKindAlwaysVisible
+        ? ""
+        : "grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out group-hover/entity-minimal:grid-rows-[1fr]",
+);
 
 const USAGE_IMG_PX = "14";
 
@@ -293,10 +309,19 @@ const magicAffixMuted = computed(
         </div>
 
         <div
-            v-if="canShowField('is_magic') && isMagicDefined"
-            class="grid max-w-full grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out group-hover/entity-minimal:grid-rows-[1fr]"
+            v-if="showMagicKind && canShowField('is_magic') && isMagicDefined"
+            class="grid max-w-full"
+            :class="magicKindRevealClass"
+            data-cy="capability-usage-magic-kind"
         >
-            <div class="min-h-0 overflow-hidden group-hover/entity-minimal:overflow-visible">
+            <div
+                class="min-h-0"
+                :class="
+                    magicKindAlwaysVisible
+                        ? 'overflow-visible'
+                        : 'overflow-hidden group-hover/entity-minimal:overflow-visible'
+                "
+            >
                 <div
                     class="inline-flex max-w-full flex-wrap items-center"
                     :class="hoverInnerGapClass"

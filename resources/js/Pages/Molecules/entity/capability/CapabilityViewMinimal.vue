@@ -246,6 +246,7 @@ const cardRootClass = computed(() =>
                             :descriptors="descriptors"
                             :table-meta="tableMeta"
                             :can-show-field="canShowField"
+                            :show-magic-kind="displayMode !== 'compact'"
                             property-size="xs"
                             row-class="gap-1.5 text-xs"
                         />
@@ -341,6 +342,7 @@ const cardRootClass = computed(() =>
                             :descriptors="descriptors"
                             :table-meta="tableMeta"
                             :can-show-field="canShowField"
+                            magic-kind-always-visible
                             property-size="xs"
                             row-class="gap-1.5 text-xs"
                         />

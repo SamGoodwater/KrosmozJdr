@@ -102,7 +102,9 @@ export function buildCapabilityFormFieldsConfig(options = {}) {
         is_magic: {
             type: 'physiqueWakfu',
             label: 'Physique ou Wakfu',
+            help: 'Physique : la capacité puise dans la force physique. Wakfu : la capacité puise dans le Wakfu (équivalent du « magique » côté Dofus).',
             required: false,
+            showInCompact: true,
         },
         ritual_available: {
             type: 'checkbox',
@@ -160,8 +162,8 @@ export const CAPABILITY_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
         title: 'Généralités',
-        subtitle: 'Nom, description, visuel et élément.',
-        fieldKeys: ['name', 'description', 'image', 'element'],
+        subtitle: 'Nom, description, visuel, élément et nature Physique / Wakfu.',
+        fieldKeys: ['name', 'description', 'image', 'element', 'is_magic'],
     },
     {
         id: 'cost_effect',
@@ -172,7 +174,7 @@ export const CAPABILITY_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'gameplay',
         title: 'Déroulé & spécificités',
-        subtitle: 'Relance, incantation, durée, magie, rituel, passif, puissance.',
+        subtitle: 'Relance, incantation, durée, rituel, passif, puissance.',
         collapsedByDefault: true,
         collapsedActionLabel: 'Afficher',
         expandedActionLabel: 'Masquer',
@@ -180,7 +182,6 @@ export const CAPABILITY_FORM_FIELD_SECTIONS_EDIT = [
             'time_before_use_again',
             'casting_time',
             'duration',
-            'is_magic',
             'ritual_available',
             'is_passive',
             'powerful',

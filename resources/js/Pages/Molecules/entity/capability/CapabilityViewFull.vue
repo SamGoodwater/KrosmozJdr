@@ -11,6 +11,7 @@
 import { computed } from "vue";
 import { Link, router } from "@inertiajs/vue3";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import Image from "@/Pages/Atoms/data-display/Image.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityPropertyDisplay from "@/Pages/Molecules/entity/shared/EntityPropertyDisplay.vue";
@@ -29,6 +30,13 @@ import { provideCharacteristicRuntime } from "@/Composables/entity/characteristi
 import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
 import ConditionBadges from "@/Pages/Molecules/entity/condition/ConditionBadges.vue";
 import CapabilityMinimalUsageMetaRow from "@/Pages/Molecules/entity/capability/CapabilityMinimalUsageMetaRow.vue";
+import SpellUsageCharacteristicTooltipPanel from "@/Pages/Molecules/entity/spell/SpellUsageCharacteristicTooltipPanel.vue";
+import { readSpellField } from "@/Utils/Entity/spellMinimalUsageDisplay";
+import {
+    resolveSpellUsageCharacteristicVisual,
+    spellUsageIconBackdropStyle,
+    spellUsageTextColorStyle,
+} from "@/Utils/Entity/spellUsageCharacteristicVisual";
 import {
     ELEMENT_PRIMARY_LABELS,
     getElementIcon,
@@ -125,9 +133,55 @@ const canShowField = (fieldKey) => {
 /** Niveau uniquement sur l’image (pas dans la grille méta). */
 const showLevelBadgeOnImage = computed(() => canShowField("level"));
 
-/** Chips d’identité hors coût/portée/timing (déjà dans UsageMetaRow). */
+const powerfulRaw = computed(() => {
+    const v = props.capability?.powerful ?? props.capability?._data?.powerful;
+    if (v === null || v === undefined) return "";
+    return String(v).trim();
+});
+
+/** Chips d’identité hors coût/portée/timing et hors nature Wakfu/Physique (puce dédiée). */
 const identityMetaFields = computed(() =>
-    ["is_passive", "is_magic", "powerful"].filter(canShowField),
+    ["is_passive", "powerful"].filter((fieldKey) => {
+        if (!canShowField(fieldKey)) return false;
+        if (fieldKey === "powerful") return powerfulRaw.value !== "";
+        return true;
+    }),
+);
+
+const MAGIC_IMG_PX = "16";
+
+const isMagicRaw = computed(() => readSpellField(props.capability, "isMagic", "is_magic"));
+const isMagicDefined = computed(
+    () => props.capability != null && isMagicRaw.value !== null && isMagicRaw.value !== undefined,
+);
+const isMagicOn = computed(() => Boolean(isMagicRaw.value));
+const magicUsageVisual = computed(() =>
+    isMagicDefined.value
+        ? resolveSpellUsageCharacteristicVisual("is_magic", isMagicOn.value)
+        : resolveSpellUsageCharacteristicVisual("is_magic"),
+);
+const magicKindLabel = computed(() => (isMagicOn.value ? "Wakfu" : "Physique"));
+const magicStatusLabel = computed(() =>
+    !isMagicDefined.value
+        ? ""
+        : isMagicOn.value
+          ? "Capacité Wakfu : puise dans le Wakfu (équivalent du magique côté Dofus)."
+          : "Capacité physique : puise dans la force physique.",
+);
+const magicAffixMuted = computed(
+    () =>
+        isMagicDefined.value &&
+        !isMagicOn.value &&
+        magicUsageVisual.value.hasIcon &&
+        !magicUsageVisual.value.hasDistinctFalseIcon,
+);
+const magicTooltipAccent = computed(() => {
+    const c = magicUsageVisual.value?.color;
+    return typeof c === "string" && c.startsWith("#") ? { "--color": c } : {};
+});
+const showMagicKindChip = computed(() => canShowField("is_magic") && isMagicDefined.value);
+const showIdentityMetaRow = computed(
+    () => identityMetaFields.value.length > 0 || showMagicKindChip.value,
 );
 
 const elementOverlay = computed(() => {
@@ -346,7 +400,7 @@ const handleAction = async (actionKey) => {
             </template>
 
             <template #mainInfos>
-                <div v-if="identityMetaFields.length > 0" class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                <div v-if="showIdentityMetaRow" class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
                     <EntityPropertyDisplay
                         v-for="fieldKey in identityMetaFields"
                         :key="fieldKey"
@@ -360,6 +414,46 @@ const handleAction = async (actionKey) => {
                         size="sm"
                         class="max-w-[18rem] whitespace-normal break-words"
                     />
+
+                    <Tooltip
+                        v-if="showMagicKindChip"
+                        placement="top"
+                        color="neutral"
+                        :accent-style="magicTooltipAccent"
+                    >
+                        <template #content>
+                            <SpellUsageCharacteristicTooltipPanel
+                                :visual="magicUsageVisual"
+                                :status-text="magicStatusLabel"
+                                :show-boolean-glyph="isMagicDefined"
+                                :boolean-on="isMagicOn"
+                            />
+                        </template>
+                        <span
+                            class="inline-flex shrink-0 cursor-default items-center gap-1.5 text-sm font-medium"
+                            tabindex="0"
+                            data-cy="capability-full-magic-kind"
+                        >
+                            <span
+                                v-if="magicUsageVisual.hasIcon"
+                                class="inline-flex shrink-0 items-center justify-center p-px"
+                                :class="{ 'opacity-[0.42]': magicAffixMuted }"
+                                :style="spellUsageIconBackdropStyle(magicUsageVisual.color)"
+                            >
+                                <Image
+                                    :source="magicUsageVisual.source"
+                                    :alt="magicKindLabel"
+                                    :width="MAGIC_IMG_PX"
+                                    :height="MAGIC_IMG_PX"
+                                    fit="contain"
+                                    class="block shrink-0"
+                                />
+                            </span>
+                            <span :style="spellUsageTextColorStyle(magicUsageVisual.color)">
+                                {{ magicKindLabel }}
+                            </span>
+                        </span>
+                    </Tooltip>
                 </div>
             </template>
 
@@ -393,6 +487,7 @@ const handleAction = async (actionKey) => {
                     :descriptors="descriptors"
                     :table-meta="tableMeta"
                     :can-show-field="canShowField"
+                    :show-magic-kind="false"
                     property-size="sm"
                     row-class="text-sm gap-x-3 gap-y-2"
                     hover-inner-gap-class="gap-1.5"

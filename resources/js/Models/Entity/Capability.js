@@ -73,7 +73,11 @@ export class Capability extends BaseModel {
     }
 
     get isMagic() {
-        return this._data.is_magic || null;
+        const v = this._data.is_magic;
+        if (v === null || v === undefined) {
+            return null;
+        }
+        return Boolean(v);
     }
 
     get ritualAvailable() {

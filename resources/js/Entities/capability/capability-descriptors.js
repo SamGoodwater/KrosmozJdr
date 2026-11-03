@@ -505,12 +505,12 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       },
       edit: {
         form: {
-          type: "checkbox",
+          type: "physiqueWakfu",
           group: "Métier",
           required: false,
-          showInCompact: false,
+          showInCompact: true,
           defaultValue: true,
-          bulk: { enabled: false },
+          bulk: { enabled: true, nullable: false, build: (v) => Boolean(v) },
         },
       },
     },
