@@ -5,19 +5,32 @@
  * @module Entities/breed/breed-form-config
  */
 
-/** Sections formulaire — édition (grille sheet 2 cols ; visuels pleine largeur). */
+/**
+ * Sections formulaire — édition.
+ * Champs courts en grille sheet 2 cols ; textes longs / TipTap en `span: 2` + `columns: 1`.
+ */
 export const BREED_FORM_FIELD_SECTIONS_EDIT = [
     {
         id: 'general',
         title: 'Généralités',
-        subtitle: 'Nom et descriptions.',
-        fieldKeys: ['name', 'description_fast', 'description'],
+        subtitle: 'Nom, accroche et dé de classe.',
+        fieldKeys: ['name', 'description_fast', 'life_dice'],
+    },
+    {
+        id: 'texts',
+        title: 'Descriptions & textes',
+        subtitle: 'Description longue et spécificité (pleine largeur).',
+        span: 2,
+        columns: 1,
+        fieldKeys: ['description', 'specificity'],
     },
     {
         id: 'gameplay',
         title: 'Règles de classe',
-        subtitle: 'Mécanique signature, évolution, dés de vie.',
-        fieldKeys: ['mechanics', 'evolution', 'life_dice', 'specificity'],
+        subtitle: 'Mécanique signature et évolution (éditeurs TipTap pleine largeur).',
+        span: 2,
+        columns: 1,
+        fieldKeys: ['mechanics', 'evolution'],
     },
     {
         id: 'visuals',
