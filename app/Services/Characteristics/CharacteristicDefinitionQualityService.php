@@ -17,7 +17,7 @@ final class CharacteristicDefinitionQualityService
         'hostility', 'life_dice',
         'duration', 'resolution_mode', 'save_dc_formula', 'save_success_note', 'spell_type',
         'attack_characteristic_key', 'save_characteristic_key', 'element', 'is_magic', 'is_passive',
-        'allows_reaction', 'range_editable', 'ritual_available', 'sight_line', 'auto_success_if_willing_target',
+        'allows_reaction', 'range_editable', 'ritual_available', 'sight_line', 'spares_chosen_targets',
         'cast_in_line', 'cast_in_diagonal', 'target_type', 'max_stack', 'global_cooldown',
         'life_dice', 'hit_dice', 'hostility', 'mastery_bonus', 'wakfu_reserve', 'wakfu_recharge',
         'life_points_restore', 'shield_points', 'temporary_life_points',

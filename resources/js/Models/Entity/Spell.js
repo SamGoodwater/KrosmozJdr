@@ -370,9 +370,9 @@ export class Spell extends BaseModel {
         return this._effectiveDegreeProperty('save_success_note') || null;
     }
 
-    /** Réussite automatique si la cible est consentante (règle optionnelle côté résolution). */
-    get autoSuccessIfWillingTarget() {
-        return Boolean(this._effectiveDegreeProperty('auto_success_if_willing_target'));
+    /** Épargne : les créatures choisies par le lanceur ne subissent pas les dégâts, mais les autres effets. */
+    get sparesChosenTargets() {
+        return Boolean(this._effectiveDegreeProperty('spares_chosen_targets'));
     }
 
     get image() {
@@ -1307,7 +1307,7 @@ export class Spell extends BaseModel {
             save_characteristic_key: this._data.save_characteristic_key || '',
             save_dc_formula: this._data.save_dc_formula || '',
             save_success_note: this._data.save_success_note || '',
-            auto_success_if_willing_target: Boolean(this._data.auto_success_if_willing_target),
+            spares_chosen_targets: Boolean(this._data.spares_chosen_targets),
             state: this.state,
             read_level: this.readLevel,
             write_level: this.writeLevel,

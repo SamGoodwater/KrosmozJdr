@@ -37,7 +37,7 @@
                 }
             ],
             "official_id": "jdr:feca-immunite",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -361,7 +361,7 @@
                 }
             ],
             "official_id": "jdr:feca-armure-de-feu",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -402,7 +402,7 @@
                 }
             ],
             "official_id": "jdr:feca-armure-de-terre",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -601,7 +601,7 @@
                 }
             ],
             "official_id": "jdr:feca-barriere",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -642,7 +642,7 @@
                 }
             ],
             "official_id": "jdr:feca-renvoi-de-sort",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -723,7 +723,7 @@
                 }
             ],
             "official_id": "jdr:feca-invulnerabilite",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         }

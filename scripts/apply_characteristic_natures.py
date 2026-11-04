@@ -104,7 +104,7 @@ SPELL_INTRINSIC = {
     "level",
     "category",
     "element",
-    "auto_success_if_willing_target",
+    "spares_chosen_targets",
     "allows_reaction",
     "action_points",
     "spell_range_min",

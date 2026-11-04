@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Cible consentante et Épargne
+
+Une créature qui accepte un sort ne fait plus aucun jet : tout ce que le sort lui fait s’applique, dégâts compris. C’est une règle générale, les fiches ne la répètent plus, et l’ancienne case « réussite automatique si la cible est consentante » disparaît. À sa place, une case **Épargne** : le lanceur choisit des créatures touchées, souvent ses allié·e·s, qui ne prennent pas les dégâts mais reçoivent le reste (déplacement, état, bonus…), sans jet si elles consentent. Un sort épargnant le rappelle en une phrase sous son coût. Les règles des sorts (3.3.2), le récapitulatif et L’Essentiel décrivent les deux.
+
 ## Novembre 2026 — Les retraits de PA et de PM se jouent contre l’Esquive
 
 Un retrait de PA ou de PM ne se compare pas à la CA, mais à l’Esquive PA ou à l’Esquive PM. La fiche d’un sort l’indique maintenant d’elle-même, d’après ses effets. Un sort à touche affiche « Jet d’attaque vs CA · Esquive PM » : un seul dé pour les deux. Un sort à sauvegarde ajoute une ligne « Jet d’attaque vs Esquive PA ». Ce jet décide seul du retrait, la sauvegarde ne compte que pour le reste. Un sort qui ne fait que retirer n’affiche plus la CA ni la sauvegarde. Un sort de soutien applique tout, retraits compris, sans aucun jet. Les règles des sorts (3.3.2) et L’Essentiel disent la même chose.

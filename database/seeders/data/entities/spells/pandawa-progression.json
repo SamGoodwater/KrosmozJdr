@@ -74,7 +74,7 @@
                 }
             ],
             "official_id": "jdr:pandawa-stabilisation",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -384,7 +384,7 @@
                 }
             ],
             "official_id": "jdr:pandawa-ivresse",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -576,7 +576,7 @@
                 }
             ],
             "official_id": "jdr:pandawa-portage",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "pandawa-bambou",

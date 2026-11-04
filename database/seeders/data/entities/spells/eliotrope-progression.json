@@ -72,7 +72,7 @@
                 }
             ],
             "official_id": "jdr:eliotrope-prevention",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -382,7 +382,7 @@
                 }
             ],
             "official_id": "jdr:eliotrope-distribution",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "eliotrope-affront-majeur",
@@ -577,7 +577,7 @@
                 }
             ],
             "official_id": "jdr:eliotrope-exaltation",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -617,7 +617,7 @@
                 }
             ],
             "official_id": "jdr:eliotrope-cicatrisation-majeure",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "eliotrope-tempête-eliotrope",
@@ -695,7 +695,7 @@
                 }
             ],
             "official_id": "jdr:eliotrope-interstice",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         }
     ]
 }

@@ -213,9 +213,6 @@ function buildSaveLine(abilityKey) {
  */
 export function buildSpellResolutionFormula(entity) {
     const mode = readSpellField(entity, "resolutionMode", "resolution_mode") || "attack_roll";
-    const willing = Boolean(
-        readSpellField(entity, "autoSuccessIfWillingTarget", "auto_success_if_willing_target"),
-    );
 
     /** @type {ResolutionLine[]} */
     const lines = [];
@@ -254,13 +251,11 @@ export function buildSpellResolutionFormula(entity) {
     }
 
     const main = lines[0];
-    const note =
-        willing && mode !== "auto_success" ? "Réussite automatique si la cible est consentante." : "";
     return {
         show: true,
         mode,
         lines,
-        note,
+        note: "",
         valueKeys: [...new Set(lines.flatMap((l) => l.valueKeys))],
         headline: lines.map((l) => l.headline).join(" + "),
         elementLabel: main.elementLabel,

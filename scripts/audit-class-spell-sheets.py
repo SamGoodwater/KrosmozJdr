@@ -397,10 +397,6 @@ def apply_spell(entry: dict, spell: dict) -> str:
     mode = resolution_mode(spell["resolution"])
     if mode:
         entry["resolution_mode"] = mode
-    lowered = (spell["resolution"] or "").lower()
-    if "automatique" in lowered and ("consent" in lowered or "allié" in lowered or "allie" in lowered):
-        if mode != "auto_success":
-            entry["auto_success_if_willing_target"] = True
     growth = rows[1:]
     old = list(entry.get("intensification") or [])
     paired: dict[int, dict] = {}

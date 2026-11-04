@@ -89,7 +89,7 @@ return static function (array $k): array {
                     .'<li><code>max_stack</code>, <code>global_cooldown</code>, <code>number_between_two_cast</code>, <code>duration</code>.</li>'
                     .'<li><code>is_magic</code>, <code>powerful</code>, <code>ritual_available</code>, <code>casting_time</code>.</li>'
                     .'<li><code>resolution_mode</code> : uniquement <code>attack_roll</code>, <code>saving_throw</code> ou <code>auto_success</code> ; <code>attack_characteristic_key</code> (ex. <code>strong</code>, <code>intel</code>).</li>'
-                    .'<li><code>save_characteristic_key</code>, <code>save_dc_formula</code>, <code>save_success_note</code>, <code>auto_success_if_willing_target</code>, <code>allows_reaction</code>.</li>'
+                    .'<li><code>save_characteristic_key</code>, <code>save_dc_formula</code>, <code>save_success_note</code>, <code>spares_chosen_targets</code> (Épargne : créatures choisies par le lanceur sans dégâts, autres effets maintenus), <code>allows_reaction</code>.</li>'
                     .'<li>Sous-effets : slugs du catalogue (frapper, soigner, pousser, invoquer…). Invocation : lier le monstre <code>jdr:summon:…</code>.</li>'
                     .'</ul>',
             ],

@@ -201,7 +201,7 @@
                 }
             ],
             "official_id": "jdr:steamer-evolution",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -319,7 +319,7 @@
                 }
             ],
             "official_id": "jdr:steamer-gardienne-majeure",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "steamer-tourelle-tactique",
@@ -580,7 +580,7 @@
                 }
             ],
             "official_id": "jdr:steamer-garde-a-vous",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -619,7 +619,7 @@
                 }
             ],
             "official_id": "jdr:steamer-recif",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },

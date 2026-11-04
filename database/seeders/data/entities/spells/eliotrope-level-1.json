@@ -148,7 +148,7 @@
                 }
             ],
             "official_id": "jdr:eliotrope-larme-eliotrope",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "portail",
@@ -201,7 +201,7 @@
             "sight_line": true,
             "cast_per_turn": "1",
             "resolution_mode": "auto_success",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "is_magic": true,
             "powerful": 3,
             "effect": "1d4 + Sagesse. Magique, 3 PA, 1×/tour, PO 1–4 adapté. Soin automatique sur une cible consentante.",

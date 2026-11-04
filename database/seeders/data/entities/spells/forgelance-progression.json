@@ -37,7 +37,7 @@
                 }
             ],
             "official_id": "jdr:forgelance-garde-au-fer",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -346,7 +346,7 @@
                 }
             ],
             "official_id": "jdr:forgelance-ligne-de-front",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -385,7 +385,7 @@
                 }
             ],
             "official_id": "jdr:forgelance-rempart-de-lances",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -615,7 +615,7 @@
                 }
             ],
             "official_id": "jdr:forgelance-phalange-majeure",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },

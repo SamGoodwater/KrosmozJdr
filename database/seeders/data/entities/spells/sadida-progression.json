@@ -69,7 +69,7 @@
                 }
             ],
             "official_id": "jdr:sadida-sacrifice-poupesque",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "tremblement",
@@ -610,7 +610,7 @@
                 }
             ],
             "official_id": "jdr:sadida-connaissance-des-poupées",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },

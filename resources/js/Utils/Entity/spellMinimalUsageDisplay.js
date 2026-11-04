@@ -365,10 +365,7 @@ function labelForCharacteristicKey(key) {
  */
 export function buildResolutionSummary(entity) {
     const mode = readSpellField(entity, "resolutionMode", "resolution_mode") || "attack_roll";
-    const willing = Boolean(
-        readSpellField(entity, "autoSuccessIfWillingTarget", "auto_success_if_willing_target"),
-    );
-    let text = "";
+    let text;
     if (mode === "auto_success") {
         text = "Réussite automatique";
     } else if (mode === "saving_throw") {
@@ -381,9 +378,6 @@ export function buildResolutionSummary(entity) {
         const k = readSpellField(entity, "attackCharacteristicKey", "attack_characteristic_key");
         const carac = labelForCharacteristicKey(k);
         text = carac ? `Jet d'attaque vs CA (${carac})` : "Jet d'attaque vs CA";
-    }
-    if (willing && mode !== "auto_success") {
-        text += " · réussite auto si consentement";
     }
     return { show: Boolean(text), text };
 }

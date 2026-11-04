@@ -47,7 +47,7 @@ class SpellDegreeFactory extends Factory
             'save_characteristic_key' => null,
             'save_dc_formula' => null,
             'save_success_note' => null,
-            'auto_success_if_willing_target' => null,
+            'spares_chosen_targets' => null,
         ];
     }
 

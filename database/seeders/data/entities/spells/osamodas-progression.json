@@ -39,7 +39,7 @@
                 }
             ],
             "dofusdb_id": "31114",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -581,7 +581,7 @@
                 }
             ],
             "dofusdb_id": "32557",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -620,7 +620,7 @@
                 }
             ],
             "dofusdb_id": "32554",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },

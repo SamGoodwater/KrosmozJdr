@@ -710,7 +710,7 @@ final class IntegrationService
             'save_characteristic_key' => isset($data['save_characteristic_key']) ? (string) $data['save_characteristic_key'] : null,
             'save_dc_formula' => isset($data['save_dc_formula']) ? (string) $data['save_dc_formula'] : null,
             'save_success_note' => isset($data['save_success_note']) ? (string) $data['save_success_note'] : null,
-            'auto_success_if_willing_target' => (bool) ($data['auto_success_if_willing_target'] ?? false),
+            'spares_chosen_targets' => (bool) ($data['spares_chosen_targets'] ?? false),
             'created_by' => $userId,
         ];
         if ($propertyWhitelist !== []) {

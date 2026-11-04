@@ -246,13 +246,12 @@ export function buildSpellFormFieldsConfig(options = {}) {
             required: false,
             visibleWhen: { field: 'resolution_mode', value: 'saving_throw' },
         },
-        auto_success_if_willing_target: {
+        spares_chosen_targets: {
             type: 'checkbox',
-            label: 'Réussite automatique si la cible est consentante',
-            help: 'Si activé, le sort réussit sans jet lorsque la cible accepte volontairement l’effet (règle optionnelle).',
+            label: 'Épargne',
+            help: 'Au lancement, le lanceur choisit des créatures touchées (souvent ses allié·e·s) : elles ne subissent aucun dégât du sort, mais reçoivent ses autres effets (déplacement, état, retrait, bonus…), sans jet si elles consentent. Règle 3.3.2.3.',
             required: false,
-            visibleWhen: { field: 'resolution_mode', in: ['attack_roll', 'saving_throw'] },
-            uiIcon: 'fa-solid fa-handshake',
+            uiIcon: 'fa-solid fa-hand-holding-heart',
             uiColor: '#c026d3',
         },
         official_id: {
@@ -334,7 +333,7 @@ export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
             'save_characteristic_key',
             'save_dc_formula',
             'save_success_note',
-            'auto_success_if_willing_target',
+            'spares_chosen_targets',
         ],
     },
     {
@@ -462,7 +461,7 @@ export function getSpellCreateDefaultEntity() {
         save_characteristic_key: '',
         save_dc_formula: '',
         save_success_note: '',
-        auto_success_if_willing_target: false,
+        spares_chosen_targets: false,
         state: 'draft',
         read_level: 0,
         write_level: 3,

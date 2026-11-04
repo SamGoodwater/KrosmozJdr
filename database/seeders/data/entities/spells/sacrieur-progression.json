@@ -34,7 +34,7 @@
                 }
             ],
             "official_id": "jdr:sacrieur-cooperation",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "sacrieur-pied-du-sacrieur",
@@ -341,7 +341,7 @@
                 }
             ],
             "official_id": "jdr:sacrieur-transposition",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "sacrieur-sang-impur",
@@ -380,7 +380,7 @@
                 }
             ],
             "official_id": "jdr:sacrieur-sang-impur",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -576,7 +576,7 @@
                 }
             ],
             "official_id": "jdr:sacrieur-sacrifice-majeur",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },

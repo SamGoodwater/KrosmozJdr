@@ -90,7 +90,7 @@ class SpellTableController extends Controller
             'save_characteristic_key' => $spell->save_characteristic_key,
             'save_dc_formula' => $spell->save_dc_formula,
             'save_success_note' => $spell->save_success_note,
-            'auto_success_if_willing_target' => (bool) ($spell->auto_success_if_willing_target ?? false),
+            'spares_chosen_targets' => (bool) ($spell->spares_chosen_targets ?? false),
         ];
     }
 

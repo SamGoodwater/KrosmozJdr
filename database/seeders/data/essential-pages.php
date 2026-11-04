@@ -322,7 +322,7 @@ return [
                     .'<tr><td><strong>Dégâts / effets</strong></td><td>1d20 + mod (carac du sort) ≥ [[kref:characteristic:armor_class_creature|CA]]</td><td>1d20 + save (carac du sort) ≥ DD. DD = 8 + mod <strong>du lanceur</strong> + [[kref:characteristic:mastery_bonus_creature|maîtrise]]. Save réussie : seulement ce que la fiche dit (pas de moitié par défaut).</td></tr>'
                     .'<tr><td><strong>Retrait [[kref:characteristic:action_points_creature|PA]]/[[kref:characteristic:movement_points_creature|PM]]</strong></td><td><strong>Le même d20</strong> ≥ [[kref:characteristic:dodge_action_points_creature|Esquive PA]] ou [[kref:characteristic:dodge_movement_points_creature|Esquive PM]]</td><td><strong>Jet d’attaque du lanceur</strong> (carac d’attaque, sinon celle du DD) ≥ [[kref:characteristic:dodge_action_points_creature|Esquive PA]] ou [[kref:characteristic:dodge_movement_points_creature|Esquive PM]]. La save ne compte pas pour le retrait.</td></tr>'
                     .'</tbody></table>'
-                    .'<p>Les deux caracs (lanceur / save) peuvent différer. Soutien : auto, aucun jet, retraits compris. → [[kref:page:regles-3-3-sorts|3.3.2]]</p>',
+                    .'<p>Les deux caracs (lanceur / save) peuvent différer. Soutien : auto, aucun jet, retraits compris. Cible consentante : aucun jet contre elle, elle accepte tout le sort (dégâts compris). <strong>Épargne</strong> : le lanceur choisit des créatures qui ne prennent pas les dégâts mais reçoivent le reste, sans jet si elles consentent. → [[kref:page:regles-3-3-sorts|3.3.2]]</p>',
             ],
             [
                 'slug' => 'reactions',

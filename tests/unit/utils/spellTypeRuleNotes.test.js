@@ -13,7 +13,7 @@ import {
     TEMP_HP_RULE_NOTE,
     TRAP_GLYPH_CAP_NOTE,
     TRAP_RULE_NOTE,
-    WILLING_TARGET_RULE_NOTE,
+    SPARE_RULE_NOTE,
     spellTypeRuleNotes,
 } from "@/Utils/Entity/spellTypeRuleNotes";
 
@@ -85,9 +85,9 @@ describe("spellTypeRuleNotes", () => {
         ).toEqual([SHIELD_RULE_NOTE]);
     });
 
-    it("cible consentante, réaction, PV temporaires", () => {
-        expect(spellTypeRuleNotes({ auto_success_if_willing_target: true })).toEqual([
-            WILLING_TARGET_RULE_NOTE,
+    it("épargne, réaction, PV temporaires", () => {
+        expect(spellTypeRuleNotes({ spares_chosen_targets: true })).toEqual([
+            SPARE_RULE_NOTE,
         ]);
         expect(spellTypeRuleNotes({ allowsReaction: 1 })).toEqual([REACTION_RULE_NOTE]);
         expect(
@@ -102,7 +102,7 @@ describe("spellTypeRuleNotes", () => {
             _data: {
                 spellTypes: [{ name: "Soin" }],
                 allows_reaction: true,
-                auto_success_if_willing_target: true,
+                spares_chosen_targets: true,
                 effect_usages_chips: [
                     { action_slug: "soigner", life_steal_formula: "1d4" },
                     { action_slug: "donner-pv-temporaires", target_type: "glyph" },
@@ -115,7 +115,7 @@ describe("spellTypeRuleNotes", () => {
             GLYPH_DISPEL_NOTE,
             TRAP_GLYPH_CAP_NOTE,
             LIFE_STEAL_RULE_NOTE,
-            WILLING_TARGET_RULE_NOTE,
+            SPARE_RULE_NOTE,
             REACTION_RULE_NOTE,
             TEMP_HP_RULE_NOTE,
         ]);

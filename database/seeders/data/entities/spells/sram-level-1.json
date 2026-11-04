@@ -202,7 +202,7 @@
             "cast_per_turn": "1",
             "max_stack": 1,
             "resolution_mode": "auto_success",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "is_magic": true,
             "powerful": 5,
             "duration": "jusqu’à la fin de ton prochain tour, ou jusqu’à un sort offensif",

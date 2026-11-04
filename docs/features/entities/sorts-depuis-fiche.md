@@ -1,12 +1,59 @@
 # Construire un sort de classe depuis sa fiche
 
-La fiche écrite (Obsidian) fait foi. Le repère de niveaux (5/10/15/20, etc.) ne sert que lorsqu’une fiche n’a pas encore ses lignes.
+On choisit d’abord le sort Dofus de départ, on écrit la fiche, puis on la recopie dans le catalogue. Une fois écrite, la fiche (Obsidian) fait foi. Le repère de niveaux (5/10/15/20, etc.) ne sert que lorsqu’une fiche n’a pas encore ses lignes.
 
 Un sort se construit **un par un**. Le catalogue JSON puis l’import ne devinent pas une case vide : ils recopient le sort de base. C’est pour ça qu’un palier peut perdre un lancer, une portée ou une relance même si la ligne d’au-dessus était juste.
 
 ## Pourquoi une passe globale rate des colonnes
 
 Il y a beaucoup de détail : trois classes, une trentaine de sorts, plusieurs paliers, une quinzaine de colonnes. Ce n’est pas la seule raison. Les catalogues ont été réécrits en plusieurs passes (repère commun, puis dés, puis niveaux de la fiche) sans une liste de colonnes à cocher. Et l’importeur ne reprend pas la ligne précédente : une clé absente d’un palier retombe sur le **sort de base**.
+
+## Choisir le sort Dofus de départ
+
+Cette étape vient avant la fiche. Chaque sort de Krosmoz part d’un sort de la même classe dans Dofus (page de la classe sur [DofusDB](https://dofusdb.fr/fr/database/breeds/8), ici l’Iop).
+
+Une classe a deux familles de sorts, et elles ne viennent pas du même tas.
+
+| Famille | Nombre | Places | Source Dofus |
+| --- | --- | --- | --- |
+| Élémentaire | 16 | 4 par voie (Feu, Terre, Air, Eau), aux niveaux 1, 4, 7 et 12 | sort de cet élément **qui fait des dégâts** |
+| Général | 16 | 8 choix de 2 variantes (deux au niveau 1, puis 2, 5, 6, 8, 10, 11) | sort **sans élément strict et sans dégâts** |
+
+### 1. Trier les sorts Dofus de la classe
+
+Lister chaque sort avec son élément, s’il fait des dégâts, et son effet secondaire. Puis faire deux tas :
+
+- **dégâts d’un élément** : tas élémentaire de cet élément ;
+- **pas de dégâts, pas d’élément strict** : tas général.
+
+C’est l’élément et les dégâts qui décident, pas l’orientation. Un sort Dofus sans dégâts reste dans le tas général, même si son effet colle à une voie (un bonus de dégâts colle à la voie Amélioration, mais ne devient pas un sort Feu pour autant). C’est l’erreur qui a mélangé l’Iop : des sorts généraux rangés dans les voies, des sorts élémentaires sans dégâts.
+
+### 2. Les sorts élémentaires
+
+Pour chaque voie, prendre 4 sorts dans le tas de son élément, puis les ranger aux niveaux 1, 4, 7 et 12 du plus simple au plus fort.
+
+1. Préférer un sort dont l’effet secondaire suit l’orientation de la voie (repousse pour Placement, retrait pour Entrave, bouclier pour Protection…).
+2. Si aucun ne la suit, garder un sort de l’élément qui fait des dégâts, et adapter son effet à l’orientation. Les dégâts et l’élément restent ceux de Dofus. L’effet peut s’en éloigner.
+3. Chaque sort élémentaire de Krosmoz fait des dégâts de l’élément de sa voie.
+
+### 3. Les sorts généraux
+
+Prendre 16 sorts dans le tas général, puis les mettre par paires sur les 8 choix.
+
+1. Viser des sorts utiles à plusieurs voies : déplacement, protection, amélioration, entrave, soin.
+2. Les deux variantes d’un même choix n’ont pas la même orientation.
+3. Répartir les orientations sur les 8 choix, pour que chaque voie trouve des généraux qui l’aident.
+4. Une exception est possible (un sort Dofus à dégâts devenu général, deux variantes de même orientation) si l’adaptation la justifie. L’écrire dans *Général* ou *Effets*.
+
+### 4. Vérifier le kit avant d’écrire les tableaux
+
+- 32 sorts, un par place.
+- Les 16 élémentaires font des dégâts de l’élément de leur voie.
+- Les 16 généraux ne font pas de dégâts, sauf exception écrite.
+- Aucun choix général n’a deux variantes de même orientation, sauf exception écrite.
+- Le sort Dofus de départ est connu pour chaque sort (`dofusdb_id` dans le catalogue JSON quand il existe).
+
+Ensuite seulement, on écrit les tableaux de la fiche, puis on suit les étapes ci-dessous.
 
 ## Avant de recopier
 
@@ -46,7 +93,7 @@ Les sorts généraux choisissent leurs paliers. Un 9, un 14 ou un 16 écrit sur 
 | automatique | `resolution_mode` = `auto_success` |
 | « Dégâts d’Air », voie, tags | élément, caractéristique du jet, types du sort |
 
-Un second jet ne remplace pas le premier. « Jet d’attaque, retrait vs Esquive » reste un jet d’attaque. « Automatique pour le bouclier » ou « pour un allié consentant » ajoute `auto_success_if_willing_target`, le mode principal ne change pas.
+Un second jet ne remplace pas le premier. « Jet d’attaque, retrait vs Esquive » reste un jet d’attaque. « Automatique pour les allié·e·s » ou « pour un allié consentant » ne se coche pas : une cible consentante ne fait jamais de jet (règle 3.3.2.3). Le mode principal ne change pas. « Allié·e·s saufs » (pas de dégâts aux allié·e·s, autres effets maintenus) se coche en `spares_chosen_targets` (Épargne).
 
 « AS », un rebond, ou « selon la pièce » restent dans le texte de l’effet. AS veut dire que les alliés de la zone ne sont pas touchés. Ce n’est pas une forme de zone. « En ligne » se lit aussi avec une majuscule.
 

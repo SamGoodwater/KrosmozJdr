@@ -1402,7 +1402,7 @@
             "save_characteristic_key": "vitality",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "acuite-absolue",

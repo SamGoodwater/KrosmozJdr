@@ -34,7 +34,7 @@
                 }
             ],
             "official_id": "jdr:huppermage-runification-elementaire",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -344,7 +344,7 @@
                 }
             ],
             "official_id": "jdr:huppermage-contribution",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -380,7 +380,7 @@
                 }
             ],
             "official_id": "jdr:huppermage-rune-de-terre",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -612,7 +612,7 @@
                 }
             ],
             "official_id": "jdr:huppermage-astral",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },

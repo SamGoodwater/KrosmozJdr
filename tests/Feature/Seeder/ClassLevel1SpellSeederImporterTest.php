@@ -250,7 +250,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame('3', $vivifiant->pa);
         $this->assertSame('2', $vivifiant->cast_per_turn);
         $this->assertSame(Spell::RESOLUTION_AUTO_SUCCESS, $vivifiant->resolution_mode);
-        $this->assertTrue($vivifiant->auto_success_if_willing_target);
+        $this->assertFalse($vivifiant->spares_chosen_targets);
         $this->assertSame(ElementBitmask::fromSlug('water'), $vivifiant->element);
         $this->assertTrue($vivifiant->spellTypes()->where('name', 'Soin')->exists());
 

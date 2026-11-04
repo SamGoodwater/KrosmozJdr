@@ -242,7 +242,7 @@ final class ClassLevel1SpellSeederImporter
             'save_characteristic_key' => $entry['save_characteristic_key'],
             'save_dc_formula' => $entry['save_dc_formula'],
             'save_success_note' => $entry['save_success_note'],
-            'auto_success_if_willing_target' => $entry['auto_success_if_willing_target'],
+            'spares_chosen_targets' => $entry['spares_chosen_targets'],
             'allows_reaction' => (bool) ($entry['allows_reaction'] ?? false),
             'duration' => $entry['duration'],
             'state' => $this->spellState((string) ($entry['state'] ?? Spell::STATE_AUTO)),

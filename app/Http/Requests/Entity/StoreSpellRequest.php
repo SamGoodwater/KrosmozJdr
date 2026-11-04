@@ -89,7 +89,7 @@ class StoreSpellRequest extends FormRequest
             'save_characteristic_key' => ['nullable', 'string', 'max:64'],
             'save_dc_formula' => ['nullable', 'string', 'max:255'],
             'save_success_note' => ['nullable', 'string'],
-            'auto_success_if_willing_target' => ['nullable', 'boolean'],
+            'spares_chosen_targets' => ['nullable', 'boolean'],
             'allows_reaction' => ['nullable', 'boolean'],
             'state' => ['nullable', 'string', EntityState::rule()],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],

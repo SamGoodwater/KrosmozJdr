@@ -345,7 +345,7 @@
                 }
             ],
             "official_id": "jdr:roublard-detonateur-majeur",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -577,7 +577,7 @@
                 }
             ],
             "official_id": "jdr:roublard-last-boom",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },

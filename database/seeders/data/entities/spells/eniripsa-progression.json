@@ -39,7 +39,7 @@
                 }
             ],
             "dofusdb_id": "25761",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -78,7 +78,7 @@
                 }
             ],
             "dofusdb_id": "13234",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -99,7 +99,7 @@
             "sight_line": true,
             "cast_per_turn": "1",
             "resolution_mode": "auto_success",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "is_magic": true,
             "powerful": 5,
             "effect": "2d4 + Sagesse (Eau). Magique, 5 PA, 1×/tour, PO 1–5 adapté. Soin automatique sur une cible consentante.",
@@ -137,7 +137,7 @@
             "sight_line": false,
             "cast_per_turn": "1",
             "resolution_mode": "auto_success",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "is_magic": true,
             "powerful": 5,
             "effect": "1d4 + Sagesse (Feu) en petite zone autour de toi, alliés consentants. Magique, 5 PA, 1×/tour.",
@@ -194,7 +194,7 @@
                 }
             ],
             "dofusdb_id": "13187",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "eniripsa-fontaine-de-jouvence",
@@ -232,7 +232,7 @@
                 }
             ],
             "dofusdb_id": "25893",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "eniripsa-mot-exsangue",
@@ -270,7 +270,7 @@
                 }
             ],
             "dofusdb_id": "13217",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "eniripsa-mot-malicieux",
@@ -308,7 +308,7 @@
                 }
             ],
             "dofusdb_id": "25895",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "eniripsa-mot-secret",
@@ -381,7 +381,7 @@
                 }
             ],
             "dofusdb_id": "25909",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -460,7 +460,7 @@
                 }
             ],
             "dofusdb_id": "25865",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "eniripsa-choeur-strident",
@@ -498,7 +498,7 @@
                 }
             ],
             "dofusdb_id": "28830",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "eniripsa-mot-accablant",
@@ -536,7 +536,7 @@
                 }
             ],
             "dofusdb_id": "28571",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "eniripsa-mot-alchimique",
@@ -573,7 +573,7 @@
                 }
             ],
             "dofusdb_id": "25993",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -613,7 +613,7 @@
                 }
             ],
             "dofusdb_id": "25869",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "eniripsa-mot-fleuri",
@@ -651,7 +651,7 @@
                 }
             ],
             "dofusdb_id": "25897",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "eniripsa-laments",
@@ -689,7 +689,7 @@
                 }
             ],
             "dofusdb_id": "25890",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         }
     ]
 }

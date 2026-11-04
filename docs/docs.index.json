@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Portée, lancers par tour et par cible, relance, durée, dés, zones et repoussements reprennent les lignes écrites de la fiche. Une case vide reprend la ligne d’avant. Quand le nombre par cible n’est pas écrit, il vaut le nombre par tour. Flèche harcelante passe à 3 lancers au niveau 15, pas avant. Vendetta, Représailles, Pas chassé et les autres paliers décalés retrouvent le niveau de la fiche."
+    "description": "Un retrait de PA ou de PM ne se compare pas à la CA, mais à l’Esquive PA ou à l’Esquive PM. La fiche d’un sort l’indique maintenant d’elle-même, d’après ses effets. Un sort à touche affiche « Jet d’attaque vs CA · Esquive PM » : un seul dé pour les deux. Un sort à sauvegarde ajoute une ligne « Jet d’attaque vs Esquive PA ». Ce jet décide seul du retrait, la sauvegarde ne compte que pour le reste. Un sort qui ne fait que retirer n’affiche plus la CA ni la sauvegarde. Un sort de soutien applique tout, retraits compris, sans aucun jet. Les règles des sorts (3.3.2) et L’Essentiel disent la même chose."
   },
   {
     "path": "backend/_ai.md",
@@ -130,14 +130,14 @@
     "description": "Ajouter/modifier un type d'entité, un champ, une vue, une colonne de table."
   },
   {
-    "path": "features/entities/sorts-depuis-fiche.md",
-    "title": "Construire un sort de classe depuis sa fiche",
-    "description": "La fiche écrite fait foi. Une colonne, un champ, un sort à la fois. Une clé absente d’un palier retombe sur le sort de base."
-  },
-  {
     "path": "features/entities/README.md",
     "title": "Entités JDR",
     "description": "Les « entités de jeu » sont les objets métier du référentiel KrosmozJDR : sorts, objets, ressources, consommables, monstres, PNJ, classes, spécialisations, capacités, conditions, traits, panoplies, boutiques, campagnes, scénarios. Elles partagent un modèle de champs, un système de droits et un pipeline d'affichage communs."
+  },
+  {
+    "path": "features/entities/sorts-depuis-fiche.md",
+    "title": "Construire un sort de classe depuis sa fiche",
+    "description": "Choisir le sort Dofus (élémentaire = élément + dégâts, général = sans élément ni dégâts), écrire la fiche, puis la recopier une colonne à la fois."
   },
   {
     "path": "features/feedback/_ai.md",

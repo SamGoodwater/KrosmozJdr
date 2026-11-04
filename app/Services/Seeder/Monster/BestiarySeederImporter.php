@@ -173,7 +173,7 @@ final class BestiarySeederImporter
             'save_characteristic_key' => null,
             'save_dc_formula' => null,
             'save_success_note' => null,
-            'auto_success_if_willing_target' => $isHeal,
+            'spares_chosen_targets' => false,
             'allows_reaction' => false,
             'duration' => null,
             'official_id' => $spellRow['official_id'],

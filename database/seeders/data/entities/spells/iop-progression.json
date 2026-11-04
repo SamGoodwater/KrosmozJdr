@@ -39,7 +39,7 @@
                 }
             ],
             "dofusdb_id": "13118",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1,
             "intensification": [
@@ -916,7 +916,7 @@
                 }
             ],
             "dofusdb_id": "32702",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1,
             "intensification": [
@@ -1005,7 +1005,7 @@
                 }
             ],
             "dofusdb_id": "13132",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1,
             "intensification": [],
@@ -1416,7 +1416,7 @@
                 }
             ],
             "dofusdb_id": "13114",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1,
             "intensification": [
@@ -1493,7 +1493,7 @@
                 }
             ],
             "dofusdb_id": "30772",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à ta prochaine attaque de mêlée de classe",
             "max_stack": 3,
             "intensification": [

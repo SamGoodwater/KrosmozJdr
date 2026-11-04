@@ -19,7 +19,7 @@
             "sight_line": true,
             "cast_per_turn": "2",
             "resolution_mode": "auto_success",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "is_magic": true,
             "powerful": 3,
             "effect": "1d4 + Sagesse (Eau). Magique, 3 PA, 2×/tour, PO 1–5 adapté. Soin automatique sur une cible consentante.",
@@ -56,7 +56,7 @@
             "sight_line": true,
             "cast_per_turn": "2",
             "resolution_mode": "auto_success",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "is_magic": true,
             "powerful": 3,
             "effect": "1d4 + Sagesse (Air). Magique, 3 PA, 2×/tour, PO 1–5 adapté. Soin automatique sur une cible consentante.",
@@ -111,7 +111,7 @@
                 }
             ],
             "dofusdb_id": "28573",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "eniripsa-mot-galvanisant",
@@ -148,7 +148,7 @@
                 }
             ],
             "dofusdb_id": "25764",
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "key": "mot-de-frayeur",
@@ -201,7 +201,7 @@
             "sight_line": true,
             "cast_per_turn": "1",
             "resolution_mode": "auto_success",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "is_magic": true,
             "powerful": 3,
             "effect": "Échange de position avec l’allié ciblé. Magique, 3 PA, 1×/tour, PO 1–5 adapté.",

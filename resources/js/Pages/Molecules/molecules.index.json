@@ -1032,7 +1032,7 @@
   },
   {
     "name": "SpellResolutionFormula",
-    "description": "Affichage du mode de résolution d’un sort. - `variant=\"full\"` : libellé coloré + formule (vs séparé) + valeurs si runtime. - `variant=\"compact\"` : libellé cliquable → popover avec la formule (et valeurs).",
+    "description": "Affichage du mode de résolution d’un sort (une ligne par jet). - `variant=\"full\"` : libellé coloré + formule (vs séparé) + valeurs si runtime. - `variant=\"compact\"` : libellé cliquable → popover avec la formule (et valeurs). Les retraits PA/PM ajoutent « vs Esquive PA/PM » (même jet sur une touche, jet d’attaque séparé sur une sauvegarde) — voir `spellDodgeChecks.js`.",
     "props": [],
     "slots": [],
     "file": "entity/spell/SpellResolutionFormula.vue"

@@ -43,7 +43,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $save_characteristic_key
  * @property string|null $save_dc_formula
  * @property string|null $save_success_note
- * @property bool|null $auto_success_if_willing_target
+ * @property bool|null $spares_chosen_targets
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Spell $spell
@@ -56,7 +56,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellDegree whereAllowsReaction($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellDegree whereArea($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellDegree whereAttackCharacteristicKey($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellDegree whereAutoSuccessIfWillingTarget($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellDegree whereSparesChosenTargets($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellDegree whereCastInDiagonal($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellDegree whereCastInLine($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellDegree whereCastPerTarget($value)
@@ -156,7 +156,7 @@ class SpellDegree extends Model
         'save_characteristic_key',
         'save_dc_formula',
         'save_success_note',
-        'auto_success_if_willing_target',
+        'spares_chosen_targets',
     ];
 
     protected $casts = [
@@ -172,7 +172,7 @@ class SpellDegree extends Model
         'global_cooldown' => 'integer',
         'max_stack' => 'integer',
         'allows_reaction' => 'boolean',
-        'auto_success_if_willing_target' => 'boolean',
+        'spares_chosen_targets' => 'boolean',
     ];
 
     protected static function newFactory(): SpellDegreeFactory

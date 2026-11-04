@@ -34,7 +34,7 @@
                 }
             ],
             "official_id": "jdr:zobal-masque-du-psychopathe",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -70,7 +70,7 @@
                 }
             ],
             "official_id": "jdr:zobal-masque-du-classy",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -342,7 +342,7 @@
                 }
             ],
             "official_id": "jdr:zobal-masque-du-renegat",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -572,7 +572,7 @@
                 }
             ],
             "official_id": "jdr:zobal-plastron-majeur",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },

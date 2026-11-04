@@ -3,7 +3,7 @@
  *
  * @description
  * Soin (type ou effet), invocation, piège/glyphe (`target_type`), vol de vie,
- * cible consentante, réaction, PV temporaires.
+ * Épargne, réaction, PV temporaires.
  *
  * @example
  * spellTypeRuleNotes({ spellTypes: [{ name: "Soin" }] });
@@ -23,7 +23,8 @@ export const GLYPH_RULE_NOTE =
 
 export const LIFE_STEAL_RULE_NOTE = "Vol de vie : pas sur les boucliers.";
 
-export const WILLING_TARGET_RULE_NOTE = "Cible consentante : réussite auto.";
+export const SPARE_RULE_NOTE =
+    "Épargne : les créatures que tu choisis ne prennent pas les dégâts ; consentantes, le reste passe sans jet.";
 
 export const REACTION_RULE_NOTE = "Réaction : 1 / round, hors de ton tour.";
 
@@ -328,8 +329,8 @@ export function spellHasLifeStealEffect(entity) {
     return entityHasMatchingEffect(entity, nodeLooksLikeLifeSteal);
 }
 
-export function spellHasWillingAutoSuccess(entity) {
-    return entityHasFlag(entity, "autoSuccessIfWillingTarget", "auto_success_if_willing_target");
+export function spellSparesChosenTargets(entity) {
+    return entityHasFlag(entity, "sparesChosenTargets", "spares_chosen_targets");
 }
 
 export function spellAllowsReaction(entity) {
@@ -377,8 +378,8 @@ export function spellTypeRuleNotes(entity) {
     if (spellHasLifeStealEffect(entity)) {
         notes.push(LIFE_STEAL_RULE_NOTE);
     }
-    if (spellHasWillingAutoSuccess(entity)) {
-        notes.push(WILLING_TARGET_RULE_NOTE);
+    if (spellSparesChosenTargets(entity)) {
+        notes.push(SPARE_RULE_NOTE);
     }
     if (spellAllowsReaction(entity)) {
         notes.push(REACTION_RULE_NOTE);

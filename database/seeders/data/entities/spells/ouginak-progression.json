@@ -34,7 +34,7 @@
                 }
             ],
             "official_id": "jdr:ouginak-rage",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -571,7 +571,7 @@
                 }
             ],
             "official_id": "jdr:ouginak-amarok-majeur",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },
@@ -610,7 +610,7 @@
                 }
             ],
             "official_id": "jdr:ouginak-veille",
-            "auto_success_if_willing_target": true,
+            "spares_chosen_targets": false,
             "duration": "jusqu’à la fin de ton prochain tour",
             "max_stack": 1
         },

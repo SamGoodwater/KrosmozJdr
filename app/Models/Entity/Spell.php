@@ -54,7 +54,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $save_characteristic_key
  * @property string|null $save_dc_formula
  * @property string|null $save_success_note
- * @property bool $auto_success_if_willing_target Réussite auto si la cible est consentante
+ * @property bool $spares_chosen_targets Épargne : le lanceur choisit des créatures qui ne subissent pas les dégâts (autres effets maintenus)
  * @property bool $allows_reaction Utilisable comme réaction de combat (PA non récupérés au tour suivant)
  * @property string|null $casting_time Temps d'incantation (texte libre)
  * @property bool|null $ritual_available Utilisable en mode rituel (null = non renseigné)
@@ -130,7 +130,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read int|null $conditions_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAllowsReaction($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAttackCharacteristicKey($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereAutoSuccessIfWillingTarget($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSparesChosenTargets($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereCastingTime($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereDuration($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereResolutionMode($value)
@@ -240,7 +240,7 @@ class Spell extends Model implements HasMedia
         'read_level' => 0,
         'write_level' => 3,
         'auto_update' => true,
-        'auto_success_if_willing_target' => false,
+        'spares_chosen_targets' => false,
         'allows_reaction' => false,
         'pa_from_wakfu_reserve' => false,
         'cast_in_line' => false,
@@ -288,7 +288,7 @@ class Spell extends Model implements HasMedia
         'save_characteristic_key',
         'save_dc_formula',
         'save_success_note',
-        'auto_success_if_willing_target',
+        'spares_chosen_targets',
         'allows_reaction',
         'state',
         'read_level',
@@ -318,7 +318,7 @@ class Spell extends Model implements HasMedia
         'is_magic' => 'boolean',
         'pa_from_wakfu_reserve' => 'boolean',
         'auto_update' => 'boolean',
-        'auto_success_if_willing_target' => 'boolean',
+        'spares_chosen_targets' => 'boolean',
         'allows_reaction' => 'boolean',
         'ritual_available' => 'boolean',
     ];

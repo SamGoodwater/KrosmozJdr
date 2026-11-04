@@ -43,7 +43,7 @@
 | `attack_characteristic_key_spell` | A | Caractéristique d’attaque au jet (`attack_characteristic_key`). |
 | `save_characteristic_key_spell` | A | Caractéristique de sauvegarde (`save_characteristic_key`). |
 | `save_dc_formula_spell` | A | Formule du DD (`save_dc_formula`). |
-| `auto_success_if_willing_target_spell` | A | Réussite auto si cible consentante (`auto_success_if_willing_target`). |
+| `spares_chosen_targets_spell` | A | Épargne : créatures choisies sans dégâts (`spares_chosen_targets`). |
 | `movement_points_spell` | B | Malus/bonus **PM** (effet sur cible ; id Dofus différent du coût PA du sort). |
 | `initiative_spell` | B | Initiative. |
 | `range_spell` | B | PO / portée « créature » (anneau / bonus PO). |
@@ -115,7 +115,7 @@ Cette règle est appliquée dans `SpellEffectsConversionService` via `params.eff
 
 ## Backlog métier (extensions prévues)
 
-- **Déjà en `*-spell-definition.json` (rôle A — résolution)** : `resolution_mode_spell`, `attack_characteristic_key_spell`, `save_characteristic_key_spell`, `save_dc_formula_spell`, `save_success_note_spell`, `auto_success_if_willing_target_spell` (colonnes `spells.*`).
+- **Déjà en `*-spell-definition.json` (rôle A — résolution)** : `resolution_mode_spell`, `attack_characteristic_key_spell`, `save_characteristic_key_spell`, `save_dc_formula_spell`, `save_success_note_spell`, `spares_chosen_targets_spell` (colonnes `spells.*`).
 
 - **Déjà modélisé (rôle B — PV temporaires)** : `pv_temporaires_spell` via sous-effet `donner-pv-temporaires` (charac DofusDB 95). Le max PV via sort reste `vitality_spell` (pas de `life_points_max_spell`).
 

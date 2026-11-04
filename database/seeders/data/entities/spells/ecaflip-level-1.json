@@ -347,7 +347,7 @@
             ],
             "official_id": "jdr:ecaflip:langue-rapeuse",
             "cast_in_diagonal": false,
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "cast_per_target": "2",
@@ -797,7 +797,7 @@
             ],
             "official_id": "jdr:ecaflip:entrechat",
             "cast_in_diagonal": false,
-            "auto_success_if_willing_target": true
+            "spares_chosen_targets": false
         },
         {
             "cast_per_target": "1",

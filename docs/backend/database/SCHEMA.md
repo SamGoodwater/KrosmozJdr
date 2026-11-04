@@ -1557,7 +1557,7 @@ erDiagram
     save_characteristic_key : varchar(64)
     save_dc_formula : varchar(255)
     save_success_note : text
-    auto_success_if_willing_target : tinyint(1)
+    spares_chosen_targets : tinyint(1)
     created_at : timestamp
     updated_at : timestamp
   }
@@ -1620,7 +1620,7 @@ erDiagram
     save_characteristic_key : varchar(64)
     save_dc_formula : varchar(255)
     save_success_note : text
-    auto_success_if_willing_target : tinyint(1)
+    spares_chosen_targets : tinyint(1)
     allows_reaction : tinyint(1)
     state : varchar(255)
     read_level : tinyint(4)
