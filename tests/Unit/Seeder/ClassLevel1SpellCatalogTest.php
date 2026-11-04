@@ -10,18 +10,21 @@ use Tests\TestCase;
 
 final class ClassLevel1SpellCatalogTest extends TestCase
 {
-    public function test_iop_catalog_has_six_spells_in_three_slots(): void
+    public function test_iop_catalog_has_eight_variants_in_three_slots(): void
     {
         $catalog = ClassLevel1SpellCatalog::load();
         $entries = $this->assertIopStyleLevel1Slots(
             $catalog,
             'Iop',
-            ['Pression', 'Attaque Naturelle', 'Épée Divine', 'Épée de Givre', 'Bond', 'Concentration']
+            ['Intimidation', 'Épée du Destin', 'Ferveur', 'Pression', 'Bond', 'Détermination', 'Vindicte', 'Puissance']
         );
-        $this->assertSame('jdr:attaque-naturelle', $entries[1]['official_id']);
-        $this->assertSame('water', $entries[3]['element']);
-        $this->assertSame('3', $entries[0]['pa']);
-        $this->assertSame('3', $entries[2]['pa']);
+        $this->assertSame(['air', 'fire', 'water', 'earth'], array_column(array_slice($entries, 0, 4), 'element'));
+        $this->assertSame([1, 1, 1, 1, 2, 2, 3, 3], array_column($entries, 'slot_index'));
+        $this->assertSame('jdr:iop:pression', $entries[3]['official_id']);
+        $this->assertSame('3', $entries[3]['pa']);
+        $this->assertSame('2', $entries[3]['cast_per_target']);
+        $this->assertSame('saving_throw', $entries[6]['resolution_mode']);
+        $this->assertSame('sagesse', $entries[6]['save_characteristic_key']);
     }
 
     public function test_cra_catalog_has_eight_playable_spells_in_three_slots(): void
@@ -283,7 +286,8 @@ final class ClassLevel1SpellCatalogTest extends TestCase
     public function test_iop_elemental_spell_uses_the_level_1_ladder(): void
     {
         $catalog = ClassLevel1SpellCatalog::load();
-        $pression = $catalog->entries()[0];
+        $pression = $catalog->entries()[3];
+        $this->assertSame('Pression', $pression['name']);
         $this->assertCount(4, $pression['intensification']);
         $this->assertSame('I', $pression['intensification'][0]['tier']);
         $this->assertSame(
@@ -304,10 +308,9 @@ final class ClassLevel1SpellCatalogTest extends TestCase
             }
         }
         $this->assertNotNull($tempete);
-        $this->assertSame(12, $tempete['character_level']);
-        $this->assertCount(1, $tempete['intensification']);
-        $this->assertSame(17, $tempete['intensification'][0]['required_creature_level']);
-        $this->assertSame('5d6+Agilité', $tempete['intensification'][0]['sub_effects'][0]['params']['value']);
+        $this->assertSame(7, $tempete['character_level']);
+        $this->assertSame([13, 18], array_column($tempete['intensification'], 'required_creature_level'));
+        $this->assertSame('2d10+Intelligence', $tempete['intensification'][0]['sub_effects'][0]['params']['value']);
     }
 
     public function test_cra_elemental_spell_uses_the_level_1_ladder(): void

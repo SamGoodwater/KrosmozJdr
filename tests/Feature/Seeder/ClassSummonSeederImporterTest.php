@@ -15,7 +15,7 @@ use Tests\TestCase;
 
 final class ClassSummonSeederImporterTest extends TestCase
 {
-    public function test_imports_nineteen_summons_and_is_idempotent(): void
+    public function test_imports_twenty_summons_and_is_idempotent(): void
     {
         $this->seed(SubEffectSeeder::class);
         $this->seedSpellTypes();
@@ -23,7 +23,7 @@ final class ClassSummonSeederImporterTest extends TestCase
         $importer = app(ClassSummonSeederImporter::class);
         $first = $importer->import();
 
-        $this->assertCount(19, $first['created']);
+        $this->assertCount(20, $first['created']);
         $this->assertSame([], $first['updated']);
         $this->assertSame([], $first['skipped']);
 
@@ -61,17 +61,17 @@ final class ClassSummonSeederImporterTest extends TestCase
 
         $second = $importer->import();
         $this->assertSame([], $second['created']);
-        $this->assertCount(19, $second['updated']);
+        $this->assertCount(20, $second['updated']);
         $this->assertSame(
-            19,
+            20,
             Monster::query()->where('official_id', 'like', 'jdr:summon:%')->count()
         );
         $this->assertSame(
-            19,
+            20,
             Spell::query()->where('category', Spell::CATEGORY_CREATURE)->where('state', Spell::STATE_AUTO)->count()
         );
         $this->assertSame('8', $tofu->creature?->fresh()->life);
-        $this->assertCount(19, ClassSummonCatalog::load()->entries());
+        $this->assertCount(20, ClassSummonCatalog::load()->entries());
     }
 
     private function seedSpellTypes(): void

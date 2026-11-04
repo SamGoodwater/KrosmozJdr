@@ -103,21 +103,27 @@ return [
                     'slug' => 'creation-classes-intro',
                     'title' => 'Philosophie',
                     'html' => '<h2>Classes</h2>'
-                        .'<p>Une classe est une <strong>voie</strong>, pas un tas de bonus. Elle fixe 24 sorts (12 appris au niveau 20), un passif unique, un dé de vie et 3 rôles possibles parmi dégâts, protection, soin, amélioration, entrave, placement. '.$kClassesLivre.' · '.$kClassesEq.'.</p>'
+                        .'<p>Une classe de Krosmoz part de sa classe de Dofus. Elle garde le nom, l’univers et les sorts qu’on reconnaît, mais elle se joue autour d’une table : moins de sorts, de vrais choix, des effets qu’on lit en quelques secondes. '.$kClassesLivre.' · '.$kClassesEq.'.</p>'
+                        .'<p>Une classe a un passif, trois capacités de classe (aux niveaux 3, 9 et 14), parfois une mécanique à elle (la pièce de l’Ecaflip), et <strong>12 choix de sorts</strong>. À chaque choix, le personnage prend une variante. Il finit avec 12 sorts.</p>'
+                        .'<p>Elle a aussi <strong>quatre voies</strong>, une par élément : Feu, Terre, Eau, Air. Chaque voie a une orientation propre à la classe : dégâts, protection, soin, amélioration, entrave, placement… L’élément ne décide pas de l’orientation. Le Crâ entrave par l’Eau, l’Iop s’y protège.</p>'
                         .'<p>Les stats de combat vivent sur la créature liée (comme un [[kref:page:creation-monstres|monstre]]). Sur une fiche jouable, les liaisons masquent les brouillons.</p>',
                 ],
                 [
                     'slug' => 'creation-classes-methode',
                     'title' => 'Comment la créer',
-                    'html' => '<h3>Marche à suivre</h3>'
+                    'html' => '<h3>Convertir une classe de Dofus</h3>'
                         .'<ol>'
-                        .'<li>Écris l’identité en une phrase (ex. « frappe fort au contact, peu de contrôle »).</li>'
-                        .'<li>Choisis <strong>un rôle fort</strong> et un rôle secondaire — pas six à fond. Une classe qui tank, soigne et dps autant qu’un spécialiste casse le groupe.</li>'
-                        .'<li>Répartis les sorts sur des <strong>voies élémentaires</strong> cohérentes (Feu agressif, Eau soin/contrôle, Terre protection, Air mobilité). Neutre = polyvalence, pas « tout faire ».</li>'
-                        .'<li>Calibre le dé de vie et les caracs sur la ligne <strong>neutre</strong> des chartes au niveau 1, puis vérifie un palier 10 et 20.</li>'
+                        .'<li><strong>L’identité.</strong> Résume la classe en une phrase (« frappe fort au contact et protège les siens »), puis donne une orientation à chacune des quatre voies.</li>'
+                        .'<li><strong>Trier ses sorts Dofus.</strong> D’un côté, ceux qui font des dégâts d’un élément. De l’autre, ceux qui ne frappent pas : déplacement, bouclier, bonus, contrôle. C’est l’élément et les dégâts qui rangent un sort, pas son effet. Un sort qui ne frappe pas ne va pas dans une voie, même si son effet lui irait bien.</li>'
+                        .'<li><strong>Les sorts élémentaires.</strong> Chaque voie a quatre sorts, appris aux niveaux 1, 4, 7 et 12, du plus simple au plus fort. Ils viennent des sorts Dofus de son élément, et tous font des dégâts. Prends de préférence ceux dont l’effet suit déjà l’orientation (une repousse pour une voie de placement). Sinon, garde un sort qui frappe dans cet élément et change son effet pour qu’il colle à la voie. Les dégâts restent ceux de Dofus, l’effet peut s’en éloigner.</li>'
+                        .'<li><strong>Les sorts généraux.</strong> Les autres choix offrent deux variantes chacun. On les prend dans les sorts Dofus qui ne frappent pas et n’ont pas d’élément marqué. Ils doivent servir à plusieurs voies, et les deux variantes d’un même choix ne font pas la même chose : l’une déplace, l’autre protège, par exemple. Le joueur choisit vraiment. Une exception se garde quand l’adaptation la justifie.</li>'
+                        .'<li><strong>La progression.</strong> Un sort élémentaire grandit à quelques niveaux. Un sort général grandit peu, parfois pas du tout. Chaque sort a sa fiche, ligne par ligne.</li>'
+                        .'<li><strong>Le reste.</strong> Passif, capacités et mécanique viennent ensuite. Calibre le dé de vie et les caractéristiques sur la ligne <strong>neutre</strong> des chartes au niveau 1, puis vérifie les niveaux 10 et 20.</li>'
                         .'<li>Lie sorts, capacités et traits <em>après</em> les avoir eux-mêmes équilibrés. Catalogue : [[kref:page:bibliotheque-breed|Classes]].</li>'
                         .'</ol>'
-                        .'<p><strong>À éviter :</strong> recopier une classe existante en +2 partout ; un passif qui vaut un sort de 5 '.$pa.' en continu.</p>',
+                        .'<p><strong>Exemple :</strong> chez l’Iop, Pression frappe en Terre : c’est un sort de la voie Terre. Bond ne frappe pas : c’est un sort général, même si la voie Air est une voie de placement.</p>'
+                        .'<p><strong>Pour relire :</strong> chaque sort élémentaire frappe dans l’élément de sa voie ; aucun sort général ne frappe sans raison ; deux variantes d’un même choix ne se ressemblent pas.</p>'
+                        .'<p><strong>À éviter :</strong> ranger un sort dans une voie pour son effet alors qu’il ne frappe pas ; reprendre tous les sorts de Dofus tels quels ; recopier une classe existante en +2 partout ; un passif qui vaut un sort de 5 '.$pa.' en continu.</p>',
                 ],
                 [
                     'slug' => 'creation-classes-catalog',

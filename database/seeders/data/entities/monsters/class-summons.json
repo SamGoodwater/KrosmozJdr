@@ -361,6 +361,26 @@
             }
         },
         {
+            "key": "iop-stratege",
+            "name": "Stratège Iop",
+            "image": "https://api.dofusdb.fr/img/monsters/5130.png",
+            "breed": "Iop",
+            "character_level": 11,
+            "size": 1,
+            "primary": "strong",
+            "description": "Étendard vivant planté par Conquête. Il tient la ligne : les allié·e·s à son contact subissent moins de dégâts (1d4 par coup, 1d6 dès le palier 17).",
+            "other_info": "Invocation de classe (Conquête). Agit à l’initiative du lanceur. Un seul Stratège à la fois. Disparaît à 0 PV ou si le lanceur tombe à 0 PV.",
+            "action": {
+                "name": "Coup de hampe",
+                "kind": "frapper",
+                "element": "earth",
+                "value": "1d4",
+                "attack_characteristic_key": "strong",
+                "resolution_mode": "attack_roll",
+                "is_magic": false
+            }
+        },
+        {
             "key": "osamodas-sulfenix",
             "name": "Sulfénix",
             "image": "https://api.dofusdb.fr/img/monsters/2532.png",

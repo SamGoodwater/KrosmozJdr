@@ -46,7 +46,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $importer = app(ClassLevel1SpellSeederImporter::class);
         $first = $importer->import($catalog);
 
-        $this->assertCount(6, $first['created']);
+        $this->assertCount(8, $first['created']);
         $this->assertSame([], $first['updated']);
         $this->assertSame([], $first['skipped']);
 
@@ -63,18 +63,18 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertSame(ElementBitmask::fromSlug('earth'), $pression->element);
         $this->assertSame(Spell::CATEGORY_CLASS, $pression->category);
 
-        $attaque = Spell::query()->where('official_id', 'jdr:attaque-naturelle')->first();
-        $this->assertNotNull($attaque);
-        $this->assertSame('intel', $attaque->attack_characteristic_key);
-        $this->assertTrue($attaque->po_editable);
-        $this->assertSame('4', $attaque->po_max);
+        $destin = Spell::query()->where('official_id', 'jdr:iop:epee-du-destin')->first();
+        $this->assertNotNull($destin);
+        $this->assertSame('intel', $destin->attack_characteristic_key);
+        $this->assertTrue($destin->po_editable);
+        $this->assertSame('2', $destin->po_max);
 
-        $givre = Spell::query()->where('official_id', 'jdr:epee-de-givre')->first();
-        $this->assertNotNull($givre);
-        $this->assertSame('Épée de Givre', $givre->name);
-        $this->assertSame('3', $givre->pa);
-        $this->assertSame('chance', $givre->attack_characteristic_key);
-        $this->assertSame(ElementBitmask::fromSlug('water'), $givre->element);
+        $ferveur = Spell::query()->where('official_id', 'jdr:iop:ferveur')->first();
+        $this->assertNotNull($ferveur);
+        $this->assertSame('Ferveur', $ferveur->name);
+        $this->assertSame('2', $ferveur->pa);
+        $this->assertSame('chance', $ferveur->attack_characteristic_key);
+        $this->assertSame(ElementBitmask::fromSlug('water'), $ferveur->element);
 
         $bond = Spell::query()->where('dofusdb_id', '15660')->first();
         $this->assertNotNull($bond);
@@ -82,13 +82,12 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertFalse($bond->sight_line);
         $this->assertSame('3', $bond->pa);
 
-        $concentration = Spell::query()->where('dofusdb_id', '30767')->first();
-        $this->assertNotNull($concentration);
-        $this->assertStringContainsString('jets d’attaque', (string) $concentration->effect);
-        $this->assertStringNotContainsString('1d4', (string) $concentration->effect);
-        $this->assertStringNotContainsString('+2', (string) $concentration->effect);
+        $vindicte = Spell::query()->where('official_id', 'jdr:iop:vindicte')->first();
+        $this->assertNotNull($vindicte);
+        $this->assertSame(Spell::RESOLUTION_SAVING_THROW, $vindicte->resolution_mode);
+        $this->assertStringContainsString('Insoignable', (string) $vindicte->effect);
 
-        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
+        $this->assertSame(8, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
         $this->assertGreaterThan(0, $pression->effects()->count());
         $this->assertTrue($pression->spellTypes()->where('name', 'Dégâts')->exists());
 
@@ -97,11 +96,11 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertNotNull($pressionPivot);
         $this->assertSame(1, (int) $pressionPivot->character_level);
         $this->assertSame(1, (int) $pressionPivot->slot_index);
-        $this->assertSame(0, (int) $pressionPivot->choice_order);
+        $this->assertSame(3, (int) $pressionPivot->choice_order);
 
-        $attaquePivot = $iop->spells()->where('spells.id', $attaque->id)->first()?->pivot;
-        $this->assertSame(1, (int) $attaquePivot?->slot_index);
-        $this->assertSame(1, (int) $attaquePivot?->choice_order);
+        $vindictePivot = $iop->spells()->where('spells.id', $vindicte->id)->first()?->pivot;
+        $this->assertSame(3, (int) $vindictePivot?->slot_index);
+        $this->assertSame(0, (int) $vindictePivot?->choice_order);
 
         $extraPivot = $iop->spells()->where('spells.id', $extra->id)->first()?->pivot;
         $this->assertNotNull($extraPivot);
@@ -116,8 +115,8 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
 
         $second = $importer->import($catalog);
         $this->assertSame([], $second['created']);
-        $this->assertCount(6, $second['updated']);
-        $this->assertSame(6, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
+        $this->assertCount(8, $second['updated']);
+        $this->assertSame(8, Spell::query()->where('state', Spell::STATE_PLAYABLE)->count());
         $this->assertSame('3', $pression->fresh()->pa);
     }
 
@@ -830,7 +829,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $this->assertStringNotContainsString('1d4 aux dégâts', (string) $runification->effect);
     }
 
-    public function test_imports_iop_progression_and_places_colere_at_level_10(): void
+    public function test_imports_iop_progression_and_places_colere_at_level_12(): void
     {
         $this->seed(SubEffectSeeder::class);
         $this->seedSpellTypes();
@@ -861,24 +860,24 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         );
         $first = app(ClassLevel1SpellSeederImporter::class)->import($catalog);
 
-        $this->assertCount(17, $first['created']);
+        $this->assertCount(23, $first['created']);
         $this->assertCount(1, $first['updated']);
-        $this->assertSame([], $first['skipped']);
 
         $colere = Spell::query()->where('dofusdb_id', '15661')->first();
         $this->assertNotNull($colere);
         $this->assertSame('Colère de Iop', $colere->name);
         $this->assertSame(Spell::STATE_PLAYABLE, $colere->state);
-        $this->assertSame('5', $colere->pa);
-        $this->assertSame('10', $colere->level);
-        $this->assertSame(Spell::RESOLUTION_SAVING_THROW, $colere->resolution_mode);
+        $this->assertSame('4', $colere->pa);
+        $this->assertSame('12', $colere->level);
+        $this->assertSame(Spell::RESOLUTION_ATTACK_ROLL, $colere->resolution_mode);
+        $this->assertSame('3', $colere->number_between_two_cast);
 
         $iop->refresh();
         $pivot = $iop->spells()->where('spells.id', $colere->id)->first()?->pivot;
-        $this->assertSame(10, (int) $pivot?->character_level);
+        $this->assertSame(12, (int) $pivot?->character_level);
         $this->assertSame(1, (int) $pivot?->slot_index);
-        $this->assertSame(0, (int) $pivot?->choice_order);
-        $this->assertSame(18, $iop->spells()->count());
+        $this->assertSame(3, (int) $pivot?->choice_order);
+        $this->assertSame(24, $iop->spells()->count());
     }
 
     public function test_full_import_keeps_level_1_and_progression_slots_together(): void
@@ -902,7 +901,7 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $slotted = $iop->spells()
             ->wherePivot('character_level', '>', 0)
             ->get();
-        $this->assertCount(24, $slotted);
+        $this->assertCount(32, $slotted);
         $levels = $slotted->pluck('pivot.character_level')->unique()->sort()->values()->all();
         $this->assertSame([1, 2, 4, 5, 6, 7, 8, 10, 11, 12], array_map('intval', $levels));
     }

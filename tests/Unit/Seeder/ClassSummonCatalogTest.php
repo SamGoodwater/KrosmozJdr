@@ -9,15 +9,15 @@ use Tests\TestCase;
 
 final class ClassSummonCatalogTest extends TestCase
 {
-    public function test_catalog_has_nineteen_unique_summons(): void
+    public function test_catalog_has_twenty_unique_summons(): void
     {
         $entries = ClassSummonCatalog::load()->entries();
         $keys = array_column($entries, 'key');
         $officialIds = array_column($entries, 'official_id');
 
-        $this->assertCount(19, $entries);
-        $this->assertCount(19, array_unique($keys));
-        $this->assertCount(19, array_unique($officialIds));
+        $this->assertCount(20, $entries);
+        $this->assertCount(20, array_unique($keys));
+        $this->assertCount(20, array_unique($officialIds));
         $this->assertContains('tofu', $keys);
         $this->assertContains('harponneuse', $keys);
         $this->assertContains('poupee-sadida', $keys);

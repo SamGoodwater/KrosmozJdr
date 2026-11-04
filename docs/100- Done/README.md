@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Le Iop repart de ses sorts Dofus
+
+La fiche du Iop rangeait des sorts au mauvais endroit : des sorts sans dégâts dans les voies, des sorts à dégâts dans les choix généraux. Chaque voie prend maintenant quatre sorts Dofus de son élément qui frappent. La voie Eau, tournée vers la protection, gagne Épée du Jugement et Fendoir, qui frappent et couvrent le Iop d’un bouclier. Les choix généraux viennent des sorts Dofus sans dégâts : Vindicte rend une cible Insoignable, Violence repousse ce qui colle au Iop, Massacre fait prendre plus de dégâts à une cible, Conquête plante un Stratège Iop qui protège les allié·e·s à son contact. Les deux variantes d’un choix ne servent jamais la même orientation. Les 32 sorts du jeu suivent la fiche, palier par palier ; les anciens (Épée Divine, Épée de Givre, Zénith…) sortent de la grille de la classe.
+
 ## Novembre 2026 — Cible consentante et Épargne
 
 Une créature qui accepte un sort ne fait plus aucun jet : tout ce que le sort lui fait s’applique, dégâts compris. C’est une règle générale, les fiches ne la répètent plus, et l’ancienne case « réussite automatique si la cible est consentante » disparaît. À sa place, une case **Épargne** : le lanceur choisit des créatures touchées, souvent ses allié·e·s, qui ne prennent pas les dégâts mais reçoivent le reste (déplacement, état, bonus…), sans jet si elles consentent. Un sort épargnant le rappelle en une phrase sous son coût. Les règles des sorts (3.3.2), le récapitulatif et L’Essentiel décrivent les deux.
@@ -11,8 +15,6 @@ Un retrait de PA ou de PM ne se compare pas à la CA, mais à l’Esquive PA ou 
 ## Novembre 2026 — Les lancers de l’Ecaflip suivent la fiche
 
 Sur l’Ecaflip, le nombre de lancers sur une même cible était à zéro, donc sans limite, alors que la fiche donne le même nombre que les lancers du tour, ou un nombre écrit à part. Portée, relance, ligne de vue, zone et paliers reprennent la fiche, y compris quand le nombre change en cours de route. Lapement passe à 2 lancers au niveau 5, écrit « 2 par cible » au niveau 10, puis 3 lancers par tour au niveau 15 sans dépasser 2 sur la même cible. Le retrait passe à 2 seulement au niveau 15.
-
-L’Iop en base n’est pas encore la fiche actuelle : beaucoup de sorts ont un autre nom ou s’apprennent à un autre niveau. Seuls Pression, Vitalité, Bond et Épée Divine, déjà au bon niveau, ont été recopiés. Les autres attendent d’être reconstruits un par un.
 
 ## Novembre 2026 — Les sorts du Crâ suivent leur fiche
 

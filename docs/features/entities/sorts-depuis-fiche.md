@@ -111,6 +111,8 @@ Il ne juge pas le texte (Pile/Face, alliés saufs, rebond), ni le montant d’un
 
 `--apply` réécrit un sort seulement si le nom et le niveau d’apprentissage sont déjà ceux de la fiche. Il ne crée pas les sorts manquants.
 
+Quand le kit entier change (sorts déplacés, renommés, ajoutés), on reconstruit les deux catalogues d’un coup. `scripts/build-iop-spells-from-sheet.py` le fait pour l’Iop : la fiche donne les lancers et les paliers, une liste dans le script donne pour chaque sort l’emplacement, les types, le `dofusdb_id` déjà en base (pour mettre à jour la ligne existante plutôt que d’en créer une) et ses sous-effets. On copie ce script pour une autre classe, puis on relance l’audit.
+
 Ensuite : importer la classe, ouvrir la fiche, cliquer chaque onglet `Niv`. La ligne d’usage est `spell-facts-timing`, la ligne d’effet est `spell-sub-effect-row`. On vérifie aussi que la phrase libre ne cite pas un autre niveau que l’onglet.
 
 On passe au sort suivant seulement quand celui-ci est juste.
