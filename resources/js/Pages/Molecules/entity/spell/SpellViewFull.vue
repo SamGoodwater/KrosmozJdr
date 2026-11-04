@@ -274,6 +274,7 @@ const usageEntity = computed(() => {
         }
     }
     merged._active_degree_properties = propsDeg;
+    merged._active_degree_rows = activeDegree.value?.rows ?? [];
     // Réutiliser la classe Spell si disponible sur l’instance.
     const Ctor = base.constructor;
     if (typeof Ctor === 'function' && Ctor !== Object) {

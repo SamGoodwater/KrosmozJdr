@@ -171,6 +171,7 @@ const usageEntity = computed(() => {
             merged[k] = v;
         }
     }
+    merged._active_degree_rows = activeDegree.value?.rows ?? [];
     const Ctor = base.constructor;
     if (typeof Ctor === "function" && Ctor !== Object) {
         try {

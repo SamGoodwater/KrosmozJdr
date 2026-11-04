@@ -1,9 +1,12 @@
 <script setup>
 /**
- * Affichage du mode de résolution d’un sort.
+ * Affichage du mode de résolution d’un sort (une ligne par jet).
  *
  * - `variant="full"` : libellé coloré + formule (vs séparé) + valeurs si runtime.
  * - `variant="compact"` : libellé cliquable → popover avec la formule (et valeurs).
+ *
+ * Les retraits PA/PM ajoutent « vs Esquive PA/PM » (même jet sur une touche,
+ * jet d’attaque séparé sur une sauvegarde) — voir `spellDodgeChecks.js`.
  *
  * @example
  * <SpellResolutionFormula :entity="spell" variant="full" />
@@ -36,26 +39,57 @@ const injectedRuntime = inject(CHARACTERISTIC_RUNTIME_INJECT_KEY, null);
 
 const formula = computed(() => buildSpellResolutionFormula(props.entity));
 
-/** Couleur d’élément sans fond pour Jet d’attaque / sauvegarde / DD. */
-const elementTextStyle = computed(() => getElementTextStyle(formula.value.elementPrimary));
-
 const elementTextClass = "inline font-semibold leading-none";
+
+/**
+ * Regroupe les segments colorés en pastilles lisibles.
+ * @param {Array<{ text: string, colored?: boolean }>} parts
+ * @returns {Array<{ text: string, colored: boolean }>}
+ */
+function groupHeadlineParts(parts) {
+    const list = Array.isArray(parts) ? parts : [];
+    const out = [];
+    for (const part of list) {
+        const colored = Boolean(part?.colored);
+        const text = part?.text != null ? String(part.text) : "";
+        if (!text) continue;
+        const last = out[out.length - 1];
+        if (last && last.colored === colored) {
+            last.text += text;
+        } else {
+            out.push({ text, colored });
+        }
+    }
+    return out;
+}
+
+const lines = computed(() =>
+    formula.value.lines.map((line, index) => ({
+        ...line,
+        id: `${line.kind}-${index}`,
+        elementStyle: getElementTextStyle(line.elementPrimary),
+        leftGroups: groupHeadlineParts(line.leftHeadline),
+        rightGroups: groupHeadlineParts(line.rightHeadline),
+        hasBody: line.leftParts.length > 0 || line.rightParts.length > 0,
+    })),
+);
 
 const chips = computed(() => {
     const map = {};
-    const allParts = [...formula.value.leftParts, ...formula.value.rightParts];
-    for (const part of allParts) {
-        if (part.type !== "chip" || map[part.key]) continue;
-        const def = resolveDef(part.key, undefined, { sourceGroups: ["creature"] });
-        map[part.key] = {
-            key: part.key,
-            name: def?.name || part.key,
-            shortName: def?.short_name || def?.shortName || def?.name || part.key,
-            icon: def?._resolvedIcon || def?.icon || "",
-            colorStyle: getCharacteristicColorStyle(def?._resolvedColor || def?.color) || undefined,
-            cardGroup: "creature",
-            hideDisplayValueInTooltip: true,
-        };
+    for (const line of formula.value.lines) {
+        for (const part of [...line.leftParts, ...line.rightParts]) {
+            if (part.type !== "chip" || map[part.key]) continue;
+            const def = resolveDef(part.key, undefined, { sourceGroups: ["creature"] });
+            map[part.key] = {
+                key: part.key,
+                name: def?.name || part.key,
+                shortName: def?.short_name || def?.shortName || def?.name || part.key,
+                icon: def?._resolvedIcon || def?.icon || "",
+                colorStyle: getCharacteristicColorStyle(def?._resolvedColor || def?.color) || undefined,
+                cardGroup: "creature",
+                hideDisplayValueInTooltip: true,
+            };
+        }
     }
     return map;
 });
@@ -89,35 +123,6 @@ const runtimeValues = computed(() => {
     }
     return out;
 });
-
-const hasFormulaBody = computed(
-    () => formula.value.leftParts.length > 0 || formula.value.rightParts.length > 0,
-);
-
-/**
- * Regroupe les segments colorés en pastilles lisibles.
- * @param {Array<{ text: string, colored?: boolean }>} parts
- * @returns {Array<{ text: string, colored: boolean }>}
- */
-function groupHeadlineParts(parts) {
-    const list = Array.isArray(parts) ? parts : [];
-    const out = [];
-    for (const part of list) {
-        const colored = Boolean(part?.colored);
-        const text = part?.text != null ? String(part.text) : "";
-        if (!text) continue;
-        const last = out[out.length - 1];
-        if (last && last.colored === colored) {
-            last.text += text;
-        } else {
-            out.push({ text, colored });
-        }
-    }
-    return out;
-}
-
-const leftHeadlineGroups = computed(() => groupHeadlineParts(formula.value.leftHeadline));
-const rightHeadlineGroups = computed(() => groupHeadlineParts(formula.value.rightHeadline));
 </script>
 
 <template>
@@ -134,94 +139,104 @@ const rightHeadlineGroups = computed(() => groupHeadlineParts(formula.value.righ
                 class="spell-resolution-trigger inline-flex max-w-full flex-wrap items-center gap-x-1 text-left text-xs font-medium leading-snug hover:underline"
                 data-cy="spell-resolution-trigger"
             >
-                <template v-for="(part, i) in leftHeadlineGroups" :key="`hl-${i}`">
-                    <span
-                        v-if="part.colored"
-                        :class="elementTextClass"
-                        :style="elementTextStyle"
-                    >{{ part.text }}</span>
-                    <span v-else>{{ part.text }}</span>
-                </template>
-                <template v-if="rightHeadlineGroups.length">
-                    <span class="px-1.5 opacity-60">vs</span>
-                    <template v-for="(part, i) in rightHeadlineGroups" :key="`hr-${i}`">
+                <template v-for="(line, li) in lines" :key="`t-${line.id}`">
+                    <span v-if="li > 0" class="px-1 opacity-60">+</span>
+                    <template v-for="(part, i) in line.leftGroups" :key="`hl-${i}`">
                         <span
                             v-if="part.colored"
                             :class="elementTextClass"
-                            :style="elementTextStyle"
+                            :style="line.elementStyle"
                         >{{ part.text }}</span>
                         <span v-else>{{ part.text }}</span>
+                    </template>
+                    <template v-if="line.rightGroups.length">
+                        <span class="px-1.5 opacity-60">vs</span>
+                        <template v-for="(part, i) in line.rightGroups" :key="`hr-${i}`">
+                            <span
+                                v-if="part.colored"
+                                :class="elementTextClass"
+                                :style="line.elementStyle"
+                            >{{ part.text }}</span>
+                            <span v-else>{{ part.text }}</span>
+                        </template>
                     </template>
                 </template>
             </button>
             <template #content>
                 <div class="space-y-2 text-sm">
-                    <p class="inline-flex max-w-full flex-wrap items-center gap-x-1 font-medium leading-snug">
-                        <template v-for="(part, i) in leftHeadlineGroups" :key="`phl-${i}`">
-                            <span
-                                v-if="part.colored"
-                                :class="elementTextClass"
-                                :style="elementTextStyle"
-                            >{{ part.text }}</span>
-                            <span v-else>{{ part.text }}</span>
-                        </template>
-                        <template v-if="rightHeadlineGroups.length">
-                            <span class="px-2 opacity-60">vs</span>
-                            <template v-for="(part, i) in rightHeadlineGroups" :key="`phr-${i}`">
+                    <div
+                        v-for="line in lines"
+                        :key="`p-${line.id}`"
+                        class="space-y-1"
+                        :data-cy="`spell-resolution-line-${line.kind}`"
+                    >
+                        <p class="inline-flex max-w-full flex-wrap items-center gap-x-1 font-medium leading-snug">
+                            <template v-for="(part, i) in line.leftGroups" :key="`phl-${i}`">
                                 <span
                                     v-if="part.colored"
                                     :class="elementTextClass"
-                                    :style="elementTextStyle"
+                                    :style="line.elementStyle"
                                 >{{ part.text }}</span>
                                 <span v-else>{{ part.text }}</span>
                             </template>
-                        </template>
-                    </p>
-                    <div
-                        v-if="hasFormulaBody"
-                        class="inline-flex max-w-full flex-wrap items-center gap-x-1 gap-y-1 leading-snug"
-                    >
-                        <template v-for="(part, index) in formula.leftParts" :key="`pl-${index}`">
-                            <span v-if="part.type === 'text'">{{ part.text }}</span>
-                            <Tooltip v-else placement="top">
-                                <template #content>
-                                    <CharacteristicInfoPanel :model="chips[part.key]" tone="dark" />
+                            <template v-if="line.rightGroups.length">
+                                <span class="px-2 opacity-60">vs</span>
+                                <template v-for="(part, i) in line.rightGroups" :key="`phr-${i}`">
+                                    <span
+                                        v-if="part.colored"
+                                        :class="elementTextClass"
+                                        :style="line.elementStyle"
+                                    >{{ part.text }}</span>
+                                    <span v-else>{{ part.text }}</span>
                                 </template>
-                                <span
-                                    class="inline-flex cursor-default items-center gap-1 rounded bg-base-200/50 px-1 py-0.5"
-                                    :style="chips[part.key]?.colorStyle"
-                                >
-                                    <Icon
-                                        v-if="chips[part.key]?.icon"
-                                        :source="chips[part.key].icon"
-                                        :alt="chips[part.key].shortName"
-                                        size="xs"
-                                    />
-                                    <span class="font-semibold">{{ chips[part.key]?.shortName }}</span>
-                                </span>
-                            </Tooltip>
-                        </template>
-                        <span v-if="formula.rightParts.length" class="px-2 opacity-60">vs</span>
-                        <template v-for="(part, index) in formula.rightParts" :key="`pr-${index}`">
-                            <span v-if="part.type === 'text'">{{ part.text }}</span>
-                            <Tooltip v-else placement="top">
-                                <template #content>
-                                    <CharacteristicInfoPanel :model="chips[part.key]" tone="dark" />
-                                </template>
-                                <span
-                                    class="inline-flex cursor-default items-center gap-1 rounded bg-base-200/50 px-1 py-0.5"
-                                    :style="chips[part.key]?.colorStyle"
-                                >
-                                    <Icon
-                                        v-if="chips[part.key]?.icon"
-                                        :source="chips[part.key].icon"
-                                        :alt="chips[part.key].shortName"
-                                        size="xs"
-                                    />
-                                    <span class="font-semibold">{{ chips[part.key]?.shortName }}</span>
-                                </span>
-                            </Tooltip>
-                        </template>
+                            </template>
+                        </p>
+                        <div
+                            v-if="line.hasBody"
+                            class="inline-flex max-w-full flex-wrap items-center gap-x-1 gap-y-1 leading-snug"
+                        >
+                            <template v-for="(part, index) in line.leftParts" :key="`pl-${index}`">
+                                <span v-if="part.type === 'text'">{{ part.text }}</span>
+                                <Tooltip v-else placement="top">
+                                    <template #content>
+                                        <CharacteristicInfoPanel :model="chips[part.key]" tone="dark" />
+                                    </template>
+                                    <span
+                                        class="inline-flex cursor-default items-center gap-1 rounded bg-base-200/50 px-1 py-0.5"
+                                        :style="chips[part.key]?.colorStyle"
+                                    >
+                                        <Icon
+                                            v-if="chips[part.key]?.icon"
+                                            :source="chips[part.key].icon"
+                                            :alt="chips[part.key].shortName"
+                                            size="xs"
+                                        />
+                                        <span class="font-semibold">{{ chips[part.key]?.shortName }}</span>
+                                    </span>
+                                </Tooltip>
+                            </template>
+                            <span v-if="line.rightParts.length" class="px-2 opacity-60">vs</span>
+                            <template v-for="(part, index) in line.rightParts" :key="`pr-${index}`">
+                                <span v-if="part.type === 'text'">{{ part.text }}</span>
+                                <Tooltip v-else placement="top">
+                                    <template #content>
+                                        <CharacteristicInfoPanel :model="chips[part.key]" tone="dark" />
+                                    </template>
+                                    <span
+                                        class="inline-flex cursor-default items-center gap-1 rounded bg-base-200/50 px-1 py-0.5"
+                                        :style="chips[part.key]?.colorStyle"
+                                    >
+                                        <Icon
+                                            v-if="chips[part.key]?.icon"
+                                            :source="chips[part.key].icon"
+                                            :alt="chips[part.key].shortName"
+                                            size="xs"
+                                        />
+                                        <span class="font-semibold">{{ chips[part.key]?.shortName }}</span>
+                                    </span>
+                                </Tooltip>
+                            </template>
+                        </div>
                     </div>
                     <ul
                         v-if="runtimeValues.length"
@@ -242,75 +257,82 @@ const rightHeadlineGroups = computed(() => groupHeadlineParts(formula.value.righ
             </template>
         </Popover>
 
-        <!-- Page / modal : libellé puis formule (deux lignes, sans fond) -->
-        <div v-else class="flex flex-col gap-1.5">
-            <p class="flex max-w-full flex-wrap items-center gap-x-1 font-medium leading-snug">
-                <template v-for="(part, i) in leftHeadlineGroups" :key="`fhl-${i}`">
-                    <span
-                        v-if="part.colored"
-                        :class="elementTextClass"
-                        :style="elementTextStyle"
-                    >{{ part.text }}</span>
-                    <span v-else>{{ part.text }}</span>
-                </template>
-                <template v-if="rightHeadlineGroups.length">
-                    <span class="px-2 opacity-60">vs</span>
-                    <template v-for="(part, i) in rightHeadlineGroups" :key="`fhr-${i}`">
+        <!-- Page / modal : par jet, libellé puis formule (sans fond) -->
+        <div v-else class="flex flex-col gap-2.5">
+            <div
+                v-for="line in lines"
+                :key="`f-${line.id}`"
+                class="flex flex-col gap-1.5"
+                :data-cy="`spell-resolution-line-${line.kind}`"
+            >
+                <p class="flex max-w-full flex-wrap items-center gap-x-1 font-medium leading-snug">
+                    <template v-for="(part, i) in line.leftGroups" :key="`fhl-${i}`">
                         <span
                             v-if="part.colored"
                             :class="elementTextClass"
-                            :style="elementTextStyle"
+                            :style="line.elementStyle"
                         >{{ part.text }}</span>
                         <span v-else>{{ part.text }}</span>
                     </template>
-                </template>
-            </p>
-            <div
-                v-if="hasFormulaBody"
-                class="flex max-w-full flex-wrap items-center gap-x-1 gap-y-1 leading-snug text-primary-200/90"
-                data-cy="spell-resolution-formula-line"
-            >
-                <template v-for="(part, index) in formula.leftParts" :key="`fl-${index}`">
-                    <span v-if="part.type === 'text'">{{ part.text }}</span>
-                    <Tooltip v-else placement="top">
-                        <template #content>
-                            <CharacteristicInfoPanel :model="chips[part.key]" tone="dark" />
+                    <template v-if="line.rightGroups.length">
+                        <span class="px-2 opacity-60">vs</span>
+                        <template v-for="(part, i) in line.rightGroups" :key="`fhr-${i}`">
+                            <span
+                                v-if="part.colored"
+                                :class="elementTextClass"
+                                :style="line.elementStyle"
+                            >{{ part.text }}</span>
+                            <span v-else>{{ part.text }}</span>
                         </template>
-                        <span
-                            class="inline-flex cursor-default items-center gap-1 rounded bg-base-200/50 px-1 py-0.5"
-                            :style="chips[part.key]?.colorStyle"
-                        >
-                            <Icon
-                                v-if="chips[part.key]?.icon"
-                                :source="chips[part.key].icon"
-                                :alt="chips[part.key].shortName"
-                                size="xs"
-                            />
-                            <span class="font-semibold">{{ chips[part.key]?.shortName }}</span>
-                        </span>
-                    </Tooltip>
-                </template>
-                <span v-if="formula.rightParts.length" class="px-2 opacity-60">vs</span>
-                <template v-for="(part, index) in formula.rightParts" :key="`fr-${index}`">
-                    <span v-if="part.type === 'text'">{{ part.text }}</span>
-                    <Tooltip v-else placement="top">
-                        <template #content>
-                            <CharacteristicInfoPanel :model="chips[part.key]" tone="dark" />
-                        </template>
-                        <span
-                            class="inline-flex cursor-default items-center gap-1 rounded bg-base-200/50 px-1 py-0.5"
-                            :style="chips[part.key]?.colorStyle"
-                        >
-                            <Icon
-                                v-if="chips[part.key]?.icon"
-                                :source="chips[part.key].icon"
-                                :alt="chips[part.key].shortName"
-                                size="xs"
-                            />
-                            <span class="font-semibold">{{ chips[part.key]?.shortName }}</span>
-                        </span>
-                    </Tooltip>
-                </template>
+                    </template>
+                </p>
+                <div
+                    v-if="line.hasBody"
+                    class="flex max-w-full flex-wrap items-center gap-x-1 gap-y-1 leading-snug text-primary-200/90"
+                    data-cy="spell-resolution-formula-line"
+                >
+                    <template v-for="(part, index) in line.leftParts" :key="`fl-${index}`">
+                        <span v-if="part.type === 'text'">{{ part.text }}</span>
+                        <Tooltip v-else placement="top">
+                            <template #content>
+                                <CharacteristicInfoPanel :model="chips[part.key]" tone="dark" />
+                            </template>
+                            <span
+                                class="inline-flex cursor-default items-center gap-1 rounded bg-base-200/50 px-1 py-0.5"
+                                :style="chips[part.key]?.colorStyle"
+                            >
+                                <Icon
+                                    v-if="chips[part.key]?.icon"
+                                    :source="chips[part.key].icon"
+                                    :alt="chips[part.key].shortName"
+                                    size="xs"
+                                />
+                                <span class="font-semibold">{{ chips[part.key]?.shortName }}</span>
+                            </span>
+                        </Tooltip>
+                    </template>
+                    <span v-if="line.rightParts.length" class="px-2 opacity-60">vs</span>
+                    <template v-for="(part, index) in line.rightParts" :key="`fr-${index}`">
+                        <span v-if="part.type === 'text'">{{ part.text }}</span>
+                        <Tooltip v-else placement="top">
+                            <template #content>
+                                <CharacteristicInfoPanel :model="chips[part.key]" tone="dark" />
+                            </template>
+                            <span
+                                class="inline-flex cursor-default items-center gap-1 rounded bg-base-200/50 px-1 py-0.5"
+                                :style="chips[part.key]?.colorStyle"
+                            >
+                                <Icon
+                                    v-if="chips[part.key]?.icon"
+                                    :source="chips[part.key].icon"
+                                    :alt="chips[part.key].shortName"
+                                    size="xs"
+                                />
+                                <span class="font-semibold">{{ chips[part.key]?.shortName }}</span>
+                            </span>
+                        </Tooltip>
+                    </template>
+                </div>
             </div>
             <ul
                 v-if="runtimeValues.length"

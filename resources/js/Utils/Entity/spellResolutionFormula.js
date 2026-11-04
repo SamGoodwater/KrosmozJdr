@@ -1,8 +1,12 @@
 /**
- * Formule publique d'un jet de sort (attaque, DD, sauvegarde).
+ * Formule publique d'un jet de sort (attaque, DD, sauvegarde, esquive PA/PM).
  *
  * Les termes sont des clés de caractéristiques créature : le survol ouvre
  * leur fiche, y compris pour un visiteur sans personnage.
+ *
+ * Un sort peut demander plusieurs jets (`lines`) : sur une touche, le même total
+ * vs CA et vs Esquive PA/PM ; sur une sauvegarde, un jet d'attaque séparé vs Esquive
+ * pour les retraits. La réussite automatique applique tout sans jet.
  *
  * @example
  * buildSpellResolutionFormula({ resolution_mode: "attack_roll", attack_characteristic_key: "agi" })
@@ -10,6 +14,7 @@
 
 import { readSpellField } from "@/Utils/Entity/spellMinimalUsageDisplay";
 import { ELEMENT_PRIMARY_LABELS } from "@/Utils/Entity/Elements";
+import { detectSpellDodgeChecks, SPELL_DODGE_TARGETS } from "@/Utils/Entity/spellDodgeChecks";
 
 /**
  * Clé de caractéristique de sort → indice primaire d’élément (Elements.js).
@@ -63,6 +68,17 @@ const HIT_BONUS_KEY = "hit_bonus_creature";
 /**
  * @typedef {{ type: "text", text: string }|{ type: "chip", key: string }} FormulaPart
  * @typedef {{ text: string, colored?: boolean }} HeadlinePart
+ * @typedef {{
+ *   kind: "attack"|"save"|"auto",
+ *   elementLabel: string|null,
+ *   elementPrimary: number|null,
+ *   leftHeadline: HeadlinePart[],
+ *   rightHeadline: HeadlinePart[],
+ *   leftParts: FormulaPart[],
+ *   rightParts: FormulaPart[],
+ *   valueKeys: string[],
+ *   headline: string,
+ * }} ResolutionLine
  */
 
 /**
@@ -79,19 +95,119 @@ export function resolveSpellElementFromAbility(abilityKey) {
 }
 
 /**
+ * @param {Omit<ResolutionLine, "headline">} line
+ * @returns {ResolutionLine}
+ */
+function withHeadline(line) {
+    return { ...line, headline: joinHeadline(line.leftHeadline, line.rightHeadline) };
+}
+
+/**
+ * @param {string} label
+ * @param {string|null} elementLabel
+ * @returns {HeadlinePart[]}
+ */
+function coloredHeadline(label, elementLabel) {
+    return elementLabel
+        ? [
+              { text: label, colored: true },
+              { text: ` ${elementLabel}`, colored: true },
+          ]
+        : [{ text: label, colored: true }];
+}
+
+/**
+ * Jet d'attaque du lanceur vs CA et/ou Esquive PA/PM (même total).
+ *
+ * @param {string} abilityKey
+ * @param {{ vsArmor: boolean, dodges: Array<{ key: string, label: string }> }} targets
+ * @returns {ResolutionLine}
+ */
+function buildAttackLine(abilityKey, { vsArmor, dodges }) {
+    const ability = ABILITIES[abilityKey];
+    const { primary, label } = resolveSpellElementFromAbility(abilityKey);
+
+    const rightLabels = [...(vsArmor ? ["CA"] : []), ...dodges.map((d) => d.label)];
+    const rightHeadline = [{ text: rightLabels.join(" · "), colored: false }];
+
+    /** @type {FormulaPart[]} */
+    const rightParts = [];
+    if (vsArmor) rightParts.push({ type: "text", text: "CA" });
+    for (const dodge of dodges) {
+        if (rightParts.length) rightParts.push({ type: "text", text: " · " });
+        rightParts.push({ type: "chip", key: dodge.key });
+    }
+
+    const leftParts = ability
+        ? [
+              { type: "text", text: "1d20 + " },
+              { type: "chip", key: ability.mod },
+              { type: "text", text: " + " },
+              { type: "chip", key: HIT_BONUS_KEY },
+          ]
+        : [{ type: "text", text: "1d20 + modificateur de l'élément + bonus de touche" }];
+
+    return withHeadline({
+        kind: "attack",
+        elementLabel: label,
+        elementPrimary: primary,
+        leftHeadline: coloredHeadline("Jet d'attaque", label),
+        rightHeadline,
+        leftParts,
+        rightParts,
+        valueKeys: [
+            ...(ability ? [ability.mod, HIT_BONUS_KEY] : []),
+            ...dodges.map((d) => d.key),
+        ],
+    });
+}
+
+/**
+ * DD du lanceur vs jet de sauvegarde de la cible.
+ *
+ * @param {string} abilityKey
+ * @returns {ResolutionLine}
+ */
+function buildSaveLine(abilityKey) {
+    const ability = ABILITIES[abilityKey];
+    const { primary, label } = resolveSpellElementFromAbility(abilityKey);
+    return withHeadline({
+        kind: "save",
+        elementLabel: label,
+        elementPrimary: primary,
+        leftHeadline: coloredHeadline("Degré de difficulté", label),
+        rightHeadline: coloredHeadline("jet de sauvegarde", label),
+        leftParts: ability
+            ? [
+                  { type: "text", text: "DD " },
+                  { type: "chip", key: ability.dc },
+              ]
+            : [{ type: "text", text: "DD de l'élément du lanceur" }],
+        rightParts: ability
+            ? [
+                  { type: "text", text: "1d20 + " },
+                  { type: "chip", key: ability.save },
+              ]
+            : [{ type: "text", text: "1d20 + sauvegarde de l'élément" }],
+        valueKeys: ability ? [ability.dc, ability.save] : [],
+    });
+}
+
+/**
  * @param {object|null|undefined} entity
  * @returns {{
  *   show: boolean,
  *   mode: string,
+ *   lines: ResolutionLine[],
+ *   note: string,
+ *   valueKeys: string[],
+ *   headline: string,
  *   elementLabel: string|null,
  *   elementPrimary: number|null,
  *   leftHeadline: HeadlinePart[],
  *   rightHeadline: HeadlinePart[],
  *   leftParts: FormulaPart[],
  *   rightParts: FormulaPart[],
- *   note: string,
- *   valueKeys: string[],
- *   headline: string,
  *   parts: FormulaPart[],
  * }}
  */
@@ -100,153 +216,62 @@ export function buildSpellResolutionFormula(entity) {
     const willing = Boolean(
         readSpellField(entity, "autoSuccessIfWillingTarget", "auto_success_if_willing_target"),
     );
+
+    /** @type {ResolutionLine[]} */
+    const lines = [];
+    if (mode === "auto_success") {
+        lines.push(
+            withHeadline({
+                kind: "auto",
+                elementLabel: null,
+                elementPrimary: null,
+                leftHeadline: [{ text: "Réussite automatique", colored: false }],
+                rightHeadline: [],
+                leftParts: [],
+                rightParts: [],
+                valueKeys: [],
+            }),
+        );
+    } else {
+        const dodgeInfo = detectSpellDodgeChecks(entity);
+        const dodges = dodgeInfo.kinds.map((k) => SPELL_DODGE_TARGETS[k]);
+        const removalOnly = dodges.length > 0 && !dodgeInfo.hasOtherEffects;
+        const attackKey = String(
+            readSpellField(entity, "attackCharacteristicKey", "attack_characteristic_key") || "",
+        );
+
+        if (mode === "saving_throw") {
+            const saveKey = String(
+                readSpellField(entity, "saveCharacteristicKey", "save_characteristic_key") || "",
+            );
+            if (!removalOnly) lines.push(buildSaveLine(saveKey));
+            if (dodges.length) {
+                lines.push(buildAttackLine(attackKey || saveKey, { vsArmor: false, dodges }));
+            }
+        } else {
+            lines.push(buildAttackLine(attackKey, { vsArmor: !removalOnly, dodges }));
+        }
+    }
+
+    const main = lines[0];
     const note =
         willing && mode !== "auto_success" ? "Réussite automatique si la cible est consentante." : "";
-
-    const empty = {
-        show: true,
-        mode,
-        elementLabel: null,
-        elementPrimary: null,
-        leftHeadline: [],
-        rightHeadline: [],
-        leftParts: [],
-        rightParts: [],
-        note: "",
-        valueKeys: [],
-        headline: "",
-        parts: [],
-    };
-
-    if (mode === "auto_success") {
-        return {
-            ...empty,
-            leftHeadline: [{ text: "Réussite automatique", colored: false }],
-            headline: "Réussite automatique",
-            note: "",
-        };
-    }
-
-    if (mode === "saving_throw") {
-        const abilityKey = String(
-            readSpellField(entity, "saveCharacteristicKey", "save_characteristic_key") || "",
-        );
-        const ability = ABILITIES[abilityKey];
-        const { primary, label } = resolveSpellElementFromAbility(abilityKey);
-        const leftHeadline = label
-            ? [
-                  { text: "Degré de difficulté", colored: true },
-                  { text: ` ${label}`, colored: true },
-              ]
-            : [{ text: "Degré de difficulté", colored: true }];
-        const rightHeadline = label
-            ? [
-                  { text: "jet de sauvegarde", colored: true },
-                  { text: ` ${label}`, colored: true },
-              ]
-            : [{ text: "jet de sauvegarde", colored: true }];
-
-        if (!ability) {
-            const leftParts = [
-                { type: "text", text: "DD de l'élément du lanceur" },
-            ];
-            const rightParts = [
-                { type: "text", text: "1d20 + sauvegarde de l'élément" },
-            ];
-            return {
-                show: true,
-                mode,
-                elementLabel: label,
-                elementPrimary: primary,
-                leftHeadline,
-                rightHeadline,
-                leftParts,
-                rightParts,
-                note,
-                valueKeys: [],
-                headline: joinHeadline(leftHeadline, rightHeadline),
-                parts: [...leftParts, { type: "text", text: " vs " }, ...rightParts],
-            };
-        }
-
-        const leftParts = [
-            { type: "text", text: "DD " },
-            { type: "chip", key: ability.dc },
-        ];
-        const rightParts = [
-            { type: "text", text: "1d20 + " },
-            { type: "chip", key: ability.save },
-        ];
-        return {
-            show: true,
-            mode,
-            elementLabel: label,
-            elementPrimary: primary,
-            leftHeadline,
-            rightHeadline,
-            leftParts,
-            rightParts,
-            note,
-            valueKeys: [ability.dc, ability.save],
-            headline: joinHeadline(leftHeadline, rightHeadline),
-            parts: [...leftParts, { type: "text", text: " vs " }, ...rightParts],
-        };
-    }
-
-    const abilityKey = String(
-        readSpellField(entity, "attackCharacteristicKey", "attack_characteristic_key") || "",
-    );
-    const ability = ABILITIES[abilityKey];
-    const { primary, label } = resolveSpellElementFromAbility(abilityKey);
-    const leftHeadline = label
-        ? [
-              { text: "Jet d'attaque", colored: true },
-              { text: ` ${label}`, colored: true },
-          ]
-        : [{ text: "Jet d'attaque", colored: true }];
-    const rightHeadline = [{ text: "CA", colored: false }];
-
-    if (!ability) {
-        const leftParts = [
-            { type: "text", text: "1d20 + modificateur de l'élément + bonus de touche" },
-        ];
-        const rightParts = [{ type: "text", text: "CA" }];
-        return {
-            show: true,
-            mode,
-            elementLabel: label,
-            elementPrimary: primary,
-            leftHeadline,
-            rightHeadline,
-            leftParts,
-            rightParts,
-            note,
-            valueKeys: [],
-            headline: joinHeadline(leftHeadline, rightHeadline),
-            parts: [...leftParts, { type: "text", text: " vs " }, ...rightParts],
-        };
-    }
-
-    const leftParts = [
-        { type: "text", text: "1d20 + " },
-        { type: "chip", key: ability.mod },
-        { type: "text", text: " + " },
-        { type: "chip", key: HIT_BONUS_KEY },
-    ];
-    const rightParts = [{ type: "text", text: "CA" }];
     return {
         show: true,
         mode,
-        elementLabel: label,
-        elementPrimary: primary,
-        leftHeadline,
-        rightHeadline,
-        leftParts,
-        rightParts,
+        lines,
         note,
-        valueKeys: [ability.mod, HIT_BONUS_KEY],
-        headline: joinHeadline(leftHeadline, rightHeadline),
-        parts: [...leftParts, { type: "text", text: " vs " }, ...rightParts],
+        valueKeys: [...new Set(lines.flatMap((l) => l.valueKeys))],
+        headline: lines.map((l) => l.headline).join(" + "),
+        elementLabel: main.elementLabel,
+        elementPrimary: main.elementPrimary,
+        leftHeadline: main.leftHeadline,
+        rightHeadline: main.rightHeadline,
+        leftParts: main.leftParts,
+        rightParts: main.rightParts,
+        parts: main.rightParts.length
+            ? [...main.leftParts, { type: "text", text: " vs " }, ...main.rightParts]
+            : [...main.leftParts],
     };
 }
 

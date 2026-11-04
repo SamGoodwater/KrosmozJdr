@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Les retraits de PA et de PM se jouent contre l’Esquive
+
+Un retrait de PA ou de PM ne se compare pas à la CA, mais à l’Esquive PA ou à l’Esquive PM. La fiche d’un sort l’indique maintenant d’elle-même, d’après ses effets. Un sort à touche affiche « Jet d’attaque vs CA · Esquive PM » : un seul dé pour les deux. Un sort à sauvegarde ajoute une ligne « Jet d’attaque vs Esquive PA ». Ce jet décide seul du retrait, la sauvegarde ne compte que pour le reste. Un sort qui ne fait que retirer n’affiche plus la CA ni la sauvegarde. Un sort de soutien applique tout, retraits compris, sans aucun jet. Les règles des sorts (3.3.2) et L’Essentiel disent la même chose.
+
 ## Novembre 2026 — Enregistrer une classe ne mélange plus ses sorts
 
 Enregistrer une classe gardait le nom et le reste, mais rangeait tous les sorts au premier emplacement. Les choix suivants disparaissaient. Chaque sort reste à sa place.
