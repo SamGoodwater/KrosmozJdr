@@ -303,10 +303,16 @@ export function buildUnifiedSubEffectModel(input) {
 }
 
 /**
- * Valeur affichée sur le pivot (formule, dés, min–max).
+ * Valeur affichée sur le pivot (formule, dés, min–max, sinon le montant écrit en `params.value`).
+ *
+ * Les retraits et bonus de fiche (PA, PM, PO…) stockent souvent le nombre dans `params.value`
+ * sans `value_formula`. Sans ce repli, la ligne affiche seulement « en PA ».
  *
  * @param {object} row
  * @returns {string}
+ *
+ * @example
+ * formatPivotRowValue({ params: { characteristic: "pa", value: "1" } }); // "1"
  */
 export function formatPivotRowValue(row) {
     const r = row && typeof row === "object" ? row : {};
@@ -330,6 +336,13 @@ export function formatPivotRowValue(row) {
     }
     if (vmin != null) {
         return String(vmin);
+    }
+    const raw = p.value;
+    if (typeof raw === "number" && Number.isFinite(raw)) {
+        return String(raw);
+    }
+    if (typeof raw === "string" && raw.trim() !== "") {
+        return raw.trim();
     }
     return "";
 }

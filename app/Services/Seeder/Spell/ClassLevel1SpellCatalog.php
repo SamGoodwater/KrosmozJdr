@@ -196,6 +196,7 @@ final class ClassLevel1SpellCatalog
      *     save_dc_formula: string|null,
      *     save_success_note: string|null,
      *     auto_success_if_willing_target: bool,
+     *     allows_reaction: bool,
      *     is_magic: bool,
      *     powerful: int,
      *     duration: string|null,
@@ -203,7 +204,7 @@ final class ClassLevel1SpellCatalog
      *     effect: string,
      *     description: string,
      *     sub_effects: list<array<string, mixed>>,
-     *     intensification: list<array<string, mixed>>
+     *     intensification: list<array<string, mixed>>|null
      * }>
      */
     public function entries(): array
@@ -275,6 +276,7 @@ final class ClassLevel1SpellCatalog
                 'save_dc_formula' => $this->nullableString($row['save_dc_formula'] ?? null),
                 'save_success_note' => $this->nullableString($row['save_success_note'] ?? null),
                 'auto_success_if_willing_target' => (bool) ($row['auto_success_if_willing_target'] ?? false),
+                'allows_reaction' => (bool) ($row['allows_reaction'] ?? false),
                 'is_magic' => (bool) ($row['is_magic'] ?? false),
                 'powerful' => max(0, (int) ($row['powerful'] ?? 0)),
                 'duration' => $this->nullableString($row['duration'] ?? null),
@@ -282,7 +284,9 @@ final class ClassLevel1SpellCatalog
                 'effect' => (string) ($row['effect'] ?? ''),
                 'description' => (string) ($row['description'] ?? ''),
                 'sub_effects' => $subEffects,
-                'intensification' => $this->intensification($row['intensification'] ?? null),
+                'intensification' => array_key_exists('intensification', $row)
+                    ? $this->intensification($row['intensification'])
+                    : null,
             ];
         }
 

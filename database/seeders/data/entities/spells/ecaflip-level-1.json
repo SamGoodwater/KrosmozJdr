@@ -4,7 +4,7 @@
     "state": "playable",
     "entries": [
         {
-            "cast_per_target": "0",
+            "cast_per_target": "2",
             "number_between_two_cast": "0",
             "cast_in_line": false,
             "po_editable": true,
@@ -54,7 +54,35 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "air",
+                                "value": "1d6",
+                                "value_formula": "1d6",
+                                "dice_formula": "1d6",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "jump"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -81,8 +109,8 @@
                     ]
                 },
                 {
-                    "tier": "II",
-                    "required_creature_level": 16,
+                    "tier": "III",
+                    "required_creature_level": 15,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -109,7 +137,7 @@
                     ]
                 },
                 {
-                    "tier": "III",
+                    "tier": "IV",
                     "required_creature_level": 20,
                     "effect": "",
                     "sub_effects": [
@@ -137,10 +165,11 @@
                     ]
                 }
             ],
-            "official_id": "jdr:ecaflip:reflexes"
+            "official_id": "jdr:ecaflip:reflexes",
+            "cast_in_diagonal": false
         },
         {
-            "cast_per_target": "0",
+            "cast_per_target": "2",
             "number_between_two_cast": "0",
             "cast_in_line": false,
             "po_editable": true,
@@ -193,7 +222,38 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "1d6",
+                                "value_formula": "1d6",
+                                "dice_formula": "1d6",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -214,17 +274,17 @@
                             "order": 1,
                             "params": {
                                 "characteristic": "fire",
-                                "value": "1d6",
-                                "value_formula": "1d6",
-                                "dice_formula": "1d6",
+                                "value": "1d8",
+                                "value_formula": "1d8",
+                                "dice_formula": "1d8",
                                 "effect_direction": "action"
                             }
                         }
                     ]
                 },
                 {
-                    "tier": "II",
-                    "required_creature_level": 16,
+                    "tier": "III",
+                    "required_creature_level": 15,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -245,16 +305,16 @@
                             "order": 1,
                             "params": {
                                 "characteristic": "fire",
-                                "value": "1d8",
-                                "value_formula": "1d8",
-                                "dice_formula": "1d8",
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
                                 "effect_direction": "action"
                             }
                         }
                     ]
                 },
                 {
-                    "tier": "III",
+                    "tier": "IV",
                     "required_creature_level": 20,
                     "effect": "",
                     "sub_effects": [
@@ -276,19 +336,21 @@
                             "order": 1,
                             "params": {
                                 "characteristic": "fire",
-                                "value": "2d6",
-                                "value_formula": "2d6",
-                                "dice_formula": "2d6",
+                                "value": "3d6",
+                                "value_formula": "3d6",
+                                "dice_formula": "3d6",
                                 "effect_direction": "action"
                             }
                         }
                     ]
                 }
             ],
-            "official_id": "jdr:ecaflip:langue-rapeuse"
+            "official_id": "jdr:ecaflip:langue-rapeuse",
+            "cast_in_diagonal": false,
+            "auto_success_if_willing_target": true
         },
         {
-            "cast_per_target": "0",
+            "cast_per_target": "2",
             "number_between_two_cast": "0",
             "cast_in_line": false,
             "po_editable": true,
@@ -328,7 +390,26 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -346,8 +427,8 @@
                     ]
                 },
                 {
-                    "tier": "II",
-                    "required_creature_level": 16,
+                    "tier": "III",
+                    "required_creature_level": 15,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -365,7 +446,7 @@
                     ]
                 },
                 {
-                    "tier": "III",
+                    "tier": "IV",
                     "required_creature_level": 20,
                     "effect": "",
                     "sub_effects": [
@@ -384,16 +465,17 @@
                     ]
                 }
             ],
-            "official_id": "jdr:ecaflip:griffe-joueuse"
+            "official_id": "jdr:ecaflip:griffe-joueuse",
+            "cast_in_diagonal": false
         },
         {
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "0",
             "cast_in_line": false,
             "po_editable": true,
             "sight_line": true,
             "is_magic": false,
-            "effect": "Sans état : dégâts seuls. Pile : −PA (1 ; 2 dès le palier 16). Face : −PM (même montant). Consommation (niv. 7+) : −PA et −PM ; l'état est retiré. Le retrait ne se cumule pas sur une même cible.",
+            "effect": "Sans état : dégâts seuls. Pile : −PA (1 ; 2 dès le palier 15). Face : −PM (même montant). Consommation (niv. 7+) : −PA et −PM ; l'état est retiré. Le retrait ne se cumule pas sur une même cible.",
             "resolution_mode": "attack_roll",
             "key": "lapement",
             "name": "Lapement",
@@ -446,7 +528,46 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1"
+                            }
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "order": 2,
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1"
+                            }
+                        }
+                    ],
+                    "cast_per_turn": "2",
+                    "cast_per_target": "2"
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -480,11 +601,12 @@
                             }
                         }
                     ],
-                    "cast_per_turn": "2"
+                    "cast_per_turn": "2",
+                    "cast_per_target": "2"
                 },
                 {
-                    "tier": "II",
-                    "required_creature_level": 16,
+                    "tier": "III",
+                    "required_creature_level": 15,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -518,10 +640,11 @@
                             }
                         }
                     ],
-                    "cast_per_turn": "3"
+                    "cast_per_turn": "3",
+                    "cast_per_target": "2"
                 },
                 {
-                    "tier": "III",
+                    "tier": "IV",
                     "required_creature_level": 20,
                     "effect": "",
                     "sub_effects": [
@@ -556,13 +679,15 @@
                             }
                         }
                     ],
-                    "cast_per_turn": "3"
+                    "cast_per_turn": "3",
+                    "cast_per_target": "2"
                 }
             ],
-            "official_id": "jdr:ecaflip:lapement"
+            "official_id": "jdr:ecaflip:lapement",
+            "cast_in_diagonal": false
         },
         {
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "0",
             "cast_in_line": false,
             "po_editable": true,
@@ -597,41 +722,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "déplacer",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "cells_formula": "3",
-                                "movement_kind": "jump"
-                            }
-                        }
-                    ],
-                    "po_max": "3"
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "déplacer",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "cells_formula": "3",
-                                "movement_kind": "jump"
-                            }
-                        }
-                    ],
-                    "po_max": "3"
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 9,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -647,10 +738,11 @@
                     "po_max": "3"
                 }
             ],
-            "official_id": "jdr:ecaflip:bond-du-felin"
+            "official_id": "jdr:ecaflip:bond-du-felin",
+            "cast_in_diagonal": false
         },
         {
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "0",
             "cast_in_line": false,
             "po_editable": true,
@@ -688,39 +780,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "autre",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "value": "Échange de place avec la cible."
-                            }
-                        }
-                    ],
-                    "po_max": "3"
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "autre",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "value": "Échange de place avec la cible."
-                            }
-                        }
-                    ],
-                    "po_max": "3"
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 9,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -735,16 +795,18 @@
                     "po_max": "3"
                 }
             ],
-            "official_id": "jdr:ecaflip:entrechat"
+            "official_id": "jdr:ecaflip:entrechat",
+            "cast_in_diagonal": false,
+            "auto_success_if_willing_target": true
         },
         {
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "3",
             "cast_in_line": false,
             "po_editable": true,
             "sight_line": true,
             "is_magic": false,
-            "effect": "Sans état : zone 2×2 (3×3 dès le palier 16), soin 1d4 (1d6 dès 13), révèle l'invisible. Pile : zone agrandie d'un cran. Face : soin du palier suivant. Consommation (niv. 7+) : zone agrandie et soin du palier suivant ; l'état est retiré.",
+            "effect": "Sans état : zone 2×2 (3×3 dès le palier 16), soin 1d4 (1d6 dès 9), révèle l'invisible. Pile : zone agrandie d'un cran. Face : soin du palier suivant. Consommation (niv. 7+) : zone agrandie et soin du palier suivant ; l'état est retiré.",
             "resolution_mode": "auto_success",
             "key": "perception",
             "name": "Perception",
@@ -784,7 +846,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 9,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -835,42 +897,16 @@
                             }
                         }
                     ]
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "soigner",
-                            "area": "rect-3x3",
-                            "order": 0,
-                            "params": {
-                                "characteristic": "fire",
-                                "value": "1d8",
-                                "value_formula": "1d8",
-                                "dice_formula": "1d8",
-                                "effect_direction": "action"
-                            }
-                        },
-                        {
-                            "slug": "autre",
-                            "area": "rect-3x3",
-                            "order": 1,
-                            "params": {
-                                "value": "Révèle les créatures invisibles dans la zone."
-                            }
-                        }
-                    ]
                 }
             ],
-            "official_id": "jdr:ecaflip:perception"
+            "official_id": "jdr:ecaflip:perception",
+            "cast_in_diagonal": false
         },
         {
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "3",
             "cast_in_line": false,
-            "po_editable": true,
+            "po_editable": false,
             "sight_line": true,
             "is_magic": false,
             "effect": "Pendant 1 tour, critiques sur 19 ou 20. La première fois que tu subis des dégâts pendant cette durée, ils augmentent de 1d4.",
@@ -894,7 +930,8 @@
                     "area": "point",
                     "order": 0,
                     "params": {
-                        "value": "Critiques sur 19 ou 20."
+                        "value": "Critiques sur 19 ou 20.",
+                        "duration_formula": "1"
                     },
                     "duration_formula": "1"
                 },
@@ -903,7 +940,8 @@
                     "area": "point",
                     "order": 1,
                     "params": {
-                        "value": "+1d4 au premier dégât subi pendant la durée."
+                        "value": "+1d4 au premier dégât subi pendant la durée.",
+                        "duration_formula": "1"
                     },
                     "duration_formula": "1"
                 }
@@ -911,7 +949,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 10,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -919,7 +957,8 @@
                             "area": "point",
                             "order": 0,
                             "params": {
-                                "value": "Critiques sur 19 ou 20."
+                                "value": "Critiques sur 19 ou 20.",
+                                "duration_formula": "2"
                             },
                             "duration_formula": "2"
                         },
@@ -928,7 +967,8 @@
                             "area": "point",
                             "order": 1,
                             "params": {
-                                "value": "+1d4 au premier dégât subi pendant la durée."
+                                "value": "+1d4 au premier dégât subi pendant la durée.",
+                                "duration_formula": "2"
                             },
                             "duration_formula": "2"
                         }
@@ -936,32 +976,7 @@
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "autre",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "value": "Critiques sur 19 ou 20."
-                            },
-                            "duration_formula": "2"
-                        },
-                        {
-                            "slug": "autre",
-                            "area": "point",
-                            "order": 1,
-                            "params": {
-                                "value": "+1d4 au premier dégât subi pendant la durée."
-                            },
-                            "duration_formula": "2"
-                        }
-                    ]
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 18,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -985,7 +1000,9 @@
                     ]
                 }
             ],
-            "official_id": "jdr:ecaflip:trefle"
+            "official_id": "jdr:ecaflip:trefle",
+            "cast_in_diagonal": false,
+            "duration": "1 tour"
         }
     ]
 }

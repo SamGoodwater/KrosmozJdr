@@ -280,14 +280,18 @@ final class ClassLevel1SpellCatalogTest extends TestCase
         return $entries;
     }
 
-    public function test_iop_spells_carry_three_intensification_tiers(): void
+    public function test_iop_elemental_spell_uses_the_level_1_ladder(): void
     {
         $catalog = ClassLevel1SpellCatalog::load();
         $pression = $catalog->entries()[0];
-        $this->assertCount(3, $pression['intensification']);
+        $this->assertCount(4, $pression['intensification']);
         $this->assertSame('I', $pression['intensification'][0]['tier']);
-        $this->assertSame(13, $pression['intensification'][0]['required_creature_level']);
-        $this->assertSame('2d6+Force', $pression['intensification'][0]['sub_effects'][0]['params']['value']);
+        $this->assertSame(
+            [5, 10, 15, 20],
+            array_column($pression['intensification'], 'required_creature_level'),
+        );
+        $this->assertSame('3d4+Force', $pression['intensification'][0]['sub_effects'][0]['params']['value']);
+        $this->assertSame('3d12+Force', $pression['intensification'][3]['sub_effects'][0]['params']['value']);
 
         $progression = ClassLevel1SpellCatalog::load(
             ClassLevel1SpellCatalog::directory().'/iop-progression.json'
@@ -301,9 +305,26 @@ final class ClassLevel1SpellCatalogTest extends TestCase
         }
         $this->assertNotNull($tempete);
         $this->assertSame(12, $tempete['character_level']);
+        $this->assertCount(1, $tempete['intensification']);
+        $this->assertSame(17, $tempete['intensification'][0]['required_creature_level']);
         $this->assertSame('5d6+Agilité', $tempete['intensification'][0]['sub_effects'][0]['params']['value']);
-        $this->assertSame([], $tempete['intensification'][1]['sub_effects'] ?? []);
-        $this->assertSame([], $tempete['intensification'][2]['sub_effects'] ?? []);
+    }
+
+    public function test_cra_elemental_spell_uses_the_level_1_ladder(): void
+    {
+        $catalog = ClassLevel1SpellCatalog::load(
+            ClassLevel1SpellCatalog::directory().'/cra-level-1.json'
+        );
+        $fleche = $catalog->entries()[0];
+        $this->assertSame('Flèche harcelante', $fleche['name']);
+        $this->assertSame(
+            [5, 10, 15, 20],
+            array_column($fleche['intensification'], 'required_creature_level'),
+        );
+        $this->assertSame('2d4+Agilité', $fleche['intensification'][0]['sub_effects'][0]['params']['value']);
+        $this->assertSame('3d8+Agilité', $fleche['intensification'][3]['sub_effects'][0]['params']['value']);
+        $this->assertArrayNotHasKey('cast_per_turn', $fleche['intensification'][0]);
+        $this->assertSame('3', $fleche['intensification'][2]['cast_per_turn']);
     }
 
     public function test_unknown_resolution_mode_is_rejected(): void

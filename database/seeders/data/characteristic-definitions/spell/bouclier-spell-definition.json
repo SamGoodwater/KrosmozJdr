@@ -8,7 +8,7 @@
         "descriptions": "Bouclier (sous-effet protéger, 3.2.4.2). Absorbe les dégâts avant les PV temporaires puis les PV ; dissipable. Exception : n’encaisse pas les dégâts de chute ni de poussée. Distinct des PV temporaires (`pv_temporaires_spell`). Barèmes alignés sur le budget de soins.",
         "icon": "armorClass.webp",
         "icon_false": null,
-        "color": "brown",
+        "color": "gray",
         "value_overrides": null,
         "hide_when_empty": false,
         "hide_when_false": false,

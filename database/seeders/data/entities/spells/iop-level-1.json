@@ -14,15 +14,15 @@
             "element": "earth",
             "pa": "3",
             "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
+            "po_max": "3",
+            "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "2",
             "resolution_mode": "attack_roll",
             "attack_characteristic_key": "strong",
             "is_magic": false,
             "powerful": 3,
-            "effect": "Dégâts de Terre au contact. Deux fois par tour.",
+            "effect": "Dégâts de Terre. Deux fois par tour, deux fois par cible.",
             "description": "Tu frappes net, d’un coup de Wakfu terreux, à bout portant.",
             "sub_effects": [
                 {
@@ -41,7 +41,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 5,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -49,9 +49,9 @@
                             "area": "point",
                             "params": {
                                 "characteristic": "earth",
-                                "value": "2d6+Force",
-                                "value_formula": "2d6+[strong]",
-                                "dice_formula": "2d6+[strong]",
+                                "value": "3d4+Force",
+                                "value_formula": "3d4+[strong]",
+                                "dice_formula": "3d4+[strong]",
                                 "value_formula_crit": "3d6+[strong]",
                                 "effect_direction": "action"
                             }
@@ -60,26 +60,7 @@
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "frapper",
-                            "area": "point",
-                            "params": {
-                                "characteristic": "earth",
-                                "value": "3d6+Force",
-                                "value_formula": "3d6+[strong]",
-                                "dice_formula": "3d6+[strong]",
-                                "value_formula_crit": "4d6+[strong]",
-                                "effect_direction": "action"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 10,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -90,6 +71,44 @@
                                 "value": "4d6+Force",
                                 "value_formula": "4d6+[strong]",
                                 "dice_formula": "4d6+[strong]",
+                                "value_formula_crit": "4d6+[strong]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 15,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "4d8+Force",
+                                "value_formula": "4d8+[strong]",
+                                "dice_formula": "4d8+[strong]",
+                                "value_formula_crit": "5d6+[strong]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "3d12+Force",
+                                "value_formula": "3d12+[strong]",
+                                "dice_formula": "3d12+[strong]",
                                 "value_formula_crit": "5d6+[strong]",
                                 "effect_direction": "action"
                             }
@@ -97,7 +116,11 @@
                     ]
                 }
             ],
-            "state": "playable"
+            "state": "playable",
+            "cast_per_target": "2",
+            "number_between_two_cast": "0",
+            "cast_in_line": false,
+            "cast_in_diagonal": false
         },
         {
             "key": "attaque-naturelle",
@@ -138,7 +161,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 5,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -157,7 +180,7 @@
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
+                    "required_creature_level": 10,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -176,7 +199,7 @@
                 },
                 {
                     "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 15,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -187,6 +210,25 @@
                                 "value": "4d6+Intelligence",
                                 "value_formula": "4d6+[intel]",
                                 "dice_formula": "4d6+[intel]",
+                                "value_formula_crit": "5d6+[intel]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "5d6+Intelligence",
+                                "value_formula": "5d6+[intel]",
+                                "dice_formula": "5d6+[intel]",
                                 "value_formula_crit": "5d6+[intel]",
                                 "effect_direction": "action"
                             }
@@ -206,25 +248,25 @@
             ],
             "element": "air",
             "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
+            "po_min": "0",
+            "po_max": "3",
+            "po_editable": true,
             "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
+            "cast_per_turn": "1",
+            "resolution_mode": "saving_throw",
             "is_magic": false,
             "powerful": 3,
-            "effect": "Dégâts d’Air au contact. Deux fois par tour.",
+            "effect": "Dégâts d’Air en croix, allié·e·s saufs. Bonus de dégâts pendant 1 tour. Relance de 2 tours.",
             "description": "Tu fends l’air d’un revers : la lame part avant que la cible ait bougé.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "point",
+                    "area": "cross-0-1",
                     "params": {
                         "characteristic": "air",
-                        "value": "1d6+Agilité",
-                        "value_formula": "1d6+[agi]",
-                        "dice_formula": "1d6+[agi]",
+                        "value": "1d4+Agilité",
+                        "value_formula": "1d4+[agi]",
+                        "dice_formula": "1d4+[agi]",
                         "value_formula_crit": "2d6+[agi]",
                         "effect_direction": "action"
                     }
@@ -235,17 +277,17 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 7,
                     "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
-                            "area": "point",
+                            "area": "cross-0-1",
                             "params": {
                                 "characteristic": "air",
-                                "value": "2d6+Agilité",
-                                "value_formula": "2d6+[agi]",
-                                "dice_formula": "2d6+[agi]",
+                                "value": "1d12+Agilité",
+                                "value_formula": "1d12+[agi]",
+                                "dice_formula": "1d12+[agi]",
                                 "value_formula_crit": "3d6+[agi]",
                                 "effect_direction": "action"
                             }
@@ -254,37 +296,18 @@
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
+                    "required_creature_level": 14,
                     "effect": "",
                     "sub_effects": [
                         {
                             "slug": "frapper",
-                            "area": "point",
+                            "area": "cross-0-1",
                             "params": {
                                 "characteristic": "air",
-                                "value": "3d6+Agilité",
-                                "value_formula": "3d6+[agi]",
-                                "dice_formula": "3d6+[agi]",
+                                "value": "3d4+Agilité",
+                                "value_formula": "3d4+[agi]",
+                                "dice_formula": "3d4+[agi]",
                                 "value_formula_crit": "4d6+[agi]",
-                                "effect_direction": "action"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "frapper",
-                            "area": "point",
-                            "params": {
-                                "characteristic": "air",
-                                "value": "4d6+Agilité",
-                                "value_formula": "4d6+[agi]",
-                                "dice_formula": "4d6+[agi]",
-                                "value_formula_crit": "5d6+[agi]",
                                 "effect_direction": "action"
                             }
                         }
@@ -292,7 +315,13 @@
                 }
             ],
             "official_id": "jdr:epee-divine",
-            "state": "playable"
+            "state": "playable",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "auto_success_if_willing_target": true,
+            "duration": "1 tour"
         },
         {
             "key": "epee-de-givre",
@@ -346,7 +375,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 5,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -377,7 +406,7 @@
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
+                    "required_creature_level": 10,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -408,7 +437,7 @@
                 },
                 {
                     "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 15,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -419,6 +448,37 @@
                                 "value": "4d6+Chance",
                                 "value_formula": "4d6+[chance]",
                                 "dice_formula": "4d6+[chance]",
+                                "value_formula_crit": "5d6+[chance]",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "Chance",
+                                "value_formula": "[chance]",
+                                "effect_direction": "self",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "5d6+Chance",
+                                "value_formula": "5d6+[chance]",
+                                "dice_formula": "5d6+[chance]",
                                 "value_formula_crit": "5d6+[chance]",
                                 "effect_direction": "action"
                             }
@@ -454,7 +514,7 @@
             "pa": "3",
             "po_min": "1",
             "po_max": "4",
-            "po_editable": false,
+            "po_editable": true,
             "sight_line": false,
             "cast_per_turn": "1",
             "resolution_mode": "auto_success",
@@ -477,7 +537,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 9,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -490,44 +550,15 @@
                                 "effect_direction": "action"
                             }
                         }
-                    ]
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "déplacer",
-                            "area": "point",
-                            "params": {
-                                "cells_formula": "6",
-                                "teleport": true,
-                                "movement_kind": "teleport",
-                                "effect_direction": "action"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "déplacer",
-                            "area": "point",
-                            "params": {
-                                "cells_formula": "7",
-                                "teleport": true,
-                                "movement_kind": "teleport",
-                                "effect_direction": "action"
-                            }
-                        }
-                    ]
+                    ],
+                    "po_max": "6"
                 }
             ],
-            "state": "playable"
+            "state": "playable",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "cast_in_line": false,
+            "cast_in_diagonal": false
         },
         {
             "key": "concentration",
@@ -567,26 +598,7 @@
                     }
                 }
             ],
-            "intensification": [
-                {
-                    "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
-                    "effect": "",
-                    "sub_effects": []
-                }
-            ],
+            "intensification": [],
             "state": "playable"
         }
     ]

@@ -64,7 +64,45 @@ final class SpellIntensificationCranTest extends TestCase
         ]);
 
         $this->assertStringContainsString('+2 aux jets d’attaque', $text);
-        $this->assertStringContainsString('Palier I (perso 13) : —', $text);
+        $this->assertStringContainsString('Palier I (perso 7) : —', $text);
         $this->assertStringContainsString('Palier III (perso 20) : —', $text);
+    }
+
+    public function test_schedule_follows_learn_level_and_elemental_slot(): void
+    {
+        $cran = new SpellIntensificationCran;
+
+        $this->assertSame([5, 10, 15, 20], $cran->scheduleLevels(1, true));
+        $this->assertSame([7, 14, 20], $cran->scheduleLevels(1, false));
+        $this->assertSame([17], $cran->scheduleLevels(12, false));
+    }
+
+    public function test_authored_levels_are_kept_and_empty_list_adds_none(): void
+    {
+        $cran = new SpellIntensificationCran;
+        $kept = $cran->tiersFor([
+            'intensification' => [
+                ['tier' => 'I', 'required_creature_level' => 5, 'effect' => '', 'sub_effects' => []],
+            ],
+        ]);
+        $this->assertSame(5, $kept[0]['required_creature_level']);
+
+        $this->assertSame([], $cran->tiersFor(['intensification' => []]));
+    }
+
+    public function test_level_12_default_is_a_single_rung_at_17(): void
+    {
+        $cran = new SpellIntensificationCran;
+        $tiers = $cran->defaultTiers([
+            'character_level' => 12,
+            'effect' => '1d6+Force',
+            'sub_effects' => [
+                ['slug' => 'frapper', 'params' => ['value_formula' => '1d6+[strong]']],
+            ],
+        ]);
+
+        $this->assertCount(1, $tiers);
+        $this->assertSame(17, $tiers[0]['required_creature_level']);
+        $this->assertSame('2d6+[strong]', $tiers[0]['sub_effects'][0]['params']['value_formula']);
     }
 }

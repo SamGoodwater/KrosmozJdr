@@ -171,7 +171,7 @@ return [
                     .'<li><strong>Combat qui compte</strong> — les [[kref:characteristic:action_points_creature|PA]] reviennent chaque tour, mais seulement pour tes <strong>sorts de classe</strong> : les dieux n’aident qu’avec les sorts qu’ils ont donnés. Une capacité ou un sort appris puise dans la réserve, même en combat.</li>'
                     .'<li><strong>Hors combat</strong> (ou combat sans enjeu) — la [[kref:characteristic:wakfu_reserve_creature|réserve de Wakfu]] paie. Elle vaut le bonus de maîtrise (+3 max d’équipement). <strong>1 point = une fois tes PA max</strong>.</li>'
                     .'</ul>'
-                    .'<p>Tu apprends <strong>12 sorts de classe</strong> d’ici le niveau 12 (3 au niveau 1, une variante par emplacement). Aux niv. <strong>13, 16 et 20</strong>, ces sorts s’intensifient tous ensemble : les dés montent, tu n’en apprends pas de nouveau. La concentration n’existe que si la fiche le dit.</p>'
+                    .'<p>Tu apprends <strong>12 sorts de classe</strong> d’ici le niveau 12 (3 au niveau 1, une variante par emplacement). Ensuite chaque sort s’intensifie sur <strong>ses</strong> lignes : les dés montent, tu n’en apprends pas de nouveau. Un sort peut n’avoir aucune ligne de plus. La concentration n’existe que si la fiche le dit.</p>'
                     .'<p>→ [[kref:page:essentiels-sorts-aptitudes|Sorts]] · [[kref:page:regles-3-3-sorts|3.3]]</p>',
             ],
             [

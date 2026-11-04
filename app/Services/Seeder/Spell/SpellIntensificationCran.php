@@ -5,21 +5,21 @@ declare(strict_types=1);
 namespace App\Services\Seeder\Spell;
 
 /**
- * Trois paliers d’intensification (I / II / III) pour un sort de classe.
+ * Lignes d’intensification d’un sort de classe (§3.3.6).
  *
- * Fiche prioritaire si {@code intensification} est déjà dans l’entrée ; sinon cran
- * par défaut de 3.3.6.3 : +1 dé (plafond 5d6 / 5d4) ou +1 case / tour.
+ * Fiche prioritaire si {@code intensification} est déjà dans l’entrée (tableau vide =
+ * aucune ligne). Sinon cran par défaut : une ligne par cran du repère, +1 dé
+ * (plafond 5d6 / 5d4) ou +1 case / tour.
+ *
+ * Le choix élémentaire du niveau 1 (slot 1) suit 5, 10, 15, 20. Les autres sorts
+ * suivent le repère de leur niveau d’apprentissage.
  *
  * @example $tiers = (new SpellIntensificationCran())->tiersFor($entry);
  */
 final class SpellIntensificationCran
 {
-    /** @var list<array{tier: string, required_creature_level: int}> */
-    public const TIERS = [
-        ['tier' => 'I', 'required_creature_level' => 13],
-        ['tier' => 'II', 'required_creature_level' => 16],
-        ['tier' => 'III', 'required_creature_level' => 20],
-    ];
+    /** @var list<string> */
+    private const TIER_LABELS = ['I', 'II', 'III', 'IV', 'V', 'VI'];
 
     /**
      * @param  array<string, mixed>  $entry
@@ -27,16 +27,46 @@ final class SpellIntensificationCran
      */
     public function tiersFor(array $entry): array
     {
-        $authored = $entry['intensification'] ?? null;
-        if (is_array($authored) && $authored !== []) {
-            return $this->normalizeAuthored($authored);
+        if (! array_key_exists('intensification', $entry) || $entry['intensification'] === null) {
+            return $this->defaultTiers($entry);
         }
 
-        return $this->defaultTiers($entry);
+        $authored = $entry['intensification'];
+        if (! is_array($authored) || $authored === []) {
+            return [];
+        }
+
+        return $this->normalizeAuthored($authored);
     }
 
     /**
-     * Concatène la ligne Appris et les trois paliers (y compris « — »).
+     * Niveaux d’intensification du repère §3.3.6.2, hors ligne d’apprentissage.
+     *
+     * @return list<int>
+     */
+    public function scheduleLevels(int $characterLevel, bool $elementalLevel1): array
+    {
+        if ($characterLevel === 1 && $elementalLevel1) {
+            return [5, 10, 15, 20];
+        }
+
+        return match ($characterLevel) {
+            1 => [7, 14, 20],
+            2 => [6, 13, 19],
+            4 => [9, 14, 19],
+            5 => [12, 20],
+            6 => [11, 18],
+            7 => [13, 18],
+            8 => [13, 20],
+            10 => [17],
+            11 => [20],
+            12 => [17],
+            default => [7, 14, 20],
+        };
+    }
+
+    /**
+     * Concatène la ligne Appris et les paliers (y compris « — »).
      *
      * @param  array<string, mixed>  $entry
      */
@@ -66,8 +96,10 @@ final class SpellIntensificationCran
         $kind = $this->kind($baseSubs);
         $previous = $baseEffect;
         $tiers = [];
+        $characterLevel = max(1, (int) ($entry['character_level'] ?? 1));
+        $elemental = $characterLevel === 1 && (int) ($entry['slot_index'] ?? 0) === 1;
 
-        foreach (self::TIERS as $index => $meta) {
+        foreach ($this->scheduleLevels($characterLevel, $elemental) as $index => $requiredLevel) {
             $steps = $index + 1;
             $text = $this->intensifyEffectText($baseEffect, $steps, $kind);
             $subs = $this->bumpSubEffects($baseSubs, $steps, $kind);
@@ -79,8 +111,8 @@ final class SpellIntensificationCran
             }
 
             $tiers[] = [
-                'tier' => $meta['tier'],
-                'required_creature_level' => $meta['required_creature_level'],
+                'tier' => self::TIER_LABELS[$index] ?? (string) ($index + 1),
+                'required_creature_level' => $requiredLevel,
                 'effect' => $text,
                 'sub_effects' => $subs,
             ];
@@ -96,8 +128,14 @@ final class SpellIntensificationCran
     private function normalizeAuthored(array $authored): array
     {
         $tiers = [];
-        foreach (self::TIERS as $index => $meta) {
-            $row = is_array($authored[$index] ?? null) ? $authored[$index] : [];
+        foreach (array_values($authored) as $index => $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $requiredLevel = (int) ($row['required_creature_level'] ?? 0);
+            if ($requiredLevel <= 0) {
+                continue;
+            }
             $subs = [];
             foreach (is_array($row['sub_effects'] ?? null) ? $row['sub_effects'] : [] as $sub) {
                 if (is_array($sub)) {
@@ -105,10 +143,11 @@ final class SpellIntensificationCran
                 }
             }
             $effect = trim((string) ($row['effect'] ?? ''));
+            $label = trim((string) ($row['tier'] ?? ''));
             // Un palier sans commentaire libre mais avec sous-effets reste valide.
             $tier = [
-                'tier' => $meta['tier'],
-                'required_creature_level' => $meta['required_creature_level'],
+                'tier' => $label !== '' ? $label : (self::TIER_LABELS[$index] ?? (string) ($index + 1)),
+                'required_creature_level' => $requiredLevel,
                 'effect' => $effect,
                 'sub_effects' => $subs,
             ];

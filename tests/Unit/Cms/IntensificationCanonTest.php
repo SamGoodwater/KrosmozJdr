@@ -20,17 +20,21 @@ final class IntensificationCanonTest extends TestCase
         $this->assertStringContainsString('**3.3.6** Intensification', $toc);
     }
 
-    public function test_intensification_uses_three_character_level_tiers(): void
+    public function test_intensification_follows_the_spell_not_a_fixed_grid(): void
     {
         $path = dirname(__DIR__, 3).'/private/game/rules/3-Jouer/3.3-sorts/3.3.6-intensification.md';
         $this->assertFileExists($path);
 
         $md = file_get_contents($path);
         $this->assertIsString($md);
-        $this->assertStringContainsString('**13, 16 et 20**', $md);
+        $this->assertStringContainsString('de niveaux fixes', $md);
+        $this->assertStringContainsString('1, 5, 10, 15, 20', $md);
+        $this->assertStringContainsString('1, 7, 14, 20', $md);
+        $this->assertStringContainsString('12, 17', $md);
         $this->assertStringContainsString('5d6+mod', $md);
         $this->assertStringContainsString('Format de fiche', $md);
         $this->assertStringContainsString('pas un 13', $md);
+        $this->assertStringNotContainsString('**13, 16 et 20**', $md);
     }
 
     public function test_specialization_sheet_format_is_locked(): void

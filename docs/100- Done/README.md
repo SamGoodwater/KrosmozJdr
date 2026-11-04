@@ -4,6 +4,28 @@
 
 Un retrait de PA ou de PM ne se compare pas à la CA, mais à l’Esquive PA ou à l’Esquive PM. La fiche d’un sort l’indique maintenant d’elle-même, d’après ses effets. Un sort à touche affiche « Jet d’attaque vs CA · Esquive PM » : un seul dé pour les deux. Un sort à sauvegarde ajoute une ligne « Jet d’attaque vs Esquive PA ». Ce jet décide seul du retrait, la sauvegarde ne compte que pour le reste. Un sort qui ne fait que retirer n’affiche plus la CA ni la sauvegarde. Un sort de soutien applique tout, retraits compris, sans aucun jet. Les règles des sorts (3.3.2) et L’Essentiel disent la même chose.
 
+## Novembre 2026 — Les lancers de l’Ecaflip suivent la fiche
+
+Sur l’Ecaflip, le nombre de lancers sur une même cible était à zéro, donc sans limite, alors que la fiche donne le même nombre que les lancers du tour, ou un nombre écrit à part. Portée, relance, ligne de vue, zone et paliers reprennent la fiche, y compris quand le nombre change en cours de route. Lapement passe à 2 lancers au niveau 5, écrit « 2 par cible » au niveau 10, puis 3 lancers par tour au niveau 15 sans dépasser 2 sur la même cible. Le retrait passe à 2 seulement au niveau 15.
+
+L’Iop en base n’est pas encore la fiche actuelle : beaucoup de sorts ont un autre nom ou s’apprennent à un autre niveau. Seuls Pression, Vitalité, Bond et Épée Divine, déjà au bon niveau, ont été recopiés. Les autres attendent d’être reconstruits un par un.
+
+## Novembre 2026 — Les sorts du Crâ suivent leur fiche
+
+Portée, lancers par tour et par cible, relance, durée, dés, zones et repoussements reprennent les lignes écrites de la fiche. Une case vide reprend la ligne d’avant. Quand le nombre par cible n’est pas écrit, il vaut le nombre par tour. Flèche harcelante passe à 3 lancers au niveau 15, pas avant. Vendetta, Représailles, Pas chassé et les autres paliers décalés retrouvent le niveau de la fiche.
+
+## Novembre 2026 — Le retrait affiche le nombre
+
+Sur une fiche de sort, un retrait (PA, PM, portée…) montrait seulement la caractéristique. Le nombre écrit sur la fiche, comme le 1 puis le 2 de Flèche ralentissante, apparaît maintenant devant.
+
+## Novembre 2026 — Les sorts du Crâ suivent leur repère
+
+Les flèches du Crâ ne montent plus toutes aux niveaux 13, 16 et 20. Chaque sort prend les lignes de son niveau d’apprentissage, et chaque ligne garde une vraie amélioration. Une flèche du niveau 1 grandit aux niveaux 5, 10, 15 et 20. Les balises et les sorts qui ne grossissent pas n’ont plus de ligne vide.
+
+## Novembre 2026 — L’intensification dépend du sort
+
+Un sort de classe ne grandit plus en même temps que tous les autres, aux niveaux 13, 16 et 20. Chaque fiche a ses propres lignes, selon le niveau où le sort s’apprend. Un sort général peut en avoir moins, ou aucune. Le Crâ, l’Iop et l’Ecaflip suivent ce repère.
+
 ## Novembre 2026 — Enregistrer une classe ne mélange plus ses sorts
 
 Enregistrer une classe gardait le nom et le reste, mais rangeait tous les sorts au premier emplacement. Les choix suivants disparaissaient. Chaque sort reste à sa place.
@@ -396,7 +418,7 @@ Sur les pages **Bibliothèques** (tableaux d’entités), un bouton **Créer** a
 
 L’**Érudit** est la première spécialisation réécrite sur le gabarit verrouillé : sept paliers, une capacité garantie plus une option, trois aptitudes (Politicien, Mémoire des formules, Expertise en Wakfu). **Façonneur de sorts** est une capacité garantie du palier 9 (effet lié au lancement de zone), pas une aptitude. Plus de liste D&D à rallonge.
 
-Les **sorts Iop** s’apprennent maintenant aux vrais emplacements (2, 4, 5, 6, 7, 8, 10, 11, 12). Chaque fiche porte ses lignes d’intensification : au niveau 13, 16 et 20, le même sort gagne un dé — ou une case, ou rien (« — ») s’il est déjà au plafond.
+Les **sorts Iop** s’apprennent maintenant aux vrais emplacements (2, 4, 5, 6, 7, 8, 10, 11, 12). Chaque fiche portait alors trois lignes d’intensification (13, 16 et 20) : un dé de plus, une case, ou rien (« — ») si le sort était déjà au plafond. Ce calendrier commun a été abandonné ensuite : les lignes dépendent du sort.
 
 ## Septembre 2026 — Conversion IA des PNJ : classes, spés et noms Dofus
 
@@ -404,7 +426,7 @@ Quand on convertit un PNJ par IA, le modèle **voit** les classes et spécialisa
 
 ## Septembre 2026 — Intensification des sorts et gabarit des fiches
 
-À partir du niveau 12, plus de nouveau sort de classe : les 12 déjà connus grandissent aux niveaux **13, 16 et 20**. On lit une nouvelle ligne sur la même fiche (plus de dés, de portée ou de durée), pas un 13ᵉ sort. Si la fiche n’a pas encore ces lignes, on ajoute un dé — plafonné à 5d6 (attaque) ou 5d4 (soin). Les spécialisations s’écrivent toutes sur le même gabarit à 7 paliers : 1 capacité garantie, 1 option, 1 compétence (2 seulement si c’est écrit), 3 aptitudes aux niveaux 3, 9 et 15.
+À partir du niveau 12, plus de nouveau sort de classe : les 12 déjà connus grandissent chacun sur leur fiche (plus de dés, de portée ou de durée), pas un 13ᵉ sort. Le premier calendrier posait ces lignes aux niveaux 13, 16 et 20 ; il a été remplacé par un repère selon le niveau d’apprentissage. Si la fiche n’a pas encore ses lignes, on ajoute un dé à chaque cran du repère — plafonné à 5d6 (attaque) ou 5d4 (soin). Les spécialisations s’écrivent toutes sur le même gabarit à 7 paliers : 1 capacité garantie, 1 option, 1 compétence (2 seulement si c’est écrit), 3 aptitudes aux niveaux 3, 9 et 15.
 
 ## Septembre 2026 — Refonte de la progression : moins de points, plus de choix
 

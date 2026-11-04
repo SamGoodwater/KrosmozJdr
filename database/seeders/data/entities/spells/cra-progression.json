@@ -19,10 +19,10 @@
             "po_editable": true,
             "sight_line": false,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "3",
             "cast_in_line": false,
-            "resolution_mode": "auto_success",
+            "resolution_mode": "saving_throw",
             "is_magic": false,
             "effect": "Avantage et bonus de dégâts pendant 3 tours.",
             "description": "Tu désignes une créature. Pendant 3 tours, tes attaques contre elle gagnent un avantage et des dégâts supplémentaires.",
@@ -50,7 +50,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 5,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -59,7 +59,7 @@
                             "order": 0,
                             "params": {
                                 "characteristic": "touch",
-                                "value": "2d6"
+                                "value": "1d8"
                             },
                             "duration_formula": "3"
                         },
@@ -76,33 +76,7 @@
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "booster",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "characteristic": "touch",
-                                "value": "2d6"
-                            },
-                            "duration_formula": "3"
-                        },
-                        {
-                            "slug": "autre",
-                            "area": "point",
-                            "order": 1,
-                            "params": {
-                                "value": "Avantage aux jets de touche contre la cible."
-                            },
-                            "duration_formula": "3"
-                        }
-                    ]
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 13,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -128,7 +102,10 @@
                 }
             ],
             "official_id": "jdr:cra:vendetta",
-            "duration": "3 tours"
+            "duration": "3 tours",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué."
         },
         {
             "key": "oeil-pour-oeil",
@@ -146,7 +123,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "3",
             "cast_in_line": false,
             "resolution_mode": "auto_success",
@@ -161,13 +138,14 @@
                     "params": {
                         "cells_formula": "1",
                         "movement_kind": "push"
-                    }
+                    },
+                    "duration_formula": "2"
                 }
             ],
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 9,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -177,29 +155,14 @@
                             "params": {
                                 "cells_formula": "2",
                                 "movement_kind": "push"
-                            }
+                            },
+                            "duration_formula": "2"
                         }
                     ]
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "déplacer",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "cells_formula": "2",
-                                "movement_kind": "push"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 19,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -209,13 +172,15 @@
                             "params": {
                                 "cells_formula": "3",
                                 "movement_kind": "push"
-                            }
+                            },
+                            "duration_formula": "2"
                         }
                     ]
                 }
             ],
             "dofusdb_id": "32454",
-            "duration": "2 tours"
+            "duration": "2 tours",
+            "allows_reaction": true
         },
         {
             "key": "fleche-de-recul",
@@ -266,7 +231,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 9,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -295,7 +260,7 @@
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
+                    "required_creature_level": 14,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -325,7 +290,7 @@
                 },
                 {
                     "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 19,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -373,7 +338,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "0",
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
@@ -398,7 +363,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 9,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -415,11 +380,12 @@
                             }
                         }
                     ],
-                    "cast_per_turn": "2"
+                    "cast_per_turn": "2",
+                    "cast_per_target": "2"
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
+                    "required_creature_level": 14,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -436,11 +402,12 @@
                             }
                         }
                     ],
-                    "cast_per_turn": "2"
+                    "cast_per_turn": "2",
+                    "cast_per_target": "2"
                 },
                 {
                     "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 19,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -457,7 +424,8 @@
                             }
                         }
                     ],
-                    "cast_per_turn": "2"
+                    "cast_per_turn": "2",
+                    "cast_per_target": "2"
                 }
             ],
             "element": "fire",
@@ -480,7 +448,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "2",
-            "cast_per_target": "0",
+            "cast_per_target": "2",
             "number_between_two_cast": "0",
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
@@ -505,14 +473,14 @@
                     "area": "rect-2x2",
                     "order": 1,
                     "params": {
-                        "value": "État Aveuglé. Révèle l'invisible."
+                        "value": "État Aveuglé. Révèle l'invisible. Les allié·e·s sont saufs."
                     }
                 }
             ],
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 9,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -532,14 +500,14 @@
                             "area": "rect-2x3",
                             "order": 1,
                             "params": {
-                                "value": "État Aveuglé. Révèle l'invisible."
+                                "value": "État Aveuglé. Révèle l'invisible. Les allié·e·s sont saufs."
                             }
                         }
                     ]
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
+                    "required_creature_level": 14,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -559,14 +527,14 @@
                             "area": "rect-3x3",
                             "order": 1,
                             "params": {
-                                "value": "État Aveuglé. Révèle l'invisible."
+                                "value": "État Aveuglé. Révèle l'invisible. Les allié·e·s sont saufs."
                             }
                         }
                     ]
                 },
                 {
                     "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 19,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -586,7 +554,7 @@
                             "area": "rect-4x4",
                             "order": 1,
                             "params": {
-                                "value": "État Aveuglé. Révèle l'invisible."
+                                "value": "État Aveuglé. Révèle l'invisible. Les allié·e·s sont saufs."
                             }
                         }
                     ]
@@ -612,7 +580,7 @@
             "po_editable": false,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "0",
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
@@ -645,7 +613,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 9,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -673,7 +641,7 @@
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
+                    "required_creature_level": 14,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -701,7 +669,7 @@
                 },
                 {
                     "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 19,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -748,7 +716,7 @@
             "po_editable": true,
             "sight_line": false,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "3",
             "cast_in_line": false,
             "resolution_mode": "auto_success",
@@ -769,29 +737,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "autre",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "value": "Critique à partir de 18. +3d4 dégâts en cas de critique."
-                            },
-                            "duration_formula": "2"
-                        }
-                    ]
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 15,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -824,7 +770,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "2",
             "cast_in_line": false,
             "resolution_mode": "saving_throw",
@@ -846,30 +792,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "retirer",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "characteristic": "pm",
-                                "value": "1 par attaque réussie"
-                            },
-                            "duration_formula": "2"
-                        }
-                    ]
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 14,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -907,7 +830,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "3",
             "cast_in_line": false,
             "resolution_mode": "auto_success",
@@ -933,26 +856,7 @@
                     "order": 1
                 }
             ],
-            "intensification": [
-                {
-                    "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
-                    "effect": "",
-                    "sub_effects": []
-                }
-            ],
+            "intensification": [],
             "dofusdb_id": "32476",
             "duration": "1 tour"
         },
@@ -971,7 +875,7 @@
             "po_editable": false,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "3",
             "cast_in_line": false,
             "resolution_mode": "auto_success",
@@ -988,26 +892,7 @@
                     }
                 }
             ],
-            "intensification": [
-                {
-                    "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
-                    "effect": "",
-                    "sub_effects": []
-                }
-            ],
+            "intensification": [],
             "official_id": "jdr:cra:balise-de-rappel"
         },
         {
@@ -1026,7 +911,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "2",
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
@@ -1103,43 +988,7 @@
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "frapper",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "characteristic": "air",
-                                "value": "2d8+Agilité",
-                                "value_formula": "2d8+[agi]",
-                                "dice_formula": "2d8+[agi]",
-                                "effect_direction": "action"
-                            }
-                        },
-                        {
-                            "slug": "retirer",
-                            "area": "point",
-                            "order": 1,
-                            "params": {
-                                "characteristic": "pm",
-                                "value": "1"
-                            }
-                        },
-                        {
-                            "slug": "autre",
-                            "area": "point",
-                            "order": 2,
-                            "params": {
-                                "value": "Rebondit sur 4 créatures à 4 PO ou moins."
-                            }
-                        }
-                    ]
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 18,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -1194,7 +1043,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "0",
             "cast_in_line": false,
             "resolution_mode": "saving_throw",
@@ -1257,36 +1106,7 @@
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "frapper",
-                            "area": "rect-3x3",
-                            "order": 0,
-                            "params": {
-                                "characteristic": "fire",
-                                "value": "2d10+Intelligence",
-                                "value_formula": "2d10+[intel]",
-                                "dice_formula": "2d10+[intel]",
-                                "effect_direction": "action"
-                            }
-                        },
-                        {
-                            "slug": "booster",
-                            "area": "point",
-                            "order": 1,
-                            "params": {
-                                "characteristic": "fire",
-                                "value": "[intel]"
-                            },
-                            "duration_formula": "1"
-                        }
-                    ]
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 18,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -1419,46 +1239,7 @@
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "frapper",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "characteristic": "water",
-                                "value": "2d8+Chance",
-                                "value_formula": "2d8+[chance]",
-                                "dice_formula": "2d8+[chance]",
-                                "effect_direction": "action"
-                            }
-                        },
-                        {
-                            "slug": "retirer",
-                            "area": "point",
-                            "order": 1,
-                            "params": {
-                                "characteristic": "pa",
-                                "value": "1"
-                            },
-                            "duration_formula": "1"
-                        },
-                        {
-                            "slug": "autre",
-                            "area": "point",
-                            "order": 2,
-                            "params": {
-                                "value": "Empêche la réaction pendant 1 tour."
-                            },
-                            "duration_formula": "1"
-                        }
-                    ],
-                    "cast_per_turn": "3"
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 18,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -1515,7 +1296,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "0",
             "cast_in_line": false,
             "resolution_mode": "saving_throw",
@@ -1558,26 +1339,7 @@
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "frapper",
-                            "area": "cross-0-2",
-                            "order": 0,
-                            "params": {
-                                "characteristic": "earth",
-                                "value": "nd4+Force",
-                                "value_formula": "nd4+[strong]",
-                                "dice_formula": "nd4+[strong]",
-                                "effect_direction": "action"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 18,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -1617,7 +1379,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "4",
             "cast_in_line": false,
             "resolution_mode": "saving_throw",
@@ -1634,26 +1396,7 @@
                     }
                 }
             ],
-            "intensification": [
-                {
-                    "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
-                    "effect": "",
-                    "sub_effects": []
-                }
-            ],
+            "intensification": [],
             "official_id": "jdr:cra:fleche-ecrasante",
             "attack_characteristic_key": "vitality",
             "save_characteristic_key": "vitality",
@@ -1676,7 +1419,7 @@
             "po_editable": false,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "4",
             "cast_in_line": false,
             "resolution_mode": "auto_success",
@@ -1694,26 +1437,7 @@
                     "duration_formula": "1"
                 }
             ],
-            "intensification": [
-                {
-                    "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
-                    "effect": "",
-                    "sub_effects": []
-                }
-            ],
+            "intensification": [],
             "dofusdb_id": "32469",
             "duration": "1 tour"
         },
@@ -1733,7 +1457,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "2",
-            "cast_per_target": "0",
+            "cast_per_target": "2",
             "number_between_two_cast": "0",
             "cast_in_line": false,
             "resolution_mode": "auto_success",
@@ -1764,13 +1488,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
+                    "required_creature_level": 15,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -1796,7 +1514,7 @@
                     "po_max": "2"
                 },
                 {
-                    "tier": "III",
+                    "tier": "II",
                     "required_creature_level": 20,
                     "effect": "",
                     "sub_effects": [
@@ -1840,7 +1558,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "4",
             "cast_in_line": false,
             "resolution_mode": "saving_throw",
@@ -1870,13 +1588,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
+                    "required_creature_level": 14,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -1901,7 +1613,7 @@
                     "number_between_two_cast": "3"
                 },
                 {
-                    "tier": "III",
+                    "tier": "II",
                     "required_creature_level": 20,
                     "effect": "",
                     "sub_effects": [
@@ -1949,7 +1661,7 @@
             "po_editable": false,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "4",
             "cast_in_line": false,
             "resolution_mode": "auto_success",
@@ -1984,26 +1696,7 @@
                     }
                 }
             ],
-            "intensification": [
-                {
-                    "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
-                    "effect": "",
-                    "sub_effects": []
-                }
-            ],
+            "intensification": [],
             "dofusdb_id": "32479"
         },
         {
@@ -2021,7 +1714,7 @@
             "po_editable": true,
             "sight_line": false,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "3",
             "cast_in_line": false,
             "resolution_mode": "auto_success",
@@ -2039,26 +1732,7 @@
                     "duration_formula": "2"
                 }
             ],
-            "intensification": [
-                {
-                    "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
-                    "effect": "",
-                    "sub_effects": []
-                }
-            ],
+            "intensification": [],
             "official_id": "jdr:cra:fleches-amoureuses",
             "duration": "2 tours"
         },
@@ -2078,7 +1752,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "0",
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
@@ -2112,19 +1786,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 17,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -2172,7 +1834,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "3",
             "cast_in_line": false,
             "resolution_mode": "saving_throw",
@@ -2205,19 +1867,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 17,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -2268,7 +1918,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "1",
             "cast_in_line": false,
             "resolution_mode": "saving_throw",
@@ -2319,19 +1969,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 17,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -2399,7 +2037,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "0",
             "cast_in_line": true,
             "resolution_mode": "attack_roll",
@@ -2433,19 +2071,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": []
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 17,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -2479,7 +2105,8 @@
                             }
                         }
                     ],
-                    "cast_per_turn": "2"
+                    "cast_per_turn": "2",
+                    "cast_per_target": "2"
                 }
             ],
             "element": "earth",

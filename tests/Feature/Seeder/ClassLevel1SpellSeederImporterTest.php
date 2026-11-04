@@ -930,13 +930,15 @@ final class ClassLevel1SpellSeederImporterTest extends TestCase
         $pression->load(['effects.degrees.effectSubEffects', 'degrees.effects']);
         $degrees = $pression->effects->first()?->degrees->sortBy('degree')->values();
         $this->assertNotNull($degrees);
-        $this->assertCount(4, $degrees);
+        $this->assertCount(5, $degrees);
         $this->assertSame(1, (int) $degrees[0]->required_creature_level);
-        $this->assertSame(13, (int) $degrees[1]->required_creature_level);
-        $this->assertSame(16, (int) $degrees[2]->required_creature_level);
-        $this->assertSame(20, (int) $degrees[3]->required_creature_level);
-        $this->assertSame('2d6+[strong]', $degrees[1]->effectSubEffects->first()?->params['value_formula'] ?? null);
-        $this->assertCount(4, $pression->degrees);
+        $this->assertSame(5, (int) $degrees[1]->required_creature_level);
+        $this->assertSame(10, (int) $degrees[2]->required_creature_level);
+        $this->assertSame(15, (int) $degrees[3]->required_creature_level);
+        $this->assertSame(20, (int) $degrees[4]->required_creature_level);
+        $this->assertSame('3d4+[strong]', $degrees[1]->effectSubEffects->first()?->params['value_formula'] ?? null);
+        $this->assertSame('3d12+[strong]', $degrees[4]->effectSubEffects->first()?->params['value_formula'] ?? null);
+        $this->assertCount(5, $pression->degrees);
         $this->assertSame('1d6+[strong]', $degrees[0]->effectSubEffects->first()?->params['value_formula'] ?? null);
     }
 

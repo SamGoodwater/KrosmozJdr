@@ -1643,6 +1643,13 @@
     "file": "entity/shared/EntityEditContainer.vue"
   },
   {
+    "name": "ActionPointCost",
+    "description": "Coût en PA : « [icône PA] N PA » (+ icône réserve de Wakfu si demandé).",
+    "props": [],
+    "slots": [],
+    "file": "entity/shared/ActionPointCost.vue"
+  },
+  {
     "name": "ScenarioViewText",
     "description": "ScenarioViewText — Vue Texte pour Scenario",
     "props": [
@@ -2380,7 +2387,7 @@
   },
   {
     "name": "CapabilityWakfuCost",
-    "description": "Coût d'une capacité : « [icône PA] 2 PA [icône réserve de Wakfu] ».",
+    "description": "Alias capacité de {@link ActionPointCost} (PA depuis la réserve par défaut).",
     "props": [],
     "slots": [],
     "file": "entity/capability/CapabilityWakfuCost.vue"
@@ -2431,7 +2438,7 @@
   },
   {
     "name": "CapabilityMinimalUsageMetaRow",
-    "description": "Ligne méta capacité : PA (réserve de Wakfu, {@link CapabilityWakfuCost}), PO + portée modifiable, incantation/rituel, durée / relance, élément & magie au survol.",
+    "description": "Ligne méta capacité : PA ({@link ActionPointCost}, réserve selon `pa_from_wakfu_reserve`), PO + portée modifiable, incantation/rituel, durée / relance, élément & magie au survol.",
     "props": [],
     "slots": [],
     "file": "entity/capability/CapabilityMinimalUsageMetaRow.vue"

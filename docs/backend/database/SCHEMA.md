@@ -190,6 +190,7 @@ erDiagram
     effect : text
     level : varchar(255)
     pa : varchar(255)
+    pa_from_wakfu_reserve : tinyint(1)
     po : varchar(255)
     po_editable : tinyint(1)
     time_before_use_again : varchar(255)
@@ -1597,6 +1598,7 @@ erDiagram
     area : varchar(64)
     po_editable : tinyint(1)
     pa : varchar(255)
+    pa_from_wakfu_reserve : tinyint(1)
     casting_time : varchar(255)
     ritual_available : tinyint(1)
     cast_per_turn : varchar(255)

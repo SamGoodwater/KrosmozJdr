@@ -40,7 +40,8 @@
     état, options, annuler/reset, supprimer, enregistrer).
   - Effets : élément/carac (icônes couleurs), créature (`params.creature_id`), état,
     `value_formula` + `value_formula_crit`, `duration_formula`, `scope` visible (pas dans Avancé);
-    `monster_id` legacy OK
+    `monster_id` legacy OK. Affichage : si `value_formula` est vide, la ligne reprend
+    `params.value` (retrait de PA/PM, bonus chiffré, texte d’un effet « autre »).
   - Vocabulaire UI : **effet** (= ancien sous-effet) ; catalogue technique `SubEffect` conservé
 - `app/Models/Effect*.php`, `app/Models/ObjectEffect.php` — encore utilisés objets + legacy sorts
 - `GET /api/object-effects` — liste par fiche ; `view` sur le parent + `visibleToUser` sur le monstre invoqué (session `web`)

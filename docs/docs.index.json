@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Enregistrer une classe gardait le nom et le reste, mais rangeait tous les sorts au premier emplacement. Les choix suivants disparaissaient. Chaque sort reste à sa place."
+    "description": "Portée, lancers par tour et par cible, relance, durée, dés, zones et repoussements reprennent les lignes écrites de la fiche. Une case vide reprend la ligne d’avant. Quand le nombre par cible n’est pas écrit, il vaut le nombre par tour. Flèche harcelante passe à 3 lancers au niveau 15, pas avant. Vendetta, Représailles, Pas chassé et les autres paliers décalés retrouvent le niveau de la fiche."
   },
   {
     "path": "backend/_ai.md",
@@ -128,6 +128,11 @@
     "path": "features/entities/_ai.md",
     "title": "Entités JDR — carte IA (degré 1a)",
     "description": "Ajouter/modifier un type d'entité, un champ, une vue, une colonne de table."
+  },
+  {
+    "path": "features/entities/sorts-depuis-fiche.md",
+    "title": "Construire un sort de classe depuis sa fiche",
+    "description": "La fiche écrite fait foi. Une colonne, un champ, un sort à la fois. Une clé absente d’un palier retombe sur le sort de base."
   },
   {
     "path": "features/entities/README.md",

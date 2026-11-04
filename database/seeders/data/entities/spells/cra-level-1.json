@@ -18,7 +18,7 @@
             "po_editable": true,
             "sight_line": false,
             "cast_per_turn": "2",
-            "cast_per_target": "0",
+            "cast_per_target": "2",
             "number_between_two_cast": "0",
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
@@ -42,7 +42,26 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d4+Agilité",
+                                "value_formula": "2d4+[agi]",
+                                "dice_formula": "2d4+[agi]",
+                                "effect_direction": "action"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -60,8 +79,8 @@
                     ]
                 },
                 {
-                    "tier": "II",
-                    "required_creature_level": 16,
+                    "tier": "III",
+                    "required_creature_level": 15,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -77,10 +96,11 @@
                             }
                         }
                     ],
-                    "cast_per_turn": "3"
+                    "cast_per_turn": "3",
+                    "cast_per_target": "3"
                 },
                 {
-                    "tier": "III",
+                    "tier": "IV",
                     "required_creature_level": 20,
                     "effect": "",
                     "sub_effects": [
@@ -97,7 +117,8 @@
                             }
                         }
                     ],
-                    "cast_per_turn": "3"
+                    "cast_per_turn": "3",
+                    "cast_per_target": "3"
                 }
             ],
             "element": "air",
@@ -119,7 +140,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "2",
-            "cast_per_target": "0",
+            "cast_per_target": "2",
             "number_between_two_cast": "0",
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
@@ -143,7 +164,35 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "line-1x2",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d4+Intelligence",
+                                "value_formula": "2d4+[intel]",
+                                "dice_formula": "2d4+[intel]",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "line-1x2",
+                            "order": 1,
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -170,8 +219,8 @@
                     ]
                 },
                 {
-                    "tier": "II",
-                    "required_creature_level": 16,
+                    "tier": "III",
+                    "required_creature_level": 15,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -198,7 +247,7 @@
                     ]
                 },
                 {
-                    "tier": "III",
+                    "tier": "IV",
                     "required_creature_level": 20,
                     "effect": "",
                     "sub_effects": [
@@ -279,7 +328,36 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d4+Chance",
+                                "value_formula": "2d4+[chance]",
+                                "dice_formula": "2d4+[chance]",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1"
+                            }
+                        }
+                    ],
+                    "cast_per_target": "2"
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -303,11 +381,12 @@
                                 "value": "2"
                             }
                         }
-                    ]
+                    ],
+                    "cast_per_target": "2"
                 },
                 {
-                    "tier": "II",
-                    "required_creature_level": 16,
+                    "tier": "III",
+                    "required_creature_level": 15,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -332,10 +411,11 @@
                             }
                         }
                     ],
-                    "cast_per_turn": "3"
+                    "cast_per_turn": "3",
+                    "cast_per_target": "2"
                 },
                 {
-                    "tier": "III",
+                    "tier": "IV",
                     "required_creature_level": 20,
                     "effect": "",
                     "sub_effects": [
@@ -361,7 +441,8 @@
                             }
                         }
                     ],
-                    "cast_per_turn": "3"
+                    "cast_per_turn": "3",
+                    "cast_per_target": "2"
                 }
             ],
             "element": "water",
@@ -383,7 +464,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "2",
-            "cast_per_target": "0",
+            "cast_per_target": "2",
             "number_between_two_cast": "0",
             "cast_in_line": false,
             "resolution_mode": "attack_roll",
@@ -407,7 +488,35 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "order": 0,
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            }
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -434,8 +543,8 @@
                     ]
                 },
                 {
-                    "tier": "II",
-                    "required_creature_level": 16,
+                    "tier": "III",
+                    "required_creature_level": 15,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -462,7 +571,7 @@
                     ]
                 },
                 {
-                    "tier": "III",
+                    "tier": "IV",
                     "required_creature_level": 20,
                     "effect": "",
                     "sub_effects": [
@@ -552,85 +661,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "frapper",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "characteristic": "neutral",
-                                "value": "1d6",
-                                "value_formula": "1d6",
-                                "dice_formula": "1d6",
-                                "effect_direction": "action"
-                            }
-                        },
-                        {
-                            "slug": "déplacer",
-                            "area": "point",
-                            "order": 1,
-                            "params": {
-                                "cells_formula": "2",
-                                "movement_kind": "push"
-                            }
-                        },
-                        {
-                            "slug": "déplacer",
-                            "area": "point",
-                            "order": 2,
-                            "params": {
-                                "cells_formula": "2",
-                                "movement_kind": "movement"
-                            }
-                        }
-                    ],
-                    "cast_per_turn": "2",
-                    "po_max": "8"
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "frapper",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "characteristic": "neutral",
-                                "value": "1d6",
-                                "value_formula": "1d6",
-                                "dice_formula": "1d6",
-                                "effect_direction": "action"
-                            }
-                        },
-                        {
-                            "slug": "déplacer",
-                            "area": "point",
-                            "order": 1,
-                            "params": {
-                                "cells_formula": "2",
-                                "movement_kind": "push"
-                            }
-                        },
-                        {
-                            "slug": "déplacer",
-                            "area": "point",
-                            "order": 2,
-                            "params": {
-                                "cells_formula": "2",
-                                "movement_kind": "movement"
-                            }
-                        }
-                    ],
-                    "cast_per_turn": "2",
-                    "po_max": "8"
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 9,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -686,7 +717,7 @@
             "po_editable": false,
             "sight_line": true,
             "cast_per_turn": "2",
-            "cast_per_target": "0",
+            "cast_per_target": "2",
             "number_between_two_cast": "0",
             "cast_in_line": false,
             "resolution_mode": "auto_success",
@@ -707,39 +738,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "déplacer",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "cells_formula": "4",
-                                "movement_kind": "push"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "déplacer",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "cells_formula": "4",
-                                "movement_kind": "push"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 9,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -771,7 +770,7 @@
             "po_editable": true,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "3",
             "cast_in_line": false,
             "resolution_mode": "auto_success",
@@ -788,12 +787,20 @@
                         "value": "5"
                     },
                     "duration_formula": "2"
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "order": 1,
+                    "params": {
+                        "value": "Jusqu'à mod. d'Intelligence + 2 créatures."
+                    }
                 }
             ],
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 7,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -805,12 +812,21 @@
                                 "value": "10"
                             },
                             "duration_formula": "2"
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "order": 1,
+                            "params": {
+                                "value": "Jusqu'à mod. d'Intelligence + 4 créatures."
+                            }
                         }
-                    ]
+                    ],
+                    "pa": "2"
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
+                    "required_creature_level": 14,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -822,25 +838,17 @@
                                 "value": "20"
                             },
                             "duration_formula": "2"
-                        }
-                    ]
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
-                    "effect": "",
-                    "sub_effects": [
+                        },
                         {
-                            "slug": "booster",
+                            "slug": "autre",
                             "area": "point",
-                            "order": 0,
+                            "order": 1,
                             "params": {
-                                "characteristic": "po",
-                                "value": "20"
-                            },
-                            "duration_formula": "2"
+                                "value": "Jusqu'à mod. d'Intelligence + 5 créatures."
+                            }
                         }
-                    ]
+                    ],
+                    "pa": "2"
                 }
             ],
             "dofusdb_id": "32558",
@@ -861,7 +869,7 @@
             "po_editable": false,
             "sight_line": true,
             "cast_per_turn": "1",
-            "cast_per_target": "0",
+            "cast_per_target": "1",
             "number_between_two_cast": "3",
             "cast_in_line": false,
             "resolution_mode": "auto_success",
@@ -883,7 +891,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 13,
+                    "required_creature_level": 7,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -900,24 +908,7 @@
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "booster",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "characteristic": "earth",
-                                "value": "[strong]+5"
-                            },
-                            "duration_formula": "2"
-                        }
-                    ]
-                },
-                {
-                    "tier": "III",
-                    "required_creature_level": 20,
+                    "required_creature_level": 14,
                     "effect": "",
                     "sub_effects": [
                         {

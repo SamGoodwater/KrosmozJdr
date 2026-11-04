@@ -163,8 +163,6 @@ const poDisplayForCac = computed(() => {
 
 const spellPoIsCac = computed(() => isPoCac(poDisplayForCac.value));
 
-const USAGE_IMG_PX = "14";
-
 const paFromWakfuReserve = computed(() => readPaFromWakfuReserve(props.entity, false));
 </script>
 
