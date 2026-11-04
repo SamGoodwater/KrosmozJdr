@@ -87,4 +87,25 @@ class CapabilityControllerUpdateTest extends TestCase
         $response->assertSessionHasNoErrors();
         $this->assertFalse((bool) $capability->fresh()->pa_from_wakfu_reserve);
     }
+
+    public function test_update_preserves_ritual_available_false(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $capability = Capability::factory()->create([
+            'created_by' => $admin->id,
+            'ritual_available' => false,
+        ]);
+
+        $response = $this->actingAs($admin)->patch(
+            route('entities.capabilities.update', $capability),
+            [
+                'name' => $capability->name,
+                'ritual_available' => false,
+                'redirect_after_update' => 'edit',
+            ]
+        );
+
+        $response->assertSessionHasNoErrors();
+        $this->assertFalse((bool) $capability->fresh()->ritual_available);
+    }
 }

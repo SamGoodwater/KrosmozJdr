@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Enregistrer une capacité ne force plus le rituel
+
+Sur une capacité sans rituel, Enregistrer renvoyait le champ vide. Le serveur le relisait comme « rituel disponible ». La case reste décochée.
+
 ## Novembre 2026 — Enregistrer une classe ne mélange plus ses sorts
 
 Enregistrer une classe gardait le nom et le reste, mais rangeait tous les sorts au premier emplacement. Les choix suivants disparaissaient. Chaque sort reste à sa place.

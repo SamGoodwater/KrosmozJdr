@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Enregistrer une classe gardait le nom et le reste, mais rangeait tous les sorts au premier emplacement. Les choix suivants disparaissaient. Chaque sort reste à sa place."
+    "description": "Sur une capacité sans rituel, Enregistrer renvoyait le champ vide. Le serveur le relisait comme « rituel disponible ». La case reste décochée."
   },
   {
     "path": "backend/_ai.md",

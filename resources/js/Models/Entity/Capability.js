@@ -89,8 +89,17 @@ export class Capability extends BaseModel {
         return Boolean(v);
     }
 
+    /**
+     * Utilisable en rituel.
+     * `false` est une valeur réelle : `||` l’enverrait en `null` puis le backend
+     * (NOT NULL) la forcerait à `true` à l’enregistrement.
+     */
     get ritualAvailable() {
-        return this._data.ritual_available || null;
+        const v = this._data.ritual_available;
+        if (v === null || v === undefined) {
+            return null;
+        }
+        return Boolean(v);
     }
 
     /** Capacité passive (sans activation type sort). */
