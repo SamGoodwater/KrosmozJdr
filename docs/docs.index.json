@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Un retrait de PA ou de PM ne se compare pas à la CA, mais à l’Esquive PA ou à l’Esquive PM. La fiche d’un sort l’indique maintenant d’elle-même, d’après ses effets. Un sort à touche affiche « Jet d’attaque vs CA · Esquive PM » : un seul dé pour les deux. Un sort à sauvegarde ajoute une ligne « Jet d’attaque vs Esquive PA ». Ce jet décide seul du retrait, la sauvegarde ne compte que pour le reste. Un sort qui ne fait que retirer n’affiche plus la CA ni la sauvegarde. Un sort de soutien applique tout, retraits compris, sans aucun jet. Les règles des sorts (3.3.2) et L’Essentiel disent la même chose."
+    "description": "La fiche du Iop rangeait des sorts au mauvais endroit : des sorts sans dégâts dans les voies, des sorts à dégâts dans les choix généraux. Chaque voie prend maintenant quatre sorts Dofus de son élément qui frappent. La voie Eau, tournée vers la protection, gagne Épée du Jugement et Fendoir, qui frappent et couvrent le Iop d’un bouclier. Les choix généraux viennent des sorts Dofus sans dégâts : Vindicte rend une cible Insoignable, Violence repousse ce qui colle au Iop, Massacre fait prendre plus de dégâts à une cible, Conquête plante un Stratège Iop qui protège les allié·e·s à son contact. Les deux variantes d’un choix ne servent jamais la même orientation. Les 32 sorts du jeu suivent la fiche, palier par palier ; les anciens (Épée Divine, Épée de Givre, Zénith…) sortent de la grille de la classe."
   },
   {
     "path": "backend/_ai.md",
@@ -137,7 +137,7 @@
   {
     "path": "features/entities/sorts-depuis-fiche.md",
     "title": "Construire un sort de classe depuis sa fiche",
-    "description": "Choisir le sort Dofus (élémentaire = élément + dégâts, général = sans élément ni dégâts), écrire la fiche, puis la recopier une colonne à la fois."
+    "description": "On choisit d’abord le sort Dofus de départ, on écrit la fiche, puis on la recopie dans le catalogue. Une fois écrite, la fiche (Obsidian) fait foi. Le repère de niveaux (5/10/15/20, etc.) ne sert que lorsqu’une fiche n’a pas encore ses lignes."
   },
   {
     "path": "features/feedback/_ai.md",
