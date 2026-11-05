@@ -45,6 +45,15 @@ import {
     SPELL_ACTIONS_CHARACTERISTIC_KEY,
     spellActionBadgeStyle,
 } from "@/Utils/Entity/spellActionCharacteristics";
+import {
+    formatAppliesToText,
+    formatConditionsListText,
+    formatValueRuleText,
+    normalizeAppliesTo,
+    normalizeConditions,
+    normalizeValueRules,
+} from "@/Utils/Entity/effectConditions.js";
+import { SHORT_ABILITY_TO_MOD_KEY } from "@/Utils/Entity/spellFormulaDisplay";
 
 const props = defineProps({
     model: {
@@ -328,6 +337,38 @@ const durationLabel = computed(() => {
     }
     return hasDuration.value ? `Durée ${durationSeg.value}` : "";
 });
+
+function resolveConditionLabel(key) {
+    const k = String(key ?? "").replace(/^(caster|target):/i, "");
+    const full = SHORT_ABILITY_TO_MOD_KEY[k] || k;
+    const def = resolveDef(full) || resolveDef(k);
+    return def?.short_name || def?.name || k;
+}
+
+const gateConditionsText = computed(() => {
+    const list = normalizeConditions(m.value.conditions);
+    if (list.length === 0) return "";
+    return formatConditionsListText(list, resolveConditionLabel, {
+        abbreviate: isMinimalLayout.value,
+    });
+});
+
+const appliesToBadge = computed(() => {
+    const v = normalizeAppliesTo(m.value.appliesTo);
+    if (v === "targets") return "";
+    return formatAppliesToText(v, { abbreviate: true });
+});
+
+const valueRulesTexts = computed(() => {
+    const rules = normalizeValueRules(m.value.valueRules);
+    return rules
+        .map((r) =>
+            formatValueRuleText(r, resolveConditionLabel, { abbreviate: isMinimalLayout.value }),
+        )
+        .filter(Boolean);
+});
+
+const valueRulesTitle = computed(() => valueRulesTexts.value.join(" · "));
 </script>
 
 <template>
@@ -339,6 +380,16 @@ const durationLabel = computed(() => {
         <!-- Ligne 1 : badges action + élément → formule | critique (peut passer dessous) -->
         <div class="flex w-full min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
             <div class="mr-auto inline-flex min-w-0 max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                <span
+                    v-if="gateConditionsText"
+                    class="text-base-content/70 italic"
+                    :class="isMinimalLayout ? 'max-w-[10rem] truncate' : ''"
+                    :title="gateConditionsText"
+                    data-cy="spell-sub-effect-gate"
+                >
+                    Si {{ gateConditionsText }} :
+                </span>
+
                 <template v-if="m.critOnly">
                     <Icon source="fa-solid fa-bolt" alt="Critique" size="xs" class="shrink-0 text-warning" />
                 </template>
@@ -521,6 +572,33 @@ const durationLabel = computed(() => {
                     />
                     <span v-else class="font-medium">{{ m.textFallback || "—" }}</span>
                 </template>
+
+                <span
+                    v-if="appliesToBadge"
+                    class="badge badge-ghost badge-xs font-normal text-base-content/70"
+                    data-cy="spell-sub-effect-applies-to"
+                >
+                    {{ appliesToBadge }}
+                </span>
+
+                <span
+                    v-if="valueRulesTexts.length"
+                    class="text-base-content/65"
+                    :class="isMinimalLayout ? 'max-w-[12rem] truncate' : ''"
+                    :title="valueRulesTitle"
+                    data-cy="spell-sub-effect-value-rules"
+                >
+                    <template v-if="isMinimalLayout">
+                        ({{ valueRulesTexts[0] }}<template v-if="valueRulesTexts.length > 1">…</template>)
+                    </template>
+                    <template v-else>
+                        <span
+                            v-for="(t, i) in valueRulesTexts"
+                            :key="i"
+                            class="ml-1"
+                        >({{ t }})</span>
+                    </template>
+                </span>
             </div>
 
             <!-- Critique : à droite s'il tient, sinon ligne suivante (mr-auto sur la formule) -->

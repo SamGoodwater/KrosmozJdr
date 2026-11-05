@@ -201,6 +201,12 @@ export function buildUnifiedSubEffectModel(input) {
                     ? params.movement_kind.trim()
                     : null,
             teleport: Boolean(params.teleport),
+            appliesTo:
+                typeof params.applies_to === "string" && params.applies_to.trim() !== ""
+                    ? params.applies_to.trim()
+                    : "targets",
+            conditions: Array.isArray(params.conditions) ? params.conditions : [],
+            valueRules: Array.isArray(params.value_rules) ? params.value_rules : [],
             textFallback: null,
             rawTextValue: null,
         };
@@ -297,6 +303,9 @@ export function buildUnifiedSubEffectModel(input) {
                 ? chip.movement_kind.trim()
                 : null,
         teleport: Boolean(chip.teleport),
+        appliesTo: "targets",
+        conditions: [],
+        valueRules: [],
         textFallback: rawText,
         rawTextValue: rawText,
     };

@@ -17,6 +17,7 @@ return static function (array $k): array {
     $agi = $k['agi'];
     $chance = $k['chance'];
     $sagesse = $k['sagesse'];
+    $vitalite = $k['vitalite'];
 
     return [
         'entity' => 'spell',
@@ -91,7 +92,14 @@ return static function (array $k): array {
                     .'<li><code>resolution_mode</code> : uniquement <code>attack_roll</code>, <code>saving_throw</code> ou <code>auto_success</code> ; <code>attack_characteristic_key</code> (ex. <code>strong</code>, <code>intel</code>).</li>'
                     .'<li><code>save_characteristic_key</code>, <code>save_dc_formula</code>, <code>save_success_note</code>, <code>spares_chosen_targets</code> (Épargne : créatures choisies par le lanceur sans dégâts, autres effets maintenus), <code>allows_reaction</code>.</li>'
                     .'<li>Sous-effets : slugs du catalogue (frapper, soigner, pousser, invoquer…). Invocation : lier le monstre <code>jdr:summon:…</code>.</li>'
-                    .'</ul>',
+                    .'<li><code>params.applies_to</code> : <code>caster</code>, <code>targets</code> (défaut) ou <code>caster_and_targets</code> — qui reçoit l’effet.</li>'
+                    .'<li><code>params.conditions</code> : liste de comparaisons (formule gauche / opérateur / formule droite) liées par ET ou OU. Préfixes <code>[caster:…]</code> et <code>[target:…]</code> obligatoires dans ces formules.</li>'
+                    .'<li><code>params.value_rules</code> : règles appliquées dans l’ordre sur la valeur de base (<code>replace</code>, <code>add</code>, <code>subtract</code>), chacune avec ses propres conditions.</li>'
+                    .'</ul>'
+                    .'<h3>Sorts à facteurs</h3>'
+                    .'<p>Un effet peut ne s’appliquer que si une ou plusieurs conditions sont vraies. Une condition compare deux formules : nombres, opérateurs <code>+ - * /</code>, fonctions <code>min</code> / <code>max</code> / <code>floor</code>, et caractéristiques entre crochets. Exemple : <code>[caster:modifier_intelligence_creature] &gt; [target:modifier_chance_creature]</code>.</p>'
+                    .'<p>La valeur de base peut aussi changer selon des conditions : une règle <strong>remplace</strong>, <strong>ajoute</strong> ou <strong>soustrait</strong> une formule. Exemple : repousse de 1 case, +1 si le modificateur d’Agilité du lanceur vaut au moins 3. Autre exemple : portée <code>min(3 + [strong], 6)</code>.</p>'
+                    .'<p>Sur les sorts généraux d’une classe, la résolution reste automatique, '.$sagesse.' ou '.$vitalite.', sauf quatre exceptions (une par voie). Les conditions et bonus de voie servent à garder les six caractéristiques utiles sans forcer un jet. Méthode classe : [[kref:page:creation-classes|Classes]].</p>',
             ],
             [
                 'id' => 'conseils',
@@ -105,8 +113,9 @@ return static function (array $k): array {
                     .'<li>Ne copie pas un passif ou une capacité de classe dans le sort (la Fureur de l’Iop est une capacité ; Concentration ne rajoute pas un dé).</li>'
                     .'<li>Sort-créature : 1 attaque calée sur les '.$pa.' Dofus du monstre ; une 2ᵉ option seulement si le monstre a assez de '.$pa.' pour ne pas tout lancer chaque tour.</li>'
                     .'<li>Compare toujours à la charte au niveau du sort, ligne neutre, puis régulateurs.</li>'
+                    .'<li>Pour un bonus de voie, garde une base utile à tout le monde, puis un petit seuil ou un modificateur — pas un sort qui ne marche qu’avec 5 en Agilité.</li>'
                     .'</ul>'
-                    .'<p><strong>À éviter :</strong> dégâts de sort fort + large zone + pas de cooldown ; contrôle sans sauvegarde ; jeton Dofus brut à la place d’un état JDR ; 8 sorts sur un sbire.</p>',
+                    .'<p><strong>À éviter :</strong> dégâts de sort fort + large zone + pas de cooldown ; contrôle sans sauvegarde ; jeton Dofus brut à la place d’un état JDR ; 8 sorts sur un sbire ; transformer un sort automatique en jet pour caser une caractéristique.</p>',
             ],
             [
                 'id' => 'exemples',
@@ -118,6 +127,12 @@ return static function (array $k): array {
                     .'<li><strong>Bond</strong> (Iop, niv. 1) — 3 '.$pa.' bonus, téléport 1–4, pas de dégâts. Combo du tour : Bond + Pression.</li>'
                     .'<li><strong>Mot Vivifiant</strong> (Eniripsa, niv. 1) — 3 '.$pa.', 1d4+'.$sagesse.' (soin en d4, pas d6).</li>'
                     .'<li><strong>Béco du Tofu</strong> (Tofu Chimérique) — sort-créature Air, 3 '.$pa.', 1d6, une action. Le monstre n’a pas de grimoire de classe.</li>'
+                    .'</ul>'
+                    .'<h3>Exemples à facteurs</h3>'
+                    .'<ul>'
+                    .'<li><strong>Repousse conditionnelle</strong> — valeur 1 (puis 2, 3 selon le palier) ; règle <code>add</code> +1 si <code>[caster:modifier_agility_creature] &gt;= 3</code>.</li>'
+                    .'<li><strong>Portée plafonnée</strong> — valeur <code>min(3 + [strong], 6)</code> : tout le monde lance, la Force allonge jusqu’à 6.</li>'
+                    .'<li><strong>Dégâts si Intel &gt; Chance</strong> — effet « frapper » neutre avec condition <code>[caster:modifier_intelligence_creature] &gt; [target:modifier_chance_creature]</code>.</li>'
                     .'</ul>'
                     .'<p>Catalogue : [[kref:page:bibliotheque-spell|Sorts]]. Classes : chaque fiche a ses 12 emplacements et leurs variantes ; Crâ, Iop et Ecaflip sont validés et servent de modèle.</p>',
             ],

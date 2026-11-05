@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Sorts à facteurs multiples
+
+Un effet de sort peut dépendre des caractéristiques du lanceur et de la cible. On écrit des conditions (« si l’Intelligence du lanceur dépasse la Chance de la cible ») et des règles de valeur qui remplacent, ajoutent ou soustraient une formule. Chaque effet précise aussi s’il s’applique à toi, aux cibles, ou aux deux. Les fiches le disent en une phrase ; l’éditeur guide la saisie. Les règles de création des classes et des sorts expliquent comment répartir Force, Agilité, Intelligence, Chance, Sagesse et Vitalité sur les sorts généraux.
+
 ## Novembre 2026 — Filtre d’image pour les sorts devenus basiques
 
 Un sort élémentaire Dofus repris comme sort basique gardait une icône trop colorée. Sur la fiche, on choisit maintenant Image d’origine, Beige, Violet ou Personnalisé (curseurs). Le filtre s’applique partout où l’icône apparaît — fiche, cartes, tableau, liste texte des variantes de classe, recherche globale — sans retoucher le fichier. Si le sort n’a pas d’élément et que l’image est encore colorée, l’édition propose d’appliquer Beige en un clic.

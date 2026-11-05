@@ -7,6 +7,7 @@ namespace App\Services\Spell;
 use App\Models\Entity\Spell;
 use App\Models\SpellDegree;
 use App\Services\Effect\EffectTextSanitizer;
+use App\Support\Spell\EffectConditionParams;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -174,6 +175,7 @@ final class SpellDegreeService
                             $params[$fk] = $sanitizer->sanitize($params[$fk]);
                         }
                     }
+                    $params = EffectConditionParams::sanitizeParams($params);
                 }
                 $duration = $row['duration_formula'] ?? null;
                 if (is_string($duration) && $duration !== '') {

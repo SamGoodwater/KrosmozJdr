@@ -12,6 +12,18 @@ import EffectContextCharacteristic from '@/Pages/Molecules/entity/spell/EffectCo
 import EffectContextCreature from '@/Pages/Molecules/entity/spell/EffectContextCreature.vue';
 import EffectContextCondition from '@/Pages/Molecules/entity/spell/EffectContextCondition.vue';
 import EffectContextMove from '@/Pages/Molecules/entity/spell/EffectContextMove.vue';
+import EffectConditionList from '@/Pages/Molecules/entity/spell/EffectConditionList.vue';
+import EffectValueRulesEditor from '@/Pages/Molecules/entity/spell/EffectValueRulesEditor.vue';
+import FormulaExpressionInput from '@/Pages/Molecules/data-input/FormulaExpressionInput.vue';
+import {
+    APPLIES_TO_OPTIONS,
+    buildActorPrefixedSuggestions,
+    normalizeAppliesTo,
+    normalizeConditions,
+    normalizeValueRules,
+} from '@/Utils/Entity/effectConditions.js';
+import { SHORT_ABILITY_TO_MOD_KEY } from '@/Utils/Entity/spellFormulaDisplay.js';
+import { resolveDef } from '@/Composables/entity/useCharacteristicDisplay';
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -191,8 +203,55 @@ function defaultParams() {
         cells_formula: '',
         movement_kind: 'movement',
         teleport: false,
+        applies_to: 'targets',
+        conditions: [],
+        value_rules: [],
     };
 }
+
+/** Suggestions de formules (clés courtes + modificateurs complets). */
+const formulaSuggestions = computed(() => {
+    const seen = new Set();
+    const out = [];
+    const push = (id, name, short_name = null) => {
+        const key = String(id ?? '').trim();
+        if (!key || seen.has(key)) return;
+        seen.add(key);
+        out.push({ id: key, name: name || key, short_name });
+    };
+
+    for (const c of props.options.characteristics ?? []) {
+        push(c.key, c.label, c.label);
+        const full = SHORT_ABILITY_TO_MOD_KEY[c.key];
+        if (full) {
+            const def = resolveDef(full);
+            push(full, def?.name || c.label, def?.short_name || c.label);
+        }
+    }
+    for (const [short, full] of Object.entries(SHORT_ABILITY_TO_MOD_KEY)) {
+        push(short, short);
+        const def = resolveDef(full);
+        push(full, def?.name || full, def?.short_name || null);
+    }
+    push('level', 'Niveau', 'Niv.');
+    push('niveau', 'Niveau', 'Niv.');
+
+    return out;
+});
+
+const actorConditionSuggestions = computed(() =>
+    buildActorPrefixedSuggestions(formulaSuggestions.value),
+);
+
+const appliesToModel = computed({
+    get() {
+        return normalizeAppliesTo(props.row?.params?.applies_to);
+    },
+    set(v) {
+        ensureParams().applies_to = normalizeAppliesTo(v);
+        markDirty();
+    },
+});
 
 function resetIncompatibleParams(previousSlug) {
     const p = ensureParams();
@@ -257,36 +316,6 @@ watch(
         class="rounded-box border border-base-300 bg-base-100"
         data-cy="spell-degree-effect-row"
     >
-        <div
-            v-if="index > 0"
-            class="border-b border-dashed border-base-300 bg-base-200/40 px-3 py-2"
-        >
-            <div class="text-xs font-medium text-base-content/70">Lien avec l’effet précédent</div>
-            <div class="mt-1.5 flex flex-wrap items-end gap-2">
-                <div class="min-w-40">
-                    <label class="label text-xs py-0">Enchaînement</label>
-                    <select
-                        v-model="row.logic_operator"
-                        class="select select-bordered select-sm w-full"
-                        @change="markDirty"
-                    >
-                        <option value="AND">ET — le précédent doit s’appliquer</option>
-                        <option value="OR">OU — si la condition &gt; 0</option>
-                    </select>
-                </div>
-                <div v-if="row.logic_operator === 'OR'" class="flex-1 min-w-48 max-w-lg">
-                    <label class="label text-xs py-0">Condition (formule &gt; 0)</label>
-                    <input
-                        v-model="row.logic_condition"
-                        type="text"
-                        class="input input-bordered input-sm w-full"
-                        placeholder="ex: [target_is_ally]"
-                        @input="markDirty"
-                    />
-                </div>
-            </div>
-        </div>
-
         <div class="flex flex-wrap items-end gap-2 gap-y-2 px-3 py-2 border-b border-base-300 bg-base-200/30">
             <div class="min-w-40 flex-1">
                 <label class="text-xs font-medium text-base-content/70">Action</label>
@@ -336,6 +365,40 @@ watch(
         </div>
 
         <div v-if="row.sub_effect_id" class="p-3 space-y-3">
+            <div class="space-y-1.5 rounded-box border border-dashed border-primary/30 bg-primary/5 p-2">
+                <label class="text-xs font-medium text-base-content/80">
+                    Conditions pour appliquer cet effet
+                </label>
+                <EffectConditionList
+                    :model-value="normalizeConditions(row.params?.conditions)"
+                    :suggestions="actorConditionSuggestions"
+                    @update:model-value="
+                        ensureParams().conditions = $event;
+                        markDirty();
+                    "
+                    @dirty="markDirty"
+                />
+            </div>
+
+            <div class="space-y-1 max-w-xs">
+                <label class="text-xs font-medium text-base-content/80">S’applique à</label>
+                <select
+                    v-model="appliesToModel"
+                    class="select select-bordered select-sm w-full"
+                >
+                    <option
+                        v-for="opt in APPLIES_TO_OPTIONS"
+                        :key="opt.value"
+                        :value="opt.value"
+                    >
+                        {{ opt.label }}
+                    </option>
+                </select>
+                <p class="text-xs text-base-content/70">
+                    Qui reçoit l’effet : toi, les cibles, ou les deux.
+                </p>
+            </div>
+
             <EffectContextCondition
                 v-if="isCondition"
                 :condition-id="row.params.condition_id || null"
@@ -388,36 +451,57 @@ watch(
             <div v-if="hasValue" class="grid gap-3 sm:grid-cols-2">
                 <div class="space-y-1">
                     <label class="text-xs font-medium text-base-content/80">Valeur (formule)</label>
-                    <input
-                        v-model="row.params.value_formula"
-                        type="text"
-                        class="input input-bordered input-sm w-full"
-                        placeholder="ex: 2d6, [1-4], [level]*2"
-                        @input="markDirty"
+                    <FormulaExpressionInput
+                        :model-value="row.params.value_formula || ''"
+                        :suggestions="formulaSuggestions"
+                        :min-query-length="2"
+                        placeholder="ex: 2d6, [strong], min(3+[agi], 6)"
+                        @update:model-value="
+                            ensureParams().value_formula = $event;
+                            markDirty();
+                        "
                     />
                     <p class="text-xs text-base-content/70">{{ valueHelp }}</p>
                 </div>
                 <div class="space-y-1">
                     <label class="text-xs font-medium text-base-content/80">Valeur critique</label>
-                    <input
-                        v-model="row.params.value_formula_crit"
-                        type="text"
-                        class="input input-bordered input-sm w-full"
+                    <FormulaExpressionInput
+                        :model-value="row.params.value_formula_crit || ''"
+                        :suggestions="formulaSuggestions"
+                        :min-query-length="2"
                         placeholder="optionnel"
-                        @input="markDirty"
+                        @update:model-value="
+                            ensureParams().value_formula_crit = $event;
+                            markDirty();
+                        "
                     />
                     <p class="text-xs text-base-content/70">{{ critHelp }}</p>
                 </div>
             </div>
 
+            <EffectValueRulesEditor
+                v-if="hasValue"
+                :model-value="normalizeValueRules(row.params?.value_rules)"
+                :condition-suggestions="actorConditionSuggestions"
+                :value-suggestions="formulaSuggestions"
+                @update:model-value="
+                    ensureParams().value_rules = $event;
+                    markDirty();
+                "
+                @dirty="markDirty"
+            />
+
             <div v-if="hasLifeSteal" class="space-y-1 max-w-md">
                 <label class="text-xs font-medium text-base-content/80">Vol de vie (formule)</label>
-                <input
-                    v-model="row.params.life_steal_formula"
-                    type="text"
-                    class="input input-bordered input-sm w-full"
+                <FormulaExpressionInput
+                    :model-value="row.params.life_steal_formula || ''"
+                    :suggestions="formulaSuggestions"
+                    :min-query-length="2"
                     placeholder="ex: floor([value]/2)"
-                    @input="markDirty"
+                    @update:model-value="
+                        ensureParams().life_steal_formula = $event;
+                        markDirty();
+                    "
                 />
                 <p class="text-xs text-base-content/70">
                     Part des dégâts convertie en soins. Laisser vide si aucun vol de vie.

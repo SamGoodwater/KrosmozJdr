@@ -4,10 +4,11 @@
  * Les formules métier (PHP) n’acceptent que des variables {@code [ident]} ; l’affichage peut rester en clés nues.
  */
 
-const IDENT_CHAR = /[a-zA-Z0-9_]/;
+/** Identifiant de formule : lettres, chiffres, underscore, et `:` pour caster:/target:. */
+const IDENT_CHAR = /[a-zA-Z0-9_:]/;
 
 /**
- * Borne du mot / identifiant sous le curseur (suite de [a-zA-Z0-9_]).
+ * Borne du mot / identifiant sous le curseur (suite de [a-zA-Z0-9_:]).
  *
  * @param {string} value
  * @param {number} caretPos
@@ -44,11 +45,10 @@ export function filterCharacteristicSuggestions(suggestions, query, opts = {}) {
         const shortN = String(s?.short_name ?? "").toLowerCase();
         if (!id.includes(q) && !name.includes(q) && !shortN.includes(q)) continue;
 
-        let rank = 4;
+        let rank = 3;
         if (id === q) rank = 0;
         else if (id.startsWith(q)) rank = 1;
         else if (name.startsWith(q) || shortN.startsWith(q)) rank = 2;
-        else rank = 3;
 
         scored.push({ s, rank, id });
     }

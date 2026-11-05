@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Spell;
 
 use App\Http\Requests\Spell\Concerns\AuthorizesSpellDegreeMutation;
+use App\Http\Requests\Spell\Concerns\SpellDegreeEffectParamsRules;
 use App\Models\SpellDegree;
 use App\Rules\ValidAreaNotation;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -17,13 +18,14 @@ use Illuminate\Validation\Rule;
 class SyncSpellDegreesBulkRequest extends FormRequest
 {
     use AuthorizesSpellDegreeMutation;
+    use SpellDegreeEffectParamsRules;
 
     /**
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        return [
+        return array_merge([
             'degrees' => 'required|array',
             'degrees.*.id' => 'required|integer|exists:spell_degrees,id',
             'degrees.*.required_level' => 'nullable|integer|min:0|max:65535',
@@ -56,21 +58,7 @@ class SyncSpellDegreesBulkRequest extends FormRequest
             'degrees.*.effects.*.logic_group' => 'nullable|string|max:64',
             'degrees.*.effects.*.logic_operator' => 'nullable|string|in:AND,OR',
             'degrees.*.effects.*.logic_condition' => 'nullable|string|max:255',
-            'degrees.*.effects.*.params' => 'nullable|array',
-            'degrees.*.effects.*.params.characteristic' => 'nullable|string|max:64',
-            'degrees.*.effects.*.params.value_formula' => 'nullable|string|max:500',
-            'degrees.*.effects.*.params.value_formula_crit' => 'nullable|string|max:500',
-            'degrees.*.effects.*.params.life_steal_formula' => 'nullable|string|max:500',
-            'degrees.*.effects.*.params.cells_formula' => 'nullable|string|max:500',
-            'degrees.*.effects.*.params.movement_kind' => 'nullable|string|in:movement,jump,teleport,push,pull',
-            'degrees.*.effects.*.params.creature_id' => 'nullable|integer|exists:creatures,id',
-            'degrees.*.effects.*.params.monster_id' => 'nullable|integer|exists:monsters,id',
-            'degrees.*.effects.*.params.condition_id' => 'nullable|integer|exists:conditions,id',
-            'degrees.*.effects.*.params.condition_dofusdb_id' => 'nullable|integer|min:0',
-            'degrees.*.effects.*.params.condition_name' => 'nullable|string|max:255',
-            'degrees.*.effects.*.params.teleport' => 'nullable|boolean',
-            'degrees.*.effects.*.params.dispellable' => 'nullable|boolean',
             'degrees.*.effects.*.crit_only' => 'nullable|boolean',
-        ];
+        ], $this->spellDegreeEffectParamsRules('degrees.*.effects.*.params'));
     }
 }

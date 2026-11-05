@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "La fiche du Iop rangeait des sorts au mauvais endroit : des sorts sans dégâts dans les voies, des sorts à dégâts dans les choix généraux. Chaque voie prend maintenant quatre sorts Dofus de son élément qui frappent. La voie Eau, tournée vers la protection, gagne Épée du Jugement et Fendoir, qui frappent et couvrent le Iop d’un bouclier. Les choix généraux viennent des sorts Dofus sans dégâts : Vindicte rend une cible Insoignable, Violence repousse ce qui colle au Iop, Massacre fait prendre plus de dégâts à une cible, Conquête plante un Stratège Iop qui protège les allié·e·s à son contact. Les deux variantes d’un choix ne servent jamais la même orientation. Les 32 sorts du jeu suivent la fiche, palier par palier ; les anciens (Épée Divine, Épée de Givre, Zénith…) sortent de la grille de la classe."
+    "description": "Un effet de sort peut dépendre des caractéristiques du lanceur et de la cible : conditions, règles de valeur (remplacer / ajouter / soustraire) et destinataire (toi, cibles, ou les deux). Les règles de création des classes et des sorts expliquent comment répartir les six caractéristiques sur les sorts généraux."
   },
   {
     "path": "backend/_ai.md",

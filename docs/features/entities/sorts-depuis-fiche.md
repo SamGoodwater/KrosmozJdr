@@ -92,6 +92,11 @@ Les sorts généraux choisissent leurs paliers. Un 9, un 14 ou un 16 écrit sur 
 | DD vs sauvegarde | `resolution_mode` = `saving_throw` |
 | automatique | `resolution_mode` = `auto_success` |
 | « Dégâts d’Air », voie, tags | élément, caractéristique du jet, types du sort |
+| « Si Agi ≥ 3 » / « Intel > Chance de la cible » | `params.conditions` (formules `[caster:…]` / `[target:…]`) |
+| « +1 case si … » / « remplace / ajoute / soustrait » | `params.value_rules` (`add` / `replace` / `subtract`) |
+| « sur toi » / « toi et les cibles » | `params.applies_to` (`caster` / `caster_and_targets` ; défaut `targets`) |
+
+Sur une fiche Obsidian, note la condition sous *Effets* ou dans une colonne « Autres », puis recopie-la dans l’éditeur (bloc Conditions + règles de valeur). Les sorts généraux d’une classe suivent les règles de résolution (auto / Sagesse / Vitalité, quatre exceptions de voie) décrites dans l’atelier Classes.
 
 Un second jet ne remplace pas le premier. « Jet d’attaque, retrait vs Esquive » reste un jet d’attaque. « Automatique pour les allié·e·s » ou « pour un allié consentant » ne se coche pas : une cible consentante ne fait jamais de jet (règle 3.3.2.3). Le mode principal ne change pas. « Allié·e·s saufs » (pas de dégâts aux allié·e·s, autres effets maintenus) se coche en `spares_chosen_targets` (Épargne).
 

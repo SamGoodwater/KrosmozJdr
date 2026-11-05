@@ -331,6 +331,19 @@ const activeDegreeHasRows = computed(() => {
     return Array.isArray(rows) && rows.length > 0;
 });
 
+/** Au moins un effet conditionnel ou à règles de valeur sur le degré actif. */
+const hasMultiFactorEffects = computed(() => {
+    const rows = activeDegree.value?.rows;
+    if (!Array.isArray(rows)) return false;
+    return rows.some((row) => {
+        const p = row?.params && typeof row.params === 'object' ? row.params : {};
+        const hasCond = Array.isArray(p.conditions) && p.conditions.length > 0;
+        const hasRules = Array.isArray(p.value_rules) && p.value_rules.length > 0;
+        const applies = typeof p.applies_to === 'string' && p.applies_to !== '' && p.applies_to !== 'targets';
+        return hasCond || hasRules || applies;
+    });
+});
+
 /** Chips structurés uniquement (pas le fallback texte `effect`, pour éviter la répétition). */
 const hasSummaryChips = computed(() =>
     spellEffectsCellHasContent(
@@ -569,6 +582,20 @@ const handleAction = async (actionKey) => {
 
             <div class="space-y-1.5">
                 <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Effets</h3>
+                <details
+                    v-if="hasMultiFactorEffects"
+                    class="rounded-box border border-base-300 bg-base-200/40 px-3 py-2 text-xs text-primary-200/90"
+                >
+                    <summary class="cursor-pointer font-medium text-primary-100">
+                        Lire un sort à facteurs
+                    </summary>
+                    <p class="mt-1.5 leading-relaxed">
+                        «&nbsp;Si …&nbsp;: » indique quand l’effet s’applique. Une pastille
+                        «&nbsp;sur toi&nbsp;» ou «&nbsp;toi et les cibles&nbsp;» précise qui le reçoit.
+                        Les mentions entre parenthèses après la valeur (+1 si Agi ≥ 3, etc.)
+                        modifient la valeur de base selon les caractéristiques.
+                    </p>
+                </details>
                 <SpellEffectsJournal
                     v-if="activeDegreeHasRows"
                     v-model="activeDegreeIndex"

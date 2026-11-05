@@ -146,6 +146,9 @@ function addEffectRow() {
             cells_formula: '',
             movement_kind: 'movement',
             teleport: false,
+            applies_to: 'targets',
+            conditions: [],
+            value_rules: [],
         },
         sub_effect: first,
     });
