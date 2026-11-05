@@ -19,6 +19,7 @@ import {
     supportsEntityCatalogViews,
 } from "@/Composables/entity/useEntityTableFetch";
 import { OVERLAY_TRIGGER } from "@/Composables/overlay/overlayConstants";
+import { spellImageFilterCss } from "@/Utils/Entity/spellImageFilter";
 
 const props = defineProps({
     result: { type: Object, required: true },
@@ -52,6 +53,12 @@ const canPreview = computed(
 );
 
 const thumbSize = computed(() => (props.density === "comfortable" ? "compact" : "search"));
+
+const imageCssFilter = computed(() => {
+    const fromHit = props.result?.image_filter ?? props.result?.imageFilter;
+    if (fromHit) return spellImageFilterCss({ image_filter: fromHit });
+    return spellImageFilterCss(hydratedEntity.value);
+});
 
 const rowClass = computed(() =>
     props.density === "comfortable"
@@ -161,6 +168,7 @@ onMounted(() => {
                     :src="result.iconUrl || ''"
                     :label="normalizeEntityThumbLabel(result.title)"
                     :alt="result.title"
+                    :css-filter="imageCssFilter"
                     aria-hidden="true"
                 />
                 <span class="min-w-0 flex-1">
@@ -181,6 +189,7 @@ onMounted(() => {
                 :src="result.iconUrl || ''"
                 :label="normalizeEntityThumbLabel(result.title)"
                 :alt="result.title"
+                :css-filter="imageCssFilter"
                 aria-hidden="true"
             />
             <span class="min-w-0 flex-1">

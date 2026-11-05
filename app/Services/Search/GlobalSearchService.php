@@ -253,7 +253,7 @@ final class GlobalSearchService
     }
 
     /**
-     * @return array{id:int|string, entityType:string, group:string, title:string, subtitle:string, href:string, icon:string, iconUrl:string}
+     * @return array{id:int|string, entityType:string, group:string, title:string, subtitle:string, href:string, icon:string, iconUrl:string, image_filter?: array<string, mixed>}
      */
     private function serializeHit(string $type, string $group, Model $model): array
     {
@@ -261,7 +261,7 @@ final class GlobalSearchService
         $subtitle = $this->inferSubtitle($model);
         $visual = $this->inferVisual($type, $model);
 
-        return [
+        $hit = [
             'id' => $model->getKey(),
             'entityType' => $type,
             'group' => $group,
@@ -271,6 +271,15 @@ final class GlobalSearchService
             'icon' => $visual['icon'],
             'iconUrl' => $visual['iconUrl'],
         ];
+
+        if ($type === 'spells' && $this->tableHasColumn($model, 'image_filter')) {
+            $filter = $model->getAttribute('image_filter');
+            if (is_array($filter) && $filter !== []) {
+                $hit['image_filter'] = $filter;
+            }
+        }
+
+        return $hit;
     }
 
     /**

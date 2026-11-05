@@ -2,7 +2,7 @@
 
 ## Novembre 2026 — Filtre d’image pour les sorts devenus basiques
 
-Un sort élémentaire Dofus repris comme sort basique gardait une icône trop colorée. Sur la fiche, on choisit maintenant Image d’origine, Beige, Violet ou Personnalisé (curseurs). Le filtre s’applique partout où l’icône apparaît, sans retoucher le fichier. Si le sort n’a pas d’élément et que l’image est encore colorée, l’édition propose d’appliquer Beige en un clic.
+Un sort élémentaire Dofus repris comme sort basique gardait une icône trop colorée. Sur la fiche, on choisit maintenant Image d’origine, Beige, Violet ou Personnalisé (curseurs). Le filtre s’applique partout où l’icône apparaît — fiche, cartes, tableau, liste texte des variantes de classe, recherche globale — sans retoucher le fichier. Si le sort n’a pas d’élément et que l’image est encore colorée, l’édition propose d’appliquer Beige en un clic.
 
 ## Novembre 2026 — Le Iop repart de ses sorts Dofus
 

@@ -5,6 +5,7 @@ import Image from "@/Pages/Atoms/data-display/Image.vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import OverlayTrigger from "@/Pages/Molecules/overlay/OverlayTrigger.vue";
 import { fetchEntityModelById } from "@/Composables/entity/useEntityTableFetch";
+import { spellImageFilterStyle } from "@/Utils/Entity/spellImageFilter";
 
 const props = defineProps({
   entity: { type: Object, required: true },
@@ -51,6 +52,9 @@ const imageSrc = computed(() => {
   if (!props.imageFallbackField) return null;
   return props.entity?.[props.imageFallbackField] || null;
 });
+
+/** Filtre CSS d’icône (sorts devenus basiques, etc.). */
+const imageFilterStyle = computed(() => spellImageFilterStyle(props.entity));
 
 const nameCell = computed(() => {
   let cell;
@@ -147,14 +151,19 @@ const overlayContent = computed(() => {
 
 <template>
   <div class="inline-flex min-w-0 items-center gap-2">
-    <Image
+    <span
       v-if="imageSrc"
-      :src="imageSrc"
-      :alt="entityName || 'Image'"
-      fit="cover"
-      rounded="sm"
-      class="pointer-events-none h-4 w-4 shrink-0 overflow-hidden"
-    />
+      class="pointer-events-none inline-flex h-4 w-4 shrink-0 overflow-hidden rounded-sm"
+      :style="imageFilterStyle"
+    >
+      <Image
+        :src="imageSrc"
+        :alt="entityName || 'Image'"
+        fit="cover"
+        rounded="sm"
+        class="h-4 w-4"
+      />
+    </span>
     <Icon
       v-else
       :source="fallbackIcon"
