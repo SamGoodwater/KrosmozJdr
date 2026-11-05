@@ -807,6 +807,8 @@ const getDefaultValue = (type) => {
         case 'checkbox':
         case 'physiqueWakfu':
             return false;
+        case 'spellImageFilter':
+            return null;
         case 'select': return null;
         case 'elementPrimaries': return null;
         case 'spellTypesMulti': return [];
@@ -1075,6 +1077,7 @@ const getFieldRenderType = (fieldKey, fieldConfig) => {
     if (fieldConfig?.type === 'elementPrimaries') return 'elementPrimaries';
     if (fieldConfig?.type === 'spellTypesMulti') return 'spellTypesMulti';
     if (fieldConfig?.type === 'physiqueWakfu') return 'physiqueWakfu';
+    if (fieldConfig?.type === 'spellImageFilter') return 'spellImageFilter';
     return fieldConfig?.type || 'text';
 };
 

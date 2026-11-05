@@ -11,6 +11,7 @@ import FileField from '@/Pages/Molecules/data-input/FileField.vue';
 import ToggleCore from '@/Pages/Atoms/data-input/ToggleCore.vue';
 import SpellElementPrimariesField from '@/Pages/Molecules/entity/spell/SpellElementPrimariesField.vue';
 import SpellTypesMultiField from '@/Pages/Molecules/entity/spell/SpellTypesMultiField.vue';
+import SpellImageFilterField from '@/Pages/Molecules/entity/spell/SpellImageFilterField.vue';
 import AreaNotationField from '@/Pages/Molecules/data-input/AreaNotationField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import RichTextEditorField from '@/Pages/Molecules/data-input/RichTextEditorField.vue';
@@ -514,6 +515,28 @@ const resolvedSelectOptions = computed(() => {
             @update:model-value="() => markDirty(field.key)"
         />
 
+        <div
+            v-else-if="getFieldRenderType(field.key, field.config) === 'spellImageFilter'"
+            class="w-full min-w-0 space-y-1"
+            data-cy="spell-image-filter-edit"
+        >
+            <div class="text-sm font-medium text-base-content">
+                {{ getFieldLabel(field.key, field.config) }}
+            </div>
+            <p
+                v-if="getFieldHelper(field.key, field.config)"
+                class="text-xs text-base-content/70"
+            >
+                {{ getFieldHelper(field.key, field.config) }}
+            </p>
+            <SpellImageFilterField
+                :model-value="form[field.key]"
+                :image-url="form.image || ''"
+                :element="form.element"
+                @update:model-value="(v) => { form[field.key] = v; markDirty(field.key); }"
+            />
+        </div>
+
         <!-- InputField -->
         <div
             v-else-if="
@@ -531,6 +554,7 @@ const resolvedSelectOptions = computed(() => {
                     'spellTypesMulti',
                     'poRange',
                     'areaNotation',
+                    'spellImageFilter',
                 ].includes(getFieldRenderType(field.key, field.config))
             "
             class="w-full min-w-0"

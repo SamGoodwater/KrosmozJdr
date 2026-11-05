@@ -39,6 +39,13 @@ export function buildSpellFormFieldsConfig(options = {}) {
             accept: 'image/*',
             help: 'Illustration du sort. Formats courants : JPEG, PNG, WebP, GIF.',
         },
+        image_filter: {
+            type: 'spellImageFilter',
+            label: 'Filtre d’image',
+            required: false,
+            showInCompact: false,
+            help: 'Pour un sort élémentaire Dofus devenu basique : teinte beige ou violet, ou réglages libres. Image d’origine = aucun filtre.',
+        },
         category: {
             type: 'select',
             label: 'Catégorie',
@@ -313,7 +320,7 @@ export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
         id: 'general',
         title: 'Description du sort',
         subtitle: 'Nom, texte et illustration.',
-        fieldKeys: ['name', 'description', 'image', 'effect'],
+        fieldKeys: ['name', 'description', 'image', 'image_filter', 'effect'],
     },
     {
         id: 'global_properties',
@@ -469,5 +476,6 @@ export function getSpellCreateDefaultEntity() {
         official_id: '',
         dofusdb_id: '',
         image: '',
+        image_filter: null,
     };
 }

@@ -76,4 +76,39 @@ final class SpellSaveSmokeTest extends TestCase
         $response->assertSessionHasNoErrors();
         $this->assertTrue((bool) $spell->fresh()->pa_from_wakfu_reserve);
     }
+
+    public function test_update_persists_image_filter_preset(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $spell = Spell::factory()->create([
+            'image_filter' => null,
+            'state' => 'draft',
+        ]);
+
+        $response = $this->actingAs($admin)->from(route('entities.spells.edit', $spell))->patch(route('entities.spells.update', $spell), [
+            'name' => $spell->name,
+            'description' => $spell->description ?? 'Desc',
+            'image_filter' => ['preset' => 'beige'],
+            'redirect_after_update' => 'edit',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertSame(['preset' => 'beige'], $spell->fresh()->image_filter);
+    }
+
+    public function test_update_rejects_unknown_image_filter_preset(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $spell = Spell::factory()->create(['state' => 'draft']);
+
+        $response = $this->actingAs($admin)->from(route('entities.spells.edit', $spell))->patch(route('entities.spells.update', $spell), [
+            'name' => $spell->name,
+            'description' => $spell->description ?? 'Desc',
+            'image_filter' => ['preset' => 'neon'],
+            'redirect_after_update' => 'edit',
+        ]);
+
+        $response->assertSessionHasErrors('image_filter.preset');
+        $this->assertNull($spell->fresh()->image_filter);
+    }
 }

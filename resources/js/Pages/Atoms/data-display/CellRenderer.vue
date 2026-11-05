@@ -34,6 +34,7 @@ import CharacteristicInlineGroup from "@/Pages/Molecules/data-display/Characteri
 import SpellEffectChips from "@/Pages/Molecules/entity/spell/SpellEffectChips.vue";
 import { getTruncateClass } from "@/Utils/entity/text-truncate";
 import { warnDev } from "@/Utils/dev-logger";
+import { spellImageFilterCss } from "@/Utils/Entity/spellImageFilter";
 
 const props = defineProps({
     cell: {
@@ -93,6 +94,14 @@ const text = computed(() => {
     const v = value.value;
     if (v === null || typeof v === "undefined" || v === "") return "—";
     return String(v);
+});
+
+/** Filtre CSS d’icône de sort (params.imageFilter ou entité). */
+const imageCssFilter = computed(() => {
+    const fromParams = params.value?.imageFilter ?? params.value?.image_filter;
+    if (fromParams) return spellImageFilterCss({ image_filter: fromParams });
+    if (props.entity) return spellImageFilterCss(props.entity);
+    return "";
 });
 
 /**
@@ -275,6 +284,7 @@ const chipsUseColumnFlow = computed(() => Boolean(chipsMaxRows.value));
             :src="value ? String(value) : ''"
             :label="params.alt || params.searchValue || 'Entité'"
             :alt="params.alt || 'Image'"
+            :css-filter="imageCssFilter"
         />
     </span>
 

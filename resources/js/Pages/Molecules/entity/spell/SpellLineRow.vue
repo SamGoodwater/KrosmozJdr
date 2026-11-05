@@ -19,6 +19,7 @@ import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
 import SpellUsageBlock from "@/Pages/Molecules/entity/spell/SpellUsageBlock.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 import { getElementGlassSurfaceStyle, getElementSurfaceRingClass, resolveEntityElementValue } from "@/Utils/Entity/Elements";
+import { spellImageFilterCss } from "@/Utils/Entity/spellImageFilter";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -81,6 +82,11 @@ const levelValue = computed(() => {
 
 const nameCell = computed(() => getCell("name"));
 const imageCell = computed(() => getCell("image"));
+const imageCssFilter = computed(() => {
+    const fromCell = imageCell.value?.params?.imageFilter ?? imageCell.value?.params?.image_filter;
+    if (fromCell) return spellImageFilterCss({ image_filter: fromCell });
+    return spellImageFilterCss(entity.value);
+});
 const spellTypesCell = computed(() => getCell("spell_types"));
 
 const descriptionFull = computed(() => entity.value?.description ?? entity.value?._data?.description ?? "");
@@ -108,6 +114,7 @@ const elementRingClass = computed(() => getElementSurfaceRingClass(elementSurfac
                 size="line"
                 :src="imageCell?.value || ''"
                 :label="entity?.name ?? row?.name ?? 'Sort'"
+                :css-filter="imageCssFilter"
             />
             <div class="flex-1 min-w-0 flex flex-col gap-1.5 pl-1">
                 <div class="flex items-center gap-2">

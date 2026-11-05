@@ -91,6 +91,7 @@ class SpellTableController extends Controller
             'save_dc_formula' => $spell->save_dc_formula,
             'save_success_note' => $spell->save_success_note,
             'spares_chosen_targets' => (bool) ($spell->spares_chosen_targets ?? false),
+            'image_filter' => $spell->image_filter,
         ];
     }
 
@@ -462,6 +463,7 @@ class SpellTableController extends Controller
                     'read_level' => (int) ($sp->read_level ?? 0),
                     'write_level' => (int) ($sp->write_level ?? 0),
                     'image' => $sp->image,
+                    'image_filter' => $sp->image_filter,
                     'auto_update' => (bool) $sp->auto_update,
                     'spellTypes' => $sp->spellTypes?->map(fn ($t) => [
                         'id' => $t->id,
@@ -672,7 +674,10 @@ class SpellTableController extends Controller
                     'image' => [
                         'type' => 'thumb',
                         'value' => $sp->image ?: '',
-                        'params' => ['sortValue' => $sp->image ? 1 : 0],
+                        'params' => [
+                            'sortValue' => $sp->image ? 1 : 0,
+                            'imageFilter' => $sp->image_filter,
+                        ],
                     ],
                     'read_level' => [
                         'type' => 'badge',
@@ -751,6 +756,7 @@ class SpellTableController extends Controller
                         'read_level' => (int) ($sp->read_level ?? 0),
                         'write_level' => (int) ($sp->write_level ?? 0),
                         'image' => $sp->image,
+                        'image_filter' => $sp->image_filter,
                         'auto_update' => (bool) $sp->auto_update,
                         'spellTypes' => $sp->spellTypes?->map(fn ($t) => [
                             'id' => $t->id,

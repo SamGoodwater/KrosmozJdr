@@ -62,6 +62,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property int $read_level
  * @property int $write_level
  * @property string|null $image
+ * @property array<string, mixed>|null $image_filter Filtre CSS d’icône (null = image d’origine)
  * @property bool $auto_update
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -294,6 +295,7 @@ class Spell extends Model implements HasMedia
         'read_level',
         'write_level',
         'image',
+        'image_filter',
         'auto_update',
         'created_by',
     ];
@@ -321,6 +323,7 @@ class Spell extends Model implements HasMedia
         'spares_chosen_targets' => 'boolean',
         'allows_reaction' => 'boolean',
         'ritual_available' => 'boolean',
+        'image_filter' => 'array',
     ];
 
     /**

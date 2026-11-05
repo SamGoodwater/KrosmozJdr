@@ -59,6 +59,7 @@ class SpellFactory extends Factory
             'read_level' => $readLevel,
             'write_level' => $writeLevel,
             'image' => fake()->optional()->imageUrl(),
+            'image_filter' => null,
             'auto_update' => fake()->boolean(80),
             'created_by' => User::factory(),
         ];

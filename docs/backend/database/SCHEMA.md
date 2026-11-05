@@ -1626,6 +1626,7 @@ erDiagram
     read_level : tinyint(4)
     write_level : tinyint(4)
     image : varchar(255)
+    image_filter : json
     auto_update : tinyint(1)
     created_at : timestamp
     updated_at : timestamp

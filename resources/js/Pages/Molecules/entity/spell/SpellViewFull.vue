@@ -48,6 +48,8 @@ import {
     resolveEntityElementValue,
 } from '@/Utils/Entity/Elements';
 import { spellTypeRuleNotes } from '@/Utils/Entity/spellTypeRuleNotes';
+import { buildSpellActiveDegreeEntity } from '@/Utils/Entity/spellActiveDegreeEntity';
+import { spellImageFilterStyle } from '@/Utils/Entity/spellImageFilter';
 
 const props = defineProps({
     spell: {
@@ -261,36 +263,14 @@ watch(
  *
  * @returns {import('@/Models/Entity/Spell').Spell|object}
  */
-const usageEntity = computed(() => {
-    const base = spell.value;
-    const propsDeg = activeDegree.value?.properties;
-    if (!base || !propsDeg) {
-        return base;
-    }
-    const merged = { ...(base._data || {}) };
-    for (const [k, v] of Object.entries(propsDeg)) {
-        if (v !== null && v !== undefined) {
-            merged[k] = v;
-        }
-    }
-    merged._active_degree_properties = propsDeg;
-    merged._active_degree_rows = activeDegree.value?.rows ?? [];
-    // Réutiliser la classe Spell si disponible sur l’instance.
-    const Ctor = base.constructor;
-    if (typeof Ctor === 'function' && Ctor !== Object) {
-        try {
-            return new Ctor(merged);
-        } catch {
-            /* fallback objet plat */
-        }
-    }
-    return { ...base, _data: merged, ...merged };
-});
+const usageEntity = computed(() => buildSpellActiveDegreeEntity(spell.value, activeDegree.value));
 
 const freeEffectComment = computed(() => {
     const t = spell.value?.effect != null ? String(spell.value.effect).trim() : '';
     return t;
 });
+
+const imageFilterStyle = computed(() => spellImageFilterStyle(spell.value));
 
 const ritualDef = computed(() =>
     resolveDef('ritual_available_spell', usageEntity.value?.isRitual, { sourceGroups: ['spell'] }),
@@ -425,19 +405,24 @@ const handleAction = async (actionKey) => {
                         </Badge>
                     </div>
 
-                    <ImageViewer
+                    <div
                         v-if="spell.image"
-                        :source="spell.image"
-                        :alt="spell.name || 'Sort'"
-                        :caption="spell.name || ''"
-                        preload="hover"
-                        :image-props="{
-                            size: 'lg',
-                            rounded: 'lg',
-                            fit: 'cover',
-                            class: 'w-full h-full',
-                        }"
-                    />
+                        class="size-full"
+                        :style="imageFilterStyle"
+                    >
+                        <ImageViewer
+                            :source="spell.image"
+                            :alt="spell.name || 'Sort'"
+                            :caption="spell.name || ''"
+                            preload="hover"
+                            :image-props="{
+                                size: 'lg',
+                                rounded: 'lg',
+                                fit: 'cover',
+                                class: 'w-full h-full',
+                            }"
+                        />
+                    </div>
 
                     <div v-else class="flex size-full items-center justify-center bg-base-200 entity-radius-box">
                         <Icon source="fa-solid fa-wand-magic-sparkles" :alt="spell.name" size="lg" />

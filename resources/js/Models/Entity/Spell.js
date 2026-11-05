@@ -379,6 +379,12 @@ export class Spell extends BaseModel {
         return this._data.image || '';
     }
 
+    /** Filtre CSS d’icône (`null` = image d’origine). */
+    get imageFilter() {
+        const raw = this._data.image_filter;
+        return raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : null;
+    }
+
     get autoUpdate() {
         return this._data.auto_update ?? false;
     }
@@ -1084,6 +1090,7 @@ export class Spell extends BaseModel {
                 height: imageSize,
                 sortValue: imageUrl,
                 searchValue: imageUrl,
+                imageFilter: this.imageFilter,
             },
         };
     }
@@ -1312,6 +1319,7 @@ export class Spell extends BaseModel {
             read_level: this.readLevel,
             write_level: this.writeLevel,
             image: this.image,
+            image_filter: this.imageFilter,
             auto_update: this.autoUpdate,
             created_at: this._data.created_at ?? null,
             updated_at: this._data.updated_at ?? null,

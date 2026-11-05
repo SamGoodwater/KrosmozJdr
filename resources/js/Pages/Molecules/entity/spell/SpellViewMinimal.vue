@@ -48,6 +48,8 @@ import {
 import { spellTypeRuleNotes } from "@/Utils/Entity/spellTypeRuleNotes";
 import { PROPERTY_DISPLAY_MODES } from "@/Utils/Entity/Constants";
 import { readSpellField } from "@/Utils/Entity/spellMinimalUsageDisplay";
+import { buildSpellActiveDegreeEntity } from "@/Utils/Entity/spellActiveDegreeEntity";
+import { spellImageFilterCss } from "@/Utils/Entity/spellImageFilter";
 import {
     resolveSpellUsageCharacteristicVisual,
     spellUsageIconBackdropStyle,
@@ -159,29 +161,7 @@ watch(
 
 const activeDegree = computed(() => displayDegrees.value[activeDegreeIndex.value] || null);
 
-const usageEntity = computed(() => {
-    const base = entity.value;
-    const propsDeg = activeDegree.value?.properties;
-    if (!base || !propsDeg) {
-        return base;
-    }
-    const merged = { ...(base._data || {}) };
-    for (const [k, v] of Object.entries(propsDeg)) {
-        if (v !== null && v !== undefined) {
-            merged[k] = v;
-        }
-    }
-    merged._active_degree_rows = activeDegree.value?.rows ?? [];
-    const Ctor = base.constructor;
-    if (typeof Ctor === "function" && Ctor !== Object) {
-        try {
-            return new Ctor(merged);
-        } catch {
-            /* fallback */
-        }
-    }
-    return { ...base, _data: merged, ...merged };
-});
+const usageEntity = computed(() => buildSpellActiveDegreeEntity(entity.value, activeDegree.value));
 
 const spellDegreesPayload = computed(() => readSpellDegreesPayload(entity.value));
 const effectsDefinitions = computed(() =>
@@ -212,6 +192,8 @@ const imageUrl = computed(() => {
     const u = entity.value?.image ?? entity.value?._data?.image;
     return u && String(u).trim() ? String(u) : null;
 });
+
+const imageCssFilter = computed(() => spellImageFilterCss(entity.value));
 
 const stateTick = ref(0);
 const entityState = computed(() => {
@@ -327,6 +309,7 @@ const USAGE_IMG_PX = "14";
                                 size="compact"
                                 :src="imageUrl || ''"
                                 :label="entity?.name ?? 'Sort'"
+                                :css-filter="imageCssFilter"
                             />
                             <span
                                 v-if="elementOverlay"
@@ -446,6 +429,7 @@ const USAGE_IMG_PX = "14";
                                 size="compact"
                                 :src="imageUrl || ''"
                                 :label="entity?.name ?? 'Sort'"
+                                :css-filter="imageCssFilter"
                             />
                             <span
                                 v-if="elementOverlay"

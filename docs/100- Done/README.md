@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Filtre d’image pour les sorts devenus basiques
+
+Un sort élémentaire Dofus repris comme sort basique gardait une icône trop colorée. Sur la fiche, on choisit maintenant Image d’origine, Beige, Violet ou Personnalisé (curseurs). Le filtre s’applique partout où l’icône apparaît, sans retoucher le fichier. Si le sort n’a pas d’élément et que l’image est encore colorée, l’édition propose d’appliquer Beige en un clic.
+
 ## Novembre 2026 — Le Iop repart de ses sorts Dofus
 
 La fiche du Iop rangeait des sorts au mauvais endroit : des sorts sans dégâts dans les voies, des sorts à dégâts dans les choix généraux. Chaque voie prend maintenant quatre sorts Dofus de son élément qui frappent. La voie Eau, tournée vers la protection, gagne Épée du Jugement et Fendoir, qui frappent et couvrent le Iop d’un bouclier. Les choix généraux viennent des sorts Dofus sans dégâts : Vindicte rend une cible Insoignable, Violence repousse ce qui colle au Iop, Massacre fait prendre plus de dégâts à une cible, Conquête plante un Stratège Iop qui protège les allié·e·s à son contact. Les deux variantes d’un choix ne servent jamais la même orientation. Les 32 sorts du jeu suivent la fiche, palier par palier ; les anciens (Épée Divine, Épée de Givre, Zénith…) sortent de la grille de la classe.

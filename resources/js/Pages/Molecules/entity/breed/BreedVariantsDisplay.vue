@@ -14,6 +14,7 @@ import SpellViewMinimal from "@/Pages/Molecules/entity/spell/SpellViewMinimal.vu
 import EntityViewTextLink from "@/Pages/Molecules/entity/shared/EntityViewTextLink.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
+import { spellImageFilterCss } from "@/Utils/Entity/spellImageFilter";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import { Spell } from "@/Models/Entity/Spell";
 import { breedVariantGroupTitle, splitBreedSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
@@ -104,6 +105,7 @@ const hiddenVariantCount = computed(() => Math.max(0, allVariantSpells.value.len
 
 const spellName = (spell) => spell?.name || spell?._data?.name || "Sort";
 const spellImage = (spell) => spell?.image || spell?._data?.image || "";
+const spellCssFilter = (spell) => spellImageFilterCss(spell);
 const openSpell = (spell) => emit("open-spell", spell);
 
 /**
@@ -279,6 +281,7 @@ const variantTitle = (g) => breedVariantGroupTitle(g);
                                 class="h-4 w-4"
                                 :src="spellImage(s) || ''"
                                 :label="spellName(s)"
+                                :css-filter="spellCssFilter(s)"
                             />
                         </button>
                     </Tooltip>

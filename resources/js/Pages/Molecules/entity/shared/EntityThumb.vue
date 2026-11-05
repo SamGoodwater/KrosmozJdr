@@ -39,7 +39,14 @@ const props = defineProps({
         default: "contain",
         validator: (v) => ["cover", "contain"].includes(v),
     },
+    /** Chaîne CSS `filter:` (ex. sorts basiques). */
+    cssFilter: { type: String, default: "" },
     class: { type: String, default: "" },
+});
+
+const filterStyle = computed(() => {
+    const f = props.cssFilter != null ? String(props.cssFilter).trim() : "";
+    return f ? { filter: f } : undefined;
 });
 
 const imageSrc = computed(() => {
@@ -77,7 +84,7 @@ const wrapperClass = computed(() =>
 </script>
 
 <template>
-    <div :class="wrapperClass">
+    <div :class="wrapperClass" :style="filterStyle">
         <Avatar
             size="fill"
             :src="imageSrc"

@@ -1016,6 +1016,35 @@ export function getSpellFieldDescriptors(ctx = {}) {
         },
       },
     },
+    image_filter: {
+      key: "image_filter",
+      label: "Filtre d’image",
+      icon: "fa-solid fa-palette",
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        sortable: false,
+      },
+      display: {
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
+      },
+      edit: {
+        form: {
+          type: "spellImageFilter",
+          label: "Filtre d’image",
+          group: "Image",
+          required: false,
+          showInCompact: false,
+          help: "Beige / violet pour un sort devenu basique, ou réglages personnalisés.",
+          bulk: { enabled: false },
+        },
+      },
+    },
     spell_types: {
       key: "spell_types",
       label: "Types",
