@@ -12,21 +12,20 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * Valide un côté de condition (formule avec éventuels {@code [caster:clé]} / {@code [target:clé]}).
+ * Valide une formule d’effet / condition avec placeholders caractéristiques.
  *
- * Remplace chaque crochet par {@code 1}, puis délègue à {@see SafeExpressionEvaluator}.
+ * Formes acceptées :
+ * - {@code [clé]} ou {@code [clé:caster]} → lanceur
+ * - {@code [clé:target]} → cible
+ * - ancienne forme {@code [caster:clé]} / {@code [target:clé]} (compat lecture)
  *
  * @example
- * 'params.conditions.*.left' => [new EffectConditionSideFormula(requireActorPrefix: true)]
+ * 'params.conditions.*.left' => [new EffectConditionSideFormula]
  */
 final class EffectConditionSideFormula implements ValidationRule
 {
-    private const PLACEHOLDER_PATTERN = '/\[(?:(caster|target):)?([a-zA-Z_][a-zA-Z0-9_]*)\]/';
-
-    public function __construct(
-        private readonly bool $requireActorPrefix = false,
-        private readonly bool $allowBareCharacteristic = true,
-    ) {}
+    /** Nouvelle forme clé[:acteur] + ancienne acteur:clé. */
+    private const PLACEHOLDER_PATTERN = '/\[(?:(?:(caster|target):([a-zA-Z_][a-zA-Z0-9_]*))|([a-zA-Z_][a-zA-Z0-9_]*)(?::(caster|target))?)\]/';
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
@@ -46,30 +45,16 @@ final class EffectConditionSideFormula implements ValidationRule
 
         $allowed = $this->allowedPlaceholders();
         $unknown = [];
-        $missingPrefix = false;
 
         $probe = (string) preg_replace_callback(
             self::PLACEHOLDER_PATTERN,
-            function (array $m) use ($allowed, &$unknown, &$missingPrefix): string {
-                $prefix = $m[1] ?? '';
-                $key = $m[2] ?? '';
-                if ($this->requireActorPrefix && $prefix === '') {
-                    $missingPrefix = true;
-
-                    return '1';
-                }
-                if ($prefix !== '' && ! in_array($prefix, ['caster', 'target'], true)) {
-                    $unknown[] = $m[0];
-
-                    return '1';
-                }
-                if ($prefix === '' && ! $this->allowBareCharacteristic) {
-                    $missingPrefix = true;
-
-                    return '1';
-                }
-                if (! isset($allowed[$key])) {
-                    $unknown[] = $key;
+            function (array $m) use ($allowed, &$unknown): string {
+                // Groupe 1+2 = ancienne forme acteur:clé ; 3+4 = nouvelle clé[:acteur]
+                $legacyKey = (string) ($m[2] ?? '');
+                $suffixKey = (string) ($m[3] ?? '');
+                $key = $legacyKey !== '' ? $legacyKey : $suffixKey;
+                if ($key === '' || ! isset($allowed[$key])) {
+                    $unknown[] = $key !== '' ? $key : $m[0];
                 }
 
                 return '1';
@@ -77,18 +62,12 @@ final class EffectConditionSideFormula implements ValidationRule
             $value
         );
 
-        if ($missingPrefix) {
-            $fail('Chaque caractéristique doit indiquer le lanceur ou la cible : [caster:…] ou [target:…].');
-
-            return;
-        }
         if ($unknown !== []) {
             $fail('Caractéristique inconnue : '.implode(', ', array_unique($unknown)).'.');
 
             return;
         }
 
-        // Crochets restants (ex. [1-4] ou syntaxe invalide) → rejet
         if (preg_match('/\[/', $probe) === 1) {
             $fail('Syntaxe de crochets invalide dans la formule.');
 
@@ -107,11 +86,10 @@ final class EffectConditionSideFormula implements ValidationRule
      */
     private function allowedPlaceholders(): array
     {
-        return Cache::remember('effect_condition_side_placeholders_v1', 300, function (): array {
+        return Cache::remember('effect_condition_side_placeholders_v2', 300, function (): array {
             $validator = app(CreatureFormulaPlaceholderValidator::class);
             $allowed = $validator->buildAllowedPlaceholderSet();
 
-            // Alias courts utilisés dans les formules de sorts (dégâts).
             foreach (['intel', 'strong', 'agi', 'chance', 'vitality', 'sagesse', 'force', 'wisdom', 'strength', 'agility', 'level', 'niveau'] as $alias) {
                 $allowed[$alias] = true;
             }

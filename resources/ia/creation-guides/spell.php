@@ -93,13 +93,13 @@ return static function (array $k): array {
                     .'<li><code>save_characteristic_key</code>, <code>save_dc_formula</code>, <code>save_success_note</code>, <code>spares_chosen_targets</code> (Épargne : créatures choisies par le lanceur sans dégâts, autres effets maintenus), <code>allows_reaction</code>.</li>'
                     .'<li>Sous-effets : slugs du catalogue (frapper, soigner, pousser, invoquer…). Invocation : lier le monstre <code>jdr:summon:…</code>.</li>'
                     .'<li><code>params.applies_to</code> : <code>caster</code>, <code>targets</code> (défaut) ou <code>caster_and_targets</code> — qui reçoit l’effet.</li>'
-                    .'<li><code>params.conditions</code> : liste de comparaisons (formule gauche / opérateur / formule droite) liées par ET ou OU. Préfixes <code>[caster:…]</code> et <code>[target:…]</code> obligatoires dans ces formules.</li>'
-                    .'<li><code>params.value_rules</code> : règles appliquées dans l’ordre sur la valeur de base (<code>replace</code>, <code>add</code>, <code>subtract</code>), chacune avec ses propres conditions.</li>'
+                    .'<li><code>params.conditions</code> : comparaisons (formule / opérateur / formule) liées par ET ou OU. Caractéristiques : <code>[clé]</code> ou <code>[clé:caster]</code> = lanceur, <code>[clé:target]</code> = cible.</li>'
+                    .'<li><code>params.value_rules</code> : règles sur la valeur (<code>replace</code>, <code>add</code>, <code>subtract</code>), chacune avec ses conditions.</li>'
+                    .'<li><code>params.value_up_to</code> : si vrai, le lanceur choisit un montant ≤ la formule (« jusqu’à »).</li>'
                     .'</ul>'
                     .'<h3>Sorts à facteurs</h3>'
-                    .'<p>Un effet peut ne s’appliquer que si une ou plusieurs conditions sont vraies. Une condition compare deux formules : nombres, opérateurs <code>+ - * /</code>, fonctions <code>min</code> / <code>max</code> / <code>floor</code>, et caractéristiques entre crochets. Exemple : <code>[caster:modifier_intelligence_creature] &gt; [target:modifier_chance_creature]</code>.</p>'
-                    .'<p>La valeur de base peut aussi changer selon des conditions : une règle <strong>remplace</strong>, <strong>ajoute</strong> ou <strong>soustrait</strong> une formule. Exemple : repousse de 1 case, +1 si le modificateur d’Agilité du lanceur vaut au moins 3. Autre exemple : portée <code>min(3 + [strong], 6)</code>.</p>'
-                    .'<p>Sur les sorts généraux d’une classe, la résolution reste automatique, '.$sagesse.' ou '.$vitalite.', sauf quatre exceptions (une par voie). Les conditions et bonus de voie servent à garder les six caractéristiques utiles sans forcer un jet. Méthode classe : [[kref:page:creation-classes|Classes]].</p>',
+                    .'<p>Un effet peut ne s’appliquer que si des conditions sont vraies. Exemple : <code>[modifier_intelligence_creature] &gt; [modifier_chance_creature:target]</code>. La valeur peut aussi être un plafond (« jusqu’à 3 cases ») ou changer via des règles ( +1 si Agi ≥ 3 ). Formule plafonnée : <code>min(3 + [strong], 6)</code>.</p>'
+                    .'<p>Sur les sorts généraux d’une classe, la résolution reste automatique, '.$sagesse.' ou '.$vitalite.', sauf quatre exceptions (une par voie). Méthode classe : [[kref:page:creation-classes|Classes]].</p>',
             ],
             [
                 'id' => 'conseils',
@@ -130,9 +130,9 @@ return static function (array $k): array {
                     .'</ul>'
                     .'<h3>Exemples à facteurs</h3>'
                     .'<ul>'
-                    .'<li><strong>Repousse conditionnelle</strong> — valeur 1 (puis 2, 3 selon le palier) ; règle <code>add</code> +1 si <code>[caster:modifier_agility_creature] &gt;= 3</code>.</li>'
-                    .'<li><strong>Portée plafonnée</strong> — valeur <code>min(3 + [strong], 6)</code> : tout le monde lance, la Force allonge jusqu’à 6.</li>'
-                    .'<li><strong>Dégâts si Intel &gt; Chance</strong> — effet « frapper » neutre avec condition <code>[caster:modifier_intelligence_creature] &gt; [target:modifier_chance_creature]</code>.</li>'
+                    .'<li><strong>Repousse conditionnelle</strong> — valeur 1 ; règle <code>add</code> +1 si <code>[modifier_agility_creature] &gt;= 3</code>.</li>'
+                    .'<li><strong>Attirance au choix</strong> — valeur 3 avec <code>value_up_to</code> : le lanceur attire de 1 à 3 cases.</li>'
+                    .'<li><strong>Dégâts si Intel &gt; Chance</strong> — condition <code>[modifier_intelligence_creature] &gt; [modifier_chance_creature:target]</code>.</li>'
                     .'</ul>'
                     .'<p>Catalogue : [[kref:page:bibliotheque-spell|Sorts]]. Classes : chaque fiche a ses 12 emplacements et leurs variantes ; Crâ, Iop et Ecaflip sont validés et servent de modèle.</p>',
             ],

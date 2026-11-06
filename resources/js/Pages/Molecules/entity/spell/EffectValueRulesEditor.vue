@@ -1,18 +1,16 @@
 <script setup>
 /**
  * Règles de valeur conditionnelles : remplacer / ajouter / soustraire une formule.
- *
- * @example
- * <EffectValueRulesEditor v-model="row.params.value_rules" :condition-suggestions="…" :value-suggestions="…" />
+ * Brouillon local : une règle nouvellement ajoutée reste visible même sans formule encore.
  */
-import { computed } from "vue";
+import { ref, watch } from "vue";
 import FormulaExpressionInput from "@/Pages/Molecules/data-input/FormulaExpressionInput.vue";
 import EffectConditionList from "@/Pages/Molecules/entity/spell/EffectConditionList.vue";
 import EffectConditionHelp from "@/Pages/Molecules/entity/spell/EffectConditionHelp.vue";
 import {
     VALUE_RULE_ACTIONS,
+    draftValueRules,
     emptyValueRule,
-    normalizeValueRules,
 } from "@/Utils/Entity/effectConditions.js";
 
 const props = defineProps({
@@ -23,38 +21,58 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue", "dirty"]);
 
-const rules = computed({
-    get() {
-        return normalizeValueRules(props.modelValue);
-    },
-    set(next) {
-        emit("update:modelValue", next);
-        emit("dirty");
-    },
-});
+/** @type {import('vue').Ref<ReturnType<typeof draftValueRules>>} */
+const draft = ref(draftValueRules(props.modelValue));
 
-function ensureMutable() {
-    return rules.value.map((r) => ({
-        ...r,
-        conditions: (r.conditions ?? []).map((c) => ({ ...c })),
-    }));
+let syncingFromParent = false;
+
+watch(
+    () => props.modelValue,
+    (next) => {
+        syncingFromParent = true;
+        draft.value = draftValueRules(next);
+        syncingFromParent = false;
+    },
+    { deep: true },
+);
+
+function emitDraft() {
+    if (syncingFromParent) return;
+    emit(
+        "update:modelValue",
+        draft.value.map((r) => ({
+            action: r.action,
+            formula: r.formula,
+            conditions: (r.conditions ?? []).map((c) => ({ ...c })),
+        })),
+    );
+    emit("dirty");
 }
 
 function updateRule(index, patch) {
-    const next = ensureMutable();
+    const next = draft.value.map((r) => ({
+        ...r,
+        conditions: (r.conditions ?? []).map((c) => ({ ...c })),
+    }));
     if (!next[index]) return;
     next[index] = { ...next[index], ...patch };
-    rules.value = next;
+    draft.value = next;
+    emitDraft();
 }
 
 function addRule() {
-    const next = ensureMutable();
+    const next = draft.value.map((r) => ({
+        ...r,
+        conditions: (r.conditions ?? []).map((c) => ({ ...c })),
+    }));
     next.push(emptyValueRule());
-    rules.value = next;
+    draft.value = next;
+    emitDraft();
 }
 
 function removeRule(index) {
-    rules.value = ensureMutable().filter((_, i) => i !== index);
+    draft.value = draft.value.filter((_, i) => i !== index);
+    emitDraft();
 }
 </script>
 
@@ -64,15 +82,26 @@ function removeRule(index) {
             <label class="text-xs font-medium text-base-content/80">
                 Règles de valeur (selon caractéristiques)
             </label>
-            <button type="button" class="btn btn-ghost btn-xs" @click="addRule">
+            <button
+                type="button"
+                class="btn btn-ghost btn-xs"
+                data-cy="effect-value-rule-add"
+                @click="addRule"
+            >
                 + Règle
             </button>
         </div>
 
+        <p v-if="draft.length === 0" class="text-xs text-base-content/55">
+            Aucune règle. Ajoute-en une pour modifier la valeur selon des conditions
+            (ex. +1 si Agilité ≥ 3).
+        </p>
+
         <div
-            v-for="(rule, index) in rules"
-            :key="index"
+            v-for="(rule, index) in draft"
+            :key="'rule-' + index"
             class="space-y-2 rounded-box border border-base-300 bg-base-200/20 p-2"
+            data-cy="effect-value-rule-row"
         >
             <div class="flex flex-wrap items-end gap-2">
                 <div class="min-w-48 flex-1">
@@ -96,7 +125,8 @@ function removeRule(index) {
                     <FormulaExpressionInput
                         :model-value="rule.formula"
                         :suggestions="valueSuggestions"
-                        :min-query-length="2"
+                        :min-query-length="0"
+                        :open-on-focus="true"
                         placeholder="ex: 1 ou [strong]"
                         @update:model-value="updateRule(index, { formula: $event })"
                     />

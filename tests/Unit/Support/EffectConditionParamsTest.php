@@ -16,9 +16,9 @@ final class EffectConditionParamsTest extends TestCase
     public function normalize_conditions_keeps_valid_rows_and_drops_empty(): void
     {
         $out = EffectConditionParams::normalizeConditions([
-            ['left' => '[caster:agi]', 'op' => '>=', 'right' => '3'],
+            ['left' => '[agi]', 'op' => '>=', 'right' => '3'],
             ['left' => '', 'op' => '>', 'right' => ''],
-            ['join' => 'OR', 'left' => '[caster:intel]', 'op' => '>', 'right' => '[target:chance]'],
+            ['join' => 'OR', 'left' => '[intel]', 'op' => '>', 'right' => '[chance:target]'],
             ['left' => '1', 'op' => '??', 'right' => '2'],
         ]);
 
@@ -33,38 +33,55 @@ final class EffectConditionParamsTest extends TestCase
         $params = EffectConditionParams::sanitizeParams([
             'applies_to' => 'nope',
             'conditions' => [],
+            'value_up_to' => true,
             'value_rules' => [
                 ['action' => 'add', 'formula' => '1', 'conditions' => [
-                    ['left' => '[caster:agi]', 'op' => '>=', 'right' => '3'],
+                    ['left' => '[agi]', 'op' => '>=', 'right' => '3'],
                 ]],
             ],
             'value_formula' => '2',
         ]);
 
         $this->assertSame('targets', $params['applies_to']);
+        $this->assertTrue($params['value_up_to']);
         $this->assertArrayNotHasKey('conditions', $params);
         $this->assertCount(1, $params['value_rules']);
         $this->assertSame('add', $params['value_rules'][0]['action']);
     }
 
     #[Test]
-    public function side_formula_accepts_prefixed_characteristic(): void
+    public function sanitize_params_drops_false_value_up_to(): void
     {
-        $v = Validator::make(
-            ['left' => '[caster:agi] + 1'],
-            ['left' => [new EffectConditionSideFormula(requireActorPrefix: true)]],
-        );
-        $this->assertTrue($v->passes(), (string) $v->errors());
+        $params = EffectConditionParams::sanitizeParams([
+            'value_up_to' => false,
+        ]);
+        $this->assertArrayNotHasKey('value_up_to', $params);
     }
 
     #[Test]
-    public function side_formula_rejects_missing_prefix_when_required(): void
+    public function side_formula_accepts_bare_and_suffix_actor(): void
     {
         $v = Validator::make(
             ['left' => '[agi] + 1'],
-            ['left' => [new EffectConditionSideFormula(requireActorPrefix: true)]],
+            ['left' => [new EffectConditionSideFormula]],
         );
-        $this->assertTrue($v->fails());
+        $this->assertTrue($v->passes(), (string) $v->errors());
+
+        $v2 = Validator::make(
+            ['left' => '[chance:target]'],
+            ['left' => [new EffectConditionSideFormula]],
+        );
+        $this->assertTrue($v2->passes(), (string) $v2->errors());
+    }
+
+    #[Test]
+    public function side_formula_accepts_legacy_prefix_actor(): void
+    {
+        $v = Validator::make(
+            ['left' => '[caster:agi] + 1'],
+            ['left' => [new EffectConditionSideFormula]],
+        );
+        $this->assertTrue($v->passes(), (string) $v->errors());
     }
 
     #[Test]
@@ -72,23 +89,23 @@ final class EffectConditionParamsTest extends TestCase
     {
         $v = Validator::make(
             ['left' => 'system("rm")'],
-            ['left' => [new EffectConditionSideFormula(requireActorPrefix: false)]],
+            ['left' => [new EffectConditionSideFormula]],
         );
         $this->assertTrue($v->fails());
 
         $v2 = Validator::make(
             ['left' => 'eval(1)'],
-            ['left' => [new EffectConditionSideFormula(requireActorPrefix: false)]],
+            ['left' => [new EffectConditionSideFormula]],
         );
         $this->assertTrue($v2->fails());
     }
 
     #[Test]
-    public function side_formula_allows_bare_keys_for_value_rules(): void
+    public function side_formula_allows_min_max_with_strong(): void
     {
         $v = Validator::make(
             ['formula' => 'min(3 + [strong], 6)'],
-            ['formula' => [new EffectConditionSideFormula(requireActorPrefix: false)]],
+            ['formula' => [new EffectConditionSideFormula]],
         );
         $this->assertTrue($v->passes(), (string) $v->errors());
     }

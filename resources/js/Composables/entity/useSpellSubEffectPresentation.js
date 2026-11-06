@@ -207,6 +207,7 @@ export function buildUnifiedSubEffectModel(input) {
                     : "targets",
             conditions: Array.isArray(params.conditions) ? params.conditions : [],
             valueRules: Array.isArray(params.value_rules) ? params.value_rules : [],
+            valueUpTo: Boolean(params.value_up_to),
             textFallback: null,
             rawTextValue: null,
         };
@@ -306,6 +307,7 @@ export function buildUnifiedSubEffectModel(input) {
         appliesTo: "targets",
         conditions: [],
         valueRules: [],
+        valueUpTo: false,
         textFallback: rawText,
         rawTextValue: rawText,
     };

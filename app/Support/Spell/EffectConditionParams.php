@@ -10,9 +10,11 @@ namespace App\Support\Spell;
  * Stockées dans {@code params} du pivot {@code spell_degree_effects} :
  * {@code applies_to}, {@code conditions}, {@code value_rules}.
  *
+ * Placeholders : {@code [clé]} / {@code [clé:caster]} = lanceur, {@code [clé:target]} = cible.
+ *
  * @example
  * EffectConditionParams::normalizeConditions([
- *     ['left' => '[caster:agi]', 'op' => '>=', 'right' => '3'],
+ *     ['left' => '[agi]', 'op' => '>=', 'right' => '3'],
  * ]);
  */
 final class EffectConditionParams
@@ -157,6 +159,13 @@ final class EffectConditionParams
                 unset($params['value_rules']);
             } else {
                 $params['value_rules'] = $rules;
+            }
+        }
+
+        if (array_key_exists('value_up_to', $params)) {
+            $params['value_up_to'] = filter_var($params['value_up_to'], FILTER_VALIDATE_BOOLEAN);
+            if ($params['value_up_to'] === false) {
+                unset($params['value_up_to']);
             }
         }
 

@@ -1,17 +1,27 @@
 <script setup>
 /**
- * Contexte déplacement (cases, type, téléport).
+ * Contexte déplacement (cases, type, téléport, option « jusqu’à »).
  */
 import { computed } from 'vue';
+import FormulaExpressionInput from '@/Pages/Molecules/data-input/FormulaExpressionInput.vue';
 import { METERS_PER_CASE, previewMetersFromCellsFormula } from '@/Utils/Entity/displacementFormat.js';
 
 const props = defineProps({
     cellsFormula: { type: String, default: '' },
     movementKind: { type: String, default: 'movement' },
     teleport: { type: Boolean, default: false },
+    valueUpTo: { type: Boolean, default: false },
+    /** Suggestions formules (optionnel). */
+    suggestions: { type: Array, default: () => [] },
 });
 
-const emit = defineEmits(['update:cellsFormula', 'update:movementKind', 'update:teleport', 'dirty']);
+const emit = defineEmits([
+    'update:cellsFormula',
+    'update:movementKind',
+    'update:teleport',
+    'update:valueUpTo',
+    'dirty',
+]);
 
 const MOVEMENT_KIND_OPTIONS = Object.freeze([
     { value: 'movement', label: 'Déplacement' },
@@ -39,22 +49,43 @@ function onTeleport(checked) {
     emit('update:movementKind', checked ? 'teleport' : 'movement');
     emit('dirty');
 }
+
+function onUpTo(checked) {
+    emit('update:valueUpTo', checked);
+    emit('dirty');
+}
 </script>
 
 <template>
     <div class="space-y-2 max-w-xl">
         <div class="space-y-1">
-            <label class="text-xs font-medium text-base-content/80">Nombre de cases (formule)</label>
-            <input
-                type="text"
-                inputmode="decimal"
-                class="input input-bordered input-sm w-full"
-                :value="cellsFormula"
-                placeholder="ex: 3, 0,33, [level]…"
-                @input="onCells($event.target.value)"
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <label class="text-xs font-medium text-base-content/80">Nombre de cases (formule)</label>
+                <label class="flex items-center gap-1.5 cursor-pointer text-xs text-base-content/75">
+                    <input
+                        type="checkbox"
+                        class="checkbox checkbox-xs"
+                        :checked="valueUpTo"
+                        @change="onUpTo($event.target.checked)"
+                    />
+                    <span title="Le lanceur choisit un nombre de cases ≤ cette formule">
+                        Jusqu’à
+                    </span>
+                </label>
+            </div>
+            <FormulaExpressionInput
+                :model-value="cellsFormula"
+                :suggestions="suggestions"
+                :min-query-length="0"
+                :open-on-focus="true"
+                placeholder="ex: 3, [strong], min(3+[agi], 6)"
+                @update:model-value="onCells"
             />
             <p class="text-xs text-base-content/70">
                 Distance en cases (1 case = {{ METERS_PER_CASE }} m).
+                <template v-if="valueUpTo">
+                    Coché « Jusqu’à » : le lanceur choisit un nombre ≤ cette formule.
+                </template>
             </p>
             <p v-if="metersPreview" class="text-xs font-medium tabular-nums text-base-content/80">
                 {{ metersPreview }}
@@ -79,7 +110,7 @@ function onTeleport(checked) {
                 :checked="teleport"
                 @change="onTeleport($event.target.checked)"
             />
-            <span class="text-xs">Téléportation</span>
+            <span class="text-xs">Téléportation (ignore les obstacles)</span>
         </label>
     </div>
 </template>

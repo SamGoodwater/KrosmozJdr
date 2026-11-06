@@ -149,6 +149,7 @@ function addEffectRow() {
             applies_to: 'targets',
             conditions: [],
             value_rules: [],
+            value_up_to: false,
         },
         sub_effect: first,
     });

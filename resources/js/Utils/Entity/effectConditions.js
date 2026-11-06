@@ -1,12 +1,13 @@
 /**
  * Conditions et règles de valeur des effets de sort (params.conditions / value_rules).
  *
- * Une condition compare deux formules : left op right.
- * Une règle de valeur remplace, ajoute ou soustrait une formule si ses conditions sont vraies.
+ * Syntaxe caractéristique entre crochets :
+ * - `[clé]` ou `[clé:caster]` → caractéristique du lanceur
+ * - `[clé:target]` → caractéristique de la cible
+ * (ancienne forme `[caster:clé]` / `[target:clé]` encore lue à l’affichage)
  *
  * @example
- * formatConditionText({ left: '[caster:agi]', op: '>=', right: '3' })
- * // → « Agi du lanceur ≥ 3 » (selon resolveLabel)
+ * formatConditionText({ left: '[modifier_agility_creature:target]', op: '>=', right: '3' })
  */
 
 /** @type {ReadonlyArray<{ value: string, label: string, symbol: string }>} */
@@ -73,6 +74,29 @@ const SHORT_LABELS = Object.freeze({
 });
 
 /**
+ * Décompose un jeton entre crochets : clé + acteur (caster par défaut).
+ *
+ * @param {string} token
+ * @returns {{ key: string, actor: 'caster'|'target'|null }}
+ */
+export function parseBracketToken(token) {
+    const raw = String(token ?? "").trim();
+    // Nouvelle forme : clé:acteur
+    let m = /^([a-zA-Z_][a-zA-Z0-9_]*):(caster|target)$/i.exec(raw);
+    if (m) {
+        return { key: m[1], actor: /** @type {'caster'|'target'} */ (m[2].toLowerCase()) };
+    }
+    // Ancienne forme : acteur:clé
+    m = /^(caster|target):([a-zA-Z_][a-zA-Z0-9_]*)$/i.exec(raw);
+    if (m) {
+        return { key: m[2], actor: /** @type {'caster'|'target'} */ (m[1].toLowerCase()) };
+    }
+    return { key: raw, actor: null };
+}
+
+/**
+ * Normalise pour persistance : ignore les lignes sans formules.
+ *
  * @param {mixed} raw
  * @returns {Array<{ left: string, op: string, right: string, join?: string }>}
  */
@@ -89,7 +113,7 @@ export function normalizeConditions(raw) {
         if (!OP_SET.has(op)) continue;
         /** @type {{ left: string, op: string, right: string, join?: string }} */
         const item = { left, op, right };
-        if (i > 0 || row.join != null) {
+        if (out.length > 0 || row.join != null) {
             const join = String(row.join ?? "AND").toUpperCase();
             if (JOIN_SET.has(join)) item.join = join;
         }
@@ -97,6 +121,30 @@ export function normalizeConditions(raw) {
         if (out.length >= 10) break;
     }
     return out;
+}
+
+/**
+ * Copie pour l’éditeur : conserve les lignes en cours de saisie (même vides).
+ *
+ * @param {mixed} raw
+ * @returns {Array<{ left: string, op: string, right: string, join?: string }>}
+ */
+export function draftConditions(raw) {
+    if (!Array.isArray(raw)) return [];
+    return raw.slice(0, 10).map((row, i) => {
+        const src = row && typeof row === "object" ? row : {};
+        /** @type {{ left: string, op: string, right: string, join?: string }} */
+        const item = {
+            left: String(src.left ?? ""),
+            op: OP_SET.has(String(src.op ?? "")) ? String(src.op) : ">=",
+            right: String(src.right ?? ""),
+        };
+        if (i > 0) {
+            const join = String(src.join ?? "AND").toUpperCase();
+            item.join = JOIN_SET.has(join) ? join : "AND";
+        }
+        return item;
+    });
 }
 
 /**
@@ -122,6 +170,25 @@ export function normalizeValueRules(raw) {
 }
 
 /**
+ * Copie pour l’éditeur : conserve les règles incomplètes.
+ *
+ * @param {mixed} raw
+ * @returns {Array<{ conditions: ReturnType<typeof draftConditions>, action: string, formula: string }>}
+ */
+export function draftValueRules(raw) {
+    if (!Array.isArray(raw)) return [];
+    return raw.slice(0, 10).map((row) => {
+        const src = row && typeof row === "object" ? row : {};
+        const action = String(src.action ?? "add");
+        return {
+            conditions: draftConditions(src.conditions),
+            action: ACTION_SET.has(action) ? action : "add",
+            formula: String(src.formula ?? ""),
+        };
+    });
+}
+
+/**
  * @param {mixed} raw
  * @returns {'targets'|'caster'|'caster_and_targets'}
  */
@@ -131,42 +198,45 @@ export function normalizeAppliesTo(raw) {
 }
 
 /**
- * @param {string} token contenu entre crochets, éventuellement préfixé
+ * @param {mixed} raw
+ * @returns {boolean}
+ */
+export function normalizeValueUpTo(raw) {
+    return raw === true || raw === 1 || raw === "1" || raw === "true";
+}
+
+/**
+ * @param {string} token contenu entre crochets
  * @param {(key: string) => string|null|undefined} [resolveLabel]
  * @returns {string}
  */
 export function formatBracketToken(token, resolveLabel) {
-    const raw = String(token ?? "").trim();
-    const m = /^(caster|target):(.+)$/i.exec(raw);
-    const actor = m ? m[1].toLowerCase() : null;
-    const key = m ? m[2] : raw;
+    const { key, actor } = parseBracketToken(token);
     let label = null;
     if (typeof resolveLabel === "function") {
-        label = resolveLabel(key) || resolveLabel(raw);
+        label = resolveLabel(key) || resolveLabel(token);
     }
     if (!label) {
         label = SHORT_LABELS[key] || key;
     }
-    if (actor && ACTOR_LABELS[actor]) {
-        return `${label} ${ACTOR_LABELS[actor]}`;
+    if (actor === "target") {
+        return `${label} ${ACTOR_LABELS.target}`;
+    }
+    if (actor === "caster") {
+        return `${label} ${ACTOR_LABELS.caster}`;
     }
     return label;
 }
 
 /**
- * Remplace les [tokens] d’une formule par des libellés lisibles.
- *
  * @param {string} formula
  * @param {(key: string) => string|null|undefined} [resolveLabel]
  * @param {{ abbreviate?: boolean }} [opts]
  */
-export function formatFormulaReadable(formula, resolveLabel, opts = {}) {
+export function formatFormulaReadable(formula, resolveLabel, _opts = {}) {
     const src = String(formula ?? "").trim();
     if (!src) return "";
-    return src.replace(/\[([^\]]+)\]/g, (_all, inner) => {
-        const readable = formatBracketToken(inner, resolveLabel);
-        return opts.abbreviate ? readable : readable;
-    });
+    return src.replace(/\[([^\]]+)\]/g, (_all, inner) => formatBracketToken(inner, resolveLabel));
 }
 
 /**
@@ -227,43 +297,52 @@ export function formatValueRuleText(rule, resolveLabel, opts = {}) {
  * @param {string} appliesTo
  * @param {{ abbreviate?: boolean }} [opts]
  */
-export function formatAppliesToText(appliesTo, opts = {}) {
+export function formatAppliesToText(appliesTo, _opts = {}) {
     const v = normalizeAppliesTo(appliesTo);
-    if (v === "targets") return opts.abbreviate ? "" : "";
+    if (v === "targets") return "";
     const meta = APPLIES_TO_OPTIONS.find((a) => a.value === v);
     return meta?.short || meta?.label || "";
 }
 
 /**
- * Suggestions d’autocomplétion avec préfixe lanceur / cible.
+ * Suggestions : clé nue (lanceur) + clé:target (cible).
+ * `[clé:caster]` est optionnel (= clé nue).
  *
  * @param {Array<{ id: string, name?: string|null, short_name?: string|null }>} baseSuggestions
  * @returns {Array<{ id: string, name: string, short_name?: string|null }>}
  */
-export function buildActorPrefixedSuggestions(baseSuggestions) {
+export function buildActorSuffixedSuggestions(baseSuggestions) {
     const out = [];
     for (const s of baseSuggestions ?? []) {
         const id = String(s?.id ?? "").trim();
-        if (!id) continue;
+        if (!id || id.includes(":")) continue;
         const name = String(s?.name ?? s?.short_name ?? id);
         const short = s?.short_name ?? null;
         out.push({
-            id: `caster:${id}`,
-            name: `Lanceur · ${name}`,
-            short_name: short ? `Lanceur · ${short}` : null,
+            id,
+            name: `${name} (lanceur)`,
+            short_name: short ? `${short} (lanceur)` : null,
         });
         out.push({
-            id: `target:${id}`,
-            name: `Cible · ${name}`,
-            short_name: short ? `Cible · ${short}` : null,
+            id: `${id}:target`,
+            name: `${name} (cible)`,
+            short_name: short ? `${short} (cible)` : null,
+        });
+        out.push({
+            id: `${id}:caster`,
+            name: `${name} (lanceur, explicite)`,
+            short_name: short ? `${short} (lanceur)` : null,
         });
     }
     return out;
 }
 
+/** @deprecated Utiliser {@link buildActorSuffixedSuggestions}. */
+export function buildActorPrefixedSuggestions(baseSuggestions) {
+    return buildActorSuffixedSuggestions(baseSuggestions);
+}
+
 /**
- * Condition vide pour l’éditeur.
- *
  * @param {number} index
  */
 export function emptyCondition(index = 0) {
@@ -273,12 +352,9 @@ export function emptyCondition(index = 0) {
     return c;
 }
 
-/**
- * Règle de valeur vide pour l’éditeur.
- */
 export function emptyValueRule() {
     return {
-        conditions: [emptyCondition(0)],
+        conditions: [],
         action: "add",
         formula: "",
     };

@@ -2,7 +2,7 @@
 
 ## Novembre 2026 — Sorts à facteurs multiples
 
-Un effet de sort peut dépendre des caractéristiques du lanceur et de la cible. On écrit des conditions (« si l’Intelligence du lanceur dépasse la Chance de la cible ») et des règles de valeur qui remplacent, ajoutent ou soustraient une formule. Chaque effet précise aussi s’il s’applique à toi, aux cibles, ou aux deux. Les fiches le disent en une phrase ; l’éditeur guide la saisie. Les règles de création des classes et des sorts expliquent comment répartir Force, Agilité, Intelligence, Chance, Sagesse et Vitalité sur les sorts généraux.
+Un effet de sort peut dépendre des caractéristiques du lanceur et de la cible. On écrit des conditions (« si l’Intelligence du lanceur dépasse la Chance de la cible ») et des règles de valeur qui remplacent, ajoutent ou soustraient une formule. Chaque effet précise aussi s’il s’applique à toi, aux cibles, ou aux deux, et s’il laisse choisir un montant « jusqu’à » la formule (attirance, soins…). Entre crochets, `[clé]` vise le lanceur et `[clé:target]` la cible. Les fiches le disent en une phrase ; l’éditeur guide la saisie.
 
 ## Novembre 2026 — Filtre d’image pour les sorts devenus basiques
 

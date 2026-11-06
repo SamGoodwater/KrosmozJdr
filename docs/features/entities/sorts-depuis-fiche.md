@@ -92,8 +92,9 @@ Les sorts généraux choisissent leurs paliers. Un 9, un 14 ou un 16 écrit sur 
 | DD vs sauvegarde | `resolution_mode` = `saving_throw` |
 | automatique | `resolution_mode` = `auto_success` |
 | « Dégâts d’Air », voie, tags | élément, caractéristique du jet, types du sort |
-| « Si Agi ≥ 3 » / « Intel > Chance de la cible » | `params.conditions` (formules `[caster:…]` / `[target:…]`) |
+| « Si Agi ≥ 3 » / « Intel > Chance de la cible » | `params.conditions` (`[clé]` = lanceur, `[clé:target]` = cible) |
 | « +1 case si … » / « remplace / ajoute / soustrait » | `params.value_rules` (`add` / `replace` / `subtract`) |
+| « jusqu’à N » (choix du lanceur ≤ formule) | `params.value_up_to` = true |
 | « sur toi » / « toi et les cibles » | `params.applies_to` (`caster` / `caster_and_targets` ; défaut `targets`) |
 
 Sur une fiche Obsidian, note la condition sous *Effets* ou dans une colonne « Autres », puis recopie-la dans l’éditeur (bloc Conditions + règles de valeur). Les sorts généraux d’une classe suivent les règles de résolution (auto / Sagesse / Vitalité, quatre exceptions de voie) décrites dans l’atelier Classes.

@@ -3,7 +3,6 @@
  * Aide courte + exemples repliables pour les conditions d’effet.
  */
 defineProps({
-    /** Mode condition d’effet (préfixes obligatoires) ou formule de valeur (sans préfixe). */
     mode: {
         type: String,
         default: "condition",
@@ -25,11 +24,13 @@ defineProps({
                 <code class="text-[0.7rem]">&lt; ≤ &gt; ≥ = ≠</code>
                 ) +
                 <code class="text-[0.7rem]">formule</code>.
-                Dans les crochets, préfixe obligatoire :
-                <code class="text-[0.7rem]">[caster:…]</code>
-                (lanceur) ou
-                <code class="text-[0.7rem]">[target:…]</code>
-                (cible). Opérateurs autorisés de chaque côté :
+                Caractéristiques entre crochets :
+                <code class="text-[0.7rem]">[clé]</code>
+                ou
+                <code class="text-[0.7rem]">[clé:caster]</code>
+                = lanceur ;
+                <code class="text-[0.7rem]">[clé:target]</code>
+                = cible. Opérateurs autorisés :
                 <code class="text-[0.7rem]">+ - * /</code>,
                 <code class="text-[0.7rem]">min</code>,
                 <code class="text-[0.7rem]">max</code>,
@@ -38,13 +39,13 @@ defineProps({
             <p v-else>
                 La valeur est une formule classique (dés, nombres,
                 <code class="text-[0.7rem]">[clé]</code>
-                sans préfixe = lanceur). Chaque règle ajoute une condition puis
-                remplace, ajoute ou soustrait une formule.
+                = lanceur). Chaque règle ajoute des conditions puis remplace, ajoute
+                ou soustrait une formule.
             </p>
             <ul class="list-disc pl-4 space-y-1">
                 <li>
                     Repousse +1 si Agi ≥ 3 :
-                    <code class="text-[0.7rem]">[caster:modifier_agility_creature] &gt;= 3</code>
+                    <code class="text-[0.7rem]">[modifier_agility_creature] &gt;= 3</code>
                     → action « s’ajouter », formule
                     <code class="text-[0.7rem]">1</code>
                 </li>
@@ -54,7 +55,7 @@ defineProps({
                 </li>
                 <li>
                     Effet si Intel &gt; Chance de la cible :
-                    <code class="text-[0.7rem]">[caster:modifier_intelligence_creature] &gt; [target:modifier_chance_creature]</code>
+                    <code class="text-[0.7rem]">[modifier_intelligence_creature] &gt; [modifier_chance_creature:target]</code>
                 </li>
             </ul>
         </div>

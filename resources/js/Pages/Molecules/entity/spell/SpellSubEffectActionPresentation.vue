@@ -52,6 +52,7 @@ import {
     normalizeAppliesTo,
     normalizeConditions,
     normalizeValueRules,
+    normalizeValueUpTo,
 } from "@/Utils/Entity/effectConditions.js";
 import { SHORT_ABILITY_TO_MOD_KEY } from "@/Utils/Entity/spellFormulaDisplay";
 
@@ -339,11 +340,17 @@ const durationLabel = computed(() => {
 });
 
 function resolveConditionLabel(key) {
-    const k = String(key ?? "").replace(/^(caster|target):/i, "");
+    const k = String(key ?? "")
+        .replace(/^(caster|target):/i, "")
+        .replace(/:(caster|target)$/i, "");
     const full = SHORT_ABILITY_TO_MOD_KEY[k] || k;
     const def = resolveDef(full) || resolveDef(k);
     return def?.short_name || def?.name || k;
 }
+
+const valueUpTo = computed(() => normalizeValueUpTo(m.value.valueUpTo));
+
+const displayValuePrefix = computed(() => (valueUpTo.value ? "jusqu’à " : ""));
 
 const gateConditionsText = computed(() => {
     const list = normalizeConditions(m.value.conditions);
@@ -430,6 +437,12 @@ const valueRulesTitle = computed(() => valueRulesTexts.value.join(" · "));
                 </span>
 
                 <span class="shrink-0 text-base-content/55" aria-hidden="true">→</span>
+
+                <span
+                    v-if="valueUpTo"
+                    class="shrink-0 text-base-content/70 italic"
+                    data-cy="spell-sub-effect-up-to"
+                >{{ displayValuePrefix }}</span>
 
                 <!-- appliquer-etat -->
                 <template v-if="action === 'appliquer-etat' || action === 's-appliquer-etat'">

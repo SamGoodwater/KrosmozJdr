@@ -43,12 +43,12 @@
     `monster_id` legacy OK. Affichage : si `value_formula` est vide, la ligne reprend
     `params.value` (retrait de PA/PM, bonus chiffré, texte d’un effet « autre »).
   - Facteurs multiples (`params`) : `applies_to` (`caster`|`targets`|`caster_and_targets`),
-    `conditions` (left/op/right + join AND/OR, préfixes `[caster:…]`/`[target:…]`),
-    `value_rules` (action `replace`|`add`|`subtract` + conditions + formula). Validation
-    `EffectConditionSideFormula` + `EffectConditionParams` ; UI `EffectConditionList` /
-    `EffectValueRulesEditor` ; affichage journal « Si … : » + pastille applies_to + règles.
-    L’ancien lien ET/OU entre effets (`logic_operator`/`logic_condition`) est retiré de
-    l’éditeur natif (0 usage en base) ; lecture legacy conservée.
+    `value_up_to` (bool, « jusqu’à » la formule), `conditions` (left/op/right + join AND/OR),
+    `value_rules` (`replace`|`add`|`subtract`). Placeholders : `[clé]` / `[clé:caster]` =
+    lanceur, `[clé:target]` = cible (ancienne forme `[caster:clé]` encore lue). UI
+    `EffectConditionList` / `EffectValueRulesEditor` (brouillon local, lignes vides OK) ;
+    `FormulaExpressionInput` liste au focus. Affichage « Si … : », pastille applies_to,
+    « jusqu’à », règles. Ancien lien ET/OU entre effets retiré de l’éditeur natif.
   - Vocabulaire UI : **effet** (= ancien sous-effet) ; catalogue technique `SubEffect` conservé
 - `app/Models/Effect*.php`, `app/Models/ObjectEffect.php` — encore utilisés objets + legacy sorts
 - `GET /api/object-effects` — liste par fiche ; `view` sur le parent + `visibleToUser` sur le monstre invoqué (session `web`)

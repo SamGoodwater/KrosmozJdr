@@ -17,10 +17,9 @@ import EffectValueRulesEditor from '@/Pages/Molecules/entity/spell/EffectValueRu
 import FormulaExpressionInput from '@/Pages/Molecules/data-input/FormulaExpressionInput.vue';
 import {
     APPLIES_TO_OPTIONS,
-    buildActorPrefixedSuggestions,
+    buildActorSuffixedSuggestions,
     normalizeAppliesTo,
-    normalizeConditions,
-    normalizeValueRules,
+    normalizeValueUpTo,
 } from '@/Utils/Entity/effectConditions.js';
 import { SHORT_ABILITY_TO_MOD_KEY } from '@/Utils/Entity/spellFormulaDisplay.js';
 import { resolveDef } from '@/Composables/entity/useCharacteristicDisplay';
@@ -102,7 +101,7 @@ const hasValue = computed(
         schemaHas('value') ||
         isFrapper.value ||
         isBuffChar.value ||
-        ['soigner', 'protéger', 'autre'].includes(slug.value),
+        ['soigner', 'protéger', 'autre', 'donner-pv-temporaires'].includes(slug.value),
 );
 const hasLifeSteal = computed(() => schemaHas('life_steal_formula') || isFrapper.value);
 
@@ -206,6 +205,7 @@ function defaultParams() {
         applies_to: 'targets',
         conditions: [],
         value_rules: [],
+        value_up_to: false,
     };
 }
 
@@ -240,7 +240,7 @@ const formulaSuggestions = computed(() => {
 });
 
 const actorConditionSuggestions = computed(() =>
-    buildActorPrefixedSuggestions(formulaSuggestions.value),
+    buildActorSuffixedSuggestions(formulaSuggestions.value),
 );
 
 const appliesToModel = computed({
@@ -249,6 +249,16 @@ const appliesToModel = computed({
     },
     set(v) {
         ensureParams().applies_to = normalizeAppliesTo(v);
+        markDirty();
+    },
+});
+
+const valueUpToModel = computed({
+    get() {
+        return normalizeValueUpTo(props.row?.params?.value_up_to);
+    },
+    set(v) {
+        ensureParams().value_up_to = Boolean(v);
         markDirty();
     },
 });
@@ -370,7 +380,7 @@ watch(
                     Conditions pour appliquer cet effet
                 </label>
                 <EffectConditionList
-                    :model-value="normalizeConditions(row.params?.conditions)"
+                    :model-value="Array.isArray(row.params?.conditions) ? row.params.conditions : []"
                     :suggestions="actorConditionSuggestions"
                     @update:model-value="
                         ensureParams().conditions = $event;
@@ -427,12 +437,15 @@ watch(
                 :cells-formula="row.params.cells_formula || ''"
                 :movement-kind="row.params.movement_kind || 'movement'"
                 :teleport="Boolean(row.params.teleport)"
+                :value-up-to="valueUpToModel"
+                :suggestions="formulaSuggestions"
                 @update:cells-formula="
                     ensureParams().cells_formula = $event;
                     ensureParams().value_formula = $event;
                 "
                 @update:movement-kind="ensureParams().movement_kind = $event"
                 @update:teleport="ensureParams().teleport = $event"
+                @update:value-up-to="valueUpToModel = $event"
                 @dirty="markDirty"
             />
 
@@ -450,25 +463,44 @@ watch(
 
             <div v-if="hasValue" class="grid gap-3 sm:grid-cols-2">
                 <div class="space-y-1">
-                    <label class="text-xs font-medium text-base-content/80">Valeur (formule)</label>
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <label class="text-xs font-medium text-base-content/80">Valeur (formule)</label>
+                        <label class="flex items-center gap-1.5 cursor-pointer text-xs text-base-content/75">
+                            <input
+                                v-model="valueUpToModel"
+                                type="checkbox"
+                                class="checkbox checkbox-xs"
+                            />
+                            <span title="Le lanceur choisit un montant inférieur ou égal à cette formule">
+                                Jusqu’à
+                            </span>
+                        </label>
+                    </div>
                     <FormulaExpressionInput
                         :model-value="row.params.value_formula || ''"
                         :suggestions="formulaSuggestions"
-                        :min-query-length="2"
+                        :min-query-length="0"
+                        :open-on-focus="true"
                         placeholder="ex: 2d6, [strong], min(3+[agi], 6)"
                         @update:model-value="
                             ensureParams().value_formula = $event;
                             markDirty();
                         "
                     />
-                    <p class="text-xs text-base-content/70">{{ valueHelp }}</p>
+                    <p class="text-xs text-base-content/70">
+                        {{ valueHelp }}
+                        <template v-if="valueUpToModel">
+                            Coché « Jusqu’à » : le lanceur choisit un montant ≤ cette formule.
+                        </template>
+                    </p>
                 </div>
                 <div class="space-y-1">
                     <label class="text-xs font-medium text-base-content/80">Valeur critique</label>
                     <FormulaExpressionInput
                         :model-value="row.params.value_formula_crit || ''"
                         :suggestions="formulaSuggestions"
-                        :min-query-length="2"
+                        :min-query-length="0"
+                        :open-on-focus="true"
                         placeholder="optionnel"
                         @update:model-value="
                             ensureParams().value_formula_crit = $event;
@@ -481,7 +513,7 @@ watch(
 
             <EffectValueRulesEditor
                 v-if="hasValue"
-                :model-value="normalizeValueRules(row.params?.value_rules)"
+                :model-value="Array.isArray(row.params?.value_rules) ? row.params.value_rules : []"
                 :condition-suggestions="actorConditionSuggestions"
                 :value-suggestions="formulaSuggestions"
                 @update:model-value="
