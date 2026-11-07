@@ -37,7 +37,9 @@ Les numéros renvoient aux fichiers du livre. Changelog et historique : [[kref:p
 - **Repos** (1 court entre deux longs ; long 8 h) : 3.2.4
 - **Wakfu** (hors combat ; 1 pt = 1× PA max) : 3.3.4
 - **Mort** (jets 10+, 3/3) : 3.2.4
-- **Chute** (1d6 / 3 m, max 20d6 ; pas de bouclier) : 3.1.4, 3.2.4
+- **Chute** (1d6 / 3 m, max 20d6 ; pas de bouclier) : 3.1.4, 3.2.4, 3.2.2
+- **Vol et hauteur** (hauteur max selon la source ; contact jusqu’à 1 case d’écart, plus à partir de 2) : 3.2.2
+- **Porter une créature** (consentante ou inconsciente, plus petite ; 1 PM de plus par case ; lancer seulement par sort ou capacité) : 3.2.2
 
 ## Création et progression
 
