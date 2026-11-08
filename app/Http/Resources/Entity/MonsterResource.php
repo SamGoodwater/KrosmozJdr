@@ -32,6 +32,7 @@ class MonsterResource extends JsonResource
             'monster_race_id' => $this->monster_race_id,
             'is_boss' => $this->is_boss,
             'boss_pa' => $this->boss_pa,
+            'life_formula' => $this->life_formula,
             'state' => $this->state,
             'read_level' => $this->read_level,
             'write_level' => $this->write_level,

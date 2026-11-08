@@ -1,8 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
+import { createPinia, setActivePinia } from "pinia";
 import { useEntityMinimalShell } from "@/Composables/entity/useEntityMinimalShell";
 import { MINIMAL_EXPANDED_ACTION_KEYS } from "@/Entities/entity-actions-config";
 
 describe("useEntityMinimalShell", () => {
+    beforeEach(() => {
+        setActivePinia(createPinia());
+    });
+
     it("expose la whitelist et le contexte minimal", () => {
         const emitted = [];
         const emit = (...args) => emitted.push(args);

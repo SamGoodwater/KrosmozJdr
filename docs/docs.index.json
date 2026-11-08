@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Orientations de voie indicatives (variété, niv.1 basique) sur les 19 classes ; Iop, Crâ et Ecaflip enregistrés en base. Avant : sorts à facteurs multiples (conditions, règles de valeur, destinataire)."
+    "description": "Calculateur de dés de vie (PNJ/monstre) et life_dice des classes. Avant : orientations de voie indicatives ; Iop, Crâ et Ecaflip en base."
   },
   {
     "path": "backend/_ai.md",

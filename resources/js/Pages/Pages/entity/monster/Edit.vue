@@ -79,6 +79,13 @@ const monsterName = computed(() => {
     return monster.value.creature?.name || 'Nouveau monstre';
 });
 
+const vitalityModifier = computed(() => {
+    const raw = monster.value.creature?.vitality;
+    const score = parseInt(String(raw ?? ''), 10);
+    if (!Number.isFinite(score)) return 0;
+    return Math.floor((score - 10) / 2);
+});
+
 setPageTitle(`Modifier le monstre : ${monsterName.value}`);
 </script>
 
@@ -142,6 +149,9 @@ setPageTitle(`Modifier le monstre : ${monsterName.value}`);
                         :entity-id="monster.id"
                         update-route-name="entities.monsters.update"
                         update-route-param-name="monster"
+                        life-dice-source="formula"
+                        :life-formula="monster.lifeFormula || monster._data?.life_formula || ''"
+                        :vitality-modifier="vitalityModifier"
                     />
                 </EntityEditContainer>
 

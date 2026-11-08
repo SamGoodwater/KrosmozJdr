@@ -1,12 +1,16 @@
 <?php
+
 namespace Tests\Feature\Spell;
+
 use App\Models\Entity\Spell;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+
 final class SpellSaveSmokeTest extends TestCase
 {
     use RefreshDatabase;
+
     public function test_update_with_global_props_and_redirect_edit(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);

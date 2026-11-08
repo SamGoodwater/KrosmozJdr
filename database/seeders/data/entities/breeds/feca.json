@@ -3,6 +3,7 @@
     "name": "Féca",
     "dofusdb_id": "1",
     "description_fast": "Protecteur",
+    "life_dice": "1d10",
     "description": "Les Fécas sont de loyaux protecteurs toujours sur la défensive. Ils sont appréciés dans les groupes d'aventuriers pour leurs armures élémentaires et leur capacité à encaisser les coups durs. Ils sont également maîtres dans l'art des signes magiques : quan",
     "mechanics": "<p><strong>Pile ou Face</strong> — La mécanique centrale du Féca, indépendante des voies.</p><p>Tu évolues toujours dans l’un des deux états suivants (propres à la classe, hors catalogue des états) :</p><ul><li><strong>Pile</strong></li><li><strong>Face</strong></li></ul><p>Certains sorts ont <strong>deux effets</strong> : l’un s’applique en Pile, l’autre en Face. Au niveau 1, un sort sans variante (hors choix de voie) te fait <strong>lancer un dé</strong> pour déterminer l’état de départ — c’est le cœur du kit Féca.</p>",
     "dofus_version": "3",

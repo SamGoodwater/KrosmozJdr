@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Calculateur de dés de vie
+
+En édition PNJ ou monstre, on lance les dés de vie (relance des 1) ou on applique la méthode stable, puis on enregistre la part des dés. Les PV affichés = part des dés + max(0, mod. Vitalité) × niveau + équipement. Les classes ont leur `life_dice` en seed ; un monstre peut porter sa propre formule de gain.
+
 ## Novembre 2026 — Orientations de voie indicatives
 
 L’orientation d’une voie (Placement, Entrave, Soin…) reste un repère, pas une case à cocher pour chaque sort. Au moins deux sorts collent bien ; les autres varient pour proposer un autre gameplay. Deux sorts d’une même voie ne font plus le même effet. Le sort élémentaire de niveau 1 frappe basique : les effets secondaires arrivent aux montées ou aux sorts suivants. Les règles (2.3.3, 5.2.2, 5.2.3) et le guide de construction des sorts le disent. Passes : les 19 classes — Féca, Osamodas, Enutrof, Eniripsa, Sadida, Sram, Pandawa, Sacrieur, Roublard, Xélor, Eliotrope, Steamer, Huppermage, Forgelance, Ouginak, Zobal (Iop, Crâ et Ecaflip déjà alignés).

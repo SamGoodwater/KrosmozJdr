@@ -12,11 +12,14 @@ use App\Models\Entity\Specialization;
 use App\Models\Page;
 use App\Models\User;
 use App\Services\BibliothequeEntityPageService;
+use App\Services\EntityDisplay\EntityDisplayVisibilityService;
 use App\Services\NotificationService;
 use App\Services\PageService;
 use App\Services\SectionService;
 use App\Support\Cms\CreationPageLegacyRedirects;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -214,15 +217,25 @@ class PageController extends Controller
             $entity->load([
                 'createdBy',
                 'elementOrientations',
-                'spells' => fn ($q) => $q
-                    ->visibleToUser($user)
-                    ->orderBy('breed_spell.character_level')
-                    ->orderBy('breed_spell.slot_index')
-                    ->orderBy('breed_spell.choice_order')
-                    ->orderBy('spells.name'),
-                'npcs' => fn ($q) => $q->visibleToUser($user)->limit(100),
-                'capabilities' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
-                'creatureTraits' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
+                'spells' => function ($q) use ($user) {
+                    $this->constrainRelationVisibleToUser($q, $user);
+                    $q->orderBy('breed_spell.character_level')
+                        ->orderBy('breed_spell.slot_index')
+                        ->orderBy('breed_spell.choice_order')
+                        ->orderBy('spells.name');
+                },
+                'npcs' => function ($q) use ($user) {
+                    $this->constrainRelationVisibleToUser($q, $user);
+                    $q->limit(100);
+                },
+                'capabilities' => function ($q) use ($user) {
+                    $this->constrainRelationVisibleToUser($q, $user);
+                    $q->orderBy('name');
+                },
+                'creatureTraits' => function ($q) use ($user) {
+                    $this->constrainRelationVisibleToUser($q, $user);
+                    $q->orderBy('name');
+                },
                 'languages',
                 'sections' => Breed::visibleSectionsEagerLoadConstraint($user),
             ]);
@@ -231,19 +244,62 @@ class PageController extends Controller
             /** @var Specialization $entity */
             $entity->load([
                 'createdBy',
-                'npcs' => fn ($q) => $q->visibleToUser($user)->limit(100),
-                'capabilities' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
-                'spells' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
-                'creatureTraits' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
-                'consumables' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
-                'resources' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
-                'items' => fn ($q) => $q->visibleToUser($user)->orderBy('name'),
+                'npcs' => function ($q) use ($user) {
+                    $this->constrainRelationVisibleToUser($q, $user);
+                    $q->limit(100);
+                },
+                'capabilities' => function ($q) use ($user) {
+                    $this->constrainRelationVisibleToUser($q, $user);
+                    $q->orderBy('name');
+                },
+                'spells' => function ($q) use ($user) {
+                    $this->constrainRelationVisibleToUser($q, $user);
+                    $q->orderBy('name');
+                },
+                'creatureTraits' => function ($q) use ($user) {
+                    $this->constrainRelationVisibleToUser($q, $user);
+                    $q->orderBy('name');
+                },
+                'consumables' => function ($q) use ($user) {
+                    $this->constrainRelationVisibleToUser($q, $user);
+                    $q->orderBy('name');
+                },
+                'resources' => function ($q) use ($user) {
+                    $this->constrainRelationVisibleToUser($q, $user);
+                    $q->orderBy('name');
+                },
+                'items' => function ($q) use ($user) {
+                    $this->constrainRelationVisibleToUser($q, $user);
+                    $q->orderBy('name');
+                },
                 'sections' => Specialization::visibleSectionsEagerLoadConstraint($user),
             ]);
             $payload['linkedEntity'] = new SpecializationResource($entity);
         }
 
         return Inertia::render('Pages/page/LinkedEntityShow', $payload);
+    }
+
+    /**
+     * Restreint une relation eager-load aux lignes visibles pour l'utilisateur.
+     *
+     * Le scope `visibleToUser` est déclaré sur le modèle. Une relation Eloquent
+     * ne l'expose que par délégation (`__call`), donc on contraint le builder sous-jacent.
+     *
+     * @param  Relation<Model, Model, mixed>  $query
+     *
+     * @example $this->constrainRelationVisibleToUser($query, $user);
+     */
+    private function constrainRelationVisibleToUser(Relation $query, ?User $user): void
+    {
+        $builder = $query->getQuery();
+        $service = app(EntityDisplayVisibilityService::class);
+        $key = $service->permissionKeyForModel($builder->getModel());
+        if ($key === null || $key === '') {
+            return;
+        }
+
+        $service->constrainQueryToViewer($builder, $user, $key);
     }
 
     /**

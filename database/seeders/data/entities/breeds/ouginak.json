@@ -3,6 +3,7 @@
     "name": "Ouginak",
     "dofusdb_id": "18",
     "description_fast": "Barbare",
+    "life_dice": "1d10",
     "description": "Quand on est un barbare avec un caractère de chienchien, il faut savoir montrer les crocs pour se faire respecter. Le regard fier, le poil brillant, la truffe humide : c'est ainsi que l'Ouginak traverse les épreuves et triomphe de l'adversité. Traquer ses proies sans relâche, laisser éclater sa rage pour écraser ses ennemis, les voir mourir devant soi et entendre les miaulements terrorisés de leurs chachas... Voilà une vie digne d'être vécue !",
     "dofus_version": "3",
     "state": "draft",

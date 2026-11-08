@@ -47,6 +47,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereOfficialId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereSize($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereUpdatedAt($value)
+ * @property string|null $life_formula
  * @property int $is_boss
  * @property string $boss_pa
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereBossPa($value)
@@ -145,6 +146,7 @@ class Monster extends Model
         'size',
         'is_boss',
         'boss_pa',
+        'life_formula',
         'monster_race_id',
         'state',
         'read_level',

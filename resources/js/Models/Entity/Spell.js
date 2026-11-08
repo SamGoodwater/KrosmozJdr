@@ -1266,6 +1266,42 @@ export class Spell extends BaseModel {
     // ============================================
 
     /**
+     * Booléen exporté au formulaire, à partir de la valeur stockée sur le sort.
+     *
+     * @param {unknown} raw
+     * @param {boolean} fallback
+     * @returns {boolean}
+     * @example spell._formBool(1, false) // true
+     */
+    _formBool(raw, fallback) {
+        if (raw === null || raw === undefined) {
+            return Boolean(fallback);
+        }
+        return Boolean(raw);
+    }
+
+    /**
+     * Nombre exporté au formulaire, à partir de la valeur stockée sur le sort.
+     *
+     * @param {unknown} raw
+     * @param {number} fallback
+     * @returns {number}
+     * @example spell._formNumber("5", 0) // 5
+     */
+    _formNumber(raw, fallback) {
+        if (raw === null || raw === undefined || raw === "") {
+            const fallbackNumber = Number(fallback);
+            return Number.isFinite(fallbackNumber) ? fallbackNumber : 0;
+        }
+        const n = Number(raw);
+        if (Number.isFinite(n)) {
+            return n;
+        }
+        const fallbackNumber = Number(fallback);
+        return Number.isFinite(fallbackNumber) ? fallbackNumber : 0;
+    }
+
+    /**
      * Retourne les données pour un formulaire
      * @returns {Object}
      */
@@ -1289,11 +1325,11 @@ export class Spell extends BaseModel {
             cast_per_turn: strOrEmpty(this._data.cast_per_turn ?? this.castPerTurn),
             cast_per_target: strOrEmpty(this._data.cast_per_target ?? this.castPerTarget),
             sight_line: this._data.sight_line ?? this.sightLine,
-            cast_in_line: this._data.cast_in_line ?? this.castInLine,
-            cast_in_diagonal: this._data.cast_in_diagonal ?? this.castInDiagonal,
+            cast_in_line: this._formBool(this._data.cast_in_line, this.castInLine),
+            cast_in_diagonal: this._formBool(this._data.cast_in_diagonal, this.castInDiagonal),
             target_type: this.targetType,
-            max_stack: this._data.max_stack ?? this.maxStack,
-            global_cooldown: this._data.global_cooldown ?? this.globalCooldown,
+            max_stack: this._formNumber(this._data.max_stack, this.maxStack),
+            global_cooldown: this._formNumber(this._data.global_cooldown, this.globalCooldown),
             number_between_two_cast: strOrEmpty(
                 this._data.number_between_two_cast ?? this.numberBetweenTwoCast,
             ),

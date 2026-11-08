@@ -3,6 +3,7 @@
     "name": "Xélor",
     "dofusdb_id": "5",
     "description_fast": "Maître du temps",
+    "life_dice": "1d8",
     "description": "Les Xélors sont des mages qui maîtrisent le temps et toutes les mécaniques qui donnent l'heure : carillons, horloges, et pendules leur obéissent au doigt et à l'œil. Les Xélors jouent donc avec le temps pour ralentir un ennemi ou se téléporter où bon leur",
     "dofus_version": "3",
     "state": "draft",

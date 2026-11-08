@@ -101,6 +101,18 @@ const creatureItems = computed(
     () => npc.value.creature?.items ?? npc.value._data?.creature?.items ?? [],
 );
 
+const classLifeDice = computed(() => {
+    const breed = npc.value.breed || npc.value._data?.breed || {};
+    return breed.life_dice || breed.lifeDice || '1d8';
+});
+
+const vitalityModifier = computed(() => {
+    const raw = npc.value.creature?.vitality;
+    const score = parseInt(String(raw ?? ''), 10);
+    if (!Number.isFinite(score)) return 0;
+    return Math.floor((score - 10) / 2);
+});
+
 setPageTitle(`Modifier le PNJ : ${npcName.value}`);
 </script>
 
@@ -160,6 +172,9 @@ setPageTitle(`Modifier le PNJ : ${npcName.value}`);
                         :entity-id="npc.id"
                         update-route-name="entities.npcs.update"
                         update-route-param-name="npc"
+                        life-dice-source="class"
+                        :class-life-dice="classLifeDice"
+                        :vitality-modifier="vitalityModifier"
                     />
                 </EntityEditContainer>
 

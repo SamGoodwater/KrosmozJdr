@@ -5,7 +5,7 @@ import { useOverlayA11y } from "@/Composables/overlay/useOverlayA11y";
 describe("useOverlayA11y", () => {
     it("expose un déclencheur focalisable avec role button", () => {
         const openRef = ref(false);
-        const { triggerAttrs } = useOverlayA11y({ openRef, interactive: false });
+        const { triggerAttrs } = useOverlayA11y({ openRef, interactive: true });
 
         expect(triggerAttrs.value.tabindex).toBe("0");
         expect(triggerAttrs.value.role).toBe("button");

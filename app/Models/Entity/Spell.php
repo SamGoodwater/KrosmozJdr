@@ -147,6 +147,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereTargetType($value)
  * @property-read Collection<int, SpellDegree> $degrees
  * @property-read int|null $degrees_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereImageFilter($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePaFromWakfuReserve($value)
  * @mixin \Eloquent
  */
 class Spell extends Model implements HasMedia

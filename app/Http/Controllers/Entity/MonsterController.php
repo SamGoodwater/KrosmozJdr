@@ -216,7 +216,7 @@ class MonsterController extends Controller
 
         $validated = $request->validated();
         $monsterPayload = array_intersect_key($validated, array_flip([
-            'size', 'is_boss', 'boss_pa', 'monster_race_id', 'dofus_version', 'auto_update',
+            'size', 'is_boss', 'boss_pa', 'life_formula', 'monster_race_id', 'dofus_version', 'auto_update',
             'state', 'read_level', 'write_level',
             ...ProfileMasteryColumns::all(),
         ]));
@@ -229,6 +229,9 @@ class MonsterController extends Controller
             $creaturePayload = [];
             if (array_key_exists('level', $validated)) {
                 $creaturePayload['level'] = $validated['level'];
+            }
+            if (array_key_exists('life_dice_total', $validated)) {
+                $creaturePayload['life_dice_total'] = $validated['life_dice_total'];
             }
             $composablePersister->apply($creature, $composablePersister->extractPayload($validated));
             if ($creaturePayload !== []) {

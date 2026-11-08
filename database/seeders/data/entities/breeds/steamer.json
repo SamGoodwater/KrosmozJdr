@@ -3,6 +3,7 @@
     "name": "Steamer",
     "dofusdb_id": "15",
     "description_fast": "Technomage",
+    "life_dice": "1d8",
     "description": "Les Steamers ont plus d'une tourelle dans leur boîte à outils. En fins tacticiens, ils utilisent la technomagie pour prendre l'avantage sur le terrain. Ces marinventeurs aux scaphandres rutilants vouent un culte au Grand Oktapodas, le protecteur des océans.",
     "dofus_version": "3",
     "state": "draft",

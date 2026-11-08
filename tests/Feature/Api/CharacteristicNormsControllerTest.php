@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use App\Enums\SectionType;
 use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
+use App\Models\CharacteristicSpell;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
@@ -96,7 +97,7 @@ class CharacteristicNormsControllerTest extends TestCase
             'strong' => 1.3,
             'very_strong' => 1.7,
         ];
-        \App\Models\CharacteristicSpell::create([
+        CharacteristicSpell::create([
             'characteristic_id' => $char->id,
             'entity' => '*',
             'min' => '0',

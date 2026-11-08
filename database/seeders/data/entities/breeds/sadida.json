@@ -3,6 +3,7 @@
     "name": "Sadida",
     "dofusdb_id": "10",
     "description_fast": "Sorcier sylvestre",
+    "life_dice": "1d8",
     "description": "Les Sadidas sont des invocateurs qui empoisonnent la vie de leurs ennemis ! Apprivoiser les Ronces pour en faire des armes terrifiantes, confectionner des poupées de guerre et de soins, voilà qui satisfait tout disciple Sadida digne de ce nom.",
     "dofus_version": "3",
     "state": "draft",

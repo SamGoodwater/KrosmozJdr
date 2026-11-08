@@ -3,6 +3,7 @@
     "name": "Eniripsa",
     "dofusdb_id": "7",
     "description_fast": "Guérisseur",
+    "life_dice": "1d8",
     "description": "Les Eniripsas sont des guérisseurs qui soignent d'un simple Mot. Ils utilisent le pouvoir de la parole pour soulager les souffrances de leurs alliés, mais parfois aussi pour blesser leurs ennemis. Certains Eniripsas sont même devenus de véritables arpente",
     "dofus_version": "3",
     "state": "draft",

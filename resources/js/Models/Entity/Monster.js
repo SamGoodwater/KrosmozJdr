@@ -76,6 +76,10 @@ export class Monster extends BaseModel {
         return this._data.boss_pa || null;
     }
 
+    get lifeFormula() {
+        return this._data.life_formula || null;
+    }
+
     // ============================================
     // RELATIONS
     // ============================================
@@ -817,6 +821,7 @@ export class Monster extends BaseModel {
             monster_race_id: this.monsterRaceId,
             is_boss: this.isBoss,
             boss_pa: this.bossPa,
+            life_formula: this.lifeFormula,
             state: this.state,
             read_level: this.readLevel,
             write_level: this.writeLevel,

@@ -40,6 +40,7 @@ class UpdateNpcRequest extends FormRequest
             'name' => ['sometimes', 'nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'level' => ['nullable', 'string', 'max:255'],
+            'life_dice_total' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:100000'],
             'location' => ['nullable', 'string', 'max:255'],
             'hostility' => ['nullable', 'integer', 'min:0', 'max:4'],
             'story' => ['nullable', 'string'],

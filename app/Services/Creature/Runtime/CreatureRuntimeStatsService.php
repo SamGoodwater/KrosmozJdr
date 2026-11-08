@@ -159,6 +159,11 @@ final class CreatureRuntimeStatsService
         $variables = $this->stripContextColumnsFromVariables($variables);
         $variables['level_creature'] = $level;
         $variables['level'] = $level;
+        $lifeDiceTotal = $creature->getAttribute('life_dice_total');
+        if ($lifeDiceTotal !== null && $lifeDiceTotal !== '') {
+            $variables['life_dice_total_creature'] = (float) $lifeDiceTotal;
+            $variables['life_dice_total'] = (float) $lifeDiceTotal;
+        }
         $variables = FormulaVariableResolver::withShortNames('creature', $variables);
 
         // Les formules utilisent les clés groupe objet ([strength_object], [wakfu_recharge_object]),
@@ -585,6 +590,13 @@ final class CreatureRuntimeStatsService
      */
     private function evaluateBaseFormula(string $key, string $entity, array $variables): ?float
     {
+        if ($key === 'life_points_creature') {
+            $special = $this->evaluateLifePointsFormula($variables);
+            if ($special !== null) {
+                return $special;
+            }
+        }
+
         $def = $this->getter->getDefinition($key, $entity);
         if ($def === null) {
             return null;
@@ -595,6 +607,34 @@ final class CreatureRuntimeStatsService
         }
 
         return $this->formulas->evaluate($formula, $variables, SafeExpressionEvaluator::DICE_MODE_MIN);
+    }
+
+    /**
+     * Part des dés (calculateur) + max(0, mod. Vit) × niveau + équipement.
+     * Si aucune part n’est enregistrée, laisse la formule seed (½ dé) s’appliquer.
+     *
+     * @param  array<string, float|int>  $variables
+     */
+    private function evaluateLifePointsFormula(array $variables): ?float
+    {
+        if (! array_key_exists('life_dice_total_creature', $variables)
+            && ! array_key_exists('life_dice_total', $variables)
+        ) {
+            // Ancienne formule seed, avec mod. Vitalité jamais négatif.
+            $hit = (float) ($variables['hit_dice_creature'] ?? $variables['hit_dice'] ?? 0);
+            $mod = max(0.0, (float) ($variables['modifier_vitality_creature'] ?? $variables['modifier_vitality'] ?? 0));
+            $level = max(1.0, (float) ($variables['level_creature'] ?? $variables['level'] ?? 1));
+            $equip = (float) ($variables['life_points_max_object'] ?? 0);
+
+            return $hit + ($mod * $level) + (($level - 1.0) * round($hit / 2.0)) + $equip;
+        }
+
+        $diceTotal = (float) ($variables['life_dice_total_creature'] ?? $variables['life_dice_total'] ?? 0);
+        $mod = max(0.0, (float) ($variables['modifier_vitality_creature'] ?? $variables['modifier_vitality'] ?? 0));
+        $level = max(1.0, (float) ($variables['level_creature'] ?? $variables['level'] ?? 1));
+        $equip = (float) ($variables['life_points_max_object'] ?? 0);
+
+        return $diceTotal + ($mod * $level) + $equip;
     }
 
     /**

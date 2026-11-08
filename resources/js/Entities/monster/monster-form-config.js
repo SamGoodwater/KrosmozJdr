@@ -34,6 +34,13 @@ export function buildMonsterFormFieldsConfig() {
             tooltip:
                 "Pool hors tour, utilisable entre deux tours d'autres créatures. Se recharge à la fin du tour du boss.",
         },
+        life_formula: {
+            type: 'text',
+            label: 'Formule de PV (par niveau)',
+            required: false,
+            showInCompact: false,
+            help: 'Gain d’un niveau, ex. 5 + 2d6 / 2. Le niveau 1 prend le maximum. Pas de parenthèses.',
+        },
         monster_race_id: {
             type: 'number',
             label: 'Race (ID)',
@@ -83,7 +90,7 @@ export const MONSTER_FORM_FIELD_SECTIONS_EDIT = [
         id: 'general',
         title: 'Coquille monstre',
         subtitle: 'Taille, boss et PA légendaires. Nom / stats sur la créature liée.',
-        fieldKeys: ['size', 'is_boss', 'boss_pa'],
+        fieldKeys: ['size', 'is_boss', 'boss_pa', 'life_formula'],
     },
     {
         id: 'links',

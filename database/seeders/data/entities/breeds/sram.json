@@ -3,6 +3,7 @@
     "name": "Sram",
     "dofusdb_id": "4",
     "description_fast": "Assassin",
+    "life_dice": "1d10",
     "description": "Les Srams sont des assassins qui aiment les bourses, rebondies de préférence. Trousser les pans d'une tunique, tâter le fond d'une poche, faire preuve de doigté, palper enfin des bijoux tant convoités avant de poser un piège ou d'asséner un coup mortel, v",
     "dofus_version": "3",
     "state": "draft",

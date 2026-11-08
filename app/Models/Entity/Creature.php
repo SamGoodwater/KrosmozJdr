@@ -25,6 +25,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string $level
  * @property string|null $other_info
  * @property string $life
+ * @property int|null $life_dice_total
  * @property string $pa
  * @property string $pm
  * @property string $po
@@ -428,6 +429,7 @@ class Creature extends Model implements HasMedia
         'level',
         'other_info',
         'life',
+        'life_dice_total',
         'pa',
         'pm',
         'po',
@@ -571,6 +573,7 @@ class Creature extends Model implements HasMedia
      */
     protected $casts = [
         'hostility' => 'integer',
+        'life_dice_total' => 'integer',
         'read_level' => 'integer',
         'write_level' => 'integer',
     ];

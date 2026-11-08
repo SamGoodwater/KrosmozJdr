@@ -40,11 +40,11 @@ class LevelDomainResolverTest extends TestCase
         $this->assertSame([1], $this->resolver->resolve(''));
     }
 
-    public function test_it_excludes_level_zero_and_clamps_high_values(): void
+    public function test_it_excludes_level_zero_and_drops_values_above_the_playable_max(): void
     {
         $this->assertSame([1], $this->resolver->resolve('0'));
-        $this->assertSame([1], $this->resolver->resolve('{[0-2]}'));
-        $this->assertSame([30], $this->resolver->resolve('99'));
+        $this->assertSame([1, 2], $this->resolver->resolve('{[0-2]}'));
+        $this->assertSame([1], $this->resolver->resolve('99'));
         $this->assertSame([28, 29, 30], $this->resolver->resolve('{[28-32]}'));
     }
 }

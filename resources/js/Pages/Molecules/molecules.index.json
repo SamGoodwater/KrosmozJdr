@@ -1059,6 +1059,13 @@
     "file": "entity/spell/SpellLineRow.vue"
   },
   {
+    "name": "SpellImageFilterField",
+    "description": "Champ d’édition du filtre d’icône d’un sort. Choix : Image d’origine / Beige / Violet / Personnalisé (+ curseurs). Suggestion si sort sans élément et image colorée (canvas, non bloquant).",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/SpellImageFilterField.vue"
+  },
+  {
     "name": "SpellHoldersPanel",
     "description": "Porteurs d’un sort : liste compacte + aperçu minimal (monstres).",
     "props": [],
@@ -1178,8 +1185,15 @@
     "file": "entity/spell/SpellCastPropertiesGrid.vue"
   },
   {
+    "name": "EffectValueRulesEditor",
+    "description": "Règles de valeur conditionnelles : remplacer / ajouter / soustraire une formule. Brouillon local : une règle nouvellement ajoutée reste visible même sans formule encore.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/EffectValueRulesEditor.vue"
+  },
+  {
     "name": "EffectContextMove",
-    "description": "Contexte déplacement (cases, type, téléport).",
+    "description": "Contexte déplacement (cases, type, téléport, option « jusqu’à »).",
     "props": [],
     "slots": [],
     "file": "entity/spell/EffectContextMove.vue"
@@ -1204,6 +1218,20 @@
     "props": [],
     "slots": [],
     "file": "entity/spell/EffectContextCharacteristic.vue"
+  },
+  {
+    "name": "EffectConditionList",
+    "description": "Liste de conditions (formule gauche / opérateur / formule droite) liées par ET ou OU. Le brouillon local conserve les lignes vides pendant la saisie ; la normalisation (lignes incomplètes écartées) n’intervient qu’à l’enregistrement côté parent/API.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/EffectConditionList.vue"
+  },
+  {
+    "name": "EffectConditionHelp",
+    "description": "Aide courte + exemples repliables pour les conditions d’effet.",
+    "props": [],
+    "slots": [],
+    "file": "entity/spell/EffectConditionHelp.vue"
   },
   {
     "name": "AreaShapePicker",
@@ -2789,7 +2817,7 @@
   },
   {
     "name": "FormulaExpressionInput",
-    "description": "Champ texte avec autocomplétion des clés de caractéristiques (admin formules, min, max, défaut). — Souris : clic sur une proposition remplace l’identifiant en cours de frappe. — Clavier : ↑/↓ pour naviguer, Entrée ou → pour valider, Échap ferme la liste.",
+    "description": "Champ texte avec autocomplétion des clés de caractéristiques. — Focus / bouton : ouvre la liste (top suggestions, filtrable). — Frappe : filtre sur l’identifiant en cours (accepte `clé:caster` / `clé:target`). — Clavier : ↑/↓, Entrée ou → pour valider, Échap ferme.",
     "props": [],
     "slots": [],
     "file": "data-input/FormulaExpressionInput.vue"

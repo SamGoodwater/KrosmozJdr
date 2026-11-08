@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Api\Effect;
 
 use App\Models\Effect;
+use App\Models\EffectDegree;
 use App\Models\EffectSubEffect;
 use App\Models\Entity\Spell;
 use App\Models\SubEffect;
@@ -93,7 +94,7 @@ final class SpellEffectCreateTest extends TestCase
 
         $response->assertCreated();
         $effectId = (int) $response->json('data.id');
-        $degreeId = (int) \App\Models\EffectDegree::query()
+        $degreeId = (int) EffectDegree::query()
             ->where('effect_id', $effectId)
             ->where('degree', 1)
             ->value('id');

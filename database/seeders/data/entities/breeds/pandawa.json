@@ -3,6 +3,7 @@
     "name": "Pandawa",
     "dofusdb_id": "12",
     "description_fast": "Bagarreur assoiffé",
+    "life_dice": "1d10",
     "description": "Les Pandawas sont des guerriers adeptes des arts martiaux qui savent faire des folies de leurs corps ! Ils peuvent même en faire avec le corps des autres... Le Pandawa sait comment soulever les foules, il porte ses alliés sur ses épaules pour mieux les protéger. Quant à ses ennemis, il les enverra valser dans le décor, avant de fêter sa victoire avec une bonne rasade de lait de bambou !",
     "dofus_version": "3",
     "state": "draft",

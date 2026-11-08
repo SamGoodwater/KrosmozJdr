@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Console;
 
+use App\Console\Commands\Pages\PagesImportRulesTocCommand;
 use App\Enums\SectionType;
 use App\Models\Page;
 use App\Models\Section;
@@ -42,7 +43,7 @@ final class PagesImportRulesTocPurgeTest extends TestCase
             'order' => 2,
         ]);
 
-        $command = $this->app->make(\App\Console\Commands\Pages\PagesImportRulesTocCommand::class);
+        $command = $this->app->make(PagesImportRulesTocCommand::class);
         $method = new ReflectionMethod($command, 'purgeOrphanSectionsOnPage');
         $method->setAccessible(true);
         $method->invoke($command, $page->id, ['kept-slug']);

@@ -285,7 +285,7 @@ class NpcController extends Controller
         $creature = $npc->creature;
         if ($creature) {
             $creaturePayload = [];
-            foreach (['name', 'description', 'level', 'location', 'hostility'] as $key) {
+            foreach (['name', 'description', 'level', 'life_dice_total', 'location', 'hostility'] as $key) {
                 if (array_key_exists($key, $data)) {
                     $creaturePayload[$key] = $data[$key];
                 }

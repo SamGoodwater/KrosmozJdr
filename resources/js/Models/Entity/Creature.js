@@ -43,6 +43,10 @@ export class Creature extends BaseModel {
         return this._data.life || null;
     }
 
+    get lifeDiceTotal() {
+        return this._data.life_dice_total ?? null;
+    }
+
     get pa() {
         return this._data.pa || null;
     }
@@ -518,6 +522,7 @@ export class Creature extends BaseModel {
             location: this.location,
             level: this.level,
             life: this.life,
+            life_dice_total: this.lifeDiceTotal,
             pa: this.pa,
             pm: this.pm,
             po: this.po,

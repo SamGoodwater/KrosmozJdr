@@ -72,15 +72,26 @@ final class DiceFormulaService
 
     /**
      * Simule un lancer (dés tirés, tranche = entier uniforme inclusif).
+     *
+     * Options :
+     * - `reroll_ones` (bool) : chaque face 1 est relancée tant qu’elle fait 1
+     * - `fixed_by_sides` (array<int, int>) : faces → valeur fixe (ex. 6 → 3 remplace chaque d6)
+     * - `random_int` (callable(int, int): int) : injecte le tirage (tests)
+     *
+     * @param  array{
+     *     reroll_ones?: bool,
+     *     fixed_by_sides?: array<int, int>,
+     *     random_int?: callable(int, int): int
+     * }  $options
      */
-    public function roll(string $formula): DiceRollResult
+    public function roll(string $formula, array $options = []): DiceRollResult
     {
         $parsed = $this->parse($formula);
         if ($parsed['error'] !== null) {
             return DiceRollResult::invalid($parsed['empty'] ? 'Formule vide' : $parsed['error']);
         }
 
-        $rolled = $this->rollTokens($parsed['tokens']);
+        $rolled = $this->rollTokens($parsed['tokens'], $options);
         if ($rolled === null) {
             return DiceRollResult::invalid('Impossible d’évaluer la formule');
         }
@@ -91,6 +102,48 @@ final class DiceFormulaService
             breakdown: $rolled['breakdown'],
             error: null,
         );
+    }
+
+    /**
+     * Liste les groupes de dés d’une formule (ex. `2d6` + `1d8` → deux entrées).
+     *
+     * @return list<array{count: int, sides: int}>
+     */
+    public function listDiceGroups(string $formula): array
+    {
+        $parsed = $this->parse($formula);
+        if ($parsed['error'] !== null) {
+            return [];
+        }
+
+        $groups = [];
+        foreach ($parsed['tokens'] as $token) {
+            if (($token['type'] ?? null) !== 'dice') {
+                continue;
+            }
+            $groups[] = [
+                'count' => (int) $token['n'],
+                'sides' => (int) $token['x'],
+            ];
+        }
+
+        return $groups;
+    }
+
+    /**
+     * Valeurs fixes par défaut pour la méthode stable d’une formule monstre : ⌊faces / 2⌋.
+     *
+     * @return array<int, int> faces → valeur
+     */
+    public function defaultFixedBySides(string $formula): array
+    {
+        $fixed = [];
+        foreach ($this->listDiceGroups($formula) as $group) {
+            $sides = $group['sides'];
+            $fixed[$sides] = intdiv($sides, 2);
+        }
+
+        return $fixed;
     }
 
     /**
@@ -437,9 +490,14 @@ final class DiceFormulaService
 
     /**
      * @param  list<array<string, mixed>>  $tokens
+     * @param  array{
+     *     reroll_ones?: bool,
+     *     fixed_by_sides?: array<int, int>,
+     *     random_int?: callable(int, int): int
+     * }  $options
      * @return array{result: float, breakdown: list<string>}|null
      */
-    private function rollTokens(array $tokens): ?array
+    private function rollTokens(array $tokens, array $options = []): ?array
     {
         $values = [];
         $ops = [];
@@ -451,7 +509,7 @@ final class DiceFormulaService
 
                 continue;
             }
-            $rolled = $this->rollToken($token);
+            $rolled = $this->rollToken($token, $options);
             $values[] = $rolled['value'];
             $breakdown[] = $rolled['label'];
         }
@@ -479,17 +537,52 @@ final class DiceFormulaService
 
     /**
      * @param  array<string, mixed>  $token
+     * @param  array{
+     *     reroll_ones?: bool,
+     *     fixed_by_sides?: array<int, int>,
+     *     random_int?: callable(int, int): int
+     * }  $options
      * @return array{value: float, label: string}
      */
-    private function rollToken(array $token): array
+    private function rollToken(array $token, array $options = []): array
     {
+        $randomInt = $options['random_int'] ?? null;
+        if (! is_callable($randomInt)) {
+            $randomInt = static fn (int $min, int $max): int => random_int($min, $max);
+        }
+
         if ($token['type'] === 'dice') {
             $n = (int) $token['n'];
             $x = (int) $token['x'];
+            $fixedBySides = $options['fixed_by_sides'] ?? [];
+            $fixedValue = null;
+            if (is_array($fixedBySides)) {
+                if (array_key_exists($x, $fixedBySides)) {
+                    $fixedValue = $fixedBySides[$x];
+                } elseif (array_key_exists((string) $x, $fixedBySides)) {
+                    $fixedValue = $fixedBySides[(string) $x];
+                }
+            }
+            if ($fixedValue !== null) {
+                $fixed = max(1, (int) $fixedValue);
+                $sum = $n * $fixed;
+
+                return [
+                    'value' => (float) $sum,
+                    'label' => $n.'d'.$x.'→'.$fixed.': '.$sum,
+                ];
+            }
+
+            $rerollOnes = (bool) ($options['reroll_ones'] ?? false);
             $rolls = [];
             $sum = 0;
             for ($i = 0; $i < $n; $i++) {
-                $roll = random_int(1, $x);
+                $roll = (int) $randomInt(1, $x);
+                if ($rerollOnes) {
+                    while ($roll === 1 && $x > 1) {
+                        $roll = (int) $randomInt(1, $x);
+                    }
+                }
                 $rolls[] = $roll;
                 $sum += $roll;
             }
@@ -504,9 +597,9 @@ final class DiceFormulaService
             $min = (float) $token['min'];
             $max = (float) $token['max'];
             if ($this->isWholeNumber($min) && $this->isWholeNumber($max)) {
-                $value = (float) random_int((int) $min, (int) $max);
+                $value = (float) $randomInt((int) $min, (int) $max);
             } else {
-                $value = $min + ($max - $min) * (random_int(0, 10_000) / 10_000);
+                $value = $min + ($max - $min) * ($randomInt(0, 10_000) / 10_000);
             }
             $labelMin = $this->formatNumber($min);
             $labelMax = $this->formatNumber($max);

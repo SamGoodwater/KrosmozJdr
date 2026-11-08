@@ -37,6 +37,7 @@ describe("Content Dashboard Index", () => {
                 overview: { cms: { pages: 2, sections: 4 }, entities: [] },
                 stateLabels: { raw: "Brut", playable: "Jouable" },
                 stateColors: { raw: "#888", playable: "#0a0" },
+                canPipeline: true,
             },
             global: {
                 stubs: {

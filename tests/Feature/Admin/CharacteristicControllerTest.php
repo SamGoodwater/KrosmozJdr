@@ -6,6 +6,7 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
+use App\Models\CharacteristicSpell;
 use App\Models\Scrapping\ScrappingEntityMapping;
 use App\Models\User;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
@@ -608,7 +609,7 @@ class CharacteristicControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $char = Characteristic::where('key', 'dommages_spell')->first();
         $this->assertNotNull($char);
-        $existing = \App\Models\CharacteristicSpell::query()
+        $existing = CharacteristicSpell::query()
             ->where('characteristic_id', $char->id)
             ->where('entity', '*')
             ->first();

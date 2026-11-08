@@ -328,6 +328,7 @@ export const SPELL_FORM_FIELD_SECTIONS_EDIT = [
         subtitle: 'Catégorie, types, éléments, ciblage, résolution — non surchargées par les degrés.',
         fieldKeys: [
             'category',
+            'state',
             'spellTypes',
             'is_magic',
             'pa_from_wakfu_reserve',

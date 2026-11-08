@@ -40,6 +40,7 @@ class UpdateMonsterRequest extends FormRequest
             'size' => ['nullable', 'integer', 'min:0'],
             'is_boss' => ['nullable', 'boolean'],
             'boss_pa' => ['nullable', 'integer', 'min:0'],
+            'life_formula' => ['nullable', 'string', 'max:64'],
             'monster_race_id' => ['nullable', 'integer', 'exists:monster_races,id'],
             'dofus_version' => ['nullable', 'string', 'max:255'],
             'auto_update' => ['nullable', 'boolean'],
@@ -47,6 +48,8 @@ class UpdateMonsterRequest extends FormRequest
             'read_level' => ['sometimes', 'integer', 'min:0', 'max:4'],
             'write_level' => ['sometimes', 'integer', 'min:0', 'max:4'],
             'level' => ['sometimes', 'nullable', 'string'],
+            'life_dice_total' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:100000'],
+            'life' => ['sometimes', 'nullable', 'string'],
         ], $this->creatureComposableFieldRules(), $this->profileMasteryFieldRules());
     }
 

@@ -347,12 +347,37 @@ function randomInt(min, max) {
     return low + Math.floor(Math.random() * span);
 }
 
-function rollToken(token) {
+/**
+ * @param {object} token
+ * @param {{
+ *   rerollOnes?: boolean,
+ *   fixedBySides?: Record<number|string, number>,
+ *   randomInt?: (min: number, max: number) => number
+ * }} [options]
+ */
+function rollToken(token, options = {}) {
+    const rng = typeof options.randomInt === 'function' ? options.randomInt : randomInt;
     if (token.type === 'dice') {
+        const fixedMap = options.fixedBySides || {};
+        const fixedRaw = fixedMap[token.x] ?? fixedMap[String(token.x)];
+        if (fixedRaw !== undefined && fixedRaw !== null && fixedRaw !== '') {
+            const fixed = Math.max(1, Math.trunc(Number(fixedRaw)));
+            const sum = token.n * fixed;
+            return {
+                value: sum,
+                label: `${token.n}d${token.x}→${fixed}: ${sum}`,
+            };
+        }
+        const rerollOnes = Boolean(options.rerollOnes);
         const rolls = [];
         let sum = 0;
         for (let i = 0; i < token.n; i += 1) {
-            const roll = randomInt(1, token.x);
+            let roll = rng(1, token.x);
+            if (rerollOnes) {
+                while (roll === 1 && token.x > 1) {
+                    roll = rng(1, token.x);
+                }
+            }
             rolls.push(roll);
             sum += roll;
         }
@@ -364,9 +389,9 @@ function rollToken(token) {
     if (token.type === 'range') {
         let value;
         if (isWholeNumber(token.min) && isWholeNumber(token.max)) {
-            value = randomInt(token.min, token.max);
+            value = rng(token.min, token.max);
         } else {
-            value = token.min + (token.max - token.min) * (randomInt(0, 10000) / 10000);
+            value = token.min + (token.max - token.min) * (rng(0, 10000) / 10000);
         }
         return {
             value,
@@ -376,7 +401,11 @@ function rollToken(token) {
     return { value: token.value, label: formatNumber(token.value) };
 }
 
-function rollTokens(tokens) {
+/**
+ * @param {object[]} tokens
+ * @param {object} [options]
+ */
+function rollTokens(tokens, options = {}) {
     const values = [];
     const ops = [];
     const breakdown = [];
@@ -386,7 +415,7 @@ function rollTokens(tokens) {
             ops.push(token.value);
             continue;
         }
-        const rolled = rollToken(token);
+        const rolled = rollToken(token, options);
         values.push(rolled.value);
         breakdown.push(rolled.label);
     }
@@ -487,10 +516,17 @@ export function parseDiceFormula(formula) {
 /**
  * Simule un lancer de dés selon la formule.
  *
+ * Options : `rerollOnes`, `fixedBySides` (faces → valeur fixe), `randomInt` (tests).
+ *
  * @param {string} formula
+ * @param {{
+ *   rerollOnes?: boolean,
+ *   fixedBySides?: Record<number|string, number>,
+ *   randomInt?: (min: number, max: number) => number
+ * }} [options]
  * @returns {{ result: number, breakdown: string[], isValid: boolean, error: string|null }}
  */
-export function rollDiceFormula(formula) {
+export function rollDiceFormula(formula, options = {}) {
     const parsed = parseTokens(formula);
     if (parsed.error) {
         return {
@@ -501,7 +537,7 @@ export function rollDiceFormula(formula) {
         };
     }
 
-    const rolled = rollTokens(parsed.tokens);
+    const rolled = rollTokens(parsed.tokens, options);
     if (!rolled) {
         return {
             result: 0,
@@ -517,4 +553,35 @@ export function rollDiceFormula(formula) {
         isValid: true,
         error: null,
     };
+}
+
+/**
+ * Groupes de dés d’une formule.
+ *
+ * @param {string} formula
+ * @returns {{ count: number, sides: number }[]}
+ */
+export function listDiceGroups(formula) {
+    const parsed = parseTokens(formula);
+    if (parsed.error) {
+        return [];
+    }
+    return parsed.tokens
+        .filter((token) => token.type === 'dice')
+        .map((token) => ({ count: token.n, sides: token.x }));
+}
+
+/**
+ * Valeurs fixes par défaut (méthode stable monstre) : ⌊faces / 2⌋.
+ *
+ * @param {string} formula
+ * @returns {Record<number, number>}
+ */
+export function defaultFixedBySides(formula) {
+    /** @type {Record<number, number>} */
+    const fixed = {};
+    for (const group of listDiceGroups(formula)) {
+        fixed[group.sides] = Math.floor(group.sides / 2);
+    }
+    return fixed;
 }

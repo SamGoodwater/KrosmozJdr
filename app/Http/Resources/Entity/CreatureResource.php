@@ -29,6 +29,7 @@ class CreatureResource extends JsonResource
             'location' => $this->location,
             'level' => $this->level,
             'life' => $this->life,
+            'life_dice_total' => $this->life_dice_total,
             'created_by' => $this->created_by,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
