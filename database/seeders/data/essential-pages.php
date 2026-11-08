@@ -184,7 +184,7 @@ return [
                     .'<li><strong>Critique d’attaque</strong> — 20 naturel, dés doublés. L’équipement peut abaisser le seuil (19, 18, 17).</li>'
                     .'<li><strong>Matos</strong> — chapeau, cape, ceinture, bottes, amulette, deux anneaux, arme, bouclier, panoplies, Dofus, forgemagie. L’arme porte surtout des bonus : on frappe avec les sorts.</li>'
                     .'</ul>'
-                    .'<p>PV max = max du dé de classe + (mod. Vitalité × niveau) + ((niveau − 1) × round(dé/2)) + équipement.</p>'
+                    .'<p>PV max = max du dé de vie (d6 à d12 selon la classe) + un gain par niveau après le 1er (dé de vie, ou 6 + un petit dé, selon la méthode choisie pour la table) + (mod. Vitalité × niveau) + équipement.</p>'
                     .'<p>MJ qui convertit un monstre ou un scénario 5e : [[kref:page:regles-5-2-principes-dequilibrage|5.2.1]]. Le livre joueur prime : une réaction existe si la fiche le dit.</p>',
             ],
         ],
@@ -214,7 +214,7 @@ return [
                 'title' => 'Caractéristiques',
                 'html' => '<p>Mod. = ⌊(score − 10) / 2⌋. Six stats : [[kref:characteristic:vitality_creature|Vita]], [[kref:characteristic:strength_creature|For]], [[kref:characteristic:agility_creature|Agi]], [[kref:characteristic:intelligence_creature|Int]], [[kref:characteristic:wisdom_creature|Sag]], [[kref:characteristic:chance_creature|Cha]].</p>'
                     .'<p>Niv. 1 : [[kref:characteristic:action_points_creature|PA]] 6, [[kref:characteristic:movement_points_creature|PM]] 3, [[kref:characteristic:range_creature|PO]] 0. +1 carac. aux niveaux <strong>2, 4, 8, 10, 14, 16</strong> (6 pts). Les spécialisations n’en donnent pas. Plafond du <strong>score</strong> : <strong>14 + ⌊niv./2⌋</strong> (score <strong>14</strong> au niv. 1, 24 au niv. 20). Équipement : <strong>+8</strong> au total par carac, forgemagie comprise.</p>'
-                    .'<p>Table unique (sorts / carac / spé / maîtrise) : [[kref:page:regles-2-3-choisir-sa-classe|2.3.2]]. PV max = max du dé de classe + (mod. Vitalité × niveau) + ((niveau − 1) × round(dé/2)) + équipement.</p>'
+                    .'<p>Table unique (sorts / carac / spé / maîtrise) : [[kref:page:regles-2-3-choisir-sa-classe|2.3.2]]. PV max = max du dé de vie (d6 à d12 selon la classe) + un gain par niveau après le 1er (dé de vie, ou 6 + un petit dé, selon la méthode choisie pour la table) + (mod. Vitalité × niveau) + équipement.</p>'
                     .'<p>→ [[kref:page:caracteristiques|Tableau]] · [[kref:page:regles-2-2-les-caracteristiques|Règles caracs]]</p>',
             ],
             [
@@ -364,7 +364,7 @@ return [
                 'title' => 'Absorption',
                 'html' => '<p>Ordre : <strong>boucliers</strong> (cumulables, pas à 0 PV, dissipables) → <strong>[[kref:characteristic:life_points_creature|PV]] temp</strong> (pas de cumul, pas de dissipation, ne réveillent pas) → <strong>[[kref:characteristic:life_points_creature|PV]]</strong>.</p>'
                     .'<p><strong>Chute / poussée</strong> : le bouclier n’encaisse pas → [[kref:characteristic:life_points_creature|PV]] temp puis [[kref:characteristic:life_points_creature|PV]].</p>'
-                    .'<p>Vol de vie : pas sur les boucliers. Max [[kref:characteristic:life_points_creature|PV]] : <strong>max du dé de classe + (mod. Vitalité × niveau) + ((niveau − 1) × round(dé/2)) + équipement</strong>.</p>',
+                    .'<p>Vol de vie : pas sur les boucliers. Max [[kref:characteristic:life_points_creature|PV]] : <strong>max du dé de vie (d6 à d12 selon la classe) + un gain par niveau après le 1er (dé de vie, ou 6 + un petit dé, selon la méthode choisie pour la table) + (mod. Vitalité × niveau) + équipement</strong>.</p>',
             ],
             [
                 'slug' => 'zero-pv',
