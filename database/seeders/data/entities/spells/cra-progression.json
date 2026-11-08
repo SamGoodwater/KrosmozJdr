@@ -25,7 +25,7 @@
             "resolution_mode": "saving_throw",
             "is_magic": false,
             "effect": "Avantage et bonus de dégâts pendant 3 tours.",
-            "description": "Tu désignes une créature. Pendant 3 tours, tes attaques contre elle gagnent un avantage et des dégâts supplémentaires.",
+            "description": "Tu nommes quelqu'un, même si un mur vous sépare. Tant que la marque tient, tes flèches cherchent cette cible et frappent plus juste, plus fort.",
             "sub_effects": [
                 {
                     "slug": "booster",
@@ -129,7 +129,7 @@
             "resolution_mode": "auto_success",
             "is_magic": false,
             "effect": "Réaction : repousse l’attaquant pendant 2 tours.",
-            "description": "Tu protèges une créature, toi y compris, pendant 2 tours. Quand on l'attaque, tu repousses l'attaquant en réaction.",
+            "description": "Tu gardes une flèche encochée pour une créature, toi y compris. Quand on l'attaque, tu lâches le trait en réponse et l'attaquant recule.",
             "sub_effects": [
                 {
                     "slug": "déplacer",
@@ -204,7 +204,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "effect": "Les allié·e·s ne sont pas blessé·e·s par le recul.",
-            "description": "Tu infliges des dégâts et tu repousses la cible. Les allié·e·s ne subissent pas les dégâts.",
+            "description": "Tu décoches une flèche lourde. Elle inflige des dommages d'Air et fait reculer la cible.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -344,7 +344,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "effect": "Vol de la moitié des dégâts finaux.",
-            "description": "Tu voles une partie des points de vie de la cible.",
+            "description": "Tu tires une flèche qui boit la blessure. Elle inflige des dommages de Feu, et une part de ce qu'elle arrache te revient.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -454,7 +454,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "effect": "Aveugle et révèle l’invisible.",
-            "description": "Tu troubles une zone. Les ennemis sont aveuglés et les invisibles sont révélés. Les allié·e·s ne sont pas touché·e·s.",
+            "description": "Tu troubles une zone d'un nuage trouble. Il inflige des dommages d'Eau, aveugle les ennemi·e·s et révèle les invisibles. Tes allié·e·s traversent sans dommage.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -586,7 +586,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "effect": "Cumuls de dégâts supplémentaires, non dissipables.",
-            "description": "Tu prépares un tir de Terre au contact. Si tu le relances à chacun de tes tours, ses dégâts augmentent, jusqu'à 3 cumuls. Ce bonus n'est pas dissipable.",
+            "description": "Tu répètes le même tir, tour après tour. La corde garde la tension : les dommages de Terre montent tant que tu ne t'arrêtes pas.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -722,7 +722,7 @@
             "resolution_mode": "auto_success",
             "is_magic": false,
             "effect": "Critique facilité et dégâts critiques bonus pendant 2 tours.",
-            "description": "Pendant 2 tours, tes coups critiques se déclenchent plus tôt. Un critique inflige des dégâts supplémentaires.",
+            "description": "Tu tires la corde plus loin que d'habitude et tu la gardes ainsi un moment. Tes tirs partent plus près du point de rupture, et un coup critique fait plus mal.",
             "sub_effects": [
                 {
                     "slug": "autre",
@@ -776,7 +776,7 @@
             "resolution_mode": "saving_throw",
             "is_magic": false,
             "effect": "Retire des PM à chaque attaque qui blesse la cible.",
-            "description": "Tu marques une créature. Chaque fois qu'une attaque la blesse, elle perd des PM. La marque dure 1 tour, puis 2 tours",
+            "description": "Tu marques une créature d'une flèche fine. Chaque blessure qu'elle reçoit ensuite lui coupe un peu les jambes.",
             "sub_effects": [
                 {
                     "slug": "retirer",
@@ -836,7 +836,7 @@
             "resolution_mode": "auto_success",
             "is_magic": false,
             "effect": "Cases adjacentes à la balise : terrain difficile pour les ennemis. La balise relance un de tes sorts comme s’il partait de sa case.",
-            "description": "Tu poses une balise pendant 1 tour. Les cases adjacentes sont un terrain difficile pour les ennemis. La balise peut relancer un de tes sorts comme s’il partait d’elle, avec les mêmes propriétés. Tes propres dégâts ne la blessent pas.",
+            "description": "Tu plantes une balise, un carreau fiché au sol ou dans un mur. Pendant un court instant, un de tes sorts peut partir d'elle. Tes propres tirs la laissent intacte.",
             "sub_effects": [
                 {
                     "slug": "autre",
@@ -881,7 +881,7 @@
             "resolution_mode": "auto_success",
             "is_magic": false,
             "effect": "Au début de ton prochain tour, tu échanges ta place avec la balise.",
-            "description": "Tu poses une balise. Au début de ton prochain tour, tu échanges ta place avec elle, puis elle disparaît.",
+            "description": "Tu plantes une balise là où tu veux revenir. Au début de ton prochain tour, tu prends sa place, et elle s'éteint.",
             "sub_effects": [
                 {
                     "slug": "autre",
@@ -917,7 +917,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "effect": "Rebondit sur plusieurs créatures à portée.",
-            "description": "Ta flèche rebondit d'une créature à l'autre. Chaque créature ennemie touchée subit des dégâts et perd des PM. Elle peut rebondir sur un·e allié·e sans lui infliger de dégâts.",
+            "description": "Tu lances une flèche qui ricoche d'une créature à l'autre. Chaque ennemi·e touché·e subit des dommages d'Air et perd de l'appui. Un·e allié·e n'est que frôlé·e.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1049,7 +1049,7 @@
             "resolution_mode": "saving_throw",
             "is_magic": false,
             "effect": "Zone ; bonus lié au modificateur d’Intelligence.",
-            "description": "Ta flèche explose à l'impact et blesse une zone. L'explosion renforce tes prochains dégâts de Feu pendant 1 tour.",
+            "description": "Tu tires une flèche qui éclate à l'impact. La gerbe inflige des dommages de Feu en zone et rend tes prochains sorts de Feu plus vifs.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1163,7 +1163,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "effect": "Retire des PA ; la cible ne peut pas réagir pendant 1 tour.",
-            "description": "Tu infliges des dégâts et tu retires des PA. La cible ne peut pas utiliser sa réaction pendant 1 tour.",
+            "description": "Tu décoches une flèche empennée pour mordre et rester. Elle inflige des dommages d'Eau, coupe l'élan, et le réflexe de répondre ne part plus.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1302,7 +1302,7 @@
             "resolution_mode": "saving_throw",
             "is_magic": false,
             "effect": "n dés : n = nombre de créatures dans la zone.",
-            "description": "Tu frappes une zone. Les dégâts valent n dés : n est le nombre de créatures dans la zone.",
+            "description": "Tu tires au milieu d'un groupe. La flèche se charge de chaque présence qu'elle frôle : plus il y a de monde, plus les dommages de Terre sont lourds.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1385,7 +1385,7 @@
             "resolution_mode": "saving_throw",
             "is_magic": false,
             "effect": "Applique Indéplaçable (allié·e·s compris).",
-            "description": "Tu appliques l'état Indéplaçable dans une zone. Les créatures touchées ne peuvent plus se téléporter ni être déplacées par certains effets. Les allié·e·s dans la zone le subissent aussi.",
+            "description": "Tu tires une flèche qui s'écrase au sol et cloue l'endroit. Ceux qui s'y trouvent, allié·e·s compris, ne peuvent plus être déplacés.",
             "sub_effects": [
                 {
                     "slug": "autre",
@@ -1425,7 +1425,7 @@
             "resolution_mode": "auto_success",
             "is_magic": false,
             "effect": "Pendant 1 tour, tes tirs ignorent les lignes de vue.",
-            "description": "Pendant 1 tour, tes tirs ignorent les lignes de vue, même si un obstacle bloque le chemin.",
+            "description": "Tes yeux se voilent un instant. Pendant un court moment, tu distingues les silhouettes à travers les obstacles, et tes tirs n'ont plus besoin de ligne de vue.",
             "sub_effects": [
                 {
                     "slug": "autre",
@@ -1463,7 +1463,7 @@
             "resolution_mode": "auto_success",
             "is_magic": false,
             "effect": "Téléportation sur la case visée et +1 PM.",
-            "description": "Tu te téléportes sur la case visée et tu gagnes 1 PM.",
+            "description": "Tu fais un pas de côté si court qu'il ressemble à une glissade. Tu te retrouves sur la case visée, avec un peu plus d'allonge dans les jambes.",
             "sub_effects": [
                 {
                     "slug": "déplacer",
@@ -1564,7 +1564,7 @@
             "resolution_mode": "saving_throw",
             "is_magic": false,
             "effect": "État Empoisonné pendant 1 tour. Tes retraits de PA et de PM contre la cible réussissent automatiquement.",
-            "description": "Tu empoisonnes la cible pendant 1 tour : elle est Empoisonnée, et tes retraits de PA et de PM contre elle réussissent automatiquement.",
+            "description": "Tu enduis la pointe. Tant que le poison tient, tes retraits de pas et de gestes contre cette cible ne ratent plus.",
             "sub_effects": [
                 {
                     "slug": "autre",
@@ -1667,7 +1667,7 @@
             "resolution_mode": "auto_success",
             "is_magic": false,
             "effect": "Avantage, dégâts et portée bonus ; perdu au déplacement.",
-            "description": "Tu te poses en sentinelle : avantage aux jets de touche, +1d8 de dégâts et +5 de portée. Tu ne bouges plus. Au premier déplacement, tu perds l'effet.",
+            "description": "Tu te poses, arc levé, et tu ne bouges plus. Tant que tu restes là, la visée est plus sûre, les traits portent plus loin et frappent plus fort.",
             "sub_effects": [
                 {
                     "slug": "autre",
@@ -1720,7 +1720,7 @@
             "resolution_mode": "auto_success",
             "is_magic": false,
             "effect": "Lie deux créatures : l’une se soigne de la moitié des dégâts reçus par l’autre.",
-            "description": "Tu lies deux créatures, toi y compris si tu le veux, pendant 2 tours. Quand l'une subit des dégâts, l'autre récupère la moitié des dégâts finaux.",
+            "description": "Tu lies deux créatures par une paire de flèches. Quand l'une subit des dommages, l'autre en récupère une part.",
             "sub_effects": [
                 {
                     "slug": "autre",
@@ -1758,7 +1758,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "effect": "Zone ; réduit l’esquive PM pendant 1 tour.",
-            "description": "Tu couvres une zone d'une pluie de flèches. Les créatures touchées perdent aussi de l'esquive PM pendant 1 tour.",
+            "description": "Tu bandes l'arc vers le ciel et tu lâches une volée. Les flèches retombent en zone, infligent des dommages d'Air, et celles qui frappent les jambes gênent la course.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1840,7 +1840,7 @@
             "resolution_mode": "saving_throw",
             "is_magic": false,
             "effect": "Applique un poison de Feu sur plusieurs tours.",
-            "description": "Tu marques une créature. Elle subit des dégâts, puis un poison de Feu chaque fois qu'elle est déplacée contre son gré, pendant 2 tours.",
+            "description": "Tu marques une créature d'une flèche qui reste plantée. Elle subit des dommages de Feu, et chaque déplacement forcé réveille le poison de la pointe.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -1924,7 +1924,7 @@
             "resolution_mode": "saving_throw",
             "is_magic": false,
             "effect": "Retire PA et PM ; désavantage aux jets de la cible.",
-            "description": "Tu infliges des dégâts dans une croix. La cible perd 1 PA et 1 PM à son prochain tour, et subit un désavantage à ses jets d'attaque pendant 1 tour.",
+            "description": "Tu plantes une flèche qui engourdit. Le froid se répand en croix : dommages d'Eau, le geste et le pas se coupent, et les attaques partent de travers.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -2043,7 +2043,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "effect": "Vol du modificateur de Force (cumulable).",
-            "description": "Tu infliges de lourds dégâts de Terre. Pendant 2 tours, la cible perd son modificateur de Force aux dégâts, et tu le gagnes.",
+            "description": "Tu tires une volée courte de carreaux lourds, en ligne. Ils infligent de lourds dommages de Terre et, pendant un moment, la force du coup passe de la cible à toi.",
             "sub_effects": [
                 {
                     "slug": "frapper",

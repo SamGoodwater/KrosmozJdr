@@ -3,6 +3,7 @@
     "name": "Iop",
     "dofusdb_id": "8",
     "description_fast": "Guerrier téméraire",
+    "life_dice": "1d10",
     "description": "Les Iops sont des guerriers fonceurs et sans reproche ! Une chose est sûre : les Iops savent faire parler les armes. D'ailleurs, se retrouver pris dans une bagarre au moins une fois par jour est pour eux un signe de bonne santé. Leur tempérament impétueux",
     "mechanics": "<p><strong>Préparation</strong> — Mécanique centrale, indépendante des voies.</p><p>Concentration, Puissance, Vitalité, Détermination, Précipitation et Accumulation sont des <strong>Préparations</strong>. Tu n’as qu’une Préparation active à la fois : en lancer une nouvelle remplace l’ancienne.</p><p>Le rythme de l’Iop tient en trois temps : tu te prépares, tu bondis au contact, tu frappes.</p>",
     "dofus_version": "3",

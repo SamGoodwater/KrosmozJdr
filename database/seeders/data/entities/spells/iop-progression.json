@@ -17,7 +17,7 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "auto_success",
-            "description": "Tu secoues les épaules, et les jambes répondent plus vite. Pendant un court instant, les prises glissent : on ne peut plus te tacler.",
+            "description": "Tu secoues les épaules, et les jambes répondent plus vite. Pendant un court instant, on ne peut plus te tacler.",
             "effect": "Tu gagnes des PM et tu deviens Intaclable pendant 1 tour. Relance de 3 tours.",
             "pa": "2",
             "cast_per_turn": "1",
@@ -102,7 +102,7 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "auto_success",
-            "description": "Tu restes en garde sur quelqu'un, toi y compris. Quand on l'attaque au contact, ton épaule ou ta lame repart et repousse l'attaquant.",
+            "description": "Tu restes en garde sur quelqu'un, toi y compris. Quand on l'attaque au contact, tu repousses l'attaquant.",
             "effect": "Pendant 2 tours, en réaction, tu repousses celui qui attaque au contact la créature protégée. Relance de 3 tours.",
             "pa": "2",
             "cast_per_turn": "1",
@@ -211,7 +211,7 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "saving_throw",
-            "description": "Tu expires d'un coup, assez fort pour que l'air parte d'une case que tu désignes. Tout ce qui s'y trouve est poussé vers l'extérieur. Tu n'as pas besoin de voir l'endroit.",
+            "description": "Tu expires fort vers une case, même hors de vue. Le souffle écarte ce qui s'y trouve et inflige des dommages d'Air.",
             "effect": "Dégâts d'Air en zone, sans ligne de vue. Repousse depuis le centre. Une fois par tour.",
             "pa": "3",
             "cast_per_turn": "1",
@@ -357,7 +357,7 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "saving_throw",
-            "description": "D'un coup puissant, tu envoies un vent brulant sur une zone. Le vent s'engouffre autour de tes ennemies qui l'emplifie dans leurs confusions. Chaque créature, présente dans la zone, augmente les dommages de feu que l'ensemble subit.",
+            "description": "Tu balayes une zone d'un vent brûlant. Chaque ennemi·e pris·e dedans attise la gerbe : plus il y a de monde, plus les dommages de Feu sont lourds.",
             "effect": "Augmente les dommages du sort pour chaque ennemi dans la zone d'effet et occasionne des dommages Feu en zone.",
             "pa": "4",
             "cast_per_turn": "1",
@@ -495,9 +495,9 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "attack_roll",
-            "description": "Tu te cambrures et une pellicule d'eau te couvre. Ceux qui sont à ton contact s'y brûlent. Toi, tu restes au sec.",
+            "description": "Tu te cambrures et une pellicule d'eau te couvre d'un bouclier. Ceux qui sont à ton contact subissent des dommages d'Eau. Toi, tu restes au sec.",
             "effect": "Bouclier sur toi. Dégâts d'Eau aux ennemis à ton contact. Une fois par tour, relance de 2 tours.",
-            "pa": "2",
+            "pa": "4",
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "2",
@@ -515,9 +515,9 @@
                     "area": "cross-0-1",
                     "params": {
                         "characteristic": "water",
-                        "value": "1d4+Chance",
-                        "value_formula": "1d4+[chance]",
-                        "dice_formula": "1d4+[chance]",
+                        "value": "2d4+Chance",
+                        "value_formula": "2d4+[chance]",
+                        "dice_formula": "2d4+[chance]",
                         "effect_direction": "action"
                     },
                     "order": 0
@@ -527,9 +527,9 @@
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "value": "2d4",
-                        "value_formula": "2d4",
-                        "dice_formula": "2d4",
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
                         "effect_direction": "self",
                         "duration_formula": "1"
                     },
@@ -547,9 +547,41 @@
                             "area": "cross-0-1",
                             "params": {
                                 "characteristic": "water",
-                                "value": "1d4+Chance",
-                                "value_formula": "1d4+[chance]",
-                                "dice_formula": "1d4+[chance]",
+                                "value": "3d4+Chance",
+                                "value_formula": "3d4+[chance]",
+                                "dice_formula": "3d4+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "self",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "3d6+Chance",
+                                "value_formula": "3d6+[chance]",
+                                "dice_formula": "3d6+[chance]",
                                 "effect_direction": "action"
                             },
                             "order": 0
@@ -570,38 +602,6 @@
                     ]
                 },
                 {
-                    "tier": "II",
-                    "required_creature_level": 14,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "frapper",
-                            "area": "cross-0-1",
-                            "params": {
-                                "characteristic": "water",
-                                "value": "1d6+Chance",
-                                "value_formula": "1d6+[chance]",
-                                "dice_formula": "1d6+[chance]",
-                                "effect_direction": "action"
-                            },
-                            "order": 0
-                        },
-                        {
-                            "slug": "protéger",
-                            "area": "point",
-                            "duration_formula": "1",
-                            "params": {
-                                "value": "2d10",
-                                "value_formula": "2d10",
-                                "dice_formula": "2d10",
-                                "effect_direction": "self",
-                                "duration_formula": "1"
-                            },
-                            "order": 1
-                        }
-                    ]
-                },
-                {
                     "tier": "III",
                     "required_creature_level": 19,
                     "effect": "",
@@ -611,9 +611,9 @@
                             "area": "cross-0-1",
                             "params": {
                                 "characteristic": "water",
-                                "value": "1d6+Chance",
-                                "value_formula": "1d6+[chance]",
-                                "dice_formula": "1d6+[chance]",
+                                "value": "4d6+Chance",
+                                "value_formula": "4d6+[chance]",
+                                "dice_formula": "4d6+[chance]",
                                 "effect_direction": "action"
                             },
                             "order": 0
@@ -623,9 +623,9 @@
                             "area": "point",
                             "duration_formula": "1",
                             "params": {
-                                "value": "2d12",
-                                "value_formula": "2d12",
-                                "dice_formula": "2d12",
+                                "value": "4d4",
+                                "value_formula": "4d4",
+                                "dice_formula": "4d4",
                                 "effect_direction": "self",
                                 "duration_formula": "1"
                             },
@@ -649,7 +649,7 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "attack_roll",
-            "description": "Tu poses tout le poids du coup sur un seul point, au contact. Contre une créature appelée, la lame trouve plus facilement le joint.",
+            "description": "Tu poses tout le poids du coup sur un seul point, au contact. Il inflige des dommages de Terre, plus lourds contre une invocation.",
             "effect": "Dégâts de Terre au contact, une fois par cible, deux fois par tour. Dégâts supplémentaires contre une invocation.",
             "pa": "3",
             "cast_per_turn": "2",
@@ -659,7 +659,7 @@
             "cast_in_line": false,
             "cast_in_diagonal": false,
             "po_min": "1",
-            "po_max": "1",
+            "po_max": "2",
             "po_editable": true,
             "element": "earth",
             "attack_characteristic_key": "strong",
@@ -738,7 +738,8 @@
                             },
                             "order": 1
                         }
-                    ]
+                    ],
+                    "po_max": "3"
                 },
                 {
                     "tier": "III",
@@ -765,7 +766,8 @@
                             },
                             "order": 1
                         }
-                    ]
+                    ],
+                    "po_max": "3"
                 }
             ]
         },
@@ -783,8 +785,8 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "auto_success",
-            "description": "Tu bouscules le temps d'un geste, le tien ou celui d'un·e allié·e. Les actions s'enchaînent plus vite, mais la main lâche l'arme : pendant ce tour, on frappe sans elle.",
-            "effect": "Gagne des PA pendant 1 tour. Impossible d'attaquer avec une arme pendant ce tour. Relance de 3 tours.",
+            "description": "Tu bouscules le temps d'un geste, le tien ou celui d'un·e allié·e. Les actions s'enchaînent plus vite, puis la fatigue te gagne.",
+            "effect": "Gagne des PA pendant 1 tour, puis perd des PA le tour d'après. Relance de 3 tours.",
             "pa": "2",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -802,8 +804,8 @@
                     "duration_formula": "1",
                     "params": {
                         "characteristic": "pa",
-                        "value": "1",
-                        "value_formula": "1",
+                        "value": "5",
+                        "value_formula": "5",
                         "effect_direction": "action",
                         "duration_formula": "1"
                     },
@@ -832,8 +834,8 @@
                             "duration_formula": "1",
                             "params": {
                                 "characteristic": "pa",
-                                "value": "2",
-                                "value_formula": "2",
+                                "value": "5",
+                                "value_formula": "5",
                                 "effect_direction": "action",
                                 "duration_formula": "1"
                             },
@@ -867,7 +869,7 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "saving_throw",
-            "description": "Tu écartes les bras d'un coup, épée en travers. Tout ce qui te colle recule. Tes allié·e·s, eux, ne bougent pas.",
+            "description": "Tu écartes les bras d'un coup, arme en travers. Les ennemi·e·s à ton contact reculent. Tes allié·e·s ne bougent pas.",
             "effect": "Repousse les ennemis à ton contact, allié·e·s saufs. Pas de dégâts. Une fois par tour, relance de 2 tours.",
             "pa": "2",
             "cast_per_turn": "1",
@@ -887,7 +889,7 @@
             "sub_effects": [
                 {
                     "slug": "déplacer",
-                    "area": "cross-0-1",
+                    "area": "rect-3x3",
                     "params": {
                         "cells_formula": "1",
                         "movement_kind": "push",
@@ -904,7 +906,7 @@
                     "sub_effects": [
                         {
                             "slug": "déplacer",
-                            "area": "cross-0-1",
+                            "area": "rect-3x3",
                             "params": {
                                 "cells_formula": "2",
                                 "movement_kind": "push",
@@ -1013,7 +1015,7 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "auto_success",
-            "description": "Tu poses la main et tu prêtes un souffle. Sur toi, il tient mieux que sur quelqu'un d'autre : une réserve de vie qui part avant la vraie.",
+            "description": "Tu poses la main et tu prêtes un souffle de vie. Sur toi, cette réserve tient mieux que sur quelqu'un d'autre.",
             "effect": "PV temporaires, plus élevés si tu es la cible. Une fois par tour, relance de 3 tours.",
             "pa": "2",
             "cast_per_turn": "1",
@@ -1094,7 +1096,7 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "attack_roll",
-            "description": "Tu tends la main, ou l'épée, et tu ramènes quelqu'un vers toi.",
+            "description": "Tu tends la main, ou l'arme, et tu ramènes la cible vers toi. Si c'est un·e ennemi·e, le choc inflige aussi des dommages d'Air.",
             "effect": "Attire la cible. Dégâts d'Air si c'est un ennemi. Une fois par tour.",
             "pa": "4",
             "cast_per_turn": "1",
@@ -1208,7 +1210,7 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "attack_roll",
-            "description": "Tu enchaînes des coups de feu. Le premier que tu touches garde la brûlure : chaque autre créature que tu frappes ainsi dans le même tour lui renvoie une part du choc.",
+            "description": "Tu enchaînes des coups enflammés. La première cible garde la brûlure : chaque autre créature frappée ensuite lui renvoie une part du choc, en dommages de Feu.",
             "effect": "Dégâts de Feu, une fois par cible, deux fois par tour. La première cible subit un surplus à chaque coup suivant.",
             "pa": "3",
             "cast_per_turn": "2",
@@ -1316,8 +1318,8 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "attack_roll",
-            "description": "Tu frappes, et l'eau de la lame revient se plaquer sur toi. Sur la cible, elle laisse une marque froide qui éclate au tour suivant.",
-            "effect": "Dégâts d'Eau et bouclier sur toi. Au début de ton prochain tour, la cible marquée subit à nouveau des dégâts d'Eau. Une fois par tour.",
+            "description": "Tu frappes, et l'eau de la lame se colle à la cible. Elle subit des dommages d'Eau, puis la marque froide éclate à ton tour suivant.",
+            "effect": "Dégâts d'Eau. Au début de ton prochain tour, la cible marquée subit à nouveau des dégâts d'Eau. Une fois par tour.",
             "pa": "4",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -1348,9 +1350,9 @@
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "value": "1d6",
-                        "value_formula": "1d6",
-                        "dice_formula": "1d6",
+                        "value": "",
+                        "value_formula": "",
+                        "dice_formula": "",
                         "effect_direction": "self",
                         "duration_formula": "1"
                     },
@@ -1360,7 +1362,7 @@
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Au début de ton prochain tour, la cible subit 1d6 dégâts d'Eau.",
+                        "value": "Au début de ton prochain tour, la cible subit 2d6 dégâts d'Eau.",
                         "duration_formula": "1"
                     },
                     "duration_formula": "1",
@@ -1390,9 +1392,9 @@
                             "area": "point",
                             "duration_formula": "1",
                             "params": {
-                                "value": "1d8",
-                                "value_formula": "1d8",
-                                "dice_formula": "1d8",
+                                "value": "",
+                                "value_formula": "",
+                                "dice_formula": "",
                                 "effect_direction": "self",
                                 "duration_formula": "1"
                             },
@@ -1402,7 +1404,7 @@
                             "slug": "autre",
                             "area": "point",
                             "params": {
-                                "value": "Au début de ton prochain tour, la cible subit 1d8 dégâts d'Eau.",
+                                "value": "Au début de ton prochain tour, la cible subit 2d8 dégâts d'Eau.",
                                 "duration_formula": "1"
                             },
                             "duration_formula": "1",
@@ -1432,9 +1434,9 @@
                             "area": "point",
                             "duration_formula": "1",
                             "params": {
-                                "value": "2d6",
-                                "value_formula": "2d6",
-                                "dice_formula": "2d6",
+                                "value": "",
+                                "value_formula": "",
+                                "dice_formula": "",
                                 "effect_direction": "self",
                                 "duration_formula": "1"
                             },
@@ -1444,7 +1446,7 @@
                             "slug": "autre",
                             "area": "point",
                             "params": {
-                                "value": "Au début de ton prochain tour, la cible subit 2d6 dégâts d'Eau.",
+                                "value": "Au début de ton prochain tour, la cible subit 3d6 dégâts d'Eau.",
                                 "duration_formula": "1"
                             },
                             "duration_formula": "1",
@@ -1468,7 +1470,7 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "saving_throw",
-            "description": "Tu tournes sur toi-même, lame à l'horizontale. Le cercle coupe ceux d'en face. Toi et tes allié·e·s, le fil vous évite.",
+            "description": "Tu tournes sur toi-même, lame à l'horizontale. Le cercle inflige des dommages de Terre aux ennemi·e·s. Toi et tes allié·e·s, le fil vous évite.",
             "effect": "Dégâts de Terre en croix, allié·e·s et toi saufs. Une fois par tour.",
             "pa": "4",
             "cast_per_turn": "1",
@@ -1527,7 +1529,7 @@
                     "sub_effects": [
                         {
                             "slug": "frapper",
-                            "area": "cross-0-1",
+                            "area": "cross-0-2",
                             "params": {
                                 "characteristic": "earth",
                                 "value": "3d12+Force",
@@ -1555,7 +1557,7 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "auto_success",
-            "description": "Tu prends ton élan et tu traverses la distance en courant, épée en avant, jusqu'à coller quelqu'un, ennemi ou allié·e. Si la cible est trop loin, tu t'arrêtes au bout de ta course.",
+            "description": "Tu prends ton élan et tu cours, arme en avant, jusqu'à coller la cible. Si elle est trop loin, tu t'arrêtes au bout de ta course.",
             "effect": "Tu te rapproches jusqu'au contact de la cible. Pas de dégâts : c'est l'élan, le coup vient après. Une fois par tour, relance de 2 tours.",
             "pa": "2",
             "cast_per_turn": "1",
@@ -1673,7 +1675,7 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "auto_success",
-            "description": "Tu laisses la Terre s'accumuler dans le bras. Pendant un moment, tes sorts de Terre frappent plus lourd.",
+            "description": "Tu charges le bras du poids du sol. Pendant un moment, tes sorts de Terre frappent plus lourd.",
             "effect": "Bonus aux dégâts de tes sorts de Terre pendant 2 tours. Relance de 3 tours.",
             "pa": "2",
             "cast_per_turn": "1",
@@ -1791,7 +1793,7 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "saving_throw",
-            "description": "Tu désignes un ennemi à toute la mêlée. Pendant un moment, chaque coup qu'il reçoit entre plus profond.",
+            "description": "Tu désignes un·e ennemi·e à toute la mêlée. Pendant un moment, chaque coup reçu entre plus profond.",
             "effect": "La cible subit des dégâts supplémentaires à chaque coup reçu pendant 1 tour. Pas de dégâts directs. Relance de 4 tours.",
             "pa": "2",
             "cast_per_turn": "1",
@@ -1853,7 +1855,7 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "auto_success",
-            "description": "Tu étends un bouclier d'eau sur tes allié·e·s proches. Chaque allié·e encore à ton contact t'alourdit un peu le bras : tes coups perdent de leur tranchant.",
+            "description": "Tu étends un bouclier sur tes allié·e·s proches. Chaque allié·e encore à ton contact t'alourdit le bras : tes coups perdent de leur tranchant.",
             "effect": "Bouclier en zone. Tu perds 1 aux dégâts par allié·e à ton contact, jusqu'à 4, pendant 1 tour. Relance de 3 tours.",
             "pa": "3",
             "cast_per_turn": "1",
@@ -1938,8 +1940,8 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "auto_success",
-            "description": "Tu plantes ton étendard et un Stratège Iop se dresse à côté. Il ne frappe pas : il tient la ligne, et ceux qui se serrent contre lui prennent moins cher.",
-            "effect": "Invoque un Stratège Iop sur une case libre. Les allié·e·s à son contact subissent moins de dégâts. Un seul Stratège à la fois. Relance de 4 tours.",
+            "description": "Tu plantes ton étendard et tu invoques un Stratège Iop. Il ne frappe pas : les allié·e·s à son contact subissent moins de dommages.",
+            "effect": "Invoque un Stratège Iop sur une case libre. Les allié·e·s à son contact subissent moins de dégâts. Relance de 4 tours.",
             "pa": "3",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -2009,7 +2011,7 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "saving_throw",
-            "description": "Tu lèves l'épée et une lame d'air s'abat plus loin, sur une large zone. Le vent s'ouvre autour de toi : tu restes en dehors du coup.",
+            "description": "Tu lèves l'arme et une lame s'abat plus loin, sur une large zone. Elle inflige des dommages d'Air, et le coup t'évite.",
             "effect": "Dégâts d'Air en zone, une fois par tour, relance de 2 tours. Ne te touche pas.",
             "pa": "4",
             "cast_per_turn": "2",
@@ -2093,7 +2095,7 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "saving_throw",
-            "description": "Tu abats une lame de feu sur une zone. Tes allié·e·s dans le brasier n'en souffrent pas : la chaleur leur reste dans les bras et renforce leurs prochains feux.",
+            "description": "Tu abats une gerbe de flammes sur une zone. Tes allié·e·s n'en souffrent pas : la chaleur renforce leurs prochains dommages de Feu.",
             "effect": "Dégâts de Feu en zone, allié·e·s saufs. Ils gagnent un bonus de dégâts de Feu pendant 1 tour. Une fois par tour.",
             "pa": "4",
             "cast_per_turn": "1",
@@ -2190,7 +2192,7 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "saving_throw",
-            "description": "Tu fends le sol d'un grand coup. L'eau jaillit sur ceux d'en face, et chaque ennemi touché te renvoie une gerbe qui te couvre. Toi, le coup t'évite.",
+            "description": "Tu fends le sol d'un grand coup. Une gerbe jaillit sur les ennemi·e·s, en dommages d'Eau, et chaque personne touchée t'en renvoie une qui te couvre d'un bouclier.",
             "effect": "Dégâts d'Eau en zone, sans te toucher. Tu gagnes un bouclier par ennemi touché, jusqu'à 4. Une fois par tour.",
             "pa": "4",
             "cast_per_turn": "1",
@@ -2210,7 +2212,7 @@
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "rect-2x2",
+                    "area": "cross-0-1",
                     "params": {
                         "characteristic": "water",
                         "value": "4d4+Chance",
@@ -2250,12 +2252,12 @@
                     "sub_effects": [
                         {
                             "slug": "frapper",
-                            "area": "rect-2x2",
+                            "area": "cross-0-2",
                             "params": {
                                 "characteristic": "water",
-                                "value": "2d12+Chance",
-                                "value_formula": "2d12+[chance]",
-                                "dice_formula": "2d12+[chance]",
+                                "value": "3d10+Chance",
+                                "value_formula": "3d10+[chance]",
+                                "dice_formula": "3d10+[chance]",
                                 "effect_direction": "action"
                             },
                             "order": 0
@@ -2299,9 +2301,9 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "attack_roll",
-            "description": "Tu lèves l'épée à deux mains et tu abats tout ce que tu as dans un seul coup, au contact. Le bras met du temps à revenir. Chaque fois que tu recommences dans le même combat, la colère est déjà là, et le coup est plus lourd.",
+            "description": "Tu abats ton arme de tout ton poids, au contact, et tu infliges de lourds dommages de Terre. Chaque fois que tu relances ce sort dans le combat, le coup suivant frappe plus lourd.",
             "effect": "Dégâts de Terre au contact, une fois, puis tous les 3 tours. Chaque Colère déjà lancée dans le combat ajoute 2d12.",
-            "pa": "4",
+            "pa": "5",
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "3",

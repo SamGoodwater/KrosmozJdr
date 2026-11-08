@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Orientations de voie indicatives
+
+L’orientation d’une voie (Placement, Entrave, Soin…) reste un repère, pas une case à cocher pour chaque sort. Au moins deux sorts collent bien ; les autres varient pour proposer un autre gameplay. Deux sorts d’une même voie ne font plus le même effet. Le sort élémentaire de niveau 1 frappe basique : les effets secondaires arrivent aux montées ou aux sorts suivants. Les règles (2.3.3, 5.2.2, 5.2.3) et le guide de construction des sorts le disent. Passes : les 19 classes — Féca, Osamodas, Enutrof, Eniripsa, Sadida, Sram, Pandawa, Sacrieur, Roublard, Xélor, Eliotrope, Steamer, Huppermage, Forgelance, Ouginak, Zobal (Iop, Crâ et Ecaflip déjà alignés).
+
 ## Novembre 2026 — Sorts à facteurs multiples
 
 Un effet de sort peut dépendre des caractéristiques du lanceur et de la cible. On écrit des conditions (« si l’Intelligence du lanceur dépasse la Chance de la cible ») et des règles de valeur qui remplacent, ajoutent ou soustraient une formule. Chaque effet précise aussi s’il s’applique à toi, aux cibles, ou aux deux, et s’il laisse choisir un montant « jusqu’à » la formule (attirance, soins…). Entre crochets, `[clé]` vise le lanceur et `[clé:target]` la cible. Les fiches le disent en une phrase ; l’éditeur guide la saisie.

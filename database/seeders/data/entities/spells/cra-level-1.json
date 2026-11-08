@@ -24,7 +24,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "effect": "",
-            "description": "Tu décoches une flèche très rapide, sans ligne de vue. Sa portée te permet de harceler une cible sans t'exposer.",
+            "description": "Tu décoches de petites flèches qui se faufilent. Elles infligent des dommages d'Air et trouvent leur cible même derrière un obstacle, tant qu'un chemin existe.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -146,7 +146,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "effect": "",
-            "description": "Tu tires une flèche embrasée. Elle inflige des dégâts de Feu.",
+            "description": "Tu enflammes la pointe avant de tirer. Le trait laisse une traînée et inflige des dommages de Feu.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -301,7 +301,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "effect": "Le retrait de PM se résout contre l’esquive PM.",
-            "description": "Tu retires des PM à la cible et tu ralentis sa fuite.",
+            "description": "Tu vises les jambes. La flèche inflige des dommages d'Eau et alourdit le pas : la cible perd en mobilité.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -470,7 +470,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "effect": "",
-            "description": "Tu infliges des dégâts de Terre.",
+            "description": "Tu tires de près une flèche lourde, comme un coup de masse. Elle inflige des dommages de Terre.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -625,7 +625,7 @@
             "resolution_mode": "attack_roll",
             "is_magic": false,
             "effect": "Tu t’éloignes et tu repousses la cible. Les allié·e·s ne sont pas blessé·e·s.",
-            "description": "Tu t'éloignes de la cible et tu la repousses. Les créatures ennemies touchées subissent des dégâts neutres.",
+            "description": "Tu tires presque au contact. Le recul de l'arc t'écarte en même temps que tu repousses la cible, sans dommage.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -723,7 +723,7 @@
             "resolution_mode": "auto_success",
             "is_magic": false,
             "effect": "Tu te repousses sans infliger de dégâts.",
-            "description": "Tu t'éloignes de la cible en profitant du recul du tir. Tu romps le contact sans renoncer à agir.",
+            "description": "Tu décoches vers le sol, et le recul te porte en arrière. Tu choisis jusqu'où tu glisses.",
             "sub_effects": [
                 {
                     "slug": "déplacer",
@@ -776,7 +776,7 @@
             "resolution_mode": "auto_success",
             "is_magic": false,
             "effect": "Augmente la portée de tes tirs ou celle d’un·e allié·e dans la zone.",
-            "description": "Tu augmentes la portée de tes tirs, ou celle d'un·e allié·e. Si plusieurs allié·e·s sont dans la zone, tu peux en affecter plusieurs.",
+            "description": "Tu règles la visée, la tienne ou celle d'un·e allié·e. L'arc porte plus loin.",
             "sub_effects": [
                 {
                     "slug": "booster",
@@ -875,7 +875,7 @@
             "resolution_mode": "auto_success",
             "is_magic": false,
             "effect": "Bonus de dégâts de Terre pendant 2 tours.",
-            "description": "Tu concentres tes prochains tirs. Pendant 2 tours, tes attaques à distance infligent des dégâts supplémentaires liés à la Terre.",
+            "description": "Tu armes tes prochaines flèches pour qu'elles traversent. Pendant un moment, tes tirs à distance frappent plus lourd, du poids de la Terre.",
             "sub_effects": [
                 {
                     "slug": "booster",

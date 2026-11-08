@@ -370,8 +370,8 @@ erDiagram
     short_name : varchar(64)
     helper : text
     descriptions : text
-    icon : varchar(64)
-    icon_false : varchar(64)
+    icon : varchar(255)
+    icon_false : varchar(255)
     color : varchar(32)
     value_overrides : longtext
     unit : varchar(32)
@@ -566,6 +566,7 @@ erDiagram
     level : varchar(255)
     other_info : varchar(255)
     life : text
+    life_dice_total : int unsigned nullable
     pa : text
     pm : text
     po : text
@@ -1020,6 +1021,7 @@ erDiagram
     size : int(11)
     is_boss : tinyint(1)
     boss_pa : varchar(255)
+    life_formula : varchar(64) nullable
     monster_race_id : bigint(20) unsigned
     state : varchar(255)
     read_level : tinyint(4)
@@ -1591,7 +1593,7 @@ erDiagram
     dofusdb_id : varchar(255)
     name : varchar(255)
     description : varchar(255)
-    effect : varchar(255)
+    effect : text
     level : varchar(255)
     po_min : varchar(64)
     po_max : varchar(64)
@@ -1626,7 +1628,7 @@ erDiagram
     read_level : tinyint(4)
     write_level : tinyint(4)
     image : varchar(255)
-    image_filter : json
+    image_filter : longtext
     auto_update : tinyint(1)
     created_at : timestamp
     updated_at : timestamp

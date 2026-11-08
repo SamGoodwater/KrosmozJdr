@@ -146,7 +146,7 @@ SPELLS = [
     ("precipitation", "Précipitation", "13114", 1, 0, ["Amélioration"], None, None,
      lambda r: [boost("pa", num(r["buff"]), "1"), other("Impossible d'attaquer avec une arme pendant ce tour.", turns="1")], {}),
     ("violence", "Violence", "13151", 1, 1, ["Placement"], None, "strong",
-     lambda r: [move("push", num(r["deplac"]), "cross-0-1")], {"spares_chosen_targets": True}),
+     lambda r: [move("push", num(r["deplac"]), zone(r))], {"spares_chosen_targets": True}),
     # Niveau 6
     ("duel", "Duel", "13165", 1, 0, ["Entrave", "Protection"], None, "sagesse",
      lambda r: [other("Désavantage si la cible attaque une autre créature que le lanceur.", turns=turns_of(r["autres"])),

@@ -32,9 +32,12 @@ C’est l’élément et les dégâts qui décident, pas l’orientation. Un sor
 
 Pour chaque voie, prendre 4 sorts dans le tas de son élément, puis les ranger aux niveaux 1, 4, 7 et 12 du plus simple au plus fort.
 
-1. Préférer un sort dont l’effet secondaire suit l’orientation de la voie (repousse pour Placement, retrait pour Entrave, bouclier pour Protection…).
-2. Si aucun ne la suit, garder un sort de l’élément qui fait des dégâts, et adapter son effet à l’orientation. Les dégâts et l’élément restent ceux de Dofus. L’effet peut s’en éloigner.
-3. Chaque sort élémentaire de Krosmoz fait des dégâts de l’élément de sa voie.
+L’orientation de la voie est **indicative**. Au moins **deux** sorts collent bien. Les autres peuvent s’en écarter pour offrir un autre gameplay (Placement avec −PM, esquive PM, Indéplaçable, voire un peu de soin ; Entrave sur PO, résistances, états…). **Deux sorts d’une même voie ne font pas exactement la même chose.**
+
+1. Le sort de **niveau 1** frappe **basique** : dégâts de l’élément, sans effet secondaire fort. Les effets (retrait, poussée, bouclier, poison, buff…) arrivent aux montées (souvent niveau 5+) ou sur les sorts 4 / 7 / 12.
+2. Préférer, pour au moins deux sorts de la voie, un effet secondaire qui suit l’orientation (repousse pour Placement, retrait pour Entrave, bouclier pour Protection…).
+3. Pour les autres, garder un sort de l’élément qui fait des dégâts, et diversifier l’outil : même famille, pas le même effet. Les dégâts et l’élément restent ceux de Dofus. L’effet peut s’éloigner de l’orientation.
+4. Chaque sort élémentaire de Krosmoz fait des dégâts de l’élément de sa voie.
 
 ### 3. Les sorts généraux
 
@@ -54,6 +57,22 @@ Prendre 16 sorts dans le tas général, puis les mettre par paires sur les 8 cho
 - Le sort Dofus de départ est connu pour chaque sort (`dofusdb_id` dans le catalogue JSON quand il existe).
 
 Ensuite seulement, on écrit les tableaux de la fiche, puis on suit les étapes ci-dessous.
+
+## Le texte Général
+
+Chaque sort a deux textes. *Général* (champ `description`) raconte le geste. *Effets* (champ `effect`) reprend, factuellement, ce qui sert à jouer le tour : dés, portées, durées, relances.
+
+*Général* tient en une ou deux phrases, trois si elles sont courtes. On tutoie le lanceur. On écrit en langage inclusif (`allié·e`, `ennemi·e`). On montre le geste par une image concrète et tout de suite compréhensible : une gerbe de flamme, un jet d’eau, une vague de froid, l’air comprimé autour de l’arme. Puis on nomme l’élément et la nature de l’effet (dommages, buff, debuff, soin, protection, invocation, déplacement), sans aucune valeur.
+
+L’image ne répète pas le nom de l’élément, et elle ne reste pas vague. « Un coup d’air » ne dit pas le geste. « Tu frappes en comprimant l’air autour de ton arme » le dit. Une métaphore n’est là que si elle fait comprendre. Une image courte mais opaque (« le pas suit la voix », « la chaleur reste dans les bras ») ne convient pas.
+
+Exemples :
+
+- Intimidation : « Tu frappes en comprimant l’air autour de ton arme. La cible subit des dommages d’Air et recule sous le choc. »
+- Tumulte : « Tu balayes une zone d’un vent brûlant. Chaque ennemi·e pris·e dedans attise la gerbe : plus il y a de monde, plus les dommages de Feu sont lourds. »
+- Bulle : « Tu formes une bulle d’eau au bout de ton bâton et tu la lances. Elle inflige des dommages d’Eau et gêne la visée de la cible. »
+
+Le champ en base est limité à 255 caractères. Une phrase qui cite un dé, une case ou un tour appartient à *Effets*.
 
 ## Avant de recopier
 

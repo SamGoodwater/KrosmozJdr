@@ -3,6 +3,7 @@
     "name": "Crâ",
     "dofusdb_id": "9",
     "description_fast": "Archer",
+    "life_dice": "1d6",
     "description": "Les Crâs sont des archers aussi fiers que précis ! Ils font des alliés précieux contre les adeptes de la mêlée franche. Restant à distance, décochant leurs traits empennés dans le moindre orifice laissé sans surveillance, ils ne laissent aucun répit à leu",
     "mechanics": "<p><strong>La distance</strong> — Pas de ressource propre : le Crâ joue avec la portée de ses flèches.</p><p>Tes flèches portent loin, et ton passif <strong>Œil de Crâ</strong> leur ajoute une portée longue (le double de la portée maximale, avec le désavantage). Tir éloigné et Sentinelle allongent la portée normale, donc la portée longue avec.</p><p>Ton tour tient en trois gestes : tu prends du champ (Flèche évasive, Tir de repli, Balise de rappel), tu tiens l’ennemi à distance (Flèche d’immobilisation, Flèche de recul, retraits de PM), puis tu tires depuis la meilleure case (Balise tactique, Acuité absolue).</p><p>Au contact, tu perds ton avantage : chaque case entre toi et l’ennemi compte.</p>",
     "dofus_version": "3",
