@@ -43,12 +43,16 @@
     `monster_id` legacy OK. Affichage : si `value_formula` est vide, la ligne reprend
     `params.value` (retrait de PA/PM, bonus chiffré, texte d’un effet « autre »).
   - Facteurs multiples (`params`) : `applies_to` (`caster`|`targets`|`caster_and_targets`),
-    `value_up_to` (bool, « jusqu’à » la formule), `conditions` (left/op/right + join AND/OR),
+    `value_up_to` (bool, « jusqu’à » la formule), `trigger_turn` (int 0..255, défaut 0 =
+    au lancer ; 1 = début du tour n+1 du lanceur ; durée part du déclenchement ; pas de
+    nouveau jet ; 0 omis en base), `conditions` (left/op/right + join AND/OR),
     `value_rules` (`replace`|`add`|`subtract`). Placeholders : `[clé]` / `[clé:caster]` =
     lanceur, `[clé:target]` = cible (ancienne forme `[caster:clé]` encore lue). UI
     `EffectConditionList` / `EffectValueRulesEditor` (brouillon local, lignes vides OK) ;
-    `FormulaExpressionInput` liste au focus. Affichage « Si … : », pastille applies_to,
-    « jusqu’à », règles. Ancien lien ET/OU entre effets retiré de l’éditeur natif.
+    `FormulaExpressionInput` liste au focus. Champ « Déclenchement » dans
+    `SpellEffectEditorRow`. Affichage « Si … : », pastille applies_to, « jusqu’à »,
+    règles ; Full (`SpellEffectsJournal`) groupe par tour ; Minimal/Line badge
+    `formatTriggerTurnLabel`. Ancien lien ET/OU entre effets retiré de l’éditeur natif.
   - Vocabulaire UI : **effet** (= ancien sous-effet) ; catalogue technique `SubEffect` conservé
 - `app/Models/Effect*.php`, `app/Models/ObjectEffect.php` — encore utilisés objets + legacy sorts
 - `GET /api/object-effects` — liste par fiche ; `view` sur le parent + `visibleToUser` sur le monstre invoqué (session `web`)

@@ -47,6 +47,9 @@ final class EffectConditionParams
 
     public const SIDE_MAX_LENGTH = 255;
 
+    /** Tour de déclenchement max (0 = au lancer, 1 = n+1, …). */
+    public const TRIGGER_TURN_MAX = 255;
+
     /**
      * @return list<array{left: string, op: string, right: string, join?: string}>
      */
@@ -169,6 +172,51 @@ final class EffectConditionParams
             }
         }
 
+        if (array_key_exists('trigger_turn', $params)) {
+            $raw = $params['trigger_turn'];
+            if ($raw === null || $raw === '') {
+                unset($params['trigger_turn']);
+            } else {
+                $turn = (int) $raw;
+                if ($turn < 0) {
+                    $turn = 0;
+                }
+                if ($turn > self::TRIGGER_TURN_MAX) {
+                    $turn = self::TRIGGER_TURN_MAX;
+                }
+                if ($turn === 0) {
+                    unset($params['trigger_turn']);
+                } else {
+                    $params['trigger_turn'] = $turn;
+                }
+            }
+        }
+
         return $params;
+    }
+
+    /**
+     * Tour de déclenchement (0 = au lancer) lu depuis {@code params}.
+     *
+     * @param  array<string, mixed>|null  $params
+     */
+    public static function normalizeTriggerTurn(?array $params): int
+    {
+        if ($params === null || ! array_key_exists('trigger_turn', $params)) {
+            return 0;
+        }
+        $raw = $params['trigger_turn'];
+        if ($raw === null || $raw === '') {
+            return 0;
+        }
+        $turn = (int) $raw;
+        if ($turn < 0) {
+            return 0;
+        }
+        if ($turn > self::TRIGGER_TURN_MAX) {
+            return self::TRIGGER_TURN_MAX;
+        }
+
+        return $turn;
     }
 }

@@ -12,6 +12,10 @@ L’orientation d’une voie (Placement, Entrave, Soin…) reste un repère, pas
 
 Un effet de sort peut dépendre des caractéristiques du lanceur et de la cible. On écrit des conditions (« si l’Intelligence du lanceur dépasse la Chance de la cible ») et des règles de valeur qui remplacent, ajoutent ou soustraient une formule. Chaque effet précise aussi s’il s’applique à toi, aux cibles, ou aux deux, et s’il laisse choisir un montant « jusqu’à » la formule (attirance, soins…). Entre crochets, `[clé]` vise le lanceur et `[clé:target]` la cible. Les fiches le disent en une phrase ; l’éditeur guide la saisie.
 
+## Novembre 2026 — Effets qui se déclenchent plus tard
+
+Certains sorts agissent au tour d’après (Odorat de l’Écaflip, etc.). Chaque effet d’un sort a maintenant un tour de déclenchement : 0 au lancer, 1 au début du prochain tour du lanceur, et ainsi de suite. Sur la fiche, les effets différés sont regroupés sous « Au tour suivant » / « Dans k tours ». Sur les cartes compactes, un petit badge le rappelle. Odorat est décrit avec ce paramètre plutôt qu’un texte libre.
+
 ## Novembre 2026 — Filtre d’image pour les sorts devenus basiques
 
 Un sort élémentaire Dofus repris comme sort basique gardait une icône trop colorée. Sur la fiche, on choisit maintenant Image d’origine, Beige, Violet ou Personnalisé (curseurs). Le filtre s’applique partout où l’icône apparaît — fiche, cartes, tableau, liste texte des variantes de classe, recherche globale — sans retoucher le fichier. Si le sort n’a pas d’élément et que l’image est encore colorée, l’édition propose d’appliquer Beige en un clic.

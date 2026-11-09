@@ -24,6 +24,10 @@ const props = defineProps({
         type: [String, null],
         default: null,
     },
+    hideTriggerTurn: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const model = computed(() =>
@@ -38,6 +42,9 @@ const model = computed(() =>
 
 <template>
     <div class="overflow-visible border-b border-base-300/50 py-2 last:border-b-0">
-        <SpellSubEffectActionPresentation :model="model" />
+        <SpellSubEffectActionPresentation
+            :model="model"
+            :hide-trigger-turn="hideTriggerTurn"
+        />
     </div>
 </template>

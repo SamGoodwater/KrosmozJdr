@@ -59,6 +59,34 @@ final class EffectConditionParamsTest extends TestCase
     }
 
     #[Test]
+    public function sanitize_params_keeps_trigger_turn_and_drops_zero(): void
+    {
+        $kept = EffectConditionParams::sanitizeParams([
+            'trigger_turn' => 1,
+            'value_formula' => '1',
+        ]);
+        $this->assertSame(1, $kept['trigger_turn']);
+
+        $dropped = EffectConditionParams::sanitizeParams([
+            'trigger_turn' => 0,
+        ]);
+        $this->assertArrayNotHasKey('trigger_turn', $dropped);
+
+        $clamped = EffectConditionParams::sanitizeParams([
+            'trigger_turn' => 999,
+        ]);
+        $this->assertSame(EffectConditionParams::TRIGGER_TURN_MAX, $clamped['trigger_turn']);
+    }
+
+    #[Test]
+    public function normalize_trigger_turn_defaults_to_zero(): void
+    {
+        $this->assertSame(0, EffectConditionParams::normalizeTriggerTurn(null));
+        $this->assertSame(0, EffectConditionParams::normalizeTriggerTurn([]));
+        $this->assertSame(2, EffectConditionParams::normalizeTriggerTurn(['trigger_turn' => 2]));
+    }
+
+    #[Test]
     public function side_formula_accepts_bare_and_suffix_actor(): void
     {
         $v = Validator::make(

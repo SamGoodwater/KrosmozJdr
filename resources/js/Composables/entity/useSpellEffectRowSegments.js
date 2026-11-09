@@ -1,3 +1,54 @@
+import {
+    formatTriggerTurnGroupLabel,
+    normalizeTriggerTurn,
+} from "@/Composables/entity/useSpellSubEffectPresentation";
+
+/**
+ * Tour de déclenchement d’une ligne pivot (colonne ou params).
+ *
+ * @param {Record<string, unknown>|null|undefined} row
+ * @returns {number}
+ */
+export function rowTriggerTurn(row) {
+    if (!row || typeof row !== "object") {
+        return 0;
+    }
+    if (row.trigger_turn != null && row.trigger_turn !== "") {
+        return normalizeTriggerTurn(row.trigger_turn);
+    }
+    const params = row.params && typeof row.params === "object" ? row.params : null;
+    return normalizeTriggerTurn(params?.trigger_turn);
+}
+
+/**
+ * Groupes de lignes par tour de déclenchement (ordre croissant), order conservé dans chaque groupe.
+ *
+ * @param {Array<Record<string, unknown>>} rows
+ * @returns {Array<{ triggerTurn: number, label: string, rows: Array<Record<string, unknown>>, segments: Array<{ type: 'or' | 'sequence', rows: Array<Record<string, unknown>> }> }>}
+ */
+export function groupSpellEffectRowsByTriggerTurn(rows) {
+    if (!Array.isArray(rows) || rows.length === 0) {
+        return [];
+    }
+    /** @type {Map<number, Array<Record<string, unknown>>>} */
+    const byTurn = new Map();
+    for (const row of rows) {
+        const turn = rowTriggerTurn(row);
+        if (!byTurn.has(turn)) {
+            byTurn.set(turn, []);
+        }
+        byTurn.get(turn).push(row);
+    }
+    return [...byTurn.entries()]
+        .sort((a, b) => a[0] - b[0])
+        .map(([triggerTurn, groupRows]) => ({
+            triggerTurn,
+            label: formatTriggerTurnGroupLabel(triggerTurn),
+            rows: groupRows,
+            segments: segmentSpellEffectRows(groupRows),
+        }));
+}
+
 /**
  * Regroupe les lignes pivot `effect_sub_effect` pour l’affichage « journal ».
  *

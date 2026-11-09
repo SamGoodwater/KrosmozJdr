@@ -1700,12 +1700,28 @@
                     "order": 1
                 },
                 {
-                    "slug": "autre",
-                    "area": "rect-2x2",
+                    "slug": "retirer",
+                    "area": "point",
                     "params": {
-                        "value": "Toi sauf du retrait. Au tour suivant : perds les PM, gagne autant de PA."
+                        "characteristic": "pm",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "self",
+                        "trigger_turn": 1
                     },
                     "order": 2
+                },
+                {
+                    "slug": "booster",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "pa",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "self",
+                        "trigger_turn": 1
+                    },
+                    "order": 3
                 }
             ],
             "intensification": [
@@ -1741,12 +1757,28 @@
                             "order": 1
                         },
                         {
-                            "slug": "autre",
-                            "area": "rect-2x2",
+                            "slug": "retirer",
+                            "area": "point",
                             "params": {
-                                "value": "Toi sauf du retrait. Au tour suivant : perds les PM, gagne autant de PA."
+                                "characteristic": "pm",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "self",
+                                "trigger_turn": 1
                             },
                             "order": 2
+                        },
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "self",
+                                "trigger_turn": 1
+                            },
+                            "order": 3
                         }
                     ]
                 }

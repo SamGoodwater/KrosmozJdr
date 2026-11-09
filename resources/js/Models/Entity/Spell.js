@@ -687,6 +687,10 @@ export class Spell extends BaseModel {
                         ? String(chip.action_slug).trim()
                         : null,
                 crit_only: Boolean(chip.crit_only),
+                trigger_turn:
+                    chip.trigger_turn != null && Number.isFinite(Number(chip.trigger_turn))
+                        ? Math.max(0, Math.min(255, Number(chip.trigger_turn)))
+                        : 0,
                 scope: chip.scope ?? null,
                 value_formula:
                     chip.value_formula != null && String(chip.value_formula).trim() !== ''

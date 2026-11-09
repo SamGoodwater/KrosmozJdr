@@ -103,6 +103,51 @@ export function valueBadgeText(text) {
 }
 
 /**
+ * Tour de déclenchement (0 = au lancer, 1 = n+1, … 255).
+ *
+ * @param {unknown} raw
+ * @returns {number}
+ */
+export function normalizeTriggerTurn(raw) {
+    if (raw == null || raw === "") {
+        return 0;
+    }
+    const n = Number(raw);
+    if (!Number.isFinite(n)) {
+        return 0;
+    }
+    return Math.max(0, Math.min(255, Math.trunc(n)));
+}
+
+/**
+ * Libellé affichable pour un tour de déclenchement différé.
+ *
+ * @param {unknown} raw
+ * @returns {string|null} null si 0 (au lancer)
+ */
+export function formatTriggerTurnLabel(raw) {
+    const k = normalizeTriggerTurn(raw);
+    if (k <= 0) {
+        return null;
+    }
+    if (k === 1) {
+        return "Au tour suivant";
+    }
+    return `Dans ${k} tours`;
+}
+
+/**
+ * Libellé d’en-tête de groupe Full (inclut « Au lancer »).
+ *
+ * @param {unknown} raw
+ * @returns {string}
+ */
+export function formatTriggerTurnGroupLabel(raw) {
+    const delayed = formatTriggerTurnLabel(raw);
+    return delayed ?? "Au lancer";
+}
+
+/**
  * Libellé durée à partir d’une formule pivot (définitions) ou chaîne déjà formatée (chips).
  *
  * @param {string|null|undefined} durationFormula
@@ -151,10 +196,14 @@ export function buildUnifiedSubEffectModel(input) {
             typeof params.characteristic === "string" && params.characteristic.trim() !== ""
                 ? params.characteristic.trim()
                 : null;
+        const triggerTurn = normalizeTriggerTurn(
+            row.trigger_turn != null ? row.trigger_turn : params.trigger_turn,
+        );
         return {
             layout,
             actionSlug: normalizeSubEffectSlug(sub.slug),
             critOnly: Boolean(row.crit_only),
+            triggerTurn,
             scope: row.scope ?? null,
             area:
                 input.degreeArea != null && String(input.degreeArea).trim() !== ""
@@ -308,6 +357,7 @@ export function buildUnifiedSubEffectModel(input) {
         conditions: [],
         valueRules: [],
         valueUpTo: false,
+        triggerTurn: normalizeTriggerTurn(chip.trigger_turn),
         textFallback: rawText,
         rawTextValue: rawText,
     };

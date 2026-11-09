@@ -13,6 +13,7 @@ use App\Models\Entity\Monster;
 use App\Services\Characteristic\Formula\CharacteristicFormulaService;
 use App\Support\DofusDbElementId;
 use App\Support\DofusHyperlinkText;
+use App\Support\Spell\EffectConditionParams;
 
 /**
  * Moteur de résolution des effects.
@@ -149,6 +150,7 @@ final class EffectResolutionService
                 'life_steal_formula' => $params['life_steal_formula'] ?? null,
                 'life_steal_heal' => $ctx['life_steal_heal'] ?? null,
                 'crit_only' => (bool) ($row->crit_only ?? false),
+                'trigger_turn' => EffectConditionParams::normalizeTriggerTurn($params),
                 'duration' => $ctx['duration'] ?? null,
                 'duration_formula' => $row->duration_formula,
                 'scope' => $row->scope,

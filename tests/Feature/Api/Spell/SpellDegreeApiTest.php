@@ -146,6 +146,94 @@ final class SpellDegreeApiTest extends TestCase
         $this->assertSame('3d6', $bulk->json('data.degrees.0.rows.0.params.value_formula_crit'));
     }
 
+    public function test_sync_bulk_persists_trigger_turn_and_rejects_out_of_range(): void
+    {
+        $gm = User::factory()->createOne(['role' => User::ROLE_GAME_MASTER]);
+        $spell = Spell::factory()->create(['created_by' => $gm->id, 'write_level' => 0, 'pa' => '3']);
+        $sub = SubEffect::query()->create([
+            'slug' => 'booster-trigger-'.uniqid(),
+            'type_slug' => 'booster',
+            'template_text' => 'Boost [value].',
+            'variables_allowed' => ['value'],
+            'param_schema' => [],
+        ]);
+
+        $first = $this->actingAs($gm)->postJson("/api/spells/{$spell->id}/degrees", [
+            'required_level' => 1,
+            'inherits_effects' => false,
+            'pa' => '3',
+            'area' => 'point',
+            'effects' => [[
+                'sub_effect_id' => $sub->id,
+                'params' => ['value_formula' => '1', 'characteristic' => 'pa'],
+            ]],
+        ]);
+        $first->assertCreated();
+        $degreeId = (int) $first->json('degree_id');
+
+        $ok = $this->actingAs($gm)->putJson("/api/spells/{$spell->id}/degrees", [
+            'degrees' => [[
+                'id' => $degreeId,
+                'required_level' => 1,
+                'inherits_effects' => false,
+                'effects' => [[
+                    'sub_effect_id' => $sub->id,
+                    'params' => [
+                        'value_formula' => '1',
+                        'characteristic' => 'pa',
+                        'trigger_turn' => 1,
+                    ],
+                ]],
+            ]],
+        ]);
+        $ok->assertOk();
+        $this->assertSame(1, $ok->json('data.degrees.0.rows.0.trigger_turn'));
+        $this->assertSame(1, $ok->json('data.degrees.0.rows.0.params.trigger_turn'));
+
+        $zero = $this->actingAs($gm)->putJson("/api/spells/{$spell->id}/degrees", [
+            'degrees' => [[
+                'id' => $degreeId,
+                'required_level' => 1,
+                'inherits_effects' => false,
+                'effects' => [[
+                    'sub_effect_id' => $sub->id,
+                    'params' => [
+                        'value_formula' => '1',
+                        'characteristic' => 'pa',
+                        'trigger_turn' => 0,
+                    ],
+                ]],
+            ]],
+        ]);
+        $zero->assertOk();
+        $this->assertSame(0, $zero->json('data.degrees.0.rows.0.trigger_turn'));
+        $this->assertArrayNotHasKey('trigger_turn', $zero->json('data.degrees.0.rows.0.params') ?? []);
+
+        $this->actingAs($gm)->putJson("/api/spells/{$spell->id}/degrees", [
+            'degrees' => [[
+                'id' => $degreeId,
+                'required_level' => 1,
+                'inherits_effects' => false,
+                'effects' => [[
+                    'sub_effect_id' => $sub->id,
+                    'params' => ['trigger_turn' => 256],
+                ]],
+            ]],
+        ])->assertStatus(422);
+
+        $this->actingAs($gm)->putJson("/api/spells/{$spell->id}/degrees", [
+            'degrees' => [[
+                'id' => $degreeId,
+                'required_level' => 1,
+                'inherits_effects' => false,
+                'effects' => [[
+                    'sub_effect_id' => $sub->id,
+                    'params' => ['trigger_turn' => -1],
+                ]],
+            ]],
+        ])->assertStatus(422);
+    }
+
     /**
      * SpellPolicy::update autorise l’auteur (rôle user) : l’API degrés doit suivre,
      * sinon l’enregistrement unique de l’éditeur échoue en 403.

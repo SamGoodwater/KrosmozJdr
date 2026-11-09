@@ -2,10 +2,11 @@
 /**
  * Progression des degrés d’un sort : effets du degré actif (+ onglets optionnels).
  * Préfère `spellDegrees` (canal natif) ; repli sur `effects_definitions` legacy.
+ * Groupe les lignes par tour de déclenchement quand au moins une est différée.
  */
 import { computed, ref, watch } from 'vue';
 import SpellDegreeTabs from '@/Pages/Molecules/entity/spell/SpellDegreeTabs.vue';
-import { segmentSpellEffectRows } from '@/Composables/entity/useSpellEffectRowSegments';
+import { groupSpellEffectRowsByTriggerTurn } from '@/Composables/entity/useSpellEffectRowSegments';
 import { buildSpellDisplayDegrees } from '@/Composables/entity/useSpellDisplayDegrees';
 import SpellSubEffectTypeRouter from '@/Pages/Molecules/entity/spell/SpellSubEffectTypeRouter.vue';
 
@@ -66,9 +67,19 @@ const displayDegrees = computed(() =>
     buildSpellDisplayDegrees(props.spellDegrees, props.definitions),
 );
 
-function segmentsForDegree(deg) {
-    return segmentSpellEffectRows(Array.isArray(deg?.rows) ? [...deg.rows] : []);
-}
+const hasContent = computed(() => displayDegrees.value.length > 0);
+
+const activeDegree = computed(() => displayDegrees.value[activeIndex.value] || null);
+
+const effectGroups = computed(() => {
+    const deg = activeDegree.value;
+    const rows = Array.isArray(deg?.rows) ? [...deg.rows] : [];
+    return groupSpellEffectRowsByTriggerTurn(rows);
+});
+
+const showTriggerGroupHeaders = computed(() =>
+    effectGroups.value.some((g) => g.triggerTurn > 0),
+);
 
 watch(
     displayDegrees,
@@ -91,10 +102,6 @@ watch(
 watch(activeIndex, (idx) => {
     emit('active-degree-change', displayDegrees.value[idx] || null);
 });
-
-const hasContent = computed(() => displayDegrees.value.length > 0);
-
-const activeDegree = computed(() => displayDegrees.value[activeIndex.value] || null);
 </script>
 
 <template>
@@ -110,36 +117,52 @@ const activeDegree = computed(() => displayDegrees.value[activeIndex.value] || n
             class="space-y-2 overflow-visible"
             :class="flush ? '' : 'rounded-box border border-base-300 bg-base-200/30 p-4 space-y-4'"
         >
-            <div class="space-y-2">
-                <template v-for="(seg, si) in segmentsForDegree(activeDegree)" :key="`seg-${si}`">
-                    <div
-                        v-if="seg.type === 'or'"
-                        class="rounded-lg border border-secondary/50 bg-secondary/5 p-3 space-y-2"
+            <div class="space-y-4">
+                <div
+                    v-for="(group, gi) in effectGroups"
+                    :key="`tg-${group.triggerTurn}-${gi}`"
+                    class="space-y-2"
+                    data-cy="spell-effect-trigger-group"
+                >
+                    <h4
+                        v-if="showTriggerGroupHeaders"
+                        class="text-xs font-semibold uppercase tracking-wide text-base-content/60"
+                        data-cy="spell-effect-trigger-label"
                     >
-                        <template v-for="(r, ri) in seg.rows" :key="`or-${ri}-${r.order}`">
-                            <p
-                                class="text-sm font-bold text-secondary"
-                                :class="{ 'pt-2': ri > 0 }"
-                            >
-                                Soit
-                            </p>
+                        {{ group.label }}
+                    </h4>
+                    <template v-for="(seg, si) in group.segments" :key="`seg-${gi}-${si}`">
+                        <div
+                            v-if="seg.type === 'or'"
+                            class="rounded-lg border border-secondary/50 bg-secondary/5 p-3 space-y-2"
+                        >
+                            <template v-for="(r, ri) in seg.rows" :key="`or-${ri}-${r.order}`">
+                                <p
+                                    class="text-sm font-bold text-secondary"
+                                    :class="{ 'pt-2': ri > 0 }"
+                                >
+                                    Soit
+                                </p>
+                                <SpellSubEffectTypeRouter
+                                    :row="r"
+                                    :layout="subEffectLayout"
+                                    :degree-area="activeDegree.area"
+                                    :hide-trigger-turn="true"
+                                />
+                            </template>
+                        </div>
+                        <div v-else class="space-y-2">
                             <SpellSubEffectTypeRouter
+                                v-for="r in seg.rows"
+                                :key="`seq-${r.order}`"
                                 :row="r"
                                 :layout="subEffectLayout"
                                 :degree-area="activeDegree.area"
+                                :hide-trigger-turn="true"
                             />
-                        </template>
-                    </div>
-                    <div v-else class="space-y-2">
-                        <SpellSubEffectTypeRouter
-                            v-for="r in seg.rows"
-                            :key="`seq-${r.order}`"
-                            :row="r"
-                            :layout="subEffectLayout"
-                            :degree-area="activeDegree.area"
-                        />
-                    </div>
-                </template>
+                        </div>
+                    </template>
+                </div>
             </div>
         </div>
     </section>

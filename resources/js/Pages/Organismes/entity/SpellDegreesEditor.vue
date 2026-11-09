@@ -150,6 +150,7 @@ function addEffectRow() {
             conditions: [],
             value_rules: [],
             value_up_to: false,
+            trigger_turn: 0,
         },
         sub_effect: first,
     });

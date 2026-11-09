@@ -206,6 +206,7 @@ function defaultParams() {
         conditions: [],
         value_rules: [],
         value_up_to: false,
+        trigger_turn: 0,
     };
 }
 
@@ -259,6 +260,31 @@ const valueUpToModel = computed({
     },
     set(v) {
         ensureParams().value_up_to = Boolean(v);
+        markDirty();
+    },
+});
+
+const TRIGGER_TURN_MAX = 255;
+
+const triggerTurnModel = computed({
+    get() {
+        const raw = props.row?.params?.trigger_turn ?? props.row?.trigger_turn;
+        if (raw == null || raw === "") {
+            return 0;
+        }
+        const n = Number(raw);
+        if (!Number.isFinite(n)) {
+            return 0;
+        }
+        return Math.max(0, Math.min(TRIGGER_TURN_MAX, Math.trunc(n)));
+    },
+    set(v) {
+        const n = Number(v);
+        const turn =
+            Number.isFinite(n) && n > 0
+                ? Math.max(0, Math.min(TRIGGER_TURN_MAX, Math.trunc(n)))
+                : 0;
+        ensureParams().trigger_turn = turn;
         markDirty();
     },
 });
@@ -540,16 +566,34 @@ watch(
                 </p>
             </div>
 
-            <div class="space-y-1 max-w-md">
-                <label class="text-xs font-medium text-base-content/80">Durée de l’effet</label>
-                <input
-                    v-model="row.duration_formula"
-                    type="text"
-                    class="input input-bordered input-sm w-full"
-                    placeholder="ex: 2, [level]"
-                    @input="markDirty"
-                />
-                <p class="text-xs text-base-content/70">{{ durationHelp }}</p>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 max-w-2xl">
+                <div class="space-y-1">
+                    <label class="text-xs font-medium text-base-content/80">Durée de l’effet</label>
+                    <input
+                        v-model="row.duration_formula"
+                        type="text"
+                        class="input input-bordered input-sm w-full"
+                        placeholder="ex: 2, [level]"
+                        @input="markDirty"
+                    />
+                    <p class="text-xs text-base-content/70">{{ durationHelp }}</p>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-medium text-base-content/80">Déclenchement</label>
+                    <input
+                        v-model.number="triggerTurnModel"
+                        type="number"
+                        min="0"
+                        :max="TRIGGER_TURN_MAX"
+                        step="1"
+                        class="input input-bordered input-sm w-full"
+                        placeholder="0 = au lancer"
+                    />
+                    <p class="text-xs text-base-content/70">
+                        Tours après le lancer (début du tour du lanceur). 0 = immédiat, 1 = tour
+                        suivant. La durée part du déclenchement.
+                    </p>
+                </div>
             </div>
 
             <div class="space-y-1 max-w-xs">

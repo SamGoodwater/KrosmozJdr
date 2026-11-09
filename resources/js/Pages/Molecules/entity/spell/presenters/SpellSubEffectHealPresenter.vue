@@ -19,9 +19,18 @@ defineProps({
         type: [String, null],
         default: null,
     },
+    hideTriggerTurn: {
+        type: Boolean,
+        default: false,
+    },
 });
 </script>
 
 <template>
-    <SpellSubEffectRow :row="row" :layout="layout" :degree-area="degreeArea" />
+    <SpellSubEffectRow
+        :row="row"
+        :layout="layout"
+        :degree-area="degreeArea"
+        :hide-trigger-turn="hideTriggerTurn"
+    />
 </template>

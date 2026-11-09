@@ -37,6 +37,7 @@ trait SpellDegreeEffectParamsRules
             "{$p}.dispellable" => 'nullable|boolean',
             "{$p}.applies_to" => 'nullable|string|in:'.implode(',', EffectConditionParams::APPLIES_TO),
             "{$p}.value_up_to" => 'nullable|boolean',
+            "{$p}.trigger_turn" => 'nullable|integer|min:0|max:'.EffectConditionParams::TRIGGER_TURN_MAX,
             "{$p}.conditions" => 'nullable|array|max:'.EffectConditionParams::MAX_CONDITIONS,
             "{$p}.conditions.*.left" => ['nullable', 'string', 'max:'.EffectConditionParams::SIDE_MAX_LENGTH, new EffectConditionSideFormula],
             "{$p}.conditions.*.op" => 'nullable|string|in:'.implode(',', EffectConditionParams::OPERATORS),

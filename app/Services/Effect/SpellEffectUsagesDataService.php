@@ -7,6 +7,7 @@ namespace App\Services\Effect;
 use App\Models\Entity\Spell;
 use App\Support\AreaNotation;
 use App\Support\DofusHyperlinkText;
+use App\Support\Spell\EffectConditionParams;
 
 /**
  * Résumé texte et chips structurés des usages d’effets d’un sort (aligné tableau sorts / tooltips).
@@ -146,6 +147,11 @@ final class SpellEffectUsagesDataService
                         'summon_monster' => $hasSummon ? $summonMonster : null,
                         'action_slug' => $sub['action_slug'] ?? null,
                         'crit_only' => (bool) ($sub['crit_only'] ?? false),
+                        'trigger_turn' => EffectConditionParams::normalizeTriggerTurn(
+                            array_key_exists('trigger_turn', $sub)
+                                ? ['trigger_turn' => $sub['trigger_turn']]
+                                : null
+                        ),
                         'scope' => $sub['scope'] ?? null,
                         'value_formula' => is_string($sub['value_formula'] ?? null) ? trim((string) $sub['value_formula']) : null,
                         'value_formula_crit' => is_string($sub['value_formula_crit'] ?? null) ? trim((string) $sub['value_formula_crit']) : null,

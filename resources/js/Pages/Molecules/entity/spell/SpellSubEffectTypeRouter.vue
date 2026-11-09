@@ -23,6 +23,11 @@ const props = defineProps({
         type: [String, null],
         default: null,
     },
+    /** Masque le badge de tour (déjà en en-tête de groupe Full). */
+    hideTriggerTurn: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const presenters = {
@@ -38,5 +43,11 @@ const resolved = computed(() => {
 </script>
 
 <template>
-    <component :is="resolved" :row="row" :layout="layout" :degree-area="degreeArea" />
+    <component
+        :is="resolved"
+        :row="row"
+        :layout="layout"
+        :degree-area="degreeArea"
+        :hide-trigger-turn="hideTriggerTurn"
+    />
 </template>

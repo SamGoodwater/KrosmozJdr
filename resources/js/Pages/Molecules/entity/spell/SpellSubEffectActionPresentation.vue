@@ -33,6 +33,8 @@ import {
 import {
     subEffectScopeAbbrev,
     subEffectDurationSegment,
+    formatTriggerTurnLabel,
+    normalizeTriggerTurn,
 } from "@/Composables/entity/useSpellSubEffectPresentation";
 import { formatDisplacementForDisplay } from "@/Utils/Entity/displacementFormat";
 import {
@@ -61,6 +63,11 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    /** Masque le badge de tour (en-tête de groupe Full déjà affiché). */
+    hideTriggerTurn: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const m = computed(() => props.model ?? {});
@@ -84,7 +91,15 @@ const durationSeg = computed(() =>
     subEffectDurationSegment(m.value.durationFormula, m.value.durationLabel),
 );
 const hasDuration = computed(() => durationSeg.value !== "");
-const hasParamsLine = computed(() => hasDuration.value || scopeTag.value != null);
+const triggerTurnLabel = computed(() => {
+    if (props.hideTriggerTurn) {
+        return null;
+    }
+    return formatTriggerTurnLabel(normalizeTriggerTurn(m.value.triggerTurn));
+});
+const hasParamsLine = computed(
+    () => hasDuration.value || scopeTag.value != null || triggerTurnLabel.value != null,
+);
 
 const textSize = computed(() => (layout.value === "line" ? "text-xs" : "text-sm"));
 const badgeSizeClass = computed(() => (layout.value === "line" ? "badge-xs" : "badge-sm"));
@@ -629,12 +644,17 @@ const valueRulesTitle = computed(() => valueRulesTexts.value.join(" · "));
             </div>
         </div>
 
-        <!-- Ligne 2 : paramètres (durée, portée en jeu) -->
+        <!-- Ligne 2 : paramètres (durée, déclenchement, portée en jeu) -->
         <div
             v-if="hasParamsLine"
             class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-base-content/65"
             data-cy="spell-sub-effect-params"
         >
+            <span
+                v-if="triggerTurnLabel"
+                class="badge badge-ghost badge-xs font-normal"
+                data-cy="spell-sub-effect-trigger-turn"
+            >{{ triggerTurnLabel }}</span>
             <span v-if="durationLabel">{{ durationLabel }}</span>
             <span v-if="scopeTag" class="font-mono uppercase tracking-tight">{{ scopeTag }}</span>
         </div>

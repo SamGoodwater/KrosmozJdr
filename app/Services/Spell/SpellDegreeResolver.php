@@ -7,6 +7,7 @@ namespace App\Services\Spell;
 use App\Models\Entity\Spell;
 use App\Models\SpellDegree;
 use App\Models\SpellDegreeEffect;
+use App\Support\Spell\EffectConditionParams;
 use Illuminate\Support\Collection;
 
 /**
@@ -201,6 +202,9 @@ final class SpellDegreeResolver
             'logic_condition' => $row->logic_condition,
             'crit_only' => (bool) $row->crit_only,
             'params' => is_array($row->params) ? $row->params : [],
+            'trigger_turn' => EffectConditionParams::normalizeTriggerTurn(
+                is_array($row->params) ? $row->params : null
+            ),
             'sub_effect' => $sub ? [
                 'id' => $sub->id,
                 'slug' => $sub->slug,
