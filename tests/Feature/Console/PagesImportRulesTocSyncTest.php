@@ -67,6 +67,58 @@ MD);
         $this->assertSame(SectionContentSync::SAME, SectionContentSync::plan($this->section(), $this->content()));
     }
 
+    public function test_renamed_toc_title_keeps_cms_edit_instead_of_purging(): void
+    {
+        $this->import()->assertSuccessful();
+
+        $section = $this->section();
+        $originalId = (int) $section->id;
+        $section->update([
+            'data' => array_merge($section->data, ['content' => '<p>Édité dans le CMS.</p>']),
+            'params' => array_merge($section->params, ['content' => '<p>Édité dans le CMS.</p>']),
+        ]);
+
+        file_put_contents($this->dir.'/TABLE_DES_MATIERES.md', <<<'MD'
+## 1. Introduction
+
+### 1.1 Présentation du jeu
+
+- **1.1.1** Concept révisé
+MD);
+
+        $this->import()->expectsOutputToContain('Sections en conflit (conservées) : 1')->assertSuccessful();
+
+        $section = $this->section();
+        $this->assertSame($originalId, (int) $section->id);
+        $this->assertSame('regle-1-1-1-concept-revise', $section->slug);
+        $this->assertStringContainsString('Édité dans le CMS.', $this->content());
+        $this->assertSame(1, Section::query()->count());
+        $this->assertSame(0, Section::onlyTrashed()->count());
+    }
+
+    public function test_renamed_toc_title_without_cms_edit_follows_markdown(): void
+    {
+        $this->import()->assertSuccessful();
+        $originalId = (int) $this->section()->id;
+
+        file_put_contents($this->dir.'/TABLE_DES_MATIERES.md', <<<'MD'
+## 1. Introduction
+
+### 1.1 Présentation du jeu
+
+- **1.1.1** Concept révisé
+MD);
+        $this->writeRule('Deuxième version.');
+
+        $this->import()->expectsOutputToContain('Sections mises à jour depuis les .md : 1')->assertSuccessful();
+
+        $section = $this->section();
+        $this->assertSame($originalId, (int) $section->id);
+        $this->assertSame('regle-1-1-1-concept-revise', $section->slug);
+        $this->assertStringContainsString('Deuxième version.', $this->content());
+        $this->assertSame(1, Section::query()->count());
+    }
+
     public function test_dry_run_writes_nothing(): void
     {
         $this->import(['--dry-run' => true])
