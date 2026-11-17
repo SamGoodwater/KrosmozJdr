@@ -710,6 +710,13 @@
     "file": "entity/ObjectEffectsManager.vue"
   },
   {
+    "name": "LifeDiceCalculatorModal",
+    "description": "Calculateur de part des dés de vie (PNJ / monstre). Modes : total (niv. 1 → N) ou montée d’un niveau. Méthodes : aléatoire (relance des 1) ou stable.",
+    "props": [],
+    "slots": [],
+    "file": "entity/LifeDiceCalculatorModal.vue"
+  },
+  {
     "name": "FavoritesPanel",
     "description": "FavoritesPanel — Liste des favoris (Minimal) + recherche (cards partagées).",
     "props": [],

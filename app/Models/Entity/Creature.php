@@ -393,6 +393,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereHerbalisteBonus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereHerbalisteMastery($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereIntimidationAbility($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereLifeDiceTotal($value)
  * @mixin \Eloquent
  */
 class Creature extends Model implements HasMedia

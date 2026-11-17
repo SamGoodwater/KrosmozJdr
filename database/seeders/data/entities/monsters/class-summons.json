@@ -399,6 +399,46 @@
                 "resolution_mode": "attack_roll",
                 "is_magic": true
             }
+        },
+        {
+            "key": "eniripsa-lapino",
+            "name": "Lapino",
+            "image": "https://api.dofusdb.fr/img/monsters/48.png",
+            "breed": "Eniripsa",
+            "character_level": 1,
+            "size": 1,
+            "primary": "intel",
+            "description": "Familier Mot d'Amitié. Niveau = lanceur. Mignon : Câlin (soin 1d4→2d6). Monstrueux : Morsure (1d4→2d6). Relais 1/tour (2 dès niv. 13). Formules : Intel 8+⌊niv/4⌋, Vit 6+⌊niv/3⌋, PM 3+⌊niv/13⌋.",
+            "other_info": "Un seul Lapino. Contrôlé, joue juste après l’Eniripsa. Disparaît à 0 PV, fin de combat, ou 1 h hors combat. À sa mort, Mot d’Amitié : relance 2 tours.",
+            "action": {
+                "name": "Câlin",
+                "kind": "soigner",
+                "element": null,
+                "value": "1d4",
+                "attack_characteristic_key": null,
+                "resolution_mode": "auto_success",
+                "is_magic": true
+            }
+        },
+        {
+            "key": "eniripsa-fee",
+            "name": "Fée d'Eniripsa",
+            "image": "https://api.dofusdb.fr/img/monsters/494.png",
+            "breed": "Eniripsa",
+            "character_level": 6,
+            "size": 0,
+            "primary": "agi",
+            "description": "Porte un sort ≤ 3 PA pendant 2 tours puis se pose. Vol hauteur 1, ignore tacle. Niveau = lanceur. Agi 12+⌊niv/5⌋, PM 4+⌊(niv-6)/6⌋. 1 fée (2 dès niv. 12). N’attaque pas.",
+            "other_info": "Invocation Mot Féerique. Joue juste après l’Eniripsa dès l’apparition. Disparaît à la pose, à 0 PV (sort perdu), ou fin de combat.",
+            "action": {
+                "name": "Se poser",
+                "kind": "soigner",
+                "element": null,
+                "value": "0",
+                "attack_characteristic_key": null,
+                "resolution_mode": "auto_success",
+                "is_magic": true
+            }
         }
     ]
 }

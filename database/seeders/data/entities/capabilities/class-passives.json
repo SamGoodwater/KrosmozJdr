@@ -84,11 +84,44 @@
         },
         {
             "breed": "Eniripsa",
-            "name": "Mot",
-            "engine": "marque",
+            "name": "Encouragement",
+            "previous_name": "Mot",
+            "engine": "",
             "is_magic": true,
-            "description": "Chaque soin laisse un mot. Un jeton, pas un second DPS.",
-            "effect": "<p><strong>Niveau 1.</strong> Quand tu soignes une créature, elle gagne 1 PV temporaire (ne se cumule pas).</p><p><strong>Montée.</strong> Niveau 7 : le Mot reste jusqu’à ton prochain tour ; un sort Feu sur une cible marquée inflige +1d4. Niveau 11 : PV temp = 1d4.</p><p><strong>Moteur.</strong> 1 marque « Mot » sur une cible. Soins en d4, pas en d6.</p>"
+            "description": "Soin, bouclier ou buff : la cible est encouragée.",
+            "effect": "<p>Quand un de tes sorts soigne une créature, lui donne un bouclier ou un buff, elle est <strong>encouragée</strong> jusqu’à la fin de son prochain tour, toi compris·e. C’est un jeton de table, pas un état de la base. Ça ne se cumule pas.</p><p>Une créature encouragée a +1 à ses jets de sauvegarde. À partir du niveau 10, elle a aussi +1 à ses jets d’attaque.</p>",
+            "capabilities": [
+                {
+                    "name": "Ailes",
+                    "level": 3,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "0",
+                    "description": "Tu es petit·e, et tes ailes te portent.",
+                    "effect": "<p>Tu peux voler, à volonté. Le vol suit la règle commune (3.2.2.4). Hauteur max : 2 cases (3 m) au niveau 3 ; 5 cases (7,5 m) au niveau 9 ; 10 cases (15 m) au niveau 14 ; aucune limite à partir du niveau 17.</p>"
+                },
+                {
+                    "name": "Mot d'urgence",
+                    "level": 9,
+                    "pa": "0",
+                    "is_magic": true,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Le mot part avant que tu y penses.",
+                    "effect": "<p>Une fois par repos court, quand un·e allié·e que tu vois tombe à 0 PV, il reste à 1 PV à la place, et il est encouragé. Ça ne coûte pas de PA mais ta réaction. Tu ne peux pas l’utiliser sur toi.</p>"
+                },
+                {
+                    "name": "Mot de Vie",
+                    "level": 14,
+                    "pa": "0",
+                    "is_magic": true,
+                    "duration": "0",
+                    "time_before_use_again": "repos long",
+                    "description": "Tu rappelles quelqu’un qui vient de partir.",
+                    "effect": "<p>Une fois par repos long, tu touches une créature morte depuis moins d’une minute (10 tours). Elle revient avec 1 PV, et elle est encouragée. En combat, ça te prend tout ton tour (pas d’autres sorts ou capacité, tu peux te déplacer).</p>"
+                }
+            ]
         },
         {
             "breed": "Iop",

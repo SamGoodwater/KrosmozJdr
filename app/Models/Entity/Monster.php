@@ -113,6 +113,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereSleightOfHandMastery($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereStealthMastery($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereSurvivalMastery($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereLifeFormula($value)
  * @mixin \Eloquent
  */
 class Monster extends Model

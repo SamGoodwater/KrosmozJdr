@@ -1,28 +1,1779 @@
 {
     "_schema_version": "1",
     "breed": "Eniripsa",
+    "state": "playable",
     "entries": [
         {
-            "key": "eniripsa-mot-stimulant",
-            "name": "Mot Stimulant",
+            "key": "mot-fleuri",
+            "name": "Mot Fleuri",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:mot-fleuri",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 4,
+            "types": [
+                "Amélioration",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "attack_roll",
+            "description": "Tu fais éclore une fleur sur la cible. Elle subit des dommages d'Air, et tes allié·e·s la frappent plus fort.",
+            "effect": "Dégâts d'Air. Jusqu'au début de ton prochain tour, le premier coup de chaque allié·e contre la cible fait +1d4 pendant 1 tour. Toi compris·e, pas ce sort. +1d6 au niveau 14.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "1d10+Agilité",
+                        "value_formula": "1d10+[agi]",
+                        "dice_formula": "1d10+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Allié·e·s : +1d4 au premier coup sur la cible",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Allié·e·s : +1d4 au premier coup sur la cible",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "3d6+Agilité",
+                                "value_formula": "3d6+[agi]",
+                                "dice_formula": "3d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d6",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "4d6+Agilité",
+                                "value_formula": "4d6+[agi]",
+                                "dice_formula": "4d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d6",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "mot-secret",
+            "name": "Mot Secret",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:mot-secret",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 7,
+            "types": [
+                "Amélioration",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "attack_roll",
+            "description": "Tu glisses un secret à l'oreille de tes allié·e·s, et le vent le porte jusqu'aux ennemi·e·s. Eux subissent des dommages d'Air, tes allié·e·s visent mieux.",
+            "effect": "Zone. Dégâts d'Air aux ennemi·e·s de la zone. Les allié·e·s de la zone, toi non compris·e, ont l'avantage à leur prochain jet d'attaque, d'ici la fin de leur prochain tour. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "spares_chosen_targets": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "2d4+Agilité",
+                        "value_formula": "2d4+[agi]",
+                        "dice_formula": "2d4+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Allié·e·s (toi sauf) : avantage au prochain jet d'attaque.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Allié·e·s (toi sauf) : avantage au prochain jet d'attaque.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-2",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-2",
+                            "params": {
+                                "value": "Allié·e·s (toi sauf) : avantage au prochain jet d'attaque.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "bosquet-enchante",
+            "name": "Bosquet Enchanté",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:bosquet-enchante",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 12,
+            "types": [
+                "Amélioration",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "attack_roll",
+            "description": "Tu fais pousser un bosquet autour de tout ce qui t'est cher. Les ennemi·e·s pris·es dans les branches subissent des dommages d'Air, et tes allié·e·s s'y protègent.",
+            "effect": "Une zone autour de chacun·e : tes fées, ton Lapino, et chaque allié·e encouragé·e à 6 cases. Dégâts d'Air aux ennemi·e·s de ces zones. Les allié·e·s de ces zones gagnent 1d4 puis 1d6 de résistance multiple et l'avantage à leurs jet d'attaque pendant 1 tour, Une créature n'est touchée qu'une fois. Une fois par tour, relance de 2 tours.",
+            "pa": "5",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "spares_chosen_targets": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "3d4+Agilité",
+                        "value_formula": "3d4+[agi]",
+                        "dice_formula": "3d4+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Résistance de 1d4 et avantage au jet d'attaque / 1 tour",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "4d4+Agilité",
+                                "value_formula": "4d4+[agi]",
+                                "dice_formula": "4d4+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Résistance de 1d6 et avantage au jet d'attaque / 1 tour",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "mot-tapageur",
+            "name": "Mot Tapageur",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:mot-tapageur",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 4,
+            "types": [
+                "Soin",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "attack_roll",
+            "description": "Tu lances une fiole de mots brûlants qui éclate en gerbe. Tes allié·e·s pris·es dedans sont soigné·e·s, les ennemi·e·s subissent des dommages de Feu.",
+            "effect": "Zone. Soin aux allié·e·s de la zone, toi compris·e. Dégâts de Feu aux ennemi·e·s de la zone. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "spares_chosen_targets": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "rect-2x2",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d8+Intelligence",
+                        "value_formula": "1d8+[intel]",
+                        "dice_formula": "1d8+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "soigner",
+                    "area": "rect-2x2",
+                    "params": {
+                        "value": "1d6",
+                        "value_formula": "1d6",
+                        "dice_formula": "1d6",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "rect-2x3",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "rect-2x3",
+                            "params": {
+                                "value": "1d8",
+                                "value_formula": "1d8",
+                                "dice_formula": "1d8",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "rect-3x3",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "3d6+Intelligence",
+                                "value_formula": "3d6+[intel]",
+                                "dice_formula": "3d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "rect-3x3",
+                            "params": {
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "rect-3x4",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "3d8+Intelligence",
+                                "value_formula": "3d8+[intel]",
+                                "dice_formula": "3d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "rect-3x4",
+                            "params": {
+                                "value": "2d8",
+                                "value_formula": "2d8",
+                                "dice_formula": "2d8",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "mot-turbulent",
+            "name": "Mot Turbulent",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:mot-turbulent",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 7,
+            "types": [
+                "Soin",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "attack_roll",
+            "description": "Tu souffles un mot en tourbillon autour d'un point. Tes allié·e·s sont plus faciles à soigner, les ennemi·e·s subissent des dommages de Feu et sont chassé·e·s d'un pas.",
+            "effect": "Zone. Soin aux allié·e·s de la zone, toi compris·e. Dégâts de Feu aux ennemi·e·s de la zone, puis ils reculent d'une case depuis le centre. Une fois par tour. Lancé sur un·e allié·e en mêlée, il dégage la mêlée.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "spares_chosen_targets": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "2d4+Intelligence",
+                        "value_formula": "2d4+[intel]",
+                        "dice_formula": "2d4+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "soigner",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "cross-0-1",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    },
+                    "order": 2
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "+1d4 par soin sur les allié·e·s pendant 1 tour"
+                    },
+                    "order": 3
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "1d6",
+                                "value_formula": "1d6",
+                                "dice_formula": "1d6",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 2
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "+1d6 par soin sur les allié·e·s pendant 1 tour"
+                            },
+                            "order": 3
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-2",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "cross-0-2",
+                            "params": {
+                                "value": "1d10",
+                                "value_formula": "1d10",
+                                "dice_formula": "1d10",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-2",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 2
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-2",
+                            "params": {
+                                "value": "+1d10 par soin sur les allié·e·s pendant 1 tour"
+                            },
+                            "order": 3
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "choeur-strident",
+            "name": "Chœur Strident",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:choeur-strident",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 12,
+            "types": [
+                "Soin",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "attack_roll",
+            "description": "Tu entonnes un chant qui embrase l'air sur une large zone. Tes allié·e·s y sont soigné·e·s, plus encore s'ils sont encouragé·e·s. Les ennemi·e·s subissent des dommages de Feu.",
+            "effect": "Zone. Soin aux allié·e·s de la zone, toi compris·e, +1d6 sur chaque allié·e encouragé·e. Dégâts de Feu aux ennemi·e·s de la zone. Une fois par tour, relance de 2 tours.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "spares_chosen_targets": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "rect-3x3",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "2d10+Intelligence",
+                        "value_formula": "2d10+[intel]",
+                        "dice_formula": "2d10+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "soigner",
+                    "area": "rect-3x3",
+                    "params": {
+                        "value": "2d8",
+                        "value_formula": "2d8",
+                        "dice_formula": "2d8",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "rect-3x3",
+                    "params": {
+                        "value": "Encouragé·e : +1d6 de soin."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "rect-5x5",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "3d10+Intelligence",
+                                "value_formula": "3d10+[intel]",
+                                "dice_formula": "3d10+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "rect-5x5",
+                            "params": {
+                                "value": "3d6",
+                                "value_formula": "3d6",
+                                "dice_formula": "3d6",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "rect-5x5",
+                            "params": {
+                                "value": "Encouragé·e : +1d6 de soin."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "sanglots",
+            "name": "Sanglots",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:sanglots",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 4,
+            "types": [
+                "Protection",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "attack_roll",
+            "description": "Tu fais pleurer la cible de larmes lourdes qui coulent jusqu'à tes allié·e·s. Elle subit des dommages d'Eau, et celles et ceux qui l'entourent sont protégé·e·s.",
+            "effect": "Dégâts d'Eau. Chaque allié·e au contact de la cible, toi compris·e, gagne de la résistance.",
+            "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "1d8+Chance",
+                        "value_formula": "1d8+[chance]",
+                        "dice_formula": "1d8+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "2 de résistance allié·e·s au contact / 1 tour",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "4 de résistance allié·e·s au contact / 1 tour",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "6 de résistance allié·e·s au contact / 1 tour",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "3d8+Chance",
+                                "value_formula": "3d8+[chance]",
+                                "dice_formula": "3d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "8 de résistance allié·e·s au contact / 1 tour",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "mot-exsangue",
+            "name": "Mot Exsangue",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:mot-exsangue",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 7,
+            "types": [
+                "Protection",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "attack_roll",
+            "description": "Tu marques la cible d'un mot qui la vide. Elle subit des dommages d'Eau, et chaque allié·e qui la frappe se protège. Sur un·e allié·e, le mot devient un bouclier.",
+            "effect": "Sur un·e ennemi·e : dégâts d'Eau. Jusqu'au début de ton prochain tour, chaque allié·e qui la frappe gagne un bouclier, une fois chacun·e non cumulabke. Sur un·e allié·e, ou toi : bouclier, pas de dégâts. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d4+Chance",
+                        "value_formula": "2d4+[chance]",
+                        "dice_formula": "2d4+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "1d6",
+                        "value_formula": "1d6",
+                        "dice_formula": "1d6",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Qui la frappe : bouclier 1d6. Sur allié·e : bouclier 2d4"
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Qui la frappe : 2d4. Sur allié·e : 2d6"
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Qui la frappe : 2d6. Sur allié·e : 3d6"
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "cryotherapie",
+            "name": "Cryothérapie",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:cryotherapie",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 12,
+            "types": [
+                "Protection",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "attack_roll",
+            "description": "Tu enveloppes la cible d'une gangue de givre. Un·e ennemi·e y subit des dommages d'Eau et un désavantage pour attaquer.",
+            "effect": "Sur un·e ennemi·e : dégâts d'Eau + désavantage à tout ces jets d'attaque et réaction annulée / 1 tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d8+Chance",
+                        "value_formula": "2d8+[chance]",
+                        "dice_formula": "2d8+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Désavantage + réaction annulées / 1 tour",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "4d6+Chance",
+                                "value_formula": "4d6+[chance]",
+                                "dice_formula": "4d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Désavantage + réaction annulées / 1 tour",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "onguent-ancestral",
+            "name": "Onguent Ancestral",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:onguent-ancestral",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 4,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "attack_roll",
+            "description": "Tu jettes un onguent épais et poisseux sur la cible. Elle subit des dommages de Terre, et ses pieds collent au sol.",
+            "effect": "Dégâts de Terre et −1, puis -2 PM. Relance 2/tour",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "retirer",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pm",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d4+Force",
+                                "value_formula": "2d4+[strong]",
+                                "dice_formula": "2d4+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ],
+                    "cast_per_turn": "2"
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ],
+                    "cast_per_turn": "2",
+                    "cast_per_target": "2"
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ],
+                    "cast_per_turn": "3",
+                    "cast_per_target": "2"
+                }
+            ]
+        },
+        {
+            "key": "cri-de-guerre",
+            "name": "Cri de Guerre",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:cri-de-guerre",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 7,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "attack_roll",
+            "description": "Tu pousses un cri qui fait trembler le sol autour de toi. Les créatures (toi exclut) à ton contact subissent des dommages de Terre, et leurs pieds se figent.",
+            "effect": "Zone autour de toi. Dégâts de Terre aux ennemi·e·s de la zone, puis Indéplaçable pendant 1 tour. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Indéplaçable / 1 tour.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Indéplaçable / 1 tour.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-2",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "3d6+Force",
+                                "value_formula": "3d6+[strong]",
+                                "dice_formula": "3d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-2",
+                            "params": {
+                                "value": "Indéplaçable / 1 tour.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "mot-furieux",
+            "name": "Mot Furieux",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:mot-furieux",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 12,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "attack_roll",
+            "description": "Tu hurles un mot de colère qui fend la terre. Les ennemi·e·s pris·es dedans subissent des dommages de Terre, sont projeté·e·s loin du centre et peinent à esquiver.",
+            "effect": "Zone. Dégâts de Terre aux ennemi·e·s de la zone, puis ils reculent de deux cases depuis le centre, et baisse d'esquive PM. Une fois par tour, relance de 2 tours.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "spares_chosen_targets": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "3d6+Force",
+                        "value_formula": "3d6+[strong]",
+                        "dice_formula": "3d6+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "cross-0-1",
+                    "params": {
+                        "cells_formula": "2",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "désavantage à l'esquive / 1 tour",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-2",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "4d6+Force",
+                                "value_formula": "4d6+[strong]",
+                                "dice_formula": "4d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-2",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-2",
+                            "params": {
+                                "value": "désavantage à l'esquive / 1 tour",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "mot-vivifiant",
+            "name": "Mot Vivifiant",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:mot-vivifiant",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 2,
             "types": [
                 "Amélioration"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
+            "state": "playable",
             "is_magic": true,
-            "powerful": 3,
-            "effect": "+1d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Mot Stimulant : tu te prépares. Le prochain élan frappe plus fort.",
+            "resolution_mode": "auto_success",
+            "description": "Tu souffles un mot léger dans le dos d'un·e allié·e. C'est un buff : ses pas s'allongent, et la mêlée le retient moins.",
+            "effect": "Sur un·e allié·e, ou toi, jusqu'à la fin de son prochain tour : +1 PM, et avantage pour échapper au tacle. Si ton mod. d'Agilité vaut au moins 3, la portée gagne 1 case. Relance de 2 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "5",
+            "po_editable": true,
+            "attack_characteristic_key": "agi",
+            "sub_effects": [
+                {
+                    "slug": "booster",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pm",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Avantage contre le tacle. PO +1 si Agi ≥ 3.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 6,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Avantage contre le tacle. PO +1 si Agi ≥ 3.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "3",
+                                "value_formula": "3",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Avantage contre le tacle. PO +1 si Agi ≥ 3.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "mot-d-envol",
+            "name": "Mot d'Envol",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:mot-d-envol",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 2,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "auto_success",
+            "description": "Tu bats des ailes et tu prends la place d'un·e allié·e, qui se retrouve à la tienne. C'est une téléportation.",
+            "effect": "Tu échanges ta place avec un·e allié·e consentant·e. Si ton mod. d'Agilité vaut au moins 3, l'allié·e gagne aussi 1 PM jusqu'à la fin de son prochain tour. Une fois par tour, relance de 2 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "attack_characteristic_key": "agi",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Échange de place avec un·e allié·e. +1 PM à l'allié·e si Agi ≥ 3."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 6,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "teleport",
+                                "effect_direction": "action",
+                                "teleport": true
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Échange de place avec un·e allié·e. +1 PM à l'allié·e si Agi ≥ 3."
+                            },
+                            "order": 1
+                        }
+                    ],
+                    "po_max": "5"
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "teleport",
+                                "effect_direction": "action",
+                                "teleport": true
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Échange de place avec un·e allié·e. +1 PM à l'allié·e si Agi ≥ 3."
+                            },
+                            "order": 1
+                        }
+                    ],
+                    "number_between_two_cast": "1",
+                    "po_max": "5"
+                }
+            ]
+        },
+        {
+            "key": "mot-galvanisant",
+            "name": "Mot Galvanisant",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:mot-galvanisant",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "auto_success",
+            "description": "Tu traces un mot de guerre à l'encre sur le bras d'un·e allié·e. C'est un buff : ses coups pèsent plus lourd, et il est protégé.",
+            "effect": "Sur un·e allié·e, ou toi, jusqu'à la fin de son prochain tour : chaque coup fait +1d4 dégâts, et bouclier. Mot de boost. Si ton mod. de Force vaut au moins 3, +1d6 au lieu de +1d4. Relance de 3 tours.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "4",
+            "po_editable": true,
+            "attack_characteristic_key": "strong",
             "sub_effects": [
                 {
                     "slug": "booster",
@@ -32,664 +1783,665 @@
                         "characteristic": "dommages_spell",
                         "value": "1d4",
                         "value_formula": "1d4",
-                        "dice_formula": "1d4",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
-                    }
-                }
-            ],
-            "dofusdb_id": "25761",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
-        },
-        {
-            "key": "eniripsa-mot-de-solidarite",
-            "name": "Mot de Solidarité",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 2,
-            "types": [
-                "Protection"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "1d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Mot de Solidarité : une couche de Wakfu avant les PV.",
-            "sub_effects": [
+                        "effect_direction": "action",
+                        "duration_formula": "1",
+                        "dice_formula": "1d4"
+                    },
+                    "order": 0
+                },
                 {
                     "slug": "protéger",
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "value": "1d4+Sagesse",
-                        "value_formula": "1d4+[sagesse]",
-                        "effect_direction": "self",
+                        "value": "1d6",
+                        "value_formula": "1d6",
+                        "dice_formula": "1d6",
+                        "effect_direction": "action",
                         "duration_formula": "1"
-                    }
-                }
-            ],
-            "dofusdb_id": "13234",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
-        },
-        {
-            "key": "mot-interdit",
-            "name": "Mot Interdit",
-            "dofusdb_id": "25873",
-            "slot_index": 1,
-            "choice_order": 0,
-            "types": [
-                "Soin"
-            ],
-            "element": "water",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "5",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "spares_chosen_targets": false,
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "2d4 + Sagesse (Eau). Magique, 5 PA, 1×/tour, PO 1–5 adapté. Soin automatique sur une cible consentante.",
-            "description": "Le mot qu’on ne dit qu’une fois par tour. La cible se redresse d’un coup.",
-            "sub_effects": [
-                {
-                    "slug": "soigner",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "2d4+Sagesse",
-                        "value_formula": "2d4+[sagesse]",
-                        "dice_formula": "2d4+[sagesse]",
-                        "value_formula_crit": "3d4+[sagesse]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "character_level": 4
-        },
-        {
-            "key": "mot-tapageur",
-            "name": "Mot Tapageur",
-            "dofusdb_id": "25858",
-            "slot_index": 1,
-            "choice_order": 1,
-            "types": [
-                "Soin"
-            ],
-            "element": "fire",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "spares_chosen_targets": false,
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d4 + Sagesse (Feu) en petite zone autour de toi, alliés consentants. Magique, 5 PA, 1×/tour.",
-            "description": "Tu cries. Ceux qui restent collés à toi reprennent un peu de vie.",
-            "sub_effects": [
-                {
-                    "slug": "soigner",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "1d4+Sagesse",
-                        "value_formula": "1d4+[sagesse]",
-                        "dice_formula": "1d4+[sagesse]",
-                        "value_formula_crit": "2d4+[sagesse]",
-                        "effect_direction": "self"
-                    }
-                }
-            ],
-            "character_level": 4
-        },
-        {
-            "key": "eniripsa-mot-de-reconstitution",
-            "name": "Mot de Reconstitution",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 5,
-            "types": [
-                "Soin"
-            ],
-            "element": "water",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "2d4 + Sagesse en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Mot de Reconstitution : soin de zone, palier 5.",
-            "sub_effects": [
-                {
-                    "slug": "soigner",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "2d4+Sagesse",
-                        "value_formula": "2d4+[sagesse]",
-                        "dice_formula": "2d4+[sagesse]",
-                        "value_formula_crit": "3d4+[sagesse]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "13187",
-            "spares_chosen_targets": false
-        },
-        {
-            "key": "eniripsa-fontaine-de-jouvence",
-            "name": "Fontaine de Jouvence",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 5,
-            "types": [
-                "Soin"
-            ],
-            "element": "water",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "2d4 + Sagesse en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Fontaine de Jouvence : soin de zone, palier 5.",
-            "sub_effects": [
-                {
-                    "slug": "soigner",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "2d4+Sagesse",
-                        "value_formula": "2d4+[sagesse]",
-                        "dice_formula": "2d4+[sagesse]",
-                        "value_formula_crit": "3d4+[sagesse]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "25893",
-            "spares_chosen_targets": false
-        },
-        {
-            "key": "eniripsa-mot-exsangue",
-            "name": "Mot Exsangue",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 6,
-            "types": [
-                "Soin"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "5",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "3d4 + Sagesse. Magique, 3 PA, 2×/tour. Soin automatique sur une cible consentante.",
-            "description": "Mot Exsangue : soin de palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "soigner",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d4+Sagesse",
-                        "value_formula": "3d4+[sagesse]",
-                        "dice_formula": "3d4+[sagesse]",
-                        "value_formula_crit": "4d4+[sagesse]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "13217",
-            "spares_chosen_targets": false
-        },
-        {
-            "key": "eniripsa-mot-malicieux",
-            "name": "Mot Malicieux",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 6,
-            "types": [
-                "Soin"
-            ],
-            "element": "air",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "5",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "3d4 + Sagesse. Magique, 3 PA, 2×/tour. Soin automatique sur une cible consentante.",
-            "description": "Mot Malicieux : soin de palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "soigner",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "3d4+Sagesse",
-                        "value_formula": "3d4+[sagesse]",
-                        "dice_formula": "3d4+[sagesse]",
-                        "value_formula_crit": "4d4+[sagesse]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "25895",
-            "spares_chosen_targets": false
-        },
-        {
-            "key": "eniripsa-mot-secret",
-            "name": "Mot Secret",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 7,
-            "types": [
-                "Amélioration"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "Invisible jusqu’à la fin de ton prochain tour ou jusqu’à un sort offensif. 3 PA, 1×/tour.",
-            "description": "Mot Secret : tu disparais des regards.",
-            "sub_effects": [
+                    },
+                    "order": 1
+                },
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Invisible jusqu’à la fin de ton prochain tour ou jusqu’à un sort offensif.",
-                        "effect_direction": "action"
-                    }
+                        "value": "Mot de boost. +1d6 si Force ≥ 3."
+                    },
+                    "order": 2
                 }
             ],
-            "dofusdb_id": "25899",
-            "duration": "jusqu’à la fin de ton prochain tour"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 12,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "dommages_spell",
+                                "value": "1d6",
+                                "value_formula": "1d6",
+                                "effect_direction": "action",
+                                "duration_formula": "1",
+                                "dice_formula": "1d6"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Mot de boost. +1d6 si Force ≥ 3."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "eniripsa-mot-rituel",
-            "name": "Mot Rituel",
+            "key": "mot-accablant",
+            "name": "Mot Accablant",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:mot-accablant",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 7,
+            "character_level": 5,
+            "types": [
+                "Entrave"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "saving_throw",
+            "description": "Tu accables l'ennemi·e d'un mot qui pèse sur ses jambes. C'est un debuff : il marche moins, et se dégage mal de la mêlée.",
+            "effect": "−1 PM ou -2PM, et désavantage pour échapper au tacle, jusqu'à la fin de son prochain tour. Moquerie. Si ton mod. de Chance vaut au moins 3, −2 PM ou -3 PM. Relance de 2 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "attack_characteristic_key": "chance",
+            "save_characteristic_key": "chance",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "DD de Chance vs jet de sauvegarde de Chance",
+            "sub_effects": [
+                {
+                    "slug": "retirer",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pm",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Désavantage contre le tacle. Moquerie. −2 PM si Chance ≥ 3.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 12,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Désavantage contre le tacle. Moquerie. −2 PM si Chance ≥ 3.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "mot-feerique",
+            "name": "Mot Féerique",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:mot-feerique",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Invocation"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "auto_success",
+            "description": "Tu enfermes un de tes mots dans une fée de lumière. C'est une invocation : elle vole jusqu'à une créature et lui livre le sort à son contact.",
+            "effect": "Effet Invoquer vers le monstre Fée (`jdr:summon:eniripsa-fee`, fiche Fee-eniripsa). Ce lien ouvre sa fiche. L'invocation a ton niveau. Tu choisis un de tes sorts à 3 PA ou moins, sauf Mot d'Amitié. Tu paies son coût, plus 1 PA. La fée le porte pendant maximum 2 tours : elle vole, puis se pose pour lâcher le sort au contact d'une créature. Le sort devient un sort de contact, une fée ne peut pas l'envoyer à distance. Une fois par tour.",
+            "pa": "1",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "invoquer",
+                    "area": "point",
+                    "params": {
+                        "monster_official_id": "jdr:summon:eniripsa-fee"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "PA = coût du sort porté + 1. Porte un sort ≤ 3 PA (sauf Mot d'Amitié) pendant 2 tours."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "mot-stimulant",
+            "name": "Mot Stimulant",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:mot-stimulant",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 8,
             "types": [
                 "Amélioration"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
+            "state": "playable",
             "is_magic": true,
-            "powerful": 5,
-            "effect": "+2d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Mot Rituel : tu te prépares. Le prochain élan frappe plus fort.",
+            "resolution_mode": "auto_success",
+            "description": "Tu fais boire à un·e allié·e une gorgée d'élixir. C'est un buff : il agit plus vite.",
+            "effect": "Sur un·e allié·e, ou toi : +1 PA, ou +2 PA pendant 2 tours. Mot de boost. Si ton mod. d'Intelligence vaut au moins 3, +2 ou +3PA Relance de 3 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "5",
+            "po_editable": true,
+            "attack_characteristic_key": "intel",
             "sub_effects": [
                 {
                     "slug": "booster",
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "2d4",
-                        "value_formula": "2d4",
-                        "dice_formula": "2d4",
-                        "effect_direction": "self",
+                        "characteristic": "pa",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
                         "duration_formula": "1"
-                    }
-                }
-            ],
-            "dofusdb_id": "25909",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
-        },
-        {
-            "key": "eniripsa-mot-vampirique",
-            "name": "Mot Vampirique",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 8,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 5,
-            "effect": "2d6 + Intelligence (Feu) et vol de vie 2d4. 3 PA, 2×/tour.",
-            "description": "Mot Vampirique : tu frappes, tu récupères.",
-            "sub_effects": [
+                    },
+                    "order": 0
+                },
                 {
-                    "slug": "frapper",
+                    "slug": "autre",
                     "area": "point",
                     "params": {
-                        "characteristic": "fire",
-                        "value": "2d6+Intelligence",
-                        "value_formula": "2d6+[intel]",
-                        "dice_formula": "2d6+[intel]",
-                        "value_formula_crit": "3d6+[intel]",
-                        "effect_direction": "action",
-                        "life_steal_formula": "2d4"
-                    }
+                        "value": "Mot de boost. +2 PA si Intel ≥ 3."
+                    },
+                    "order": 1
                 }
             ],
-            "dofusdb_id": "25889",
-            "attack_characteristic_key": "intel"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Mot de boost. +2 PA si Intel ≥ 3."
+                            },
+                            "order": 1
+                        }
+                    ],
+                    "number_between_two_cast": "1"
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Mot de boost. +2 PA si Intel ≥ 3."
+                            },
+                            "order": 1
+                        }
+                    ],
+                    "cast_per_turn": "2",
+                    "number_between_two_cast": "1"
+                }
+            ]
         },
         {
-            "key": "eniripsa-mot-furieux",
-            "name": "Mot Furieux",
+            "key": "mot-decourageant",
+            "name": "Mot Décourageant",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:mot-decourageant",
             "slot_index": 1,
             "choice_order": 1,
             "character_level": 8,
             "types": [
-                "Soin"
+                "Entrave"
             ],
-            "element": "fire",
-            "pa": "3",
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "saving_throw",
+            "description": "Tu glisses à l'ennemi·e un mot qui lui coupe l'élan. C'est un debuff : il agit moins.",
+            "effect": "−1 PA jusqu'à la fin de son prochain tour. Moquerie. Si ton mod. de Sagesse vaut au moins 3, −2 PA. Relance de 3 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "5",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "2d4 + Sagesse. Magique, 3 PA, 2×/tour. Soin automatique sur une cible consentante.",
-            "description": "Mot Furieux : soin de palier 8.",
+            "attack_characteristic_key": "sagesse",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "DD de Sagesse vs jet de sauvegarde de Sagesse",
             "sub_effects": [
                 {
-                    "slug": "soigner",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "2d4+Sagesse",
-                        "value_formula": "2d4+[sagesse]",
-                        "dice_formula": "2d4+[sagesse]",
-                        "value_formula_crit": "3d4+[sagesse]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "25865",
-            "spares_chosen_targets": false
-        },
-        {
-            "key": "eniripsa-choeur-strident",
-            "name": "Chœur Strident",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 10,
-            "types": [
-                "Soin"
-            ],
-            "element": "air",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "3d4 + Sagesse en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Chœur Strident : soin de zone, palier 10.",
-            "sub_effects": [
-                {
-                    "slug": "soigner",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "3d4+Sagesse",
-                        "value_formula": "3d4+[sagesse]",
-                        "dice_formula": "3d4+[sagesse]",
-                        "value_formula_crit": "4d4+[sagesse]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "28830",
-            "spares_chosen_targets": false
-        },
-        {
-            "key": "eniripsa-mot-accablant",
-            "name": "Mot Accablant",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 10,
-            "types": [
-                "Soin"
-            ],
-            "element": "water",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "3d4 + Sagesse en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Mot Accablant : soin de zone, palier 10.",
-            "sub_effects": [
-                {
-                    "slug": "soigner",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d4+Sagesse",
-                        "value_formula": "3d4+[sagesse]",
-                        "dice_formula": "3d4+[sagesse]",
-                        "value_formula_crit": "4d4+[sagesse]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "28571",
-            "spares_chosen_targets": false
-        },
-        {
-            "key": "eniripsa-mot-alchimique",
-            "name": "Mot Alchimique",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 11,
-            "types": [
-                "Protection"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "3d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Mot Alchimique : une couche de Wakfu avant les PV.",
-            "sub_effects": [
-                {
-                    "slug": "protéger",
+                    "slug": "retirer",
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "value": "3d4+Sagesse",
-                        "value_formula": "3d4+[sagesse]",
-                        "effect_direction": "self",
+                        "characteristic": "pa",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
                         "duration_formula": "1"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Moquerie. −2 PA si Sag ≥ 3.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
                 }
             ],
-            "dofusdb_id": "25993",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Moquerie. −2 PA si Sag ≥ 3.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "3",
+                                "value_formula": "3",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Moquerie. −2 PA si Sag ≥ 3.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "eniripsa-onguent-ancestral",
-            "name": "Onguent Ancestral",
+            "key": "fontaine-de-jouvence",
+            "name": "Fontaine de Jouvence",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:fontaine-de-jouvence",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 10,
+            "types": [
+                "Soin"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "auto_success",
+            "description": "Tu ouvres une fiole et une source jaillit à tes pieds. Tes allié·e·s autour de toi sont soigné·e·s, et l'eau te rend insaisissable jusqu'à ton prochain tour.",
+            "effect": "Zone autour de toi. Soin à toi et aux allié·e·s de la zone. Jusqu'au début de ton prochain tour, tu ne peux pas être taclé·e. Si ton mod. de Vitalité vaut au moins 3, tes allié·e·s aussi sont intacables. Ce n'est pas un glyphe : rien ne reste au sol. Une fois par tour, relance de 3 tours.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "spares_chosen_targets": true,
+            "sub_effects": [
+                {
+                    "slug": "soigner",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "2d6",
+                        "value_formula": "2d6",
+                        "dice_formula": "2d6",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Intacable jusqu'au prochain tour ; allié·e·s aussi si Vit ≥ 3.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "soigner",
+                            "area": "cross-0-2",
+                            "params": {
+                                "value": "2d8",
+                                "value_formula": "2d8",
+                                "dice_formula": "2d8",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-2",
+                            "params": {
+                                "value": "Intacable jusqu'au prochain tour ; allié·e·s aussi si Vit ≥ 3.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "mot-de-declin",
+            "name": "Mot de Déclin",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:mot-de-declin",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 10,
+            "types": [
+                "Entrave"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "saving_throw",
+            "description": "Tu prononces un mot qui enlève tous les bonus et malus d'une créature.",
+            "effect": "Les effets désenvoutable de la cible prennent fin.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "attack_characteristic_key": "intel",
+            "save_characteristic_key": "intel",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "DD d'Intelligence vs jet de sauvegarde d'Intelligence",
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Désenvoutement : fin des effets désenvoutables."
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "mot-de-reconstitution",
+            "name": "Mot de Reconstitution",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:mot-de-reconstitution",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Soin"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "auto_success",
+            "description": "Tu prononces le mot le plus ancien de ton peuple. L'allié·e retrouve toute sa vie, mais son corps refuse ensuite tout autre soin.",
+            "effect": "Sur un·e allié·e, ou toi : tous ses PV reviennent. Ensuite, il ne peut plus être soigné pendant 4 tours. Si ton mod. de Vitalité vaut au moins 3, pendant 3 tours seulement. Une fois par repos long.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "1",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "3",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "soigner",
+                    "area": "point",
+                    "params": {
+                        "value": "PV max",
+                        "value_formula": "PV max",
+                        "dice_formula": "PV max",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Puis insoignable 4 tours (3 si Vit ≥ 3). 1 fois / repos long."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "mot-de-solidarite",
+            "name": "Mot de Solidarité",
+            "dofusdb_id": null,
+            "official_id": "jdr:eniripsa:mot-de-solidarite",
             "slot_index": 1,
             "choice_order": 1,
             "character_level": 11,
             "types": [
                 "Soin"
             ],
-            "element": null,
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "auto_success",
+            "description": "Tu partages ta propre vie d'un mot. Tu perds des PV, et chaque allié·e encouragé·e autour de toi en récupère autant.",
+            "effect": "Tu choisis entre 1 et 20, et tu perds ce total de PV. Tu ne peux pas choisir un montant supérieur à tes points de vie actuels. Chaque allié·e dans un rayon de 3 cases autour de toi sont soigné·e de ce total. Les allié·e·s encouragé·e·s sont soignés du double.",
             "pa": "3",
-            "po_min": "1",
-            "po_max": "5",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "3d4 + Sagesse. Magique, 3 PA, 2×/tour. Soin automatique sur une cible consentante.",
-            "description": "Onguent Ancestral : soin de palier 11.",
-            "sub_effects": [
-                {
-                    "slug": "soigner",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d4+Sagesse",
-                        "value_formula": "3d4+[sagesse]",
-                        "dice_formula": "3d4+[sagesse]",
-                        "value_formula_crit": "4d4+[sagesse]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "25869",
-            "spares_chosen_targets": false
-        },
-        {
-            "key": "eniripsa-mot-fleuri",
-            "name": "Mot Fleuri",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 12,
-            "types": [
-                "Soin"
-            ],
-            "element": "water",
-            "pa": "5",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "0",
             "po_max": "0",
             "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "4d4 + Sagesse en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Mot Fleuri : soin de zone, palier 14.",
+            "attack_characteristic_key": "chance",
+            "spares_chosen_targets": true,
             "sub_effects": [
                 {
                     "slug": "soigner",
-                    "area": "circle-0-1",
+                    "area": "rect-7x7",
                     "params": {
-                        "characteristic": "water",
-                        "value": "4d4+Sagesse",
-                        "value_formula": "4d4+[sagesse]",
-                        "dice_formula": "4d4+[sagesse]",
-                        "value_formula_crit": "5d4+[sagesse]",
+                        "value": "montant choisi (1–20)",
+                        "value_formula": "montant choisi (1–20)",
+                        "dice_formula": "montant choisi (1–20)",
                         "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "25897",
-            "spares_chosen_targets": false
-        },
-        {
-            "key": "eniripsa-laments",
-            "name": "Lamentations",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 12,
-            "types": [
-                "Soin"
-            ],
-            "element": "fire",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "4d4 + Sagesse en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Lamentations : soin de zone, palier 14.",
-            "sub_effects": [
+                    },
+                    "order": 0
+                },
                 {
-                    "slug": "soigner",
-                    "area": "circle-0-1",
+                    "slug": "autre",
+                    "area": "rect-7x7",
                     "params": {
-                        "characteristic": "fire",
-                        "value": "4d4+Sagesse",
-                        "value_formula": "4d4+[sagesse]",
-                        "dice_formula": "4d4+[sagesse]",
-                        "value_formula_crit": "5d4+[sagesse]",
-                        "effect_direction": "action"
-                    }
+                        "value": "Tu perds autant de PV. Encouragé·e·s : soin doublé."
+                    },
+                    "order": 1
                 }
             ],
-            "dofusdb_id": "25890",
-            "spares_chosen_targets": false
+            "intensification": []
         }
     ]
 }

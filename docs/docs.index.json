@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Calculateur de dés de vie (PNJ/monstre) et life_dice des classes. Avant : orientations de voie indicatives ; Iop, Crâ et Ecaflip en base."
+    "description": "En édition PNJ ou monstre, on lance les dés de vie (relance des 1) ou on applique la méthode stable, puis on enregistre la part des dés. Les PV affichés = part des dés + max(0, mod. Vitalité) × niveau + équipement. Les classes ont leur `life_dice` en seed ; un monstre peut porter sa propre formule de gain."
   },
   {
     "path": "backend/_ai.md",

@@ -50,7 +50,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 5,
+                    "required_creature_level": 6,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -105,7 +105,8 @@
             "duration": "3 tours",
             "save_characteristic_key": "sagesse",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué."
+            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
+            "cast_in_diagonal": false
         },
         {
             "key": "oeil-pour-oeil",
@@ -145,7 +146,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 9,
+                    "required_creature_level": 6,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -162,7 +163,7 @@
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 19,
+                    "required_creature_level": 13,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -180,7 +181,8 @@
             ],
             "dofusdb_id": "32454",
             "duration": "2 tours",
-            "allows_reaction": true
+            "allows_reaction": true,
+            "cast_in_diagonal": false
         },
         {
             "key": "fleche-de-recul",
@@ -321,7 +323,8 @@
             ],
             "element": "air",
             "dofusdb_id": "32426",
-            "attack_characteristic_key": "agi"
+            "attack_characteristic_key": "agi",
+            "cast_in_diagonal": false
         },
         {
             "key": "fleche-devorante",
@@ -430,7 +433,8 @@
             ],
             "element": "fire",
             "dofusdb_id": "32446",
-            "attack_characteristic_key": "intel"
+            "attack_characteristic_key": "intel",
+            "cast_in_diagonal": false
         },
         {
             "key": "oeil-de-taupe",
@@ -562,7 +566,8 @@
             ],
             "element": "water",
             "dofusdb_id": "32437",
-            "attack_characteristic_key": "chance"
+            "attack_characteristic_key": "chance",
+            "cast_in_diagonal": false
         },
         {
             "key": "fleche-punitive",
@@ -699,7 +704,8 @@
             "element": "earth",
             "dofusdb_id": "32456",
             "attack_characteristic_key": "strong",
-            "max_stack": 3
+            "max_stack": 3,
+            "cast_in_diagonal": false
         },
         {
             "key": "tir-puissant",
@@ -737,7 +743,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 15,
+                    "required_creature_level": 12,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -753,7 +759,8 @@
                 }
             ],
             "dofusdb_id": "32466",
-            "duration": "2 tours"
+            "duration": "2 tours",
+            "cast_in_diagonal": false
         },
         {
             "key": "represailles",
@@ -792,7 +799,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 14,
+                    "required_creature_level": 12,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -813,7 +820,8 @@
             "attack_characteristic_key": "chance",
             "save_characteristic_key": "chance",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué."
+            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
+            "cast_in_diagonal": false
         },
         {
             "key": "balise-tactique",
@@ -858,7 +866,8 @@
             ],
             "intensification": [],
             "dofusdb_id": "32476",
-            "duration": "1 tour"
+            "duration": "1 tour",
+            "cast_in_diagonal": false
         },
         {
             "key": "balise-de-rappel",
@@ -893,7 +902,8 @@
                 }
             ],
             "intensification": [],
-            "official_id": "jdr:cra:balise-de-rappel"
+            "official_id": "jdr:cra:balise-de-rappel",
+            "cast_in_diagonal": false
         },
         {
             "key": "fleche-boomerang",
@@ -1025,7 +1035,8 @@
             ],
             "element": "air",
             "official_id": "jdr:cra:fleche-boomerang",
-            "attack_characteristic_key": "agi"
+            "attack_characteristic_key": "agi",
+            "cast_in_diagonal": false
         },
         {
             "key": "fleche-explosive",
@@ -1139,7 +1150,8 @@
             "attack_characteristic_key": "intel",
             "save_characteristic_key": "intel",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué."
+            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
+            "cast_in_diagonal": false
         },
         {
             "key": "fleche-ralentissante",
@@ -1279,7 +1291,8 @@
             ],
             "element": "water",
             "official_id": "jdr:cra:fleche-ralentissante",
-            "attack_characteristic_key": "chance"
+            "attack_characteristic_key": "chance",
+            "cast_in_diagonal": false
         },
         {
             "key": "fleche-massacrante",
@@ -1362,7 +1375,8 @@
             "attack_characteristic_key": "strong",
             "save_characteristic_key": "strong",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué."
+            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
+            "cast_in_diagonal": false
         },
         {
             "key": "fleche-ecrasante",
@@ -1402,7 +1416,8 @@
             "save_characteristic_key": "vitality",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
-            "spares_chosen_targets": false
+            "spares_chosen_targets": false,
+            "cast_in_diagonal": false
         },
         {
             "key": "acuite-absolue",
@@ -1439,7 +1454,8 @@
             ],
             "intensification": [],
             "dofusdb_id": "32469",
-            "duration": "1 tour"
+            "duration": "1 tour",
+            "cast_in_diagonal": false
         },
         {
             "key": "pas-chasse",
@@ -1488,34 +1504,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 15,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "déplacer",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "cells_formula": "1",
-                                "movement_kind": "teleport",
-                                "teleport": true
-                            }
-                        },
-                        {
-                            "slug": "booster",
-                            "area": "point",
-                            "order": 1,
-                            "params": {
-                                "characteristic": "pm",
-                                "value": "1"
-                            }
-                        }
-                    ],
-                    "po_max": "2"
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 20,
+                    "required_creature_level": 17,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -1541,7 +1530,8 @@
                     "po_max": "3"
                 }
             ],
-            "dofusdb_id": "32464"
+            "dofusdb_id": "32464",
+            "cast_in_diagonal": false
         },
         {
             "key": "fleche-empoisonnee",
@@ -1588,33 +1578,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 14,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "autre",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "value": "Retraits de PA et de PM automatiques contre la cible."
-                            },
-                            "duration_formula": "1"
-                        },
-                        {
-                            "slug": "autre",
-                            "area": "point",
-                            "params": {
-                                "value": "État Empoisonné."
-                            },
-                            "duration_formula": "1",
-                            "order": 1
-                        }
-                    ],
-                    "number_between_two_cast": "3"
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 20,
+                    "required_creature_level": 17,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -1644,7 +1608,8 @@
             "save_characteristic_key": "vitality",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
-            "duration": "1 tour"
+            "duration": "1 tour",
+            "cast_in_diagonal": false
         },
         {
             "key": "sentinelle",
@@ -1697,7 +1662,8 @@
                 }
             ],
             "intensification": [],
-            "dofusdb_id": "32479"
+            "dofusdb_id": "32479",
+            "cast_in_diagonal": false
         },
         {
             "key": "fleches-amoureuses",
@@ -1734,7 +1700,8 @@
             ],
             "intensification": [],
             "official_id": "jdr:cra:fleches-amoureuses",
-            "duration": "2 tours"
+            "duration": "2 tours",
+            "cast_in_diagonal": false
         },
         {
             "key": "pluie-de-fleches",
@@ -1816,7 +1783,8 @@
             ],
             "element": "air",
             "dofusdb_id": "32481",
-            "attack_characteristic_key": "agi"
+            "attack_characteristic_key": "agi",
+            "cast_in_diagonal": false
         },
         {
             "key": "fleche-tyrannique",
@@ -1900,7 +1868,8 @@
             "save_characteristic_key": "intel",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
             "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
-            "duration": "2 tours"
+            "duration": "2 tours",
+            "cast_in_diagonal": false
         },
         {
             "key": "fleche-paralysante",
@@ -2019,7 +1988,8 @@
             "attack_characteristic_key": "chance",
             "save_characteristic_key": "chance",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué."
+            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
+            "cast_in_diagonal": false
         },
         {
             "key": "carreaux-destructeurs",
@@ -2111,7 +2081,8 @@
             ],
             "element": "earth",
             "official_id": "jdr:cra:carreaux-destructeurs",
-            "attack_characteristic_key": "strong"
+            "attack_characteristic_key": "strong",
+            "cast_in_diagonal": false
         }
     ]
 }

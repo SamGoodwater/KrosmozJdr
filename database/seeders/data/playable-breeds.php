@@ -116,12 +116,12 @@ return [
     ],
     [
         'name' => 'Eniripsa',
-        'passive' => 'Mot',
-        'identity' => 'En tant qu’Eniripsa, tu soignes, et chaque soin laisse un mot. Un jeton, pas un second DPS. On te cherche pour que les autres restent debout.',
-        'focus' => 'Soins, mots, soutien',
-        'characteristics' => 'Sagesse pour soigner. Intelligence (Feu) si le mot brûle. Chance (Eau) pour galvaniser.',
+        'passive' => 'Encouragement',
+        'identity' => 'En tant qu’Eniripsa, tu soignes, protèges et buffs : chaque geste encourage. Ton Lapino relaie, tes fées portent un sort plus loin. On te cherche pour que les autres restent debout.',
+        'focus' => 'Soins, mots, Lapino, fées',
+        'characteristics' => 'Sagesse pour soigner. Intelligence (Feu) si le mot brûle. Chance (Eau) pour protéger. Agilité (Air) pour accélérer.',
         'idealFor' => 'Dévot, Artiste, tout groupe qui n’a pas encore de soigneur.',
-        'difference' => 'L’Eniripsa n’est pas un Dévot. Tes mots soignent en d4, pas en miracles. Mot, c’est 1 PV temporaire, pas un second sort de feu au niveau 1.',
+        'difference' => 'L’Eniripsa n’est pas un Dévot. Tu soignes en d6/d8, tu encourages, tu ne fais pas de miracles. Encouragement, c’est un jeton de table, pas un second DPS.',
         'synergies' => [
             'Dévot' => 'Deux façons de relever : le mot et la prière.',
             'Iop' => 'Tu le ramènes, iel recharge.',

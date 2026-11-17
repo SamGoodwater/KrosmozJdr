@@ -723,7 +723,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 9,
+                    "required_creature_level": 7,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -796,7 +796,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 9,
+                    "required_creature_level": 7,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -826,7 +826,7 @@
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
+                    "required_creature_level": 14,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -901,7 +901,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 9,
+                    "required_creature_level": 7,
                     "effect": "",
                     "sub_effects": [
                         {

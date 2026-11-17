@@ -123,7 +123,8 @@
             ],
             "element": "air",
             "official_id": "jdr:cra:fleche-harcelante",
-            "attack_characteristic_key": "agi"
+            "attack_characteristic_key": "agi",
+            "cast_in_diagonal": false
         },
         {
             "key": "fleche-enflammee",
@@ -277,7 +278,8 @@
             ],
             "element": "fire",
             "dofusdb_id": "32447",
-            "attack_characteristic_key": "intel"
+            "attack_characteristic_key": "intel",
+            "cast_in_diagonal": false
         },
         {
             "key": "fleche-immobilisation",
@@ -447,7 +449,8 @@
             ],
             "element": "water",
             "dofusdb_id": "32436",
-            "attack_characteristic_key": "chance"
+            "attack_characteristic_key": "chance",
+            "cast_in_diagonal": false
         },
         {
             "key": "fleche-du-vagabond",
@@ -601,7 +604,8 @@
             ],
             "element": "earth",
             "official_id": "jdr:cra:fleche-du-vagabond",
-            "attack_characteristic_key": "strong"
+            "attack_characteristic_key": "strong",
+            "cast_in_diagonal": false
         },
         {
             "key": "fleche-evasive",
@@ -661,7 +665,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 9,
+                    "required_creature_level": 7,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -700,7 +704,8 @@
                 }
             ],
             "official_id": "jdr:cra:fleche-evasive",
-            "attack_characteristic_key": "agi"
+            "attack_characteristic_key": "agi",
+            "cast_in_diagonal": false
         },
         {
             "key": "tir-de-repli",
@@ -738,7 +743,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 9,
+                    "required_creature_level": 7,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -753,7 +758,8 @@
                     ]
                 }
             ],
-            "dofusdb_id": "32470"
+            "dofusdb_id": "32470",
+            "cast_in_diagonal": false
         },
         {
             "key": "tir-eloigne",
@@ -852,7 +858,8 @@
                 }
             ],
             "dofusdb_id": "32558",
-            "duration": "2 tours"
+            "duration": "2 tours",
+            "cast_in_diagonal": false
         },
         {
             "key": "tir-percant",
@@ -926,7 +933,8 @@
             ],
             "element": "earth",
             "dofusdb_id": "13080",
-            "duration": "2 tours"
+            "duration": "2 tours",
+            "cast_in_diagonal": false
         }
     ]
 }

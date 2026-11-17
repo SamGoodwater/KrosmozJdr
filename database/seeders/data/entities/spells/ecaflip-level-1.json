@@ -794,8 +794,8 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "auto_success",
-            "description": "Tu plies les jarrets. Tu te poses sur une case libre, ou tu donnes de l'allant à un·e allié·e. Tu ne traverses pas un mur.",
-            "effect": "Tu choisis. Soit tu sautes sur une case libre. Soit tu cibles un·e allié·e, qui gagne des PM jusqu'au début de ton prochain tour, et tu ne sautes pas. Une fois par tour. Pas de dégâts. Si ton mod. d'Agilité vaut au moins 3, le saut gagne une case, ou le bonus de PM gagne 1.",
+            "description": "Tu plies les jarrets et tu bondis sur la case adjacentes.",
+            "effect": "",
             "pa": "2",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -803,15 +803,12 @@
             "sight_line": false,
             "cast_in_line": false,
             "cast_in_diagonal": false,
-            "po_min": "1",
-            "po_max": "2",
-            "po_editable": true,
             "sub_effects": [
                 {
                     "slug": "déplacer",
                     "area": "point",
                     "params": {
-                        "cells_formula": "2",
+                        "cells_formula": "4",
                         "movement_kind": "jump",
                         "effect_direction": "action"
                     },
@@ -842,14 +839,14 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 9,
+                    "required_creature_level": 7,
                     "effect": "",
                     "sub_effects": [
                         {
                             "slug": "déplacer",
                             "area": "point",
                             "params": {
-                                "cells_formula": "3",
+                                "cells_formula": "4",
                                 "movement_kind": "jump",
                                 "effect_direction": "action"
                             },
@@ -877,7 +874,8 @@
                             "order": 2
                         }
                     ],
-                    "po_max": "3"
+                    "cast_per_turn": "2",
+                    "cast_per_target": "2"
                 }
             ]
         },
@@ -931,7 +929,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 10,
+                    "required_creature_level": 7,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -972,7 +970,7 @@
             "is_magic": false,
             "resolution_mode": "attack_roll",
             "description": "Tu croises une créature toute proche. Tu prends sa place, ou tu te poses sur une case libre à côté. Un·e allié·e se prête au pas. Un·e ennemi·e peut le refuser.",
-            "effect": "Tu choisis : échange de place, ou saut sur une case libre dans la portée. Une fois par tour. Pas de dégâts. Si ton mod. d'Agilité vaut au moins 3, la portée gagne une case.",
+            "effect": "Tu choisis : échange de place, ou saut sur une case libre dans la portée. Une fois par tour.",
             "pa": "2",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -1008,7 +1006,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 9,
+                    "required_creature_level": 7,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -1031,6 +1029,8 @@
                             "order": 1
                         }
                     ],
+                    "cast_per_turn": "2",
+                    "cast_per_target": "2",
                     "po_max": "3"
                 }
             ]
@@ -1098,7 +1098,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 10,
+                    "required_creature_level": 7,
                     "effect": "",
                     "sub_effects": [
                         {

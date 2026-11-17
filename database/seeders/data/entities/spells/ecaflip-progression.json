@@ -1655,12 +1655,12 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "saving_throw",
-            "description": "Tu souffles fort autour de toi. Les ennemi·e·s ont les bras lourds, et tes jambes répondent mieux. Au tour d'après, c'est l'inverse pour toi.",
-            "effect": "Les ennemi·e·s de la zone perdent des PA. Toi, tu gagnes des PM. Tu n'es pas entravé·e. Au début de ton prochain tour, tu perds ces PM et tu gagnes autant de PA. Une fois par tour, relance de 2 tours.",
+            "description": "Tu souffles fort autour de toi. Toutes les créatures, toi y comprit, ont les jambes lourdes, mais vos bras répondent mieux. Au tour d'après, c'est l'inverse.",
+            "effect": "Toutes les créatures de la Zone gagnent 2 PM mais perdent 3 PA, au tour d'après c'est l'inverse",
             "pa": "3",
             "cast_per_turn": "1",
             "cast_per_target": "1",
-            "number_between_two_cast": "2",
+            "number_between_two_cast": "3",
             "sight_line": false,
             "cast_in_line": false,
             "cast_in_diagonal": false,
@@ -1679,8 +1679,8 @@
                     "duration_formula": "1",
                     "params": {
                         "characteristic": "pa",
-                        "value": "1",
-                        "value_formula": "1",
+                        "value": "3",
+                        "value_formula": "3",
                         "effect_direction": "action",
                         "duration_formula": "1"
                     },
@@ -1692,52 +1692,36 @@
                     "duration_formula": "1",
                     "params": {
                         "characteristic": "pm",
-                        "value": "1",
-                        "value_formula": "1",
+                        "value": "2",
+                        "value_formula": "2",
                         "effect_direction": "self",
                         "duration_formula": "1"
                     },
                     "order": 1
                 },
                 {
-                    "slug": "retirer",
-                    "area": "point",
+                    "slug": "autre",
+                    "area": "rect-2x2",
                     "params": {
-                        "characteristic": "pm",
-                        "value": "1",
-                        "value_formula": "1",
-                        "effect_direction": "self",
-                        "trigger_turn": 1
+                        "value": "Toi sauf du retrait. Au tour suivant : perds les PM, gagne autant de PA."
                     },
                     "order": 2
-                },
-                {
-                    "slug": "booster",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "pa",
-                        "value": "1",
-                        "value_formula": "1",
-                        "effect_direction": "self",
-                        "trigger_turn": 1
-                    },
-                    "order": 3
                 }
             ],
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 10,
+                    "required_creature_level": 6,
                     "effect": "",
                     "sub_effects": [
                         {
                             "slug": "retirer",
-                            "area": "rect-2x2",
+                            "area": "rect-3x2",
                             "duration_formula": "1",
                             "params": {
                                 "characteristic": "pa",
-                                "value": "2",
-                                "value_formula": "2",
+                                "value": "3",
+                                "value_formula": "3",
                                 "effect_direction": "action",
                                 "duration_formula": "1"
                             },
@@ -1757,30 +1741,15 @@
                             "order": 1
                         },
                         {
-                            "slug": "retirer",
-                            "area": "point",
+                            "slug": "autre",
+                            "area": "rect-3x2",
                             "params": {
-                                "characteristic": "pm",
-                                "value": "2",
-                                "value_formula": "2",
-                                "effect_direction": "self",
-                                "trigger_turn": 1
+                                "value": "Toi sauf du retrait. Au tour suivant : perds les PM, gagne autant de PA."
                             },
                             "order": 2
-                        },
-                        {
-                            "slug": "booster",
-                            "area": "point",
-                            "params": {
-                                "characteristic": "pa",
-                                "value": "2",
-                                "value_formula": "2",
-                                "effect_direction": "self",
-                                "trigger_turn": 1
-                            },
-                            "order": 3
                         }
-                    ]
+                    ],
+                    "pa": "2"
                 }
             ]
         },
@@ -1847,7 +1816,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 11,
+                    "required_creature_level": 6,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -1900,13 +1869,13 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "auto_success",
-            "description": "Tu tires une carte au hasard. Elle tombe sur toi et sur tout le monde autour, pour le meilleur ou pour le pire.",
-            "effect": "Lance 1d4 pour la zone, allié·e·s, ennemi·e·s et toi compris. 1 : +1 PM. 2 : +1 PA. 3 : −1 PM. 4 : bouclier 1d4. L'effet dure jusqu'au début de ton prochain tour. Si ton mod. de Sagesse vaut au moins 3, tu peux relancer le dé une fois et garder le nouveau résultat. Relance de 3 tours. Ce dé n'est pas la pièce.",
+            "description": "Tu tires une carte au hasard, tu la lances à tes pieds : elle explose en une pluie d'étincelle, touchant toutes les créatures à moins de 45m, pour le meilleur ou pour le pire.",
+            "effect": "Lance 1d10. L'effet dure jusqu'au début de ton prochain tour. Si ton mod. de Sagesse vaut au moins 3, tu peux relancer le dé une fois et garder le nouveau résultat. Relance de 4 puis 3 tours.",
             "pa": "2",
             "cast_per_turn": "1",
             "cast_per_target": "1",
-            "number_between_two_cast": "3",
-            "sight_line": false,
+            "number_between_two_cast": "4",
+            "sight_line": true,
             "cast_in_line": false,
             "cast_in_diagonal": false,
             "po_min": "0",
@@ -1915,7 +1884,7 @@
             "sub_effects": [
                 {
                     "slug": "autre",
-                    "area": "rect-2x2",
+                    "area": "point",
                     "params": {
                         "value": "1d4 sur la zone (toi compris) : 1 +PM, 2 +PA, 3 −PM, 4 bouclier. Relance du dé si Sag ≥ 3."
                     },
@@ -1930,13 +1899,14 @@
                     "sub_effects": [
                         {
                             "slug": "autre",
-                            "area": "rect-2x2",
+                            "area": "point",
                             "params": {
                                 "value": "1d4 sur la zone (toi compris) : 1 +PM, 2 +PA, 3 −PM, 4 bouclier. Relance du dé si Sag ≥ 3."
                             },
                             "order": 0
                         }
-                    ]
+                    ],
+                    "number_between_two_cast": "3"
                 }
             ]
         },
@@ -1954,8 +1924,8 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "auto_success",
-            "description": "Tu siffles un chaton. Il reste le temps d'un court numéro, puis il file.",
-            "effect": "Invoque un Chaton d'Ecaflip sur une case libre. Il agit juste après toi. Le profil est dans la fiche Chaton d'Ecaflip. Relance de 4 tours.",
+            "description": "Tu siffles et ton chaton apparaît. C'est une invocation : la pièce décide s'il griffe, s'il soigne, ou les deux.",
+            "effect": "Effet Invoquer vers le monstre Chaton d'Ecaflip (`jdr:summon:ecaflip-chaton`, fiche Chaton-ecaflip). Ce lien ouvre sa fiche. L'invocation a ton niveau. Elle compte dans ton nombre d'invocations. Il agit juste après toi et tient **3 tours** (ou jusqu'à 0 PV). Relance de 4 tours.",
             "pa": "3",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -1984,54 +1954,7 @@
                     "order": 1
                 }
             ],
-            "intensification": [
-                {
-                    "tier": "I",
-                    "required_creature_level": 11,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "invoquer",
-                            "area": "point",
-                            "params": {
-                                "monster_official_id": "jdr:summon:ecaflip-chaton"
-                            },
-                            "order": 0
-                        },
-                        {
-                            "slug": "autre",
-                            "area": "point",
-                            "params": {
-                                "value": "Sans état : mêlé. Pile : enragé. Face : affectueux. Consommation (niv. 7+) : les deux au dé augmenté."
-                            },
-                            "order": 1
-                        }
-                    ]
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 17,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "invoquer",
-                            "area": "point",
-                            "params": {
-                                "monster_official_id": "jdr:summon:ecaflip-chaton"
-                            },
-                            "order": 0
-                        },
-                        {
-                            "slug": "autre",
-                            "area": "point",
-                            "params": {
-                                "value": "Sans état : mêlé. Pile : enragé. Face : affectueux. Consommation (niv. 7+) : les deux au dé augmenté."
-                            },
-                            "order": 1
-                        }
-                    ]
-                }
-            ]
+            "intensification": []
         },
         {
             "key": "roue-de-la-fortune",
@@ -2074,7 +1997,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 14,
+                    "required_creature_level": 11,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -2145,7 +2068,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 14,
+                    "required_creature_level": 11,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -2216,7 +2139,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 14,
+                    "required_creature_level": 13,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -2277,7 +2200,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 14,
+                    "required_creature_level": 13,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -2336,7 +2259,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 16,
+                    "required_creature_level": 17,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -2409,7 +2332,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 16,
+                    "required_creature_level": 17,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -2480,7 +2403,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 17,
+                    "required_creature_level": 20,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -2546,7 +2469,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 17,
+                    "required_creature_level": 20,
                     "effect": "",
                     "sub_effects": [
                         {

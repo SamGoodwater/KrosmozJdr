@@ -35,6 +35,7 @@ FILES = {
     "Cra.md": ["cra-level-1.json", "cra-progression.json"],
     "Iop.md": ["iop-level-1.json", "iop-progression.json"],
     "Ecaflip.md": ["ecaflip-level-1.json", "ecaflip-progression.json"],
+    "Eniripsa.md": ["eniripsa-level-1.json", "eniripsa-progression.json"],
 }
 ROMAN = ["I", "II", "III", "IV", "V", "VI"]
 TEXT_COLS = ("zone", "degat", "deplac", "protect", "debuff", "buff", "autres")
@@ -123,8 +124,14 @@ def parse_sheet(path: Path) -> list[dict]:
     while index < len(lines):
         raw = lines[index]
         heading = None
-        if re.match(r"^#{3,6}\s+Niv\s+\d+", raw) or re.match(r"^\*\*Variante\s+\d+", raw):
+        # Titres avec nom après « Niv N : » / « Variante N : », ou ligne **Nom** #tags
+        # (ex. Mot d'Amitié). On ignore « ##### Niv 1 — sort obligatoire » sans nom.
+        if re.match(r"^#{3,6}\s+Niv\s+\d+\s*:", raw) or re.match(r"^\*\*Variante\s+\d+", raw):
             heading = spell_name_from(raw)
+        elif re.match(r"^\*\*[^*]+\*\*", raw) and not re.match(r"^\*\*Variante\s+\d+", raw):
+            candidate = spell_name_from(raw)
+            if candidate and not re.match(r"^Niv\s+\d+", candidate, re.I):
+                heading = candidate
         if heading:
             current = {"name": heading, "resolution": "", "rows": []}
             spells.append(current)

@@ -1088,7 +1088,7 @@
   },
   {
     "name": "SpellEffectsJournal",
-    "description": "Progression des degrés d’un sort : effets du degré actif (+ onglets optionnels). Préfère `spellDegrees` (canal natif) ; repli sur `effects_definitions` legacy.",
+    "description": "Progression des degrés d’un sort : effets du degré actif (+ onglets optionnels). Préfère `spellDegrees` (canal natif) ; repli sur `effects_definitions` legacy. Groupe les lignes par tour de déclenchement quand au moins une est différée.",
     "props": [],
     "slots": [],
     "file": "entity/spell/SpellEffectsJournal.vue"

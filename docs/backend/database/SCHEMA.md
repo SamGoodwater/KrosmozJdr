@@ -566,7 +566,7 @@ erDiagram
     level : varchar(255)
     other_info : varchar(255)
     life : text
-    life_dice_total : int unsigned nullable
+    life_dice_total : int(10) unsigned
     pa : text
     pm : text
     po : text
@@ -1021,7 +1021,7 @@ erDiagram
     size : int(11)
     is_boss : tinyint(1)
     boss_pa : varchar(255)
-    life_formula : varchar(64) nullable
+    life_formula : varchar(64)
     monster_race_id : bigint(20) unsigned
     state : varchar(255)
     read_level : tinyint(4)

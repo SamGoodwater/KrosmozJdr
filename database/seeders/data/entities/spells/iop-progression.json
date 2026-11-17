@@ -57,7 +57,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 10,
+                    "required_creature_level": 6,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -140,7 +140,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 9,
+                    "required_creature_level": 6,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -168,7 +168,7 @@
                 },
                 {
                     "tier": "II",
-                    "required_creature_level": 16,
+                    "required_creature_level": 13,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -825,7 +825,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 14,
+                    "required_creature_level": 12,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -901,7 +901,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 14,
+                    "required_creature_level": 12,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -974,7 +974,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 14,
+                    "required_creature_level": 11,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -1053,7 +1053,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 14,
+                    "required_creature_level": 11,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -1582,7 +1582,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 16,
+                    "required_creature_level": 13,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -1643,7 +1643,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 16,
+                    "required_creature_level": 13,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -1717,38 +1717,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 15,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "booster",
-                            "area": "point",
-                            "duration_formula": "2",
-                            "params": {
-                                "characteristic": "dommages_spell",
-                                "value": "1d6",
-                                "value_formula": "1d6",
-                                "effect_direction": "self",
-                                "duration_formula": "2",
-                                "dice_formula": "1d6"
-                            },
-                            "order": 0
-                        },
-                        {
-                            "slug": "autre",
-                            "area": "point",
-                            "params": {
-                                "value": "Seulement sur tes sorts de Terre.",
-                                "duration_formula": "2"
-                            },
-                            "duration_formula": "2",
-                            "order": 1
-                        }
-                    ]
-                },
-                {
-                    "tier": "II",
-                    "required_creature_level": 20,
+                    "required_creature_level": 17,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -1895,7 +1864,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 17,
+                    "required_creature_level": 20,
                     "effect": "",
                     "sub_effects": [
                         {
@@ -1941,7 +1910,7 @@
             "is_magic": false,
             "resolution_mode": "auto_success",
             "description": "Tu plantes ton étendard et tu invoques un Stratège Iop. Il ne frappe pas : les allié·e·s à son contact subissent moins de dommages.",
-            "effect": "Invoque un Stratège Iop sur une case libre. Les allié·e·s à son contact subissent moins de dégâts. Relance de 4 tours.",
+            "effect": "Invoque un Stratège Iop sur une case libre. L'invocation a ton niveau. Il ne frappe pas. Les allié·e·s à son contact subissent moins de dégâts. Relance de 4 tours.",
             "pa": "3",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -1973,7 +1942,7 @@
             "intensification": [
                 {
                     "tier": "I",
-                    "required_creature_level": 17,
+                    "required_creature_level": 20,
                     "effect": "",
                     "sub_effects": [
                         {
