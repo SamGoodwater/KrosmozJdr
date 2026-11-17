@@ -14,7 +14,7 @@ Conventions appliquées au projet.
 
 - Backend : validation via Form Requests, policies pour les droits, services pour la logique métier.
 - Frontend : Composition API, composants Atomic Design, pas de classes Tailwind dynamiques. Lint JS/Vue : ESLint 10 (`eslint.config.js`, `pnpm lint` sur un sous-ensemble de fichiers).
-- Sécurité : valider les entrées, ne pas versionner `.env`, garder les actions admin sous confirmation de mot de passe si sensibles. Les CVE transitives Node se corrigent via `pnpm.overrides` dans `package.json` (ex. `undici` 6.28.0, `qs` 6.16.0 pour les CVE GHSA-x5fp-wj9c-mxmx / GHSA-4mjr-xmp4-gh2g via Inertia, `brace-expansion` 1.1.18 / 2.1.4 / 5.0.9 pour CVE-2026-13149) plutôt qu’en patchant le code applicatif. Dependabot versionne npm, Composer et GitHub Actions via `.github/dependabot.yml` (weekly ; npm groupé minor/patch ; Composer sans groupe pour éviter de mélanger le lockfile ; un bump majeur de Vitest ou des Actions se fait à part).
+- Sécurité : valider les entrées, ne pas versionner `.env`, garder les actions admin sous confirmation de mot de passe si sensibles. Les CVE transitives Node se corrigent via `pnpm.overrides` dans `package.json` (ex. `undici` 6.28.0, `qs` 6.16.0 pour les CVE GHSA-x5fp-wj9c-mxmx / GHSA-4mjr-xmp4-gh2g via Inertia, `brace-expansion` 1.1.18 / 2.1.4 / 5.0.12 pour CVE-2026-13149) plutôt qu’en patchant le code applicatif. `glob` (script d’index Atomic Design) est en `^14.0.6` pour GHSA-3g3m-2fjr-6pw4 et GHSA-qxr8-q827-836c. Dependabot versionne npm, Composer et GitHub Actions via `.github/dependabot.yml` (weekly ; npm groupé minor/patch ; Composer sans groupe pour éviter de mélanger le lockfile ; un bump majeur de Vitest ou des Actions se fait à part).
 
 ## Git et GitHub
 

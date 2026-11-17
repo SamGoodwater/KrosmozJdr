@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Index des composants d’interface plus sûr
+
+L’outil qui dresse la liste des Atoms, Molecules et Organismes utilise une version plus récente de sa bibliothèque de fichiers, sans changer le rendu du site.
+
 ## Novembre 2026 — Calculateur de dés de vie
 
 En édition PNJ ou monstre, on lance les dés de vie (relance des 1) ou on applique la méthode stable, puis on enregistre la part des dés. Les PV affichés = part des dés + max(0, mod. Vitalité) × niveau + équipement. Les classes ont leur `life_dice` en seed ; un monstre peut porter sa propre formule de gain.
