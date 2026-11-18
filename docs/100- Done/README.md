@@ -1,5 +1,9 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Outils alignés sur les derniers correctifs
+
+Le site est calé sur PHP 8.5, la version qui sera en place au moment de la publication. Node, pnpm et Composer utilisés pour le développer sont montés sur leurs derniers correctifs de sécurité. La base MariaDB du poste reste sur le dernier paquet Debian : le correctif suivant n’est pas encore dans les dépôts officiels.
+
 ## Novembre 2026 — Calculateur de dés de vie
 
 En édition PNJ ou monstre, on lance les dés de vie (relance des 1) ou on applique la méthode stable, puis on enregistre la part des dés. Les PV affichés = part des dés + max(0, mod. Vitalité) × niveau + équipement. Les classes ont leur `life_dice` en seed ; un monstre peut porter sa propre formule de gain.

@@ -8,7 +8,7 @@ Scan secrets avant push : `git config core.hooksPath .githooks` puis `pnpm run s
 
 ## Cursor Cloud specific instructions
 
-Contexte : KrosmozJDR est une application web monolithique **Laravel 13 / PHP 8.4** (backend + API hybride Inertia)
+Contexte : KrosmozJDR est une application web monolithique **Laravel 13 / PHP 8.5** (backend + API hybride Inertia)
 et **Vue 3 / Inertia / Vite** (frontend, JS, Atomic Design). Base de données relationnelle, sessions et queue
 stockées en base. Détails stack : `docs/_ai.md`, `docs/project/README.md`.
 
@@ -60,7 +60,7 @@ Créés par `UserSeeder` (mot de passe : `password`) : `superadmin@test.fr` (rô
 
 ### Node.js (obligatoire ≥ 22)
 
-- `package.json` `engines.node` : `>=22`. Fichiers pin : `.nvmrc` / `.node-version` (`22` / `22.23.3`).
+- `package.json` `engines.node` : `>=22`. Fichiers pin : `.nvmrc` / `.node-version` (`22` / `22.23.5`). pnpm épinglé : `10.34.9` (`packageManager`).
 - Sous WSL/Cloud : `fnm use` (ou `nvm use`) avant `pnpm`. Node 18 casse ESLint (`util.styleText`) et Vitest/jsdom.
 - Ex. : `eval "$(fnm env)" && fnm use` puis `pnpm lint` / `pnpm test:run`.
 

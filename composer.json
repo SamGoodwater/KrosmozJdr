@@ -9,7 +9,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.4",
+        "php": "^8.5",
         "barryvdh/laravel-dompdf": "^3.1",
         "calcinai/php-imagick": "^0.1.2",
         "inertiajs/inertia-laravel": "^3.0",

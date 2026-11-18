@@ -1,6 +1,6 @@
 # Backend — IA
 
-> Laravel 13 / PHP 8.4, monolithe classique sous `app/`.
+> Laravel 13 / PHP 8.5, monolithe classique sous `app/`.
 
 ## Quand lire
 
