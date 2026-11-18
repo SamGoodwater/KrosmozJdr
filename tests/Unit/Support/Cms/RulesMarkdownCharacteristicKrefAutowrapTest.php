@@ -32,17 +32,15 @@ class RulesMarkdownCharacteristicKrefAutowrapTest extends TestCase
     }
 
     /**
-     * Les cellules GFM sans espace après le pipe (`|Force|`) ne doivent pas bloquer la conversion
-     * (régression : un lookbehind sur {@code |} était inutile une fois les shortcodes kref masqués).
+     * Un tableau GFM est laissé tel quel : « Force » dans une cellule n’est pas une caractéristique
+     * (le catalogue masque les tableaux avant le remplacement des libellés).
      */
-    public function test_wraps_characteristics_in_markdown_table_cells_after_pipe(): void
+    public function test_leaves_markdown_table_cells_unwrapped(): void
     {
         $md = "| Carac | Mod |\n|-------|-----|\n|Force|+2|\n|Agilité|+1|\n|Intelligence|0|\n|Sagesse|-1|";
         $out = RulesMarkdownCharacteristicKrefAutowrap::apply($md);
-        $this->assertStringContainsString('[[kref:characteristic:strength_creature|Force]]', $out);
-        $this->assertStringContainsString('[[kref:characteristic:agility_creature|Agilité]]', $out);
-        $this->assertStringContainsString('[[kref:characteristic:intelligence_creature|Intelligence]]', $out);
-        $this->assertStringContainsString('[[kref:characteristic:wisdom_creature|Sagesse]]', $out);
+        $this->assertSame($md, $out);
+        $this->assertStringNotContainsString('[[kref:', $out);
     }
 
     public function test_wraps_modifier_and_save_phrases(): void

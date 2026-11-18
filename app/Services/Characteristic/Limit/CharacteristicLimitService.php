@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Characteristic\Limit;
 
-use App\Services\Characteristic\Getter\CharacteristicGetterService;
+use App\Contracts\Characteristic\CharacteristicDefinitionLookup;
 
 /**
  * Service limite : valide une valeur ou un ensemble de champs selon le type de caractéristique
@@ -23,7 +23,7 @@ final class CharacteristicLimitService
     private const NUMERIC_TYPES = ['string', 'int', 'integer'];
 
     public function __construct(
-        private readonly CharacteristicGetterService $getter
+        private readonly CharacteristicDefinitionLookup $getter
     ) {}
 
     /**

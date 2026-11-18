@@ -56,6 +56,11 @@ final class NpcStatGabaritTest extends TestCase
             {
                 return ['norms_grid' => $this->grids[$key] ?? null];
             }
+
+            public function getLimits(string $characteristicKey, string $entity, array $variables = []): ?array
+            {
+                return null;
+            }
         };
 
         $this->gabarit = new NpcStatGabarit($getter, new NormsResolver);

@@ -52,6 +52,11 @@ final class SpellActionBudgetServiceTest extends TestCase
             {
                 return ['norms_grid' => $this->grids[$key] ?? null];
             }
+
+            public function getLimits(string $characteristicKey, string $entity, array $variables = []): ?array
+            {
+                return null;
+            }
         };
 
         $this->service = new SpellActionBudgetService($getter);

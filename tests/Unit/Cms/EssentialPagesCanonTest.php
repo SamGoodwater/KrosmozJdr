@@ -71,7 +71,7 @@ final class EssentialPagesCanonTest extends TestCase
     {
         $html = $this->flattenHtml($this->pages['sante-etats']);
 
-        $this->assertStringContainsString('max du dé de classe', $html);
+        $this->assertStringContainsString('max du dé de vie (d6 à d12 selon la classe)', $html);
         $this->assertStringContainsString('mod. Vitalité × niveau', $html);
         $this->assertStringNotContainsString('Vitalité × 10', $html);
         $this->assertStringNotContainsString('classe + niveau +', $html);
