@@ -32,7 +32,8 @@ use RecursiveIteratorIterator;
  *
  * Contenu des sections : synchro sûre ({@see SectionContentSync}). Une section inchangée depuis
  * son dernier import suit le .md ; une section modifiée dans le CMS est signalée et conservée,
- * sauf `--accept=<numéros>` ou `--force-content`.
+ * sauf `--accept=<numéros>` ou `--force-content`. L’identité est le numéro TOC : un libellé
+ * renommé met à jour le slug au lieu de créer une section neuve et d’en purger l’ancienne.
  */
 class PagesImportRulesTocCommand extends Command
 {
@@ -59,6 +60,9 @@ class PagesImportRulesTocCommand extends Command
 
     /** @var array<string, list<string>> Slugs de sections par résultat de synchro (create, same, update, conflict, forced). */
     private array $syncReport = [];
+
+    /** @var list<int> Sections déjà rattachées sur la page courante (évite de réutiliser un chunk). */
+    private array $claimedSectionIds = [];
 
     private ?RulesTocSlugIndex $rulesTocSlugIndex = null;
 
@@ -114,6 +118,7 @@ class PagesImportRulesTocCommand extends Command
 
                     $expectedSectionSlugs = [];
                     $pageSectionOrder = 0;
+                    $this->claimedSectionIds = [];
                     foreach ($level2['sections'] as $level3) {
                         foreach ($this->upsertLevel3Sections($level3, (int) $child->id, $creatorId, $pageSectionOrder) as $slug) {
                             $expectedSectionSlugs[] = $slug;
@@ -262,6 +267,14 @@ class PagesImportRulesTocCommand extends Command
             ->where('slug', $slug)
             ->first();
 
+        if ($existing === null) {
+            $existing = $this->findSectionByTocNumber($pageId, $level3Number);
+        }
+
+        if ($existing !== null) {
+            $this->claimedSectionIds[] = (int) $existing->id;
+        }
+
         $textSettings = [
             'align' => 'left',
             'size' => 'md',
@@ -318,7 +331,37 @@ class PagesImportRulesTocCommand extends Command
         $attributes['params'] = SectionContentSync::stamp([], $content);
         $this->syncReport[SectionContentSync::CREATE][] = $level3Number.' '.$slug;
 
-        return Section::create($attributes);
+        $created = Section::create($attributes);
+        $this->claimedSectionIds[] = (int) $created->id;
+
+        return $created;
+    }
+
+    /**
+     * Retrouve la section du même numéro TOC si le libellé (donc le slug) a changé.
+     *
+     * Sans ça, l’import crée une section neuve et {@see purgeOrphanSectionsOnPage()}
+     * soft-delete l’ancienne — y compris une édition CMS que {@see SectionContentSync}
+     * aurait dû conserver.
+     */
+    private function findSectionByTocNumber(int $pageId, string $number): ?Section
+    {
+        $claimed = $this->claimedSectionIds;
+
+        return Section::withTrashed()
+            ->where('page_id', $pageId)
+            ->where(function ($query): void {
+                $query->where('template', SectionType::TEXT->value)
+                    ->orWhere('type', SectionType::TEXT->value);
+            })
+            ->when($claimed !== [], fn ($query) => $query->whereNotIn('id', $claimed))
+            ->orderByRaw('deleted_at IS NULL DESC')
+            ->orderBy('order')
+            ->get()
+            ->first(fn (Section $section): bool => RulesImportSlugHelper::sectionSlugMatchesNumber(
+                (string) $section->slug,
+                $number,
+            ));
     }
 
     /**
