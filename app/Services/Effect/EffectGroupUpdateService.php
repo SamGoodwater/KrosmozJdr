@@ -7,6 +7,7 @@ namespace App\Services\Effect;
 use App\Models\Effect;
 use App\Models\EffectDegree;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
+use App\Support\Spell\EffectConditionParams;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -68,8 +69,10 @@ final class EffectGroupUpdateService
     {
         foreach ($rows as $i => $row) {
             $params = $row['params'] ?? [];
-            if (array_key_exists('monster_id', $params) && $params['monster_id'] === '') {
-                $rows[$i]['params']['monster_id'] = null;
+            foreach (['monster_id', 'creature_id'] as $idKey) {
+                if (array_key_exists($idKey, $params) && $params[$idKey] === '') {
+                    $rows[$i]['params'][$idKey] = null;
+                }
             }
         }
 
@@ -88,6 +91,9 @@ final class EffectGroupUpdateService
             }
             if ($params && ! empty($params['cells_formula'])) {
                 $params['cells_formula'] = $sanitizer->sanitize($params['cells_formula']);
+            }
+            if (is_array($params)) {
+                $params = EffectConditionParams::sanitizeParams($params);
             }
             $durationFormula = $row['duration_formula'] ?? null;
             if ($durationFormula) {
