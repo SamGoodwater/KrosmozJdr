@@ -44,7 +44,7 @@ class EffectSpellAttachmentController extends Controller
             ]);
 
             /** @var list<array<string, mixed>> $initialSubs */
-            $initialSubs = $request->input('initial_sub_effects', []) ?: [];
+            $initialSubs = $request->validated('initial_sub_effects') ?? [];
             if ($initialSubs !== []) {
                 $updater->syncSubEffects($degree, $initialSubs);
             }

@@ -47,8 +47,11 @@
     au lancer ; 1 = début du tour n+1 du lanceur ; durée part du déclenchement ; pas de
     nouveau jet ; 0 omis en base), `conditions` (left/op/right + join AND/OR),
     `value_rules` (`replace`|`add`|`subtract`). Placeholders : `[clé]` / `[clé:caster]` =
-    lanceur, `[clé:target]` = cible (ancienne forme `[caster:clé]` encore lue). UI
-    `EffectConditionList` / `EffectValueRulesEditor` (brouillon local, lignes vides OK) ;
+    lanceur, `[clé:target]` = cible (ancienne forme `[caster:clé]` encore lue).
+    Même `params` côté legacy : `UpdateEffectGroupRequest` / `CreateSpellEffectRequest`
+    réutilisent `SpellDegreeEffectParamsRules` (`validated()` conserve conditions /
+    trigger_turn / creature_id). UI `EffectConditionList` / `EffectValueRulesEditor`
+    (brouillon local, lignes vides OK) ;
     `FormulaExpressionInput` liste au focus. Champ « Déclenchement » dans
     `SpellEffectEditorRow`. Affichage « Si … : », pastille applies_to, « jusqu’à »,
     règles ; Full (`SpellEffectsJournal`) groupe par tour ; Minimal/Line badge

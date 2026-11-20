@@ -26,6 +26,11 @@ Le système d'effets décrit les effets de sorts et d'objets : degrés, effets (
   `value_formula_crit` ; durée (`duration_formula`) ; portée de jeu (`scope`) au même niveau.
 - Une invocation manuelle stocke `params.creature_id`. `params.monster_id` reste lu pour la
   compatibilité avec les imports et données antérieures.
+- Conditions, tour de déclenchement, `applies_to`, `value_rules` et `creature_id` sont
+  validés sur le canal natif **et** sur le groupe d’effets legacy
+  (`UpdateEffectGroupRequest`, `CreateSpellEffectRequest` via `SpellDegreeEffectParamsRules`).
+  Un enregistrement admin / « Définitions liées » recrée les sous-effets : omettre ces clés
+  dans `validated()` les efface.
 - Scraping : après intégration legacy, miroir via `rebuildFromLegacy`.
 - Canal affichage préféré : `spell_degrees` ; `effects_definitions` reste en repli legacy.
 
