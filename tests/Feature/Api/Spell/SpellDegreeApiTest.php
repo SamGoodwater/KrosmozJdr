@@ -146,6 +146,92 @@ final class SpellDegreeApiTest extends TestCase
         $this->assertSame('3d6', $bulk->json('data.degrees.0.rows.0.params.value_formula_crit'));
     }
 
+    public function test_sync_bulk_preserves_seeded_params_value_and_effect_direction(): void
+    {
+        $gm = User::factory()->createOne(['role' => User::ROLE_GAME_MASTER]);
+        $spell = Spell::factory()->create(['created_by' => $gm->id, 'write_level' => 0, 'pa' => '3']);
+        $hit = SubEffect::query()->create([
+            'slug' => 'frapper-params-'.uniqid(),
+            'type_slug' => 'frapper',
+            'template_text' => 'Dégâts [value].',
+            'variables_allowed' => ['value'],
+            'param_schema' => [],
+        ]);
+        $other = SubEffect::query()->create([
+            'slug' => 'autre-params-'.uniqid(),
+            'type_slug' => 'autre',
+            'template_text' => '[value]',
+            'variables_allowed' => ['value'],
+            'param_schema' => [],
+        ]);
+
+        $first = $this->actingAs($gm)->postJson("/api/spells/{$spell->id}/degrees", [
+            'required_level' => 1,
+            'inherits_effects' => false,
+            'pa' => '3',
+            'area' => 'point',
+            'effects' => [
+                [
+                    'sub_effect_id' => $hit->id,
+                    'params' => [
+                        'characteristic' => 'earth',
+                        'value' => '1d6+Force',
+                        'value_formula' => '1d6+[strong]',
+                        'dice_formula' => '1d6+[strong]',
+                        'effect_direction' => 'action',
+                        'dofus_element_id' => 0,
+                    ],
+                ],
+                [
+                    'sub_effect_id' => $other->id,
+                    'params' => [
+                        'value' => 'Indéplaçable.',
+                    ],
+                ],
+            ],
+        ]);
+        $first->assertCreated();
+        $degreeId = (int) $first->json('degree_id');
+        $this->assertSame('1d6+Force', $first->json('data.degrees.0.rows.0.params.value'));
+        $this->assertSame('Indéplaçable.', $first->json('data.degrees.0.rows.1.params.value'));
+
+        $bulk = $this->actingAs($gm)->putJson("/api/spells/{$spell->id}/degrees", [
+            'degrees' => [[
+                'id' => $degreeId,
+                'required_level' => 1,
+                'inherits_effects' => false,
+                'pa' => '4',
+                'effects' => [
+                    [
+                        'sub_effect_id' => $hit->id,
+                        'params' => [
+                            'characteristic' => 'earth',
+                            'value' => '1d6+Force',
+                            'value_formula' => '1d6+[strong]',
+                            'dice_formula' => '1d6+[strong]',
+                            'effect_direction' => 'action',
+                            'dofus_element_id' => 0,
+                        ],
+                    ],
+                    [
+                        'sub_effect_id' => $other->id,
+                        'params' => [
+                            'value' => 'Indéplaçable.',
+                        ],
+                    ],
+                ],
+            ]],
+        ]);
+        $bulk->assertOk();
+        $this->assertSame('4', $bulk->json('data.degrees.0.properties.pa'));
+        $this->assertSame('1d6+Force', $bulk->json('data.degrees.0.rows.0.params.value'));
+        $this->assertSame('1d6+[strong]', $bulk->json('data.degrees.0.rows.0.params.value_formula'));
+        $this->assertSame('1d6+[strong]', $bulk->json('data.degrees.0.rows.0.params.dice_formula'));
+        $this->assertSame('action', $bulk->json('data.degrees.0.rows.0.params.effect_direction'));
+        $this->assertSame(0, $bulk->json('data.degrees.0.rows.0.params.dofus_element_id'));
+        $this->assertSame('Indéplaçable.', $bulk->json('data.degrees.0.rows.1.params.value'));
+    }
+
     public function test_sync_bulk_persists_trigger_turn_and_rejects_out_of_range(): void
     {
         $gm = User::factory()->createOne(['role' => User::ROLE_GAME_MASTER]);
