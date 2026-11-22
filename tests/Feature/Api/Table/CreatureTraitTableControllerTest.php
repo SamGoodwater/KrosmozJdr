@@ -172,6 +172,43 @@ class CreatureTraitTableControllerTest extends TestCase
         $this->assertNotContains('Trait brouillon', $names);
     }
 
+    public function test_character_and_level_filters_narrow_the_library(): void
+    {
+        $user = User::factory()->create();
+        CreatureTrait::factory()->create([
+            'name' => 'Pour personnages',
+            'available_for_characters' => true,
+            'level' => 4,
+            'state' => CreatureTrait::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'created_by' => $user->id,
+        ]);
+        CreatureTrait::factory()->create([
+            'name' => 'Pour monstres',
+            'available_for_characters' => false,
+            'level' => 16,
+            'state' => CreatureTrait::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'created_by' => $user->id,
+        ]);
+
+        $characters = $this->actingAs($user)
+            ->getJson('/api/tables/creature-traits?format=entities&limit=25&filters[available_for_characters]=1');
+        $characters->assertOk();
+        $names = array_column($characters->json('entities'), 'name');
+        $this->assertContains('Pour personnages', $names);
+        $this->assertNotContains('Pour monstres', $names);
+        $this->assertArrayHasKey('level', $characters->json('entities.0'));
+        $this->assertArrayHasKey('available_for_characters', $characters->json('entities.0'));
+
+        $high = $this->actingAs($user)
+            ->getJson('/api/tables/creature-traits?format=entities&limit=25&filters[level][min]=12&filters[level][max]=20');
+        $high->assertOk();
+        $highNames = array_column($high->json('entities'), 'name');
+        $this->assertContains('Pour monstres', $highNames);
+        $this->assertNotContains('Pour personnages', $highNames);
+    }
+
     /**
      * Test : Le format `entities` gère la pagination/limite
      */

@@ -548,6 +548,8 @@ erDiagram
     id : bigint(20) unsigned
     name : varchar(255)
     description : text
+    level : tinyint(3) unsigned
+    available_for_characters : tinyint(1)
     state : varchar(255)
     read_level : tinyint(4)
     write_level : tinyint(4)

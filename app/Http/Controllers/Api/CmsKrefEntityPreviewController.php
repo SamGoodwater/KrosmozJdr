@@ -50,7 +50,12 @@ class CmsKrefEntityPreviewController extends Controller
         $imageUrl = $image !== null && trim((string) $image) !== '' ? (string) $image : null;
 
         $meta = [];
+        $element = null;
         if ($entityType === 'spells') {
+            $rawElement = $model->getAttribute('element');
+            if ($rawElement !== null && $rawElement !== '') {
+                $element = is_numeric($rawElement) ? (int) $rawElement : $rawElement;
+            }
             $level = $model->getAttribute('level');
             if ($level !== null && $level !== '') {
                 $meta[] = 'Niveau '.(string) $level;
@@ -87,6 +92,7 @@ class CmsKrefEntityPreviewController extends Controller
             'entityType' => $entityType,
             'name' => $name,
             'image' => $imageUrl,
+            'element' => $element,
             'meta' => array_values(array_filter($meta, static fn ($v) => is_string($v) && $v !== '')),
         ];
     }

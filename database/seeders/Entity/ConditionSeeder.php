@@ -15,7 +15,7 @@ class ConditionSeeder extends Seeder
         $conditions = [
             [
                 'name' => 'Pesanteur',
-                'description' => 'La créature ne peut pas se téléporter ou être téléportée',
+                'description' => 'Tu ne peux pas te téléporter, ni être téléporté·e.',
                 'image' => 'https://api.dofusdb.fr/img/states/stateImmobilization.png',
                 'cant_be_moved' => true,
                 'cant_be_pushed' => true,
@@ -23,29 +23,29 @@ class ConditionSeeder extends Seeder
             ],
             [
                 'name' => 'Empoisonné',
-                'description' => 'Une créature empoisonnée a un désavantage aux jets d\'attaque et aux jets de caractéristique. Elle peut également subir des dégâts en fonction de la source du poison.',
+                'description' => 'Tes jets d’attaque et tes jets de caractéristique ont un désavantage. Tu peux aussi subir des dégâts, selon la source du poison.',
                 'image' => '/storage/images/icons/states/empoisonne.png',
             ],
             [
                 'name' => 'Étourdi',
-                'description' => "Une créature étourdie est incapable d'agir (PA = 0 quelque soit ces bonus), ne peut plus bouger (PM=0 quelque soit ces bonus) et parle de manière hésitante.\nLa créature rate automatiquement ses jets de sauvegarde de Force et de Dextérité.\nLes jets d'attaque contre la créature ont un avantage.",
+                'description' => "Tu es incapable d’agir : tes PA passent à 0, quels que soient tes bonus. Tu ne bouges plus : tes PM passent à 0, quels que soient tes bonus. Tu parles de façon hésitante.\nTu rates automatiquement tes jets de sauvegarde de Force et de Dextérité.\nLes jets d’attaque contre toi ont un avantage.",
                 'image' => '/storage/images/icons/states/etourdi.png',
                 'prevents_spell_cast' => true,
                 'prevents_fight' => true,
             ],
             [
                 'name' => 'Ralenti',
-                'description' => 'La créature voit ces PM divisé par 2. Hors combat la cible ne peut pas courir.',
+                'description' => 'Tes PM sont divisés par 2. Hors combat, tu ne peux pas courir.',
                 'image' => '/storage/images/icons/states/ralenti.png',
             ],
             [
                 'name' => 'Affaibli',
-                'description' => 'La créature voit ces dommages divisé par 2. De plus elle se déplace 2 fois moins vite (hors combat).',
+                'description' => 'Tes dégâts sont divisés par 2. Hors combat, tu te déplaces deux fois moins vite.',
                 'image' => 'https://api.dofusdb.fr/img/states/stateWeakened.png',
             ],
             [
                 'name' => 'Aveuglé',
-                'description' => "Une créature aveuglée ne voit pas et rate automatiquement tout jet de caractéristique qui nécessite la vue.\nLes jets d'attaque contre la créature ont un avantage, et les jets d'attaque de la créature ont un désavantage.",
+                'description' => "Tu ne vois plus. Tu rates automatiquement tout jet de caractéristique qui a besoin de la vue.\nLes jets d’attaque contre toi ont un avantage. Les tiens ont un désavantage.",
                 'image' => '/storage/images/icons/states/aveugle.png',
                 'write_level' => User::ROLE_GAME_MASTER,
             ],

@@ -25,6 +25,8 @@ class CreatureTraitResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
+            'level' => $this->level !== null ? (int) $this->level : null,
+            'available_for_characters' => (bool) ($this->available_for_characters ?? false),
             'state' => $this->state,
             'read_level' => (int) ($this->read_level ?? 0),
             'write_level' => (int) ($this->write_level ?? 0),

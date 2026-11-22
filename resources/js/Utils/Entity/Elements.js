@@ -226,6 +226,31 @@ export function getElementColor(primaryIndex) {
 }
 
 /**
+ * Fond très léger pour une puce inline de sort (kref / vue texte).
+ * Neutre / hors élément → violet sort très pâle ; sinon teinte de l’élément.
+ *
+ * @param {unknown} elementRaw — masque / code élément du sort
+ * @returns {Record<string, string>}
+ *
+ * @example
+ * getSpellInlineChipSurfaceStyle(8) // Air
+ */
+export function getSpellInlineChipSurfaceStyle(elementRaw) {
+  const primaries = getElementPrimaries(elementRaw);
+  const isGeneral =
+    primaries.length === 0 || (primaries.length === 1 && Number(primaries[0]) === 0);
+  const cssVar = isGeneral
+    ? "var(--color-spell-500)"
+    : ELEMENT_PRIMARY_CSS_VARS[Number(primaries[0])] ?? "var(--color-spell-500)";
+  return {
+    backgroundColor: `color-mix(in oklch, ${cssVar} 14%, transparent)`,
+    borderColor: `color-mix(in oklch, ${cssVar} 28%, transparent)`,
+    color: "inherit",
+    "--spell-chip-hover-bg": `color-mix(in oklch, ${cssVar} 28%, transparent)`,
+  };
+}
+
+/**
  * Style lisible pour un libellé d’élément sur fond sombre (résolution de sort).
  * Fond teinté + texte éclairci (color-mix vers blanc), pas le token *-600 trop sombre.
  *

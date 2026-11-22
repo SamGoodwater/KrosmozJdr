@@ -99,7 +99,7 @@ final class ClassSummonSeederImporter
 
         $spell->fill([
             'name' => $action['name'],
-            'description' => 'Action de l’invocation « '.$entry['name'].' ».',
+            'description' => $entry['name'].' utilise '.$action['name'].'.',
             'effect' => $effectText,
             'level' => (string) $entry['character_level'],
             'pa' => '3',

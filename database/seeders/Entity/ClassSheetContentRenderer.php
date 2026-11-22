@@ -7,16 +7,10 @@ namespace Database\Seeders\Entity;
 use App\Support\Cms\RulesCharacteristicKrefReplacementCatalog;
 
 /**
- * Transforme une fiche classe rédigée en une section CMS de présentation.
+ * Transforme une fiche classe rédigée en sections CMS.
  *
- * Le passif, les voies et les sorts restent sur {@see BreedViewFull} ;
- * ce texte raconte comment on joue la classe.
- *
- * Gabarit validé : clé `presentation` (quelques paragraphes simples, sans intertitres).
- * Ancien gabarit, tant qu’une fiche n’est pas réécrite : `identity` + Repères,
- * « Ce que cette classe n’est pas » et Synergies.
- *
- * @example (new ClassSheetContentRenderer)->sections(['name' => 'Iop', 'passive' => 'Tête brûlée', 'presentation' => ['…']]);
+ * Mode enveloppe (`class_progression`) : Texte + tableau récap + une section par niveau.
+ * Ancien gabarit : une seule section Texte.
  */
 final class ClassSheetContentRenderer
 {
@@ -27,21 +21,175 @@ final class ClassSheetContentRenderer
     public function sections(array $sheet): array
     {
         $passive = trim((string) ($sheet['passive'] ?? ''));
+        $progression = $sheet['class_progression'] ?? null;
 
-        return [
+        if (! is_array($progression) || $progression === []) {
+            return [
+                [
+                    'title' => 'Texte',
+                    'level' => 1,
+                    'content' => $this->legacyPresentationHtml($sheet),
+                    'capabilities' => $passive !== '' ? [$passive] : [],
+                ],
+            ];
+        }
+
+        $sections = [
             [
                 'title' => 'Texte',
                 'level' => 1,
-                'content' => $this->presentationHtml($sheet),
+                'content' => $this->introHtml($sheet, $progression),
                 'capabilities' => $passive !== '' ? [$passive] : [],
             ],
         ];
+
+        $levels = $progression['levels'] ?? [];
+        if (! is_array($levels)) {
+            return $sections;
+        }
+
+        foreach ($levels as $level => $levelData) {
+            if (! is_array($levelData)) {
+                continue;
+            }
+            $level = (int) $level;
+            $sections[] = [
+                'title' => 'Niveau '.$level,
+                'level' => max(1, $level),
+                'content' => $this->levelHtml($level, $levelData, $progression),
+            ];
+        }
+
+        return $sections;
+    }
+
+    /**
+     * @param  array<string, mixed>  $sheet
+     * @param  array<string, mixed>  $progression
+     */
+    private function introHtml(array $sheet, array $progression): string
+    {
+        $parts = [];
+
+        $presentation = $sheet['presentation'] ?? null;
+        if (is_array($presentation)) {
+            foreach ($presentation as $text) {
+                $text = trim((string) $text);
+                if ($text !== '') {
+                    $parts[] = '<p>'.$this->richText($text).'</p>';
+                }
+            }
+        }
+
+        // Le tableau de progression est rendu en Vue (`BreedProgressionRecap`) sur la fiche classe.
+        $parts[] = '<p><em>N’oublie pas les gains de ta spécialisation aux paliers 1, 3, 6, 9, 12, 15 et 20 — ils sont sur sa fiche, pas ici.</em></p>';
+
+        return implode('', $parts);
+    }
+
+    /**
+     * @param  array<string, mixed>  $levelData
+     * @param  array<string, mixed>  $progression
+     */
+    private function levelHtml(int $level, array $levelData, array $progression): string
+    {
+        $parts = [];
+        $hitDie = trim((string) ($progression['hit_die'] ?? 'd8'));
+
+        $flavor = trim((string) ($levelData['flavor'] ?? ''));
+        if ($flavor !== '') {
+            $parts[] = '<p>'.$this->richText($flavor).'</p>';
+        }
+
+        $parts[] = '<h2>Points de vie</h2>';
+        if ($level === 1) {
+            $parts[] = '<p>Tu poses tes PV de départ : <strong>maximum du '.$this->richText($hitDie).'</strong> + ton modificateur de Vitalité.</p>';
+            $random = trim((string) ($progression['hp_random'] ?? ''));
+            $stable = trim((string) ($progression['hp_stable'] ?? ''));
+            if ($random !== '' || $stable !== '') {
+                $parts[] = '<p>Pour les niveaux suivants, la table choisit une méthode pour tout le monde :</p><ul>'
+                    .($random !== '' ? '<li><strong>Aléatoire</strong> : '.$this->richText($random).' (un 1 se relance).</li>' : '')
+                    .($stable !== '' ? '<li><strong>Stable</strong> : '.$this->richText($stable).'.</li>' : '')
+                    .'</ul>';
+            }
+        } else {
+            $parts[] = '<p>PV actuels + <strong>1'.$this->richText($hitDie).'</strong> (méthode de la table) + ton modificateur de Vitalité.</p>'
+                .'<p>Si ton modificateur de Vitalité vient d’augmenter, on fait comme s’il avait toujours eu cette valeur : '
+                .'tu ajoutes aussi <strong>niveau × (nouveau mod. − ancien mod.)</strong> à tes PV.</p>';
+        }
+
+        $spells = $levelData['spells'] ?? null;
+        if (is_array($spells) && $spells !== []) {
+            $choices = array_values(array_filter(
+                $spells,
+                static fn (mixed $choice): bool => is_array($choice) && $choice !== [],
+            ));
+            $variantCounts = array_map(
+                static fn (array $choice): int => count($choice),
+                $choices,
+            );
+            $parts[] = '<h2>Sorts</h2>';
+            $parts[] = count($choices) === 1 && ($variantCounts[0] ?? 0) === 1
+                ? '<p>Tu gagnes le sort ci-dessous.</p>'
+                : '<p>Tu as le choix entre '.e($this->variantPhrase($variantCounts))
+                    .' — les cartes ci-dessous.</p>';
+            // Ancre pour BreedLevelSpellChoices (cartes + note temple).
+            $parts[] = '<p data-breed-level-spells="'.e((string) $level).'" class="breed-level-spells-anchor" hidden></p>';
+        }
+
+        if (! empty($levelData['carac_or_trait'])) {
+            $parts[] = '<h2>Caractéristiques ou trait</h2>'
+                .'<p>Tu choisis <strong>une</strong> option :</p><ul>'
+                .'<li><strong>2 points</strong> : +2 sur une caractéristique, ou +1 sur deux caractéristiques différentes '
+                .'(Intelligence, Chance, Force, Agilité, Sagesse, Vitalité) ;</li>'
+                .'<li><strong>1 trait</strong> parmi ceux marqués pour les personnages (niveau min. respecté) — '
+                .'[[kref:page:bibliotheque-creature-trait|Bibliothèque → Traits]].</li>'
+                .'</ul>';
+        }
+
+        $classCap = trim((string) ($levelData['class_capability'] ?? ''));
+        if ($classCap !== '') {
+            $parts[] = '<h2>Capacité de classe</h2><p>Tu gagnes [[kref:entity:capabilities:'.$classCap.'|'.$classCap.']].</p>';
+        }
+
+        $extra = trim((string) ($levelData['extra'] ?? ''));
+        if ($extra !== '') {
+            $parts[] = '<p>'.$this->richText($extra).'</p>';
+        }
+
+        return implode('', $parts);
+    }
+
+    /**
+     * @param  list<int>  $variantCounts
+     */
+    private function variantPhrase(array $variantCounts): string
+    {
+        $unique = array_values(array_unique(array_filter($variantCounts, static fn (int $n): bool => $n > 0)));
+        sort($unique);
+        if ($unique === []) {
+            return 'une ou plusieurs variantes';
+        }
+        if (count($unique) === 1) {
+            $n = $unique[0];
+
+            return $n === 1 ? '1 variante' : $n.' variantes';
+        }
+
+        $last = array_pop($unique);
+
+        return implode(', ', $unique).' ou '.$last.' variantes';
+    }
+
+    private function spellKref(string $name): string
+    {
+        return '[[kref:entity:spells:'.$name.'|'.$name.']]';
     }
 
     /**
      * @param  array<string, mixed>  $sheet
      */
-    private function presentationHtml(array $sheet): string
+    private function legacyPresentationHtml(array $sheet): string
     {
         $presentation = $sheet['presentation'] ?? null;
         if (is_array($presentation) && $presentation !== []) {
@@ -57,7 +205,6 @@ final class ClassSheetContentRenderer
         }
 
         $parts = [];
-
         $identity = trim((string) ($sheet['identity'] ?? ''));
         if ($identity !== '') {
             $parts[] = '<p>'.$this->richText($identity).'</p>';

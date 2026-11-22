@@ -11,6 +11,7 @@ import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
 import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
 import EntityMinimalTitle from "@/Pages/Molecules/entity/shared/EntityMinimalTitle.vue";
+import CreatureTraitMarks from "@/Pages/Molecules/entity/creature-trait/CreatureTraitMarks.vue";
 import { useEntityMinimalShell } from "@/Composables/entity/useEntityMinimalShell";
 
 const props = defineProps({
@@ -84,7 +85,10 @@ const hasDescription = computed(() => {
             <div data-cy="entity-minimal-card-compact" class="flex gap-2 p-2">
                 <EntityThumb size="xs" :src="imageUrl || ''" :label="displayName" />
                 <div class="min-w-0 flex-1">
-                    <EntityMinimalTitle :label="displayName" @open="openQuickView" />
+                    <div class="flex min-w-0 items-center gap-1.5">
+                        <EntityMinimalTitle :label="displayName" @open="openQuickView" />
+                        <CreatureTraitMarks :trait="entity" mode="minimal" />
+                    </div>
                     <div
                         v-if="hasDescription"
                         class="prose prose-sm prose-invert mt-1 max-w-none text-[11px] leading-snug text-primary-300/90"
@@ -101,7 +105,10 @@ const hasDescription = computed(() => {
                     <div class="min-w-0 flex-1">
                         <div class="flex w-full min-w-0 items-start gap-1.5">
                             <div class="min-w-0">
-                                <EntityMinimalTitle :label="displayName" @open="openQuickView" />
+                                <div class="flex min-w-0 items-center gap-1.5">
+                                    <EntityMinimalTitle :label="displayName" @open="openQuickView" />
+                                    <CreatureTraitMarks :trait="entity" mode="minimal" />
+                                </div>
                             </div>
                             <div v-if="showActions" data-entity-actions class="ml-auto flex min-w-8 flex-1 justify-end" @click.stop>
                                 <EntityActions

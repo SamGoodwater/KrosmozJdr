@@ -4,7 +4,7 @@
     "dofusdb_id": "7",
     "description_fast": "Guérisseur",
     "life_dice": "1d8",
-    "description": "Les Eniripsas sont des guérisseurs qui soignent d'un simple Mot. Ils utilisent le pouvoir de la parole pour soulager les souffrances de leurs alliés, mais parfois aussi pour blesser leurs ennemis. Certains Eniripsas sont même devenus de véritables arpente",
+    "description": "Un mot, et le groupe tient debout. Tu soignes, tu couvres, tu encourages.",
     "mechanics": "<p><strong>Le Lapino</strong> — Mot d'Amitié l'invoque (un seul). Il arrive <strong>mignon</strong> (soigne) ; relancer le sort le bascule en <strong>monstrueux</strong> (mord). <strong>Relais</strong> : un sort à cible unique lancé sur ton Lapino ne le touche pas — il part sur chaque créature à son contact (portée comptée jusqu'au Lapino). Mignon : soin, bouclier, buff alliés. Monstrueux : dégâts et reste d'effet ennemis. 1 relais / tour, 2 dès le niveau 13.</p><p><strong>Les fées</strong> — Mot Féerique enferme un de tes sorts (≤ 3 PA, sauf Mot d'Amitié) dans une fée. Elle a 2 tours pour le lâcher au contact. Elle vole, ignore le tacle, joue juste après toi. Le sort porté ignore PO et ligne de vue. Une fée sur le Lapino déclenche son relais. Chaque fée est une <strong>invocation</strong> : elle compte dans ta limite d’invocations (pas de plafond propre aux fées).</p><p><strong>Boosts et moqueries</strong> — Un·e allié·e ne porte qu'un mot de boost de toi à la fois ; un·e ennemi·e, qu'une moquerie. Un bouclier absorbe avant les PV jusqu'au début de ton prochain tour (on garde le plus haut). Soin élémentaire : + mod. d'élément ; soin général : non.</p>",
     "dofus_version": "3",
     "state": "playable",

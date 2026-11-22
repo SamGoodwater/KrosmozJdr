@@ -366,8 +366,14 @@ class SpecializationSeeder extends Seeder
 
             $palier = (int) $level;
             foreach ($levelData['capacities'] ?? [] as $entry) {
-                if (is_array($entry)) {
-                    $this->upsertSpecializationCapability($entry, false, $palier, $creatorId);
+                if (! is_array($entry)) {
+                    continue;
+                }
+                $this->upsertSpecializationCapability($entry, false, $palier, $creatorId);
+                foreach ($entry['archetype_variants'] ?? [] as $variant) {
+                    if (is_array($variant)) {
+                        $this->upsertSpecializationCapability($variant, false, $palier, $creatorId);
+                    }
                 }
             }
             foreach ($levelData['aptitudes'] ?? [] as $entry) {

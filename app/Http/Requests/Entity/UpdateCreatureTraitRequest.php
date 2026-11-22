@@ -34,7 +34,9 @@ class UpdateCreatureTraitRequest extends FormRequest
     {
         return [
             'name' => ['sometimes', 'required', 'string', 'max:255'],
-            'description' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:5000'],
+            'level' => ['nullable', 'integer', 'min:1', 'max:20'],
+            'available_for_characters' => ['sometimes', 'boolean'],
             'state' => ['nullable', 'string', EntityState::rule()],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],

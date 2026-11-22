@@ -6,18 +6,20 @@
  * @props {'text'|'compact'|'full'} density - text = Minimal/Line, compact = modal dense, full = fiche
  * @description
  * Uniquement les emplacements de variantes (pas le pivot 0/1 « toujours disponibles », reliquat Dofus).
- * En densité `full` / `compact` : bascule Cartes (Minimal étendu) / Texte (icône+nom + popover Minimal).
+ * En densité `full` / `compact` : bascule Icônes (défaut) / Cartes minimales / Texte.
  */
 import { computed, markRaw, ref, watch } from "vue";
 import SpellViewText from "@/Pages/Molecules/entity/spell/SpellViewText.vue";
 import SpellViewMinimal from "@/Pages/Molecules/entity/spell/SpellViewMinimal.vue";
 import EntityViewTextLink from "@/Pages/Molecules/entity/shared/EntityViewTextLink.vue";
+import OverlayTrigger from "@/Pages/Molecules/overlay/OverlayTrigger.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
 import { spellImageFilterCss } from "@/Utils/Entity/spellImageFilter";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import { Spell } from "@/Models/Entity/Spell";
 import { breedVariantGroupTitle, splitBreedSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
+import { fetchEntityModelById } from "@/Composables/entity/useEntityTableFetch";
 
 const SPELL_LAYOUT_STORAGE_KEY = "breed_spell_slots_layout";
 
@@ -25,16 +27,18 @@ const SPELL_LAYOUT_STORAGE_KEY = "breed_spell_slots_layout";
 const spellMinimalComponent = markRaw(SpellViewMinimal);
 
 /**
- * @returns {'cards'|'text'}
+ * @returns {'icons'|'cards'|'text'}
  */
 function readStoredSpellLayout() {
     try {
         const raw = localStorage.getItem(SPELL_LAYOUT_STORAGE_KEY);
-        if (raw === "text" || raw === "cards") return raw;
+        if (raw === "text" || raw === "cards" || raw === "icons") return raw;
+        // Ancien défaut « cards » → icônes (rappel compact).
+        if (raw == null) return "icons";
     } catch {
         /* private mode / SSR */
     }
-    return "cards";
+    return "icons";
 }
 
 const props = defineProps({
@@ -62,19 +66,19 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(["open-spell"]);
-
 const rawBreed = computed(() => props.breed?._data ?? props.breed);
 
 const variantGroupsList = computed(() => splitBreedSpellSlotGroups(rawBreed.value).variantGroups);
 
 const hasAny = computed(() => variantGroupsList.value.some((g) => (g.spells || []).length > 0));
-const ICON_LIMIT = 12;
+const ICON_LIMIT = 48;
 
-/** Bascule Cartes / Texte (fiche full + compact). */
+/** Bascule Icônes / Cartes / Texte (fiche full + compact). */
 const spellLayout = ref(readStoredSpellLayout());
 const showLayoutToggle = computed(() => props.density === "full" || props.density === "compact");
 const isTextLayout = computed(() => showLayoutToggle.value && spellLayout.value === "text");
+const isCardsLayout = computed(() => showLayoutToggle.value && spellLayout.value === "cards");
+const isIconsLayout = computed(() => showLayoutToggle.value && spellLayout.value === "icons");
 
 watch(spellLayout, (value) => {
     try {
@@ -85,10 +89,10 @@ watch(spellLayout, (value) => {
 });
 
 /**
- * @param {'cards'|'text'} layout
+ * @param {'icons'|'cards'|'text'} layout
  */
 function setSpellLayout(layout) {
-    if (layout !== "cards" && layout !== "text") return;
+    if (layout !== "icons" && layout !== "cards" && layout !== "text") return;
     spellLayout.value = layout;
 }
 
@@ -106,7 +110,40 @@ const hiddenVariantCount = computed(() => Math.max(0, allVariantSpells.value.len
 const spellName = (spell) => spell?.name || spell?._data?.name || "Sort";
 const spellImage = (spell) => spell?.image || spell?._data?.image || "";
 const spellCssFilter = (spell) => spellImageFilterCss(spell);
-const openSpell = (spell) => emit("open-spell", spell);
+
+/**
+ * Overlay Minimal au clic sur une icône (hydrate la fiche si besoin).
+ * @param {object} raw
+ */
+function spellIconOverlay(raw) {
+    const spell = asSpellModel(raw);
+    const id = spell?.id;
+    return {
+        key: `breed-spell-icon:${id ?? spellName(spell)}`,
+        loader: async () => {
+            let entity = spell;
+            if (id) {
+                try {
+                    const full = await fetchEntityModelById("spells", id);
+                    if (full) entity = full;
+                } catch {
+                    /* payload allégé */
+                }
+            }
+            return {
+                component: spellMinimalComponent,
+                props: {
+                    spell: entity,
+                    showActions: true,
+                    displayMode: "extended",
+                    ...(props.characteristicRuntime != null
+                        ? { characteristicRuntime: props.characteristicRuntime }
+                        : {}),
+                },
+            };
+        },
+    };
+}
 
 /**
  * @param {{ character_level: number, slot_index: number, spells?: object[] }} g
@@ -128,12 +165,24 @@ const variantTitle = (g) => breedVariantGroupTitle(g);
             aria-label="Mode d’affichage des sorts"
         >
             <div class="join">
-                <Tooltip content="Cartes détaillées" placement="top">
+                <Tooltip content="Icônes (rappel)" placement="top">
+                    <button
+                        type="button"
+                        class="btn btn-xs join-item"
+                        :class="spellLayout === 'icons' ? 'btn-primary' : 'btn-ghost'"
+                        aria-label="Affichage en icônes"
+                        :aria-pressed="spellLayout === 'icons'"
+                        @click="setSpellLayout('icons')"
+                    >
+                        <Icon source="fa-solid fa-grip" size="xs" />
+                    </button>
+                </Tooltip>
+                <Tooltip content="Cartes minimales" placement="top">
                     <button
                         type="button"
                         class="btn btn-xs join-item"
                         :class="spellLayout === 'cards' ? 'btn-primary' : 'btn-ghost'"
-                        aria-label="Affichage en cartes"
+                        aria-label="Affichage en cartes minimales"
                         :aria-pressed="spellLayout === 'cards'"
                         @click="setSpellLayout('cards')"
                     >
@@ -160,65 +209,134 @@ const variantTitle = (g) => breedVariantGroupTitle(g);
                 <div>
                     <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Variantes de sorts</h3>
                     <p v-if="showTempleNote" class="text-xs text-primary-400/90 mt-1">
-                        À chaque variante, un seul sort est retenu en jeu. Changer une variante se fait dans le temple de
-                        la classe : compter 1 h par niveau du sort pour modifier un seul choix de variante.
+                        À chaque variante, un seul sort est retenu. Pour en changer : temple de ton dieu, autant
+                        d’heures que le niveau de la variante.
                     </p>
                 </div>
-                <div
-                    v-for="(group, gIdx) in variantGroupsList"
-                    :key="`vg-${group.character_level}-${group.slot_index}-${gIdx}`"
-                    class="space-y-2 border-l-2 border-primary-500/50 pl-3"
-                >
-                    <div class="text-sm font-bold tracking-wide text-primary-100">
-                        {{ variantTitle(group) }}
-                    </div>
-                    <ul
-                        v-if="isTextLayout"
-                        class="flex list-none flex-wrap gap-x-3 gap-y-1.5 p-0 m-0"
+
+                <div v-if="isIconsLayout" class="flex flex-wrap items-center gap-2">
+                    <OverlayTrigger
+                        v-for="s in variantPreview"
+                        :key="`full-i-${s.id}`"
+                        :content="spellIconOverlay(s)"
+                        trigger="click"
+                        placement="bottom-start"
+                        max-width="auto"
+                        :interactive="true"
+                        :close-on-outside="true"
+                        :close-on-escape="true"
+                        :chromeless="true"
+                        panel-class="w-[min(92vw,36rem)] max-w-[36rem]"
+                        :focus-trap="false"
                     >
-                        <li
-                            v-for="s in group.spells || []"
-                            :key="`sg-t-${s.id}`"
-                            class="min-w-0 max-w-full"
+                        <button
+                            type="button"
+                            class="btn btn-ghost btn-sm btn-square border border-base-300/40 bg-base-200/20 hover:bg-base-200/50"
+                            :aria-label="spellName(s)"
+                            :title="spellName(s)"
                         >
-                            <EntityViewTextLink
-                                :entity="asSpellModel(s)"
-                                entity-prop="spell"
-                                :minimal-component="spellMinimalComponent"
-                                fallback-icon="fa-solid fa-wand-magic-sparkles"
-                                ui-color="primary"
-                                :show-actions-on-hover="true"
-                                hydrate-type="spells"
-                                hover-width-class="w-[min(92vw,36rem)] max-w-[36rem]"
-                                :characteristic-runtime="characteristicRuntime"
+                            <EntityThumb
+                                size="table"
+                                class="h-7 w-7"
+                                :src="spellImage(s) || ''"
+                                :label="spellName(s)"
+                                :css-filter="spellCssFilter(s)"
                             />
-                        </li>
-                    </ul>
-                    <ul
-                        v-else
-                        class="grid grid-cols-[repeat(auto-fill,minmax(22rem,1fr))] gap-3 items-start"
-                    >
-                        <li
-                            v-for="s in group.spells || []"
-                            :key="`sg-${s.id}`"
-                            class="min-w-0 max-w-[22rem]"
-                        >
-                            <SpellViewMinimal
-                                :spell="asSpellModel(s)"
-                                display-mode="hover"
-                                :characteristic-runtime="characteristicRuntime"
-                                :show-actions="true"
-                            />
-                        </li>
-                    </ul>
+                        </button>
+                    </OverlayTrigger>
+                    <span v-if="hiddenVariantCount > 0" class="text-xs text-base-content/60">
+                        +{{ hiddenVariantCount }}
+                    </span>
                 </div>
+
+                <template v-else>
+                    <div
+                        v-for="(group, gIdx) in variantGroupsList"
+                        :key="`vg-${group.character_level}-${group.slot_index}-${gIdx}`"
+                        class="space-y-2 border-l-2 border-primary-500/50 pl-3"
+                    >
+                        <div class="text-sm font-bold tracking-wide text-primary-100">
+                            {{ variantTitle(group) }}
+                        </div>
+                        <ul
+                            v-if="isTextLayout"
+                            class="flex list-none flex-wrap gap-x-3 gap-y-1.5 p-0 m-0"
+                        >
+                            <li
+                                v-for="s in group.spells || []"
+                                :key="`sg-t-${s.id}`"
+                                class="min-w-0 max-w-full"
+                            >
+                                <EntityViewTextLink
+                                    :entity="asSpellModel(s)"
+                                    entity-prop="spell"
+                                    :minimal-component="spellMinimalComponent"
+                                    fallback-icon="fa-solid fa-wand-magic-sparkles"
+                                    ui-color="neutral"
+                                    :show-actions-on-hover="true"
+                                    hydrate-type="spells"
+                                    hover-width-class="w-[min(92vw,36rem)] max-w-[36rem]"
+                                    :characteristic-runtime="characteristicRuntime"
+                                />
+                            </li>
+                        </ul>
+                        <ul
+                            v-else-if="isCardsLayout"
+                            class="grid grid-cols-[repeat(auto-fill,minmax(22rem,1fr))] gap-3 items-start"
+                        >
+                            <li
+                                v-for="s in group.spells || []"
+                                :key="`sg-${s.id}`"
+                                class="min-w-0 max-w-[22rem]"
+                            >
+                                <SpellViewMinimal
+                                    :spell="asSpellModel(s)"
+                                    display-mode="hover"
+                                    :characteristic-runtime="characteristicRuntime"
+                                    :show-actions="true"
+                                />
+                            </li>
+                        </ul>
+                    </div>
+                </template>
             </div>
         </template>
 
         <template v-else-if="density === 'compact'">
             <div class="rounded-box border border-base-300/80 bg-base-200/30 p-2 space-y-2">
                 <div class="text-[10px] font-semibold uppercase tracking-wide text-base-content/50">Variantes de sorts</div>
-                <div class="grid gap-2 sm:grid-cols-2">
+                <div v-if="isIconsLayout" class="flex flex-wrap items-center gap-1.5">
+                    <OverlayTrigger
+                        v-for="s in variantPreview"
+                        :key="`c-i-${s.id}`"
+                        :content="spellIconOverlay(s)"
+                        trigger="click"
+                        placement="bottom-start"
+                        max-width="auto"
+                        :interactive="true"
+                        :close-on-outside="true"
+                        :close-on-escape="true"
+                        :chromeless="true"
+                        panel-class="w-[min(92vw,36rem)] max-w-[36rem]"
+                        :focus-trap="false"
+                    >
+                        <button
+                            type="button"
+                            class="btn btn-ghost btn-xs btn-square"
+                            :aria-label="spellName(s)"
+                            :title="spellName(s)"
+                        >
+                            <EntityThumb
+                                size="table"
+                                class="h-5 w-5"
+                                :src="spellImage(s) || ''"
+                                :label="spellName(s)"
+                                :css-filter="spellCssFilter(s)"
+                            />
+                        </button>
+                    </OverlayTrigger>
+                </div>
+                <div v-else class="grid gap-2 sm:grid-cols-2">
                     <div
                         v-for="(group, gIdx) in variantGroupsList"
                         :key="`vc-${group.character_level}-${group.slot_index}-${gIdx}`"
@@ -241,7 +359,7 @@ const variantTitle = (g) => breedVariantGroupTitle(g);
                                     entity-prop="spell"
                                     :minimal-component="spellMinimalComponent"
                                     fallback-icon="fa-solid fa-wand-magic-sparkles"
-                                    ui-color="primary"
+                                    ui-color="neutral"
                                     :show-actions-on-hover="true"
                                     hydrate-type="spells"
                                     hover-width-class="w-[min(92vw,36rem)] max-w-[36rem]"
@@ -269,12 +387,25 @@ const variantTitle = (g) => breedVariantGroupTitle(g);
             <div class="space-y-1 text-[11px] leading-snug text-base-content/85">
                 <div class="text-[10px] font-semibold uppercase tracking-wide text-base-content/50">Variantes</div>
                 <div v-if="lightweight" class="flex flex-wrap items-center gap-1.5">
-                    <Tooltip v-for="s in variantPreview" :key="`vt-i-${s.id}`" :content="spellName(s)" placement="top">
+                    <OverlayTrigger
+                        v-for="s in variantPreview"
+                        :key="`vt-i-${s.id}`"
+                        :content="spellIconOverlay(s)"
+                        trigger="click"
+                        placement="bottom-start"
+                        max-width="auto"
+                        :interactive="true"
+                        :close-on-outside="true"
+                        :close-on-escape="true"
+                        :chromeless="true"
+                        panel-class="w-[min(92vw,36rem)] max-w-[36rem]"
+                        :focus-trap="false"
+                    >
                         <button
                             type="button"
                             class="btn btn-ghost btn-xs btn-square"
-                            :aria-label="`Ouvrir ${spellName(s)}`"
-                            @click.stop="openSpell(s)"
+                            :aria-label="spellName(s)"
+                            :title="spellName(s)"
                         >
                             <EntityThumb
                                 size="table"
@@ -284,7 +415,7 @@ const variantTitle = (g) => breedVariantGroupTitle(g);
                                 :css-filter="spellCssFilter(s)"
                             />
                         </button>
-                    </Tooltip>
+                    </OverlayTrigger>
                     <span v-if="hiddenVariantCount > 0" class="text-[10px] text-base-content/60">+{{ hiddenVariantCount }}</span>
                 </div>
                 <div

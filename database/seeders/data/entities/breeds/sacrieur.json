@@ -4,7 +4,7 @@
     "dofusdb_id": "11",
     "description_fast": "Berserker",
     "life_dice": "1d12",
-    "description": "Les Sacrieurs sont des berserkers qui décuplent leurs forces dès qu'ils sont frappés ! N'ayant pas peur de recevoir des coups, ni de s'exposer aux blessures, ils seront souvent en première ligne, prêts à verser le premier sang ! Le Sacrieur est vraiment le compagnon idéal pour vos longues soirées guerrières...",
+    "description": "On te frappe, tu rends. Plus tu as mal, plus tu tiens.",
     "mechanics": "<p><strong>Souffrance</strong> — Niveau I à X selon tes PV actuels / max (tranches de 10 %). Boucliers et PV temporaires ne comptent pas. À 100 % : Souffrance I.</p><p><strong>Sacrifice</strong> — Tu prends les dégâts à la place d’une créature protégée. Une créature n’est protégée que par un sort de sacrifice à la fois.</p>",
     "dofus_version": "3",
     "state": "playable",

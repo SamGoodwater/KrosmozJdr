@@ -4,6 +4,14 @@
 
 Chaque spécialisation jouable a maintenant un objet qui la représente (livre, bouclier, masque, ancre…). L’introduction du catalogue explique à quoi sert une spécialisation, comment se lisent les sept paliers, et où trouver la règle. Sur une page, les blocs de contenu ont la même largeur : le plus large donne le gabarit, le texte peut rester centré dedans. La fiche ne commence plus par la liste brute des capacités : elles se lisent dans le texte de chaque palier. Sur toutes les pages, un bloc sans vrai titre n’affiche plus « Texte » ni « Section ». Le bandeau (fil d’Ariane et plan) est aussi sur les classes et les spécialisations, sans bouton pour modifier la page. Chaque section peut se replier : on ne garde que son titre, ou les premiers mots s’il n’y en a pas.
 
+## Novembre 2026 — Points de carac et PV sur la classe
+
+Les points de caractéristique après la création passent clairement par la **classe** : aux niveaux **4, 10 et 16**, tu choisis **2 points ou 1 trait** (liste PJ) — jusqu’à **6 points** (3 × 2), comme le souvenir « 6 en 2×3 ». Les spés n’en donnent pas. La table 2.3.2 sépare colonne classe / colonne spé ; la fiche **Crâ** affiche dé de vie (d6, deux méthodes) et le tableau de progression.
+
+## Novembre 2026 — Enveloppe de progression des spécialisations (brouillon)
+
+Chantier **§2.4.6** : tableau de progression en tête de fiche, socle commun au niveau 1, **style au niveau 3**, briques avec des « ou ». L’**Artiste** est la première fiche seedée sur ce modèle (essai) ; les dix autres restent sur l’ancien gabarit.
+
 ## Novembre 2026 — Artiste modèle avec archétypes
 
 La spécialisation **Artiste** devient la fiche modèle **avec styles** (Musicien, Saltimbanque, Troubadour, Voyant) et **Applaudissement**. Textes séparés : ambiance d’un côté, règles de l’autre, ton simple façon guides Dofus. Une doc IA `docs/IA/TON.md` fixe cette voix pour tout le site (pas dans le livre de règles). Cadre technique §2.4.2.7 ; l’Érudit reste le modèle sans styles.

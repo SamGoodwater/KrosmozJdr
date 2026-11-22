@@ -4,7 +4,7 @@
     "dofusdb_id": "12",
     "description_fast": "Bagarreur assoiffé",
     "life_dice": "1d10",
-    "description": "Les Pandawas sont des guerriers adeptes des arts martiaux qui savent faire des folies de leurs corps ! Ils peuvent même en faire avec le corps des autres... Le Pandawa sait comment soulever les foules, il porte ses alliés sur ses épaules pour mieux les protéger. Quant à ses ennemis, il les enverra valser dans le décor, avant de fêter sa victoire avec une bonne rasade de lait de bambou !",
+    "description": "Tu portes un allié, un tonneau, parfois un ennemi. Le corps fait le déplacement.",
     "mechanics": "<p><strong>Portage</strong> — Karcham (obligatoire N1) soulève s’il ne porte personne, lance s’il porte déjà. Tu portes sans malus, créature de ta taille ou plus petite (Dos de Pandala : +1 taille).</p><p><strong>Sorts de jet</strong> — Niveau 4 de chaque voie : seulement si tu portes. Tu lances la créature sur une case libre à portée et en vue ; le sort part de là.</p><p><strong>Saoul</strong> — Optionnel. Aucun sort ne l’exige.</p>",
     "dofus_version": "3",
     "state": "playable",

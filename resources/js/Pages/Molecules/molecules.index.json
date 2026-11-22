@@ -2262,6 +2262,13 @@
     "file": "entity/creature-trait/CreatureTraitViewFull.vue"
   },
   {
+    "name": "CreatureTraitMarks",
+    "description": "Marque de trait : logo humain si un PJ ou un PNJ peut le prendre, et le niveau de puissance.",
+    "props": [],
+    "slots": [],
+    "file": "entity/creature-trait/CreatureTraitMarks.vue"
+  },
+  {
     "name": "CreatureTraitLineRow",
     "description": "CreatureTraitLineRow — ligne dense pour les tables d’entité.",
     "props": [],
@@ -2596,6 +2603,31 @@
     "file": "entity/breed/BreedSpellSlotsDisplay.vue"
   },
   {
+    "name": "BreedProgressionRecap",
+    "description": "Tableau récap de progression de classe (Vue) — sorts en puces élément, DV, passif, capacités.",
+    "props": [],
+    "slots": [],
+    "file": "entity/breed/BreedProgressionRecap.vue"
+  },
+  {
+    "name": "BreedProgressionRead",
+    "description": "Progression classe : une carte par niveau (PV, caracs, sorts minimal, capacité).",
+    "props": [
+      {
+        "name": "breed",
+        "type": "Object",
+        "desc": ""
+      },
+      {
+        "name": "characteristicRuntime",
+        "type": "Object|null",
+        "desc": ""
+      }
+    ],
+    "slots": [],
+    "file": "entity/breed/BreedProgressionRead.vue"
+  },
+  {
     "name": "BreedMechanicsDisplay",
     "description": "Bloc « Mécanique de classe » — signature hors voies (ex. Pile/Face du Féca).",
     "props": [
@@ -2614,6 +2646,24 @@
     "props": [],
     "slots": [],
     "file": "entity/breed/BreedLineRow.vue"
+  },
+  {
+    "name": "BreedLevelSpellChoices",
+    "description": "Variantes de sorts pour un niveau de classe — cartes SpellViewMinimal.",
+    "props": [
+      {
+        "name": "breed",
+        "type": "Object",
+        "desc": "- Breed / payload avec spell_slots"
+      },
+      {
+        "name": "characterLevel",
+        "type": "number",
+        "desc": "- Niveau de personnage (1, 2, 4…)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/breed/BreedLevelSpellChoices.vue"
   },
   {
     "name": "BreedElementOrientationsDisplay",

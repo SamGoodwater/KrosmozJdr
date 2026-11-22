@@ -465,9 +465,7 @@ function onPopoverLeave() {
 .section-rich-editor :deep(.ProseMirror span.kref--nav),
 .rich-text-readonly :deep(.ProseMirror span.kref--nav) {
     cursor: pointer;
-    text-decoration: underline;
-    text-decoration-style: dotted;
-    text-underline-offset: 2px;
+    text-decoration: none;
 }
 
 .section-rich-editor :deep(.ProseMirror span.kref--type-characteristic),
@@ -479,9 +477,15 @@ function onPopoverLeave() {
 
 .section-rich-editor :deep(.ProseMirror span.kref--type-entity),
 .rich-text-readonly :deep(.ProseMirror span.kref--type-entity) {
-    color: var(--color-secondary);
-    background: color-mix(in oklch, var(--color-secondary) 16%, transparent);
-    border-color: color-mix(in oklch, var(--color-secondary) 35%, transparent);
+    color: inherit;
+    background: transparent;
+    border-color: transparent;
+}
+
+/* Sorts : la teinte d’élément est portée par .kref__entity-chip (KrefInlineChip). */
+.section-rich-editor :deep(.ProseMirror span.kref--spell-chip),
+.rich-text-readonly :deep(.ProseMirror span.kref--spell-chip) {
+    text-decoration: none;
 }
 
 .section-rich-editor :deep(.ProseMirror span.kref--type-page),

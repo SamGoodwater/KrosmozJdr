@@ -35,6 +35,8 @@ class CreatureTraitFactory extends Factory
         return [
             'name' => $name,
             'description' => $this->faker->optional()->realText(60),
+            'level' => $this->faker->optional(0.5)->numberBetween(1, 16),
+            'available_for_characters' => $this->faker->boolean(40),
             'state' => $this->faker->randomElement([CreatureTrait::STATE_DRAFT, CreatureTrait::STATE_PLAYABLE]),
             'read_level' => $readLevel,
             'write_level' => $writeLevel,

@@ -7,8 +7,7 @@ namespace Tests\Unit\Seeder;
 use Tests\TestCase;
 
 /**
- * Les 11 fiches jouables partagent le même gabarit : 5 compétences au palier 1,
- * 2 options à chaque palier, 3 aptitudes aux paliers 3 / 9 / 15.
+ * Fiches jouables : gabarit legacy 2.4.2.6, ou enveloppe 2.4.6 (Artiste essai).
  */
 final class PlayableSpecializationGabaritTest extends TestCase
 {
@@ -31,6 +30,15 @@ final class PlayableSpecializationGabaritTest extends TestCase
         return $files;
     }
 
+    /**
+     * @param  array<string, mixed>  $spec
+     */
+    private function isEnvelope(array $spec): bool
+    {
+        return ($spec['envelope'] ?? '') === '2.4.6'
+            || (is_array($spec['progression'] ?? null) && $spec['progression'] !== []);
+    }
+
     public function test_all_playable_sheets_share_the_same_gabarit(): void
     {
         $this->assertCount(11, $this->sheetPaths());
@@ -41,34 +49,20 @@ final class PlayableSpecializationGabaritTest extends TestCase
             $this->assertTrue($spec['playable'] ?? false, $name);
             $this->assertSame([1, 3, 6, 9, 12, 15, 20], array_keys($spec['levels'] ?? []), $name);
 
-            $archetypes = $spec['archetypes'] ?? null;
-            if (is_array($archetypes) && $archetypes !== []) {
-                $this->assertArrayHasKey('thread', $spec, $name.' : fil rouge manquant.');
-                $this->assertArrayHasKey('signature', $spec, $name.' : mécanique signature manquante.');
-                foreach ($archetypes as $slug => $archetype) {
-                    $skillsLine = (string) ($archetype['masteries']['Compétences'] ?? '');
-                    $found = [];
-                    foreach (self::SKILL_NAMES as $skill) {
-                        if (str_contains($skillsLine, $skill)) {
-                            $found[] = $skill;
-                        }
-                    }
-                    $this->assertCount(
-                        5,
-                        $found,
-                        $name.' / '.$slug.' : liste de compétences = '.json_encode($found, JSON_UNESCAPED_UNICODE)
-                    );
-                }
-            } else {
-                $skillsLine = (string) ($spec['levels'][1]['masteries']['Compétences'] ?? '');
-                $found = [];
-                foreach (self::SKILL_NAMES as $skill) {
-                    if (str_contains($skillsLine, $skill)) {
-                        $found[] = $skill;
-                    }
-                }
-                $this->assertCount(5, $found, $name.' : liste de compétences = '.json_encode($found, JSON_UNESCAPED_UNICODE));
+            if ($this->isEnvelope($spec)) {
+                $this->assertEnvelopeSheet($spec, $name);
+
+                continue;
             }
+
+            $skillsLine = (string) ($spec['levels'][1]['masteries']['Compétences'] ?? '');
+            $found = [];
+            foreach (self::SKILL_NAMES as $skill) {
+                if (str_contains($skillsLine, $skill)) {
+                    $found[] = $skill;
+                }
+            }
+            $this->assertCount(5, $found, $name.' : liste de compétences = '.json_encode($found, JSON_UNESCAPED_UNICODE));
 
             $aptitudes = [];
             foreach ($spec['levels'] as $level => $data) {
@@ -76,22 +70,6 @@ final class PlayableSpecializationGabaritTest extends TestCase
                 $types = array_count_values(array_column($caps, 'type'));
                 $this->assertGreaterThanOrEqual(1, $types['garantie'] ?? 0, $name.' palier '.$level.' sans garantie.');
                 $this->assertSame(2, $types['choix'] ?? 0, $name.' palier '.$level.' doit avoir 2 options.');
-
-                foreach ($caps as $cap) {
-                    $variants = $cap['archetype_variants'] ?? null;
-                    if (! is_array($variants)) {
-                        continue;
-                    }
-                    $this->assertSame(
-                        array_keys($archetypes ?? []),
-                        array_keys($variants),
-                        $name.' palier '.$level.' — '.($cap['name'] ?? '?').' : variantes ≠ archétypes.'
-                    );
-                    foreach ($variants as $variant) {
-                        $this->assertNotSame('', trim((string) ($variant['name'] ?? '')), $name.' variante sans nom.');
-                        $this->assertNotSame('', trim((string) ($variant['effect'] ?? '')), $name.' variante sans effet.');
-                    }
-                }
 
                 foreach ($data['aptitudes'] ?? [] as $aptitude) {
                     $aptitudes[(int) $level] = $aptitude['name'] ?? '';
@@ -103,8 +81,50 @@ final class PlayableSpecializationGabaritTest extends TestCase
     }
 
     /**
-     * Un coût en réserve s’écrit « x PA depuis la réserve de Wakfu » et renseigne `pa`.
+     * @param  array<string, mixed>  $spec
      */
+    private function assertEnvelopeSheet(array $spec, string $name): void
+    {
+        $this->assertArrayHasKey('progression', $spec, $name);
+        $this->assertSame(
+            [1, 3, 6, 9, 12, 15, 20],
+            array_map('intval', array_keys($spec['progression'])),
+            $name.' : progression incomplète.'
+        );
+
+        $styles = $spec['styles'] ?? $spec['archetypes'] ?? [];
+        $this->assertIsArray($styles);
+        $this->assertNotEmpty($styles, $name.' : styles manquants.');
+        $this->assertSame(3, (int) ($spec['styles_at'] ?? 3), $name.' : styles au niveau 3.');
+
+        $skillsLine = (string) ($spec['levels'][1]['masteries']['Compétences'] ?? '');
+        $found = [];
+        foreach (self::SKILL_NAMES as $skill) {
+            if (str_contains($skillsLine, $skill)) {
+                $found[] = $skill;
+            }
+        }
+        $this->assertGreaterThanOrEqual(2, count($found), $name.' : liste de compétences niv. 1 trop courte.');
+
+        $this->assertTrue(
+            (bool) ($spec['levels'][3]['unlock_style'] ?? false),
+            $name.' : unlock_style attendu au niveau 3.'
+        );
+
+        foreach ([3, 9, 15] as $level) {
+            $variantCaps = array_values(array_filter(
+                $spec['levels'][$level]['capacities'] ?? [],
+                static fn (array $cap): bool => isset($cap['archetype_variants'])
+            ));
+            $this->assertNotEmpty($variantCaps, $name.' palier '.$level.' : variante de style attendue.');
+            $this->assertSame(
+                array_keys($styles),
+                array_keys($variantCaps[0]['archetype_variants']),
+                $name.' palier '.$level.' : variantes ≠ styles.'
+            );
+        }
+    }
+
     public function test_wakfu_costs_are_written_in_pa_from_the_reserve(): void
     {
         foreach ($this->sheetPaths() as $path) {

@@ -325,18 +325,17 @@
     line-height: 1.15;
     vertical-align: baseline;
     box-sizing: border-box;
-    background: hsl(var(--p) / 0.18);
-    color: hsl(var(--p));
-    border: 1px solid hsl(var(--p) / 0.35);
+    background: color-mix(in oklch, var(--color-base-content) 8%, transparent);
+    color: inherit;
+    border: 1px solid color-mix(in oklch, var(--color-base-content) 14%, transparent);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-decoration: none;
 
     &.kref--nav {
       cursor: pointer;
-      text-decoration: underline;
-      text-decoration-style: dotted;
-      text-underline-offset: 2px;
+      text-decoration: none;
     }
 
     &.kref--type-characteristic {
@@ -346,9 +345,21 @@
     }
 
     &.kref--type-entity {
-      color: var(--color-secondary);
-      background: color-mix(in oklch, var(--color-secondary) 16%, transparent);
-      border-color: color-mix(in oklch, var(--color-secondary) 35%, transparent);
+      color: inherit;
+      background: transparent;
+      border-color: transparent;
+      padding-inline: 0.12em;
+    }
+
+    /* Sorts : teinte portée par .kref__entity-chip (élément / violet neutre). */
+    &.kref--spell-chip {
+      color: inherit;
+      background: transparent;
+      border-color: transparent;
+      padding: 0;
+      margin-inline: 0.12em;
+      overflow: visible;
+      white-space: normal;
     }
 
     &.kref--type-page {
@@ -373,6 +384,17 @@
   .kref .kref__label {
     min-width: 0;
     line-height: 1.15;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .kref .kref__entity-chip--spell {
+    text-decoration: none;
+  }
+
+  .kref .kref__entity-chip--spell:hover {
+    filter: none;
+    background-color: color-mix(in oklch, var(--color-spell-500) 22%, transparent) !important;
   }
 
   .kref--invalid {

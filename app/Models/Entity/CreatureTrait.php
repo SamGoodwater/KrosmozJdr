@@ -20,6 +20,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property int $id
  * @property string $name
  * @property string|null $description
+ * @property int|null $level
+ * @property bool $available_for_characters
  * @property string $state
  * @property int $read_level
  * @property int $write_level
@@ -56,6 +58,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait withoutTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait visibleToUser(?\App\Models\User $user)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait whereAvailableForCharacters($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CreatureTrait whereLevel($value)
  * @mixin \Eloquent
  */
 class CreatureTrait extends Model implements HasMedia
@@ -77,9 +81,24 @@ class CreatureTrait extends Model implements HasMedia
 
     public const MEDIA_FILE_PATTERN_IMAGES = 'image-[id]-[name]';
 
-    protected $fillable = ['name', 'description', 'state', 'read_level', 'write_level', 'image', 'created_by'];
+    protected $fillable = [
+        'name',
+        'description',
+        'level',
+        'available_for_characters',
+        'state',
+        'read_level',
+        'write_level',
+        'image',
+        'created_by',
+    ];
 
-    protected $casts = ['read_level' => 'integer', 'write_level' => 'integer'];
+    protected $casts = [
+        'level' => 'integer',
+        'available_for_characters' => 'boolean',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
+    ];
 
     public function createdBy()
     {

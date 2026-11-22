@@ -38,7 +38,8 @@ final class EssentialPagesCanonTest extends TestCase
     {
         $html = $this->flattenHtml($this->pages['creation']);
 
-        $this->assertStringContainsString('<strong>2, 4, 8, 10, 14, 16</strong>', $html);
+        $this->assertStringContainsString('<strong>4, 10, 16</strong>', $html);
+        $this->assertStringContainsString('<strong>2 points ou 1 trait</strong>', $html);
         $this->assertStringContainsString('<strong>14 + ⌊niv./2⌋</strong>', $html);
         $this->assertStringContainsString('score <strong>14</strong> au niv. 1', $html);
         $this->assertStringContainsString('19 classes', $html);

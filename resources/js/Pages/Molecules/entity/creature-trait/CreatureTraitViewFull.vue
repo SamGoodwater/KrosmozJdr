@@ -22,6 +22,8 @@ import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getCreatureTraitFieldDescriptors } from "@/Entities/creature-trait/creature-trait-descriptors";
+import CreatureTraitMarks from "@/Pages/Molecules/entity/creature-trait/CreatureTraitMarks.vue";
+import LevelBadge from "@/Pages/Molecules/data-display/LevelBadge.vue";
 import { provideCharacteristicRuntime } from "@/Composables/entity/characteristicRuntimeContext";
 
 const props = defineProps({
@@ -107,6 +109,13 @@ const mediaSrc = computed(() => {
     return u && String(u).trim() ? String(u) : "";
 });
 
+const traitLevel = computed(() => {
+    const raw = props.creatureTrait?._data?.level ?? props.creatureTrait?.level;
+    if (raw === null || raw === undefined || raw === "") return null;
+    const n = Number(raw);
+    return Number.isFinite(n) ? n : null;
+});
+
 const metaFields = computed(() => ["read_level", "write_level"].filter(canShowField));
 
 const technicalFields = computed(() =>
@@ -168,6 +177,12 @@ const handleAction = async (actionKey) => {
         <EntityViewHeader :mode="headerMode">
             <template #media>
                 <div class="group relative size-24 shrink-0 sm:size-28 md:size-32">
+                    <div
+                        v-if="traitLevel !== null"
+                        class="absolute top-1.5 left-1.5 z-20"
+                    >
+                        <LevelBadge :level="traitLevel" size="sm" />
+                    </div>
                     <ImageViewer
                         v-if="mediaSrc"
                         :source="mediaSrc"
@@ -194,6 +209,7 @@ const handleAction = async (actionKey) => {
                 <component :is="titleTag" class="text-xl font-bold break-words text-primary-100 md:text-2xl">
                     <CellRenderer :cell="getCell('name')" ui-color="primary" />
                 </component>
+                <CreatureTraitMarks class="mt-1" :trait="creatureTrait" mode="full" />
             </template>
 
             <template v-if="hasDescription" #subtitle>

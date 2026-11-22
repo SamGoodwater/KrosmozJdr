@@ -5,215 +5,383 @@ declare(strict_types=1);
 /**
  * Traits permanents jouables.
  *
- * Les neuf fiches historiques (Malade, Lourd, tailles, poisons, Vif / Vive, Agile) gardent leur texte.
- * Les autres viennent des traits optionnels de D&D 3.5, réécrits avec les compétences,
- * les sauvegardes et l’avantage / le désavantage de KrosmozJDR.
- * École prédestinée n’est pas repris : il n’y a ni écoles de magie ni niveau de lanceur.
- * Le trait de vitesse s’appelle Rapide : Vif / Vive est déjà l’initiative.
+ * - `level` : puissance, de 1 (faible) à 20 (très fort). Un personnage ne prend pas un trait au-dessus de son niveau.
+ * - `available_for_characters` : vrai = un PJ ou un PNJ peut le prendre. Faux = créatures seulement.
  *
- * @return list<array{name: string, description: string, image: string}>
+ * Plus de traits bas (1–4) que de traits hauts. Les dons D&D d’armes, d’armures et de niveaux de sorts
+ * ne sont pas repris : ici l’arme ne fait que donner des caractéristiques, on ne porte pas d’armure,
+ * et un sort ne se paie pas en emplacements.
+ *
+ * @return list<array{name: string, description: string, image: string, level?: int|null, available_for_characters?: bool}>
  */
 $icon = static fn (string $file): string => '/storage/images/icons/traits/'.$file;
 
-return [
+$traits = [
     [
         'name' => 'Malade',
-        'description' => 'Désavantage sur les tests de Force et d’Agilité selon les règles.',
+        'description' => 'Tu as un désavantage aux tests de Force et d’Agilité, selon les règles.',
         'image' => $icon('malade.png'),
     ],
     [
         'name' => 'Lourd',
-        'description' => 'Difficile à déplacer et incapable de se déplacer sur des sols fragiles.',
+        'description' => 'On te déplace difficilement. Tu ne peux pas avancer sur un sol fragile.',
         'image' => $icon('lourd.png'),
     ],
     [
         'name' => 'Petite taille',
-        'description' => 'Avantage en discrétion, mais déplacement réduit.',
+        'description' => 'Tu as un avantage en discrétion. Ton déplacement est réduit.',
         'image' => $icon('petite-taille.png'),
     ],
     [
         'name' => 'Grande taille',
-        'description' => 'Avantage en intimidation, désavantage en discrétion.',
+        'description' => 'Tu as un avantage en intimidation et un désavantage en discrétion.',
         'image' => $icon('grande-taille.png'),
     ],
     [
         'name' => 'Gigantesque',
-        'description' => 'Grande taille extrême avec avantages de Force et perception.',
+        'description' => 'Tu es immense. Tu as un avantage en Force et en perception.',
         'image' => $icon('gigantesque.png'),
     ],
     [
         'name' => 'Insensible aux poisons',
-        'description' => 'Ne peut pas être empoisonné.',
+        'description' => 'Tu ne peux pas être empoisonné·e.',
         'image' => $icon('insensible-aux-poisons.png'),
     ],
     [
         'name' => 'Métaboliseur rapide',
-        'description' => 'Ne peut pas être empoisonné par ingestion.',
+        'description' => 'Un poison avalé ne t’empoisonne pas.',
         'image' => $icon('metaboliseur-rapide.png'),
     ],
     [
         'name' => 'Vif / Vive',
-        'description' => 'Commence le combat en premier sans jet d’initiative.',
+        'description' => 'Tu commences le combat en premier, sans jet d’initiative.',
         'image' => $icon('vif.png'),
     ],
     [
         'name' => 'Agile',
-        'description' => 'Réussit automatiquement ses jets de fuite et ne peut pas être taclé.',
+        'description' => 'Tu réussis automatiquement tes jets de fuite. On ne peut pas te tacler.',
         'image' => $icon('agile.png'),
     ],
     [
         'name' => 'Abrupt',
-        'description' => 'Avantage aux jets d’Intimidation. Désavantage aux jets de Supercherie et de Persuasion.',
+        'description' => 'Tu as un avantage aux jets d’Intimidation. Tu as un désavantage aux jets de Supercherie et de Persuasion.',
         'image' => $icon('abrupt.png'),
     ],
     [
         'name' => 'Absorbé',
-        'description' => 'Avantage aux jets d’Arcanes, d’Histoire, de Nature et de Religion. Désavantage aux jets de Perception.',
+        'description' => 'Tu as un avantage aux jets d’Arcanes, d’Histoire, de Nature et de Religion. Tu as un désavantage aux jets de Perception.',
         'image' => $icon('absorbe.png'),
     ],
     [
         'name' => 'Agressif',
-        'description' => 'Avantage au jet d’initiative. La CA diminue de 1.',
+        'description' => 'Tu as un avantage au jet d’initiative. Ta CA diminue de 1.',
         'image' => $icon('agressif.png'),
     ],
     [
         'name' => 'Amorphe',
-        'description' => 'Avantage aux jets de sauvegarde de Sagesse contre le charme. Désavantage au jet d’initiative.',
+        'description' => 'Tu as un avantage aux jets de sauvegarde de Sagesse contre le charme. Tu as un désavantage au jet d’initiative.',
         'image' => $icon('amorphe.png'),
     ],
     [
         'name' => 'Appliqué',
-        'description' => 'Avantage aux jets pour maintenir sa concentration. Désavantage aux jets de Perception.',
+        'description' => 'Tu as un avantage aux jets pour garder ta concentration. Tu as un désavantage aux jets de Perception.',
         'image' => $icon('applique.png'),
     ],
     [
         'name' => 'Bagarreur',
-        'description' => 'Avantage aux attaques à mains nues et pour agripper. Désavantage aux autres jets d’attaque. Les armes naturelles n’en profitent pas.',
+        'description' => 'Tu as un avantage aux attaques à mains nues et pour agripper. Tu as un désavantage aux autres jets d’attaque. Les armes naturelles n’en profitent pas.',
         'image' => $icon('bagarreur.png'),
     ],
     [
         'name' => 'Brutal',
-        'description' => 'Désavantage aux jets d’attaque au corps à corps. Avantage aux jets de dégâts de ces attaques.',
+        'description' => 'Tu as un désavantage aux jets d’attaque au corps à corps. Tu as un avantage aux jets de dégâts de ces attaques.',
         'image' => $icon('brutal.png'),
     ],
     [
         'name' => 'Cavalier-né',
-        'description' => 'Avantage aux jets de Dressage pour monter ou diriger une monture. Désavantage aux autres jets de Dressage.',
+        'description' => 'Tu as un avantage aux jets de Dressage pour monter ou diriger une monture. Tu as un désavantage aux autres jets de Dressage.',
         'image' => $icon('cavalier-ne.png'),
     ],
     [
         'name' => 'Corpulent',
-        'description' => 'Avantage aux jets de Force pour ne pas être poussé ou renversé. Désavantage aux jets d’Acrobaties pour se dégager.',
+        'description' => 'Tu as un avantage aux jets de Force pour ne pas être poussé ou renversé. Tu as un désavantage aux jets d’Acrobaties pour te dégager.',
         'image' => $icon('corpulent.png'),
     ],
     [
         'name' => 'Courageux',
-        'description' => 'Avantage aux jets de sauvegarde de Sagesse. Désavantage aux jets de sauvegarde de Vitalité.',
+        'description' => 'Tu as un avantage aux jets de sauvegarde de Sagesse. Tu as un désavantage aux jets de sauvegarde de Vitalité.',
         'image' => $icon('courageux.png'),
     ],
     [
         'name' => 'Désinvolte',
-        'description' => 'Avantage aux jets de sauvegarde de Sagesse. Désavantage aux jets de sauvegarde d’Agilité.',
+        'description' => 'Tu as un avantage aux jets de sauvegarde de Sagesse. Tu as un désavantage aux jets de sauvegarde d’Agilité.',
         'image' => $icon('desinvolte.png'),
     ],
     [
         'name' => 'Dur d\'oreille',
-        'description' => 'Avantage aux jets de Perception qui reposent sur la vue. Désavantage à ceux qui reposent sur l’ouïe.',
+        'description' => 'Tu as un avantage aux jets de Perception qui reposent sur la vue. Tu as un désavantage à ceux qui reposent sur l’ouïe.',
         'image' => $icon('dur-d-oreille.png'),
     ],
     [
         'name' => 'Engageant',
-        'description' => 'Avantage aux jets de Persuasion pour obtenir des renseignements. Désavantage aux jets d’Intimidation et de Perspicacité.',
+        'description' => 'Tu as un avantage aux jets de Persuasion pour obtenir des renseignements. Tu as un désavantage aux jets d’Intimidation et de Perspicacité.',
         'image' => $icon('engageant.png'),
     ],
     [
         'name' => 'Honnête',
-        'description' => 'Avantage aux jets de Persuasion. Désavantage aux jets de Supercherie et de Perspicacité.',
+        'description' => 'Tu as un avantage aux jets de Persuasion. Tu as un désavantage aux jets de Supercherie et de Perspicacité.',
         'image' => $icon('honnete.png'),
     ],
     [
         'name' => 'Hypermétrope',
-        'description' => 'Avantage aux jets de Perception à distance. Désavantage aux jets d’Investigation de près.',
+        'description' => 'Tu as un avantage aux jets de Perception à distance. Tu as un désavantage aux jets d’Investigation de près.',
         'image' => $icon('hypermetrope.png'),
     ],
     [
         'name' => 'Infatigable',
-        'description' => 'Avantage aux jets de Vitalité pour prolonger un effort. Ce qui ne devrait que fatiguer impose l’Épuisement.',
+        'description' => 'Tu as un avantage aux jets de Vitalité pour prolonger un effort. Ce qui ne devrait que te fatiguer t’impose l’Épuisement.',
         'image' => $icon('infatigable.png'),
     ],
     [
         'name' => 'Insaisissable',
-        'description' => 'Avantage pour échapper à une prise. Désavantage aux autres jets de lutte.',
+        'description' => 'Tu as un avantage pour échapper à une prise. Tu as un désavantage aux autres jets de lutte.',
         'image' => $icon('insaisissable.png'),
     ],
     [
         'name' => 'Lent',
-        'description' => 'Gagne 1 PV de plus à chaque niveau. Ses PM de base sont divisés par 2.',
+        'description' => 'Tu gagnes 1 PV de plus à chaque niveau. Tes PM de base sont divisés par 2.',
         'image' => $icon('lent.png'),
     ],
     [
         'name' => 'Maigre',
-        'description' => 'Avantage aux jets d’Acrobaties pour se faufiler. Désavantage aux jets de Force contre une poussée ou un renversement.',
+        'description' => 'Tu as un avantage aux jets d’Acrobaties pour te faufiler. Tu as un désavantage aux jets de Force contre une poussée ou un renversement.',
         'image' => $icon('maigre.png'),
     ],
     [
         'name' => 'Malhonnête',
-        'description' => 'Avantage aux jets de Supercherie. Désavantage aux jets de Persuasion.',
+        'description' => 'Tu as un avantage aux jets de Supercherie. Tu as un désavantage aux jets de Persuasion.',
         'image' => $icon('malhonnete.png'),
     ],
     [
         'name' => 'Méfiant',
-        'description' => 'Avantage aux jets de Perspicacité. Désavantage aux jets de Persuasion et d’Intimidation.',
+        'description' => 'Tu as un avantage aux jets de Perspicacité. Tu as un désavantage aux jets de Persuasion et d’Intimidation.',
         'image' => $icon('mefiant.png'),
     ],
     [
         'name' => 'Musculeux',
-        'description' => 'Avantage aux jets de Force et aux compétences de Force. Désavantage aux jets d’Agilité et aux compétences d’Agilité.',
+        'description' => 'Tu as un avantage aux jets de Force et aux compétences de Force. Tu as un désavantage aux jets d’Agilité et aux compétences d’Agilité.',
         'image' => $icon('musculeux.png'),
     ],
     [
         'name' => 'Myope',
-        'description' => 'Avantage aux jets d’Investigation de près. Désavantage aux jets de Perception à distance.',
+        'description' => 'Tu as un avantage aux jets d’Investigation de près. Tu as un désavantage aux jets de Perception à distance.',
         'image' => $icon('myope.png'),
     ],
     [
         'name' => 'Nyctalope',
-        'description' => 'Voit 2 cases plus loin dans le noir. Désavantage aux jets de Perception en pleine lumière. Il faut déjà voir dans le noir.',
+        'description' => 'Tu vois 2 cases plus loin dans le noir. Tu as un désavantage aux jets de Perception en pleine lumière. Il faut déjà voir dans le noir.',
         'image' => $icon('nyctalope.png'),
     ],
     [
         'name' => 'Passionné',
-        'description' => 'Avantage aux jets de sauvegarde de Vitalité. Désavantage aux jets de sauvegarde de Sagesse.',
+        'description' => 'Tu as un avantage aux jets de sauvegarde de Vitalité. Tu as un désavantage aux jets de sauvegarde de Sagesse.',
         'image' => $icon('passionne.png'),
     ],
     [
         'name' => 'Poli',
-        'description' => 'Avantage aux jets de Persuasion. Désavantage aux jets d’Intimidation.',
+        'description' => 'Tu as un avantage aux jets de Persuasion. Tu as un désavantage aux jets d’Intimidation.',
         'image' => $icon('poli.png'),
     ],
     [
         'name' => 'Prudent',
-        'description' => 'Sans effet si la créature est immunisée à la terreur. Sinon, +1 CA quand elle n’attaque pas dans son tour, et désavantage aux sauvegardes contre la terreur.',
+        'description' => 'Sans effet si tu es immunisé·e à la terreur. Sinon, +1 CA quand tu n’attaques pas dans ton tour, et un désavantage aux sauvegardes contre la terreur.',
         'image' => $icon('prudent.png'),
     ],
     [
         'name' => 'Sauvage',
-        'description' => 'Avantage aux jets de Dressage. Désavantage aux jets de Supercherie et de Persuasion.',
+        'description' => 'Tu as un avantage aux jets de Dressage. Tu as un désavantage aux jets de Supercherie et de Persuasion.',
         'image' => $icon('sauvage.png'),
     ],
     [
         'name' => 'Spécialisé',
-        'description' => 'Choisit Arcanes, Histoire, Nature ou Religion : avantage à celle-ci, désavantage aux trois autres.',
+        'description' => 'Tu choisis Arcanes, Histoire, Nature ou Religion : avantage à celle-ci, désavantage aux trois autres.',
         'image' => $icon('specialise.png'),
     ],
     [
         'name' => 'Rapide',
-        'description' => 'Ses PM de base augmentent de 2. Enlève 1 PV gagné à chaque niveau, y compris au niveau 1 (0 possible).',
+        'description' => 'Tes PM de base augmentent de 2. Tu enlèves 1 PV gagné à chaque niveau, y compris au niveau 1 (0 possible).',
         'image' => $icon('rapide.png'),
     ],
     [
         'name' => 'Vigoureux',
-        'description' => 'Avantage aux jets de sauvegarde de Vitalité. Désavantage aux jets de sauvegarde d’Agilité.',
+        'description' => 'Tu as un avantage aux jets de sauvegarde de Vitalité. Tu as un désavantage aux jets de sauvegarde d’Agilité.',
         'image' => $icon('vigoureux.png'),
     ],
+    [
+        'name' => 'Pisteur',
+        'description' => 'Tu as un avantage aux jets de Perception pour suivre une piste. Tu ne te perds pas en pleine nature.',
+        'image' => $icon('pisteur.png'),
+    ],
+    [
+        'name' => 'Polyglotte',
+        'description' => 'Tu connais deux langues de plus.',
+        'image' => $icon('polyglotte.png'),
+    ],
+    [
+        'name' => 'Cuisinier',
+        'description' => 'Pendant un repos, tu prépares un repas. Une créature récupère 1d4 PV. 1×/jour.',
+        'image' => $icon('cuisinier.png'),
+    ],
+    [
+        'name' => 'Guérisseur',
+        'description' => 'Hors combat, en 10 minutes : tu soignes 1d4 PV ou tu stabilises. 1×/créature/repos.',
+        'image' => $icon('guerisseur.png'),
+    ],
+    [
+        'name' => 'Furtif',
+        'description' => 'Tu as un avantage en Discrétion dans la pénombre. Tu as un désavantage en pleine lumière.',
+        'image' => $icon('furtif.png'),
+    ],
+    [
+        'name' => 'Athlète',
+        'description' => 'Tu as un avantage aux jets d’Athlétisme pour grimper ou sauter. Te relever ne te coûte pas de PM.',
+        'image' => $icon('athlete.png'),
+    ],
+    [
+        'name' => 'Initié',
+        'description' => '1×/repos, hors combat : une petite lumière, un message court, ou tu ouvres une serrure simple.',
+        'image' => $icon('initie.png'),
+    ],
+    [
+        'name' => 'Souple',
+        'description' => 'Tu as un avantage pour échapper à une prise et à tes jets de fuite. On peut encore te tacler.',
+        'image' => $icon('souple.png'),
+    ],
+    [
+        'name' => 'Résistance au poison',
+        'description' => 'Tu as un avantage aux sauvegardes contre le poison. Les dégâts de poison que tu subis sont divisés par 2.',
+        'image' => $icon('resistance-au-poison.png'),
+    ],
+    [
+        'name' => 'Sentinelle',
+        'description' => 'Quand tu tacles, la cible perd aussi 1 PM.',
+        'image' => $icon('sentinelle.png'),
+    ],
+    [
+        'name' => 'Second souffle',
+        'description' => '1×/repos, pour 2 PA : tu récupères 1d6 PV.',
+        'image' => $icon('second-souffle.png'),
+    ],
+    [
+        'name' => 'Charge',
+        'description' => 'Si tu avances d’au moins 3 cases en ligne droite avant une attaque au contact, tu ajoutes 1d4 aux dégâts.',
+        'image' => $icon('charge.png'),
+    ],
+    [
+        'name' => 'Meneur',
+        'description' => '1×/repos, un discours : tes alliés à 2 cases ou moins gagnent 1d4 PV temporaires.',
+        'image' => $icon('meneur.png'),
+    ],
+    [
+        'name' => 'Endurci',
+        'description' => 'Tu choisis Force, Agilité ou Sagesse. Tu as un avantage aux sauvegardes de cette caractéristique.',
+        'image' => $icon('endurci.png'),
+    ],
+    [
+        'name' => 'Brise-sort',
+        'description' => 'Si une créature lance un sort à 1 case de toi, tu peux réagir : son jet d’attaque de ce sort a un désavantage. 1×/tour.',
+        'image' => $icon('brise-sort.png'),
+    ],
+    [
+        'name' => 'Dur à cuire',
+        'description' => 'Tu gagnes 1 PV de plus à chaque niveau, y compris au niveau 1.',
+        'image' => $icon('dur-a-cuire.png'),
+    ],
+    [
+        'name' => 'Adepte élémentaire',
+        'description' => 'Tu choisis Feu, Eau, Air ou Terre. Tes dégâts de cet élément ignorent l’état Résistant. Invulnérable s’applique toujours.',
+        'image' => $icon('adepte-elementaire.png'),
+    ],
+    [
+        'name' => 'Inébranlable',
+        'description' => 'Tu as un avantage aux sauvegardes contre le charme et la terreur. Une créature de niveau inférieur au tien ne peut ni te charmer ni te terroriser.',
+        'image' => $icon('inebranlable.png'),
+    ],
 ];
+
+/**
+ * Puissance et accès PJ / PNJ. Plus de fiches en bas de l’échelle.
+ *
+ * @var array<string, array{0: int, 1: bool}>
+ */
+$power = [
+    'Malade' => [1, false],
+    'Poli' => [1, true],
+    'Honnête' => [1, true],
+    'Malhonnête' => [1, true],
+    'Dur d\'oreille' => [1, true],
+    'Myope' => [1, true],
+    'Hypermétrope' => [1, true],
+    'Amorphe' => [1, true],
+    'Spécialisé' => [1, true],
+    'Absorbé' => [1, true],
+    'Sauvage' => [1, true],
+    'Cavalier-né' => [1, true],
+    'Appliqué' => [1, true],
+    'Méfiant' => [1, true],
+    'Engageant' => [1, true],
+    'Abrupt' => [1, true],
+    'Pisteur' => [1, true],
+    'Polyglotte' => [1, true],
+    'Cuisinier' => [1, true],
+    'Petite taille' => [4, false],
+    'Courageux' => [4, true],
+    'Passionné' => [4, true],
+    'Vigoureux' => [4, true],
+    'Désinvolte' => [4, true],
+    'Corpulent' => [4, true],
+    'Maigre' => [4, true],
+    'Insaisissable' => [4, true],
+    'Infatigable' => [4, true],
+    'Nyctalope' => [4, true],
+    'Guérisseur' => [4, true],
+    'Furtif' => [4, true],
+    'Athlète' => [4, true],
+    'Initié' => [4, true],
+    'Souple' => [4, true],
+    'Grande taille' => [8, false],
+    'Lourd' => [8, false],
+    'Métaboliseur rapide' => [8, false],
+    'Agressif' => [8, true],
+    'Brutal' => [8, true],
+    'Bagarreur' => [8, true],
+    'Musculeux' => [8, true],
+    'Prudent' => [8, true],
+    'Lent' => [8, true],
+    'Résistance au poison' => [8, true],
+    'Sentinelle' => [8, true],
+    'Second souffle' => [8, true],
+    'Charge' => [8, true],
+    'Meneur' => [8, true],
+    'Agile' => [12, false],
+    'Insensible aux poisons' => [12, false],
+    'Rapide' => [12, true],
+    'Endurci' => [12, true],
+    'Brise-sort' => [12, true],
+    'Dur à cuire' => [12, true],
+    'Vif / Vive' => [16, false],
+    'Gigantesque' => [16, false],
+    'Adepte élémentaire' => [16, true],
+    'Inébranlable' => [20, true],
+];
+
+return array_map(static function (array $trait) use ($power): array {
+    $row = $power[$trait['name']] ?? null;
+    if ($row === null) {
+        throw new RuntimeException('Puissance manquante pour le trait '.$trait['name']);
+    }
+    $trait['level'] = $row[0];
+    $trait['available_for_characters'] = $row[1];
+
+    return $trait;
+}, $traits);

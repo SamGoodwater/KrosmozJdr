@@ -28,6 +28,24 @@ export class CreatureTrait extends BaseModel {
         return this._data.image || '';
     }
 
+    /** Puissance 1–20. Null si la fiche n’est pas encore classée. */
+    get level() {
+        const value = this._data.level;
+        if (value === null || value === undefined || value === '') return null;
+        const n = Number(value);
+        return Number.isFinite(n) ? n : null;
+    }
+
+    /** Vrai si un PJ ou un PNJ peut prendre ce trait. */
+    get availableForCharacters() {
+        const value = this._data.available_for_characters;
+        return value === true || value === 1 || value === '1';
+    }
+
+    get available_for_characters() {
+        return this.availableForCharacters;
+    }
+
     // ============================================
     // RELATIONS
     // ============================================
@@ -189,6 +207,8 @@ export class CreatureTrait extends BaseModel {
         return {
             name: this.name,
             description: this.description,
+            level: this.level,
+            available_for_characters: this.availableForCharacters,
             state: this.state,
             read_level: this.readLevel,
             write_level: this.writeLevel,

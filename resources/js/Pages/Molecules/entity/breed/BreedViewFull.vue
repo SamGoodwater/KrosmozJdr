@@ -44,6 +44,20 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    /**
+     * Affiche le bloc « Variantes de sorts » (icônes / minimal / texte).
+     * Sur la page Show, on le place après les sections CMS ; laisser true en modal.
+     */
+    showSpellVariants: {
+        type: Boolean,
+        default: true,
+    },
+    /** Blocs sous l’en-tête — désactivables pour recomposer la page Show. */
+    showOrientations: { type: Boolean, default: true },
+    showCapabilities: { type: Boolean, default: true },
+    showTraits: { type: Boolean, default: true },
+    showLanguages: { type: Boolean, default: true },
+    showMechanics: { type: Boolean, default: true },
     tableMeta: {
         type: Object,
         default: () => ({}),
@@ -326,7 +340,10 @@ const handleAction = async (actionKey) => {
             </template>
         </EntityViewHeader>
 
-        <div class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-3">
+        <div
+            v-if="showOrientations"
+            class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-3"
+        >
             <div>
                 <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Orientations</h3>
                 <p class="text-xs text-primary-400/90 mt-1">
@@ -337,14 +354,14 @@ const handleAction = async (actionKey) => {
         </div>
 
         <BreedCapabilitiesDisplay
-            v-if="linkedCapabilities.length"
+            v-if="showCapabilities && linkedCapabilities.length"
             :capabilities="linkedCapabilities"
             density="full"
             :characteristic-runtime="characteristicRuntime"
         />
 
         <div
-            v-if="hasLinkedCreatureTraits"
+            v-if="showTraits && hasLinkedCreatureTraits"
             class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-2"
             role="region"
             aria-label="Traits de classe"
@@ -354,7 +371,7 @@ const handleAction = async (actionKey) => {
         </div>
 
         <div
-            v-if="hasLinkedLanguages"
+            v-if="showLanguages && hasLinkedLanguages"
             class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-2"
             role="region"
             aria-label="Langues"
@@ -363,10 +380,10 @@ const handleAction = async (actionKey) => {
             <EntityLanguagesInline :languages="linkedLanguages" :show-label="false" />
         </div>
 
-        <BreedMechanicsDisplay :html="mechanicsHtml" />
+        <BreedMechanicsDisplay v-if="showMechanics" :html="mechanicsHtml" />
 
         <BreedVariantsDisplay
-            v-if="hasSpellSlots"
+            v-if="showSpellVariants && hasSpellSlots"
             :breed="breed?._data ?? breed"
             density="full"
             :characteristic-runtime="characteristicRuntime"

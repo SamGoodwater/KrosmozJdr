@@ -56,7 +56,7 @@ class CreatureTraitTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['state', 'read_level', 'write_level'] as $k) {
+        foreach (['state', 'read_level', 'write_level', 'level', 'available_for_characters'] as $k) {
             if (! array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -94,8 +94,14 @@ class CreatureTraitTableController extends Controller
         if ($this->hasFilterValue($filters, 'write_level')) {
             $this->applyEqualityFilter($query, 'write_level', $filters['write_level'], 'int');
         }
+        if ($this->hasFilterValue($filters, 'level')) {
+            $this->applyIntegerRangeFilter($query, 'level', $filters['level']);
+        }
+        if ($this->hasFilterValue($filters, 'available_for_characters')) {
+            $this->applyEqualityFilter($query, 'available_for_characters', $filters['available_for_characters'], 'bool');
+        }
 
-        $allowedSort = ['id', 'name', 'state', 'read_level', 'write_level', 'created_at', 'updated_at'];
+        $allowedSort = ['id', 'name', 'level', 'available_for_characters', 'state', 'read_level', 'write_level', 'created_at', 'updated_at'];
         $this->applyEntityTableSort($query, $request, $allowedSort, 'id', 'desc');
 
         $pageResult = $this->paginateEntityTable($query, $request);
@@ -116,6 +122,11 @@ class CreatureTraitTableController extends Controller
             'state' => EntityState::options(),
             'read_level' => self::LEVEL_OPTIONS,
             'write_level' => self::LEVEL_OPTIONS,
+            'level' => ['min' => 1, 'max' => 20],
+            'available_for_characters' => [
+                ['value' => '1', 'label' => 'PJ / PNJ'],
+                ['value' => '0', 'label' => 'Créatures'],
+            ],
         ];
 
         // Mode "entities" : retourner les entités brutes
@@ -127,6 +138,8 @@ class CreatureTraitTableController extends Controller
                     'id' => $a->id,
                     'name' => $a->name,
                     'description' => $a->description,
+                    'level' => $a->level !== null ? (int) $a->level : null,
+                    'available_for_characters' => (bool) $a->available_for_characters,
                     'state' => (string) ($a->state ?? 'draft'),
                     'read_level' => (int) ($a->read_level ?? 0),
                     'write_level' => (int) ($a->write_level ?? 0),
@@ -194,6 +207,23 @@ class CreatureTraitTableController extends Controller
                             'sortValue' => (string) ($a->description ?? ''),
                         ],
                     ],
+                    'level' => [
+                        'type' => 'text',
+                        'value' => $a->level !== null ? (string) (int) $a->level : '—',
+                        'params' => [
+                            'filterValue' => $a->level !== null ? (int) $a->level : null,
+                            'sortValue' => $a->level !== null ? (int) $a->level : 0,
+                        ],
+                    ],
+                    'available_for_characters' => [
+                        'type' => 'badge',
+                        'value' => $a->available_for_characters ? 'PJ / PNJ' : 'Créatures',
+                        'params' => [
+                            'color' => $a->available_for_characters ? 'success' : 'neutral',
+                            'filterValue' => $a->available_for_characters ? '1' : '0',
+                            'sortValue' => $a->available_for_characters ? 1 : 0,
+                        ],
+                    ],
                     'state' => [
                         'type' => 'badge',
                         'value' => $state,
@@ -251,6 +281,8 @@ class CreatureTraitTableController extends Controller
                         'id' => $a->id,
                         'name' => $a->name,
                         'description' => $a->description,
+                        'level' => $a->level !== null ? (int) $a->level : null,
+                        'available_for_characters' => (bool) $a->available_for_characters,
                         'state' => (string) ($a->state ?? 'draft'),
                         'read_level' => (int) ($a->read_level ?? 0),
                         'write_level' => (int) ($a->write_level ?? 0),

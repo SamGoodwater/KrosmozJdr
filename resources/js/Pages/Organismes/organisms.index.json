@@ -157,6 +157,29 @@
     "file": "section/SectionCommonFields.vue"
   },
   {
+    "name": "PageTopNav",
+    "description": "Bandeau de page : fil d'Ariane et menu des sections.",
+    "props": [
+      {
+        "name": "showBreadcrumb",
+        "type": "Boolean",
+        "desc": "- Affiche le fil d'Ariane"
+      },
+      {
+        "name": "pageTitle",
+        "type": "String",
+        "desc": "- Nom de la page dans le fil"
+      },
+      {
+        "name": "sections",
+        "type": "Array",
+        "desc": "- Entrées du plan (titre, hash, sous-titres)"
+      }
+    ],
+    "slots": [],
+    "file": "section/PageTopNav.vue"
+  },
+  {
     "name": "PageSectionEditor",
     "description": "PageSectionEditor Organism",
     "props": [
@@ -924,6 +947,13 @@
     "props": [],
     "slots": [],
     "file": "entity/BreedSpellSlotsEditor.vue"
+  },
+  {
+    "name": "BreedSectionsWithLevelSpells",
+    "description": "Sections CMS d’une classe + cartes SpellViewMinimal sous chaque « Niveau N » à sorts.",
+    "props": [],
+    "slots": [],
+    "file": "entity/BreedSectionsWithLevelSpells.vue"
   },
   {
     "name": "BreedElementOrientationsEditor",

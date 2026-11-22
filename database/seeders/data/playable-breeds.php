@@ -7,9 +7,9 @@ declare(strict_types=1);
  *
  * Une section CMS « Texte » par classe. Le passif, les voies et les sorts restent
  * sur la fiche Full ; ici on fait imaginer au joueur ou à la joueuse un historique,
- * une façon de jouer, une identité. Gabarit validé (Iop, Crâ, Ecaflip) : `presentation`,
- * quelques paragraphes simples. Les autres fiches gardent l’ancien gabarit
- * (identity, Repères, différence, synergies) jusqu’à leur réécriture.
+ * une façon de jouer, une identité. Gabarit : `presentation`, quelques paragraphes
+ * simples pour les 19 classes. Féca a servi d’étalon de ton.
+ * Le Crâ ajoute une enveloppe `class_progression` (tableau + section par niveau).
  *
  * @return list<array<string, mixed>>
  */
@@ -18,254 +18,311 @@ return [
         'name' => 'Iop',
         'passive' => 'Tête brûlée',
         'presentation' => [
-            'Les Iops sont les guerrier·ère·s du dieu Iop : fonceur·euse·s, généreux·ses, jamais contre un bon défi. On les dit têtes brûlées ; elles et ils répondent qu’ils n’ont simplement pas peur.',
-            'Ton Iop peut être un·e ancien·ne milicien·ne, un·e champion·ne de tournoi qui cherche plus fort que soi, un·e chevalier·ère errant·e qui défend la veuve et le bouftou, ou simplement quelqu’un qui pense que la plupart des problèmes se règlent en avançant.',
-            'En combat, tu te prépares, tu bondis au contact et tu frappes là où ça fait mal. Ta voie dit comment : la Terre cogne, l’Air bouscule, le Feu galvanise, l’Eau tient la ligne.',
-            'Côté spécialisation, Milicien·ne tient le front et Explorateur·rice va bien à l’aventurier·ère casse-cou. Un Iop Érudit ou Courtisan·e, c’est un beau contre-emploi à jouer.',
+            'Tu es Iop. Épée en avant, tu fonces. On te dit tête brûlée. Toi, tu dis que tu n’as pas peur.',
+            'En combat, tu te prépares, tu bondis au contact et tu frappes. Ta voie dit comment : la Terre frappe, l’Air place, le Feu renforce, l’Eau protège.',
+            'Côté spécialisation, Milicien·ne tient le front. Explorateur·rice va bien au casse-cou. Un Iop Érudit ou Courtisan, c’est un contre-emploi.',
         ],
     ],
     [
         'name' => 'Crâ',
         'passive' => 'Œil de Crâ',
         'presentation' => [
-            'Les Crâs sont les archer·ère·s du Monde des Douze : fier·ère·s, précis·es, plus à l’aise à trente mètres qu’à bout portant. Leur œil perçant en fait des éclaireur·euse·s, des chasseur·euse·s et des sentinelles recherché·e·s.',
-            'Ton Crâ a peut-être grandi dans une tour de guet, chassé pour nourrir son village ou servi de tireur·euse d’élite dans une milice. Iel observe avant d’agir, choisit sa cible et ne la lâche plus.',
-            'En combat, tu restes en retrait, tu repousses ce qui s’approche et tu tires de loin. Ta voie dit comment : l’Air place, la Terre frappe fort, le Feu renforce tes tirs, l’Eau ralentit. Hors combat, tu es les yeux du groupe.',
-            'Côté spécialisation, Explorateur·rice ou Voleur·euse prolongent l’œil et la discrétion ; Milicien·ne donne un Crâ de garnison, posté au créneau.',
+            'Tu es Crâ. Arc en main, tu tires de loin. Plus à l’aise à trente mètres qu’au contact.',
+            'Ton Crâ a grandi dans une tour de guet, chassé pour le village, ou tiré pour une milice. Tu observes, tu choisis, tu ne lâches plus.',
+            'En combat, tu restes en retrait, tu repousses ce qui s’approche et tu tires. Ta voie dit comment : l’Air place, la Terre frappe, le Feu renforce tes tirs, l’Eau ralentit. Hors combat, tu es les yeux du groupe.',
+            'Côté spécialisation, Explorateur·rice ou Voleur·euse prolongent l’œil. Milicien·ne donne un Crâ de garnison, posté au créneau.',
+        ],
+        'class_progression' => [
+            'hit_die' => 'd6',
+            'hp_random' => '1d6',
+            'hp_stable' => '6',
+            'levels' => [
+                1 => [
+                    'flavor' => 'Tu poses ton arc, tu choisis trois sorts, tu répartis tes points. L’œil de Crâ est déjà là.',
+                    'spells' => [
+                        ['Flèche harcelante', 'Flèche enflammée', 'Flèche d’immobilisation', 'Flèche du vagabond'],
+                        ['Flèche évasive', 'Tir de repli'],
+                        ['Tir éloigné', 'Tir perçant'],
+                    ],
+                    'extra' => 'Tu répartis 10 points de caractéristique (toutes à 8). Option : une carac à 6 pour récupérer 2 points (voir répartition des points).',
+                    'recap' => [
+                        '[[kref:entity:spells:Flèche harcelante|Flèche harcelante]] / [[kref:entity:spells:Flèche enflammée|Flèche enflammée]] / [[kref:entity:spells:Flèche d’immobilisation|Flèche d’immobilisation]] / [[kref:entity:spells:Flèche du vagabond|Flèche du vagabond]]',
+                        '[[kref:entity:spells:Flèche évasive|Flèche évasive]] / [[kref:entity:spells:Tir de repli|Tir de repli]]',
+                        '[[kref:entity:spells:Tir éloigné|Tir éloigné]] / [[kref:entity:spells:Tir perçant|Tir perçant]]',
+                        '10 pts carac',
+                    ],
+                ],
+                2 => [
+                    'spells' => [
+                        ['Vendetta', 'Œil pour œil'],
+                    ],
+                    'recap' => [
+                        '[[kref:entity:spells:Vendetta|Vendetta]] / [[kref:entity:spells:Œil pour œil|Œil pour œil]]',
+                    ],
+                ],
+                3 => [
+                    'class_capability' => 'Flèche guidée par le Wakfu',
+                    'recap' => [
+                        '[[kref:entity:capabilities:Flèche guidée par le Wakfu|Flèche guidée par le Wakfu]]',
+                    ],
+                ],
+                4 => [
+                    'spells' => [
+                        ['Flèche de recul', 'Flèche dévorante', 'Œil de taupe', 'Flèche punitive'],
+                    ],
+                    'carac_or_trait' => true,
+                    'recap' => [
+                        '[[kref:entity:spells:Flèche de recul|Flèche de recul]] / [[kref:entity:spells:Flèche dévorante|Flèche dévorante]] / [[kref:entity:spells:Œil de taupe|Œil de taupe]] / [[kref:entity:spells:Flèche punitive|Flèche punitive]]',
+                        '2 pts carac ou 1 trait',
+                    ],
+                ],
+                5 => [
+                    'spells' => [
+                        ['Tir puissant', 'Représailles'],
+                    ],
+                    'recap' => [
+                        '[[kref:entity:spells:Tir puissant|Tir puissant]] / [[kref:entity:spells:Représailles|Représailles]]',
+                    ],
+                ],
+                6 => [
+                    'spells' => [
+                        ['Balise tactique', 'Balise de rappel'],
+                    ],
+                    'recap' => [
+                        '[[kref:entity:spells:Balise tactique|Balise tactique]] / [[kref:entity:spells:Balise de rappel|Balise de rappel]]',
+                    ],
+                ],
+                7 => [
+                    'spells' => [
+                        ['Flèche boomerang', 'Flèche explosive', 'Flèche ralentissante', 'Flèche massacrante'],
+                    ],
+                    'recap' => [
+                        '[[kref:entity:spells:Flèche boomerang|Flèche boomerang]] / [[kref:entity:spells:Flèche explosive|Flèche explosive]] / [[kref:entity:spells:Flèche ralentissante|Flèche ralentissante]] / [[kref:entity:spells:Flèche massacrante|Flèche massacrante]]',
+                    ],
+                ],
+                8 => [
+                    'spells' => [
+                        ['Flèche écrasante', 'Acuité absolue'],
+                    ],
+                    'recap' => [
+                        '[[kref:entity:spells:Flèche écrasante|Flèche écrasante]] / [[kref:entity:spells:Acuité absolue|Acuité absolue]]',
+                    ],
+                ],
+                9 => [
+                    'class_capability' => 'Pistage',
+                    'recap' => [
+                        '[[kref:entity:capabilities:Pistage|Pistage]]',
+                    ],
+                ],
+                10 => [
+                    'spells' => [
+                        ['Pas chassé', 'Flèche empoisonnée'],
+                    ],
+                    'carac_or_trait' => true,
+                    'recap' => [
+                        '[[kref:entity:spells:Pas chassé|Pas chassé]] / [[kref:entity:spells:Flèche empoisonnée|Flèche empoisonnée]]',
+                        '2 pts carac ou 1 trait',
+                    ],
+                ],
+                11 => [
+                    'spells' => [
+                        ['Sentinelle', 'Flèches amoureuses'],
+                    ],
+                    'recap' => [
+                        '[[kref:entity:spells:Sentinelle|Sentinelle]] / [[kref:entity:spells:Flèches amoureuses|Flèches amoureuses]]',
+                    ],
+                ],
+                12 => [
+                    'spells' => [
+                        ['Pluie de flèches', 'Flèche tyrannique', 'Flèche paralysante', 'Carreaux destructeurs'],
+                    ],
+                    'extra' => 'Les 12 sorts de classe sont appris.',
+                    'recap' => [
+                        '[[kref:entity:spells:Pluie de flèches|Pluie de flèches]] / [[kref:entity:spells:Flèche tyrannique|Flèche tyrannique]] / [[kref:entity:spells:Flèche paralysante|Flèche paralysante]] / [[kref:entity:spells:Carreaux destructeurs|Carreaux destructeurs]]',
+                    ],
+                ],
+                13 => [
+                    'recap' => ['+1 DV'],
+                ],
+                14 => [
+                    'class_capability' => 'Tir parfait',
+                    'recap' => [
+                        '[[kref:entity:capabilities:Tir parfait|Tir parfait]]',
+                    ],
+                ],
+                15 => [
+                    'recap' => ['+1 DV'],
+                ],
+                16 => [
+                    'carac_or_trait' => true,
+                    'recap' => ['2 pts carac ou 1 trait'],
+                ],
+                17 => [
+                    'recap' => ['+1 DV'],
+                ],
+                18 => [
+                    'recap' => ['+1 DV'],
+                ],
+                19 => [
+                    'recap' => ['+1 DV'],
+                ],
+                20 => [
+                    'recap' => ['+1 DV'],
+                ],
+            ],
         ],
     ],
     [
         'name' => 'Féca',
         'passive' => 'Glyphes',
-        'identity' => 'En tant que Féca, tu dessines le terrain. Un glyphe, une armure, un « vous ne passez pas ». On te cherche pour que le groupe survive, pas pour le finir.',
-        'focus' => 'Protection, zones, ligne',
-        'characteristics' => 'Intelligence (Feu) pour les armures. Force (Terre) si tu tapes. Chance (Eau) pour les boucliers d’équipe.',
-        'idealFor' => 'Milicien·ne, Dévot, tout groupe squishy qui a besoin d’un sol.',
-        'difference' => 'Le Féca n’est pas un Eniripsa. Tes glyphes brûlent ou bloquent, ils ne soignent pas au niveau 1. Tu ne remplaces pas le Sacrieur pour encaisser au corps.',
-        'synergies' => [
-            'Milicien·ne' => 'Le seuil et le glyphe : deux façons de dire non.',
-            'Iop' => 'Tu tiens, iel charge. Le glyphe est déjà là.',
-            'Eniripsa' => 'Toi tu poses le sol, iel ramène les PV.',
+        'presentation' => [
+            'Tu es Féca. Bâton en main, signes lumineux autour des poignets, glyphes au sol. L’armure élémentaire se voit : un éclat devant toi, un rempart autour des tiens. À Astrub comme à Bonta, on te reconnaît avant le premier coup.',
+            'En combat, tu poses le terrain, tu couvres les allié·e·s, puis tu déclenches au bon moment. Ta voie dit comment : l’Air place, le Feu entrave, l’Eau protège, la Terre frappe.',
+            'Côté spécialisation, Milicien·ne tient le seuil à côté de tes glyphes. Dévot va bien si tu veux une garde plus posée.',
         ],
     ],
     [
         'name' => 'Osamodas',
         'passive' => 'Troupeau',
-        'identity' => 'En tant qu’Osamodas, tu n’es jamais seul·e. Une bête à tes côtés dès le premier combat. Tu parles aux animaux, et parfois ils répondent.',
-        'focus' => 'Invocation, soutien, contrôle de meute',
-        'characteristics' => 'Intelligence (Feu) si la bête frappe. Chance (Eau) si elle soigne. Agilité (Air) si elle place.',
-        'idealFor' => 'Sylvain·e, Explorateur·rice, tout groupe qui accepte de partager l’espace avec une créature.',
-        'difference' => 'L’Osamodas n’est pas un Sadida. Tes invocations marchent, elles ne poussent pas. Troupeau, c’est une bête, pas un jardin. Pas de fusion au niveau 1.',
-        'synergies' => [
-            'Sylvain·e' => 'La bête et la forêt : deux alliés qui ne parlent pas humain.',
-            'Dévot' => 'Tu invoques, iel bénit. Le troupeau tient plus longtemps.',
-            'Crâ' => 'La bête au contact, la flèche derrière.',
+        'presentation' => [
+            'Tu es Osamodas. Une bête à tes côtés dès le premier combat. Tu appelles, et parfois elle répond.',
+            'En combat, tu poses la horde et tu la fais tenir. Ta voie dit comment : l’Air place, le Feu soigne, l’Eau frappe, la Terre entrave.',
+            'Côté spécialisation, Sylvain·e ou Explorateur·rice vont bien à celui qui voyage avec une créature.',
         ],
     ],
     [
         'name' => 'Enutrof',
         'passive' => 'Pelle',
-        'identity' => 'En tant qu’Enutrof, tu frappes ce qui n’a plus de jambes, et tu ramasses. L’or, le coffre, le coup de pelle : on te cherche pour que le butin arrive, pas pour le discours.',
-        'focus' => 'Butin, contrôle des PM, mêlée opportuniste',
-        'characteristics' => 'Chance (Eau) pour l’or et les malus. Force (Terre) si la pelle tape. Intelligence (Feu) pour accélérer.',
-        'idealFor' => 'Négociant·e, Voleur·euse, tout groupe qui veut que le loot ait un responsable.',
-        'difference' => 'L’Enutrof n’est pas un Voleur. Tu ne crochètes pas : tu taxes ce qui est déjà à terre. Pelle, c’est +1 contre une cible sans PM, pas un pickpocket.',
-        'synergies' => [
-            'Négociant·e' => 'Toi tu trouves, iel vend. La chaîne complète.',
-            'Sram' => 'Iel ralentit, tu frappes. La pelle aime les 0 PM.',
-            'Milicien·ne' => 'Quelqu’un tient pendant que tu fouilles.',
+        'presentation' => [
+            'Tu es Enutrof. Pelle à la main, tu ralentis et tu ramasses. Les coffres ne restent pas fermés longtemps.',
+            'En combat, tu coupes le pas, puis tu frappes ce qui ne bouge plus. Ta voie dit comment : l’Air entrave, la Terre frappe, l’Eau renforce, le Feu soigne.',
+            'Côté spécialisation, Négociant·e ou Voleur·euse s’occupent de ce que tu as trouvé.',
         ],
     ],
     [
         'name' => 'Sram',
         'passive' => 'Pièges',
-        'identity' => 'En tant que Sram, le sol ment. Tu poses, tu disparais, tu reviens. On te cherche pour ce qu’on n’a pas vu venir.',
-        'focus' => 'Pièges, discrétion, burst',
-        'characteristics' => 'Agilité (Air) pour placer et disparaître. Chance (Eau) pour les malus. Force (Terre) si tu poignardes.',
-        'idealFor' => 'Voleur·euse, Explorateur·rice, tout groupe qui accepte que le combat commence avant le tour 1.',
-        'difference' => 'Le Sram n’est pas un Crâ. Tes pièges sont cachés, tes flèches n’existent pas. Invisibilité dès le niveau 1, ce n’est pas un luxe : c’est le kit.',
-        'synergies' => [
-            'Voleur·euse' => 'Deux façons de n’être plus là.',
-            'Roublard' => 'Piège caché, bombe visible : le sol est à vous deux.',
-            'Crâ' => 'Toi tu as posé, iel tire à travers.',
+                'presentation' => [
+            'Tu es Sram. Tu poses, tu disparais, tu reviens. On ne te voit qu’au moment du coup.',
+            'En combat, le sol ment. Ta voie dit comment : l’Air entrave, la Terre frappe, l’Eau renforce, le Feu place.',
+            'Côté spécialisation, Voleur·euse ou Explorateur·rice prolongent la discrétion.',
         ],
     ],
     [
         'name' => 'Xélor',
         'passive' => 'Sablier',
-        'identity' => 'En tant que Xélor, tu échanges les tours et tu gardes un PA en poche. L’horloge n’est pas un décor : c’est ton arme.',
-        'focus' => 'Tempo, téléport, vol de PA',
-        'characteristics' => 'Intelligence (Feu) pour les aiguilles. Chance (Eau) pour geler. Agilité (Air) pour permuter.',
-        'idealFor' => 'Érudit, Artisan·e un peu mécano, tout groupe qui aime jouer dans le désordre du tour.',
-        'difference' => 'Le Xélor n’est pas un Eliotrope. Tes téléports échangent les places, ils n’ouvrent pas un portail. Sablier, c’est un PA en poche, pas une file d’attente MMO.',
-        'synergies' => [
-            'Érudit' => 'Le temps et le livre : deux façons de lire ce qui n’est pas encore arrivé.',
-            'Iop' => 'Tu lui donnes le PA. Iel charge deux fois.',
-            'Eniripsa' => 'Un tour de plus pour soigner, un PA volé pour fuir.',
+                'presentation' => [
+            'Tu es Xélor. Horloge au poignet, tu joues avec l’heure. Tu ralentis, tu téléportes, tu arrives pile.',
+            'En combat, tu gardes un geste d’avance. Ta voie dit comment : l’Air place, la Terre frappe, l’Eau entrave, le Feu renforce.',
+            'Côté spécialisation, Érudit va bien à celui qui lit le temps. Artisan·e va bien si tu aimes les mécanismes.',
         ],
     ],
     [
         'name' => 'Ecaflip',
         'passive' => 'Retomber sur ses pattes',
         'presentation' => [
-            'Les Ecaflips sont les enfants du dieu-chat Ecaflip : joueur·euse·s, charmeur·euse·s, souvent fauché·e·s, toujours prêt·e·s à parier. Pour elles et eux, la chance ne se subit pas : elle se provoque, et elle se paie.',
-            'Ton Ecaflip a peut-être grandi dans les tripots, tiré les cartes sur les marchés, vécu de paris de taverne ou fui une dette un peu trop grosse. Iel a de l’aplomb, du flair, et ne recule pas devant une mise.',
-            'En combat, tu lances la pièce et tu adaptes ton coup à la face : griffe, langue qui soigne, bond, coup de patte. Certains sorts lancent leur propre dé : tu acceptes de perdre un peu pour gagner gros. Ta voie dit comment : l’Eau frappe, le Feu soigne, la Terre entrave, l’Air place.',
-            'Côté spécialisation, Artiste, Négociant·e ou Voleur·euse prolongent le bluff et le jeu ; Courtisan·e donne un Ecaflip des salons.',
+            'Tu es Ecaflip. Tu paries, tu griffes, tu retombes sur tes pattes. La chance, tu la provoques.',
+            'En combat, tu lances la pièce et le coup suit la face. Ta voie dit comment : l’Eau frappe, le Feu soigne, la Terre entrave, l’Air place.',
+            'Côté spécialisation, Artiste, Négociant·e ou Voleur·euse prolongent le bluff. Courtisan·e donne un Ecaflip des salons.',
         ],
     ],
     [
         'name' => 'Eniripsa',
         'passive' => 'Encouragement',
-        'identity' => 'En tant qu’Eniripsa, tu soignes, protèges et buffs : chaque geste encourage. Ton Lapino relaie, tes fées portent un sort plus loin. On te cherche pour que les autres restent debout.',
-        'focus' => 'Soins, mots, Lapino, fées',
-        'characteristics' => 'Sagesse pour soigner. Intelligence (Feu) si le mot brûle. Chance (Eau) pour protéger. Agilité (Air) pour accélérer.',
-        'idealFor' => 'Dévot, Artiste, tout groupe qui n’a pas encore de soigneur.',
-        'difference' => 'L’Eniripsa n’est pas un Dévot. Tu soignes en d6/d8, tu encourages, tu ne fais pas de miracles. Encouragement, c’est un jeton de table, pas un second DPS.',
-        'synergies' => [
-            'Dévot' => 'Deux façons de relever : le mot et la prière.',
-            'Iop' => 'Tu le ramènes, iel recharge.',
-            'Féca' => 'Toi les PV, iel le sol. Le groupe tient.',
+                'presentation' => [
+            'Tu es Eniripsa. Un mot, et le groupe tient debout. Ailes, Lapino, parfois une fée qui porte le sort plus loin.',
+            'En combat, tu soignes, tu couvres, tu encourages. Ta voie dit comment : l’Air renforce, la Terre entrave, l’Eau protège, le Feu soigne.',
+            'Côté spécialisation, Dévot ou Artiste prolongent la voix qui relève.',
         ],
     ],
     [
         'name' => 'Sadida',
         'passive' => 'Jardin',
-        'identity' => 'En tant que Sadida, tu poses une poupée, et l’herbe accroche les pieds. La forêt avance avec toi, lentement, sûrement.',
-        'focus' => 'Poupées, terrain, poison',
-        'characteristics' => 'Intelligence (Feu) pour brûler l’herbe. Chance (Eau) pour l’eau et les soins. Force (Terre) si ça frappe.',
-        'idealFor' => 'Sylvain·e, Osamodas, tout groupe qui accepte un combat long.',
-        'difference' => 'Le Sadida n’est pas un Osamodas. Tes poupées sont des plantes, pas des bêtes. Jardin, c’est une poupée et du terrain difficile, pas un troupeau.',
-        'synergies' => [
-            'Sylvain·e' => 'La poupée et l’arbre : deux racines.',
-            'Féca' => 'Glyphe et herbe : le sol appartient à deux personnes.',
-            'Eniripsa' => 'Toi tu ralentis, iel soigne le temps gagné.',
+                'presentation' => [
+            'Tu es Sadida. Poupées de sève, ronces, poison. La forêt avance avec toi.',
+            'En combat, tu plantes, puis tu fais jouer le terrain. Ta voie dit comment : l’Air frappe, la Terre protège, l’Eau soigne, le Feu entrave.',
+            'Côté spécialisation, Sylvain·e va bien à celui qui vit déjà dans les bois.',
         ],
     ],
     [
         'name' => 'Sacrieur',
         'passive' => 'Martyre',
-        'identity' => 'En tant que Sacrieur, on te touche, tu rends. Tes PV sont une ressource, pas un pourcentage. On te cherche pour encaisser et rendre, pas pour ouvrir.',
-        'focus' => 'Mêlée, punition, second rang qui s’avance',
-        'characteristics' => 'Force (Terre) pour frapper. Intelligence (Feu) si le sang brûle. Agilité (Air) pour te placer dans le coup.',
-        'idealFor' => 'Milicien·ne, Dévot, tout groupe qui a déjà un Iop et veut un deuxième mur.',
-        'difference' => 'Le Sacrieur n’est pas un Iop. Tu ne charges pas pour ouvrir : tu attends le coup. Martyre, c’est +1d4 après avoir subi, pas Fureur.',
-        'synergies' => [
-            'Dévot' => 'Tu prends, iel remet. La boucle tient.',
-            'Iop' => 'Deux mêlées, deux moteurs. Ne pas les empiler bêtement.',
-            'Milicien·ne' => 'La ligne a un visage qui aime être frappé.',
+                'presentation' => [
+            'Tu es Sacrieur. On te frappe, tu rends. Plus tu as mal, plus tu tiens.',
+            'En combat, tu prends le coup, puis tu le rends. Ta voie dit comment : l’Air place, la Terre encaisse, l’Eau frappe, le Feu entrave.',
+            'Côté spécialisation, Milicien·ne ou Dévot tiennent la ligne avec toi.',
         ],
     ],
     [
         'name' => 'Pandawa',
         'passive' => 'Portage',
-        'identity' => 'En tant que Pandawa, tu portes. Un allié, un tonneau, parfois un ennemi plus tard. La picole est un choix, pas un prérequis.',
-        'focus' => 'Placement, portage, mêlée',
-        'characteristics' => 'Chance (Eau) pour la voie festive. Force (Terre) pour porter. Agilité (Air) pour flanquer.',
-        'idealFor' => 'Artiste, Marin·e, tout groupe qui a besoin de déplacer les corps.',
-        'difference' => 'Le Pandawa n’est pas un Iop ivre. Portage, c’est porter, pas frapper plus fort. Saoul n’arrive qu’au 7, et tu peux t’en passer.',
-        'synergies' => [
-            'Artiste' => 'La taverne est déjà une scène. Tu n’as qu’à lever le verre.',
-            'Milicien·ne' => 'Tu portes le blessé, iel tient le seuil.',
-            'Eliotrope' => 'Toi tu portes, iel téléporte. Deux façons de changer la carte.',
+                'presentation' => [
+            'Tu es Pandawa. Tu portes un allié, un tonneau, parfois un ennemi. Le lait de bambou reste un choix.',
+            'En combat, tu soulèves, tu lances, tu changes la carte. Ta voie dit comment : l’Air place, la Terre frappe, l’Eau entrave, le Feu encaisse.',
+            'Côté spécialisation, Artiste ou Marin·e vont bien à celui qui vit déjà entre taverne et quai.',
         ],
     ],
     [
         'name' => 'Roublard',
         'passive' => 'Mèche',
-        'identity' => 'En tant que Roublard, tes bombes sont des pièges qu’on voit. La poudre, le détour, l’entrée par derrière. On te cherche pour faire sauter un plan, pas pour le tenir.',
-        'focus' => 'Bombes, dégâts de zone, ruse',
-        'characteristics' => 'Agilité (Air) pour placer. Chance (Eau) pour les malus. Intelligence (Feu) si ça brûle.',
-        'idealFor' => 'Voleur·euse, Artiste, Sram en duo.',
-        'difference' => 'Le Roublard n’est pas un Sram. Tes bombes se voient. Mèche, c’est une poussée à l’explosion, pas un piège caché. Pas de triangle de bombes au niveau 1.',
-        'synergies' => [
-            'Sram' => 'Visible et caché, le même sol.',
-            'Voleur·euse' => 'La poudre et la croche : deux sorties.',
-            'Artiste' => 'Le spectacle peut aussi faire mal.',
+                'presentation' => [
+            'Tu es Roublard. Poudre, mèche, bombes qu’on voit. Tu fais sauter le plan.',
+            'En combat, tu poses, tu charges, tu déclenches. Ta voie dit comment : l’Air place, la Terre renforce, l’Eau entrave, le Feu frappe.',
+            'Côté spécialisation, Voleur·euse ou Artiste prolongent le détour et le spectacle.',
         ],
     ],
     [
         'name' => 'Zobal',
         'passive' => 'Masque',
-        'identity' => 'En tant que Zobal, tu choisis un visage pour la journée. Psychopathe ou Classique au repos. Cavalcade reste un téléport, pas un troisième kit.',
-        'focus' => 'Masques, téléport, mêlée changeante',
-        'characteristics' => 'Agilité (Air) pour Cavalcade. Force (Terre) si le masque frappe. Chance (Eau) pour protéger.',
-        'idealFor' => 'Artiste, Courtisan·e, tout groupe qui veut un combattant qui change de rôle sans changer de sorts.',
-        'difference' => 'Le Zobal n’est pas un Iop à deux visages. Tes sorts ne changent pas de liste au niveau 1 — seul le rider change. Un masque à la fois.',
-        'synergies' => [
-            'Artiste' => 'Deux visages, une scène.',
-            'Milicien·ne' => 'Le masque Classique tient la ligne. Psychopathe l’ouvre.',
-            'Sram' => 'Toi tu changes de face, iel disparaît.',
+                'presentation' => [
+            'Tu es Zobal. Tu changes de masque. Le rôle change, les sorts restent.',
+            'En combat, tu choisis un visage, puis tu frappes ou tu couvres. Ta voie dit comment : l’Air protège, la Terre entrave, l’Eau place, le Feu encaisse.',
+            'Côté spécialisation, Artiste ou Courtisan·e vont bien à celui qui joue déjà un rôle.',
         ],
     ],
     [
         'name' => 'Steamer',
         'passive' => 'Tourelle',
-        'identity' => 'En tant que Steamer, tu poses une machine. Elle tire à ton tour. L’eau, la vapeur, le harpon : on te cherche pour un second tireur qui ne parle pas.',
-        'focus' => 'Tourelle, contrôle de zone, support mécanique',
-        'characteristics' => 'Chance (Eau) pour soigner plus tard. Intelligence (Feu) si ça brûle. Force (Terre) pour le harpon.',
-        'idealFor' => 'Artisan·e, Crâ, tout groupe qui accepte une case occupée par une machine.',
-        'difference' => 'Le Steamer n’est pas un Osamodas. Ta tourelle est une machine, pas une bête. Pas d’évolution Harponne / Soin / Tactique au niveau 1 : une tourelle, 1d4.',
-        'synergies' => [
-            'Artisan·e' => 'La machine et l’établi : deux façons de faire tenir un objet.',
-            'Crâ' => 'Deux distances, deux tirs.',
-            'Féca' => 'Glyphe et tourelle : le terrain est meublé.',
+                'presentation' => [
+            'Tu es Steamer. Scaphandre et tourelles. Tes machines tirent pendant que tu calibres.',
+            'En combat, tu poses une tourelle, puis tu la fais évoluer. Ta voie dit comment : l’Air place, la Terre frappe, l’Eau renforce, le Feu soigne.',
+            'Côté spécialisation, Artisan·e va bien à celui qui répare déjà ce qu’il pose.',
         ],
     ],
     [
         'name' => 'Eliotrope',
         'passive' => 'Faille',
-        'identity' => 'En tant qu’Eliotrope, tu te téléportes un pas plus loin. Les vrais portails s’ouvrent au 7. En attendant, tu danses entre les cases.',
-        'focus' => 'Téléport, portails, placement',
-        'characteristics' => 'Agilité (Air) pour bouger. Intelligence (Feu) si la faille brûle. Chance (Eau) pour soutenir.',
-        'idealFor' => 'Explorateur·rice, Xélor, tout groupe qui joue sur la carte plus que sur les dés.',
-        'difference' => 'L’Eliotrope n’est pas un Xélor. Tes téléports n’échangent pas les tours. Faille, c’est +1 case, pas un sablier. Les portails attendent le 7.',
-        'synergies' => [
-            'Xélor' => 'Deux horloges, deux téléports. Ne pas les confondre.',
-            'Crâ' => 'Tu ouvres une case, iel tire à travers.',
-            'Pandawa' => 'Toi tu portes par la faille, iel porte à bras.',
+                'presentation' => [
+            'Tu es Eliotrope. Tu disparais d’une case et tu repars plus loin. Les portails plient le chemin.',
+            'En combat, tu te téléportes, puis le coup part d’ailleurs. Ta voie dit comment : l’Air entrave, la Terre place, l’Eau frappe, le Feu soigne.',
+            'Côté spécialisation, Explorateur·rice va bien à celui qui ne reste pas sur la même case.',
         ],
     ],
     [
         'name' => 'Huppermage',
         'passive' => 'Contraste',
-        'identity' => 'En tant qu’Huppermage, changer d’élément, c’est +1. Pas un dé. Les runes viennent après. On te cherche pour le puzzle élémentaire, pas pour un 13ᵉ sort.',
-        'focus' => 'Éléments, contrastes, runes plus tard',
-        'characteristics' => 'Les quatre. Intelligence (Feu) souvent en tête. Tu changes, tu marques.',
-        'idealFor' => 'Érudit, Artisan·e un peu mage, tout groupe qui aime compter les éléments.',
-        'difference' => 'L’Huppermage n’est pas un Xélor. Tes sorts ne volent pas le temps : ils changent de couleur. Pas de puzzle à 4 runes au niveau 1.',
-        'synergies' => [
-            'Érudit' => 'Runes, contrastes, lecture du Wakfu.',
-            'Féca' => 'Toi tu changes d’élément, iel pose le glyphe de la même couleur.',
-            'Eniripsa' => 'Un mot, un contraste : deux petits bonus qui s’additionnent mal — tant mieux.',
+                'presentation' => [
+            'Tu es Huppermage. Tu changes de couleur en plein coup. Les runes restent au sol.',
+            'En combat, changer d’élément renforce le coup d’après. Ta voie dit comment : l’Air frappe, la Terre entrave, l’Eau place, le Feu renforce.',
+            'Côté spécialisation, Érudit va bien à celui qui lit les éléments. Artisan·e va bien si les runes sont déjà un outil.',
         ],
     ],
     [
         'name' => 'Ouginak',
         'passive' => 'Proie',
-        'identity' => 'En tant qu’Ouginak, la première blessure désigne la proie. Tu chasses. La Rage est un choix, plus tard. On te cherche pour coller une cible, pas pour tank la salle.',
-        'focus' => 'Poursuite, marque, mêlée',
-        'characteristics' => 'Agilité (Air) pour coller. Force (Terre) si ça morde. Chance (Eau) pour les malus.',
-        'idealFor' => 'Voleur·euse, Explorateur·rice, Iop qui veut un second chasseur.',
-        'difference' => 'L’Ouginak n’est pas un Sacrieur. Tu ne te frappes pas : tu marques. Rage n’est pas requise au niveau 1. Une proie à la fois.',
-        'synergies' => [
-            'Crâ' => 'Toi tu colles, iel transperce la même cible.',
-            'Sram' => 'La proie marche dans le piège. Tu étais déjà là.',
-            'Milicien·ne' => 'La ligne désigne, tu poursuis.',
+                'presentation' => [
+            'Tu es Ouginak. Truffe au vent, poil brillant, tu colles une proie. La première blessure la désigne.',
+            'En combat, tu marques, puis tu ne lâches plus. Ta voie dit comment : l’Air frappe, la Terre encaisse, l’Eau renforce, le Feu entrave.',
+            'Côté spécialisation, Voleur·euse ou Explorateur·rice prolongent la piste.',
         ],
     ],
     [
         'name' => 'Forgelance',
         'passive' => 'Estoc',
-        'identity' => 'En tant que Forgelance, tu charges, tu vises juste. Après un téléport de classe, le prochain coup a l’avantage. La phalange protège les allié·e·s au 7.',
-        'focus' => 'Charge, mêlée, phalange plus tard',
-        'characteristics' => 'Force (Terre) pour l’estoc. Agilité (Air) pour charger. Intelligence (Feu) si la lance brûle.',
-        'idealFor' => 'Artisan·e, Milicien·ne, Iop qui veut une lance au lieu d’une épée.',
-        'difference' => 'Le Forgelance n’est pas un Iop. Tes téléports sont des charges, pas de la Fureur. La lance n’est pas une invocation. Pas de phalange au niveau 1.',
-        'synergies' => [
-            'Artisan·e' => 'Le forgeron de légende, lame et métier collés.',
-            'Milicien·ne' => 'La charge et la ligne : tu ouvres, iel tient.',
-            'Iop' => 'Deux premiers rangs. L’un frappe, l’autre charge.',
+                'presentation' => [
+            'Tu es Forgelance. Lance en avant, tu charges. Après le bond, le coup porte plus juste.',
+            'En combat, tu te téléportes avec la lance, puis tu frappes. Ta voie dit comment : l’Air entrave, la Terre place, l’Eau protège, le Feu frappe.',
+            'Côté spécialisation, Artisan·e ou Milicien·ne vont bien à la lance et à la ligne.',
         ],
     ],
 ];

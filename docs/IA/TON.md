@@ -29,6 +29,7 @@ Le ton cible, c’est celui des guides de quêtes Dofus clairs (ex. [Dofus pour 
 - Mots concrets du Monde des Douze (Astrub, Bonta, kamas, Wakfu, PA) quand ça aide.
 - Listes et chiffres pour les effets.
 - « Choisis A, B ou C » plutôt qu’une périphrase.
+- Le point médian quand il se lit tout seul : `allié·e·s`, `un·e allié·e`.
 
 ## À éviter
 
@@ -36,14 +37,21 @@ Le ton cible, c’est celui des guides de quêtes Dofus clairs (ex. [Dofus pour 
 - Jargon auteur dans le texte joueur : fil rouge, archétype (sauf si la fiche nomme vraiment le choix), paliers, signature, teinte, gabarit.
 - Comparaisons D&D ou « ce n’est pas un sort de classe » dans le corps des capacités (garde ça pour un encart MJ / atelier Création si besoin).
 - Empilement de points-virgules, tirets dramatiques, formules toutes faites.
+- Empiler les points médians dans la même phrase (`ennemi·e·s pris·es`, `chacun·e` et `poussé·e` d’un coup).
 - Ton professoral ou marketing.
+
+## Périmètre d’une réécriture
+
+On ne réécrit que les fiches **jouables** ou **brouillon**. Le reste (`raw`, `auto`, `archived`) sera repris plus tard : le fond peut encore changer.
 
 ## Fiches d’entité (classes, spés, sorts…)
 
 1. **Présentation / identité** = ambiance.
 2. **Repères** (focus, caracs, pour qui) = faits courts.
 3. **Capacités / aptitudes** = règle d’abord ; une demi-phrase d’ambiance seulement si elle clarifie l’usage.
-4. **Choix nommés** (Musicien, Saltimbanque…) = petit blurb d’ambiance + liste d’outils / JS / compétences en clair.
+4. **Sort** : la description est l’ambiance (le geste, une phrase ou deux). L’effet dit ce qui se passe, avec les chiffres et les limites, en phrases courtes. La description ne répète pas l’effet.
+5. **Choix nommés** (Musicien, Saltimbanque…) = petit blurb d’ambiance + liste d’outils / JS / compétences en clair.
+6. **État / trait** : une ou deux phrases en tu. La règle d’abord, avec les chiffres. Pas de « une créature ».
 
 ## Atelier Création & prompts IA
 

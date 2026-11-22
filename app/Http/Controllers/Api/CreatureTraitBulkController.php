@@ -39,6 +39,8 @@ class CreatureTraitBulkController extends Controller
             // Champs "métier" utiles en édition multiple (nullable => possibilité de vider)
             'description' => ['sometimes', 'nullable', 'string'],
             'image' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'level' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:20'],
+            'available_for_characters' => ['sometimes', 'boolean'],
         ]);
         $validated = AccessLevelMutationGuard::stripUnlessAdmin($request->user(), $validated);
 
@@ -57,6 +59,8 @@ class CreatureTraitBulkController extends Controller
             'write_level',
             'description',
             'image',
+            'level',
+            'available_for_characters',
         ] as $k) {
             if (array_key_exists($k, $validated)) {
                 $patch[$k] = $validated[$k];

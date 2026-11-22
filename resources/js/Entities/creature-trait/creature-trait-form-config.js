@@ -11,7 +11,7 @@ export const CREATURE_TRAIT_FORM_FIELD_SECTIONS_EDIT = [
         id: 'general',
         title: 'Identité',
         subtitle: 'Nom, description et visuel.',
-        fieldKeys: ['name', 'description', 'image'],
+        fieldKeys: ['name', 'description', 'image', 'level', 'available_for_characters'],
     },
     {
         id: 'admin',

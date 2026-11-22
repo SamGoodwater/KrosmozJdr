@@ -6,6 +6,10 @@ import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import OverlayTrigger from "@/Pages/Molecules/overlay/OverlayTrigger.vue";
 import { fetchEntityModelById } from "@/Composables/entity/useEntityTableFetch";
 import { spellImageFilterStyle } from "@/Utils/Entity/spellImageFilter";
+import {
+    getSpellInlineChipSurfaceStyle,
+    resolveEntityElementValue,
+} from "@/Utils/Entity/Elements";
 
 const props = defineProps({
   entity: { type: Object, required: true },
@@ -55,6 +59,15 @@ const imageSrc = computed(() => {
 
 /** Filtre CSS d’icône (sorts devenus basiques, etc.). */
 const imageFilterStyle = computed(() => spellImageFilterStyle(props.entity));
+
+const isSpellLink = computed(
+    () => props.entityProp === "spell" || props.hydrateType === "spells",
+);
+
+const spellChipStyle = computed(() => {
+    if (!isSpellLink.value) return undefined;
+    return getSpellInlineChipSurfaceStyle(resolveEntityElementValue(props.entity));
+});
 
 const nameCell = computed(() => {
   let cell;
@@ -150,48 +163,67 @@ const overlayContent = computed(() => {
 </script>
 
 <template>
-  <div class="inline-flex min-w-0 items-center gap-2">
-    <span
-      v-if="imageSrc"
-      class="pointer-events-none inline-flex h-4 w-4 shrink-0 overflow-hidden rounded-sm"
-      :style="imageFilterStyle"
-    >
-      <Image
-        :src="imageSrc"
-        :alt="entityName || 'Image'"
-        fit="cover"
-        rounded="sm"
-        class="h-4 w-4"
-      />
-    </span>
-    <Icon
-      v-else
-      :source="fallbackIcon"
-      :alt="entityName"
-      size="sm"
-      class="pointer-events-none h-4 w-4 shrink-0 text-primary-300"
-    />
-
-    <OverlayTrigger
-      :content="overlayContent"
-      trigger="click"
-      :placement="placement"
-      max-width="auto"
-      :interactive="true"
-      :close-on-outside="true"
-      :close-on-escape="true"
-      :chromeless="true"
-      :panel-class="hoverWidthClass"
-      :focus-trap="false"
+  <OverlayTrigger
+    :content="overlayContent"
+    :trigger="isSpellLink ? 'hover' : 'click'"
+    :placement="placement"
+    max-width="auto"
+    :interactive="true"
+    :close-on-outside="true"
+    :close-on-escape="true"
+    :chromeless="true"
+    :panel-class="hoverWidthClass"
+    :focus-trap="false"
+  >
+    <div
+      class="entity-view-text-link inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-sm border px-1.5 py-0.5 transition-[background-color,border-color]"
+      :class="{ 'entity-view-text-link--spell': isSpellLink }"
+      :style="spellChipStyle"
+      tabindex="0"
+      @mousedown.capture="handleAltNavigation"
+      @click.capture="handleAltNavigation"
     >
       <span
-        class="relative z-0 inline-block min-w-0 cursor-pointer rounded-sm transition-colors"
-        tabindex="0"
-        @mousedown.capture="handleAltNavigation"
-        @click.capture="handleAltNavigation"
+        v-if="imageSrc"
+        class="pointer-events-none inline-flex h-4 w-4 shrink-0 overflow-hidden rounded-sm"
+        :style="imageFilterStyle"
       >
-        <CellRenderer :cell="nameCell" :ui-color="uiColor" />
+        <Image
+          :src="imageSrc"
+          :alt="entityName || 'Image'"
+          fit="cover"
+          rounded="sm"
+          class="h-4 w-4"
+        />
       </span>
-    </OverlayTrigger>
-  </div>
+      <Icon
+        v-else
+        :source="fallbackIcon"
+        :alt="entityName"
+        size="sm"
+        class="pointer-events-none h-4 w-4 shrink-0 opacity-80"
+      />
+
+      <span class="relative z-0 inline-block min-w-0 cursor-pointer">
+        <CellRenderer :cell="nameCell" :ui-color="isSpellLink ? 'neutral' : uiColor" />
+      </span>
+    </div>
+  </OverlayTrigger>
 </template>
+
+<style scoped>
+.entity-view-text-link--spell {
+  cursor: pointer;
+  text-decoration: none;
+}
+.entity-view-text-link--spell :deep(a),
+.entity-view-text-link--spell :deep(.text-primary),
+.entity-view-text-link--spell :deep(.link) {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+.entity-view-text-link--spell:hover {
+  background-color: var(--spell-chip-hover-bg) !important;
+  border-color: color-mix(in oklch, currentColor 35%, transparent);
+}
+</style>

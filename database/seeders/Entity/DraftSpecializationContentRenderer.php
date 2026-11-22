@@ -7,20 +7,19 @@ namespace Database\Seeders\Entity;
 use App\Support\Cms\RulesCharacteristicKrefReplacementCatalog;
 
 /**
- * Transforme les tableaux de spécialisations (brouillons ou fiche jouable)
- * en sections HTML.
+ * Transforme les tableaux de spécialisations en sections HTML.
  *
- * Gabarit imposé par 2.4.2.6 : 7 paliers, 2 garanties au palier 1 puis 1,
- * 2 options à chaque palier (un trait dès le palier 12), 5 compétences
- * au palier 1 (en prendre 3), aptitudes uniquement aux paliers 3 / 9 / 15.
- * Pas de points de caractéristique. Les noms de capacités, jets et
- * compétences sont des shortcodes kref (cliquables une fois convertis).
+ * Deux modes :
+ * - enveloppe 2.4.6 (`envelope` / `progression`) : ambiance → tableau → niveaux ;
+ * - gabarit legacy 2.4.2.6 : garanties / options fixes (autres fiches).
  */
 final class DraftSpecializationContentRenderer
 {
     public const DRAFT_BANNER = '<p><strong>Brouillon</strong> — proposition à retravailler (chiffres, coûts, liens vers les fiches capacités). Pas encore jouable.</p>';
 
     private bool $playable = false;
+
+    private bool $envelope = false;
 
     /**
      * @param  array<string, mixed>  $spec
@@ -29,6 +28,7 @@ final class DraftSpecializationContentRenderer
     public function sections(array $spec): array
     {
         $this->playable = (bool) ($spec['playable'] ?? false);
+        $this->envelope = $this->isEnvelope($spec);
 
         $sections = [
             [
@@ -52,12 +52,26 @@ final class DraftSpecializationContentRenderer
             $sections[] = [
                 'title' => 'Niveau '.$level,
                 'level' => max(1, $level),
-                'content' => $this->levelHtml($level, $levelData),
+                'content' => $this->levelHtml($level, $levelData, $spec),
                 'capabilities' => $this->capabilityNames($levelData),
             ];
         }
 
         return $sections;
+    }
+
+    /**
+     * @param  array<string, mixed>  $spec
+     */
+    private function isEnvelope(array $spec): bool
+    {
+        if (($spec['envelope'] ?? '') === '2.4.6') {
+            return true;
+        }
+
+        $progression = $spec['progression'] ?? null;
+
+        return is_array($progression) && $progression !== [];
     }
 
     /**
@@ -75,38 +89,49 @@ final class DraftSpecializationContentRenderer
             $parts[] = '<p>'.$this->richText($identity).'</p>';
         }
 
-        $parts[] = '<h2>Repères</h2><ul>'
-            .$this->li('Focus', (string) ($spec['focus'] ?? ''))
-            .$this->li('Caractéristiques', (string) ($spec['characteristics'] ?? ''))
-            .$this->li('Idéal pour', (string) ($spec['idealFor'] ?? ''))
-            .'</ul>';
-
-        $thread = trim((string) ($spec['thread'] ?? ''));
-        if ($thread !== '') {
-            $parts[] = '<h2>En bref</h2><p>'.$this->richText($thread).'</p>';
+        $description = trim((string) ($spec['description'] ?? ''));
+        if ($description !== '' && $description !== $identity) {
+            $parts[] = '<p>'.$this->richText($description).'</p>';
         }
 
-        $signature = $spec['signature'] ?? null;
-        if (is_array($signature)) {
-            $sigName = trim((string) ($signature['name'] ?? ''));
-            $sigSummary = trim((string) ($signature['summary'] ?? ''));
-            if ($sigName !== '' && $sigSummary !== '') {
-                $parts[] = '<h2>'.$this->capabilityKref($sigName).'</h2><p>'.$this->richText($sigSummary).'</p>';
+        if ($this->envelope) {
+            $parts[] = $this->progressionTableHtml($spec);
+
+            $signature = $spec['signature'] ?? null;
+            if (is_array($signature)) {
+                $sigName = trim((string) ($signature['name'] ?? ''));
+                $sigSummary = trim((string) ($signature['summary'] ?? ''));
+                if ($sigName !== '' && $sigSummary !== '') {
+                    $parts[] = '<h2>'.$this->capabilityKref($sigName).'</h2><p>'.$this->richText($sigSummary).'</p>';
+                }
             }
-        }
 
-        $archetypes = $spec['archetypes'] ?? [];
-        if (is_array($archetypes) && $archetypes !== []) {
-            $parts[] = $this->archetypesHtml($archetypes);
-        }
+            $stylesAt = (int) ($spec['styles_at'] ?? 3);
+            $styles = $this->stylesOf($spec);
+            if ($styles !== []) {
+                $parts[] = '<h2>Styles (niveau '.$stylesAt.')</h2>'
+                    .'<p>Au niveau '.$stylesAt.', tu choisis <strong>un</strong> style. Il fixe ta 2ᵉ sauvegarde et colore certaines capacités. Le niveau 1 reste commun à tous les Artistes.</p>'
+                    .$this->stylesSummaryHtml($styles);
+            }
 
-        $parts[] = '<h2>Comment lire un niveau</h2><p>'
-            .'À chaque niveau de la fiche, tu lis <strong>choix entre X et Y</strong> : tu prends <strong>une</strong> des capacités garanties, '
-            .'puis <strong>une</strong> des autres options. Ça ne donne <strong>jamais</strong> de points de caractéristique. '
-            .'Les options, ce sont des <strong>capacités</strong>, un <strong>trait</strong> à partir du niveau 12, plus les <strong>compétences</strong> '
-            .'et les <strong>métiers</strong> du bloc Maîtrises. Les <strong>aptitudes</strong> arrivent toutes seules aux niveaux 3, 9 et 15. '
-            .'Si la fiche propose plusieurs styles (Musicien, Saltimbanque…), tu en choisis un au niveau 1 : certaines options suivent alors ce style.'
-            .'</p>';
+            $parts[] = '<h2>Comment lire un niveau</h2><p>'
+                .'Le tableau ci-dessus dit ce que tu gagnes. En dessous, chaque niveau détaille les listes. '
+                .'Quand c’est écrit <strong>ou</strong>, tu prends un seul côté. '
+                .'Ça ne donne <strong>jamais</strong> de points de caractéristique.'
+                .'</p>';
+        } else {
+            $parts[] = '<h2>Repères</h2><ul>'
+                .$this->li('Focus', (string) ($spec['focus'] ?? ''))
+                .$this->li('Caractéristiques', (string) ($spec['characteristics'] ?? ''))
+                .$this->li('Idéal pour', (string) ($spec['idealFor'] ?? ''))
+                .'</ul>';
+
+            $parts[] = '<h2>Comment lire un niveau</h2><p>'
+                .'À chaque niveau, tu lis <strong>choix entre X et Y</strong> : tu prends une capacité garantie, '
+                .'puis une option. Ça ne donne jamais de points de caractéristique. '
+                .'Les aptitudes arrivent aux niveaux 3, 9 et 15.'
+                .'</p>';
+        }
 
         $difference = trim((string) ($spec['difference'] ?? ''));
         if ($difference !== '') {
@@ -135,9 +160,94 @@ final class DraftSpecializationContentRenderer
     }
 
     /**
-     * @param  array<string, mixed>  $levelData
+     * @param  array<string, mixed>  $spec
      */
-    private function levelHtml(int $level, array $levelData): string
+    private function progressionTableHtml(array $spec): string
+    {
+        $progression = $spec['progression'] ?? [];
+        if (! is_array($progression) || $progression === []) {
+            return '';
+        }
+
+        $rows = '';
+        foreach ($progression as $level => $gains) {
+            $cells = is_array($gains)
+                ? array_map(static fn (mixed $cell): string => (string) $cell, $gains)
+                : array_values(array_filter(array_map('trim', preg_split('/\s*·\s*/u', (string) $gains) ?: [])));
+            if ($cells === []) {
+                continue;
+            }
+            $rows .= '<tr><th scope="row">'.e((string) $level).'</th>';
+            foreach ($cells as $cell) {
+                $rows .= '<td>'.$this->richText($cell).'</td>';
+            }
+            $rows .= '</tr>';
+        }
+
+        if ($rows === '') {
+            return '';
+        }
+
+        return '<h2>Progression</h2>'
+            .'<table><thead><tr><th>Niveau</th><th colspan="10"></th></tr></thead><tbody>'
+            .$rows
+            .'</tbody></table>';
+    }
+
+    /**
+     * @param  array<string, mixed>  $spec
+     * @return array<string, mixed>
+     */
+    private function stylesOf(array $spec): array
+    {
+        $styles = $spec['styles'] ?? $spec['archetypes'] ?? [];
+
+        return is_array($styles) ? $styles : [];
+    }
+
+    /**
+     * @param  array<string, mixed>  $styles
+     */
+    private function stylesSummaryHtml(array $styles): string
+    {
+        $blocks = [];
+        foreach ($styles as $style) {
+            if (! is_array($style)) {
+                continue;
+            }
+            $name = trim((string) ($style['name'] ?? ''));
+            if ($name === '') {
+                continue;
+            }
+            $blocks[] = '<h3>'.e($name).'</h3>';
+            $blurb = trim((string) ($style['blurb'] ?? ''));
+            if ($blurb !== '') {
+                $blocks[] = '<p>'.$this->richText($blurb).'</p>';
+            }
+            $save = trim((string) ($style['save'] ?? ''));
+            if ($save !== '') {
+                $blocks[] = '<p><strong>2ᵉ sauvegarde</strong> : '.$this->richText($save).'.</p>';
+            }
+            $applause = trim((string) ($style['applaudissement'] ?? ''));
+            if ($applause !== '') {
+                $blocks[] = '<p><strong>Avec Applaudissement</strong> : '.$this->richText($applause).'</p>';
+            }
+            $ritual = $style['ritual'] ?? null;
+            if ($ritual === true) {
+                $blocks[] = '<p><strong>Rituel</strong> : oui (à partir du niveau 6).</p>';
+            } elseif ($ritual === false) {
+                $blocks[] = '<p><strong>Rituel</strong> : non.</p>';
+            }
+        }
+
+        return implode('', $blocks);
+    }
+
+    /**
+     * @param  array<string, mixed>  $levelData
+     * @param  array<string, mixed>  $spec
+     */
+    private function levelHtml(int $level, array $levelData, array $spec = []): string
     {
         $parts = [];
         if (! $this->playable) {
@@ -149,9 +259,21 @@ final class DraftSpecializationContentRenderer
             $parts[] = '<p>'.$this->richText($flavor).'</p>';
         }
 
-        $choice = $this->buildChoiceLine($level, $levelData);
-        if ($choice !== '') {
-            $parts[] = '<p><strong>À ce palier</strong> : '.$this->richText($choice).'</p>';
+        $gains = trim((string) ($levelData['gains'] ?? ''));
+        if ($gains !== '') {
+            $parts[] = '<p><strong>À ce niveau</strong> : '.$this->richText($gains).'</p>';
+        } elseif (! $this->envelope) {
+            $choice = $this->buildChoiceLine($level, $levelData);
+            if ($choice !== '') {
+                $parts[] = '<p><strong>À ce palier</strong> : '.$this->richText($choice).'</p>';
+            }
+        }
+
+        if (! empty($levelData['unlock_style'])) {
+            $styles = $this->stylesOf($spec);
+            if ($styles !== []) {
+                $parts[] = '<h2>Choix de style</h2>'.$this->stylesSummaryHtml($styles);
+            }
         }
 
         $masteries = $levelData['masteries'] ?? [];
@@ -163,14 +285,27 @@ final class DraftSpecializationContentRenderer
             $parts[] = '<h2>Maîtrises</h2><ul>'.$items.'</ul>';
         }
 
-        $capacities = $levelData['capacities'] ?? [];
-        if (is_array($capacities) && $capacities !== []) {
-            $parts[] = ($this->playable ? '<h2>Capacités</h2>' : '<h2>Capacités (pistes)</h2>').$this->namedEffectsList($capacities);
+        $ritual = trim((string) ($levelData['ritual'] ?? ''));
+        if ($ritual !== '') {
+            $parts[] = '<h2>Rituel</h2><p>'.$this->richText($ritual).'</p>';
         }
 
         $aptitudes = $levelData['aptitudes'] ?? [];
         if (is_array($aptitudes) && $aptitudes !== []) {
-            $parts[] = '<h2>Aptitude (automatique)</h2>'.$this->namedEffectsList($aptitudes);
+            $pick = (int) ($levelData['aptitude_pick'] ?? 0);
+            $title = $pick > 0
+                ? 'Aptitudes — choisis-en '.$pick
+                : ($this->envelope ? 'Aptitudes' : 'Aptitude (automatique)');
+            $parts[] = '<h2>'.$title.'</h2>'.$this->namedEffectsList($aptitudes);
+        }
+
+        $capacities = $levelData['capacities'] ?? [];
+        if (is_array($capacities) && $capacities !== []) {
+            $pick = (int) ($levelData['capacity_pick'] ?? 0);
+            $title = $pick > 0
+                ? 'Capacités — choisis-en '.$pick
+                : ($this->playable ? 'Capacités' : 'Capacités (pistes)');
+            $parts[] = '<h2>'.$title.'</h2>'.$this->namedEffectsList($capacities);
         }
 
         if ($level === 1 && $flavor === '' && $masteries === []) {
@@ -200,7 +335,7 @@ final class DraftSpecializationContentRenderer
             }
 
             $label = $this->capabilityKref($name);
-            if ($type !== '') {
+            if ($type !== '' && ! $this->envelope) {
                 $label .= ' <em>('.e($this->capacityTypeLabel($type)).')</em>';
             }
 
@@ -230,49 +365,6 @@ final class DraftSpecializationContentRenderer
         }
 
         return $items === '' ? '<p>Aucune piste pour l’instant.</p>' : '<ul>'.$items.'</ul>';
-    }
-
-    /**
-     * @param  array<string, mixed>  $archetypes
-     */
-    private function archetypesHtml(array $archetypes): string
-    {
-        $blocks = ['<h2>Styles</h2>',
-            '<p>Au niveau 1, choisis <strong>un</strong> style. Il fixe tes outils, tes jets de sauvegarde et ta liste de compétences. Il change aussi un peu l’usage d’Applaudissement. Plus loin, certaines options sont liées à ce style : tu n’as que la tienne.</p>',
-        ];
-
-        foreach ($archetypes as $archetype) {
-            if (! is_array($archetype)) {
-                continue;
-            }
-            $name = trim((string) ($archetype['name'] ?? ''));
-            if ($name === '') {
-                continue;
-            }
-            $blocks[] = '<h3>'.e($name).'</h3>';
-            $blurb = trim((string) ($archetype['blurb'] ?? ''));
-            if ($blurb !== '') {
-                $blocks[] = '<p>'.$this->richText($blurb).'</p>';
-            }
-            $thread = trim((string) ($archetype['thread'] ?? ''));
-            if ($thread !== '') {
-                $blocks[] = '<p>'.$this->richText($thread).'</p>';
-            }
-            $applause = trim((string) ($archetype['applaudissement'] ?? ''));
-            if ($applause !== '') {
-                $blocks[] = '<p><strong>Avec Applaudissement</strong> : '.$this->richText($applause).'</p>';
-            }
-            $masteries = $archetype['masteries'] ?? [];
-            if (is_array($masteries) && $masteries !== []) {
-                $items = '';
-                foreach ($masteries as $label => $text) {
-                    $items .= $this->li((string) $label, (string) $text);
-                }
-                $blocks[] = '<ul>'.$items.'</ul>';
-            }
-        }
-
-        return implode('', $blocks);
     }
 
     /**
@@ -320,8 +412,6 @@ final class DraftSpecializationContentRenderer
     }
 
     /**
-     * Construit « Choix entre X et Y » à partir des noms du palier.
-     *
      * @param  array<string, mixed>  $levelData
      */
     private function buildChoiceLine(int $level, array $levelData): string
@@ -449,9 +539,6 @@ final class DraftSpecializationContentRenderer
         return $level === 1 ? 3 : 1;
     }
 
-    /**
-     * Libellé joueur du type de capacité.
-     */
     private function capacityTypeLabel(string $type): string
     {
         return in_array($type, ['emplacement libre', '2ᵉ capacité', 'choix'], true)

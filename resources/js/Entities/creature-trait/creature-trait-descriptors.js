@@ -133,6 +133,75 @@ export function getCreatureTraitFieldDescriptors(ctx = {}) {
         },
       },
     },
+    level: {
+      key: "level",
+      label: "Niveau",
+      icon: "fa-solid fa-layer-group",
+      table: {
+        sortable: true,
+        filterable: {
+          id: "level",
+          type: "range",
+          defaultVisible: true,
+          ui: { min: 1, max: 20, step: 1 },
+        },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "number",
+          required: false,
+          showInCompact: true,
+          help: "Puissance, de 1 (faible) à 20 (très fort). Un personnage ne peut pas prendre un trait au-dessus de son niveau.",
+          validation: { min: 1, max: 20 },
+          bulk: { enabled: true, nullable: true },
+        },
+      },
+    },
+    available_for_characters: {
+      key: "available_for_characters",
+      label: "PJ / PNJ",
+      icon: "fa-solid fa-user",
+      table: {
+        sortable: true,
+        filterable: {
+          id: "available_for_characters",
+          type: "boolean",
+          defaultVisible: true,
+        },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "checkbox",
+          required: false,
+          showInCompact: true,
+          help: "Coché : un PJ ou un PNJ peut le prendre. Décoché : réservé aux créatures.",
+          defaultValue: false,
+          bulk: { enabled: true, nullable: false },
+        },
+      },
+    },
     state: {
       key: "state",
       label: "État",

@@ -6,8 +6,8 @@
             "name": "Glyphes",
             "engine": "zone",
             "is_magic": true,
-            "description": "Tu dessines le terrain. Tes glyphes sont visibles, magiques, et tes allié·e·s n’y brûlent pas.",
-            "effect": "<p><strong>Niveau 1.</strong> Tu poses des glyphes visibles. La limite suit le plafond des zones. Tes allié·e·s ignorent les dégâts de tes glyphes. Quand tu te tiens sur un de tes glyphes, tu gagnes une résistance dans l’élément de ce glyphe : les dégâts de cet élément que tu subis sont un cran plus bas. Si plusieurs glyphes se chevauchent, tu choisis l’élément.</p><p><strong>Montée.</strong> Limite §3.3.1 (2→7). À partir du niveau 10, la résistance sur glyphe passe au palier Résistant.</p><p><strong>Moteur.</strong> Zone visible, magique. Déclenchement au début du tour d’un·e ennemi·e dessus. Superposition autorisée. Le plus ancien disparaît si tu dépasses la limite.</p>",
+            "description": "Tu dessines le terrain. Tes glyphes sont visibles, magiques, et tes allié·e·s n’y prennent pas les dégâts.",
+            "effect": "<p><strong>Niveau 1.</strong> Tu poses des glyphes visibles. Tes allié·e·s ignorent les dégâts de tes glyphes. Ils prennent le reste : un malus, un bonus, une poussée. Quand tu te tiens sur un de tes glyphes, les dégâts de son élément que tu subis sont un cran plus bas. Si plusieurs glyphes se chevauchent, tu choisis l’élément.</p><p><strong>Montée.</strong> Tu peux en poser 2 aux niveaux 1 à 3, jusqu’à 7 aux niveaux 17 à 20. Au-delà, le plus ancien disparaît. À partir du niveau 10, la résistance sur glyphe devient Résistant.</p><p>Un glyphe part au début du tour d’un·e ennemi·e qui est dessus. Tu peux les superposer. Un seul glyphe élémentaire par tour. Durée 2 tours, sauf si le sort dit autrement.</p>",
             "capabilities": [
                 {
                     "name": "Signe partagé",
@@ -16,7 +16,7 @@
                     "is_magic": true,
                     "duration": "0",
                     "time_before_use_again": "repos court",
-                    "description": "Le bouclier posé sur un glyphe se recopie.",
+                    "description": "Tu poses un bouclier, et tes glyphes le recopient.",
                     "effect": "<p>Une fois par repos court : quand tu lances un bouclier sur un·e allié·e, chaque allié·e qui se tient dans un de tes glyphes reçoit le même bouclier, pour le même montant.</p>"
                 },
                 {
@@ -36,7 +36,7 @@
                     "is_magic": true,
                     "duration": "0",
                     "time_before_use_again": "repos long",
-                    "description": "Tous les signes partent ensemble.",
+                    "description": "Tous tes glyphes partent en même temps.",
                     "effect": "<p>Une fois par repos long : tu déclenches tous tes glyphes en même temps, sans te déplacer. Même effet que Main sur le glyphe, sur chacun.</p>"
                 }
             ]
@@ -47,7 +47,7 @@
             "engine": "invocation",
             "is_magic": true,
             "description": "Enfant, tu as choisi une voix d’appel. Osamodas te l’a bénie. Ta voie bénie est une famille : Bouftous, Dragons, Crapauds ou Tofus.",
-            "effect": "<p><strong>Niveau 1.</strong> Une bête de ta voie bénie reste à tes côtés : c’est ton compagnon. Il ne disparaît pas au bout d’une heure, et il ne compte jamais, ni dans ton nombre d’invocations, ni dans la limite de la horde. Tu choisis son rang parmi ceux que tu peux appeler. En changer demande un repos long. À 0 PV, il s’efface et revient après un repos court, ou tout de suite via Invocation.</p><p><strong>Horde.</strong> Limite par élément : 1 bête, 2 si mod. ≥ 3, 3 si mod. ≥ 5. Voie bénie : +1. Rang 2 hors voie bénie si mod. ≥ 2 ; rang 3 si mod. ≥ 4.</p><p><strong>Moteur.</strong> Invocation. 12 fiches (4 familles × 3 rangs).</p>",
+            "effect": "<p><strong>Niveau 1.</strong> Une bête de ta voie bénie reste à tes côtés : c’est ton compagnon. Il ne disparaît pas au bout d’une heure, et il ne compte jamais, ni dans ton nombre d’invocations, ni dans la limite de la horde. Tu choisis son rang parmi ceux que tu peux appeler. En changer demande un repos long. À 0 PV, il s’efface et revient après un repos court, ou tout de suite via Invocation.</p><p><strong>Horde.</strong> Limite par élément : 1 bête, 2 si mod. ≥ 3, 3 si mod. ≥ 5. Voie bénie : +1. Rang 2 hors voie bénie si mod. ≥ 2 ; rang 3 si mod. ≥ 4.</p><p>Tu choisis parmi 12 bêtes : 4 familles, 3 rangs.</p>",
             "capabilities": [
                 {
                     "name": "Appel du compagnon",
@@ -128,7 +128,7 @@
             "engine": "zone",
             "is_magic": false,
             "description": "Le sol ment. Tes pièges sont cachés ; il faut les chercher.",
-            "effect": "<p><strong>Niveau 1.</strong> Tu poses des pièges cachés et non magiques, jamais sous une créature. Limite = plafond des zones. Perception Modérée pour les voir (Difficile dès 11). Toute créature dans la zone subit les effets, toi y compris.</p><p><strong>Réseau.</strong> Une créature poussée ou attirée dans un piège le déclenche.</p><p><strong>Moteur.</strong> Zone cachée. Le plus ancien disparaît si tu dépasses la limite.</p>",
+            "effect": "<p><strong>Niveau 1.</strong> Tu poses des pièges cachés et non magiques, jamais sous une créature. Limite = plafond des zones. Perception Modérée pour les voir (Difficile dès 11). Toute créature dans la zone subit les effets, toi y compris.</p><p><strong>Réseau.</strong> Une créature poussée ou attirée dans un piège le déclenche.</p><p>Le plus ancien disparaît si tu dépasses la limite.</p>",
             "capabilities": [
                 {
                     "name": "Doigts de fée",
