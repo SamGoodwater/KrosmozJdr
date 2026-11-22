@@ -23,6 +23,7 @@ use App\Support\ElementBitmask;
  * Importe le bestiaire JDR (JSON `entities/monsters/*.json`, hors invocations).
  *
  * Idempotent. Upsert sur `official_id` `jdr:bestiary:…`. `auto_update = false`.
+ * État `draft` (bestiaire à valider ; pas encore jouable en sortie).
  * Ne pose pas `dofusdb_id` (les fiches scrap Dofus restent distinctes).
  *
  * @example $result = app(BestiarySeederImporter::class)->import();
@@ -177,7 +178,7 @@ final class BestiarySeederImporter
             'allows_reaction' => false,
             'duration' => null,
             'official_id' => $spellRow['official_id'],
-            'state' => Spell::STATE_AUTO,
+            'state' => Spell::STATE_DRAFT,
             'read_level' => User::ROLE_GUEST,
             'write_level' => User::ROLE_GAME_MASTER,
             'auto_update' => false,
@@ -416,7 +417,7 @@ final class BestiarySeederImporter
             'location' => $entry['location'],
             'hostility' => $entry['hostility'],
             'level' => (string) $entry['level'],
-            'state' => Creature::STATE_AUTO,
+            'state' => Creature::STATE_DRAFT,
             'read_level' => User::ROLE_GUEST,
             'write_level' => User::ROLE_GAME_MASTER,
             'created_by' => $this->createdById(),
@@ -481,7 +482,7 @@ final class BestiarySeederImporter
             'is_boss' => $entry['is_boss'] ? 1 : 0,
             'boss_pa' => $bossPa,
             'monster_race_id' => $raceId,
-            'state' => EntityState::Auto->value,
+            'state' => EntityState::Draft->value,
             'read_level' => User::ROLE_GUEST,
             'write_level' => User::ROLE_GAME_MASTER,
         ];

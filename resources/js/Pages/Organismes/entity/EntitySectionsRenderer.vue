@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import SectionRenderer from "@/Pages/Organismes/section/SectionRenderer.vue";
+import { pageSectionsUseFullWidth } from "@/Utils/section/sectionLayout";
 
 const props = defineProps({
     sections: {
@@ -20,6 +21,13 @@ const props = defineProps({
      * et le chrome meta hors édition.
      */
     immersive: {
+        type: Boolean,
+        default: false,
+    },
+    /**
+     * La fiche au-dessus occupe déjà toute la colonne : les sections s'alignent dessus.
+     */
+    alignWithColumn: {
         type: Boolean,
         default: false,
     },
@@ -60,6 +68,10 @@ const normalizedSections = computed(() => {
             return String(a.title || "").localeCompare(String(b.title || ""), "fr");
         });
 });
+
+const sectionsShareFullWidth = computed(
+    () => props.alignWithColumn || pageSectionsUseFullWidth(normalizedSections.value),
+);
 </script>
 
 <template>
@@ -70,6 +82,7 @@ const normalizedSections = computed(() => {
                 :key="section.id"
                 :section="section"
                 :immersive="immersive"
+                :force-full-width="sectionsShareFullWidth"
             />
         </div>
 

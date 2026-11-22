@@ -9,6 +9,8 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import SectionRenderer from "@/Pages/Organismes/section/SectionRenderer.vue";
 import SectionContentSkeleton from "@/Pages/Molecules/section/SectionContentSkeleton.vue";
+import { isFullWidthSectionTemplate, sectionWidthClass } from "@/Utils/section/sectionLayout";
+import { publicSectionTitle } from "@/Utils/section/sectionTitle";
 
 const props = defineProps({
     section: {
@@ -28,6 +30,11 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    /** Même largeur que la section la plus large de la page. */
+    forceFullWidth: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const emit = defineEmits(["mounted"]);
@@ -37,9 +44,9 @@ const isMounted = ref(props.eager);
 
 const sectionId = computed(() => props.section?.id ?? null);
 const sectionSlug = computed(() => String(props.section?.slug || "").trim());
-const sectionTitle = computed(() => String(props.section?.title || "").trim() || "Section");
+const sectionTitle = computed(() => publicSectionTitle(props.section?.title));
 
-/** Même gabarit que SectionRenderer : tableaux 100 %, le reste 2/3 dès md. */
+/** Même gabarit que SectionRenderer : la page partage la largeur de sa section la plus large. */
 const sectionTemplateValue = computed(() => {
     const raw = props.section?.template ?? props.section?.type ?? "text";
     if (raw && typeof raw === "object" && "value" in raw) {
@@ -48,9 +55,7 @@ const sectionTemplateValue = computed(() => {
     return String(raw || "text");
 });
 const placeholderLayoutClass = computed(() =>
-    sectionTemplateValue.value.endsWith("_table")
-        ? "w-full min-w-0 max-w-full self-stretch"
-        : "w-full min-w-0 max-w-full self-center md:w-2/3",
+    sectionWidthClass(props.forceFullWidth || isFullWidthSectionTemplate(sectionTemplateValue.value)),
 );
 
 const rootId = computed(() => (sectionId.value ? `section-${sectionId.value}` : undefined));
@@ -131,6 +136,7 @@ onBeforeUnmount(() => {
         :section="section"
         :user="user"
         :auto-edit="autoEdit"
+        :force-full-width="forceFullWidth"
     />
 
     <div
@@ -153,8 +159,9 @@ onBeforeUnmount(() => {
             <SectionContentSkeleton
                 :template="sectionTemplateValue"
                 :title="sectionTitle"
+                :show-header="Boolean(sectionTitle)"
             />
         </div>
-        <span class="sr-only">Chargement de la section {{ sectionTitle }}</span>
+        <span class="sr-only">{{ sectionTitle ? `Chargement de ${sectionTitle}` : "Chargement" }}</span>
     </div>
 </template>

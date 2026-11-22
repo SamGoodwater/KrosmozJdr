@@ -47,7 +47,7 @@ const tableRows = 8;
 </script>
 
 <template>
-    <div class="section-content-skeleton space-y-3" aria-busy="true" :aria-label="`Chargement de la section ${title || ''}`.trim()">
+    <div class="section-content-skeleton space-y-3" aria-busy="true" :aria-label="title ? `Chargement de ${title}` : 'Chargement'">
         <div v-if="showHeader" class="flex items-center gap-2 px-0.5 py-1" aria-hidden="true">
             <Skeleton class="!h-5 !w-48 max-w-[60%]" />
         </div>

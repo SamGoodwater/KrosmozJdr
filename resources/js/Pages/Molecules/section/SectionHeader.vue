@@ -18,6 +18,7 @@
  * @emits open-params - Ouvrir modal paramètres
  * @emits copy-link - Copier le lien de la section
  * @emits request-delete - Demander la suppression de la section
+ * @emits toggle-collapse - Replier ou déplier le corps de la section
  */
 import { ref, watch } from 'vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
@@ -47,10 +48,15 @@ const props = defineProps({
   isHovered: {
     type: Boolean,
     default: false
-  }
+  },
+  /** Corps masqué : seul le libellé reste visible. */
+  collapsed: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const emit = defineEmits(['update:title', 'toggle-edit', 'open-params', 'copy-link', 'request-delete']);
+const emit = defineEmits(['update:title', 'toggle-edit', 'open-params', 'copy-link', 'request-delete', 'toggle-collapse']);
 
 // Titre local pour l'input
 const localTitle = ref(props.title);
@@ -81,13 +87,13 @@ const handleTitleKeydown = (event) => {
 
 <template>
   <div
-    class="section-header flex items-center justify-between gap-4 py-3"
-    :class="showTitle || isEditing ? 'border-b border-base-300/45' : 'justify-end border-b-0 py-1'"
+    class="section-header flex w-full items-center gap-2 py-2"
+    :class="showTitle || isEditing ? 'border-b border-base-300/45' : 'border-b-0 py-1'"
   >
     <!-- Titre à gauche -->
     <div
       v-if="showTitle || isEditing"
-      class="section-header__title flex min-w-0 flex-1 items-start gap-2"
+      class="section-header__title flex min-w-0 max-w-[70%] items-start gap-2"
     >
       <span class="mt-1.5 hidden h-8 w-1 shrink-0 rounded-full bg-primary/70 sm:block" aria-hidden="true" />
       <input
@@ -97,15 +103,33 @@ const handleTitleKeydown = (event) => {
         @keydown="handleTitleKeydown"
         type="text"
         class="input input-sm input-ghost w-full"
-        placeholder="Titre de la section"
+        placeholder="Titre"
       />
       <h3 v-else class="truncate text-xl font-bold tracking-tight text-base-content md:text-2xl">
-        {{ title || 'Sans titre' }}
+        {{ title }}
       </h3>
     </div>
-    
-    <!-- Icônes à droite (hover) -->
-    <div class="section-header__actions flex items-center gap-2" :class="{ 'section-header__actions--visible': isHovered }">
+
+    <div class="section-header__tools">
+    <button
+      v-if="!isEditing"
+      type="button"
+      class="section-header__collapse"
+      :aria-expanded="collapsed ? 'false' : 'true'"
+      :title="collapsed ? 'Déplier la section' : 'Replier la section'"
+      @click.stop="emit('toggle-collapse')"
+    />
+    <span v-if="!isEditing" class="section-header__collapse-icon" aria-hidden="true">
+      <Icon
+        :source="collapsed ? 'fa-chevron-down' : 'fa-chevron-up'"
+        pack="solid"
+        alt=""
+        size="sm"
+      />
+    </span>
+
+    <!-- Icônes à droite (hover). Au-dessus de la zone de repli, sans la recouvrir au clic. -->
+    <div class="section-header__actions" :class="{ 'section-header__actions--visible': isHovered }">
       <!-- Copier lien (toujours visible) -->
       <button
         @click="$emit('copy-link')"
@@ -154,15 +178,51 @@ const handleTitleKeydown = (event) => {
         <Icon source="fa-trash-can" pack="solid" alt="Supprimer la section" size="sm" />
       </button>
     </div>
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .section-header {
   transition: all 0.2s ease;
-  
+
+  &__tools {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 0;
+    min-height: 2.5rem;
+  }
+
+  &__collapse {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding-left: 2.75rem;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  &__collapse-icon {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    padding-right: 0.15rem;
+    color: color-mix(in srgb, hsl(var(--bc)) 70%, transparent);
+    pointer-events: none;
+  }
+
   &__actions {
-    // Styles pour les actions
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.25rem;
     opacity: 0;
     transition: opacity 0.2s ease;
     pointer-events: none;

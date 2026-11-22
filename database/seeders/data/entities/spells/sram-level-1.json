@@ -1,41 +1,370 @@
 {
     "_schema_version": "1",
     "breed": "Sram",
+    "state": "playable",
     "entries": [
         {
-            "key": "sournoiserie",
-            "name": "Sournoiserie",
-            "dofusdb_id": "32536",
+            "key": "arsenic",
+            "name": "Arsenic",
+            "dofusdb_id": "12907",
+            "official_id": "jdr:sram:arsenic",
             "slot_index": 1,
             "choice_order": 0,
+            "character_level": 1,
             "types": [
+                "Entrave",
                 "Dégâts"
             ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "attack_characteristic_key": "strong",
+            "state": "playable",
             "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour, PO 1.",
-            "description": "Un coup de lame à bout portant. Tu restes collé, tu frappes net.",
+            "resolution_mode": "attack_roll",
+            "description": "Tu lances une fléchette trempée d’acide. La cible subit des dommages d’Air, puis le poison lui coupe le geste et la vue lointaine.",
+            "effect": "Dégâts d’Air. Deux fois par tour. À partir du niveau 5, poison d’Air non cumulable. À partir du niveau 10, la cible perd de la portée. Réaction : fuite ratée à ton contact. Les dégâts du sort.",
+            "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "allows_reaction": true,
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
                     "params": {
-                        "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
+                        "characteristic": "air",
+                        "value": "1d4+Agilité",
+                        "value_formula": "1d4+[agi]",
+                        "dice_formula": "1d4+[agi]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "1d4+Agilité",
+                                "value_formula": "1d4+[agi]",
+                                "dice_formula": "1d4+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison d’Air 1d4, 2 tours.",
+                                "duration_formula": "2"
+                            },
+                            "duration_formula": "2",
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "1d4+Agilité",
+                                "value_formula": "1d4+[agi]",
+                                "dice_formula": "1d4+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison d’Air 1d4, 2 tours.",
+                                "duration_formula": "2"
+                            },
+                            "duration_formula": "2",
+                            "order": 1
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "po",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 15,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d4+Agilité",
+                                "value_formula": "2d4+[agi]",
+                                "dice_formula": "2d4+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison d’Air 1d4, 2 tours.",
+                                "duration_formula": "2"
+                            },
+                            "duration_formula": "2",
+                            "order": 1
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "po",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d4+Agilité",
+                                "value_formula": "2d4+[agi]",
+                                "dice_formula": "2d4+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison d’Air 1d4, 2 tours.",
+                                "duration_formula": "2"
+                            },
+                            "duration_formula": "2",
+                            "order": 1
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "po",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "sournoiserie",
+            "name": "Sournoiserie",
+            "dofusdb_id": "12904",
+            "official_id": "jdr:sram:sournoiserie",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 1,
+            "types": [
+                "Placement",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu frappes d’une lame brûlante. La cible subit des dommages de Feu et recule.",
+            "effect": "Dégâts de Feu. La poussée a lieu si le coup porte. Deux fois par tour. Réaction : fuite ratée à ton contact. Les dégâts du sort.",
+            "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "allows_reaction": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d4+Intelligence",
+                        "value_formula": "1d4+[intel]",
+                        "dice_formula": "1d4+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "1d4+Intelligence",
+                                "value_formula": "1d4+[intel]",
+                                "dice_formula": "1d4+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "1d6+Intelligence",
+                                "value_formula": "1d6+[intel]",
+                                "dice_formula": "1d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 15,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "1d6+Intelligence",
+                                "value_formula": "1d6+[intel]",
+                                "dice_formula": "1d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
                 }
             ]
         },
@@ -43,59 +372,206 @@
             "key": "cruaute",
             "name": "Cruauté",
             "dofusdb_id": "12919",
+            "official_id": "jdr:sram:cruaute",
             "slot_index": 1,
-            "choice_order": 1,
+            "choice_order": 2,
+            "character_level": 1,
             "types": [
+                "Amélioration",
                 "Dégâts"
             ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "attack_characteristic_key": "chance",
+            "state": "playable",
             "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour, PO 1.",
-            "description": "La lame pique le froid. Même cadence que Sournoiserie, autre voie.",
+            "resolution_mode": "attack_roll",
+            "description": "Tu entailles d’une lame mouillée. La cible subit des dommages d’Eau, et le pas volé te revient.",
+            "effect": "Dégâts d’Eau. Deux fois par tour, une fois par cible. Le gain de PM dure jusqu’au début de ton prochain tour et ne se cumule pas. Réaction : fuite ratée à ton contact. Les dégâts du sort.",
+            "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "allows_reaction": true,
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
                     "params": {
                         "characteristic": "water",
-                        "value": "1d6+Chance",
-                        "value_formula": "1d6+[chance]",
-                        "dice_formula": "1d6+[chance]",
-                        "value_formula_crit": "2d6+[chance]",
+                        "value": "1d4+Chance",
+                        "value_formula": "1d4+[chance]",
+                        "dice_formula": "1d4+[chance]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "1d4+Chance",
+                                "value_formula": "1d4+[chance]",
+                                "dice_formula": "1d4+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "1d6+Chance",
+                                "value_formula": "1d6+[chance]",
+                                "dice_formula": "1d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 15,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "1d6+Chance",
+                                "value_formula": "1d6+[chance]",
+                                "dice_formula": "1d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
                 }
             ]
         },
         {
-            "key": "sram-fourvoiement",
-            "name": "Fourvoiement",
+            "key": "truanderie",
+            "name": "Truanderie",
+            "dofusdb_id": "12902",
+            "official_id": "jdr:sram:truanderie",
             "slot_index": 1,
-            "choice_order": 2,
+            "choice_order": 3,
+            "character_level": 1,
             "types": [
                 "Dégâts"
             ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
+            "state": "playable",
             "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Fourvoiement : attaque simple, même budget que le palier 4.",
+            "resolution_mode": "attack_roll",
+            "description": "Tu frappes du pommeau. La cible subit des dommages de Terre, et ton coup suivant lui prend de la force.",
+            "effect": "Dégâts de Terre. Deux fois par tour. À partir du niveau 10, jusqu’au début de ton prochain tour, le prochain coup que tu portes à cette cible vole des dégâts. Le vol ne se cumule pas. Réaction : fuite ratée à ton contact. Les dégâts du sort.",
+            "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "allows_reaction": true,
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -105,119 +581,401 @@
                         "value": "1d6+Force",
                         "value_formula": "1d6+[strong]",
                         "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
                         "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "12909",
-            "attack_characteristic_key": "strong"
-        },
-        {
-            "key": "sram-perfidie",
-            "name": "Perfidie",
-            "slot_index": 1,
-            "choice_order": 3,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Perfidie : attaque simple, même budget que le palier 4.",
-            "sub_effects": [
+                    },
+                    "order": 0
+                },
                 {
-                    "slug": "frapper",
+                    "slug": "autre",
                     "area": "point",
                     "params": {
-                        "characteristic": "water",
-                        "value": "1d6+Chance",
-                        "value_formula": "1d6+[chance]",
-                        "dice_formula": "1d6+[chance]",
-                        "value_formula_crit": "2d6+[chance]",
-                        "effect_direction": "action"
-                    }
+                        "value": "Dès niv. 10 : prochain coup sur cette cible vole des dégâts."
+                    },
+                    "order": 1
                 }
             ],
-            "dofusdb_id": "25103",
-            "attack_characteristic_key": "chance"
-        },
-        {
-            "key": "derobade",
-            "name": "Dérobade",
-            "dofusdb_id": "28742",
-            "slot_index": 2,
-            "choice_order": 0,
-            "types": [
-                "Placement"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "Téléportation 1–4 cases, pas de ligne de vue. Action bonus, 3 PA, 1×/tour.",
-            "description": "Tu n’es plus là. Assez pour coller Sournoiserie dans le même tour.",
-            "sub_effects": [
+            "intensification": [
                 {
-                    "slug": "déplacer",
-                    "area": "point",
-                    "params": {
-                        "cells_formula": "4",
-                        "teleport": true,
-                        "movement_kind": "teleport",
-                        "effect_direction": "action"
-                    }
+                    "tier": "I",
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Dès niv. 10 : prochain coup sur cette cible vole des dégâts."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Dès niv. 10 : prochain coup sur cette cible vole des dégâts."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 15,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Dès niv. 10 : prochain coup sur cette cible vole des dégâts."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Dès niv. 10 : prochain coup sur cette cible vole des dégâts."
+                            },
+                            "order": 1
+                        }
+                    ]
                 }
             ]
         },
         {
             "key": "invisibilite",
             "name": "Invisibilité",
-            "dofusdb_id": "32367",
-            "slot_index": 3,
+            "dofusdb_id": "12913",
+            "official_id": "jdr:sram:invisibilite",
+            "slot_index": 2,
             "choice_order": 0,
+            "character_level": 1,
             "types": [
                 "Amélioration"
             ],
-            "element": null,
-            "pa": "5",
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu te fonds dans l’ombre. Le coup qui achève te laisse dans le noir.",
+            "effect": "Tu deviens invisible, en combat comme en dehors. Une action de ta part qui inflige des dégâts te rend visible, après le coup. Si ce coup achève la cible, tu restes invisible et la relance de ce sort revient à 0. Au niveau 7, tu peux payer 3 PA de plus au lancement : les dégâts ne te révèlent pas pendant 1 tour. Une fois par tour, relance de 4 tours. Réaction : tu passes sous la moitié de tes PV. Tu deviens invisible jusqu’au début de ton prochain tour. Un dégât que tu infliges te révèle quand même.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "4",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "0",
             "po_max": "0",
             "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "max_stack": 1,
-            "resolution_mode": "auto_success",
-            "spares_chosen_targets": false,
-            "is_magic": true,
-            "powerful": 5,
-            "duration": "jusqu’à la fin de ton prochain tour, ou jusqu’à un sort offensif",
-            "effect": "Tu es invisible jusqu’à la fin de ton prochain tour, ou jusqu’à ce que tu lances un sort offensif. Pas de cumul. 5 PA, 1×/tour.",
-            "description": "Tu disparais. Le temps de te placer, pas de rester fantôme toute la scène.",
+            "allows_reaction": true,
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
+                    "params": {
+                        "value": "Invisible. Redeviens visible si une action de ta part inflige des dégâts (sauf si le coup achève)."
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 7,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Invisible. Redeviens visible si une action de ta part inflige des dégâts (sauf si le coup achève)."
+                            },
+                            "order": 0
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Invisible. Redeviens visible si une action de ta part inflige des dégâts (sauf si le coup achève)."
+                            },
+                            "order": 0
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Invisible. Redeviens visible si une action de ta part inflige des dégâts (sauf si le coup achève)."
+                            },
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "piege-d-immobilisation",
+            "name": "Piège d’Immobilisation",
+            "dofusdb_id": "12910",
+            "official_id": "jdr:sram:piege-d-immobilisation",
+            "slot_index": 3,
+            "choice_order": 0,
+            "character_level": 1,
+            "types": [
+                "Entrave"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu caches des collets. Ils se referment sur les chevilles de la zone.",
+            "effect": "Piège. Au déclenchement, chaque créature de la zone qui rate sa sauvegarde perd des PM, toi et tes allié·e·s compris. Une fois par tour, relance de 3 tours.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "attack_characteristic_key": "sagesse",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Entrave · Altération · physique · piège · sauvegarde de Sagesse contre ton DD de Sagesse, au déclenchement · DofusDB : 12910.",
+            "target_type": "trap",
+            "sub_effects": [
+                {
+                    "slug": "retirer",
+                    "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "value": "Invisible jusqu’à la fin de ton prochain tour, ou jusqu’à un sort offensif.",
-                        "effect_direction": "self",
+                        "characteristic": "pm",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
                         "duration_formula": "1"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Piège. Toute créature, toi compris."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 7,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Piège. Toute créature, toi compris."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "peur",
+            "name": "Peur",
+            "dofusdb_id": "12908",
+            "official_id": "jdr:sram:peur",
+            "slot_index": 3,
+            "choice_order": 1,
+            "character_level": 1,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu surgis dans son regard. Elle recule en ligne, droit vers l’endroit que tu as choisi.",
+            "effect": "La cible recule en ligne jusqu’à la case visée, sans dépasser la distance du sort. Si ton mod. de Force vaut au moins 3, la distance gagne 1 case. Une poussée dans un piège le déclenche. Une fois par tour. Réaction : une créature entre à ton contact. Elle recule d’1 case.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "2",
+            "po_editable": true,
+            "attack_characteristic_key": "strong",
+            "save_characteristic_key": "strong",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Placement · Altération · physique · sauvegarde de Force contre ton DD de Force · en ligne · réaction · DofusDB : 12908.",
+            "allows_reaction": true,
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "2",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Repousse. Réaction possible."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 7,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "3",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Repousse. Réaction possible."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "3",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Repousse. Réaction possible."
+                            },
+                            "order": 1
+                        }
+                    ]
                 }
             ]
         }

@@ -44,7 +44,7 @@ function sanitizeMenuIconSource(icon) {
 
 /**
  * Icône menu : webp entité sur le titre parent ou une entrée racine ;
- * sous-classes = menu_icon (BDD, symbole couleur) ; spécialisations imbriquées = aucune.
+ * sous-classes = menu_icon (symbole, grisé au repos) ; spécialisations = menu_icon en couleurs.
  *
  * @param {{ entity_key?: string|null, menu_icon?: string|null }} item
  * @param {'parent-header'|'top-link'|'nested-link'} placement
@@ -52,7 +52,7 @@ function sanitizeMenuIconSource(icon) {
  */
 function resolveMenuIcon(item, placement) {
     if (placement === 'nested-link') {
-        if (item?.entity_key === 'breed') {
+        if (item?.entity_key === 'breed' || item?.entity_key === 'specialization') {
             return (
                 sanitizeMenuIconSource(item?.menu_icon)
                 || sanitizeMenuIconSource(item?.icon)

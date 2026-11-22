@@ -14,6 +14,7 @@ Confirmations CLI : `-y` / `--yes` accepte, `--no` refuse. `-n` = `--no-interact
 - `php artisan ia:npc-kit-catalog` — pré-filtre compact PNJ (équipement, classes/spés, sorts par classe, gabarit 5.1.2)
 - `php artisan ia:creation-guides` — fiches de bonne pratique Création (prompt conversion), sans LLM
 - `php artisan breeds:sync-images` — aligne les visuels des classes sur `storage/app/public/images/breeds/{slug}/`
+- `php artisan specializations:sync-images` — aligne `specializations.image` sur `storage/app/public/images/specializations/{slug}.png`
 - `php artisan entities:recalculate-prices {items|consumables}` — réécrit `price_calculated`, vide `price_custom` (consommables `playable` exclus) ; bouton admin sur `/admin/content`
 - `php artisan items:seeder-export` / `items:seeder-import` — aller-retour CLI étalons d’équipement base ↔ `database/seeders/data/entities/items/` (pas d’UI) ; export défaut `auto`, `--versioned` = auto + déjà versionnés ; inclus dans `project:backup` hors prod
 - `app/Console/Commands/Project/ProjectInitCommand.php`

@@ -16,6 +16,7 @@ import {
     loadKrefSectionPreview,
 } from "@/Composables/richText/krefSectionPreviewCache";
 import { sanitizeHtml } from "@/Utils/security/sanitizeHtml";
+import { publicSectionTitle } from "@/Utils/section/sectionTitle";
 
 const props = defineProps({
     /** Conteneur qui inclut `.ProseMirror` ou le HTML rendu. */
@@ -115,7 +116,7 @@ function cancelHide() {
 async function loadSectionPreview(info) {
     const cached = getCachedKrefSectionPreview(info);
     if (cached) {
-        popoverTitle.value = String(cached?.title || info?.label || "Section");
+        popoverTitle.value = publicSectionTitle(cached?.title) || publicSectionTitle(info?.label);
         popoverHtml.value = String(cached?.html || "");
         popoverHint.value = String(cached?.hint || "");
         popoverLoading.value = false;
@@ -159,12 +160,12 @@ async function loadSectionPreview(info) {
                 hint = "Contenu non accessible.";
             }
             return {
-                title: String(data?.title || "Section"),
+                title: publicSectionTitle(data?.title),
                 html: raw ? sanitizeHtml(raw) : "",
                 hint,
             };
         });
-        popoverTitle.value = String(payload?.title || "Section");
+        popoverTitle.value = publicSectionTitle(payload?.title);
         popoverHtml.value = String(payload?.html || "");
         popoverHint.value = String(payload?.hint || "");
     } catch (e) {
@@ -261,7 +262,7 @@ function openForAnchor(anchor, info) {
 
     const previewUrl = buildSectionPreviewSnippetUrl(info);
     if (previewUrl) {
-        popoverTitle.value = info.label || "Section";
+        popoverTitle.value = publicSectionTitle(info.label);
         void loadSectionPreview(info);
         return;
     }
@@ -399,6 +400,7 @@ function onPopoverLeave() {
             @mouseleave="onPopoverLeave"
         >
             <div
+                v-if="popoverTitle"
                 class="kref-preview-popover__title border-b border-base-200/80 bg-base-200/30 px-3 py-2 text-sm font-bold leading-snug text-base-content"
             >
                 {{ popoverTitle }}

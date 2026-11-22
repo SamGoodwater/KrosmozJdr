@@ -28,6 +28,7 @@
 | Fichier | Contenu |
 | --- | --- |
 | [README](./README.md) | Problème, principes, ordre de livraison. |
+| [TON](./TON.md) | Voix du site (joueur / MJ) : tu, phrases courtes, ambiance ≠ règle. Pas dans le livre. |
 | [CHAMPS](./CHAMPS.md) | Figé vs généré : admin `/admin/content/ia-generation`, JSON de repli. |
 | [ARCHITECTURE](./ARCHITECTURE.md) | Pipeline, état, prompts, validateurs, code existant. |
 | [CATALOGUE](./CATALOGUE.md) | Objets, grille `ia:equipment-grid`, pré-filtre. |

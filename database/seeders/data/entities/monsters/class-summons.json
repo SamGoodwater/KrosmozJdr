@@ -10,8 +10,8 @@
             "size": 1,
             "monster_race": "Tofu",
             "primary": "agi",
-            "description": "Un tofu jaillit. Fragile, mais il occupe et il pique.",
-            "other_info": "Invocation de classe (Troupeau). Agit à l’initiative du lanceur. Disparaît si le lanceur tombe à 0 PV. Au plus 1 invocation à la fois au niveau 1.",
+            "description": "Rang 1 Air. Fragile, mais il occupe et il pique.",
+            "other_info": "Invocation de classe (Troupeau). Contrôlée, joue juste après le lanceur. Utilise les mods du lanceur. Compagnon possible (voie bénie Air).",
             "action": {
                 "name": "Bec",
                 "kind": "frapper",
@@ -30,8 +30,8 @@
             "character_level": 1,
             "size": 1,
             "primary": "intel",
-            "description": "Un dragonnet de poche. Même budget que le Tofu, autre élément.",
-            "other_info": "Invocation de classe (Troupeau). Agit à l’initiative du lanceur. Disparaît si le lanceur tombe à 0 PV. Au plus 1 invocation à la fois au niveau 1.",
+            "description": "Rang 1 Feu. Petit dragon de poche.",
+            "other_info": "Invocation de classe (Troupeau). Contrôlée, joue juste après le lanceur. Utilise les mods du lanceur. Compagnon possible (voie bénie Feu).",
             "action": {
                 "name": "Souffle",
                 "kind": "frapper",
@@ -40,6 +40,26 @@
                 "attack_characteristic_key": "intel",
                 "resolution_mode": "attack_roll",
                 "is_magic": true
+            }
+        },
+        {
+            "key": "osamodas-crapipou",
+            "name": "Crapipou",
+            "image": "https://api.dofusdb.fr/img/monsters/41.png",
+            "breed": "Osamodas",
+            "character_level": 1,
+            "size": 1,
+            "primary": "chance",
+            "description": "Rang 1 Eau. Petit crapaud collant.",
+            "other_info": "Invocation de classe (Troupeau). Contrôlée, joue juste après le lanceur. Utilise les mods du lanceur. Compagnon possible (voie bénie Eau).",
+            "action": {
+                "name": "Bave",
+                "kind": "frapper",
+                "element": "water",
+                "value": "1d4",
+                "attack_characteristic_key": "chance",
+                "resolution_mode": "attack_roll",
+                "is_magic": false
             }
         },
         {
@@ -63,42 +83,43 @@
             }
         },
         {
-            "key": "harponneuse",
+            "key": "steamer-harponneuse",
             "name": "Harponneuse",
             "image": "https://api.dofusdb.fr/img/monsters/1924.png",
             "breed": "Steamer",
             "character_level": 1,
             "size": 1,
-            "primary": "intel",
-            "description": "Une tourelle. Fragile, mais elle occupe et elle pique.",
-            "other_info": "Invocation de classe (Tourelle). Agit à l’initiative du lanceur. 1 PM si le lanceur la déplace. Disparaît si le lanceur tombe à 0 PV. Au plus 1 tourelle au niveau 1.",
+            "primary": "vitality",
+            "description": "Tourelle offensive. Dégâts neutres. Debuff au rang III seulement. PV = niveau du Steamer.",
+            "other_info": "Une seule. Rang I à l’arrivée. Plafond : 1× III, autres ≤ II. Repositionnement ≤3. Compte dans les invocations. Stats d’action selon le rang, pas la voie.",
             "action": {
                 "name": "Harpon",
                 "kind": "frapper",
-                "element": "fire",
+                "element": null,
                 "value": "1d4",
-                "attack_characteristic_key": "intel",
-                "resolution_mode": "attack_roll",
+                "attack_characteristic_key": null,
+                "resolution_mode": "auto_success",
                 "is_magic": false
             }
         },
         {
-            "key": "gardienne",
+            "key": "steamer-gardienne",
             "name": "Gardienne",
             "image": "https://api.dofusdb.fr/img/monsters/1923.png",
             "breed": "Steamer",
             "character_level": 1,
             "size": 1,
-            "primary": "chance",
-            "description": "Même budget que la Harponneuse, autre voie : elle recoud.",
-            "other_info": "Invocation de classe (Tourelle). Agit à l’initiative du lanceur. Disparaît si le lanceur tombe à 0 PV. Au plus 1 tourelle au niveau 1.",
+            "primary": "vitality",
+            "description": "Tourelle soin ou bouclier. PV = niveau du Steamer.",
+            "other_info": "Une seule. Rang I. À son tour : soin ou bouclier selon le rang (1d4/1d6/1d8). Repositionnement ≤3.",
             "action": {
                 "name": "Réparation",
                 "kind": "soigner",
-                "element": "water",
+                "element": null,
                 "value": "1d4",
+                "attack_characteristic_key": null,
                 "resolution_mode": "auto_success",
-                "is_magic": true
+                "is_magic": false
             }
         },
         {
@@ -106,18 +127,18 @@
             "name": "Double",
             "image": "https://api.dofusdb.fr/img/monsters/88.png",
             "breed": "Sram",
-            "character_level": 3,
-            "size": 2,
-            "primary": "strong",
-            "description": "Double : une invocation. Fragile, mais elle occupe.",
-            "other_info": "Invocation de classe. Agit à l’initiative du lanceur. Au plus 1 invocation à la fois.",
+            "character_level": 5,
+            "size": 1,
+            "primary": "agi",
+            "description": "Ton double. Stats = aux tiennes ; PV = moitié. Aucun sort ni capacité : déplacement seul.",
+            "other_info": "Un seul. Contrôlé, juste après toi. Stats = lanceur, ½ PV. Pas d’attaque. Disparaît si tu infliges des dégâts (fin de son prochain tour). Relancer = échange.",
             "action": {
-                "name": "Estoc",
-                "kind": "frapper",
-                "element": "earth",
-                "value": "1d4",
-                "attack_characteristic_key": "strong",
-                "resolution_mode": "attack_roll",
+                "name": "Se déplacer",
+                "kind": "soigner",
+                "element": null,
+                "value": "0",
+                "attack_characteristic_key": null,
+                "resolution_mode": "auto_success",
                 "is_magic": false
             }
         },
@@ -126,18 +147,39 @@
             "name": "Bouftou",
             "image": "https://api.dofusdb.fr/img/monsters/3.png",
             "breed": "Osamodas",
-            "character_level": 7,
+            "character_level": 1,
             "size": 2,
             "monster_race": "Bouftou",
             "primary": "strong",
-            "description": "Bouftou : la 2e bête du Troupeau.",
-            "other_info": "Invocation de classe (Troupeau). Agit à l’initiative du lanceur. Au plus 2 invocations à la fois dès le niveau 7.",
+            "description": "Rang 1 Terre. Solide, il occupe et il charge.",
+            "other_info": "Invocation de classe (Troupeau). Contrôlée, joue juste après le lanceur. Utilise les mods du lanceur. Compagnon possible (voie bénie Terre).",
             "action": {
                 "name": "Charge",
                 "kind": "frapper",
                 "element": "earth",
-                "value": "1d6",
+                "value": "1d4",
                 "attack_characteristic_key": "strong",
+                "resolution_mode": "attack_roll",
+                "is_magic": false
+            }
+        },
+        {
+            "key": "osamodas-ventritofu",
+            "name": "Ventritofu",
+            "image": "https://api.dofusdb.fr/img/monsters/10.png",
+            "breed": "Osamodas",
+            "character_level": 7,
+            "size": 1,
+            "monster_race": "Tofu",
+            "primary": "agi",
+            "description": "Rang 2 Air. Plus vif que le Tofu.",
+            "other_info": "Invocation de classe (Troupeau). Rang 2 dès le niveau 7 (4 PA). Contrôlée, joue juste après le lanceur.",
+            "action": {
+                "name": "Rafale",
+                "kind": "frapper",
+                "element": "air",
+                "value": "1d6",
+                "attack_characteristic_key": "agi",
                 "resolution_mode": "attack_roll",
                 "is_magic": false
             }
@@ -150,8 +192,8 @@
             "character_level": 7,
             "size": 2,
             "primary": "intel",
-            "description": "Dragonnet : l’autre 2e bête du Troupeau.",
-            "other_info": "Invocation de classe (Troupeau). Agit à l’initiative du lanceur. Au plus 2 invocations à la fois dès le niveau 7.",
+            "description": "Rang 2 Feu.",
+            "other_info": "Invocation de classe (Troupeau). Rang 2 dès le niveau 7 (4 PA). Contrôlée, joue juste après le lanceur.",
             "action": {
                 "name": "Souffle",
                 "kind": "frapper",
@@ -163,15 +205,56 @@
             }
         },
         {
+            "key": "osamodas-crapipaud",
+            "name": "Crapipaud",
+            "image": "https://api.dofusdb.fr/img/monsters/42.png",
+            "breed": "Osamodas",
+            "character_level": 7,
+            "size": 1,
+            "primary": "chance",
+            "description": "Rang 2 Eau.",
+            "other_info": "Invocation de classe (Troupeau). Rang 2 dès le niveau 7 (4 PA). Contrôlée, joue juste après le lanceur.",
+            "action": {
+                "name": "Crachat",
+                "kind": "frapper",
+                "element": "water",
+                "value": "1d6",
+                "attack_characteristic_key": "chance",
+                "resolution_mode": "attack_roll",
+                "is_magic": false
+            }
+        },
+        {
+            "key": "osamodas-bouflourd",
+            "name": "Bouflourd",
+            "image": "https://api.dofusdb.fr/img/monsters/4.png",
+            "breed": "Osamodas",
+            "character_level": 7,
+            "size": 2,
+            "monster_race": "Bouftou",
+            "primary": "strong",
+            "description": "Rang 2 Terre.",
+            "other_info": "Invocation de classe (Troupeau). Rang 2 dès le niveau 7 (4 PA). Contrôlée, joue juste après le lanceur.",
+            "action": {
+                "name": "Piétinement",
+                "kind": "frapper",
+                "element": "earth",
+                "value": "1d6",
+                "attack_characteristic_key": "strong",
+                "resolution_mode": "attack_roll",
+                "is_magic": false
+            }
+        },
+        {
             "key": "sadida-la-bloqueuse",
             "name": "La Bloqueuse",
             "image": "https://api.dofusdb.fr/img/monsters/62.png",
             "breed": "Sadida",
-            "character_level": 7,
+            "character_level": 2,
             "size": 1,
             "primary": "strong",
-            "description": "La Bloqueuse : 2e poupée du Jardin.",
-            "other_info": "Invocation de classe (Jardin). Agit à l’initiative du lanceur. Terrain difficile autour. Au plus 2 poupées dès le niveau 7.",
+            "description": "Poupée trapue. Remplace un arbre. Compte dans la limite d’invocations (même place que l’arbre).",
+            "other_info": "Une seule Bloqueuse. Contrôlée, juste après toi. Terrain difficile autour. L’arbre revient à sa disparition.",
             "action": {
                 "name": "Racines",
                 "kind": "frapper",
@@ -187,11 +270,11 @@
             "name": "La Gonflable",
             "image": "https://api.dofusdb.fr/img/monsters/64.png",
             "breed": "Sadida",
-            "character_level": 7,
+            "character_level": 5,
             "size": 1,
             "primary": "chance",
-            "description": "La Gonflable : l’autre 2e poupée, qui soigne.",
-            "other_info": "Invocation de classe (Jardin). Agit à l’initiative du lanceur. Terrain difficile autour. Au plus 2 poupées dès le niveau 7.",
+            "description": "Poupée ronde. Remplace un arbre. Soigne ou cogne. Même limite d’invocations que les arbres.",
+            "other_info": "Une seule Gonflable. Contrôlée, juste après toi. L’arbre revient à sa disparition.",
             "action": {
                 "name": "Sève",
                 "kind": "soigner",
@@ -202,42 +285,23 @@
             }
         },
         {
-            "key": "steamer-tourelle-tactique",
-            "name": "Tactirrelle",
+            "key": "steamer-tactirelle",
+            "name": "Tactirelle",
             "image": "https://api.dofusdb.fr/img/monsters/1925.png",
             "breed": "Steamer",
-            "character_level": 7,
+            "character_level": 8,
             "size": 1,
-            "primary": "intel",
-            "description": "Tactirrelle : la 2e machine, pas un buff.",
-            "other_info": "Invocation de classe (Tourelle). Agit à l’initiative du lanceur. Au plus 2 tourelles dès le niveau 7.",
+            "primary": "vitality",
+            "description": "Tourelle de placement : attire ou pousse. PV = niveau du Steamer.",
+            "other_info": "Une seule. Rang I. Attire ou pousse 1/2/3 selon rang I/II/III. Repositionnement ≤3. Pas de dégâts.",
             "action": {
-                "name": "Salve",
-                "kind": "frapper",
-                "element": "fire",
-                "value": "1d6",
-                "attack_characteristic_key": "intel",
-                "resolution_mode": "attack_roll",
-                "is_magic": false
-            }
-        },
-        {
-            "key": "steamer-tourelle-tactique-soin",
-            "name": "Soigneuse",
-            "image": "https://api.dofusdb.fr/img/monsters/1923.png",
-            "breed": "Steamer",
-            "character_level": 7,
-            "size": 1,
-            "primary": "chance",
-            "description": "Soigneuse : l’autre 2e tourelle, qui soigne.",
-            "other_info": "Invocation de classe (Tourelle). Agit à l’initiative du lanceur. Au plus 2 tourelles dès le niveau 7.",
-            "action": {
-                "name": "Visée soignante",
+                "name": "Treuil",
                 "kind": "soigner",
-                "element": "water",
-                "value": "1d4",
+                "element": null,
+                "value": "0",
+                "attack_characteristic_key": null,
                 "resolution_mode": "auto_success",
-                "is_magic": true
+                "is_magic": false
             }
         },
         {
@@ -245,16 +309,16 @@
             "name": "Repaire",
             "image": "https://api.dofusdb.fr/img/monsters/1557.png",
             "breed": "Ouginak",
-            "character_level": 7,
+            "character_level": 8,
             "size": 2,
             "primary": "strong",
-            "description": "Repaire : une invocation. Fragile, mais elle occupe.",
-            "other_info": "Invocation de classe. Agit à l’initiative du lanceur. Au plus 1 invocation à la fois.",
+            "description": "Compagnon de meute. Fragile, occupe, mord.",
+            "other_info": "Invocation Repaire. Une seule. Initiative du lanceur. Compte dans les invocations. Forme bestiale = capa, pas ce monstre.",
             "action": {
                 "name": "Morsure",
                 "kind": "frapper",
                 "element": "earth",
-                "value": "1d6",
+                "value": "1d4",
                 "attack_characteristic_key": "strong",
                 "resolution_mode": "attack_roll",
                 "is_magic": false
@@ -265,7 +329,7 @@
             "name": "Chaton d'Ecaflip",
             "image": "https://api.dofusdb.fr/img/monsters/90.png",
             "breed": "Ecaflip",
-            "character_level": 11,
+            "character_level": 5,
             "size": 1,
             "primary": "chance",
             "description": "Familier de sort. Trois tours, agit juste après toi. Sans état : mêlé (Griffe ou Léchouille 1d4). Pile : enragé (Griffe 1d6). Face : affectueux (Léchouille 1d6). Consommation : les deux au dé augmenté. Palier 17 : PV 16, CA 13, dés 1d6/1d8.",
@@ -281,55 +345,195 @@
             }
         },
         {
+            "key": "cra-balise-tactique",
+            "name": "Balise tactique",
+            "image": "https://api.dofusdb.fr/img/monsters/494.png",
+            "breed": "Crâ",
+            "character_level": 6,
+            "size": 0,
+            "primary": "agi",
+            "description": "Flèche-balise plantée. Relais de tir 1 tour. Statique. Compte dans la limite d’invocations. Tes dégâts ne l’abîment pas.",
+            "other_info": "Invocation Balise tactique. 1 tour. N’attaque pas. Un sort peut partir de sa case.",
+            "action": {
+                "name": "Se tenir",
+                "kind": "soigner",
+                "element": null,
+                "value": "0",
+                "attack_characteristic_key": null,
+                "resolution_mode": "auto_success",
+                "is_magic": false
+            }
+        },
+        {
+            "key": "cra-balise-rappel",
+            "name": "Balise de rappel",
+            "image": "https://api.dofusdb.fr/img/monsters/494.png",
+            "breed": "Crâ",
+            "character_level": 6,
+            "size": 0,
+            "primary": "agi",
+            "description": "Flèche-balise de retour. Au début de ton prochain tour, tu te téléportes sur sa case, puis elle disparaît. Compte dans la limite d’invocations.",
+            "other_info": "Invocation Balise de rappel. Statique. N’attaque pas. Disparaît après le rappel.",
+            "action": {
+                "name": "Se tenir",
+                "kind": "soigner",
+                "element": null,
+                "value": "0",
+                "attack_characteristic_key": null,
+                "resolution_mode": "auto_success",
+                "is_magic": false
+            }
+        },
+        {
+            "key": "pandawa-pandawasta",
+            "name": "Pandawasta",
+            "image": "https://api.dofusdb.fr/img/monsters/48.png",
+            "breed": "Pandawa",
+            "character_level": 5,
+            "size": 2,
+            "primary": "strong",
+            "description": "Esprit porte-faix. Compte dans la limite d’invocations. Monture possible (+PO).",
+            "other_info": "Un seul. Contrôlé, juste après toi. Massif. Monté : +1 PO (+2 dès niv. 11).",
+            "action": {
+                "name": "Épauler",
+                "kind": "soigner",
+                "element": null,
+                "value": "0",
+                "attack_characteristic_key": null,
+                "resolution_mode": "auto_success",
+                "is_magic": false
+            }
+        },
+        {
+            "key": "pandawa-bambou",
+            "name": "Bambou",
+            "image": "https://api.dofusdb.fr/img/monsters/171.png",
+            "breed": "Pandawa",
+            "character_level": 8,
+            "size": 1,
+            "primary": "chance",
+            "description": "Tige 1 PV. Immobile. Ne compte pas dans la limite d’invocations. Bloque le passage, pas la LoS. Disparaît au début de ton prochain tour.",
+            "other_info": "Invocation Bambouseraie. Zone = brise tous les bambous touchés.",
+            "action": {
+                "name": "S’ancrer",
+                "kind": "soigner",
+                "element": null,
+                "value": "0",
+                "attack_characteristic_key": null,
+                "resolution_mode": "auto_success",
+                "is_magic": false
+            }
+        },
+        {
             "key": "sadida-arbre",
             "name": "Arbre",
             "image": "https://api.dofusdb.fr/img/monsters/171.png",
             "breed": "Sadida",
-            "character_level": 10,
+            "character_level": 1,
             "size": 2,
             "primary": "strong",
-            "description": "Arbre : une invocation. Fragile, mais elle occupe.",
-            "other_info": "Invocation de classe (Jardin). Agit à l’initiative du lanceur. Au plus 2 poupées / arbres selon le passif.",
+            "description": "Arbre planté. Statique, n’agit pas. Compte dans la limite d’invocations. Sol vivant uniquement.",
+            "other_info": "Invocation Sadida. Immobile. Bloque le passage, pas la LoS du Sadida. Une poupée peut le remplacer sans ajouter d’invocation.",
             "action": {
-                "name": "Branchage",
+                "name": "S’ancrer",
+                "kind": "soigner",
+                "element": null,
+                "value": "0",
+                "attack_characteristic_key": null,
+                "resolution_mode": "auto_success",
+                "is_magic": false
+            }
+        },
+        {
+            "key": "xelor-complice",
+            "name": "Complice",
+            "image": "https://api.dofusdb.fr/img/monsters/1249.png",
+            "breed": "Xélor",
+            "character_level": 5,
+            "size": 1,
+            "primary": "agi",
+            "description": "Petite statue d’horloger. Stats = lanceur. Elle n’attaque pas : elle bloque et sert d’appui aux échanges.",
+            "other_info": "Un seul. Contrôlé, juste après toi. Pas d’attaque. Relancer remplace.",
+            "action": {
+                "name": "Se tenir",
+                "kind": "soigner",
+                "element": null,
+                "value": "0",
+                "attack_characteristic_key": null,
+                "resolution_mode": "auto_success",
+                "is_magic": false
+            }
+        },
+        {
+            "key": "xelor-cadran",
+            "name": "Cadran de Xélor",
+            "image": "https://api.dofusdb.fr/img/monsters/1248.png",
+            "breed": "Xélor",
+            "character_level": 8,
+            "size": 2,
+            "primary": "intel",
+            "description": "Cadran solaire planté au sol. Statique. Au début de son tour : Heure juste sur les créatures en Téléfrag.",
+            "other_info": "Un seul. Statique, 3 tours. Juste après toi. Heure juste : consomme Téléfrag ; allié +1 PA, ennemi −1 PA (zone 2, 3 dès niv. 14).",
+            "action": {
+                "name": "Heure juste",
+                "kind": "soigner",
+                "element": null,
+                "value": "0",
+                "attack_characteristic_key": null,
+                "resolution_mode": "auto_success",
+                "is_magic": false
+            }
+        },
+        {
+            "key": "enutrof-sac-anime",
+            "name": "Sac Animé",
+            "image": "https://api.dofusdb.fr/img/monsters/1681.png",
+            "breed": "Enutrof",
+            "character_level": 5,
+            "size": 1,
+            "primary": "chance",
+            "description": "Objet animé. Il encaisse près des allié·e·s, puis retombe.",
+            "other_info": "Invocation de classe Enutrof. Un seul objet animé à la fois. Contrôlé, joue juste après le lanceur, 3 tours. Frapper l’objet soigne l’attaquant·e (toi ou allié·e) de la moitié des dégâts.",
+            "action": {
+                "name": "Encaisser",
+                "kind": "soigner",
+                "element": null,
+                "value": "1d4",
+                "attack_characteristic_key": null,
+                "resolution_mode": "auto_success",
+                "is_magic": false
+            }
+        },
+        {
+            "key": "enutrof-pelle-animee",
+            "name": "Pelle Animée",
+            "image": "https://api.dofusdb.fr/img/monsters/1682.png",
+            "breed": "Enutrof",
+            "character_level": 6,
+            "size": 1,
+            "primary": "strong",
+            "description": "Objet animé. Elle pousse, elle frappe, puis retombe.",
+            "other_info": "Invocation de classe Enutrof. Un seul objet animé à la fois. Contrôlée, joue juste après le lanceur, 3 tours. Frapper l’objet soigne l’attaquant·e de la moitié des dégâts.",
+            "action": {
+                "name": "Pelle",
                 "kind": "frapper",
                 "element": "earth",
                 "value": "1d6",
                 "attack_characteristic_key": "strong",
                 "resolution_mode": "attack_roll",
-                "is_magic": true
+                "is_magic": false
             }
         },
         {
-            "key": "xelor-synchro",
-            "name": "Synchro",
-            "image": "https://api.dofusdb.fr/img/monsters/1249.png",
-            "breed": "Xélor",
-            "character_level": 11,
-            "size": 2,
-            "primary": "intel",
-            "description": "Synchro : une invocation. Fragile, mais elle occupe.",
-            "other_info": "Invocation de classe. Agit à l’initiative du lanceur. Au plus 1 invocation à la fois.",
-            "action": {
-                "name": "Tic",
-                "kind": "frapper",
-                "element": "fire",
-                "value": "2d4",
-                "attack_characteristic_key": "intel",
-                "resolution_mode": "attack_roll",
-                "is_magic": true
-            }
-        },
-        {
-            "key": "enutrof-malle-animee",
-            "name": "Malle Animée",
+            "key": "enutrof-coffre-anime",
+            "name": "Coffre Animé",
             "image": "https://api.dofusdb.fr/img/monsters/1683.png",
             "breed": "Enutrof",
-            "character_level": 11,
+            "character_level": 10,
             "size": 2,
             "primary": "chance",
-            "description": "Malle Animée : une invocation. Fragile, mais elle occupe. Le Coffre du passif Pelle reste une zone, pas cette fiche.",
-            "other_info": "Invocation de classe (pas le Coffre-zone du passif). Agit à l’initiative du lanceur. Au plus 1 invocation à la fois.",
+            "description": "Objet animé. Il soigne, il mord, et pèse plus lourd quand il est abîmé.",
+            "other_info": "Invocation de classe Enutrof. Un seul objet animé à la fois. Contrôlé, joue juste après le lanceur, 3 tours. Frapper l’objet soigne l’attaquant·e de la moitié des dégâts.",
             "action": {
                 "name": "Claquement",
                 "kind": "frapper",
@@ -337,7 +541,7 @@
                 "value": "2d4",
                 "attack_characteristic_key": "chance",
                 "resolution_mode": "attack_roll",
-                "is_magic": true
+                "is_magic": false
             }
         },
         {
@@ -345,11 +549,11 @@
             "name": "La Sacrifiée",
             "image": "https://api.dofusdb.fr/img/monsters/63.png",
             "breed": "Sadida",
-            "character_level": 11,
+            "character_level": 8,
             "size": 1,
             "primary": "intel",
-            "description": "La Sacrifiée : une invocation. Fragile, mais elle occupe.",
-            "other_info": "Invocation de classe (Jardin). Agit à l’initiative du lanceur. Au plus 2 poupées dès le niveau 7.",
+            "description": "Poupée de sève pourrie. Remplace un arbre. Court et éclate (poison). Même limite d’invocations.",
+            "other_info": "Une seule Sacrifiée. Contrôlée, juste après toi. L’arbre revient à sa disparition.",
             "action": {
                 "name": "Éclat",
                 "kind": "frapper",
@@ -381,15 +585,36 @@
             }
         },
         {
+            "key": "osamodas-scarafoudre",
+            "name": "Scarafoudre",
+            "image": "https://api.dofusdb.fr/img/monsters/11.png",
+            "breed": "Osamodas",
+            "character_level": 13,
+            "size": 2,
+            "monster_race": "Tofu",
+            "primary": "agi",
+            "description": "Rang 3 Air.",
+            "other_info": "Invocation de classe (Troupeau). Rang 3 dès le niveau 13 (5 PA). Contrôlée, joue juste après le lanceur.",
+            "action": {
+                "name": "Foudre",
+                "kind": "frapper",
+                "element": "air",
+                "value": "2d4",
+                "attack_characteristic_key": "agi",
+                "resolution_mode": "attack_roll",
+                "is_magic": false
+            }
+        },
+        {
             "key": "osamodas-sulfenix",
             "name": "Sulfénix",
             "image": "https://api.dofusdb.fr/img/monsters/2532.png",
             "breed": "Osamodas",
-            "character_level": 14,
+            "character_level": 13,
             "size": 2,
             "primary": "intel",
-            "description": "Sulfénix : une invocation. Fragile, mais elle occupe.",
-            "other_info": "Invocation de classe (Troupeau). Agit à l’initiative du lanceur. Au plus 2 invocations à la fois dès le niveau 7.",
+            "description": "Rang 3 Feu.",
+            "other_info": "Invocation de classe (Troupeau). Rang 3 dès le niveau 13 (5 PA). Contrôlée, joue juste après le lanceur.",
             "action": {
                 "name": "Envolée",
                 "kind": "frapper",
@@ -398,6 +623,47 @@
                 "attack_characteristic_key": "intel",
                 "resolution_mode": "attack_roll",
                 "is_magic": true
+            }
+        },
+        {
+            "key": "osamodas-crocolereux",
+            "name": "Crocoléreux",
+            "image": "https://api.dofusdb.fr/img/monsters/43.png",
+            "breed": "Osamodas",
+            "character_level": 13,
+            "size": 2,
+            "primary": "chance",
+            "description": "Rang 3 Eau.",
+            "other_info": "Invocation de classe (Troupeau). Rang 3 dès le niveau 13 (5 PA). Contrôlée, joue juste après le lanceur.",
+            "action": {
+                "name": "Morsure",
+                "kind": "frapper",
+                "element": "water",
+                "value": "2d4",
+                "attack_characteristic_key": "chance",
+                "resolution_mode": "attack_roll",
+                "is_magic": false
+            }
+        },
+        {
+            "key": "osamodas-craquolosse",
+            "name": "Craquolosse",
+            "image": "https://api.dofusdb.fr/img/monsters/5.png",
+            "breed": "Osamodas",
+            "character_level": 13,
+            "size": 3,
+            "monster_race": "Craqueleur",
+            "primary": "strong",
+            "description": "Rang 3 Terre.",
+            "other_info": "Invocation de classe (Troupeau). Rang 3 dès le niveau 13 (5 PA). Contrôlée, joue juste après le lanceur.",
+            "action": {
+                "name": "Éboulement",
+                "kind": "frapper",
+                "element": "earth",
+                "value": "2d4",
+                "attack_characteristic_key": "strong",
+                "resolution_mode": "attack_roll",
+                "is_magic": false
             }
         },
         {
@@ -428,8 +694,8 @@
             "character_level": 6,
             "size": 0,
             "primary": "agi",
-            "description": "Porte un sort ≤ 3 PA pendant 2 tours puis se pose. Vol hauteur 1, ignore tacle. Niveau = lanceur. Agi 12+⌊niv/5⌋, PM 4+⌊(niv-6)/6⌋. 1 fée (2 dès niv. 12). N’attaque pas.",
-            "other_info": "Invocation Mot Féerique. Joue juste après l’Eniripsa dès l’apparition. Disparaît à la pose, à 0 PV (sort perdu), ou fin de combat.",
+            "description": "Porte un sort ≤ 3 PA pendant 2 tours puis se pose. Vol hauteur 1, ignore tacle. Niveau = lanceur. Agi 12+⌊niv/5⌋, PM 4+⌊(niv-6)/6⌋. Compte dans la limite d’invocations. N’attaque pas.",
+            "other_info": "Invocation Mot Féerique. Compte dans la limite d’invocations du lanceur. Joue juste après l’Eniripsa dès l’apparition. Disparaît à la pose, à 0 PV (sort perdu), ou fin de combat.",
             "action": {
                 "name": "Se poser",
                 "kind": "soigner",
@@ -438,6 +704,26 @@
                 "attack_characteristic_key": null,
                 "resolution_mode": "auto_success",
                 "is_magic": true
+            }
+        },
+        {
+            "key": "roublard-bombe",
+            "name": "Bombe",
+            "image": "https://api.dofusdb.fr/img/monsters/494.png",
+            "breed": "Roublard",
+            "character_level": 1,
+            "size": 1,
+            "primary": "vitality",
+            "description": "Charge visible. Invocation + case de zone. Immobile, n’agit pas. Bloque le passage, pas la LoS. PV = 2× niveau (Mèche). Élément + niveau de charge (1 → 1+maîtrise).",
+            "other_info": "Disparaît à l’explosion, à 0 PV sans exploser (sauf Poudre), ou fin de combat. Les sorts élémentaires du Roublard changent son élément sans la blesser.",
+            "action": {
+                "name": "Mèche",
+                "kind": "soigner",
+                "element": null,
+                "value": "0",
+                "attack_characteristic_key": null,
+                "resolution_mode": "auto_success",
+                "is_magic": false
             }
         }
     ]

@@ -6,7 +6,7 @@
     "life_dice": "1d10",
     "description": "Les Zobals portent des masques magiques qui leur permettent de changer de tête comme de chemise. Tour à tour collants comme de la glu, enragés comme des psychopathes ou partisans de la retraite stratégique, ils s'adaptent à la situation, mais gare aux troubles de la personnalité ! La légende dit que ces êtres imprévisibles seraient bénis par Sadida lui-même.",
     "dofus_version": "3",
-    "state": "draft",
+    "state": "playable",
     "read_level": 0,
     "write_level": 3,
     "element_orientations": {
@@ -14,5 +14,18 @@
         "earth": "entrave",
         "water": "placement",
         "air": "protection"
+    },
+    "mechanics": {
+        "engine": "etat",
+        "masks": {
+            "optional": true,
+            "max_active": 1,
+            "types": {
+                "psychopathe": {"unlock_level": 1, "rider": "+1 dégât"},
+                "classique": {"unlock_level": 1, "rider": "+1 aux jets pour protéger un·e allié·e adjacent"},
+                "renegat": {"unlock_level": 8, "rider": "1×/tour téléport 1 après attaque de classe réussie", "unlock_spell": "Masque du Renégat"}
+            },
+            "switch_spell": "Masque"
+        }
     }
 }

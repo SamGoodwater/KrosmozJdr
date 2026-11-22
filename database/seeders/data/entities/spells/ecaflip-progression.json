@@ -17,15 +17,15 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "attack_roll",
-            "description": "Tu lances la griffe en ligne. Elle inflige des dommages d'Air, et soit tu avances vers la cible, soit tu la chasses.",
-            "effect": "Dégâts d'Air, en ligne. Une fois par tour, deux à partir du niveau 14.",
+            "resolution_mode": null,
+            "description": "Tu lances la griffe en ligne. Soit tu avances vers la cible, soit tu la chasses.",
+            "effect": "Dégâts d’Air, en ligne. Une fois par tour.",
             "pa": "3",
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "0",
             "sight_line": true,
-            "cast_in_line": true,
+            "cast_in_line": false,
             "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "4",
@@ -139,8 +139,6 @@
                             "order": 2
                         }
                     ],
-                    "cast_per_turn": "2",
-                    "cast_per_target": "2",
                     "po_max": "5"
                 },
                 {
@@ -179,8 +177,6 @@
                             "order": 2
                         }
                     ],
-                    "cast_per_turn": "2",
-                    "cast_per_target": "2",
                     "po_max": "6"
                 }
             ]
@@ -199,9 +195,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "attack_roll",
-            "description": "Tu frappes des deux pattes. Le choc inflige des dommages d'Air, et soit tu recules, soit la cible recule.",
-            "effect": "Dégâts d'Air. Une fois par tour.",
+            "resolution_mode": null,
+            "description": "Tu frappes des deux pattes. Soit tu recules, soit la cible recule.",
+            "effect": "Dégâts d’Air. Une fois par tour.",
             "pa": "4",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -257,9 +253,9 @@
                             "area": "point",
                             "params": {
                                 "characteristic": "air",
-                                "value": "3d6+Agilité",
-                                "value_formula": "3d6+[agi]",
-                                "dice_formula": "3d6+[agi]",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
                                 "effect_direction": "action"
                             },
                             "order": 0
@@ -294,9 +290,9 @@
                             "area": "point",
                             "params": {
                                 "characteristic": "air",
-                                "value": "4d6+Agilité",
-                                "value_formula": "4d6+[agi]",
-                                "dice_formula": "4d6+[agi]",
+                                "value": "3d6+Agilité",
+                                "value_formula": "3d6+[agi]",
+                                "dice_formula": "3d6+[agi]",
                                 "effect_direction": "action"
                             },
                             "order": 0
@@ -338,9 +334,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "attack_roll",
-            "description": "Tu arraches les cibles d'un coup de griffe. Elle subit de lourds dommages d'Air, et soit tu attires les cibles, soit le choc les projettent.",
-            "effect": "Dégâts d'Air. Une fois par tour, relance de 2 tours. Le vol de vie de Dofus n'est pas repris.",
+            "resolution_mode": null,
+            "description": "Tu arraches les cibles d’un coup de griffe. Soit tu les ramènes, soit le choc les projette.",
+            "effect": "Dégâts d’Air en croix. Une fois par tour, relance de 2 tours.",
             "pa": "5",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -359,9 +355,9 @@
                     "area": "cross-0-3",
                     "params": {
                         "characteristic": "air",
-                        "value": "3d8+Agilité",
-                        "value_formula": "3d8+[agi]",
-                        "dice_formula": "3d8+[agi]",
+                        "value": "2d8+Agilité",
+                        "value_formula": "2d8+[agi]",
+                        "dice_formula": "2d8+[agi]",
                         "effect_direction": "action"
                     },
                     "order": 0
@@ -396,9 +392,9 @@
                             "area": "cross-0-3",
                             "params": {
                                 "characteristic": "air",
-                                "value": "4d8+Agilité",
-                                "value_formula": "4d8+[agi]",
-                                "dice_formula": "4d8+[agi]",
+                                "value": "2d10+Agilité",
+                                "value_formula": "2d10+[agi]",
+                                "dice_formula": "2d10+[agi]",
                                 "effect_direction": "action"
                             },
                             "order": 0
@@ -440,9 +436,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "attack_roll",
-            "description": "Tu balaies du revers de la patte. La cible subit des dommages de Feu, et la chaleur qui reste soigne de la moitié des dommages infligés, toi ou un·e allié·e.",
-            "effect": "Dégâts de Feu. Deux fois par tour. Le soin ne part pas sans état. L'attirance de Dofus n'est pas reprise.",
+            "resolution_mode": null,
+            "description": "Tu balaies du revers de la patte. La chaleur qui reste referme une plaie, la tienne ou celle d’un allié, à hauteur de la moitié du coup.",
+            "effect": "Dégâts de Feu. Une fois par tour. Le soin vaut la moitié des dégâts finaux.",
             "pa": "3",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -499,9 +495,9 @@
                             "area": "point",
                             "params": {
                                 "characteristic": "fire",
-                                "value": "3d4+Intelligence",
-                                "value_formula": "3d4+[intel]",
-                                "dice_formula": "3d4+[intel]",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
                                 "effect_direction": "action"
                             },
                             "order": 0
@@ -537,9 +533,9 @@
                             "area": "point",
                             "params": {
                                 "characteristic": "fire",
-                                "value": "4d4+Intelligence",
-                                "value_formula": "4d4+[intel]",
-                                "dice_formula": "4d4+[intel]",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
                                 "effect_direction": "action"
                             },
                             "order": 0
@@ -576,9 +572,9 @@
                             "area": "point",
                             "params": {
                                 "characteristic": "fire",
-                                "value": "5d4+Intelligence",
-                                "value_formula": "5d4+[intel]",
-                                "dice_formula": "5d4+[intel]",
+                                "value": "3d6+Intelligence",
+                                "value_formula": "3d6+[intel]",
+                                "dice_formula": "3d6+[intel]",
                                 "effect_direction": "action"
                             },
                             "order": 0
@@ -621,12 +617,12 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "attack_roll",
-            "description": "Tu râpes d'un grand coup de langue. Les ennemi·e·s autour subissent des dommages de Feu, et les plaies des allié·e·s se referment.",
-            "effect": "Autour de la case ciblée. Les ennemi·e·s subissent des dommages de Feu. Les allié·e·s sont soigné·e·s. Toi, tu n'es ni frappé ni soigné. Une fois par tour. Ce sort ne lit pas la pièce : Dofus faisait déjà les deux.",
+            "resolution_mode": null,
+            "description": "Tu râpes d’un grand coup de langue. Les ennemis autour prennent le feu, et les plaies des alliés se referment.",
+            "effect": "Autour de la case ciblée. Les ennemis subissent des dégâts de Feu. Les alliés sont soignés. Toi, tu n’es ni frappé ni soigné. Une fois par tour. Ce sort ne lit pas la pièce.",
             "pa": "4",
-            "cast_per_turn": "2",
-            "cast_per_target": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
             "number_between_two_cast": "0",
             "sight_line": true,
             "cast_in_line": false,
@@ -730,9 +726,9 @@
                             "slug": "soigner",
                             "area": "cross-0-1",
                             "params": {
-                                "value": "2d4",
-                                "value_formula": "2d4",
-                                "dice_formula": "2d4",
+                                "value": "1d4",
+                                "value_formula": "1d4",
+                                "dice_formula": "1d4",
                                 "effect_direction": "action"
                             },
                             "order": 1
@@ -763,9 +759,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "attack_roll",
-            "description": "Tu mords et tu gardes une part du coup. La cible subit de lourds dommages de Feu, et cette part referme ta plaie ou augmentent les dommages.",
-            "effect": "Dégâts de Feu. La moitié des dégâts finaux soigne si pile, dégâts plus élevé si face. Une fois par tour, relance de 2 tours. Le soin ne part pas sans état.",
+            "resolution_mode": null,
+            "description": "Tu mords et tu gardes une part du coup. La pièce rend cette part en souffle, ou alourdit la morsure.",
+            "effect": "Dégâts de Feu. Une fois par tour, relance de 2 tours.",
             "pa": "5",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -866,9 +862,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "attack_roll",
-            "description": "Tu charges le coup de tout ton poids. La cible subit des dommages d'Eau, et ne peut plus faire de critique.",
-            "effect": "Dégâts d'Eau. Deux fois par tour. Tu empêches la cible de faire des critiques pour 1 tour.",
+            "resolution_mode": null,
+            "description": "Tu charges le coup de tout ton poids. La cible ne trouve plus le point juste.",
+            "effect": "Dégâts d’Eau. La cible ne peut plus faire de coup critique pendant 1 tour. Deux fois par tour. Ce sort ne lit pas la pièce.",
             "pa": "3",
             "cast_per_turn": "2",
             "cast_per_target": "2",
@@ -1008,15 +1004,15 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "attack_roll",
-            "description": "Tu allonges la griffe en ligne, même sans voir la cible. Le trait inflige de lourds dommages d'Eau.",
-            "effect": "Dégâts d'Eau, en ligne, sans ligne de vue. Une fois par tour.",
+            "resolution_mode": null,
+            "description": "Tu allonges la griffe en ligne, même sans voir la cible.",
+            "effect": "Dégâts d’Eau, en ligne, sans ligne de vue. Une fois par tour. Ce sort ne lit pas la pièce.",
             "pa": "4",
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "0",
-            "sight_line": false,
-            "cast_in_line": true,
+            "sight_line": true,
+            "cast_in_line": false,
             "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "5",
@@ -1029,9 +1025,9 @@
                     "area": "point",
                     "params": {
                         "characteristic": "water",
-                        "value": "2d10+Chance",
-                        "value_formula": "2d10+[chance]",
-                        "dice_formula": "2d10+[chance]",
+                        "value": "2d8+Chance",
+                        "value_formula": "2d8+[chance]",
+                        "dice_formula": "2d8+[chance]",
                         "effect_direction": "action"
                     },
                     "order": 0
@@ -1048,9 +1044,9 @@
                             "area": "point",
                             "params": {
                                 "characteristic": "water",
-                                "value": "3d10+Chance",
-                                "value_formula": "3d10+[chance]",
-                                "dice_formula": "3d10+[chance]",
+                                "value": "2d10+Chance",
+                                "value_formula": "2d10+[chance]",
+                                "dice_formula": "2d10+[chance]",
                                 "effect_direction": "action"
                             },
                             "order": 0
@@ -1067,9 +1063,9 @@
                             "area": "point",
                             "params": {
                                 "characteristic": "water",
-                                "value": "3d12+Chance",
-                                "value_formula": "3d12+[chance]",
-                                "dice_formula": "3d12+[chance]",
+                                "value": "3d8+Chance",
+                                "value_formula": "3d8+[chance]",
+                                "dice_formula": "3d8+[chance]",
                                 "effect_direction": "action"
                             },
                             "order": 0
@@ -1091,9 +1087,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "attack_roll",
-            "description": "Tu plantes la griffe et tu tires. La cible subit de lourds dommages d'Eau. Tes dommages ou ceux de la cible varient.",
-            "effect": "Vol de vie Eau. Une fois par tour, relance de 2 tours.",
+            "resolution_mode": null,
+            "description": "Tu plantes la griffe et tu tires. La pièce charge ton prochain coup, ou émousse celui de la cible.",
+            "effect": "Dégâts d’Eau. Une fois par tour, relance de 2 tours. Le bonus et le malus durent 1 tour.",
             "pa": "5",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -1112,9 +1108,9 @@
                     "area": "point",
                     "params": {
                         "characteristic": "water",
-                        "value": "4d6+Chance",
-                        "value_formula": "4d6+[chance]",
-                        "dice_formula": "4d6+[chance]",
+                        "value": "3d6+Chance",
+                        "value_formula": "3d6+[chance]",
+                        "dice_formula": "3d6+[chance]",
                         "effect_direction": "action"
                     },
                     "order": 0
@@ -1152,9 +1148,9 @@
                             "area": "point",
                             "params": {
                                 "characteristic": "water",
-                                "value": "4d8+Chance",
-                                "value_formula": "4d8+[chance]",
-                                "dice_formula": "4d8+[chance]",
+                                "value": "3d8+Chance",
+                                "value_formula": "3d8+[chance]",
+                                "dice_formula": "3d8+[chance]",
                                 "effect_direction": "action"
                             },
                             "order": 0
@@ -1165,8 +1161,8 @@
                             "duration_formula": "1",
                             "params": {
                                 "characteristic": "dommages_spell",
-                                "value": "10",
-                                "value_formula": "10",
+                                "value": "5",
+                                "value_formula": "5",
                                 "effect_direction": "self",
                                 "duration_formula": "1"
                             },
@@ -1198,9 +1194,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "attack_roll",
-            "description": "Tu abats le coup, puis tu téléportes si tu es dans l'état Pile. La cible subit des dommages de Terre et est téléporté si tu es dans l'état Face.",
-            "effect": "Dégâts de Terre. Deux fois par tour. Tu te déplaces ou tu déplaces la cible.",
+            "resolution_mode": null,
+            "description": "Tu abats le coup, puis la pièce choisit qui disparaît d’un pas : toi, ou la cible.",
+            "effect": "Dégâts de Terre. Deux fois par tour. La téléportation se fait sur une case libre adjacente à la cible.",
             "pa": "3",
             "cast_per_turn": "2",
             "cast_per_target": "2",
@@ -1379,9 +1375,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "attack_roll",
-            "description": "Tu passes la langue comme une lame. La cible subit des dommages de Terre et perd le geste, ou le pas.",
-            "effect": "Dégâts de Terre. Une fois par tour. Le retrait ne part pas sans état, et il ne se cumule pas. Dofus retirait déjà des PA ou des PM : la pièce choisit.",
+            "resolution_mode": null,
+            "description": "Tu passes la langue comme une lame. La pièce gêne le bras, ou l’appui au sol.",
+            "effect": "Dégâts de Terre. Une fois par tour. L’entrave dure 1 tour et ne se cumule pas.",
             "pa": "4",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -1469,8 +1465,6 @@
                             "order": 2
                         }
                     ],
-                    "cast_per_turn": "2",
-                    "cast_per_target": "2",
                     "po_max": "6"
                 },
                 {
@@ -1496,8 +1490,8 @@
                             "duration_formula": "1",
                             "params": {
                                 "characteristic": "pa",
-                                "value": "2",
-                                "value_formula": "2",
+                                "value": "1",
+                                "value_formula": "1",
                                 "effect_direction": "action",
                                 "duration_formula": "1"
                             },
@@ -1512,15 +1506,13 @@
                             "order": 2
                         }
                     ],
-                    "cast_per_turn": "2",
-                    "cast_per_target": "2",
                     "po_max": "6"
                 }
             ]
         },
         {
             "key": "destin-d-ecaflip",
-            "name": "Destin d'Ecaflip",
+            "name": "Destin d’Ecaflip",
             "dofusdb_id": null,
             "official_id": "jdr:ecaflip:destin-d-ecaflip",
             "slot_index": 1,
@@ -1532,9 +1524,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "attack_roll",
-            "description": "Tu abats les deux pattes. Pile : Tu voles de la vie à la cible. Face, tu la repousses ou l'attirent.",
-            "effect": "Dégâts de Terre. Une fois par tour, relance de 2 tours. Le vol de vie ou attire ou repousse de 4.",
+            "resolution_mode": null,
+            "description": "Tu abats les deux pattes. Pile te rend une part du coup. Face emporte la cible, vers toi ou au loin.",
+            "effect": "Dégâts de Terre. Une fois par tour, relance de 2 tours.",
             "pa": "5",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -1553,9 +1545,9 @@
                     "area": "point",
                     "params": {
                         "characteristic": "earth",
-                        "value": "2d10+Force",
-                        "value_formula": "2d10+[strong]",
-                        "dice_formula": "2d10+[strong]",
+                        "value": "2d8+Force",
+                        "value_formula": "2d8+[strong]",
+                        "dice_formula": "2d8+[strong]",
                         "effect_direction": "action"
                     },
                     "order": 0
@@ -1564,9 +1556,9 @@
                     "slug": "soigner",
                     "area": "point",
                     "params": {
-                        "value": "2d10",
-                        "value_formula": "2d10",
-                        "dice_formula": "2d10",
+                        "value": "2d8",
+                        "value_formula": "2d8",
+                        "dice_formula": "2d8",
                         "effect_direction": "action"
                     },
                     "order": 1
@@ -1601,9 +1593,9 @@
                             "area": "point",
                             "params": {
                                 "characteristic": "earth",
-                                "value": "3d10+Force",
-                                "value_formula": "3d10+[strong]",
-                                "dice_formula": "3d10+[strong]",
+                                "value": "3d8+Force",
+                                "value_formula": "3d8+[strong]",
+                                "dice_formula": "3d8+[strong]",
                                 "effect_direction": "action"
                             },
                             "order": 0
@@ -1612,9 +1604,9 @@
                             "slug": "soigner",
                             "area": "point",
                             "params": {
-                                "value": "3d10",
-                                "value_formula": "3d10",
-                                "dice_formula": "3d10",
+                                "value": "3d8",
+                                "value_formula": "3d8",
+                                "dice_formula": "3d8",
                                 "effect_direction": "action"
                             },
                             "order": 1
@@ -1654,33 +1646,29 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "saving_throw",
-            "description": "Tu souffles fort autour de toi. Toutes les créatures, toi y comprit, ont les jambes lourdes, mais vos bras répondent mieux. Au tour d'après, c'est l'inverse.",
-            "effect": "Toutes les créatures de la Zone gagnent 2 PM mais perdent 3 PA, au tour d'après c'est l'inverse",
+            "resolution_mode": null,
+            "description": "Tu souffles fort autour de toi. Les jambes répondent, et les bras se font plus courts. Au tour d’après, c’est l’inverse.",
+            "effect": "Les créatures de la zone gagnent 2 PM et perdent 2 PA. Au tour d’après, elles perdent 2 PM et gagnent 2 PA. Toi et tes alliés le recevez. Les ennemis font une sauvegarde. Relance de 3 tours.",
             "pa": "3",
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "3",
-            "sight_line": false,
+            "sight_line": true,
             "cast_in_line": false,
             "cast_in_diagonal": false,
             "po_min": "0",
             "po_max": "2",
             "po_editable": true,
-            "attack_characteristic_key": "strong",
-            "save_characteristic_key": "strong",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "DD de Force vs jet de sauvegarde de Force. Ton bonus est automatique.",
             "spares_chosen_targets": true,
             "sub_effects": [
                 {
                     "slug": "retirer",
-                    "area": "rect-2x2",
+                    "area": "point",
                     "duration_formula": "1",
                     "params": {
                         "characteristic": "pa",
-                        "value": "3",
-                        "value_formula": "3",
+                        "value": "1",
+                        "value_formula": "1",
                         "effect_direction": "action",
                         "duration_formula": "1"
                     },
@@ -1692,8 +1680,8 @@
                     "duration_formula": "1",
                     "params": {
                         "characteristic": "pm",
-                        "value": "2",
-                        "value_formula": "2",
+                        "value": "1",
+                        "value_formula": "1",
                         "effect_direction": "self",
                         "duration_formula": "1"
                     },
@@ -1701,7 +1689,7 @@
                 },
                 {
                     "slug": "autre",
-                    "area": "rect-2x2",
+                    "area": "point",
                     "params": {
                         "value": "Toi sauf du retrait. Au tour suivant : perds les PM, gagne autant de PA."
                     },
@@ -1716,12 +1704,12 @@
                     "sub_effects": [
                         {
                             "slug": "retirer",
-                            "area": "rect-3x2",
+                            "area": "point",
                             "duration_formula": "1",
                             "params": {
                                 "characteristic": "pa",
-                                "value": "3",
-                                "value_formula": "3",
+                                "value": "1",
+                                "value_formula": "1",
                                 "effect_direction": "action",
                                 "duration_formula": "1"
                             },
@@ -1733,8 +1721,8 @@
                             "duration_formula": "1",
                             "params": {
                                 "characteristic": "pm",
-                                "value": "2",
-                                "value_formula": "2",
+                                "value": "1",
+                                "value_formula": "1",
                                 "effect_direction": "self",
                                 "duration_formula": "1"
                             },
@@ -1742,14 +1730,13 @@
                         },
                         {
                             "slug": "autre",
-                            "area": "rect-3x2",
+                            "area": "point",
                             "params": {
                                 "value": "Toi sauf du retrait. Au tour suivant : perds les PM, gagne autant de PA."
                             },
                             "order": 2
                         }
-                    ],
-                    "pa": "2"
+                    ]
                 }
             ]
         },
@@ -1766,9 +1753,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "auto_success",
+            "resolution_mode": null,
             "description": "Tu lèches une plaie. Elle se ferme tout de suite, et encore un peu au tour suivant.",
-            "effect": "Soin immédiat, puis un second soin au début de ton prochain tour. Une fois par tour, relance de 3 tours. Si ton mod. d'Intelligence vaut au moins 3, le second soin gagne un dé.",
+            "effect": "Soin immédiat, puis un second soin au début de ton prochain tour. Une fois par tour, relance de 3 tours. Si ton modificateur d’Intelligence vaut au moins 3, le second soin gagne un dé.",
             "pa": "3",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -1823,9 +1810,9 @@
                             "slug": "soigner",
                             "area": "point",
                             "params": {
-                                "value": "2d4",
-                                "value_formula": "2d4",
-                                "dice_formula": "2d4",
+                                "value": "1d4",
+                                "value_formula": "1d4",
+                                "dice_formula": "1d4",
                                 "effect_direction": "action"
                             },
                             "order": 0
@@ -1834,9 +1821,9 @@
                             "slug": "soigner",
                             "area": "point",
                             "params": {
-                                "value": "2d4",
-                                "value_formula": "2d4",
-                                "dice_formula": "2d4",
+                                "value": "1d4",
+                                "value_formula": "1d4",
+                                "dice_formula": "1d4",
                                 "effect_direction": "action",
                                 "duration_formula": "1"
                             },
@@ -1857,7 +1844,7 @@
         },
         {
             "key": "tarot",
-            "name": "Tarot d'Ecaflip",
+            "name": "Tarot d’Ecaflip",
             "dofusdb_id": null,
             "official_id": "jdr:ecaflip:tarot",
             "slot_index": 1,
@@ -1868,9 +1855,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "auto_success",
-            "description": "Tu tires une carte au hasard, tu la lances à tes pieds : elle explose en une pluie d'étincelle, touchant toutes les créatures à moins de 45m, pour le meilleur ou pour le pire.",
-            "effect": "Lance 1d10. L'effet dure jusqu'au début de ton prochain tour. Si ton mod. de Sagesse vaut au moins 3, tu peux relancer le dé une fois et garder le nouveau résultat. Relance de 4 puis 3 tours.",
+            "resolution_mode": null,
+            "description": "Tu tires une carte et tu la lances à tes pieds. Elle éclate en pluie d’étincelles, pour le meilleur ou pour le pire.",
+            "effect": "Lance 1d10. L’effet touche toutes les créatures à 30 cases ou moins et dure jusqu’au début de ton prochain tour. Si ton modificateur de Sagesse vaut au moins 3, tu peux relancer le dé une fois et garder le nouveau résultat. Relance de 4 tours, puis de 3 au niveau 12. Ce dé n’est pas la pièce.",
             "pa": "2",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -1923,9 +1910,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "auto_success",
-            "description": "Tu siffles et ton chaton apparaît. C'est une invocation : la pièce décide s'il griffe, s'il soigne, ou les deux.",
-            "effect": "Effet Invoquer vers le monstre Chaton d'Ecaflip (`jdr:summon:ecaflip-chaton`, fiche Chaton-ecaflip). Ce lien ouvre sa fiche. L'invocation a ton niveau. Elle compte dans ton nombre d'invocations. Il agit juste après toi et tient **3 tours** (ou jusqu'à 0 PV). Relance de 4 tours.",
+            "resolution_mode": null,
+            "description": "Tu siffles et ton chaton apparaît. La pièce décide s’il griffe, s’il soigne, ou les deux.",
+            "effect": "Invoque un Chaton d’Ecaflip sur une case libre à portée. Il a ton niveau, il compte dans tes invocations, il agit juste après toi et il tient 3 tours, ou jusqu’à 0 PV. Relance de 4 tours.",
             "pa": "3",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -1969,14 +1956,14 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "auto_success",
-            "description": "Tu fais tourner la roue et tu la bloques de ton côté. Pendant un moment, tes coups portent plus près du point de rupture, et ton prochain dé hésite moins.",
-            "effect": "Jusqu'au début de ton prochain tour, tes critiques se déclenchent un cran plus tôt. Si ton mod. de Sagesse vaut au moins 3, deux crans. Le prochain dé de Tarot d'Ecaflip ou de Roulette lancé d'ici là est lancé deux fois : tu gardes le résultat que tu veux. Relance de 2 tours. Ce n'est pas la pièce.",
+            "resolution_mode": null,
+            "description": "Tu fais tourner la roue et tu la bloques de ton côté. Tes coups cherchent le point de rupture, et le prochain dé hésite moins.",
+            "effect": "Jusqu’au début de ton prochain tour, tes critiques se déclenchent un cran plus tôt. Si ton modificateur de Sagesse vaut au moins 3, deux crans. Le prochain dé de Tarot d’Ecaflip ou de Roulette lancé d’ici là est lancé deux fois : tu gardes le résultat que tu veux. Relance de 2 tours. Ce n’est pas la pièce.",
             "pa": "3",
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "2",
-            "sight_line": false,
+            "sight_line": true,
             "cast_in_line": false,
             "cast_in_diagonal": false,
             "po_min": "0",
@@ -2027,9 +2014,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "auto_success",
-            "description": "Tu couvres quelqu'un, toi y compris, d'un éclat bref. Le prochain choc glisse. Celui d'après trouve la garde ouverte.",
-            "effect": "Bouclier jusqu'au début de ton prochain tour. Au tour suivant, la cible subit 1d4 de dommages de plus à chaque coup reçu, pendant un tour. Relance de 3 tours. Si ton mod. de Vitalité vaut au moins 3, le bouclier gagne un dé.",
+            "resolution_mode": null,
+            "description": "Tu couvres quelqu’un, toi compris, d’un éclat bref. Le prochain choc glisse. Celui d’après trouve la garde ouverte.",
+            "effect": "Bouclier jusqu’au début de ton prochain tour. Au tour suivant, la cible subit 1d4 de dégâts de plus à chaque coup reçu, pendant 1 tour. Relance de 3 tours. Si ton modificateur de Vitalité vaut au moins 3, le bouclier gagne un dé.",
             "pa": "2",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -2076,9 +2063,9 @@
                             "area": "point",
                             "duration_formula": "1",
                             "params": {
-                                "value": "2d6",
-                                "value_formula": "2d6",
-                                "dice_formula": "2d6",
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
                                 "effect_direction": "action",
                                 "duration_formula": "1"
                             },
@@ -2111,14 +2098,14 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "auto_success",
-            "description": "Tu retentes le geste. Il te rend ce qu'il a coûté, et parfois un pas de plus.",
-            "effect": "Le PA dépensé te revient avant la fin du tour. Si ton mod. de Chance vaut au moins 3, tu gagnes aussi 1 PM jusqu'à la fin du tour. Relance de 3 tours.",
+            "resolution_mode": null,
+            "description": "Tu retentes le geste. Il te rend ce qu’il a coûté, et parfois un pas de plus.",
+            "effect": "Le PA dépensé te revient avant la fin du tour. Si ton modificateur de Chance vaut au moins 3, tu gagnes aussi 1 PM jusqu’à la fin du tour. Relance de 3 tours.",
             "pa": "1",
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "3",
-            "sight_line": false,
+            "sight_line": true,
             "cast_in_line": false,
             "cast_in_diagonal": false,
             "po_min": "0",
@@ -2169,9 +2156,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "auto_success",
-            "description": "Tu dresses un château de cartes devant quelqu'un, toi y compris. Il encaisse un choc, puis il s'effondre.",
-            "effect": "Bouclier. Relance de 3 tours. Pas de dégâts.",
+            "resolution_mode": null,
+            "description": "Tu dresses un château de cartes devant quelqu’un, toi compris. Il encaisse un choc, puis il s’effondre.",
+            "effect": "Bouclier. Relance de 3 tours.",
             "pa": "3",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -2208,9 +2195,9 @@
                             "area": "point",
                             "duration_formula": "1",
                             "params": {
-                                "value": "2d6",
-                                "value_formula": "2d6",
-                                "dice_formula": "2d6",
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
                                 "effect_direction": "action",
                                 "duration_formula": "1"
                             },
@@ -2233,14 +2220,14 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "auto_success",
-            "description": "Tu relances la pièce sans y laisser le geste. Le sort ne frappe pas : il change seulement la face.",
-            "effect": "Tu lances la pièce une fois de plus dans le tour, sans dépenser le PA de la mécanique, et sans utiliser son lancer unique. Le PA de ce sort te revient. Ça remplace l'état, ça ne s'y ajoute pas. Relance de 2 tours. Pas de dégâts.",
+            "resolution_mode": null,
+            "description": "Tu relances la pièce sans y laisser le geste. Seule la face change.",
+            "effect": "Tu lances la pièce une fois de plus dans le tour, sans dépenser le PA de la mécanique, et sans utiliser son lancer unique. Le PA de ce sort te revient. Le nouvel état remplace l’ancien. Relance de 2 tours, puis de 1 au niveau 17.",
             "pa": "1",
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "2",
-            "sight_line": false,
+            "sight_line": true,
             "cast_in_line": false,
             "cast_in_diagonal": false,
             "po_min": "0",
@@ -2288,9 +2275,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "saving_throw",
-            "description": "Tu souffles une haleine lourde. Les ennemi·e·s de la zone ont les jambes prises, et les invisibles redeviennent visibles.",
-            "effect": "Retire des PM aux ennemi·e·s de la zone et révèle les invisibles. Toi et tes allié·e·s n'êtes pas entravé·e·s. Une fois par tour, relance de 2 tours. Pas de dégâts. L'érosion de Dofus devient ce retrait.",
+            "resolution_mode": null,
+            "description": "Tu souffles une haleine lourde. Les ennemis de la zone ont les jambes prises, et les invisibles redeviennent visibles.",
+            "effect": "Retire des PM aux ennemis de la zone et révèle les invisibles. Toi et tes alliés n’êtes pas pris. Une fois par tour, relance de 2 tours.",
             "pa": "2",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -2301,15 +2288,11 @@
             "po_min": "0",
             "po_max": "3",
             "po_editable": true,
-            "attack_characteristic_key": "strong",
-            "save_characteristic_key": "strong",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "DD de Force vs jet de sauvegarde de Force. La révélation est automatique.",
             "spares_chosen_targets": true,
             "sub_effects": [
                 {
                     "slug": "retirer",
-                    "area": "rect-2x2",
+                    "area": "point",
                     "duration_formula": "1",
                     "params": {
                         "characteristic": "pm",
@@ -2322,7 +2305,7 @@
                 },
                 {
                     "slug": "autre",
-                    "area": "rect-2x2",
+                    "area": "point",
                     "params": {
                         "value": "Révèle les invisibles. Allié·e·s saufs."
                     },
@@ -2337,7 +2320,7 @@
                     "sub_effects": [
                         {
                             "slug": "retirer",
-                            "area": "rect-2x2",
+                            "area": "point",
                             "duration_formula": "1",
                             "params": {
                                 "characteristic": "pm",
@@ -2350,7 +2333,7 @@
                         },
                         {
                             "slug": "autre",
-                            "area": "rect-2x2",
+                            "area": "point",
                             "params": {
                                 "value": "Révèle les invisibles. Allié·e·s saufs."
                             },
@@ -2373,27 +2356,23 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "saving_throw",
-            "description": "Tu lances la roulette sur tout le monde autour de toi. Personne ne sait sur quelle case elle s'arrête, et le geste te rend son coût.",
-            "effect": "Lance 1d4 pour la zone, allié·e·s et toi compris. Le PA dépensé te revient. 1 : tout le monde gagne 1 PM. 2 : les ennemi·e·s perdent 1 PA. 3 : tu gagnes un bouclier 2d4 et les ennemi·e·s subissent 1d4 de dommages neutres. 4 : les allié·e·s sont soigné·e·s de 1d4 et les ennemi·e·s reculent d'une case. Si ton mod. de Chance vaut au moins 3, tu peux relancer le dé une fois. Relance de 3 tours. Ce dé n'est pas la pièce. Exception : la face 3 frappe, sans élément fixe.",
+            "resolution_mode": null,
+            "description": "Tu lances la roulette sur tout le monde autour de toi. Le geste te rend son coût.",
+            "effect": "Lance 1d4 pour la zone, alliés et toi compris. Le PA dépensé te revient. Si ton modificateur de Chance vaut au moins 3, tu peux relancer le dé une fois. Relance de 3 tours. Ce dé n’est pas la pièce.",
             "pa": "1",
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "3",
-            "sight_line": false,
+            "sight_line": true,
             "cast_in_line": false,
             "cast_in_diagonal": false,
             "po_min": "0",
             "po_max": "0",
             "po_editable": false,
-            "attack_characteristic_key": "sagesse",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "automatique. La face 3 est un DD de Chance vs jet de sauvegarde de Chance.",
             "sub_effects": [
                 {
                     "slug": "autre",
-                    "area": "rect-2x2",
+                    "area": "point",
                     "params": {
                         "value": "1d4 zone : voir Effets. Le PA revient. Relance si Chance ≥ 3. Face 3 peut frapper (neutre)."
                     },
@@ -2408,7 +2387,7 @@
                     "sub_effects": [
                         {
                             "slug": "autre",
-                            "area": "rect-2x2",
+                            "area": "point",
                             "params": {
                                 "value": "1d4 zone : voir Effets. Le PA revient. Relance si Chance ≥ 3. Face 3 peut frapper (neutre)."
                             },
@@ -2432,9 +2411,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "attack_roll",
-            "description": "Tu ouvres les bras. Une vague tiède referme les plaies des tiens, et frappe les autres dans l'élément qui te réussit le mieux.",
-            "effect": "Les allié·e·s de la zone sont soigné·e·s. Les ennemi·e·s subissent des dommages de l'élément de ton plus haut modificateur parmi Force, Intelligence, Chance et Agilité. Une fois par tour, relance de 2 tours. Exception : ce sort frappe, mais l'élément n'est pas fixe, donc il ne va dans aucune voie.",
+            "resolution_mode": null,
+            "description": "Tu ouvres les bras. Une vague tiède referme les plaies des tiens, et frappe les autres dans l’élément qui te réussit le mieux.",
+            "effect": "Les alliés de la zone sont soignés. Les ennemis subissent des dégâts de l’élément de ton plus haut modificateur parmi Force, Intelligence, Chance et Agilité. Une fois par tour, relance de 2 tours.",
             "pa": "3",
             "cast_per_turn": "1",
             "cast_per_target": "1",
@@ -2448,7 +2427,7 @@
             "sub_effects": [
                 {
                     "slug": "soigner",
-                    "area": "rect-2x2",
+                    "area": "point",
                     "params": {
                         "value": "2d4",
                         "value_formula": "2d4",
@@ -2459,7 +2438,7 @@
                 },
                 {
                     "slug": "autre",
-                    "area": "rect-2x2",
+                    "area": "point",
                     "params": {
                         "value": "Allié·e·s soigné·e·s. Ennemi·e·s : 2d6 de l'élément du meilleur mod. parmi Force, Intelligence, Chance, Agilité."
                     },
@@ -2474,18 +2453,18 @@
                     "sub_effects": [
                         {
                             "slug": "soigner",
-                            "area": "rect-2x2",
+                            "area": "point",
                             "params": {
-                                "value": "3d4",
-                                "value_formula": "3d4",
-                                "dice_formula": "3d4",
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
                                 "effect_direction": "action"
                             },
                             "order": 0
                         },
                         {
                             "slug": "autre",
-                            "area": "rect-2x2",
+                            "area": "point",
                             "params": {
                                 "value": "Allié·e·s soigné·e·s. Ennemi·e·s : 3d6 de l'élément du meilleur mod. parmi Force, Intelligence, Chance, Agilité."
                             },

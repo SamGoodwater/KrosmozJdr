@@ -3,8 +3,9 @@
  * SpecializationViewFull — Vue Full pour Specialization
  *
  * @description
- * Alignée Breed : EntityViewHeader (image | nom / accroche / corps), traits et
- * relations en sections `v-if` (SpecializationRelationsByLevel).
+ * Alignée Breed : EntityViewHeader (image | nom / accroche / corps) et traits.
+ * Les capacités se lisent dans les sections de palier (liens cliquables), pas
+ * dans une liste en tête de fiche.
  *
  * @props {Specialization} specialization - Instance du modèle Specialization
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
@@ -20,7 +21,6 @@ import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
 import { useDownloadPdf } from "@/Composables/utils/useDownloadPdf";
 import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 import CreatureTraitBadges from "@/Pages/Molecules/entity/creature-trait/CreatureTraitBadges.vue";
-import SpecializationRelationsByLevel from "@/Pages/Molecules/entity/specialization/SpecializationRelationsByLevel.vue";
 
 const props = defineProps({
     specialization: {
@@ -142,7 +142,7 @@ const handleAction = async (actionKey) => {
     <div class="space-y-3">
         <EntityViewHeader :mode="headerMode">
             <template #media>
-                <div class="group relative size-24 shrink-0 sm:size-28 md:size-32">
+                <div class="group relative size-24 shrink-0 overflow-hidden bg-base-200 entity-radius-box sm:size-28 md:size-32">
                     <ImageViewer
                         v-if="mediaSrc"
                         :source="mediaSrc"
@@ -152,8 +152,8 @@ const handleAction = async (actionKey) => {
                         :image-props="{
                             size: 'lg',
                             rounded: 'lg',
-                            fit: 'cover',
-                            class: 'w-full h-full',
+                            fit: 'contain',
+                            class: 'h-full w-full p-2',
                         }"
                     />
                     <div
@@ -208,8 +208,6 @@ const handleAction = async (actionKey) => {
             <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Traits</h3>
             <CreatureTraitBadges :traits="linkedCreatureTraits" show-level size="sm" />
         </div>
-
-        <SpecializationRelationsByLevel :specialization="specialization" />
     </div>
 </template>
 

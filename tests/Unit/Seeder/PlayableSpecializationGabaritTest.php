@@ -41,14 +41,34 @@ final class PlayableSpecializationGabaritTest extends TestCase
             $this->assertTrue($spec['playable'] ?? false, $name);
             $this->assertSame([1, 3, 6, 9, 12, 15, 20], array_keys($spec['levels'] ?? []), $name);
 
-            $skillsLine = (string) ($spec['levels'][1]['masteries']['Compétences'] ?? '');
-            $found = [];
-            foreach (self::SKILL_NAMES as $skill) {
-                if (str_contains($skillsLine, $skill)) {
-                    $found[] = $skill;
+            $archetypes = $spec['archetypes'] ?? null;
+            if (is_array($archetypes) && $archetypes !== []) {
+                $this->assertArrayHasKey('thread', $spec, $name.' : fil rouge manquant.');
+                $this->assertArrayHasKey('signature', $spec, $name.' : mécanique signature manquante.');
+                foreach ($archetypes as $slug => $archetype) {
+                    $skillsLine = (string) ($archetype['masteries']['Compétences'] ?? '');
+                    $found = [];
+                    foreach (self::SKILL_NAMES as $skill) {
+                        if (str_contains($skillsLine, $skill)) {
+                            $found[] = $skill;
+                        }
+                    }
+                    $this->assertCount(
+                        5,
+                        $found,
+                        $name.' / '.$slug.' : liste de compétences = '.json_encode($found, JSON_UNESCAPED_UNICODE)
+                    );
                 }
+            } else {
+                $skillsLine = (string) ($spec['levels'][1]['masteries']['Compétences'] ?? '');
+                $found = [];
+                foreach (self::SKILL_NAMES as $skill) {
+                    if (str_contains($skillsLine, $skill)) {
+                        $found[] = $skill;
+                    }
+                }
+                $this->assertCount(5, $found, $name.' : liste de compétences = '.json_encode($found, JSON_UNESCAPED_UNICODE));
             }
-            $this->assertCount(5, $found, $name.' : liste de compétences = '.json_encode($found, JSON_UNESCAPED_UNICODE));
 
             $aptitudes = [];
             foreach ($spec['levels'] as $level => $data) {
@@ -56,6 +76,22 @@ final class PlayableSpecializationGabaritTest extends TestCase
                 $types = array_count_values(array_column($caps, 'type'));
                 $this->assertGreaterThanOrEqual(1, $types['garantie'] ?? 0, $name.' palier '.$level.' sans garantie.');
                 $this->assertSame(2, $types['choix'] ?? 0, $name.' palier '.$level.' doit avoir 2 options.');
+
+                foreach ($caps as $cap) {
+                    $variants = $cap['archetype_variants'] ?? null;
+                    if (! is_array($variants)) {
+                        continue;
+                    }
+                    $this->assertSame(
+                        array_keys($archetypes ?? []),
+                        array_keys($variants),
+                        $name.' palier '.$level.' — '.($cap['name'] ?? '?').' : variantes ≠ archétypes.'
+                    );
+                    foreach ($variants as $variant) {
+                        $this->assertNotSame('', trim((string) ($variant['name'] ?? '')), $name.' variante sans nom.');
+                        $this->assertNotSame('', trim((string) ($variant['effect'] ?? '')), $name.' variante sans effet.');
+                    }
+                }
 
                 foreach ($data['aptitudes'] ?? [] as $aptitude) {
                     $aptitudes[(int) $level] = $aptitude['name'] ?? '';
@@ -81,6 +117,15 @@ final class PlayableSpecializationGabaritTest extends TestCase
 
                     if (preg_match('/(\d+)\s+PA\s+depuis\s+la\s+réserve\s+de\s+Wakfu/u', $effect, $m) === 1) {
                         $this->assertSame($m[1], (string) ($cap['pa'] ?? ''), $label.' : champ pa incohérent.');
+                    }
+
+                    foreach ($cap['archetype_variants'] ?? [] as $slug => $variant) {
+                        $vEffect = (string) ($variant['effect'] ?? '');
+                        $vLabel = $label.' / '.$slug;
+                        $this->assertDoesNotMatchRegularExpression('/\d+\s+réserves?\s+de\s+Wakfu/u', $vEffect, $vLabel);
+                        if (preg_match('/(\d+)\s+PA\s+depuis\s+la\s+réserve\s+de\s+Wakfu/u', $vEffect, $m) === 1) {
+                            $this->assertSame($m[1], (string) ($variant['pa'] ?? ''), $vLabel.' : champ pa incohérent.');
+                        }
                     }
                 }
             }

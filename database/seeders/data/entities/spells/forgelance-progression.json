@@ -1,415 +1,307 @@
 {
     "_schema_version": "1",
     "breed": "Forgelance",
+    "state": "playable",
     "entries": [
         {
-            "key": "forgelance-garde-au-fer",
+            "key": "garde-au-fer",
             "name": "Garde au Fer",
+            "dofusdb_id": "23830",
+            "official_id": "jdr:forgelance:garde-au-fer",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 2,
             "types": [
                 "Protection"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "1d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Garde au Fer : une couche de Wakfu avant les PV.",
+            "description": "Tu mets la garde au fer devant un·e allié·e.",
+            "effect": "Bouclier sur un·e allié·e jusqu'à la fin de ton prochain tour. Pas de cumul. Une fois par tour.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "3",
+            "po_editable": true,
             "sub_effects": [
                 {
                     "slug": "protéger",
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "value": "1d4+Sagesse",
-                        "value_formula": "1d4+[sagesse]",
-                        "effect_direction": "self",
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
+                        "effect_direction": "action",
                         "duration_formula": "1"
-                    }
+                    },
+                    "order": 0
                 }
             ],
-            "official_id": "jdr:forgelance-garde-au-fer",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 6,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "forgelance-percee",
+            "key": "percee",
             "name": "Percée",
-            "slot_index": 1,
-            "choice_order": 1,
+            "dofusdb_id": "23832",
+            "official_id": "jdr:forgelance:percee",
+            "slot_index": 2,
+            "choice_order": 0,
             "character_level": 2,
             "types": [
                 "Placement"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "Téléportation 1–4 cases, pas de ligne de vue. 3 PA, 1×/tour.",
-            "description": "Percée : tu disparais et tu réapparais.",
+            "description": "Tu perces d'un pas court.",
+            "effect": "Téléportation d'1 à 2 cases. Tu es chargé·e. Une fois par tour.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "2",
+            "po_editable": true,
             "sub_effects": [
                 {
                     "slug": "déplacer",
                     "area": "point",
                     "params": {
-                        "cells_formula": "4",
+                        "cells_formula": "1",
                         "movement_kind": "teleport",
                         "effect_direction": "action",
                         "teleport": true
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Percée. Déclenche Estoc."
+                    },
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:forgelance-percee"
+            "intensification": []
         },
         {
             "key": "volee-d-airain",
             "name": "Volée d'Airain",
             "dofusdb_id": "23741",
+            "official_id": "jdr:forgelance:volee-d-airain",
             "slot_index": 1,
             "choice_order": 0,
+            "character_level": 4,
             "types": [
+                "Entrave",
                 "Dégâts"
             ],
-            "element": "air",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
+            "description": "Tu balayes une volée d'airain. Les cibles subissent des dommages d'Air et perdent une seconde.",
+            "effect": "Dégâts d'Air en croix de 1. −1 PA. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "save_characteristic_key": "agi",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Agilité (Air). Magique, 5 PA, 1×/tour, PO 1–4.",
-            "description": "Tu lances. Ceux sur la volée encaissent.",
+            "save_success_note": "Air · origine · Entrave · Attaque · sauvegarde · DD d'Agilité vs jet de sauvegarde d'Agilité · DofusDB : 23741.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "cross-0-1",
                     "params": {
                         "characteristic": "air",
                         "value": "1d6+Agilité",
                         "value_formula": "1d6+[agi]",
                         "dice_formula": "1d6+[agi]",
-                        "value_formula_crit": "2d6+[agi]",
                         "effect_direction": "action"
-                    }
-                }
-            ],
-            "character_level": 4
-        },
-        {
-            "key": "effondrement",
-            "name": "Effondrement",
-            "dofusdb_id": "23736",
-            "slot_index": 1,
-            "choice_order": 1,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Force (Terre). Magique, 5 PA, 1×/tour.",
-            "description": "La lance frappe le sol. Autour de toi, ça cède.",
-            "sub_effects": [
+                    },
+                    "order": 0
+                },
                 {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "character_level": 4
-        },
-        {
-            "key": "forgelance-pluie-de-lances",
-            "name": "Pluie de Lances",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 5,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "air",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "2d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Pluie de Lances : sort fort de palier 5.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "2d6+Agilité",
-                        "value_formula": "2d6+[agi]",
-                        "dice_formula": "2d6+[agi]",
-                        "value_formula_crit": "3d6+[agi]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:forgelance-pluie-de-lances",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "forgelance-seisme-de-lance",
-            "name": "Séisme de Lance",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 5,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "2d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Séisme de Lance : sort fort de palier 5.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "2d6+Force",
-                        "value_formula": "2d6+[strong]",
-                        "dice_formula": "2d6+[strong]",
-                        "value_formula_crit": "3d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:forgelance-seisme-de-lance",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "forgelance-javeline",
-            "name": "Javeline",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 6,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "air",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
-            "description": "Javeline : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "3d6+Agilité",
-                        "value_formula": "3d6+[agi]",
-                        "dice_formula": "3d6+[agi]",
-                        "value_formula_crit": "4d6+[agi]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:forgelance-javeline",
-            "attack_characteristic_key": "agi"
-        },
-        {
-            "key": "forgelance-trident",
-            "name": "Trident",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 6,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Trident : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:forgelance-trident",
-            "attack_characteristic_key": "chance"
-        },
-        {
-            "key": "forgelance-ligne-de-front",
-            "name": "Ligne de Front",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 7,
-            "types": [
-                "Amélioration"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Phalange jusqu’à la fin de ton prochain tour : un allié adjacent bénéficie d’un abri partiel. 3 PA, 1×/tour.",
-            "description": "Ligne de Front : tu couvres, tu ne gagnes pas un 2d4.",
-            "sub_effects": [
-                {
-                    "slug": "autre",
-                    "area": "point",
+                    "slug": "retirer",
+                    "area": "cross-0-1",
                     "duration_formula": "1",
                     "params": {
-                        "value": "Un allié adjacent a un abri partiel jusqu’à la fin de ton prochain tour.",
-                        "effect_direction": "self",
+                        "characteristic": "pa",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
                         "duration_formula": "1"
-                    }
+                    },
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:forgelance-ligne-de-front",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d4+Agilité",
+                                "value_formula": "2d4+[agi]",
+                                "dice_formula": "2d4+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "forgelance-rempart-de-lances",
-            "name": "Rempart de Lances",
+            "key": "fente",
+            "name": "Fente",
+            "dofusdb_id": "23760",
+            "official_id": "jdr:forgelance:fente",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 7,
-            "types": [
-                "Protection"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Phalange jusqu’à la fin de ton prochain tour : les allié·e·s adjacents bénéficient d’un abri partiel. 2d4+Sagesse de bouclier sur toi. 3 PA, 1×/tour.",
-            "description": "Rempart de Lances : abri pour le rang, bouclier pour toi.",
-            "sub_effects": [
-                {
-                    "slug": "protéger",
-                    "area": "point",
-                    "duration_formula": "1",
-                    "params": {
-                        "value": "2d4+Sagesse",
-                        "value_formula": "2d4+[sagesse]",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
-                    }
-                }
-            ],
-            "official_id": "jdr:forgelance-rempart-de-lances",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
-        },
-        {
-            "key": "forgelance-estoc-brulant-majeur",
-            "name": "Estocade",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 8,
+            "character_level": 4,
             "types": [
                 "Dégâts"
             ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu fends la garde d'un coup de braise. La cible subit de lourds dommages de Feu.",
+            "effect": "Dégâts de Feu. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
             "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 5,
-            "effect": "2d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
-            "description": "Estocade : attaque simple, même budget que le palier 8.",
+            "attack_characteristic_key": "intel",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -419,35 +311,1549 @@
                         "value": "2d6+Intelligence",
                         "value_formula": "2d6+[intel]",
                         "dice_formula": "2d6+[intel]",
-                        "value_formula_crit": "3d6+[intel]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
                 }
             ],
-            "official_id": "jdr:forgelance-estoc-brulant-majeur",
-            "attack_characteristic_key": "intel"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "3d6+Intelligence",
+                                "value_formula": "3d6+[intel]",
+                                "dice_formula": "3d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "3d8+Intelligence",
+                                "value_formula": "3d8+[intel]",
+                                "dice_formula": "3d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "forgelance-lance-du-lac-majeure",
-            "name": "Lance Lacustre",
+            "key": "trident-de-la-mer",
+            "name": "Trident de la Mer",
+            "dofusdb_id": "23440",
+            "official_id": "jdr:forgelance:trident-de-la-mer",
             "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 8,
+            "choice_order": 2,
+            "character_level": 4,
             "types": [
+                "Protection",
                 "Dégâts"
             ],
-            "element": "water",
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu plantes un trident d'écume. La cible subit des dommages d'Eau ; un·e allié·e se couvre.",
+            "effect": "Dégâts d'Eau. Un·e allié·e à 3 cases ou moins gagne un bouclier 1d6 jusqu'à la fin de ton prochain tour. Une fois par tour.",
             "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "1d6+Chance",
+                        "value_formula": "1d6+[chance]",
+                        "dice_formula": "1d6+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "1d6",
+                        "value_formula": "1d6",
+                        "dice_formula": "1d6",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d4+Chance",
+                                "value_formula": "2d4+[chance]",
+                                "dice_formula": "2d4+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "effondrement",
+            "name": "Effondrement",
+            "dofusdb_id": null,
+            "official_id": "jdr:forgelance:effondrement",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 4,
+            "types": [
+                "Placement",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu fais s'effondrer le sol. Les cibles subissent des dommages de Terre et sont attirées au centre.",
+            "effect": "Dégâts de Terre en zone 2x2 autour d'une case. Attire 1 vers le centre. Une fois par tour. Ne te touche pas.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "3",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "save_characteristic_key": "strong",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Terre · origine · Placement · Attaque · sauvegarde · DD de Force vs jet de sauvegarde de Force · DofusDB : 23736.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "rect-2x2",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "rect-2x2",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "pull",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "rect-2x2",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d4+Force",
+                                "value_formula": "2d4+[strong]",
+                                "dice_formula": "2d4+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "rect-2x2",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "rect-2x2",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "rect-2x2",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "rect-2x2",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "rect-2x2",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "oriflamme",
+            "name": "Oriflamme",
+            "dofusdb_id": "23834",
+            "official_id": "jdr:forgelance:oriflamme",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu lèves l'oriflamme. L'équipe frappe plus fort.",
+            "effect": "Chaque allié·e à ton contact gagne +1 aux dégâts jusqu'à la fin de son prochain tour. Une fois par tour.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "+1d4 allié·e·s / bannière.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 12,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d4 allié·e·s / bannière.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "galanterie",
+            "name": "Galanterie",
+            "dofusdb_id": "23836",
+            "official_id": "jdr:forgelance:galanterie",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Protection"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu soignes d'un geste de courtoisie martiale.",
+            "effect": "Soin. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "3",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "1d6",
+                        "value_formula": "1d6",
+                        "dice_formula": "1d6",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 12,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "1d6",
+                                "value_formula": "1d6",
+                                "dice_formula": "1d6",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "1d6",
+                                "value_formula": "1d6",
+                                "dice_formula": "1d6",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "kyrja",
+            "name": "Kyrja",
+            "dofusdb_id": "23838",
+            "official_id": "jdr:forgelance:kyrja",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu invoques Kyrja dans le bras. Le prochain coup porte.",
+            "effect": "+1d4 aux dégâts de ta prochaine attaque de classe avant la fin de ton prochain tour. Une fois par tour.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Déclenche Estoc."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "chevalerie",
+            "name": "Chevalerie",
+            "dofusdb_id": "23840",
+            "official_id": "jdr:forgelance:chevalerie",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu prêtes serment de chevalerie : tu encaisses pour un·e autre.",
+            "effect": "Jusqu'à la fin de ton prochain tour, quand un·e allié·e à ton contact subit des dégâts, tu peux en prendre la moitié à sa place (arrondie au supérieur), 1 fois. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Buff chevaleresque.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "noa",
+            "name": "Noa",
+            "dofusdb_id": "23755",
+            "official_id": "jdr:forgelance:noa",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 7,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu plantes Noa dans le pas de la cible. Elle subit des dommages d'Air et ne peut plus être déplacée.",
+            "effect": "Dégâts d'Air et Indéplaçable pendant 1 tour. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "2d4+Agilité",
+                        "value_formula": "2d4+[agi]",
+                        "dice_formula": "2d4+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "retirer",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "po",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "po",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "po",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "muspel",
+            "name": "Muspel",
+            "dofusdb_id": "23762",
+            "official_id": "jdr:forgelance:muspel",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 7,
+            "types": [
+                "Dégâts"
+            ],
+            "state": "playable",
             "is_magic": false,
-            "powerful": 5,
-            "effect": "2d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Lance Lacustre : attaque simple, même budget que le palier 8.",
+            "resolution_mode": "saving_throw",
+            "description": "Tu ouvres une gerbe de Muspel. Plus il y a d'ennemi·e·s, plus ça brûle.",
+            "effect": "Dégâts de Feu en croix de 1 : nd4 où n = nombre d'ennemi·e·s dans la zone (min 1). Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "3",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "save_characteristic_key": "intel",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Feu · origine · Dégâts · Attaque · sauvegarde · DD d'Intelligence vs jet de sauvegarde d'Intelligence · DofusDB : 23762.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "+Intelligence",
+                        "value_formula": "+[intel]",
+                        "dice_formula": "+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bonus selon nombre d’ennemi·e·s."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "+Intelligence",
+                                "value_formula": "+[intel]",
+                                "dice_formula": "+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bonus selon nombre d’ennemi·e·s."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "+Intelligence",
+                                "value_formula": "+[intel]",
+                                "dice_formula": "+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bonus selon nombre d’ennemi·e·s."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "balestra",
+            "name": "Balestra",
+            "dofusdb_id": "23442",
+            "official_id": "jdr:forgelance:balestra",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 7,
+            "types": [
+                "Protection",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu portes une balestra d'eau. La cible subit des dommages d'Eau, et tu encaisses mieux.",
+            "effect": "Dégâts d'Eau. Tu réduis de 1d4 les dégâts de la prochaine attaque qui te touche avant la fin de ton prochain tour. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d4+Chance",
+                        "value_formula": "2d4+[chance]",
+                        "dice_formula": "2d4+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "1d6",
+                                "value_formula": "1d6",
+                                "dice_formula": "1d6",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "soulevement",
+            "name": "Soulèvement",
+            "dofusdb_id": "23766",
+            "official_id": "jdr:forgelance:soulevement",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 7,
+            "types": [
+                "Placement",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu soulèves la terre sous la cible. Elle subit des dommages de Terre et recule.",
+            "effect": "Dégâts de Terre et recul 2 cases. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d4+Force",
+                        "value_formula": "2d4+[strong]",
+                        "dice_formula": "2d4+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "ligne-de-front",
+            "name": "Ligne de Front",
+            "dofusdb_id": "23842",
+            "official_id": "jdr:forgelance:ligne-de-front",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 8,
+            "types": [
+                "Protection"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu formes la ligne de front. La phalange tient.",
+            "effect": "Tu es en Phalange jusqu'à la fin de ton prochain tour. Un·e allié·e adjacent au choix gagne aussi un bouclier 1d4. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Ligne / abri pour allié·e·s.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "rempart-de-lances",
+            "name": "Rempart de Lances",
+            "dofusdb_id": "23844",
+            "official_id": "jdr:forgelance:rempart-de-lances",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 8,
+            "types": [
+                "Protection"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu dresses un rempart de lances.",
+            "effect": "Bouclier sur toi et chaque allié·e à ton contact jusqu'à la fin de ton prochain tour (1d4 chacun, pas de cumul). Une fois par tour. Relance 1 tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "pluie-d-airain",
+            "name": "Pluie d'Airain",
+            "dofusdb_id": "23743",
+            "official_id": "jdr:forgelance:pluie-d-airain",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 10,
+            "types": [
+                "Entrave"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu fais pleuvoir l'airain sans frapper fort : tu gênes.",
+            "effect": "−1 PM et −1 PO pendant 1 tour sur une cible. Une fois par tour. Relance 1 tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "attack_characteristic_key": "agi",
+            "save_characteristic_key": "agi",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Altération · DD d'Agilité vs jet de sauvegarde d'Agilité · DofusDB : 23743.",
+            "sub_effects": [
+                {
+                    "slug": "retirer",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pa",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Pluie d’entraves."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "jormun",
+            "name": "Jormun",
+            "dofusdb_id": "23446",
+            "official_id": "jdr:forgelance:jormun",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 10,
+            "types": [
+                "Protection"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu appelles Jormun : une vague te couvre.",
+            "effect": "Bouclier 2d4 sur toi jusqu'à la fin de ton prochain tour. Pas de cumul. Une fois par tour. Relance 1 tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "2d4",
+                        "value_formula": "2d4",
+                        "dice_formula": "2d4",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "charge-de-fer",
+            "name": "Charge de Fer",
+            "dofusdb_id": "23846",
+            "official_id": "jdr:forgelance:charge-de-fer",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu charges plus loin.",
+            "effect": "Téléportation sur une case libre dans la portée, sans ligne de vue. Tu es chargé·e. Une fois par tour. Relance 1 tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Charge. Déclenche Estoc."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "mur-de-lances",
+            "name": "Mur de Lances",
+            "dofusdb_id": "23848",
+            "official_id": "jdr:forgelance:mur-de-lances",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Protection"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu dresses un mur de lances.",
+            "effect": "Bouclier 3d4 sur toi jusqu'à la fin de ton prochain tour. Pas de cumul. Une fois par tour. Relance 2 tours.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Mur / zone de protection.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "moulin-a-vent",
+            "name": "Moulin à Vent",
+            "dofusdb_id": "23757",
+            "official_id": "jdr:forgelance:moulin-a-vent",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 12,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu fais tournoyer la lance. La cible subit des dommages d'Air et voit moins loin.",
+            "effect": "Dégâts d'Air et −1 PO pendant 1 tour. Une fois par tour. Relance 1 tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "2d6+Agilité",
+                        "value_formula": "2d6+[agi]",
+                        "dice_formula": "2d6+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "fer-rouge",
+            "name": "Fer Rouge",
+            "dofusdb_id": "23764",
+            "official_id": "jdr:forgelance:fer-rouge",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 12,
+            "types": [
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu abats le fer rouge sur une zone. Chaque ennemi·e pris·e dedans subit des dommages de Feu.",
+            "effect": "Dégâts de Feu en zone 2x2. Une fois par tour. Relance 1 tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "save_characteristic_key": "intel",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Feu · origine · Dégâts · Attaque · sauvegarde · DD d'Intelligence vs jet de sauvegarde d'Intelligence · DofusDB : 23764.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "3d6+Intelligence",
+                        "value_formula": "3d6+[intel]",
+                        "dice_formula": "3d6+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "3d8+Intelligence",
+                                "value_formula": "3d8+[intel]",
+                                "dice_formula": "3d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "elding",
+            "name": "Elding",
+            "dofusdb_id": "23444",
+            "official_id": "jdr:forgelance:elding",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 12,
+            "types": [
+                "Protection",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu ouvres Elding, une vague d'écume protectrice. Les ennemi·e·s prennent des dommages d'Eau ; tes allié·e·s se couvrent.",
+            "effect": "Dégâts d'Eau en croix de 1, allié·e·s saufs. Chaque allié·e dans la zone gagne un bouclier 1d6 jusqu'à la fin de ton prochain tour. Une fois par tour. Relance 1 tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "3",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "save_characteristic_key": "chance",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Eau · origine · Protection · Attaque · automatique · DD de Chance vs jet de sauvegarde de Chance. Bouclier automatique · DofusDB : 23444.",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -457,247 +1863,126 @@
                         "value": "2d6+Chance",
                         "value_formula": "2d6+[chance]",
                         "dice_formula": "2d6+[chance]",
-                        "value_formula_crit": "3d6+[chance]",
                         "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:forgelance-lance-du-lac-majeure",
-            "attack_characteristic_key": "chance"
-        },
-        {
-            "key": "forgelance-volee-d-airain-majeure",
-            "name": "Airain",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 10,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "air",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "3d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Airain : sort fort de palier 10.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "3d6+Agilité",
-                        "value_formula": "3d6+[agi]",
-                        "dice_formula": "3d6+[agi]",
-                        "value_formula_crit": "4d6+[agi]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:forgelance-volee-d-airain-majeure",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "forgelance-effondrement-majeur",
-            "name": "Effondrement Sacre",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 10,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "3d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Effondrement Sacre : sort fort de palier 10.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "3d6+Force",
-                        "value_formula": "3d6+[strong]",
-                        "dice_formula": "3d6+[strong]",
-                        "value_formula_crit": "4d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:forgelance-effondrement-majeur",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "forgelance-charge-heroique-majeure",
-            "name": "Charge de Fer",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 11,
-            "types": [
-                "Placement"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "6",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "Téléportation 1–6 cases, pas de ligne de vue. 3 PA, 1×/tour.",
-            "description": "Charge de Fer : tu disparais et tu réapparais.",
-            "sub_effects": [
-                {
-                    "slug": "déplacer",
-                    "area": "point",
-                    "params": {
-                        "cells_formula": "6",
-                        "movement_kind": "teleport",
-                        "effect_direction": "action",
-                        "teleport": true
-                    }
-                }
-            ],
-            "official_id": "jdr:forgelance-charge-heroique-majeure"
-        },
-        {
-            "key": "forgelance-phalange-majeure",
-            "name": "Mur de Lances",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 11,
-            "types": [
-                "Protection"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "3d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Mur de Lances : une couche de Wakfu avant les PV.",
-            "sub_effects": [
+                    },
+                    "order": 0
+                },
                 {
                     "slug": "protéger",
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "value": "3d4+Sagesse",
-                        "value_formula": "3d4+[sagesse]",
-                        "effect_direction": "self",
+                        "value": "1d6",
+                        "value_formula": "1d6",
+                        "dice_formula": "1d6",
+                        "effect_direction": "action",
                         "duration_formula": "1"
-                    }
+                    },
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:forgelance-phalange-majeure",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "forgelance-apotheose-forgelance",
-            "name": "Apothéose",
+            "key": "terre-du-milieu",
+            "name": "Terre du Milieu",
+            "dofusdb_id": "23768",
+            "official_id": "jdr:forgelance:terre-du-milieu",
             "slot_index": 1,
-            "choice_order": 0,
+            "choice_order": 3,
             "character_level": 12,
             "types": [
+                "Placement",
                 "Dégâts"
             ],
-            "element": "fire",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "4d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Apothéose : sort fort de palier 14.",
+            "description": "Tu te plantes au milieu d'une zone et tu frappes. Les ennemi·e·s subissent des dommages de Terre.",
+            "effect": "Tu te téléportes sur une case libre dans la portée, puis dégâts de Terre en croix de 1 autour de toi. Une fois par tour. Relance 1 tour. Tu es chargé·e.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "save_characteristic_key": "strong",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Terre · origine · Placement · Attaque · sauvegarde · DD de Force vs jet de sauvegarde de Force · DofusDB : 23768.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "cross-0-1",
                     "params": {
-                        "characteristic": "fire",
-                        "value": "4d6+Intelligence",
-                        "value_formula": "4d6+[intel]",
-                        "dice_formula": "4d6+[intel]",
-                        "value_formula_crit": "5d6+[intel]",
+                        "characteristic": "earth",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
                 }
             ],
-            "official_id": "jdr:forgelance-apotheose-forgelance",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "forgelance-orage-d-acier",
-            "name": "Orage d'Acier",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 12,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "air",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "4d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Orage d'Acier : sort fort de palier 14.",
-            "sub_effects": [
+            "intensification": [
                 {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "4d6+Agilité",
-                        "value_formula": "4d6+[agi]",
-                        "dice_formula": "4d6+[agi]",
-                        "value_formula_crit": "5d6+[agi]",
-                        "effect_direction": "action"
-                    }
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ]
                 }
-            ],
-            "official_id": "jdr:forgelance-orage-d-acier",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            ]
         }
     ]
 }

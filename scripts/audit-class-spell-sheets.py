@@ -36,9 +36,24 @@ FILES = {
     "Iop.md": ["iop-level-1.json", "iop-progression.json"],
     "Ecaflip.md": ["ecaflip-level-1.json", "ecaflip-progression.json"],
     "Eniripsa.md": ["eniripsa-level-1.json", "eniripsa-progression.json"],
+    "Feca.md": ["feca-level-1.json", "feca-progression.json"],
+    "Osamodas.md": ["osamodas-level-1.json", "osamodas-progression.json"],
+    "Enutrof.md": ["enutrof-level-1.json", "enutrof-progression.json"],
+    "Sram.md": ["sram-level-1.json", "sram-progression.json"],
+    "Xelor.md": ["xelor-level-1.json", "xelor-progression.json"],
+    "Sadida.md": ["sadida-level-1.json", "sadida-progression.json"],
+    "Sacrieur.md": ["sacrieur-level-1.json", "sacrieur-progression.json"],
+    "Pandawa.md": ["pandawa-level-1.json", "pandawa-progression.json"],
+    "Roublard.md": ["roublard-level-1.json", "roublard-progression.json"],
+    "Zobal.md": ["zobal-level-1.json", "zobal-progression.json"],
+    "Steamer.md": ["steamer-level-1.json", "steamer-progression.json"],
+    "Eliotrope.md": ["eliotrope-level-1.json", "eliotrope-progression.json"],
+    "Huppermage.md": ["huppermage-level-1.json", "huppermage-progression.json"],
+    "Ouginak.md": ["ouginak-level-1.json", "ouginak-progression.json"],
+    "Forgelance.md": ["forgelance-level-1.json", "forgelance-progression.json"],
 }
 ROMAN = ["I", "II", "III", "IV", "V", "VI"]
-TEXT_COLS = ("zone", "degat", "deplac", "protect", "debuff", "buff", "autres")
+TEXT_COLS = ("zone", "degat", "deplac", "protect", "debuff", "buff", "soin", "poison", "autres")
 
 
 def norm_name(value: str) -> str:
@@ -78,7 +93,7 @@ def header_key(cell: str) -> str | None:
         return "po"
     if text.startswith("zone"):
         return "zone"
-    if "lign" in text or "vue" in text:
+    if text == "vue" or "lign" in text or text.startswith("vue"):
         return "los"
     if "cible" in text:
         return "cible"
@@ -96,13 +111,34 @@ def header_key(cell: str) -> str | None:
         return "debuff"
     if text == "buff":
         return "buff"
+    if text.startswith("soin"):
+        return "soin"
+    if text.startswith("poison"):
+        return "poison"
+    if "portee" in text or "portée" in text:
+        return "debuff"
     if "autre" in text:
+        return "autres"
+    if "ennemi" in text or "allie" in text or "allié" in text:
         return "autres"
     return None
 
 
 def is_sep(cells: list[str] | None) -> bool:
     return bool(cells) and all(re.fullmatch(r":?-{3,}:?", cell.replace(" ", "")) or cell == "" for cell in cells)
+
+
+# Formats courants : `**Général :** …` ou `*Général* : …`
+SPELL_LABEL_RE = re.compile(
+    r"^\*+\s*(Général|Effets|Réaction|Résolution|Resolution|Description)"
+    r"\s*:?\s*\*+\s*:?\s*(.*)$",
+    re.I,
+)
+NON_SPELL_BOLD_RE = re.compile(
+    r"^(Général|Effets|Réaction|Résolution|Resolution|Description|Allure|Visage|"
+    r"Couleurs|Habits|Taille et poids|Corps|Détails|Passif|Moteur|Voies|Dé de vie)\b",
+    re.I,
+)
 
 
 def spell_name_from(text: str) -> str | None:
@@ -112,6 +148,8 @@ def spell_name_from(text: str) -> str | None:
     text = re.sub(r"^Variante\s+\d+\s*:\s*", "", text, flags=re.I)
     text = re.sub(r"\s+#.*$", "", text).strip(" :*")
     if not text or len(text) > 80:
+        return None
+    if NON_SPELL_BOLD_RE.match(text):
         return None
     return text
 
@@ -133,15 +171,51 @@ def parse_sheet(path: Path) -> list[dict]:
             if candidate and not re.match(r"^Niv\s+\d+", candidate, re.I):
                 heading = candidate
         if heading:
-            current = {"name": heading, "resolution": "", "rows": []}
+            current = {
+                "name": heading,
+                "resolution": "",
+                "description": "",
+                "effect": "",
+                "reaction": "",
+                "meta": "",
+                "rows": [],
+            }
             spells.append(current)
             index += 1
             continue
         if current is None:
             index += 1
             continue
+        label_match = SPELL_LABEL_RE.match(raw.strip())
+        if label_match:
+            label = label_match.group(1).lower()
+            value = (label_match.group(2) or "").strip()
+            if label.startswith("général"):
+                current["description"] = value
+            elif label.startswith("effet"):
+                current["effect"] = value
+            elif label.startswith("réaction"):
+                current["reaction"] = value
+            else:
+                current["resolution"] += (" " + value).strip()
+            index += 1
+            continue
         if raw.strip().startswith("*Résolution*") or raw.strip().startswith("*Resolution*"):
             current["resolution"] += " " + re.sub(r"^\*R[ée]solution\*\s*:?\s*", "", raw.strip())
+            index += 1
+            continue
+        # Ligne méta sous le titre (Air · origine · jet d'attaque · …).
+        if (
+            not current["meta"]
+            and not current["rows"]
+            and "·" in raw
+            and not raw.strip().startswith("|")
+            and not raw.strip().startswith("#")
+            and not raw.strip().startswith("**")
+        ):
+            current["meta"] = raw.strip()
+            if not current["resolution"]:
+                current["resolution"] = raw.strip()
             index += 1
             continue
         cells = split_row(raw)
@@ -213,15 +287,22 @@ def resolve_rows(rows: list[dict]) -> list[dict]:
 
 
 def parse_po(text: str):
-    cleaned = (text or "").lower().replace("m", "").replace(" ", "").replace("–", "-")
-    if cleaned in ("", "cac", "càc"):
-        return None
-    if re.fullmatch(r"\d+", cleaned):
-        number = int(cleaned)
-        return (number, number)
-    match = re.fullmatch(r"(\d+)-(\d+)", cleaned)
+    cleaned = (text or "").lower().replace("–", "-").replace("—", "-")
+    # Garde la plage numérique ; ignore « en ligne », « sans ligne de vue », etc.
+    match = re.search(r"(\d+)\s*-\s*(\d+)", cleaned)
     if match:
         return (int(match.group(1)), int(match.group(2)))
+    cleaned = cleaned.replace("m", "").replace(" ", "")
+    if cleaned in ("", "cac", "càc"):
+        return None
+    match = re.fullmatch(r"(\d+)", cleaned)
+    if match:
+        number = int(match.group(1))
+        return (number, number)
+    match = re.search(r"(\d+)", cleaned)
+    if match:
+        number = int(match.group(1))
+        return (number, number)
     return ("?", "?")
 
 
@@ -509,7 +590,16 @@ def audit_spell(spell: dict, entry: dict | None) -> list[str]:
                 problems.append(f"PO modifiable {po[1] > 0} ≠ {got['po_editable']}")
         elif po == ("?", "?"):
             problems.append(f"PO illisible « {row['po']} »")
-        los = los_flags(row["los"])
+        los = los_flags(
+            " ".join(
+                [
+                    row.get("los") or "",
+                    row.get("po") or "",
+                    spell.get("meta") or "",
+                    spell.get("resolution") or "",
+                ]
+            )
+        )
         if los["sight_line"] != bool(got["sight_line"]):
             problems.append(f"ligne de vue {los['sight_line']} ≠ {got['sight_line']}")
         if los["cast_in_line"] != bool(got["cast_in_line"]):

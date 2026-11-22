@@ -1,41 +1,783 @@
 {
     "_schema_version": "1",
     "breed": "Féca",
+    "state": "playable",
     "entries": [
         {
-            "key": "attaque-naturelle-feca",
-            "name": "Attaque Naturelle",
-            "dofusdb_id": "32363",
+            "key": "silbo",
+            "name": "Silbo",
+            "dofusdb_id": "13011",
+            "official_id": "jdr:feca:silbo",
             "slot_index": 1,
             "choice_order": 0,
+            "character_level": 1,
             "types": [
+                "Placement",
                 "Dégâts"
             ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "attack_characteristic_key": "intel",
+            "state": "playable",
             "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour, PO 1–4 adapté.",
-            "description": "Un trait de feu depuis le bouclier. Tu piques sans quitter ta garde.",
+            "resolution_mode": "attack_roll",
+            "description": "Tu souffles en cercle depuis le bâton. Les ennemi·e·s autour subissent des dommages d’Air et reculent.",
+            "effect": "Dégâts d’Air autour de la case ciblée, puis repousse depuis cette case. Toi épargné·e. Deux fois par tour. Réaction : fuite ratée à ton contact. Les dégâts du sort.",
+            "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "0",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "allows_reaction": true,
+            "spares_chosen_targets": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "1d4+Agilité",
+                        "value_formula": "1d4+[agi]",
+                        "dice_formula": "1d4+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "cross-0-1",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Toi épargné·e."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "1d6+Agilité",
+                                "value_formula": "1d6+[agi]",
+                                "dice_formula": "1d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Toi épargné·e."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "1d6+Agilité",
+                                "value_formula": "1d6+[agi]",
+                                "dice_formula": "1d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Toi épargné·e."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 15,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Toi épargné·e."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Toi épargné·e."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "houlette",
+            "name": "Houlette",
+            "dofusdb_id": "13007",
+            "official_id": "jdr:feca:houlette",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 1,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu piques du bout du bâton, en ligne. La cible subit des dommages de Feu et le pas se coupe.",
+            "effect": "Dégâts de Feu. Deux fois par tour. Le retrait de PM arrive en montant et ne se cumule pas. Réaction : fuite ratée à ton contact. Les dégâts du sort.",
+            "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "allows_reaction": true,
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
                     "params": {
                         "characteristic": "fire",
-                        "value": "1d6+Intelligence",
-                        "value_formula": "1d6+[intel]",
-                        "dice_formula": "1d6+[intel]",
-                        "value_formula_crit": "2d6+[intel]",
+                        "value": "1d4+Intelligence",
+                        "value_formula": "1d4+[intel]",
+                        "dice_formula": "1d4+[intel]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "1d4+Intelligence",
+                                "value_formula": "1d4+[intel]",
+                                "dice_formula": "1d4+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "1d6+Intelligence",
+                                "value_formula": "1d6+[intel]",
+                                "dice_formula": "1d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 15,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "bulle",
+            "name": "Bulle",
+            "dofusdb_id": "12994",
+            "official_id": "jdr:feca:bulle",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 1,
+            "types": [
+                "Protection",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu formes une bulle d’eau et tu la lances. Elle frappe, puis durcit devant toi ou un·e allié·e.",
+            "effect": "Dégâts d’Eau. Deux fois par tour. À partir du niveau 5, si le coup porte, toi ou un·e allié·e à 1 case de la cible gagne un bouclier jusqu’au début de ton prochain tour. Réaction : fuite ratée à ton contact. Les dégâts du sort.",
+            "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "7",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "allows_reaction": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "1d4+Chance",
+                        "value_formula": "1d4+[chance]",
+                        "dice_formula": "1d4+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "À partir du niv. 5 : bouclier à toi ou un·e allié·e à 1 case de la cible si le coup porte."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "1d4+Chance",
+                                "value_formula": "1d4+[chance]",
+                                "dice_formula": "1d4+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "1d4",
+                                "value_formula": "1d4",
+                                "dice_formula": "1d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "À partir du niv. 5 : bouclier à toi ou un·e allié·e à 1 case de la cible si le coup porte."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "1d6+Chance",
+                                "value_formula": "1d6+[chance]",
+                                "dice_formula": "1d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "1d4",
+                                "value_formula": "1d4",
+                                "dice_formula": "1d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "À partir du niv. 5 : bouclier à toi ou un·e allié·e à 1 case de la cible si le coup porte."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 15,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "1d6+Chance",
+                                "value_formula": "1d6+[chance]",
+                                "dice_formula": "1d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "À partir du niv. 5 : bouclier à toi ou un·e allié·e à 1 case de la cible si le coup porte."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "À partir du niv. 5 : bouclier à toi ou un·e allié·e à 1 case de la cible si le coup porte."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "retour-du-baton",
+            "name": "Retour du Bâton",
+            "dofusdb_id": "12983",
+            "official_id": "jdr:feca:retour-du-baton",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 1,
+            "types": [
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu ramènes le bâton en plein sur la cible. Elle subit des dommages de Terre, puis perd un geste.",
+            "effect": "Dégâts de Terre. Deux fois par tour. Le retrait de PA arrive en montant et ne se cumule pas. Réaction : fuite ratée à ton contact. Les dégâts du sort.",
+            "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "allows_reaction": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "1d6+Force",
+                                "value_formula": "1d6+[strong]",
+                                "dice_formula": "1d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 15,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
                 }
             ]
         },
@@ -43,192 +785,335 @@
             "key": "rempart",
             "name": "Rempart",
             "dofusdb_id": "12981",
-            "slot_index": 1,
-            "choice_order": 1,
+            "official_id": "jdr:feca:rempart",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 1,
             "types": [
-                "Dégâts"
+                "Protection"
             ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "attack_characteristic_key": "strong",
+            "state": "playable",
             "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour, PO 1.",
-            "description": "Tu frappes du bord du pavois. Même cadence, autre voie : collé, terreux.",
+            "resolution_mode": "auto_success",
+            "description": "Tu dresses un rempart autour de toi. Toi et les allié·e·s dedans encaissez le prochain choc.",
+            "effect": "Bouclier sur toi et les allié·e·s de la zone, jusqu’au début de ton prochain tour. Si ton mod. de Vitalité vaut au moins 3, le bouclier gagne un dé. Une fois par tour, relance de 3 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
             "sub_effects": [
                 {
-                    "slug": "frapper",
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "2d4",
+                        "value_formula": "2d4",
+                        "dice_formula": "2d4",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
                     "area": "point",
                     "params": {
-                        "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
-                        "effect_direction": "action"
-                    }
+                        "value": "Bouclier +1 dé si Vitalité ≥ 3."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 7,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bouclier +1 dé si Vitalité ≥ 3."
+                            },
+                            "order": 1
+                        }
+                    ]
                 }
             ]
         },
         {
-            "key": "feca-glyphe-agressif",
-            "name": "Glyphe Agressif",
-            "slot_index": 1,
-            "choice_order": 2,
+            "key": "excursion",
+            "name": "Excursion",
+            "dofusdb_id": "13024",
+            "official_id": "jdr:feca:excursion",
+            "slot_index": 2,
+            "choice_order": 1,
+            "character_level": 1,
             "types": [
-                "Dégâts"
+                "Placement"
             ],
-            "element": "fire",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Glyphe, 2d6 + Intelligence (Feu). Magique, 5 PA, 1×/tour. Au plus 2 glyphes à la fois.",
-            "description": "Glyphe Agressif : le sol se souvient.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "2d6+Intelligence",
-                        "value_formula": "2d6+[intel]",
-                        "dice_formula": "2d6+[intel]",
-                        "value_formula_crit": "3d6+[intel]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:feca-glyphe-agressif",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "max_stack": 2,
-            "target_type": "glyph"
-        },
-        {
-            "key": "feca-bouclier-elementaire",
-            "name": "Bouclier Élémentaire",
-            "slot_index": 1,
-            "choice_order": 3,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
+            "state": "playable",
             "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Bouclier Élémentaire : attaque simple, même budget que le palier 4.",
+            "resolution_mode": "auto_success",
+            "description": "Tu traces un glyphe de passage. Un·e allié·e qui s’y trouve échange sa place avec toi.",
+            "effect": "Glyphe, durée 2 tours. Au début du tour d’un·e allié·e dessus, ou au moment où tu le poses s’iel s’y trouve déjà, vous échangez vos places. Si ton mod. d’Agilité vaut au moins 3, la portée gagne 1 case. Une fois par tour. Réaction : un·e allié·e à portée va être poussé·e. Tu échanges ta place avec lui ou elle.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "allows_reaction": true,
+            "target_type": "glyph",
+            "duration": "2 tours",
             "sub_effects": [
                 {
-                    "slug": "frapper",
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Glyphe, durée 2 tours. Échange de place avec un·e allié·e dessus.",
+                        "duration_formula": "2"
+                    },
+                    "duration_formula": "2",
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "cross-0-1",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
                     "area": "point",
                     "params": {
-                        "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
-                        "effect_direction": "action"
-                    }
+                        "value": "Portée +1 si Agilité ≥ 3."
+                    },
+                    "order": 2
                 }
             ],
-            "official_id": "jdr:feca-bouclier-elementaire",
-            "attack_characteristic_key": "strong"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 7,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Glyphe, durée 2 tours. Échange de place avec un·e allié·e dessus.",
+                                "duration_formula": "2"
+                            },
+                            "duration_formula": "2",
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "teleport",
+                                "effect_direction": "action",
+                                "teleport": true
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Portée +1 si Agilité ≥ 3."
+                            },
+                            "order": 2
+                        }
+                    ],
+                    "po_max": "5"
+                }
+            ]
         },
         {
             "key": "bouclier-feca",
             "name": "Bouclier Féca",
-            "dofusdb_id": "32365",
-            "slot_index": 2,
+            "dofusdb_id": "12982",
+            "official_id": "jdr:feca:bouclier-feca",
+            "slot_index": 3,
             "choice_order": 0,
+            "character_level": 1,
             "types": [
                 "Protection"
             ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "max_stack": 1,
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "spares_chosen_targets": false,
-            "is_magic": true,
-            "powerful": 3,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "effect": "1d4 + Sagesse de bouclier. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Le pavois s’embrase. Les coups s’arrêtent dessus avant tes PV.",
+            "description": "Tu poses la main et un éclat durcit devant un·e allié·e, toi y compris.",
+            "effect": "Bouclier jusqu’au début de ton prochain tour. Si ton mod. d’Intelligence vaut au moins 3, le bouclier gagne un dé. Une fois par tour, relance de 3 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "5",
+            "po_editable": true,
             "sub_effects": [
                 {
                     "slug": "protéger",
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "value": "1d4+Sagesse",
-                        "value_formula": "1d4+[sagesse]",
-                        "dice_formula": "1d4+[sagesse]",
-                        "effect_direction": "self",
+                        "value": "2d4",
+                        "value_formula": "2d4",
+                        "dice_formula": "2d4",
+                        "effect_direction": "action",
                         "duration_formula": "1"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bouclier +1 dé si Intelligence ≥ 3."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 7,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bouclier +1 dé si Intelligence ≥ 3."
+                            },
+                            "order": 1
+                        }
+                    ]
                 }
             ]
         },
         {
-            "key": "armure-aqueuse",
-            "name": "Armure Aqueuse",
-            "dofusdb_id": "29059",
+            "key": "renfort",
+            "name": "Renfort",
+            "dofusdb_id": "13020",
+            "official_id": "jdr:feca:renfort",
             "slot_index": 3,
-            "choice_order": 0,
+            "choice_order": 1,
+            "character_level": 1,
             "types": [
-                "Protection"
+                "Placement"
             ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "max_stack": 1,
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "spares_chosen_targets": false,
-            "is_magic": true,
-            "powerful": 3,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "effect": "1d4 + Sagesse de bouclier sur un allié consentant. Pas de cumul. 3 PA, 1×/tour, PO 1–4 adapté.",
-            "description": "Tu poses l’eau sur un autre. Même budget que Bouclier Féca, autre voie.",
+            "description": "Tu bondis jusqu’à un·e allié·e et tu te poses sur une case libre à son contact.",
+            "effect": "Saut sur une case libre adjacente à l’allié·e. Si ton mod. d’Agilité vaut au moins 3, la portée gagne 1 case. Une fois par tour. Réaction : un·e allié·e à portée passe sous la moitié de ses PV. Tu te places sur une case libre à son contact.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "2",
+            "po_max": "5",
+            "po_editable": true,
+            "allows_reaction": true,
             "sub_effects": [
                 {
-                    "slug": "protéger",
+                    "slug": "déplacer",
                     "area": "point",
-                    "duration_formula": "1",
                     "params": {
-                        "value": "1d4+Sagesse",
-                        "value_formula": "1d4+[sagesse]",
-                        "dice_formula": "1d4+[sagesse]",
-                        "effect_direction": "action",
-                        "duration_formula": "1"
-                    }
+                        "cells_formula": "1",
+                        "movement_kind": "jump",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Saut sur une case libre au contact de l’allié·e. Portée +1 si Agilité ≥ 3."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 7,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "jump",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Saut sur une case libre au contact de l’allié·e. Portée +1 si Agilité ≥ 3."
+                            },
+                            "order": 1
+                        }
+                    ],
+                    "po_max": "6"
                 }
             ]
         }

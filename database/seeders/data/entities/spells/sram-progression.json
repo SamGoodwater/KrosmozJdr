@@ -1,138 +1,1420 @@
 {
     "_schema_version": "1",
     "breed": "Sram",
+    "state": "playable",
     "entries": [
         {
-            "key": "sram-double",
-            "name": "Double",
+            "key": "derobade",
+            "name": "Dérobade",
+            "dofusdb_id": "14312",
+            "official_id": "jdr:sram:derobade",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 2,
             "types": [
-                "Invocation"
+                "Placement"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 1d4, 1 PM. Au plus 1 invocation à la fois. 3 PA, 1×/tour.",
-            "description": "Double : une invocation. Fragile, mais elle occupe.",
+            "description": "Tu souffles à un·e allié·e où poser le pied. Le premier coup glisse, et la mêlée ne le retient plus.",
+            "effect": "Sur toi ou un·e allié·e, jusqu’au début de ton prochain tour. Une fois par tour, relance de 2 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "4",
+            "po_editable": true,
             "sub_effects": [
                 {
-                    "slug": "invoquer",
+                    "slug": "déplacer",
                     "area": "point",
                     "params": {
-                        "monster_official_id": "jdr:summon:sram-double",
+                        "cells_formula": "1",
+                        "movement_kind": "jump",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Saut / esquive."
+                    },
+                    "order": 1
                 }
             ],
-            "dofusdb_id": "20682"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 6,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "jump",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Saut / esquive."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "jump",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Saut / esquive."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "sram-brume",
-            "name": "Brume",
+            "key": "concentration-de-chakra",
+            "name": "Concentration de Chakra",
+            "dofusdb_id": "12944",
+            "official_id": "jdr:sram:concentration-de-chakra",
             "slot_index": 1,
             "choice_order": 1,
             "character_level": 2,
             "types": [
                 "Amélioration"
             ],
-            "element": null,
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Invisible jusqu’à la fin de ton prochain tour ou jusqu’à un sort offensif. 5 PA, 1×/tour.",
-            "description": "Brume : tu disparais des regards.",
+            "description": "Tu marques la cible d’un trait d’énergie. Chaque piège qui la mord te rend du souffle et mord plus fort.",
+            "effect": "Jusqu’au début de ton prochain tour, chaque fois qu’un de tes pièges blesse la cible, ce piège inflige des dégâts en plus et tu récupères des PV. Si ton mod. d’Intelligence vaut au moins 3, le soin passe au dé supérieur indiqué. Une fois par tour, relance de 3 tours.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Invisible jusqu’à la fin de ton prochain tour ou jusqu’à un sort offensif.",
-                        "effect_direction": "action"
-                    }
+                        "value": "Buff chakra.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
                 }
             ],
-            "dofusdb_id": "12951",
-            "duration": "jusqu’à la fin de ton prochain tour"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 6,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Buff chakra.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 0
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Buff chakra.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 0
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Buff chakra.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "piege-repulsif",
+            "name": "Piège Répulsif",
+            "dofusdb_id": "12914",
+            "official_id": "jdr:sram:piege-repulsif",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 4,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu caches une capsule de gaz. Le nuage frappe, coupe le pas, et pousse tout le monde hors de la case.",
+            "effect": "Piège. Au déclenchement, dégâts d’Air et retrait de PM à chaque créature de la zone, puis chacune est repoussée depuis la case du piège. Toi et tes allié·e·s compris. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "target_type": "trap",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "1d6+Agilité",
+                        "value_formula": "1d6+[agi]",
+                        "dice_formula": "1d6+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "retirer",
+                    "area": "cross-0-1",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pm",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "cross-0-1",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    },
+                    "order": 2
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Piège. Toute créature, toi compris."
+                    },
+                    "order": 3
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d4+Agilité",
+                                "value_formula": "2d4+[agi]",
+                                "dice_formula": "2d4+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 2
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Piège. Toute créature, toi compris."
+                            },
+                            "order": 3
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d4+Agilité",
+                                "value_formula": "2d4+[agi]",
+                                "dice_formula": "2d4+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 2
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Piège. Toute créature, toi compris."
+                            },
+                            "order": 3
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 2
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Piège. Toute créature, toi compris."
+                            },
+                            "order": 3
+                        }
+                    ]
+                }
+            ]
         },
         {
             "key": "piege-sournois",
             "name": "Piège Sournois",
-            "dofusdb_id": "12929",
+            "dofusdb_id": "12906",
+            "official_id": "jdr:sram:piege-sournois",
             "slot_index": 1,
-            "choice_order": 0,
+            "choice_order": 1,
+            "character_level": 4,
             "types": [
+                "Placement",
                 "Dégâts"
             ],
-            "element": "earth",
-            "target_type": "trap",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": false,
-            "sight_line": true,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu caches un lacet sous une braise. Il se resserre, tire tout le monde vers le centre, et brûle.",
+            "effect": "Piège. Au déclenchement, dégâts de Feu, puis chaque créature de la zone est attirée vers la case du piège. Toi et tes allié·e·s compris. Une fois par tour.",
+            "pa": "3",
             "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Pose un piège. Au déclenchement : 1d6 + Force (Terre), sauvegarde. Magique, 5 PA, 1×/tour, PO 1–4. Au plus 2 pièges à la fois au niveau 1.",
-            "description": "Tu laisses une lame sous les pieds. Qui marche dessus le paie.",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "target_type": "trap",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "cross-0-1",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "pull",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Piège. Toute créature, toi compris."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "1d6+Intelligence",
+                                "value_formula": "1d6+[intel]",
+                                "dice_formula": "1d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Piège. Toute créature, toi compris."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Piège. Toute créature, toi compris."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-2",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-2",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-2",
+                            "params": {
+                                "value": "Piège. Toute créature, toi compris."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "pillage",
+            "name": "Pillage",
+            "dofusdb_id": "12934",
+            "official_id": "jdr:sram:pillage",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 4,
+            "types": [
+                "Amélioration",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu frappes et tu lui prends du poids dans le coup. Elle frappe moins fort, toi plus fort.",
+            "effect": "Dégâts d’Eau. Jusqu’au début de ton prochain tour, chacun de tes coups contre elle gagne n dégâts, et les siens perdent n. Le vol ne se cumule pas. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
                     "params": {
+                        "characteristic": "water",
+                        "value": "1d6+Chance",
+                        "value_formula": "1d6+[chance]",
+                        "dice_formula": "1d6+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Vol / n dés."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d4+Chance",
+                                "value_formula": "2d4+[chance]",
+                                "dice_formula": "2d4+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Vol / n dés."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d4+Chance",
+                                "value_formula": "2d4+[chance]",
+                                "dice_formula": "2d4+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Vol / n dés."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Vol / n dés."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "piege-funeste",
+            "name": "Piège Funeste",
+            "dofusdb_id": "12948",
+            "official_id": "jdr:sram:piege-funeste",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 4,
+            "types": [
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu caches une lame à ressort. Elle fauche tout le monde, plus lourdement quand ils sont plusieurs, et les jette hors de la case.",
+            "effect": "Piège. Au déclenchement, dégâts de Terre à chaque créature de la zone : le dé de base, plus 1d4 par créature après la première, jusqu’à +2d4. Chacune est ensuite repoussée de 1 case depuis le piège. Toi compris. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "target_type": "trap",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
                         "characteristic": "earth",
                         "value": "1d6+Force",
                         "value_formula": "1d6+[strong]",
                         "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "cross-0-1",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "+1d4 par créature après la 1re (max +2d4). Toute créature, toi compris."
+                    },
+                    "order": 2
                 }
             ],
-            "character_level": 4
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d4+Force",
+                                "value_formula": "2d4+[strong]",
+                                "dice_formula": "2d4+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "+1d4 par créature après la 1re (max +2d4). Toute créature, toi compris."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d4+Force",
+                                "value_formula": "2d4+[strong]",
+                                "dice_formula": "2d4+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "+1d4 par créature après la 1re (max +2d4). Toute créature, toi compris."
+                            },
+                            "order": 2
+                        }
+                    ],
+                    "number_between_two_cast": "1"
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "+1d4 par créature après la 1re (max +2d4). Toute créature, toi compris."
+                            },
+                            "order": 2
+                        }
+                    ],
+                    "number_between_two_cast": "1"
+                }
+            ]
         },
         {
-            "key": "peur",
-            "name": "Peur",
-            "dofusdb_id": "32369",
+            "key": "double",
+            "name": "Double",
+            "dofusdb_id": "12915",
+            "official_id": "jdr:sram:double",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Invocation"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu te dédoubles d’un pas de côté. Ton double ne frappe pas : il trompe, et tu prends sa place.",
+            "effect": "Invoque le Double (`jdr:summon:sram-double`). Stats = aux tiennes (niveau, caractéristiques) ; PV = moitié des tiens. Aucun sort, aucune capacité : il peut seulement se déplacer. Un seul à la fois. Il joue juste après toi. Il reste jusqu’à 1 heure. Si tu infliges des dégâts à une autre créature, il disparaît à la fin de son prochain tour. Relancer ce sort pendant qu’il est là échange ta place avec la sienne.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "invoquer",
+                    "area": "point",
+                    "params": {
+                        "monster_official_id": "jdr:summon:sram-double"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Stats = lanceur, ½ PV. Aucun sort ni capacité : déplacement seul. Relancer = échange de place."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "manigance",
+            "name": "Manigance",
+            "dofusdb_id": "14741",
+            "official_id": "jdr:sram:manigance",
             "slot_index": 1,
             "choice_order": 1,
+            "character_level": 5,
             "types": [
-                "Entrave"
+                "Amélioration"
             ],
-            "element": "air",
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu glisses un plan à l’oreille d’un·e allié·e. Le coup tombe mieux, et le pas se défait plus vite.",
+            "effect": "Sur toi et un·e allié·e, jusqu’au début de ton prochain tour. Une fois par tour, relance de 3 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "5",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "+1d4 à chaque coup (toi + allié·e).",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 12,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d4 à chaque coup (toi + allié·e).",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "meprise",
+            "name": "Méprise",
+            "dofusdb_id": "12945",
+            "official_id": "jdr:sram:meprise",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu prends la place de la cible en un clin d’œil. Si ton double est là, c’est lui qui peut échanger.",
+            "effect": "Tu échanges ta place avec la cible. Si ton Double est en jeu, tu peux échanger la cible avec lui. Une fois par tour. Réaction : un·e allié·e à portée va être poussé·e ou attiré·e. Tu échanges ta place avec lui ou elle.",
             "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "4",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "attack_roll",
-            "attack_characteristic_key": "agi",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "Poussée de 2 cases, pas de dégâts. Physique, 3 PA, 1×/tour, PO 1–4 adapté.",
-            "description": "Un geste, un recul. Tu ouvres la ligne ou tu te dégages.",
+            "allows_reaction": true,
             "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Échange avec cible, ou avec le Double."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 11,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "teleport",
+                                "effect_direction": "action",
+                                "teleport": true
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Échange avec cible, ou avec le Double."
+                            },
+                            "order": 1
+                        }
+                    ],
+                    "number_between_two_cast": "3"
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "teleport",
+                                "effect_direction": "action",
+                                "teleport": true
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Échange avec cible, ou avec le Double."
+                            },
+                            "order": 1
+                        }
+                    ],
+                    "number_between_two_cast": "2"
+                }
+            ]
+        },
+        {
+            "key": "marque-mortuaire",
+            "name": "Marque Mortuaire",
+            "dofusdb_id": "14313",
+            "official_id": "jdr:sram:marque-mortuaire",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 6,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu traces un signe du doigt. Le prochain coup cherche l’endroit juste.",
+            "effect": "Jusqu’au début de ton prochain tour, tes attaques contre la cible ont l’avantage. Si ton mod. de Sagesse vaut au moins 3, la relance baisse de 1. Une fois par tour.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "6",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Marque mortuaire.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 11,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Marque mortuaire.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 0
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Marque mortuaire.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "piege-insidieux",
+            "name": "Piège Insidieux",
+            "dofusdb_id": "12918",
+            "official_id": "jdr:sram:piege-insidieux",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 7,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu enterres une fiole. Elle éclate sous le pas, alourdit le geste, et pousse la créature vers le piège suivant.",
+            "effect": "Piège. Au déclenchement, dégâts d’Air et retrait de PA à chaque créature de la zone. La créature qui l’a déclenché est repoussée d’1 case dans la direction choisie à la pose. Toi et tes allié·e·s compris. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "target_type": "trap",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "2d4+Agilité",
+                        "value_formula": "2d4+[agi]",
+                        "dice_formula": "2d4+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "retirer",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pa",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    },
+                    "order": 2
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Piège. Direction de poussée choisie à la pose."
+                    },
+                    "order": 3
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 2
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Piège. Direction de poussée choisie à la pose."
+                            },
+                            "order": 3
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 2
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Piège. Direction de poussée choisie à la pose."
+                            },
+                            "order": 3
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "piege-de-derive",
+            "name": "Piège de Dérive",
+            "dofusdb_id": "12942",
+            "official_id": "jdr:sram:piege-de-derive",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 7,
+            "types": [
+                "Placement",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu caches une poudre qui s’enflamme sous le pas. Le souffle chasse tout le monde dans la direction que tu as préparée.",
+            "effect": "Piège. Au déclenchement, dégâts de Feu, puis chaque créature de la zone est repoussée dans la direction choisie à la pose. Toi et tes allié·e·s compris. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "target_type": "trap",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "2d4+Intelligence",
+                        "value_formula": "2d4+[intel]",
+                        "dice_formula": "2d4+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
                 {
                     "slug": "déplacer",
                     "area": "point",
@@ -140,564 +1422,1058 @@
                         "cells_formula": "2",
                         "movement_kind": "push",
                         "effect_direction": "action"
-                    }
-                }
-            ],
-            "character_level": 4
-        },
-        {
-            "key": "sram-piege-mortel",
-            "name": "Piège Mortel",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 5,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Piège, 2d6 + Force (Terre). Magique, 5 PA, 1×/tour. Au plus 2 pièges à la fois.",
-            "description": "Piège Mortel : tu poses, tu t’écartes.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "2d6+Force",
-                        "value_formula": "2d6+[strong]",
-                        "dice_formula": "2d6+[strong]",
-                        "value_formula_crit": "3d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "12927",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "max_stack": 2,
-            "target_type": "trap"
-        },
-        {
-            "key": "sram-piege-insidieux",
-            "name": "Piège Insidieux",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 5,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "water",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Piège, 2d6 + Chance (Eau). Magique, 5 PA, 1×/tour. Au plus 2 pièges à la fois.",
-            "description": "Piège Insidieux : tu poses, tu t’écartes.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "2d6+Chance",
-                        "value_formula": "2d6+[chance]",
-                        "dice_formula": "2d6+[chance]",
-                        "value_formula_crit": "3d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "28736",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "max_stack": 2,
-            "target_type": "trap"
-        },
-        {
-            "key": "sram-fourberie",
-            "name": "Fourberie",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 6,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Fourberie : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "3d6+Force",
-                        "value_formula": "3d6+[strong]",
-                        "dice_formula": "3d6+[strong]",
-                        "value_formula_crit": "4d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "12905",
-            "attack_characteristic_key": "strong"
-        },
-        {
-            "key": "sram-extorsion",
-            "name": "Extorsion",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 6,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Extorsion : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "12938",
-            "attack_characteristic_key": "chance"
-        },
-        {
-            "key": "sram-concentration-de-chakra",
-            "name": "Concentration de Chakra",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 7,
-            "types": [
-                "Amélioration"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "+2d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Concentration de Chakra : tu te prépares. Le prochain élan frappe plus fort.",
-            "sub_effects": [
-                {
-                    "slug": "booster",
-                    "area": "point",
-                    "duration_formula": "1",
-                    "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "2d4",
-                        "value_formula": "2d4",
-                        "dice_formula": "2d4",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
-                    }
-                }
-            ],
-            "dofusdb_id": "32370",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
-        },
-        {
-            "key": "sram-coupe-gorge",
-            "name": "Coupe-gorge",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 7,
-            "types": [
-                "Placement"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "5",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Téléportation 1–5 cases, pas de ligne de vue. 3 PA, 1×/tour.",
-            "description": "Coupe-gorge : tu disparais et tu réapparais.",
-            "sub_effects": [
-                {
-                    "slug": "déplacer",
-                    "area": "point",
-                    "params": {
-                        "cells_formula": "5",
-                        "movement_kind": "teleport",
-                        "effect_direction": "action",
-                        "teleport": true
-                    }
-                }
-            ],
-            "dofusdb_id": "14315"
-        },
-        {
-            "key": "sram-attaque-mortelle",
-            "name": "Attaque Mortelle",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 8,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 5,
-            "effect": "2d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Attaque Mortelle : attaque simple, même budget que le palier 8.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "2d6+Force",
-                        "value_formula": "2d6+[strong]",
-                        "dice_formula": "2d6+[strong]",
-                        "value_formula_crit": "3d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "32368",
-            "attack_characteristic_key": "strong"
-        },
-        {
-            "key": "sram-arsenic",
-            "name": "Arsenic",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 8,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 5,
-            "effect": "2d6 + Chance (Eau) et Empoisonné jusqu’à la fin du prochain tour. 3 PA, 2×/tour.",
-            "description": "Arsenic : ça s’accroche après le coup.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "2d6+Chance",
-                        "value_formula": "2d6+[chance]",
-                        "dice_formula": "2d6+[chance]",
-                        "value_formula_crit": "3d6+[chance]",
-                        "effect_direction": "action"
-                    }
+                    },
+                    "order": 1
                 },
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Empoisonné jusqu’à la fin du prochain tour de la cible.",
-                        "effect_direction": "action"
-                    }
+                        "value": "Piège. Direction choisie à la pose."
+                    },
+                    "order": 2
                 }
             ],
-            "dofusdb_id": "12907",
-            "attack_characteristic_key": "chance"
-        },
-        {
-            "key": "sram-piege-funeste",
-            "name": "Piège Funeste",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 10,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Piège, 3d6 + Force (Terre). Magique, 5 PA, 1×/tour. Au plus 3 pièges à la fois.",
-            "description": "Piège Funeste : tu poses, tu t’écartes.",
-            "sub_effects": [
+            "intensification": [
                 {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "3d6+Force",
-                        "value_formula": "3d6+[strong]",
-                        "dice_formula": "3d6+[strong]",
-                        "value_formula_crit": "4d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "12962",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "max_stack": 3,
-            "target_type": "trap"
-        },
-        {
-            "key": "sram-epidemie",
-            "name": "Épidémie",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 10,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "water",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "3d6 + Chance (Eau) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Épidémie : sort fort de palier 10.",
-            "sub_effects": [
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Piège. Direction choisie à la pose."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
                 {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "3",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Piège. Direction choisie à la pose."
+                            },
+                            "order": 2
+                        }
+                    ]
                 }
-            ],
-            "dofusdb_id": "28456",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            ]
         },
         {
-            "key": "sram-larcin",
-            "name": "Larcin",
+            "key": "guet-apens",
+            "name": "Guet-apens",
+            "dofusdb_id": "12939",
+            "official_id": "jdr:sram:guet-apens",
             "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 11,
+            "choice_order": 2,
+            "character_level": 7,
             "types": [
-                "Dégâts"
+                "Amélioration",
+                "Placement"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "attack_roll",
+            "state": "playable",
             "is_magic": false,
-            "powerful": 8,
-            "effect": "Attirance de 4 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
-            "description": "Larcin : tu ramènes la cible.",
+            "resolution_mode": "attack_roll",
+            "description": "Tu tires la cible par le col vers toi, ou vers ton double. Le souffle pris te revient, et la trajectoire peut la jeter dans tes pièges.",
+            "effect": "Dégâts d’Eau. La moitié des dégâts finaux te soigne. Puis la cible est attirée de 1 case vers toi, ou vers ton Double s’il est en jeu. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
             "sub_effects": [
                 {
                     "slug": "déplacer",
                     "area": "point",
                     "params": {
-                        "cells_formula": "4",
+                        "cells_formula": "1",
                         "movement_kind": "pull",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Attire vers toi / réseau de pièges."
+                    },
+                    "order": 1
                 }
             ],
-            "dofusdb_id": "12937",
-            "attack_characteristic_key": "agi"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Attire vers toi / réseau de pièges."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Attire vers toi / réseau de pièges."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "sram-guet-apens",
-            "name": "Guet-apens",
+            "key": "piege-mortel",
+            "name": "Piège Mortel",
+            "dofusdb_id": "12921",
+            "official_id": "jdr:sram:piege-mortel",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 7,
+            "types": [
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu caches une pointe sous une pierre. Elle cherche le corps déjà blessé, puis le projette vers le piège d’après.",
+            "effect": "Piège sur une case. Au déclenchement, dégâts de Terre à la créature qui l’a déclenché, davantage si elle a moins de la moitié de ses PV. Elle est ensuite repoussée d’1 case dans la direction choisie à la pose. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "target_type": "trap",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Piège. Toute créature, toi compris."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Piège. Toute créature, toi compris."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Piège. Toute créature, toi compris."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "brume",
+            "name": "Brume",
+            "dofusdb_id": "12930",
+            "official_id": "jdr:sram:brume",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 8,
+            "types": [
+                "Protection"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu brises une fiole à tes pieds. Le nuage cache les formes, et les tiens y devinent encore les silhouettes.",
+            "effect": "Zone autour de toi. La brume est opaque. Les allié·e·s voient les silhouettes des créatures et des objets. On ne voit pas à travers ce qu’il y a derrière. En combat, elle dure 3 tours. Hors combat, tu la maintiens par concentration, 2 PA par 10 minutes, jusqu’à 1 heure. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "6",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Brume opaque. Allié·e·s voient les silhouettes. 3 tours en combat.",
+                        "duration_formula": "3"
+                    },
+                    "duration_formula": "3",
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Brume opaque. Allié·e·s voient les silhouettes. 3 tours en combat.",
+                                "duration_formula": "3"
+                            },
+                            "duration_formula": "3",
+                            "order": 0
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Brume opaque. Allié·e·s voient les silhouettes. 3 tours en combat.",
+                                "duration_formula": "3"
+                            },
+                            "duration_formula": "3",
+                            "order": 0
+                        }
+                    ],
+                    "number_between_two_cast": "4"
+                }
+            ]
+        },
+        {
+            "key": "effraction",
+            "name": "Effraction",
+            "dofusdb_id": "14742",
+            "official_id": "jdr:sram:effraction",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 11,
+            "character_level": 8,
             "types": [
                 "Placement"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "6",
-            "po_editable": false,
-            "sight_line": false,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu glisses une tige dans la serrure, ou sous le pas de la cible. La porte cède sans bruit, et ses appuis ne lui appartiennent plus.",
+            "effect": "Hors combat, tu as l’avantage pour crocheter une serrure ou désamorcer un piège, sans bruit. En combat, à la fin du tour de la cible, tu peux la déplacer sur une case libre, dans la limite des PM qu’elle a dépensés à ce tour. Une fois par tour, relance de 4 tours.",
+            "pa": "2",
             "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "Téléportation 1–6 cases, pas de ligne de vue. 3 PA, 1×/tour.",
-            "description": "Guet-apens : tu disparais et tu réapparais.",
+            "cast_per_target": "1",
+            "number_between_two_cast": "4",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "attack_characteristic_key": "agi",
+            "save_characteristic_key": "agi",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Placement · physique · automatique hors combat · en combat, sauvegarde de Force contre ton DD de Force · DofusDB : 14742.",
             "sub_effects": [
                 {
                     "slug": "déplacer",
                     "area": "point",
                     "params": {
-                        "cells_formula": "6",
-                        "movement_kind": "teleport",
-                        "effect_direction": "action",
-                        "teleport": true
-                    }
+                        "cells_formula": "1",
+                        "movement_kind": "jump",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Passe une porte / obstacle, ou placement."
+                    },
+                    "order": 1
                 }
             ],
-            "dofusdb_id": "12960"
+            "intensification": []
         },
         {
-            "key": "sram-piege-effroyable",
+            "key": "arnaque",
+            "name": "Arnaque",
+            "dofusdb_id": "12911",
+            "official_id": "jdr:sram:arnaque",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 10,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu la pousses dans tes pièges. Chaque piège qui se referme te rend du souffle.",
+            "effect": "Tu repousses la cible en ligne. Si ce déplacement déclenche un ou plusieurs de tes pièges, tu récupères des PV pour chacun. Une fois par tour, relance de 2 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "attack_characteristic_key": "vitality",
+            "save_characteristic_key": "vitality",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Placement · Altération · physique · sauvegarde de Vitalité contre ton DD de Vitalité · en ligne · DofusDB : 12911.",
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Arnaque.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Arnaque.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "fosse-commune",
+            "name": "Fosse Commune",
+            "dofusdb_id": "14314",
+            "official_id": "jdr:sram:fosse-commune",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 10,
+            "types": [
+                "Entrave"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu creuses sous un tapis de feuilles. Qui tombe dedans ne peut plus être bougé, ni sauter, ni être emporté.",
+            "effect": "Piège. Au déclenchement, chaque créature de la zone qui rate sa sauvegarde est Indéplaçable jusqu’à la fin de son prochain tour, toi et tes allié·e·s compris. Une fois par tour, relance de 3 tours.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "attack_characteristic_key": "chance",
+            "save_characteristic_key": "chance",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Entrave · Altération · physique · piège · sauvegarde de Chance contre ton DD de Chance, au déclenchement · DofusDB : 14314.",
+            "target_type": "trap",
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Piège. Indéplaçable si sauvegarde ratée. Toute créature, toi compris.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Piège. Indéplaçable si sauvegarde ratée. Toute créature, toi compris.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "poisse",
+            "name": "Poisse",
+            "dofusdb_id": "12922",
+            "official_id": "jdr:sram:poisse",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Entrave"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu murmures une malédiction de tripot. Son prochain coup tourne mal, et le tien te rend du souffle.",
+            "effect": "La cible a un désavantage à ses jets d’attaque. Si tu lui infliges des dégâts, tu peux en récupérer la moitié en soin, une fois par tour, pendant la durée. Une fois par tour, relance de 4 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "4",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "attack_characteristic_key": "chance",
+            "save_characteristic_key": "chance",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Entrave · Altération · physique · sauvegarde de Chance contre ton DD de Chance · DofusDB : 12922.",
+            "sub_effects": [
+                {
+                    "slug": "soigner",
+                    "area": "point",
+                    "params": {
+                        "value": "moitié d’un coup",
+                        "value_formula": "moitié d’un coup",
+                        "dice_formula": "moitié d’un coup",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Vol de vie / poisse.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "moitié d’un coup",
+                                "value_formula": "moitié d’un coup",
+                                "dice_formula": "moitié d’un coup",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Vol de vie / poisse.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "piege-effroyable",
             "name": "Piège Effroyable",
+            "dofusdb_id": "28737",
+            "official_id": "jdr:sram:piege-effroyable",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 11,
+            "types": [
+                "Entrave"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu laisses un piège trop bien monté. Qui marche dessus a peur, et les soins s’y tarissent — toi y compris.",
+            "effect": "Piège. Chaque créature de la zone qui rate sa sauvegarde est Effrayé·e, et les soins qu’elle reçoit sont divisés par 2. Toi et tes allié·e·s compris. Une fois par tour, relance de 4 tours.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "4",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "attack_characteristic_key": "agi",
+            "save_characteristic_key": "agi",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · violet · Entrave · Altération · physique · piège · sauvegarde d’Agilité contre ton DD d’Agilité, au déclenchement · DofusDB : 28737.",
+            "target_type": "trap",
+            "image_filter": "violet",
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "cross-0-2",
+                    "params": {
+                        "value": "Effrayé + soins /2 si sauvegarde ratée. Toute créature, toi compris.",
+                        "duration_formula": "2"
+                    },
+                    "duration_formula": "2",
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-2",
+                            "params": {
+                                "value": "Effrayé + soins /2 si sauvegarde ratée. Toute créature, toi compris.",
+                                "duration_formula": "2"
+                            },
+                            "duration_formula": "2",
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "injection-toxique",
+            "name": "Injection Toxique",
+            "dofusdb_id": "12940",
+            "official_id": "jdr:sram:injection-toxique",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 12,
             "types": [
+                "Entrave",
                 "Dégâts"
             ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu plantes une aiguille dans une jointure. Le poison passe de créature en créature tant que l’une le refile à l’autre.",
+            "effect": "Dégâts d’Air. La cible est Indéplaçable pendant 1 tour et reçoit le poison d’Injection : 1d4 au début de son prochain tour, sans modificateur. À la fin du tour d’une créature empoisonnée, tu transmets le poison à une créature à son contact qui n’est pas immunisée. Une créature ne peut le recevoir que deux fois dans le combat ; après la deuxième, elle est immunisée jusqu’à la fin du combat. La chaîne continue tant qu’une créature empoisonnée finit son tour au contact d’une créature qui n’est pas immunisée. Une fois par tour, relance de 4 tours.",
+            "pa": "4",
             "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Piège, 4d6 + Force (Terre). Magique, 5 PA, 1×/tour. Au plus 3 pièges à la fois.",
-            "description": "Piège Effroyable : tu poses, tu t’écartes.",
+            "cast_per_target": "1",
+            "number_between_two_cast": "4",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
-                        "characteristic": "earth",
-                        "value": "4d6+Force",
-                        "value_formula": "4d6+[strong]",
-                        "dice_formula": "4d6+[strong]",
-                        "value_formula_crit": "5d6+[strong]",
+                        "characteristic": "air",
+                        "value": "1d6+Agilité",
+                        "value_formula": "1d6+[agi]",
+                        "dice_formula": "1d6+[agi]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Poison d’Air transmissible.",
+                        "duration_formula": "2"
+                    },
+                    "duration_formula": "2",
+                    "order": 1
                 }
             ],
-            "dofusdb_id": "28737",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "max_stack": 3,
-            "target_type": "trap"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "1d6+Agilité",
+                                "value_formula": "1d6+[agi]",
+                                "dice_formula": "1d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison d’Air transmissible.",
+                                "duration_formula": "2"
+                            },
+                            "duration_formula": "2",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "sram-calamite",
-            "name": "Calamité",
+            "key": "perquisition",
+            "name": "Perquisition",
+            "dofusdb_id": "12947",
+            "official_id": "jdr:sram:perquisition",
             "slot_index": 1,
             "choice_order": 1,
             "character_level": 12,
             "types": [
+                "Placement",
                 "Dégâts"
             ],
-            "element": "water",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu fouilles la cible d’un coup de lame brûlant et tu la poses plus loin, ou à la place de ton double.",
+            "effect": "Dégâts de Feu si le coup porte. Tu places ensuite la cible sur une case libre dans la portée, ou tu l’échanges avec ton Double s’il est dans la portée. Une fois par tour, relance de 3 tours.",
+            "pa": "4",
             "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "4d6 + Chance (Eau) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Calamité : sort fort de palier 14.",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "7",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
-                        "characteristic": "water",
-                        "value": "4d6+Chance",
-                        "value_formula": "4d6+[chance]",
-                        "dice_formula": "4d6+[chance]",
-                        "value_formula_crit": "5d6+[chance]",
+                        "characteristic": "fire",
+                        "value": "2d6+Intelligence",
+                        "value_formula": "2d6+[intel]",
+                        "dice_formula": "2d6+[intel]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Place la cible ou échange avec le Double."
+                    },
+                    "order": 2
                 }
             ],
-            "dofusdb_id": "12963",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "teleport",
+                                "effect_direction": "action",
+                                "teleport": true
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Place la cible ou échange avec le Double."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "calamite",
+            "name": "Calamité",
+            "dofusdb_id": "12937",
+            "official_id": "jdr:sram:calamite",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 12,
+            "types": [
+                "Amélioration",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu passes entre les ennemi·e·s en vidant leur aplomb. Les tiens, dans le même geste, ne peuvent plus être taclé·e·s.",
+            "effect": "Dégâts d’Eau aux ennemi·e·s de la zone. Toi et les allié·e·s de la zone gagnez Intaclable. Une fois par tour, relance de 2 tours.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d4+Chance",
+                        "value_formula": "2d4+[chance]",
+                        "dice_formula": "2d4+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Intaclable pour toi et allié·e·s de la zone.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d4+Chance",
+                                "value_formula": "2d4+[chance]",
+                                "dice_formula": "2d4+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Intaclable pour toi et allié·e·s de la zone.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "attaque-mortelle",
+            "name": "Attaque mortelle",
+            "dofusdb_id": "12932",
+            "official_id": "jdr:sram:attaque-mortelle",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 12,
+            "types": [
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu frappes là où le corps a déjà cédé, ou juste après qu’un piège l’a ouvert.",
+            "effect": "Dégâts de Terre. Tu ajoutes un bonus si la cible a moins de la moitié de ses PV, ou si elle a déclenché un de tes pièges depuis la fin de ton tour précédent. Un seul coup. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "2",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "3d8+Force",
+                        "value_formula": "3d8+[strong]",
+                        "dice_formula": "3d8+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bonus si cible < ½ PV ou sort d’un de tes pièges."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "4d8+Force",
+                                "value_formula": "4d8+[strong]",
+                                "dice_formula": "4d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bonus si cible < ½ PV ou sort d’un de tes pièges."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

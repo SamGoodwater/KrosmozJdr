@@ -1,695 +1,2122 @@
 {
     "_schema_version": "1",
     "breed": "Zobal",
+    "state": "playable",
     "entries": [
         {
-            "key": "zobal-masque-du-psychopathe",
-            "name": "Masque du Psychopathe",
-            "slot_index": 1,
+            "key": "reuche",
+            "name": "Reuche",
+            "dofusdb_id": "13409",
+            "official_id": "jdr:zobal:reuche",
+            "slot_index": 2,
             "choice_order": 0,
             "character_level": 2,
-            "types": [
-                "Amélioration"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "Tu chausses le masque Psychopathe : +1 dégât (remplace ton masque actuel). 1 masque à la fois. 3 PA, 1×/tour.",
-            "description": "Masque du Psychopathe : tu changes de visage, tu frappes plus fort. Pas un +1d4 générique.",
-            "sub_effects": [
-                {
-                    "slug": "autre",
-                    "area": "point",
-                    "params": {
-                        "value": "Passe en masque Psychopathe (+1 dégât). Remplace le masque actuel.",
-                        "effect_direction": "self"
-                    }
-                }
-            ],
-            "official_id": "jdr:zobal-masque-du-psychopathe",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
-        },
-        {
-            "key": "zobal-masque-du-classy",
-            "name": "Masque du Classy",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 2,
-            "types": [
-                "Protection"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "Tu chausses le masque Classique : +1 aux jets pour protéger un allié adjacent (remplace ton masque actuel). 1 masque à la fois. 3 PA, 1×/tour.",
-            "description": "Masque du Classy : tu changes de visage pour couvrir les autres.",
-            "sub_effects": [
-                {
-                    "slug": "autre",
-                    "area": "point",
-                    "params": {
-                        "value": "Passe en masque Classique (+1 aux jets pour protéger un allié adjacent). Remplace le masque actuel.",
-                        "effect_direction": "self"
-                    }
-                }
-            ],
-            "official_id": "jdr:zobal-masque-du-classy",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
-        },
-        {
-            "key": "catalepsie",
-            "name": "Catalepsie",
-            "dofusdb_id": "13420",
-            "slot_index": 1,
-            "choice_order": 0,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "water",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Chance (Eau). Magique, 5 PA, 1×/tour, PO 1–4.",
-            "description": "L’eau fige. Ceux qui restent collés prennent le choc.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "1d6+Chance",
-                        "value_formula": "1d6+[chance]",
-                        "dice_formula": "1d6+[chance]",
-                        "value_formula_crit": "2d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "character_level": 4
-        },
-        {
-            "key": "appui",
-            "name": "Appui",
-            "dofusdb_id": "13403",
-            "slot_index": 1,
-            "choice_order": 1,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Force (Terre). Magique, 5 PA, 1×/tour.",
-            "description": "Tu t’ancres. Autour de toi, ça encaisse.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "character_level": 4
-        },
-        {
-            "key": "zobal-furia",
-            "name": "Furia",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 5,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "fire",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "2d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Furia : sort fort de palier 5.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "2d6+Intelligence",
-                        "value_formula": "2d6+[intel]",
-                        "dice_formula": "2d6+[intel]",
-                        "value_formula_crit": "3d6+[intel]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:zobal-furia",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "zobal-tortue",
-            "name": "Tortue",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 5,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "2d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Tortue : sort fort de palier 5.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "2d6+Force",
-                        "value_formula": "2d6+[strong]",
-                        "dice_formula": "2d6+[strong]",
-                        "value_formula_crit": "3d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:zobal-tortue",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "zobal-boliche",
-            "name": "Boliche",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 6,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Boliche : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "3d6+Force",
-                        "value_formula": "3d6+[strong]",
-                        "dice_formula": "3d6+[strong]",
-                        "value_formula_crit": "4d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:zobal-boliche",
-            "attack_characteristic_key": "strong"
-        },
-        {
-            "key": "zobal-gafanhoto",
-            "name": "Gafanhoto",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 6,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "air",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
-            "description": "Gafanhoto : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "3d6+Agilité",
-                        "value_formula": "3d6+[agi]",
-                        "dice_formula": "3d6+[agi]",
-                        "value_formula_crit": "4d6+[agi]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:zobal-gafanhoto",
-            "attack_characteristic_key": "agi"
-        },
-        {
-            "key": "zobal-masque-du-renegat",
-            "name": "Masque du Renégat",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 7,
-            "types": [
-                "Amélioration"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Tu chausses le masque Renégat (placement) : 1 fois par tour, tu peux reculer de 1 case après avoir lancé un sort de classe. Remplace ton masque actuel. 3 PA, 1×/tour.",
-            "description": "Masque du Renégat : le troisième visage. Tu te places, tu ne gagnes pas un 2d4.",
-            "sub_effects": [
-                {
-                    "slug": "autre",
-                    "area": "point",
-                    "params": {
-                        "value": "Passe en masque Renégat (1 case de recul après un sort de classe, 1/tour). Remplace le masque actuel.",
-                        "effect_direction": "self"
-                    }
-                }
-            ],
-            "official_id": "jdr:zobal-masque-du-renegat",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
-        },
-        {
-            "key": "zobal-masque-du-ido",
-            "name": "Masque du Laisse",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 7,
             "types": [
                 "Placement"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "5",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Téléportation 1–5 cases, pas de ligne de vue. 3 PA, 1×/tour.",
-            "description": "Masque du Laisse : tu disparais et tu réapparais.",
+            "description": "Tu te rapproches d'un bond (reuche) : tu glisses vers la cible sans frapper.",
+            "effect": "Tu te téléportes d'1 à 2 cases vers la cible. Une fois par tour.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
             "sub_effects": [
                 {
                     "slug": "déplacer",
                     "area": "point",
                     "params": {
-                        "cells_formula": "5",
+                        "cells_formula": "2",
                         "movement_kind": "teleport",
                         "effect_direction": "action",
                         "teleport": true
-                    }
-                }
-            ],
-            "official_id": "jdr:zobal-masque-du-ido"
-        },
-        {
-            "key": "zobal-trancado",
-            "name": "Trancado",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 8,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 5,
-            "effect": "2d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Trancado : attaque simple, même budget que le palier 8.",
-            "sub_effects": [
+                    },
+                    "order": 0
+                },
                 {
-                    "slug": "frapper",
+                    "slug": "autre",
                     "area": "point",
                     "params": {
-                        "characteristic": "earth",
-                        "value": "2d6+Force",
-                        "value_formula": "2d6+[strong]",
-                        "dice_formula": "2d6+[strong]",
-                        "value_formula_crit": "3d6+[strong]",
-                        "effect_direction": "action"
-                    }
+                        "value": "Téléport 1–2 vers la cible."
+                    },
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:zobal-trancado",
-            "attack_characteristic_key": "strong"
+            "intensification": []
         },
         {
-            "key": "zobal-apeira",
-            "name": "Apeira",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 8,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 5,
-            "effect": "2d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Apeira : attaque simple, même budget que le palier 8.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "2d6+Chance",
-                        "value_formula": "2d6+[chance]",
-                        "dice_formula": "2d6+[chance]",
-                        "value_formula_crit": "3d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:zobal-apeira",
-            "attack_characteristic_key": "chance"
-        },
-        {
-            "key": "zobal-reinado",
-            "name": "Reinado",
+            "key": "tortuga",
+            "name": "Tortuga",
+            "dofusdb_id": "13407",
+            "official_id": "jdr:zobal:tortuga",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 10,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "fire",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "3d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Reinado : sort fort de palier 10.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "3d6+Intelligence",
-                        "value_formula": "3d6+[intel]",
-                        "dice_formula": "3d6+[intel]",
-                        "value_formula_crit": "4d6+[intel]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:zobal-reinado",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "zobal-retencao",
-            "name": "Retenção",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 10,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "water",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "3d6 + Chance (Eau) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Retenção : sort fort de palier 10.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:zobal-retencao",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "zobal-plastron-majeur",
-            "name": "Armadura",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 11,
+            "character_level": 2,
             "types": [
                 "Protection"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "3d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Armadura : une couche de Wakfu avant les PV.",
+            "description": "Tu formes une carapace (tortuga) autour de quelqu'un.",
+            "effect": "Bouclier sur un·e allié·e jusqu'à la fin de ton prochain tour. Pas de cumul. Une fois par tour.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "4",
+            "po_editable": true,
             "sub_effects": [
                 {
                     "slug": "protéger",
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "value": "3d4+Sagesse",
-                        "value_formula": "3d4+[sagesse]",
-                        "effect_direction": "self",
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
+                        "effect_direction": "action",
                         "duration_formula": "1"
-                    }
+                    },
+                    "order": 0
                 }
             ],
-            "official_id": "jdr:zobal-plastron-majeur",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 6,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "zobal-cavalcade-majeure",
-            "name": "Festa",
+            "key": "retention",
+            "name": "Rétention",
+            "dofusdb_id": "13412",
+            "official_id": "jdr:zobal:retention",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 4,
+            "types": [
+                "Protection",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu retiens la cible d'un filet d'air. Elle subit des dommages d'Air ; un·e allié·e se couvre.",
+            "effect": "Dégâts d'Air. Un·e allié·e à 3 cases ou moins gagne un bouclier 1d6 jusqu'à la fin de ton prochain tour. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "1d6+Agilité",
+                        "value_formula": "1d6+[agi]",
+                        "dice_formula": "1d6+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "1d6",
+                        "value_formula": "1d6",
+                        "dice_formula": "1d6",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d4+Agilité",
+                                "value_formula": "2d4+[agi]",
+                                "dice_formula": "2d4+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "furia",
+            "name": "Furia",
+            "dofusdb_id": "13427",
+            "official_id": "jdr:zobal:furia",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 11,
+            "character_level": 4,
+            "types": [
+                "Tank",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu ouvres une furia. Les ennemi·e·s brûlent ; tu te plaques.",
+            "effect": "Dégâts de Feu en croix de 1 autour de toi. Bouclier 1d6 sur toi. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "save_characteristic_key": "intel",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Feu · origine · Tank · Attaque · sauvegarde · DD d'Intelligence vs jet de sauvegarde d'Intelligence · DofusDB : 13427.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "1d6",
+                        "value_formula": "1d6",
+                        "dice_formula": "1d6",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d4+Intelligence",
+                                "value_formula": "2d4+[intel]",
+                                "dice_formula": "2d4+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "appeau",
+            "name": "Appeau",
+            "dofusdb_id": "13422",
+            "official_id": "jdr:zobal:appeau",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 4,
+            "types": [
+                "Placement",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu attires la cible d'un appeau d'eau. Elle subit des dommages d'Eau.",
+            "effect": "Lancé en ligne. Dégâts d'Eau et attirance 2 cases. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "1d6+Chance",
+                        "value_formula": "1d6+[chance]",
+                        "dice_formula": "1d6+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "2",
+                        "movement_kind": "pull",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d4+Chance",
+                                "value_formula": "2d4+[chance]",
+                                "dice_formula": "2d4+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "3",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "3",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "3",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "appui",
+            "name": "Appui",
+            "dofusdb_id": "13403",
+            "official_id": "jdr:zobal:appui",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 4,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu prends appui et tu frappes autour. Les cibles subissent des dommages de Terre et perdent une seconde.",
+            "effect": "Dégâts de Terre en croix de 1 autour de toi. −1 PA. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "save_characteristic_key": "strong",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Terre · origine · Entrave · Attaque · sauvegarde · DD de Force vs jet de sauvegarde de Force · DofusDB : 13403.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "retirer",
+                    "area": "cross-0-1",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pa",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d4+Force",
+                                "value_formula": "2d4+[strong]",
+                                "dice_formula": "2d4+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "mascarade",
+            "name": "Mascarade",
+            "dofusdb_id": null,
+            "official_id": "jdr:zobal:mascarade",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Soin"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu soignes sous le masque.",
+            "effect": "Soin. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "3",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "soigner",
+                    "area": "point",
+                    "params": {
+                        "value": "1d6",
+                        "value_formula": "1d6",
+                        "dice_formula": "1d6",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 12,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "transe",
+            "name": "Transe",
+            "dofusdb_id": null,
+            "official_id": "jdr:zobal:transe",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu entres en transe. Le prochain coup porte.",
+            "effect": "+1d4 aux dégâts de ta prochaine attaque de classe avant la fin de ton prochain tour. Une fois par tour.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "+1d4 prochaine attaque",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "boliche",
+            "name": "Boliche",
+            "dofusdb_id": null,
+            "official_id": "jdr:zobal:boliche",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
             "types": [
                 "Placement"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "6",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "Téléportation 1–6 cases, pas de ligne de vue. 3 PA, 1×/tour.",
-            "description": "Festa : tu disparais et tu réapparais.",
+            "description": "Tu roules en boliche et tu échanges.",
+            "effect": "Échange de place avec la cible. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
             "sub_effects": [
                 {
                     "slug": "déplacer",
                     "area": "point",
                     "params": {
-                        "cells_formula": "6",
+                        "cells_formula": "1",
                         "movement_kind": "teleport",
                         "effect_direction": "action",
                         "teleport": true
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Échange de place."
+                    },
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:zobal-cavalcade-majeure"
+            "intensification": []
         },
         {
-            "key": "zobal-mascara-supremo",
-            "name": "Apotheose",
+            "key": "gafanhoto",
+            "name": "Gafanhoto",
+            "dofusdb_id": null,
+            "official_id": "jdr:zobal:gafanhoto",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu bondis en gafanhoto : l'équipe gagne du souffle.",
+            "effect": "Chaque allié·e à ton contact gagne +1 PM à son prochain tour. Une fois par tour.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "booster",
+                    "area": "cross-0-1",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pm",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "+1 PM alliés contact.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "agular",
+            "name": "Agular",
+            "dofusdb_id": "13414",
+            "official_id": "jdr:zobal:agular",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 7,
+            "types": [
+                "Protection",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu ouvres un agular d'air. Les cibles subissent des dommages d'Air ; tu encaisses mieux.",
+            "effect": "Dégâts d'Air en zone 2x2. Tu réduis de 1d4 les dégâts de la prochaine attaque qui te touche avant la fin de ton prochain tour. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "2",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "save_characteristic_key": "agi",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Air · origine · Protection · Attaque · sauvegarde · DD d'Agilité vs jet de sauvegarde d'Agilité · DofusDB : 13414.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "rect-2x2",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "2d4+Agilité",
+                        "value_formula": "2d4+[agi]",
+                        "dice_formula": "2d4+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Réduit 1d4",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "rect-2x2",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Réduit 1d6",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "rect-2x2",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Réduit 2d4",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "reinado",
+            "name": "Reinado",
+            "dofusdb_id": "13429",
+            "official_id": "jdr:zobal:reinado",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 7,
+            "types": [
+                "Tank",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu imposes le reinado. La cible subit des dommages de Feu ; tu encaisses pour le groupe.",
+            "effect": "Dégâts de Feu. Jusqu'à la fin de ton prochain tour, quand un·e allié·e à ton contact subit des dégâts, tu peux en prendre 1d4 à sa place, 1 fois. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "2d4+Intelligence",
+                        "value_formula": "2d4+[intel]",
+                        "dice_formula": "2d4+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Intercepte 1d4 / 1×",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Intercepte 1d6",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Intercepte 2d4",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "cabriole",
+            "name": "Cabriole",
+            "dofusdb_id": "13424",
+            "official_id": "jdr:zobal:cabriole",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 7,
+            "types": [
+                "Placement",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu cabrioles sur une case et tu frappes autour. Les cibles subissent des dommages d'Eau.",
+            "effect": "Téléportation sur une case libre en diagonal à 1 case, puis dégâts d'Eau en croix de 1 autour de l'arrivée. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": true,
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "save_characteristic_key": "chance",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Eau · origine · Placement · Attaque · sauvegarde · DD de Chance vs jet de sauvegarde de Chance · DofusDB : 13424.",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d4+Chance",
+                        "value_formula": "2d4+[chance]",
+                        "dice_formula": "2d4+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Téléport diagonal 1, puis croix 1."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "teleport",
+                                "effect_direction": "action",
+                                "teleport": true
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Téléport diagonal 1, puis croix 1."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "teleport",
+                                "effect_direction": "action",
+                                "teleport": true
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Téléport diagonal 1, puis croix 1."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "catalepsie",
+            "name": "Catalepsie",
+            "dofusdb_id": "13420",
+            "official_id": "jdr:zobal:catalepsie",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 7,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu plonges la zone en catalepsie. Les cibles subissent des dommages de Terre et figent.",
+            "effect": "Dégâts de Terre en croix de 1 autour de toi. Indéplaçable pendant 1 tour. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "save_characteristic_key": "strong",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Terre · origine · Entrave · Attaque · sauvegarde · DD de Force vs jet de sauvegarde de Force · DofusDB : 13420.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d4+Force",
+                        "value_formula": "2d4+[strong]",
+                        "dice_formula": "2d4+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Indéplaçable, 1 tour.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Indéplaçable, 1 tour.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Indéplaçable, 1 tour.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "masque-du-renegat",
+            "name": "Masque du Renégat",
+            "dofusdb_id": null,
+            "official_id": "jdr:zobal:masque-du-renegat",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 8,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu débloques le visage Renégat, et tu le chausses.",
+            "effect": "Tu débloques le masque Renégat pour le reste de ta carrière, et tu le portes (1×/tour, après une attaque de classe réussie, téléport d’1 case libre). Ensuite, le sort Masque peut aussi le chausser ou le retirer. Une fois par tour.",
+            "pa": "1",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Débloque et chausse Renégat (téléport 1 après attaque de classe réussie).",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "armadura",
+            "name": "Armadura",
+            "dofusdb_id": null,
+            "official_id": "jdr:zobal:armadura",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 8,
+            "types": [
+                "Protection"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu plaques une armadura.",
+            "effect": "Bouclier 2d4 jusqu'à la fin de ton prochain tour. Pas de cumul. Une fois par tour. Relance 1 tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "3",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "2d4",
+                        "value_formula": "2d4",
+                        "dice_formula": "2d4",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "festa",
+            "name": "Festa",
+            "dofusdb_id": "13449",
+            "official_id": "jdr:zobal:festa",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 10,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu ouvres la festa et tu réapparais plus loin.",
+            "effect": "Téléportation sur une case libre dans la portée, sans ligne de vue. Une fois par tour. Relance 1 tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Sans ligne de vue."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "retencao",
+            "name": "Retenção",
+            "dofusdb_id": "13447",
+            "official_id": "jdr:zobal:retencao",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 10,
+            "types": [
+                "Entrave"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu retiens sans frapper : la cible perd un geste et un pas.",
+            "effect": "−1 PA et −1 PM pendant 1 tour. Une fois par tour. Relance 1 tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "attack_characteristic_key": "sagesse",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Altération · DD de Sagesse vs jet de sauvegarde de Sagesse · DofusDB : 13447.",
+            "sub_effects": [
+                {
+                    "slug": "retirer",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pa",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "retirer",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pm",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "apostasie",
+            "name": "Apostasie",
+            "dofusdb_id": "13451",
+            "official_id": "jdr:zobal:apostasie",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu apostasies le rôle : tout le monde frappe plus fort un instant.",
+            "effect": "Chaque allié·e à 3 cases ou moins gagne +1d4 aux dégâts de sa prochaine attaque avant la fin de son prochain tour. Une fois par tour. Relance 2 tours.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "circle-0-3",
+                    "params": {
+                        "value": "+1d4 prochaine attaque aux allié·e·s à 3 cases ou moins.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "defesa-final",
+            "name": "Defesa Final",
+            "dofusdb_id": "13453",
+            "official_id": "jdr:zobal:defesa-final",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Protection"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu dresses la defesa final.",
+            "effect": "Bouclier 3d4 jusqu'à la fin de ton prochain tour. Pas de cumul. Une fois par tour. Relance 2 tours.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "3d4",
+                        "value_formula": "3d4",
+                        "dice_formula": "3d4",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "estrelia",
+            "name": "Estrelia",
+            "dofusdb_id": "13416",
+            "official_id": "jdr:zobal:estrelia",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 12,
             "types": [
+                "Protection",
                 "Dégâts"
             ],
-            "element": "fire",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu échanges ta place avec la cible sous une estrelia d'air. Elle subit des dommages d'Air ; tes allié·e·s proches se couvrent.",
+            "effect": "Dégâts d'Air, puis échange de place avec la cible. Chaque allié·e à ton nouveau contact gagne un bouclier 1d4. Une fois par tour. Relance 1 tour.",
+            "pa": "4",
             "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "4d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Apotheose : sort fort de palier 14.",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
-                        "characteristic": "fire",
-                        "value": "4d6+Intelligence",
-                        "value_formula": "4d6+[intel]",
-                        "dice_formula": "4d6+[intel]",
-                        "value_formula_crit": "5d6+[intel]",
+                        "characteristic": "air",
+                        "value": "2d6+Agilité",
+                        "value_formula": "2d6+[agi]",
+                        "dice_formula": "2d6+[agi]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "protéger",
+                    "area": "cross-0-1",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 2
                 }
             ],
-            "official_id": "jdr:zobal-mascara-supremo",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "teleport",
+                                "effect_direction": "action",
+                                "teleport": true
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "zobal-defesa-final",
-            "name": "Defesa Final",
+            "key": "apotheose",
+            "name": "Apotheose",
+            "dofusdb_id": null,
+            "official_id": "jdr:zobal:apotheose",
             "slot_index": 1,
             "choice_order": 1,
             "character_level": 12,
             "types": [
+                "Tank",
                 "Dégâts"
             ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "4d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Defesa Final : sort fort de palier 14.",
+            "description": "Tu montes en apotheose. La zone brûle ; tu reduces fort.",
+            "effect": "Dégâts de Feu en zone 2x2. Tu réduis de 2d4 les dégâts de la prochaine attaque qui te touche avant la fin de ton prochain tour. Une fois par tour. Relance 1 tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "save_characteristic_key": "intel",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Feu · origine · Tank · Attaque · sauvegarde · DD d'Intelligence vs jet de sauvegarde d'Intelligence · DofusDB : 13431.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "rect-2x2",
                     "params": {
-                        "characteristic": "earth",
-                        "value": "4d6+Force",
-                        "value_formula": "4d6+[strong]",
-                        "dice_formula": "4d6+[strong]",
-                        "value_formula_crit": "5d6+[strong]",
+                        "characteristic": "fire",
+                        "value": "2d6+Intelligence",
+                        "value_formula": "2d6+[intel]",
+                        "dice_formula": "2d6+[intel]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Réduit 2d4",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:zobal-defesa-final",
-            "save_characteristic_key": "sagesse",
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "rect-2x2",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Réduit 2d6",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "apeira",
+            "name": "Apeira",
+            "dofusdb_id": "13433",
+            "official_id": "jdr:zobal:apeira",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 12,
+            "types": [
+                "Placement",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu ouvres une apeira. Les cibles subissent des dommages d'Eau et sont attirées au centre.",
+            "effect": "Dégâts d'Eau en zone 2x2. Attire 1 vers le centre. Une fois par tour. Relance 1 tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "save_characteristic_key": "chance",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            "save_success_note": "Eau · origine · Placement · Attaque · sauvegarde · DD de Chance vs jet de sauvegarde de Chance · DofusDB : 13433.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "rect-2x2",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d6+Chance",
+                        "value_formula": "2d6+[chance]",
+                        "dice_formula": "2d6+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "rect-2x2",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "pull",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "rect-2x2",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "rect-2x2",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "martelo",
+            "name": "Martelo",
+            "dofusdb_id": "13405",
+            "official_id": "jdr:zobal:martelo",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 12,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu abats un martelo. La cible subit des dommages de Terre et voit moins loin.",
+            "effect": "Dégâts de Terre et −1 PO pendant 1 tour. Une fois par tour. Relance 1 tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "retirer",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "po",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "po",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

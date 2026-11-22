@@ -26,9 +26,11 @@ Référence exhaustive des champs par entité : `docs/features/entities/README.m
 | Gameplay | `spells`, `items`, `resources`, `consumables`, `monsters`, `npcs`, `breeds` (classes), `capabilities`, `conditions`, `creature-traits`, `specializations`, `panoplies` |
 | Méta | `campaigns`, `scenarios`, `shops` |
 | Typages (référentiels) | `item-types`, `resource-types`, `consumable-types`, `spell-types`, `monster-races` |
-| Interne | `creatures` (classe mère de `monsters` et `npcs`, pas d'accès direct) |
+| Interne | `creatures` (corps partagé de `monsters` et `npcs`, pas d'accès catalogue direct) |
 
 Note : la table des classes est `breeds` (et la FK `breed_id`) pour éviter le mot réservé `class`.
+
+**Créature / monstre / PNJ / PJ** : qui partage quoi (classe, spe, sorts avec ou sans variantes, stuff) → [creatures-et-personnages.md](./creatures-et-personnages.md).
 
 ### États (conditions)
 
@@ -48,7 +50,9 @@ En base, capacités et aptitudes sont toutes des `Capability` liées par `capabi
 Les **onze fiches jouables** (Érudit, Milicien·ne, Dévot, Artiste, Explorateur·rice, Voleur·euse, Artisan·e, Négociant·e, Sylvain·e, Marin·e, Courtisan·e) sont
 rédigées dans `database/seeders/data/playable-specializations/*.php` : le seed les préfère au HTML legacy
 et les rafraîchit à chaque passage. Les sections de palier portent des **kref** (capacités cliquables,
-jets de sauvegarde, compétences). Une seule section par niveau. Le HTML
+jets de sauvegarde, compétences). Une seule section par niveau. L’**Érudit** est le modèle sans archétypes ;
+l’**Artiste** est le modèle avec (fil rouge, mécanique signature, `archetypes` + `archetype_variants` aux
+paliers 3/9/15 — règle §2.4.2.7). Le HTML
 `database/seeders/data/legacy-specializations/` (hors dépôt) reste un repli via
 `LegacySpecializationRealignService`. `draft-specializations.php` reste un point d’entrée vide pour
 d’éventuelles fiches encore en rédaction.

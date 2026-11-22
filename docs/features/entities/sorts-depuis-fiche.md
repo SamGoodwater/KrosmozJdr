@@ -1,96 +1,79 @@
-# Construire un sort de classe depuis sa fiche
+# Construire un sort depuis sa fiche
 
-On choisit d’abord le sort Dofus de départ, on écrit la fiche, puis on la recopie dans le catalogue. Une fois écrite, la fiche (Obsidian) fait foi. Le repère de niveaux (5/10/15/20, etc.) ne sert que lorsqu’une fiche n’a pas encore ses lignes.
+Deux familles. On ne mélange pas les budgets ni les catégories.
 
-Un sort se construit **un par un**. Le catalogue JSON puis l’import ne devinent pas une case vide : ils recopient le sort de base. C’est pour ça qu’un palier peut perdre un lancer, une portée ou une relance même si la ligne d’au-dessus était juste.
+| Famille | Qui | Budget | Source Dofus |
+| --- | --- | --- | --- |
+| **Classe** | PJ / PNJ | ≈ 30–32 sorts, voies, passif | sorts de la classe |
+| **Créature** | monstre / invocation | 1 à 4 selon la puissance | sorts de la créature |
 
-## Pourquoi une passe globale rate des colonnes
+Une fois écrite, la fiche (Obsidian ou atelier) fait foi. Le catalogue JSON puis l’import recopient : une case vide n’est pas devinée.
 
-Il y a beaucoup de détail : trois classes, une trentaine de sorts, plusieurs paliers, une quinzaine de colonnes. Ce n’est pas la seule raison. Les catalogues ont été réécrits en plusieurs passes (repère commun, puis dés, puis niveaux de la fiche) sans une liste de colonnes à cocher. Et l’importeur ne reprend pas la ligne précédente : une clé absente d’un palier retombe sur le **sort de base**.
+Guide MJ / IA (même texte) : `resources/ia/creation-guides/spell.php` (atelier Création → Sorts).
 
-## Choisir le sort Dofus de départ
+---
 
-Cette étape vient avant la fiche. Chaque sort de Krosmoz part d’un sort de la même classe dans Dofus (page de la classe sur [DofusDB](https://dofusdb.fr/fr/database/breeds/8), ici l’Iop).
+## Partie A — Sort de classe
 
-Une classe a deux familles de sorts, et elles ne viennent pas du même tas.
+On choisit d’abord le sort Dofus de départ, on écrit la fiche, puis on la recopie dans le catalogue. Un sort se construit **un par un**.
+
+### Pourquoi une passe globale rate des colonnes
+
+Beaucoup de détail (classe, paliers, colonnes). L’importeur ne reprend pas la ligne précédente : une clé absente d’un palier retombe sur le **sort de base**.
+
+### Choisir le sort Dofus de départ
+
+Chaque sort de Krosmoz part d’un sort de la même classe dans Dofus (ex. [DofusDB Iop](https://dofusdb.fr/fr/database/breeds/8)).
 
 | Famille | Nombre | Places | Source Dofus |
 | --- | --- | --- | --- |
 | Élémentaire | 16 | 4 par voie (Feu, Terre, Air, Eau), aux niveaux 1, 4, 7 et 12 | sort de cet élément **qui fait des dégâts** |
-| Général | 16 | 8 choix de 2 variantes (deux au niveau 1, puis 2, 5, 6, 8, 10, 11) | sort **sans élément strict et sans dégâts** |
+| Général | le reste | 8 choix de 1–2 variantes | sort **sans élément strict et sans dégâts** |
 
-### 1. Trier les sorts Dofus de la classe
+Exceptions volontaires (sort moteur seul : Bombe, Arbre, Masque, Portail, Mot d’Amitié…) : écrire dans Adaptations. Le total peut alors être 30 ou 31.
 
-Lister chaque sort avec son élément, s’il fait des dégâts, et son effet secondaire. Puis faire deux tas :
+#### 1. Trier les sorts Dofus de la classe
 
-- **dégâts d’un élément** : tas élémentaire de cet élément ;
-- **pas de dégâts, pas d’élément strict** : tas général.
+- **dégâts d’un élément** → tas élémentaire ;
+- **pas de dégâts, pas d’élément strict** → tas général.
 
-C’est l’élément et les dégâts qui décident, pas l’orientation. Un sort Dofus sans dégâts reste dans le tas général, même si son effet colle à une voie (un bonus de dégâts colle à la voie Amélioration, mais ne devient pas un sort Feu pour autant). C’est l’erreur qui a mélangé l’Iop : des sorts généraux rangés dans les voies, des sorts élémentaires sans dégâts.
+C’est l’élément et les dégâts qui décident, pas l’orientation.
 
-### 2. Les sorts élémentaires
+#### 2. Les sorts élémentaires
 
-Pour chaque voie, prendre 4 sorts dans le tas de son élément, puis les ranger aux niveaux 1, 4, 7 et 12 du plus simple au plus fort.
+Pour chaque voie, 4 sorts aux niveaux 1, 4, 7 et 12, du plus simple au plus fort.
 
-L’orientation de la voie est **indicative**. Au moins **deux** sorts collent bien. Les autres peuvent s’en écarter pour offrir un autre gameplay (Placement avec −PM, esquive PM, Indéplaçable, voire un peu de soin ; Entrave sur PO, résistances, états…). **Deux sorts d’une même voie ne font pas exactement la même chose.**
+- Au moins **deux** collent à l’orientation de la voie.
+- **Deux sorts d’une même voie ne font pas exactement la même chose.**
+- Niveau 1 : frappe **basique** ; effets forts en montée ou sur 4 / 7 / 12.
+- Chaque sort élémentaire fait des dégâts de l’élément de sa voie.
 
-1. Le sort de **niveau 1** frappe **basique** : dégâts de l’élément, sans effet secondaire fort. Les effets (retrait, poussée, bouclier, poison, buff…) arrivent aux montées (souvent niveau 5+) ou sur les sorts 4 / 7 / 12.
-2. Préférer, pour au moins deux sorts de la voie, un effet secondaire qui suit l’orientation (repousse pour Placement, retrait pour Entrave, bouclier pour Protection…).
-3. Pour les autres, garder un sort de l’élément qui fait des dégâts, et diversifier l’outil : même famille, pas le même effet. Les dégâts et l’élément restent ceux de Dofus. L’effet peut s’éloigner de l’orientation.
-4. Chaque sort élémentaire de Krosmoz fait des dégâts de l’élément de sa voie.
+#### 3. Les sorts généraux
 
-### 3. Les sorts généraux
+Paires sur les choix généraux. Les deux variantes n’ont pas la même orientation, sauf exception écrite. Répartir les orientations pour que chaque voie trouve de l’aide.
 
-Prendre 16 sorts dans le tas général, puis les mettre par paires sur les 8 choix.
+#### 4. Vérifier le kit avant d’écrire les tableaux
 
-1. Viser des sorts utiles à plusieurs voies : déplacement, protection, amélioration, entrave, soin.
-2. Les deux variantes d’un même choix n’ont pas la même orientation.
-3. Répartir les orientations sur les 8 choix, pour que chaque voie trouve des généraux qui l’aident.
-4. Une exception est possible (un sort Dofus à dégâts devenu général, deux variantes de même orientation) si l’adaptation la justifie. L’écrire dans *Général* ou *Effets*.
+- Un sort par place de la répartition.
+- 16 élémentaires avec dégâts de voie.
+- Généraux sans dégâts (sauf exception écrite).
+- `dofusdb_id` quand l’homonyme existe ; sinon `official_id` `jdr:{classe}:…`.
 
-### 4. Vérifier le kit avant d’écrire les tableaux
+### Le texte Général (classe et créature)
 
-- 32 sorts, un par place.
-- Les 16 élémentaires font des dégâts de l’élément de leur voie.
-- Les 16 généraux ne font pas de dégâts, sauf exception écrite.
-- Aucun choix général n’a deux variantes de même orientation, sauf exception écrite.
-- Le sort Dofus de départ est connu pour chaque sort (`dofusdb_id` dans le catalogue JSON quand il existe).
+- *Général* (`description`) : geste, 1–2 phrases, tutoiement, inclusif, image concrète, élément + nature d’effet, **sans valeurs**, ≤ 255 caractères.
+- *Effets* (`effect`) : dés, portées, durées, relances — ce qui sert à jouer le tour.
 
-Ensuite seulement, on écrit les tableaux de la fiche, puis on suit les étapes ci-dessous.
+### Une ligne de fiche
 
-## Le texte Général
+1. Case vide sur la **première** ligne = défaut (PA 3, contact, 1 case, LdV, 2/tour, relance 0).
+2. Case vide plus loin = ligne précédente.
+3. Si `/cible` n’est jamais écrit, il vaut le `/tour` de la ligne.
+4. PO `1-4` = modifiable ; `0` = non ; `1` = 1–1.
+5. Le dé n’inclut pas le modificateur d’élément. Un cran par ligne.
+6. Pas de critique écrit sur la fiche.
 
-Chaque sort a deux textes. *Général* (champ `description`) raconte le geste. *Effets* (champ `effect`) reprend, factuellement, ce qui sert à jouer le tour : dés, portées, durées, relances.
-
-*Général* tient en une ou deux phrases, trois si elles sont courtes. On tutoie le lanceur. On écrit en langage inclusif (`allié·e`, `ennemi·e`). On montre le geste par une image concrète et tout de suite compréhensible : une gerbe de flamme, un jet d’eau, une vague de froid, l’air comprimé autour de l’arme. Puis on nomme l’élément et la nature de l’effet (dommages, buff, debuff, soin, protection, invocation, déplacement), sans aucune valeur.
-
-L’image ne répète pas le nom de l’élément, et elle ne reste pas vague. « Un coup d’air » ne dit pas le geste. « Tu frappes en comprimant l’air autour de ton arme » le dit. Une métaphore n’est là que si elle fait comprendre. Une image courte mais opaque (« le pas suit la voix », « la chaleur reste dans les bras ») ne convient pas.
-
-Exemples :
-
-- Intimidation : « Tu frappes en comprimant l’air autour de ton arme. La cible subit des dommages d’Air et recule sous le choc. »
-- Tumulte : « Tu balayes une zone d’un vent brûlant. Chaque ennemi·e pris·e dedans attise la gerbe : plus il y a de monde, plus les dommages de Feu sont lourds. »
-- Bulle : « Tu formes une bulle d’eau au bout de ton bâton et tu la lances. Elle inflige des dommages d’Eau et gêne la visée de la cible. »
-
-Le champ en base est limité à 255 caractères. Une phrase qui cite un dé, une case ou un tour appartient à *Effets*.
-
-## Avant de recopier
-
-Comparer le nom **et** le niveau d’apprentissage. S’ils diffèrent, c’est un autre sort : on le construit, on n’écrase pas l’homonyme. `--apply` ne le fait pas non plus.
-
-Les sorts généraux choisissent leurs paliers. Un 9, un 14 ou un 16 écrit sur la ligne est le bon niveau, même s’il n’est pas dans le repère 7/14/20.
-
-## Une ligne de fiche
-
-1. Lire l’en-tête du tableau. Les colonnes ne sont pas toujours dans le même ordre, et « Tours avant relance » est parfois absent. Une colonne absente vaut le défaut (relance 0).
-2. Une case vide reprend la ligne du dessus. Sur la première ligne, une case vide vaut le défaut : PA 3, portée au contact, une case, ligne de vue, 2 lancers par tour, relance 0.
-3. Si « /cible » n’est jamais écrit, il vaut le « /tour » **de cette ligne**. S’il est écrit une fois, les cases vides suivantes gardent ce nombre, même quand /tour change.
-4. Une portée écrite `1-4`, avec ou sans « m », est modifiable. `0` ou `0-0` ne l’est pas. `1` seul veut dire 1–1. « càc » n’est pas un nombre à inventer.
-5. Le dé de la case n’écrit pas le modificateur d’élément : il s’ajoute quand même (`1d6` de Terre devient `1d6+Force`), sauf si la fiche dit le contraire.
-6. Le commentaire du sort (*Effets*) cite les mêmes niveaux que les lignes. « dès 16 » est faux si le palier est 17 ou 18.
-7. La fiche ne donne pas le critique. On ne laisse pas l’ancienne courbe de critique à côté du nouveau dé.
-
-## Chaque colonne, un champ
+### Chaque colonne → champ
 
 | Fiche | Champ |
 | --- | --- |
@@ -104,40 +87,74 @@ Les sorts généraux choisissent leurs paliers. Un 9, un 14 ou un 16 écrit sur 
 | /cible | `cast_per_target` |
 | Tours avant relance | `number_between_two_cast` |
 | Zone `2x2`, `1xN`, `croix N` | `area` du sous-effet (`rect-2x2`, `line-1xN`, `cross-0-N`) |
-| « / N tours » ou « pendant N tours » | `duration` du sort et `duration_formula` du sous-effet qui dure |
-| « −N PA / PM / PO » | `value` du sous-effet `retirer`, sur le palier où le nombre change |
-| « repousse / saut / attire de N » | `cells_formula` du déplacement de ce type |
+| « / N tours » ou « pendant N tours » | `duration` + `duration_formula` |
+| « −N PA / PM / PO » | sous-effet `retirer` |
+| « repousse / saut / attire de N » | `cells_formula` du déplacement |
 | Jet d’attaque vs CA | `resolution_mode` = `attack_roll` |
 | DD vs sauvegarde | `resolution_mode` = `saving_throw` |
 | automatique | `resolution_mode` = `auto_success` |
-| « Dégâts d’Air », voie, tags | élément, caractéristique du jet, types du sort |
-| « Si Agi ≥ 3 » / « Intel > Chance de la cible » | `params.conditions` (`[clé]` = lanceur, `[clé:target]` = cible) |
-| « +1 case si … » / « remplace / ajoute / soustrait » | `params.value_rules` (`add` / `replace` / `subtract`) |
-| « jusqu’à N » (choix du lanceur ≤ formule) | `params.value_up_to` = true |
-| « sur toi » / « toi et les cibles » | `params.applies_to` (`caster` / `caster_and_targets` ; défaut `targets`) |
+| « Allié·e·s saufs » | `spares_chosen_targets` |
+| Physique / Wakfu | `is_magic` |
+| « Si Agi ≥ 3 » / règles de valeur | `params.conditions`, `params.value_rules` |
+| « jusqu’à N » | `params.value_up_to` |
+| Invocation | `monster_official_id` `jdr:summon:…` |
 
-Sur une fiche Obsidian, note la condition sous *Effets* ou dans une colonne « Autres », puis recopie-la dans l’éditeur (bloc Conditions + règles de valeur). Les sorts généraux d’une classe suivent les règles de résolution (auto / Sagesse / Vitalité, quatre exceptions de voie) décrites dans l’atelier Classes.
+Sur chaque palier dont une valeur **diffère de la base**, répéter la clé. Ne pas compter sur le palier d’avant.
 
-Un second jet ne remplace pas le premier. « Jet d’attaque, retrait vs Esquive » reste un jet d’attaque. « Automatique pour les allié·e·s » ou « pour un allié consentant » ne se coche pas : une cible consentante ne fait jamais de jet (règle 3.3.2.3). Le mode principal ne change pas. « Allié·e·s saufs » (pas de dégâts aux allié·e·s, autres effets maintenus) se coche en `spares_chosen_targets` (Épargne).
-
-« AS », un rebond, ou « selon la pièce » restent dans le texte de l’effet. AS veut dire que les alliés de la zone ne sont pas touchés. Ce n’est pas une forme de zone. « En ligne » se lit aussi avec une majuscule.
-
-Sur chaque palier dont une valeur **diffère de la base**, répéter la clé (`cast_per_turn`, `cast_per_target`, `po_max`, `number_between_two_cast`, etc.). Ne pas compter sur le palier d’avant.
-
-## Contrôle
+### Contrôle classe
 
 ```bash
 python3 scripts/audit-class-spell-sheets.py
 ```
 
-Le script compare PA, portée, portée modifiable, ligne de vue, lancers par tour, lancers par cible, relance, zone géométrique, mode de résolution et durée. Il signale aussi un sort appris à un autre niveau que la fiche, ou absent du catalogue.
+Puis `scripts/build-{classe}-spells-from-sheet.py` si le kit change, import `ClassLevel1SpellSeederImporter::importBreed`, vérifier chaque onglet `Niv` sur la fiche.
 
-Il ne juge pas le texte (Pile/Face, alliés saufs, rebond), ni le montant d’un retrait, ni une repousse. Ça se lit sur la fiche, onglet par onglet, y compris la phrase d’effet au-dessus du tableau.
+---
 
-`--apply` réécrit un sort seulement si le nom et le niveau d’apprentissage sont déjà ceux de la fiche. Il ne crée pas les sorts manquants.
+## Partie B — Sort de créature (monstre)
 
-Quand le kit entier change (sorts déplacés, renommés, ajoutés), on reconstruit les deux catalogues d’un coup. `scripts/build-iop-spells-from-sheet.py` le fait pour l’Iop : la fiche donne les lancers et les paliers, une liste dans le script donne pour chaque sort l’emplacement, les types, le `dofusdb_id` déjà en base (pour mettre à jour la ligne existante plutôt que d’en créer une) et ses sous-effets. On copie ce script pour une autre classe, puis on relance l’audit.
+Objectif : une rencontre jouable en 10 secondes par action, pas un grimoire MMO.
 
-Ensuite : importer la classe, ouvrir la fiche, cliquer chaque onglet `Niv`. La ligne d’usage est `spell-facts-timing`, la ligne d’effet est `spell-sub-effect-row`. On vérifie aussi que la phrase libre ne cite pas un autre niveau que l’onglet.
+### Principe
 
-On passe au sort suivant seulement quand celui-ci est juste.
+1. Lister les sorts Dofus de la créature (nombre + types).
+2. Garder ceux qui collent aux orientations utiles : **dégâts càc**, **dégâts distance**, entrave, amélioration, protection, soin, placement, invocation.
+3. **Simplifier** (1 effet principal + 0–2 secondaires). Couper jusqu’au plafond de puissance.
+4. Catégorie **créature** (`category` = 1). Élément aligné sur la carac haute de la fiche.
+
+### Kit selon la puissance (repères souples)
+
+Peu puissant = sbire · normal = standard · puissant = élite. Pas de critère chiffré obligatoire. Boss ≈ 4 = plafond souple.
+
+| Puissance | Repère | Composition typique |
+| --- | --- | --- |
+| **Peu puissant** / sbire | 1–2 | 1 dégât ± 1 autre (placement / entrave) |
+| **Normal** / standard | 2 | 1 dégât + 1 autre |
+| **Puissant** / élite | ~3 | 1–2 attaques + 1–2 autres |
+| **Boss** | plafond ≈ 4 | distance + càc + (amélioration **ou** entrave) + placement |
+
+**Invocation** (sur un monstre) : rare, seulement si elle compte pour le gameplay. Moins d’entités sur le terrain = plus simple pour le MJ.
+
+Invocations de classe (`jdr:summon:…`) : autre modèle — souvent **1** action fragile, pas ce tableau.
+
+**Traits** de créature : souvent 0–2 du catalogue ; possibles de temps en temps s’ils collent.
+
+Bestiaire Incarnam / Amakna : en **brouillon** tant que non validé.
+
+### Écriture
+
+Même gabarit de tableau que la classe (PA, PO, zone, dés…), mais :
+
+- peu ou pas d’intensification longue (le niveau de la créature porte la puissance) ;
+- budget PA du monstre respecté (pas tout lancer chaque tour) ;
+- coûts PA/PM proches de Dofus pour le rythme ;
+- dégâts calés sur `dommages_spell` puis ajustés (faible −20–30 %, puissant +20–30 %, boss +50–100 % **ou** phases).
+
+Fiche type Obsidian : `Idées/Liste contenu/Monstres/1- Fiche type.md`. Gabarit stats : règles 5.1.2. Paquet IA : monstre + sorts dans le même JSON (`docs/IA/RENCONTRES.md`).
+
+### Contrôle créature
+
+- Élément du sort = carac haute.
+- Nombre de sorts ≤ plafond de puissance.
+- Chaque sort a *Général* + *Effets* + résolution.
+- Lien `creature_spell` ; sorts en `playable` avec le monstre.

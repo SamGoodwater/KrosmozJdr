@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from "vue";
+import { publicSectionTitle } from "@/Utils/section/sectionTitle";
 
 const props = defineProps({
     l1Title: {
@@ -21,11 +22,14 @@ const props = defineProps({
 });
 
 const normalizedSections = computed(() =>
-    (Array.isArray(props.sections) ? props.sections : []).map((section) => {
-        const title = String(section?.title || "").trim() || "Section";
+    (Array.isArray(props.sections) ? props.sections : []).flatMap((section) => {
+        const title = publicSectionTitle(section?.title);
         const hash = String(section?.hash || "").trim();
         const l4Headings = Array.isArray(section?.l4Headings) ? section.l4Headings : [];
-        return { title, hash, l4Headings };
+        if (!title && l4Headings.length === 0) {
+            return [];
+        }
+        return [{ title, hash, l4Headings }];
     }),
 );
 </script>
@@ -42,13 +46,14 @@ const normalizedSections = computed(() =>
         <ol class="space-y-2">
             <li v-for="(section, index) in normalizedSections" :key="`${section.hash}-${index}`" class="text-sm">
                 <a
+                    v-if="section.title"
                     :href="section.hash || undefined"
                     class="inline-flex max-w-full items-center gap-2 text-base-content/90 hover:text-primary hover:underline"
                 >
                     <span class="text-base-content/45">{{ index + 1 }}.</span>
                     <span class="truncate">{{ section.title }}</span>
                 </a>
-                <ul v-if="section.l4Headings.length" class="ml-6 mt-1.5 space-y-1">
+                <ul v-if="section.l4Headings.length" class="mt-1.5 space-y-1" :class="section.title ? 'ml-6' : ''">
                     <li
                         v-for="heading in section.l4Headings"
                         :key="heading.id"

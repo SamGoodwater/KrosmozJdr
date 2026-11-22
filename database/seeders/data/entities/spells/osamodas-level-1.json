@@ -1,218 +1,919 @@
 {
     "_schema_version": "1",
     "breed": "Osamodas",
+    "state": "playable",
     "entries": [
         {
-            "key": "serres-du-vautour",
-            "name": "Serres du Vautour",
-            "dofusdb_id": "31133",
+            "key": "aeropique",
+            "name": "Aéropique",
+            "dofusdb_id": "31124",
+            "official_id": "jdr:osamodas:aeropique",
             "slot_index": 1,
             "choice_order": 0,
+            "character_level": 1,
             "types": [
+                "Placement",
                 "Dégâts"
             ],
-            "element": "air",
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu fends l'air d'un revers plumé. La cible subit des dommages d'Air.",
+            "effect": "Dégâts d'Air. Deux fois par tour. À partir du niveau 5, le coup recule la cible d'1 case ; sur une de tes bêtes, pas de dégâts, les ennemi·e·s à son contact reculent d'1 case. À partir du niveau 15, le recul passe à 2 cases. Réaction : fuite ratée à ton contact. Les dégâts du sort.",
             "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
+            "element": "air",
             "attack_characteristic_key": "agi",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Agilité (Air). Physique, 3 PA, 2×/tour, PO 1–4 adapté.",
-            "description": "Les serres s’abattent. Tu frappes comme tes bêtes, de loin ou de près.",
+            "allows_reaction": true,
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
                     "params": {
                         "characteristic": "air",
-                        "value": "1d6+Agilité",
-                        "value_formula": "1d6+[agi]",
-                        "dice_formula": "1d6+[agi]",
-                        "value_formula_crit": "2d6+[agi]",
+                        "value": "1d4+Agilité",
+                        "value_formula": "1d4+[agi]",
+                        "dice_formula": "1d4+[agi]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Dès niv. 5 : recul, ou recul des ennemi·e·s au contact si tu vises une bête (pas de dégâts)."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "1d4+Agilité",
+                                "value_formula": "1d4+[agi]",
+                                "dice_formula": "1d4+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Dès niv. 5 : recul, ou recul des ennemi·e·s au contact si tu vises une bête (pas de dégâts)."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "1d6+Agilité",
+                                "value_formula": "1d6+[agi]",
+                                "dice_formula": "1d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Dès niv. 5 : recul, ou recul des ennemi·e·s au contact si tu vises une bête (pas de dégâts)."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 15,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "1d6+Agilité",
+                                "value_formula": "1d6+[agi]",
+                                "dice_formula": "1d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Dès niv. 5 : recul, ou recul des ennemi·e·s au contact si tu vises une bête (pas de dégâts)."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Dès niv. 5 : recul, ou recul des ennemi·e·s au contact si tu vises une bête (pas de dégâts)."
+                            },
+                            "order": 2
+                        }
+                    ]
                 }
             ]
         },
         {
-            "key": "griffes-du-chtigre",
-            "name": "Griffes du Chtigre",
-            "dofusdb_id": "31134",
+            "key": "pics-du-prespic",
+            "name": "Pics du Prespic",
+            "dofusdb_id": "31111",
+            "official_id": "jdr:osamodas:pics-du-prespic",
             "slot_index": 1,
             "choice_order": 1,
+            "character_level": 1,
             "types": [
+                "Soin",
                 "Dégâts"
             ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "attack_characteristic_key": "intel",
+            "state": "playable",
             "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour, PO 1–4 adapté.",
-            "description": "Le feu des griffes. Même cadence que Serres, autre voie.",
+            "resolution_mode": "attack_roll",
+            "description": "Tu projettes des piquants brûlants. Sur un·e ennemi·e, ce sont des dommages de Feu. Sur une de tes bêtes, la chaleur referme les plaies ; sur un·e allié·e, à moitié.",
+            "effect": "Sur un·e ennemi·e : dégâts de Feu. Deux fois par tour. À partir du niveau 5, tu peux viser une de tes bêtes (soin, même dé) ou un·e allié·e (soin, moitié du dé, arrondi au supérieur). Jamais sur toi. Réaction : fuite ratée à ton contact. Les dégâts du sort.",
+            "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "allows_reaction": true,
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
                     "params": {
                         "characteristic": "fire",
-                        "value": "1d6+Intelligence",
-                        "value_formula": "1d6+[intel]",
-                        "dice_formula": "1d6+[intel]",
-                        "value_formula_crit": "2d6+[intel]",
+                        "value": "1d4+Intelligence",
+                        "value_formula": "1d4+[intel]",
+                        "dice_formula": "1d4+[intel]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "soigner",
+                    "area": "point",
+                    "params": {
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Dès niv. 5 : soin même dé sur une bête, moitié sur un·e allié·e. Jamais sur toi."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "1d4+Intelligence",
+                                "value_formula": "1d4+[intel]",
+                                "dice_formula": "1d4+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "1d4",
+                                "value_formula": "1d4",
+                                "dice_formula": "1d4",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Dès niv. 5 : soin même dé sur une bête, moitié sur un·e allié·e. Jamais sur toi."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "1d6+Intelligence",
+                                "value_formula": "1d6+[intel]",
+                                "dice_formula": "1d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "1d6",
+                                "value_formula": "1d6",
+                                "dice_formula": "1d6",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Dès niv. 5 : soin même dé sur une bête, moitié sur un·e allié·e. Jamais sur toi."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 15,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d4+Intelligence",
+                                "value_formula": "2d4+[intel]",
+                                "dice_formula": "2d4+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Dès niv. 5 : soin même dé sur une bête, moitié sur un·e allié·e. Jamais sur toi."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Dès niv. 5 : soin même dé sur une bête, moitié sur un·e allié·e. Jamais sur toi."
+                            },
+                            "order": 2
+                        }
+                    ]
                 }
             ]
         },
         {
-            "key": "osamodas-crocs-du-mulou",
-            "name": "Crocs du Mulou",
+            "key": "bave-du-crapaud",
+            "name": "Bave du Crapaud",
+            "dofusdb_id": "31139",
+            "official_id": "jdr:osamodas:bave-du-crapaud",
             "slot_index": 1,
             "choice_order": 2,
+            "character_level": 1,
             "types": [
                 "Dégâts"
             ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
+            "state": "playable",
             "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Crocs du Mulou : attaque simple, même budget que le palier 4.",
+            "resolution_mode": "attack_roll",
+            "description": "Tu craches un jet de bave de crapaud, lourd et collant. La cible subit des dommages d'Eau.",
+            "effect": "Dégâts d'Eau. Deux fois par tour. Réaction : fuite ratée à ton contact. Les dégâts du sort.",
+            "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "allows_reaction": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "1d6+Chance",
+                        "value_formula": "1d6+[chance]",
+                        "dice_formula": "1d6+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 15,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "3d6+Chance",
+                                "value_formula": "3d6+[chance]",
+                                "dice_formula": "3d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ]
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "3d8+Chance",
+                                "value_formula": "3d8+[chance]",
+                                "dice_formula": "3d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "crocs-du-mulou",
+            "name": "Crocs du Mulou",
+            "dofusdb_id": "31113",
+            "official_id": "jdr:osamodas:crocs-du-mulou",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 1,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu mords comme un mulou, à pleine mâchoire. La cible subit des dommages de Terre.",
+            "effect": "Dégâts de Terre. Deux fois par tour. À partir du niveau 5, le coup retire 1 PM. Le retrait ne se cumule pas. Réaction : fuite ratée à ton contact. Les dégâts du sort.",
+            "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "2",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "allows_reaction": true,
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
                     "params": {
                         "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
+                        "value": "1d4+Force",
+                        "value_formula": "1d4+[strong]",
+                        "dice_formula": "1d4+[strong]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
                 }
             ],
-            "dofusdb_id": "32380",
-            "attack_characteristic_key": "strong"
-        },
-        {
-            "key": "osamodas-piqûre-motivante",
-            "name": "Piqûre motivante",
-            "slot_index": 1,
-            "choice_order": 3,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "air",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
-            "description": "Piqûre motivante : attaque simple, même budget que le palier 4.",
-            "sub_effects": [
+            "intensification": [
                 {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "1d6+Agilité",
-                        "value_formula": "1d6+[agi]",
-                        "dice_formula": "1d6+[agi]",
-                        "value_formula_crit": "2d6+[agi]",
-                        "effect_direction": "action"
-                    }
+                    "tier": "I",
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "1d4+Force",
+                                "value_formula": "1d4+[strong]",
+                                "dice_formula": "1d4+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "1d6+Force",
+                                "value_formula": "1d6+[strong]",
+                                "dice_formula": "1d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 15,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d4+Force",
+                                "value_formula": "2d4+[strong]",
+                                "dice_formula": "2d4+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
                 }
-            ],
-            "dofusdb_id": "32382",
-            "attack_characteristic_key": "agi"
+            ]
         },
         {
-            "key": "tofu",
-            "name": "Tofu",
-            "dofusdb_id": "31971",
+            "key": "invocation",
+            "name": "Invocation",
+            "dofusdb_id": "31115",
+            "official_id": "jdr:osamodas:invocation",
             "slot_index": 2,
             "choice_order": 0,
+            "character_level": 1,
             "types": [
                 "Invocation"
             ],
-            "element": "air",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "Invoque un Tofu adjacent (créature alliée). Il agit à ton initiative : 1 attaque Air 1d4, 1 PM. Au plus 1 invocation à la fois au niveau 1. Disparaît si tu tombes à 0 PV. 3 PA, 1×/tour.",
-            "description": "Un tofu jaillit. Fragile, mais il occupe et il pique.",
+            "description": "Tu siffles l'appel d'une famille de bêtes, et l'une d'elles répond à ta voix. Plus la bête est forte, plus l'appel te coûte.",
+            "effect": "Tu choisis l'élément et le rang, puis tu invoques le monstre correspondant : Air — Tofu (`jdr:summon:tofu`), Ventritofu (`jdr:summon:osamodas-ventritofu`), Scarafoudre (`jdr:summon:osamodas-scarafoudre`) ; Feu — Dragoune (`jdr:summon:dragoune`), Dragonnet (`jdr:summon:osamodas-dragonnet`), Sulfénix (`jdr:summon:osamodas-sulfenix`) ; Eau — Crapipou (`jdr:summon:osamodas-crapipou`), Crapipaud (`jdr:summon:osamodas-crapipaud`), Crocoléreux (`jdr:summon:osamodas-crocolereux`) ; Terre — Bouftou (`jdr:summon:osamodas-bouftou`), Bouflourd (`jdr:summon:osamodas-bouflourd`), Craquolosse (`jdr:summon:osamodas-craquolosse`). Rang 1 : 3 PA. Rang 2 : 4 PA, à partir du niveau 7. Rang 3 : 5 PA, à partir du niveau 13. La limite de la horde s'applique (voir plus haut). La bête a ton niveau et utilise tes modificateurs, pas les siens, pour ses jets. Contrôlée, elle joue juste après toi. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
             "sub_effects": [
                 {
                     "slug": "invoquer",
                     "area": "point",
                     "params": {
-                        "monster_official_id": "jdr:summon:tofu",
-                        "effect_direction": "action"
-                    }
+                        "monster_official_id": "jdr:summon:tofu"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Choix élément + rang. Rang 1 : 3 PA. Rang 2 : 4 PA (niv. 7+). Rang 3 : 5 PA (niv. 13+). Limite de la horde. Bête au niveau du lanceur, mods du lanceur."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 7,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "invoquer",
+                            "area": "point",
+                            "params": {
+                                "monster_official_id": "jdr:summon:tofu"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Choix élément + rang. Rang 1 : 3 PA. Rang 2 : 4 PA (niv. 7+). Rang 3 : 5 PA (niv. 13+). Limite de la horde. Bête au niveau du lanceur, mods du lanceur."
+                            },
+                            "order": 1
+                        }
+                    ],
+                    "pa": "4"
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "invoquer",
+                            "area": "point",
+                            "params": {
+                                "monster_official_id": "jdr:summon:tofu"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Choix élément + rang. Rang 1 : 3 PA. Rang 2 : 4 PA (niv. 7+). Rang 3 : 5 PA (niv. 13+). Limite de la horde. Bête au niveau du lanceur, mods du lanceur."
+                            },
+                            "order": 1
+                        }
+                    ],
+                    "pa": "5"
                 }
             ]
         },
         {
-            "key": "dragoune",
-            "name": "Dragoune",
-            "dofusdb_id": "31118",
+            "key": "fouet",
+            "name": "Fouet",
+            "dofusdb_id": "31114",
+            "official_id": "jdr:osamodas:fouet",
             "slot_index": 3,
             "choice_order": 0,
+            "character_level": 1,
             "types": [
-                "Invocation"
+                "Placement"
             ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "Invoque une Dragoune adjacente (créature alliée). Elle agit à ton initiative : 1 attaque Feu 1d4, 1 PM. Au plus 1 invocation à la fois au niveau 1. Disparaît si tu tombes à 0 PV. 3 PA, 1×/tour.",
-            "description": "Un dragonnet de poche. Même budget que le Tofu, autre élément.",
+            "description": "Tu fais claquer ton fouet au-dessus d'une de tes bêtes. C'est un ordre : elle bondit en avant, sans se laisser retenir.",
+            "effect": "Une de tes bêtes avance de 2 cases sans être taclée. Un·e allié·e : 1 case. Si ton mod. d'Agilité vaut au moins 3, 3 cases pour une bête. Une fois par tour. Pas de dégâts. Réaction : une de tes bêtes passe sous la moitié de ses PV. Elle avance de 2 cases vers toi, sans être taclée.",
+            "pa": "1",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "allows_reaction": true,
             "sub_effects": [
                 {
-                    "slug": "invoquer",
+                    "slug": "déplacer",
                     "area": "point",
                     "params": {
-                        "monster_official_id": "jdr:summon:dragoune",
+                        "cells_formula": "2",
+                        "movement_kind": "jump",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bête : 2 cases sans tacle (3 si Agi ≥ 3). Allié·e : 1 case."
+                    },
+                    "order": 1
                 }
-            ]
+            ],
+            "intensification": []
+        },
+        {
+            "key": "relais-spirituel",
+            "name": "Relais Spirituel",
+            "dofusdb_id": "31130",
+            "official_id": "jdr:osamodas:relais-spirituel",
+            "slot_index": 3,
+            "choice_order": 1,
+            "character_level": 1,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu tends la main vers une de tes bêtes, et vos esprits se touchent. C'est un déplacement : vous échangez vos places.",
+            "effect": "Tu échanges ta place avec une de tes bêtes à 6 cases ou moins. Si ton mod. de Sagesse vaut au moins 3, la bête gagne +1 CA jusqu'au début de ton prochain tour. Une fois par tour, relance de 2 tours. Réaction : une de tes bêtes à portée va être poussée ou attirée. Tu échanges ta place avec elle.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "allows_reaction": true,
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Échange avec une de tes bêtes. +1 CA à la bête si Sagesse ≥ 3."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
         }
     ]
 }

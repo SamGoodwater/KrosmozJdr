@@ -6,7 +6,7 @@
     "life_dice": "1d8",
     "description": "Les Steamers ont plus d'une tourelle dans leur boîte à outils. En fins tacticiens, ils utilisent la technomagie pour prendre l'avantage sur le terrain. Ces marinventeurs aux scaphandres rutilants vouent un culte au Grand Oktapodas, le protecteur des océans.",
     "dofus_version": "3",
-    "state": "draft",
+    "state": "playable",
     "read_level": 0,
     "write_level": 3,
     "element_orientations": {
@@ -14,5 +14,33 @@
         "earth": "degats",
         "water": "amelioration",
         "air": "placement"
+    },
+    "mechanics": {
+        "engine": "invocation",
+        "turrets": {
+            "max_types": 3,
+            "no_duplicates": true,
+            "max_rank_iii": 1,
+            "other_max_rank": 2,
+            "hp_formula": "niveau du lanceur",
+            "ca_formula": "10 + bonus de maîtrise",
+            "reposition_cells": 3,
+            "upgrade_spell": "Évolution",
+            "types": {
+                "harponneuse": {
+                    "official_id": "jdr:summon:steamer-harponneuse",
+                    "role": "offensive_neutre",
+                    "debuff_from_rank": 3
+                },
+                "gardienne": {
+                    "official_id": "jdr:summon:steamer-gardienne",
+                    "role": "soin_ou_bouclier"
+                },
+                "tactirelle": {
+                    "official_id": "jdr:summon:steamer-tactirelle",
+                    "role": "attire_ou_pousse"
+                }
+            }
+        }
     }
 }

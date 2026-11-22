@@ -4,16 +4,25 @@ Monstres, sorts de créature et PNJ ne se génèrent **pas** en masse au départ
 
 ## Paquet monstre + sorts
 
-Un monstre JDR n’est pas une créature Dofus + 8 sorts importés. C’est **une fiche + 1 à 3 actions**.
+Un monstre JDR n’est pas une créature Dofus + 8 sorts importés. C’est **une fiche + un kit court** (on reprend les sorts Dofus utiles, on simplifie).
+
+Repères souples (peu puissant = sbire, etc.). Boss ≈ 4 = plafond, pas un minimum. Invocation rare (simplicité MJ).
+
+| Puissance | Repère | Composition typique |
+| --- | --- | --- |
+| Peu puissant / sbire | 1–2 | 1 dégât ± 1 autre (placement / entrave) |
+| Normal / standard | 2 | 1 dégât + 1 autre |
+| Puissant / élite | ~3 | 1–2 attaques + 1–2 autres |
+| Boss | plafond ≈ 4 | distance + càc + (buff ou entrave) + placement |
 
 À générer **dans le même appel** (les **stats** du monstre restent figées par défaut, voir les réglages IA) :
 
-- 2–3 sorts-créature (attaque, particularité, éventuellement un passif) ;
+- les sorts-créature du plafond ci-dessus ;
 - loot simple si besoin.
 
 Les sorts doivent coller aux caracs déjà présentes (Terre ↔ Force, peu de sorts, budget PA). Deux appels séparés recréent l’aberration « sorts Terre / Force 0 ». Pour laisser l’IA retoucher une carac, l’ajouter dans les exceptions de l’admin IA (`writable_characteristics`).
 
-**Socle few-shot déjà en base** : 19 invocations de classe `playable` (`jdr:summon:…`, Tofu, Poupée, Harponneuse…) **et** 28 monstres de bestiaire `playable` (`jdr:bestiary:…`, Incarnam + Astrub / Tainela / plage / cimetière : Tofu Chimérique, Piou Vert, Boufton, Gelée Bleuet, Chafer…). Invocations = 1 créature fragile (8/12/16 PV, 1 PM) + **1** sort-créature. Bestiaire = PA/PM Dofus, 1 à 2 sorts, hostilité, traits. C’est le modèle à imiter ; le LLM ne les génère pas et ne les passe pas en `playable`.
+**Socle few-shot** : invocations de classe `playable` (`jdr:summon:…`) = 1 créature fragile + **1** sort. Bestiaire Incarnam / Amakna (`jdr:bestiary:…`) = en **brouillon** (à valider plus tard) ; PA/PM Dofus, kit court, traits. Pour les few-shot IA, préférer les invocations playable tant que le bestiaire n’est pas publié. Guide : [CREATION.md](./CREATION.md) + `resources/ia/creation-guides/spell.php`.
 
 ### Données
 
@@ -30,7 +39,7 @@ Flux :
 
 Commande : `php artisan ia:convert encounter --id=12` (alias `ia:convert-encounter`) ou `--official-id=jdr:bestiary:…`. UI : icône **Sources** → volet Conversion IA (admin).
 
-Plus tard : réutiliser un sort `playable` déjà collé (« même crachat que le Bouftou ») au lieu d’en créer un. En v1, créer les 2–3 sorts dans le même JSON suffit.
+Plus tard : réutiliser un sort `playable` déjà collé (« même crachat que le Bouftou ») au lieu d’en créer un. En v1, créer le kit (1 à 4 selon la puissance) dans le même JSON suffit.
 
 Gabarits : `private/game/rules/5-Ressources-et-equilibrage/5.1-ressources-mj/5.1.2-creation-de-pnj-et-monstres.md` (PV, dégâts, CA par palier, archétypes, boss).
 
@@ -49,7 +58,9 @@ Réécriture JDR d’un sort Dofus `raw` :
 
 ## PNJ
 
-Le modèle est en place : coquille `Npc` + corps `Creature` + `breed_id` / `specialization_id`, langues, panoplies, boutique. Le **kit de jeu** (sorts connus, stuff porté 1/slot sauf 2 anneaux, sync d’état coquille → créature) est du **code applicatif** (`NpcController`, `NpcEquipmentSlotValidator`) — le pipeline IA **réutilise** le même validateur au `validate` / `persist` (`NpcSpecialization`).
+Le PNJ n’est **pas** un monstre : coquille `Npc` + corps `Creature` + **classe** (passif, capacités, variantes de sorts) + **spécialisation** (langues, capacités, aptitudes, métiers / savoir-faire…) + équipements / panoplie + ressources / conso. Niveau et caractéristiques = mêmes briques que le monstre. Un futur **PJ** reprendra la même logique ; bien faire le PNJ, c’est déjà préparer le PJ.
+
+Le **kit de jeu** (sorts de classe, stuff 1/slot sauf 2 anneaux, sync d’état coquille → créature) est du code applicatif (`NpcController`, `NpcEquipmentSlotValidator`) — le pipeline IA **réutilise** le même validateur (`NpcSpecialization`).
 
 Contrairement aux objets / sorts / monstres Dofus, **il n’y a rien à figer** : l’IA crée nom, histoire, rôle, stats et kit. Option : partir d’une **page de site** (encyclopédie, wiki, DofusDB) — Laravel en extrait nom / portrait / lore, le modèle complète la fiche JDR. Pas de scrap de masse. `Npc.official_id` sert au seeder (`jdr:npc:incarnam:…`), pas à DofusDB.
 

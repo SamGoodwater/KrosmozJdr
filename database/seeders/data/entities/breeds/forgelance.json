@@ -6,7 +6,7 @@
     "life_dice": "1d10",
     "description": "Les Forgelances sont des lanciers qui ne croient qu'en eux-mêmes ! Tirant leurs pouvoirs de la Lance Originelle, ces combattants cherchent à se forger une renommée que la mort elle-même ne saurait effacer. Féru d'arts, de récits légendaires et de joutes épiques, le Forgelance se laissera convaincre de brandir son arme à vos côtés par des promesses de gloire et de postérité. Véritables fers de lance des combats, ils sont les premiers au contact pour percer les défenses adverses.",
     "dofus_version": "3",
-    "state": "draft",
+    "state": "playable",
     "read_level": 0,
     "write_level": 3,
     "element_orientations": {
@@ -14,5 +14,19 @@
         "earth": "placement",
         "water": "protection",
         "air": "entrave"
+    },
+    "mechanics": {
+        "engine": "etat",
+        "estoc": {
+            "trigger": "teleport_classe",
+            "effect": "avantage prochaine attaque de classe",
+            "once_per_round": true,
+            "survive_miss_level": 11
+        },
+        "phalange": {
+            "from_level": 7,
+            "ally_adjacent_cover": true
+        },
+        "lance_is_summon": false
     }
 }

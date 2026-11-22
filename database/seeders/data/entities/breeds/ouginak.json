@@ -6,7 +6,7 @@
     "life_dice": "1d10",
     "description": "Quand on est un barbare avec un caractère de chienchien, il faut savoir montrer les crocs pour se faire respecter. Le regard fier, le poil brillant, la truffe humide : c'est ainsi que l'Ouginak traverse les épreuves et triomphe de l'adversité. Traquer ses proies sans relâche, laisser éclater sa rage pour écraser ses ennemis, les voir mourir devant soi et entendre les miaulements terrorisés de leurs chachas... Voilà une vie digne d'être vécue !",
     "dofus_version": "3",
-    "state": "draft",
+    "state": "playable",
     "read_level": 0,
     "write_level": 3,
     "element_orientations": {
@@ -14,5 +14,34 @@
         "earth": "tank",
         "water": "amelioration",
         "air": "degats"
+    },
+    "mechanics": {
+        "engine": "etat",
+        "prey": {
+            "first_wound": true,
+            "amarok": true,
+            "attack_bonus": "+1 au jet",
+            "change_once_level": 11
+        },
+        "rage_points": {
+            "per_turn": 1,
+            "cap": 5,
+            "cap_level_11": 6,
+            "spend_bonus": "+1d4 par point",
+            "reset_end_of_combat": true
+        },
+        "bestial_form": {
+            "capability_level": 7,
+            "cost_rage": 6,
+            "cost_wakfu_pa": 6,
+            "rage_cost_from_level": 11,
+            "melee_only": true,
+            "damage_bonus": 6,
+            "damage_taken_bonus": 6,
+            "double_pm": true,
+            "untackleable": true,
+            "combat_turns": 2,
+            "combat_turns_level_11": 3
+        }
     }
 }

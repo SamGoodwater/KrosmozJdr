@@ -8,8 +8,9 @@ namespace App\Services\Seeder\Spell;
  * Lignes d’intensification d’un sort de classe (§3.3.6).
  *
  * Fiche prioritaire si {@code intensification} est déjà dans l’entrée (tableau vide =
- * aucune ligne). Sinon cran par défaut : une ligne par cran du repère, +1 dé
- * (plafond 5d6 / 5d4) ou +1 case / tour.
+ * aucune ligne). Une fiche écrite relit la grille de dégâts (§5.3.1), elle ne
+ * suit pas le +1 dé. Sinon cran de secours : une ligne par cran du repère, +1 dé
+ * (plafond 5d6 / 5d4) ou +1 case / tour, en attendant la fiche.
  *
  * Le choix élémentaire du niveau 1 (slot 1) suit 5, 10, 15, 20. Les autres sorts
  * suivent le repère de leur niveau d’apprentissage.

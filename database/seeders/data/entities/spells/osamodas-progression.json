@@ -1,701 +1,2282 @@
 {
     "_schema_version": "1",
     "breed": "Osamodas",
+    "state": "playable",
     "entries": [
         {
-            "key": "osamodas-fouet",
-            "name": "Fouet",
+            "key": "piqure-motivante",
+            "name": "Piqûre Motivante",
+            "dofusdb_id": "31120",
+            "official_id": "jdr:osamodas:piqure-motivante",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 2,
             "types": [
                 "Amélioration"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "+1d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Fouet : tu te prépares. Le prochain élan frappe plus fort.",
+            "description": "Tu piques une de tes bêtes d'un dard d'ortie. C'est un buff : elle s'agite, plus vive et plus mobile. Sur un·e allié·e, ça marche moins bien.",
+            "effect": "Une de tes bêtes : +1 PA et +1 PM jusqu'à la fin de ton prochain tour. Un·e allié·e : +1 PM. Si ton mod. d'Intelligence vaut au moins 3, la bête a aussi +1 à ses jets d'attaque. Une fois par tour, relance de 2 tours.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
             "sub_effects": [
                 {
                     "slug": "booster",
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "1d4",
-                        "value_formula": "1d4",
-                        "dice_formula": "1d4",
-                        "effect_direction": "self",
+                        "characteristic": "pa",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
                         "duration_formula": "1"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "booster",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pm",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bête : +1 PA +1 PM. Allié·e : +1 PM. +1 attaque à la bête si Intel ≥ 3."
+                    },
+                    "order": 2
                 }
             ],
-            "dofusdb_id": "31114",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "intensification": []
         },
         {
-            "key": "osamodas-cri-de-l-ours",
-            "name": "Cri de l'Ours",
+            "key": "communion-animale",
+            "name": "Communion Animale",
+            "dofusdb_id": "31142",
+            "official_id": "jdr:osamodas:communion-animale",
             "slot_index": 1,
             "choice_order": 1,
             "character_level": 2,
             "types": [
+                "Protection"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu lies ton souffle à celui d'une de tes bêtes. C'est une protection : chaque coup que l'un·e de vous prend est partagé entre vous deux.",
+            "effect": "Jusqu'au début de ton prochain tour, les dégâts que subit toi ou la bête liée sont coupés en deux, une moitié pour chacun·e. Si ton mod. de Vitalité vaut au moins 3, chaque moitié perd encore 1 dégât. Relance de 3 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Dégâts partagés 50/50 avec une de tes bêtes. −1 par moitié si Vitalité ≥ 3.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "deplumage",
+            "name": "Déplumage",
+            "dofusdb_id": "31137",
+            "official_id": "jdr:osamodas:deplumage",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 4,
+            "types": [
+                "Placement",
                 "Dégâts"
             ],
-            "element": null,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu secoues une poignée de plumes coupantes au-dessus d'un groupe. Les ennemi·e·s subissent des dommages d'Air et s'écartent du centre.",
+            "effect": "Dégâts d'Air aux ennemi·e·s dans la zone. Recul d'1 case depuis le centre. Une fois par tour.",
             "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "attack_roll",
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "spares_chosen_targets": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "1d6+Agilité",
+                        "value_formula": "1d6+[agi]",
+                        "dice_formula": "1d6+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "cross-0-1",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Allié·e·s épargné·e·s."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d4+Agilité",
+                                "value_formula": "2d4+[agi]",
+                                "dice_formula": "2d4+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Allié·e·s épargné·e·s."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Allié·e·s épargné·e·s."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Allié·e·s épargné·e·s."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "griffes-du-chtigre",
+            "name": "Griffes du Chtigre",
+            "dofusdb_id": "31134",
+            "official_id": "jdr:osamodas:griffes-du-chtigre",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 4,
+            "types": [
+                "Soin",
+                "Dégâts"
+            ],
+            "state": "playable",
             "is_magic": false,
-            "powerful": 3,
-            "effect": "Attirance de 2 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
-            "description": "Cri de l'Ours : tu ramènes la cible.",
+            "resolution_mode": "attack_roll",
+            "description": "Tu lacères la cible de griffes de braise. Elle subit des dommages de Feu, et la chaleur prise court vers une de tes bêtes pour la soigner.",
+            "effect": "Dégâts de Feu. Une de tes bêtes à 6 cases ou moins est soignée de la moitié des dégâts infligés, arrondi au supérieur. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "soigner",
+                    "area": "point",
+                    "params": {
+                        "value": "moitié des dégâts",
+                        "value_formula": "moitié des dégâts",
+                        "dice_formula": "moitié des dégâts",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Soin moitié des dégâts à une de tes bêtes à 6 cases ou moins."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d4+Intelligence",
+                                "value_formula": "2d4+[intel]",
+                                "dice_formula": "2d4+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "moitié des dégâts",
+                                "value_formula": "moitié des dégâts",
+                                "dice_formula": "moitié des dégâts",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Soin moitié des dégâts à une de tes bêtes à 6 cases ou moins."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "moitié des dégâts",
+                                "value_formula": "moitié des dégâts",
+                                "dice_formula": "moitié des dégâts",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Soin moitié des dégâts à une de tes bêtes à 6 cases ou moins."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "moitié des dégâts",
+                                "value_formula": "moitié des dégâts",
+                                "dice_formula": "moitié des dégâts",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Soin moitié des dégâts à une de tes bêtes à 6 cases ou moins."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "morsure-du-serpent",
+            "name": "Morsure du Serpent",
+            "dofusdb_id": "31112",
+            "official_id": "jdr:osamodas:morsure-du-serpent",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 4,
+            "types": [
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu mords comme un serpent d'eau et tu laisses une trace luisante. La cible subit des dommages d'Eau, et tes bêtes la sentent : leur premier coup porte plus fort.",
+            "effect": "Dégâts d'Eau. Jusqu'au début de ton prochain tour, la première attaque d'une de tes bêtes qui touche la cible gagne un bonus. Le bonus ne se cumule pas. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d4+Chance",
+                        "value_formula": "2d4+[chance]",
+                        "dice_formula": "2d4+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "+1d4 au premier coup d'une bête",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d4 au premier coup d'une bête",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d6",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "3d6+Chance",
+                                "value_formula": "3d6+[chance]",
+                                "dice_formula": "3d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d6",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "charge-bestiale",
+            "name": "Charge Bestiale",
+            "dofusdb_id": "31123",
+            "official_id": "jdr:osamodas:charge-bestiale",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 4,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu charges tête baissée, comme un sanglier. La cible subit des dommages de Terre, et le choc lui plante les pieds au sol.",
+            "effect": "Avant le coup, tu peux avancer de 2 cases en ligne droite vers la cible, sans être taclé·e. Dégâts de Terre, puis Indéplaçable pendant 1 tour. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
             "sub_effects": [
                 {
                     "slug": "déplacer",
                     "area": "point",
                     "params": {
                         "cells_formula": "2",
-                        "movement_kind": "pull",
+                        "movement_kind": "jump",
                         "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "31132",
-            "attack_characteristic_key": "agi"
-        },
-        {
-            "key": "deplumage",
-            "name": "Déplumage",
-            "dofusdb_id": "31137",
-            "slot_index": 1,
-            "choice_order": 0,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "air",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour, PO 1–4 adapté.",
-            "description": "Une bourrasque de plumes. Ceux qui restent collés prennent le vent.",
-            "sub_effects": [
+                    },
+                    "order": 0
+                },
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "1d6+Agilité",
-                        "value_formula": "1d6+[agi]",
-                        "dice_formula": "1d6+[agi]",
-                        "value_formula_crit": "2d6+[agi]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "character_level": 4
-        },
-        {
-            "key": "frappe-du-craqueleur",
-            "name": "Frappe du Craqueleur",
-            "dofusdb_id": "31144",
-            "slot_index": 1,
-            "choice_order": 1,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Force (Terre) en petite zone autour de toi. Magique, 5 PA, 1×/tour. Ne t’affecte pas.",
-            "description": "Le sol cogne. Tes bêtes restent debout, les autres encaissent.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
                         "characteristic": "earth",
                         "value": "1d6+Force",
                         "value_formula": "1d6+[strong]",
                         "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
-                        "effect_direction": "self"
-                    }
-                }
-            ],
-            "character_level": 4
-        },
-        {
-            "key": "osamodas-souffle-draconique",
-            "name": "Souffle Draconique",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 5,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "fire",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "2d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Souffle Draconique : sort fort de palier 5.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "2d6+Intelligence",
-                        "value_formula": "2d6+[intel]",
-                        "dice_formula": "2d6+[intel]",
-                        "value_formula_crit": "3d6+[intel]",
                         "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "31122",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "osamodas-tornade-de-plumes",
-            "name": "Tornade de Plumes",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 5,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "air",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "2d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Tornade de Plumes : sort fort de palier 5.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "2d6+Agilité",
-                        "value_formula": "2d6+[agi]",
-                        "dice_formula": "2d6+[agi]",
-                        "value_formula_crit": "3d6+[agi]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "31143",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "osamodas-crapaud",
-            "name": "Bave du Crapaud",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 6,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Bave du Crapaud : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "31139",
-            "attack_characteristic_key": "chance"
-        },
-        {
-            "key": "osamodas-corbac",
-            "name": "Cri du Corbac",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 6,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "air",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
-            "description": "Cri du Corbac : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "3d6+Agilité",
-                        "value_formula": "3d6+[agi]",
-                        "dice_formula": "3d6+[agi]",
-                        "value_formula_crit": "4d6+[agi]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "31110",
-            "attack_characteristic_key": "agi"
-        },
-        {
-            "key": "osamodas-bouftou",
-            "name": "Bouftou",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 7,
-            "types": [
-                "Invocation"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 2 invocations à la fois (Troupeau). 3 PA, 1×/tour.",
-            "description": "Bouftou : la 2e bête du Troupeau.",
-            "sub_effects": [
-                {
-                    "slug": "invoquer",
-                    "area": "point",
-                    "params": {
-                        "monster_official_id": "jdr:summon:osamodas-bouftou",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "31116"
-        },
-        {
-            "key": "osamodas-dragonnet",
-            "name": "Dragonnet",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 7,
-            "types": [
-                "Invocation"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 2 invocations à la fois (Troupeau). 3 PA, 1×/tour.",
-            "description": "Dragonnet : l’autre 2e bête du Troupeau.",
-            "sub_effects": [
-                {
-                    "slug": "invoquer",
-                    "area": "point",
-                    "params": {
-                        "monster_official_id": "jdr:summon:osamodas-dragonnet",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "31129"
-        },
-        {
-            "key": "osamodas-morsure-du-serpent",
-            "name": "Morsure du Serpent",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 8,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 5,
-            "effect": "2d6 + Intelligence (Feu) et Empoisonné jusqu’à la fin du prochain tour. 3 PA, 2×/tour.",
-            "description": "Morsure du Serpent : ça s’accroche après le coup.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "2d6+Intelligence",
-                        "value_formula": "2d6+[intel]",
-                        "dice_formula": "2d6+[intel]",
-                        "value_formula_crit": "3d6+[intel]",
-                        "effect_direction": "action"
-                    }
+                    },
+                    "order": 1
                 },
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Empoisonné jusqu’à la fin du prochain tour de la cible.",
-                        "effect_direction": "action"
-                    }
+                        "value": "Indéplaçable, 1 tour. Avance 2 cases en ligne avant le coup, sans tacle.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 2
                 }
             ],
-            "dofusdb_id": "31112",
-            "attack_characteristic_key": "intel"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "jump",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d4+Force",
+                                "value_formula": "2d4+[strong]",
+                                "dice_formula": "2d4+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Indéplaçable, 1 tour. Avance 2 cases en ligne avant le coup, sans tacle.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "jump",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Indéplaçable, 1 tour. Avance 2 cases en ligne avant le coup, sans tacle.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "jump",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Indéplaçable, 1 tour. Avance 2 cases en ligne avant le coup, sans tacle.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "osamodas-dents-du-piranya",
-            "name": "Dents du Piranya",
+            "key": "laisse-spirituelle",
+            "name": "Laisse Spirituelle",
+            "dofusdb_id": "31152",
+            "official_id": "jdr:osamodas:laisse-spirituelle",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu passes une laisse de wakfu au cou de tes bêtes. C'est un déplacement : quand tu marches, elles te suivent sans se laisser retenir.",
+            "effect": "Ce tour, quand tu dépenses des PM, chacune de tes bêtes à 3 cases ou moins de toi peut se déplacer du même nombre de cases, sans être taclée. Si ton mod. de Chance vaut au moins 3, un·e allié·e à 3 cases ou moins te suit aussi, de la moitié des cases. Relance de 2 tours.",
+            "pa": "1",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Ce tour, tes bêtes à 3 cases te suivent du même nombre de PM, sans tacle. Allié·e : moitié des cases si Chance ≥ 3."
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "cravache",
+            "name": "Cravache",
+            "dofusdb_id": "31136",
+            "official_id": "jdr:osamodas:cravache",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 8,
+            "character_level": 5,
             "types": [
-                "Dégâts"
+                "Placement"
             ],
-            "element": "water",
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu fais tournoyer ta cravache au-dessus d'un groupe. C'est un déplacement : tout le monde est tiré vers le centre.",
+            "effect": "Les créatures dans la zone, sauf au centre, sont attirées d'1 case vers le centre. Tes allié·e·s et tes bêtes peuvent refuser. Si ton mod. de Force vaut au moins 3, les ennemi·e·s attiré·e·s ont −1 PM. Une fois par tour, relance de 2 tours. Pas de dégâts.",
             "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 5,
-            "effect": "2d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Dents du Piranya : attaque simple, même budget que le palier 8.",
+            "attack_characteristic_key": "strong",
+            "save_characteristic_key": "strong",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Placement · Altération · physique · sauvegarde de Force contre ton DD de Force · DofusDB : 31136.",
             "sub_effects": [
                 {
-                    "slug": "frapper",
-                    "area": "point",
+                    "slug": "déplacer",
+                    "area": "cross-0-1",
                     "params": {
-                        "characteristic": "water",
-                        "value": "2d6+Chance",
-                        "value_formula": "2d6+[chance]",
-                        "dice_formula": "2d6+[chance]",
-                        "value_formula_crit": "3d6+[chance]",
+                        "cells_formula": "1",
+                        "movement_kind": "pull",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Allié·e·s et bêtes peuvent refuser. −1 PM aux ennemi·e·s si Force ≥ 3."
+                    },
+                    "order": 1
                 }
             ],
-            "dofusdb_id": "31135",
-            "attack_characteristic_key": "chance"
+            "intensification": []
         },
         {
-            "key": "osamodas-chant-du-phenix",
-            "name": "Chant du Phénix",
+            "key": "toison-d-or",
+            "name": "Toison d'Or",
+            "dofusdb_id": "31138",
+            "official_id": "jdr:osamodas:toison-d-or",
             "slot_index": 1,
             "choice_order": 0,
-            "character_level": 10,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "fire",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "3d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Chant du Phénix : sort fort de palier 10.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "3d6+Intelligence",
-                        "value_formula": "3d6+[intel]",
-                        "dice_formula": "3d6+[intel]",
-                        "value_formula_crit": "4d6+[intel]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "31145",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "osamodas-craquolosse",
-            "name": "Craquolosse",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 10,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "3d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Craquolosse : sort fort de palier 10.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "3d6+Force",
-                        "value_formula": "3d6+[strong]",
-                        "dice_formula": "3d6+[strong]",
-                        "value_formula_crit": "4d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "31149",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "osamodas-pacte-bestial",
-            "name": "Pacte Bestial",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 11,
-            "types": [
-                "Amélioration"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "+3d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Pacte Bestial : tu te prépares. Le prochain élan frappe plus fort.",
-            "sub_effects": [
-                {
-                    "slug": "booster",
-                    "area": "point",
-                    "duration_formula": "1",
-                    "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "3d4",
-                        "value_formula": "3d4",
-                        "dice_formula": "3d4",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
-                    }
-                }
-            ],
-            "dofusdb_id": "32557",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
-        },
-        {
-            "key": "osamodas-communion-animale",
-            "name": "Communion Animale",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 11,
+            "character_level": 6,
             "types": [
                 "Protection"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "3d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Communion Animale : une couche de Wakfu avant les PV.",
+            "description": "Tu jettes une toison dorée sur le dos d'une de tes bêtes. C'est une protection : la laine absorbe les coups. Sur un·e allié·e, elle est plus mince.",
+            "effect": "Une de tes bêtes : bouclier 2d6. Un·e allié·e : bouclier 1d6. Pas sur toi. Si ton mod. de Vitalité vaut au moins 3, la bête a aussi +1 CA jusqu'au début de ton prochain tour. Une fois par tour, relance de 2 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
             "sub_effects": [
                 {
                     "slug": "protéger",
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "value": "3d4+Sagesse",
-                        "value_formula": "3d4+[sagesse]",
-                        "effect_direction": "self",
+                        "value": "2d6",
+                        "value_formula": "2d6",
+                        "dice_formula": "2d6",
+                        "effect_direction": "action",
                         "duration_formula": "1"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bête : bouclier plein. Allié·e : moitié. +1 CA à la bête si Vitalité ≥ 3. Pas sur toi."
+                    },
+                    "order": 1
                 }
             ],
-            "dofusdb_id": "32554",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 11,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "3d6",
+                                "value_formula": "3d6",
+                                "dice_formula": "3d6",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bête : bouclier plein. Allié·e : moitié. +1 CA à la bête si Vitalité ≥ 3. Pas sur toi."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "osamodas-toison-d-or",
-            "name": "Toison d'Or",
+            "key": "cri-du-corbac",
+            "name": "Cri du Corbac",
+            "dofusdb_id": "31110",
+            "official_id": "jdr:osamodas:cri-du-corbac",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 6,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu lances un croassement aigu. C'est un buff : une de tes bêtes court plus vite. Sur un·e allié·e, l'élan est plus court.",
+            "effect": "Une de tes bêtes : +2 PM jusqu'à la fin de ton prochain tour. Un·e allié·e : +1 PM. Si ton mod. d'Agilité vaut au moins 3, tu gagnes aussi +1 PM ce tour. Une fois par tour, relance de 2 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "booster",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pm",
+                        "value": "2",
+                        "value_formula": "2",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bête : +2 PM. Allié·e : +1 PM. +1 PM pour toi si Agilité ≥ 3."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "serres-du-vautour",
+            "name": "Serres du Vautour",
+            "dofusdb_id": "31133",
+            "official_id": "jdr:osamodas:serres-du-vautour",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 7,
+            "types": [
+                "Placement",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu lâches un cri de vautour sur la cible. Elle subit des dommages d'Air, et une de tes bêtes fond sur elle d'un coup d'aile.",
+            "effect": "Dégâts d'Air. Une de tes bêtes à 6 cases ou moins de la cible se place sur une case libre à son contact, sans être taclée. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "2d4+Agilité",
+                        "value_formula": "2d4+[agi]",
+                        "dice_formula": "2d4+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "jump",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Une de tes bêtes à 6 cases se place au contact de la cible, sans tacle."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "jump",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Une de tes bêtes à 6 cases se place au contact de la cible, sans tacle."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "jump",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Une de tes bêtes à 6 cases se place au contact de la cible, sans tacle."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "coeur-sauvage",
+            "name": "Cœur Sauvage",
+            "dofusdb_id": "31140",
+            "official_id": "jdr:osamodas:coeur-sauvage",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 7,
+            "types": [
+                "Soin",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu fais battre un cœur de flamme dans la poitrine d'une de tes bêtes. Autour d'elle, les ennemi·e·s subissent des dommages de Feu et les allié·e·s sont soigné·e·s.",
+            "effect": "Vise une de tes bêtes. Ennemi·e·s à son contact : dégâts de Feu. Allié·e·s et bêtes à son contact, et la bête elle-même : soin, même dé. Jamais toi. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "2d4+Intelligence",
+                        "value_formula": "2d4+[intel]",
+                        "dice_formula": "2d4+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "soigner",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "2d4",
+                        "value_formula": "2d4",
+                        "dice_formula": "2d4",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Vise une bête. Ennemi·e·s au contact : dégâts. Allié·e·s/bêtes au contact + elle : soin. Jamais toi."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Vise une bête. Ennemi·e·s au contact : dégâts. Allié·e·s/bêtes au contact + elle : soin. Jamais toi."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "2d8",
+                                "value_formula": "2d8",
+                                "dice_formula": "2d8",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Vise une bête. Ennemi·e·s au contact : dégâts. Allié·e·s/bêtes au contact + elle : soin. Jamais toi."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "dents-du-piranya",
+            "name": "Dents du Piranya",
+            "dofusdb_id": "31135",
+            "official_id": "jdr:osamodas:dents-du-piranya",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 7,
+            "types": [
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu ouvres une flaque sous un groupe, et des mâchoires de piranya en jaillissent. Les ennemi·e·s qui s'y tiennent subissent des dommages d'Eau, et l'eau dans les yeux raccourcit leur visée.",
+            "effect": "Dégâts d'Eau aux ennemi·e·s dans la zone, puis −1 PO. Le retrait ne se cumule pas. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "spares_chosen_targets": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d6+Chance",
+                        "value_formula": "2d6+[chance]",
+                        "dice_formula": "2d6+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "retirer",
+                    "area": "cross-0-1",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "po",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Allié·e·s épargné·e·s."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "po",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Allié·e·s épargné·e·s."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "3d6+Chance",
+                                "value_formula": "3d6+[chance]",
+                                "dice_formula": "3d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "po",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Allié·e·s épargné·e·s."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "cri-de-l-ours",
+            "name": "Cri de l'Ours",
+            "dofusdb_id": "31132",
+            "official_id": "jdr:osamodas:cri-de-l-ours",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 7,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu rugis comme un ours, et le sol tremble sous un groupe. Les ennemi·e·s subissent des dommages de Terre et n'osent plus quitter tes bêtes.",
+            "effect": "Dégâts de Terre aux ennemi·e·s dans la zone. Jusqu'au début de ton prochain tour, ceux et celles qui sont au contact d'une de tes bêtes ont le désavantage à leur Fuite pour la quitter. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "spares_chosen_targets": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d4+Force",
+                        "value_formula": "2d4+[strong]",
+                        "dice_formula": "2d4+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Désavantage à la Fuite face à tes bêtes",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Désavantage à la Fuite face à tes bêtes",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Désavantage à la Fuite face à tes bêtes",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "martinet",
+            "name": "Martinet",
+            "dofusdb_id": "31147",
+            "official_id": "jdr:osamodas:martinet",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 8,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu désignes une proie d'un claquement sec. C'est un ordre : tes bêtes se ruent vers elle.",
+            "effect": "Vise un·e ennemi·e à 6 cases ou moins. Chacune de tes bêtes à 6 cases ou moins de lui ou d'elle avance de 2 cases vers lui ou elle, sans être taclée. Si ton mod. de Force vaut au moins 3, elles ont +1 à leur prochain jet d'attaque contre cette cible ce tour. Relance de 3 tours. Pas de dégâts.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "2",
+                        "movement_kind": "jump",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Tes bêtes à 6 cases avancent de 2 vers la cible, sans tacle. +1 attaque si Force ≥ 3."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "tourbillon",
+            "name": "Tourbillon",
+            "dofusdb_id": "31146",
+            "official_id": "jdr:osamodas:tourbillon",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 8,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu fais tourner l'eau et le vent autour d'un point. C'est un déplacement : tes allié·e·s et tes bêtes passent de l'autre côté.",
+            "effect": "Tes allié·e·s et tes bêtes dans la zone sont téléporté·e·s sur la case symétrique par rapport au centre, si elle est libre. Si ton mod. de Chance vaut au moins 3, la zone passe en croix 2. Une fois par tour, relance de 2 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "cross-0-1",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Allié·e·s et bêtes : téléport symétrique par rapport au centre si libre. Croix 2 si Chance ≥ 3."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "cortege-sauvage",
+            "name": "Cortège Sauvage",
+            "dofusdb_id": "31119",
+            "official_id": "jdr:osamodas:cortege-sauvage",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 10,
+            "types": [
+                "Invocation"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu souffles dans une corne de chasse. C'est un buff : pendant un moment, les bêtes répondent plus vite à ton appel.",
+            "effect": "Ce tour et le suivant, Invocation coûte 1 PA de moins (2 au moins). La limite de la horde ne change pas. Si ton mod. d'Intelligence vaut au moins 3, la relance baisse à 3 tours. Relance de 4 tours.",
+            "pa": "1",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "4",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Invocation coûte 1 PA de moins (2 au moins) ce tour et le suivant. Relance 3 si Intel ≥ 3.",
+                        "duration_formula": "2"
+                    },
+                    "duration_formula": "2",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "pacte-bestial",
+            "name": "Pacte Bestial",
+            "dofusdb_id": "31141",
+            "official_id": "jdr:osamodas:pacte-bestial",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 10,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu rappelles une de tes bêtes en toi. C'est un buff : sa force passe dans tes veines pour ton prochain sort.",
+            "effect": "Une de tes bêtes à 6 cases ou moins disparaît, sauf ton compagnon. Tu gagnes des PV temporaires égaux à ses PV restants, 5 par rang au plus. Ton prochain sort de dégâts ou de soin ce tour gagne +1d6 par rang de la bête. Si ton mod. de Sagesse vaut au moins 3, le plafond des PV temporaires passe à 8 par rang. Relance de 3 tours.",
+            "pa": "1",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Une bête (pas le compagnon) disparaît. PV temp. = ses PV (max 5/rang, 8/rang si Sag ≥ 3). +1d6 par rang au prochain sort de dégâts ou soin."
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "favoritisme",
+            "name": "Favoritisme",
+            "dofusdb_id": null,
+            "official_id": "jdr:osamodas:favoritisme",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu flattes ta bête préférée devant les autres. C'est un buff : elle se sent pousser des ailes et vise juste. Sur un·e allié·e, l'effet ne dure qu'un coup.",
+            "effect": "Une de tes bêtes a l'avantage à ses jets d'attaque jusqu'à la fin de ton prochain tour. Un·e allié·e : avantage à son prochain jet d'attaque. Si ton mod. de Chance vaut au moins 3, la bête a aussi +1 CA. Une fois par tour, relance de 3 tours.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bête : avantage aux jets d’attaque 2 tours. Allié·e : prochain jet. +1 CA à la bête si Chance ≥ 3.",
+                        "duration_formula": "2"
+                    },
+                    "duration_formula": "2",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "tandem-animal",
+            "name": "Tandem Animal",
+            "dofusdb_id": null,
+            "official_id": "jdr:osamodas:tandem-animal",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 11,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Toi et une de tes bêtes chassez ensemble. C'est un buff : chaque coup de l'un·e ouvre la garde pour l'autre.",
+            "effect": "Jusqu'au début de ton prochain tour, quand toi ou la bête touchez une créature que l'autre a déjà touchée ce tour, +1d6 dégâts. Si ton mod. d'Intelligence vaut au moins 3, la bête gagne aussi +1 PM. Relance de 2 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "+1d6 sur une cible commune ; +1 PM à la bête si Intelligence ≥ 3. +1 PM à la bête si Intel ≥ 3.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+2d6. +1 PM à la bête si Intel ≥ 3.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "tornade-de-plumes",
+            "name": "Tornade de Plumes",
+            "dofusdb_id": "31143",
+            "official_id": "jdr:osamodas:tornade-de-plumes",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 12,
             "types": [
+                "Placement",
                 "Dégâts"
             ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu disparais dans un tourbillon de plumes et tu retombes plus loin. Les ennemi·e·s autour de toi subissent des dommages d'Air et sont projeté·e·s.",
+            "effect": "Tu te téléportes sur la case ciblée. Dégâts d'Air aux ennemi·e·s à ton contact, recul d'1 case. Une fois par tour, relance de 2 tours.",
+            "pa": "4",
             "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "4d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Toison d'Or : sort fort de palier 14.",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "spares_chosen_targets": true,
             "sub_effects": [
                 {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
+                    "slug": "déplacer",
+                    "area": "point",
                     "params": {
-                        "characteristic": "earth",
-                        "value": "4d6+Force",
-                        "value_formula": "4d6+[strong]",
-                        "dice_formula": "4d6+[strong]",
-                        "value_formula_crit": "5d6+[strong]",
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "2d6+Agilité",
+                        "value_formula": "2d6+[agi]",
+                        "dice_formula": "2d6+[agi]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "cross-0-1",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    },
+                    "order": 2
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Allié·e·s épargné·e·s."
+                    },
+                    "order": 3
                 }
             ],
-            "dofusdb_id": "31138",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "teleport",
+                                "effect_direction": "action",
+                                "teleport": true
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 2
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Allié·e·s épargné·e·s."
+                            },
+                            "order": 3
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "osamodas-sulfenix",
-            "name": "Sulfénix",
+            "key": "chant-du-phenix",
+            "name": "Chant du Phénix",
+            "dofusdb_id": "31145",
+            "official_id": "jdr:osamodas:chant-du-phenix",
             "slot_index": 1,
             "choice_order": 1,
             "character_level": 12,
             "types": [
-                "Invocation"
+                "Soin",
+                "Dégâts"
             ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": false,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu chantes, et un phénix de feu déploie ses ailes sur la mêlée. Les ennemi·e·s subissent des dommages de Feu et sont repoussé·e·s, tes allié·e·s et tes bêtes sont soigné·e·s.",
+            "effect": "Ennemi·e·s dans la zone : dégâts de Feu, recul d'1 case depuis le centre. Allié·e·s et bêtes dans la zone : soin, même dé. Jamais toi. Une fois par tour, relance de 2 tours.",
+            "pa": "4",
             "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 2d4, 1 PM. Au plus 1 invocation à la fois. 3 PA, 1×/tour.",
-            "description": "Sulfénix : une invocation. Fragile, mais elle occupe.",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "spares_chosen_targets": true,
             "sub_effects": [
                 {
-                    "slug": "invoquer",
-                    "area": "point",
+                    "slug": "frapper",
+                    "area": "cross-0-2",
                     "params": {
-                        "monster_official_id": "jdr:summon:osamodas-sulfenix",
+                        "characteristic": "fire",
+                        "value": "2d6+Intelligence",
+                        "value_formula": "2d6+[intel]",
+                        "dice_formula": "2d6+[intel]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "cross-0-2",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "soigner",
+                    "area": "cross-0-2",
+                    "params": {
+                        "value": "2d6",
+                        "value_formula": "2d6",
+                        "dice_formula": "2d6",
+                        "effect_direction": "action"
+                    },
+                    "order": 2
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-2",
+                    "params": {
+                        "value": "Allié·e·s épargné·e·s sur les dégâts. Jamais toi pour le soin."
+                    },
+                    "order": 3
                 }
             ],
-            "dofusdb_id": "31151"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-2",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-2",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "cross-0-2",
+                            "params": {
+                                "value": "2d8",
+                                "value_formula": "2d8",
+                                "dice_formula": "2d8",
+                                "effect_direction": "action"
+                            },
+                            "order": 2
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-2",
+                            "params": {
+                                "value": "Allié·e·s épargné·e·s sur les dégâts. Jamais toi pour le soin."
+                            },
+                            "order": 3
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "saute-granouille",
+            "name": "Saute-granouille",
+            "dofusdb_id": "31121",
+            "official_id": "jdr:osamodas:saute-granouille",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 12,
+            "types": [
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu bondis comme une grenouille et tu retombes de tout ton poids sur la cible. Elle subit des dommages d'Eau, plus lourds si une de tes bêtes la tient déjà.",
+            "effect": "Dégâts d'Eau. Si une de tes bêtes est au contact de la cible, le coup ajoute un bonus. Une fois par tour, relance de 2 tours.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d8+Chance",
+                        "value_formula": "2d8+[chance]",
+                        "dice_formula": "2d8+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "+1d6 si une de tes bêtes est au contact de la cible."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "3d8+Chance",
+                                "value_formula": "3d8+[chance]",
+                                "dice_formula": "3d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d6 si une de tes bêtes est au contact de la cible."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "frappe-du-craqueleur",
+            "name": "Frappe du Craqueleur",
+            "dofusdb_id": "31144",
+            "official_id": "jdr:osamodas:frappe-du-craqueleur",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 12,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu frappes le sol à deux mains, et la roche se referme comme un piège. Les ennemi·e·s subissent des dommages de Terre, sont tiré·e·s vers le centre et perdent un geste.",
+            "effect": "Dégâts de Terre aux ennemi·e·s dans la zone. Attirance d'1 case vers le centre, puis −1 PA. Le retrait ne se cumule pas. Une fois par tour, relance de 2 tours.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "spares_chosen_targets": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-2",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "cross-0-2",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "pull",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "retirer",
+                    "area": "cross-0-2",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pa",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 2
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-2",
+                    "params": {
+                        "value": "Allié·e·s épargné·e·s."
+                    },
+                    "order": 3
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-2",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-2",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "cross-0-2",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 2
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-2",
+                            "params": {
+                                "value": "Allié·e·s épargné·e·s."
+                            },
+                            "order": 3
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

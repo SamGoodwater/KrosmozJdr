@@ -1,41 +1,130 @@
 {
     "_schema_version": "1",
     "breed": "Ouginak",
+    "state": "playable",
     "entries": [
         {
-            "key": "molosse",
-            "name": "Molosse",
-            "dofusdb_id": "13756",
+            "key": "carcasse",
+            "name": "Carcasse",
+            "dofusdb_id": "13770",
+            "official_id": "jdr:ouginak:carcasse",
             "slot_index": 1,
             "choice_order": 0,
+            "character_level": 1,
             "types": [
                 "Dégâts"
             ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "attack_characteristic_key": "strong",
+            "state": "playable",
             "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour, PO 1.",
-            "description": "Les crocs. Collé, terreux, net. Pas besoin d’être en Rage.",
+            "resolution_mode": "attack_roll",
+            "description": "Tu frappes d'un coup de carcasse. La cible subit des dommages d'Air.",
+            "effect": "Dégâts d'Air. Deux fois par tour. +1d4 si la cible est ta Proie à partir du niveau 5. Tu peux consommer 1 POINT DE RAGE pour +1d4 supplémentaires. Réaction : fuite ratée à ton contact. Les dégâts du sort.",
+            "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "allows_reaction": true,
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
                     "params": {
-                        "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
+                        "characteristic": "air",
+                        "value": "1d6+Agilité",
+                        "value_formula": "1d6+[agi]",
+                        "dice_formula": "1d6+[agi]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d4+Agilité",
+                                "value_formula": "2d4+[agi]",
+                                "dice_formula": "2d4+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ],
+                    "po_max": "4"
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 15,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ],
+                    "po_max": "4"
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "3d6+Agilité",
+                                "value_formula": "3d6+[agi]",
+                                "dice_formula": "3d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ],
+                    "po_max": "4"
                 }
             ]
         },
@@ -43,176 +132,601 @@
             "key": "charogne",
             "name": "Charogne",
             "dofusdb_id": "13766",
+            "official_id": "jdr:ouginak:charogne",
             "slot_index": 1,
             "choice_order": 1,
+            "character_level": 1,
             "types": [
+                "Entrave",
                 "Dégâts"
             ],
-            "element": "fire",
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu frappes d'un coup de charogne brûlante. La cible subit des dommages de Feu.",
+            "effect": "Dégâts de Feu. Deux fois par tour. −1 PM à partir du niveau 5. Réaction : fuite ratée à ton contact. Les dégâts du sort.",
             "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
+            "po_editable": true,
+            "element": "fire",
             "attack_characteristic_key": "intel",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour, PO 1.",
-            "description": "Tu mords au feu. Même cadence, autre voie.",
+            "allows_reaction": true,
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
                     "params": {
                         "characteristic": "fire",
-                        "value": "1d6+Intelligence",
-                        "value_formula": "1d6+[intel]",
-                        "dice_formula": "1d6+[intel]",
-                        "value_formula_crit": "2d6+[intel]",
+                        "value": "1d4+Intelligence",
+                        "value_formula": "1d4+[intel]",
+                        "dice_formula": "1d4+[intel]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "1d6+Intelligence",
+                                "value_formula": "1d6+[intel]",
+                                "dice_formula": "1d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ],
+                    "po_max": "2"
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d4+Intelligence",
+                                "value_formula": "2d4+[intel]",
+                                "dice_formula": "2d4+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ],
+                    "po_max": "3"
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 15,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ],
+                    "po_max": "3"
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ],
+                    "po_max": "3"
                 }
             ]
         },
         {
-            "key": "ouginak-croc",
-            "name": "Croc du Molosse",
+            "key": "cubitus",
+            "name": "Cubitus",
+            "dofusdb_id": "13758",
+            "official_id": "jdr:ouginak:cubitus",
             "slot_index": 1,
             "choice_order": 2,
+            "character_level": 1,
             "types": [
+                "Amélioration",
                 "Dégâts"
             ],
-            "element": "earth",
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu frappes d'un cubitus d'eau froide. La cible subit des dommages d'Eau.",
+            "effect": "Dégâts d'Eau. Deux fois par tour. +1 PM jusqu'à la fin de ton prochain tour à partir du niveau 5 si la cible est ta Proie (plafond 1 PM gagné par tour grâce à toi). Réaction : fuite ratée à ton contact. Les dégâts du sort.",
             "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "allows_reaction": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "1d4+Chance",
+                        "value_formula": "1d4+[chance]",
+                        "dice_formula": "1d4+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "1d6+Chance",
+                                "value_formula": "1d6+[chance]",
+                                "dice_formula": "1d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ],
+                    "po_max": "2"
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d4+Chance",
+                                "value_formula": "2d4+[chance]",
+                                "dice_formula": "2d4+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ],
+                    "po_max": "3"
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 15,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ],
+                    "po_max": "3"
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ],
+                    "po_max": "3"
+                }
+            ]
+        },
+        {
+            "key": "molosse",
+            "name": "Molosse",
+            "dofusdb_id": "13756",
+            "official_id": "jdr:ouginak:molosse",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 1,
+            "types": [
+                "Tank",
+                "Dégâts"
+            ],
+            "state": "playable",
             "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Croc du Molosse : attaque simple, même budget que le palier 4.",
+            "resolution_mode": "attack_roll",
+            "description": "Tu frappes en molosse. La cible subit des dommages de Terre.",
+            "effect": "Dégâts de Terre. Deux fois par tour. Réduction 1 des dégâts subis jusqu'à la fin de ton prochain tour à partir du niveau 5 (pas de cumul). Réaction : fuite ratée à ton contact. Les dégâts du sort.",
+            "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "allows_reaction": true,
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
                     "params": {
                         "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
+                        "value": "1d4+Force",
+                        "value_formula": "1d4+[strong]",
+                        "dice_formula": "1d4+[strong]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
                 }
             ],
-            "official_id": "jdr:ouginak-croc",
-            "attack_characteristic_key": "strong"
-        },
-        {
-            "key": "ouginak-cerbere",
-            "name": "Cerbère",
-            "slot_index": 1,
-            "choice_order": 3,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "1d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
-            "description": "Cerbère : attaque simple, même budget que le palier 4.",
-            "sub_effects": [
+            "intensification": [
                 {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "1d6+Intelligence",
-                        "value_formula": "1d6+[intel]",
-                        "dice_formula": "1d6+[intel]",
-                        "value_formula_crit": "2d6+[intel]",
-                        "effect_direction": "action"
-                    }
+                    "tier": "I",
+                    "required_creature_level": 5,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "1d6+Force",
+                                "value_formula": "1d6+[strong]",
+                                "dice_formula": "1d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 10,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d4+Force",
+                                "value_formula": "2d4+[strong]",
+                                "dice_formula": "2d4+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ],
+                    "po_max": "2"
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 15,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ],
+                    "po_max": "2"
+                },
+                {
+                    "tier": "IV",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ],
+                    "po_max": "2"
                 }
-            ],
-            "official_id": "jdr:ouginak-cerbere",
-            "attack_characteristic_key": "intel"
+            ]
         },
         {
             "key": "traque",
             "name": "Traque",
             "dofusdb_id": "13755",
+            "official_id": "jdr:ouginak:traque",
             "slot_index": 2,
             "choice_order": 0,
+            "character_level": 1,
             "types": [
-                "Entrave"
+                "Placement"
             ],
-            "element": "air",
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu tires la cible vers toi d'un coup de laisse.",
+            "effect": "Attirance 2 cases. Pas de dégâts. Une fois par tour. Réaction : un·e allié·e à portée va être poussé·e ou attiré·e. Tu appliques le déplacement du sort.",
             "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "attack_roll",
-            "attack_characteristic_key": "agi",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "Attirance de 2 cases, pas de dégâts. Physique, 3 PA, 1×/tour, PO 1–4 adapté.",
-            "description": "Tu tires. L’ennemi vient coller. Assez pour Molosse dans le même tour.",
+            "allows_reaction": true,
             "sub_effects": [
                 {
                     "slug": "déplacer",
                     "area": "point",
                     "params": {
-                        "cells_formula": "2",
-                        "movement_kind": "pull",
-                        "effect_direction": "action"
-                    }
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Vers la Proie / piste."
+                    },
+                    "order": 1
                 }
-            ]
+            ],
+            "intensification": []
         },
         {
             "key": "amarok",
             "name": "Amarok",
             "dofusdb_id": "13802",
-            "slot_index": 3,
-            "choice_order": 0,
+            "official_id": "jdr:ouginak:amarok",
+            "slot_index": 2,
+            "choice_order": 1,
+            "character_level": 1,
             "types": [
                 "Amélioration"
             ],
-            "element": null,
-            "pa": "3",
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu désignes la Proie d'un regard.",
+            "effect": "La cible devient ta Proie (remplace l'ancienne). Une fois par tour.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "Tu désignes une créature à PO 1–4 comme ta Proie (même si tu ne l’as pas encore blessée). Remplace la Proie actuelle. 3 PA, 1×/tour. Pas de Rage au niveau 1.",
-            "description": "Tu grognes : celle-là, c’est la tienne. Le passif Proie fait le reste.",
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Désigne la cible comme ta Proie (1 à la fois).",
-                        "effect_direction": "action"
-                    }
+                        "value": "Désigne la Proie."
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "butin",
+            "name": "Butin",
+            "dofusdb_id": "13788",
+            "official_id": "jdr:ouginak:butin",
+            "slot_index": 3,
+            "choice_order": 0,
+            "character_level": 1,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu te rapproche du butin.",
+            "effect": "Tu te téléportes d'1 case vers la cible (case libre sur la ligne). Une fois par tour.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "1 case vers la cible."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "veille",
+            "name": "Veille",
+            "dofusdb_id": "13790",
+            "official_id": "jdr:ouginak:veille",
+            "slot_index": 3,
+            "choice_order": 1,
+            "character_level": 1,
+            "types": [
+                "Protection"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu te mets en veille.",
+            "effect": "Bouclier jusqu'à la fin de ton prochain tour. Pas de cumul. Une fois par tour. Réaction : un·e allié·e à portée est touché·e. Tu appliques l’effet de protection du sort.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "allows_reaction": true,
+            "sub_effects": [
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 7,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "1d6",
+                                "value_formula": "1d6",
+                                "dice_formula": "1d6",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        }
+                    ]
                 }
             ]
         }

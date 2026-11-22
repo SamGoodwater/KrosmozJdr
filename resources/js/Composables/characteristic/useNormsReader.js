@@ -1,6 +1,9 @@
 import { ref, computed } from 'vue';
 import { POWER_LEVELS, NEUTRAL_INDEX, MAX_LEVEL } from '@/Utils/Characteristic/normsConstants';
 
+/** Cumul des conditions qui décalent le niveau (règle 5.3.1.5). */
+const LEVEL_OFFSET_LIMIT = 4;
+
 /**
  * Logique de lecture interactive d'une grille de normes.
  * Gère la sélection du level, l'activation des conditions et le calcul des indices effectifs.
@@ -52,7 +55,7 @@ export function useNormsReader(grid, conditions) {
                 offset += cond.modifier ?? 0;
             }
         }
-        return offset;
+        return Math.max(-LEVEL_OFFSET_LIMIT, Math.min(LEVEL_OFFSET_LIMIT, offset));
     });
 
     const effectivePowerIndex = computed(() => {

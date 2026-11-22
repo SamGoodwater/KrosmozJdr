@@ -5,13 +5,14 @@
     "description_fast": "Sorcier sylvestre",
     "life_dice": "1d8",
     "description": "Les Sadidas sont des invocateurs qui empoisonnent la vie de leurs ennemis ! Apprivoiser les Ronces pour en faire des armes terrifiantes, confectionner des poupées de guerre et de soins, voilà qui satisfait tout disciple Sadida digne de ce nom.",
+    "mechanics": "<p><strong>Jardin</strong> — Arbres et poupées sont des <strong>invocations</strong> (même limite). Un arbre pousse sur sol vivant ; une poupée remplace un arbre sans en ajouter une deuxième. Autour d’un arbre : un sort peut partir sur chaque créature à son contact.</p><p><strong>Poison</strong> — Marque sans dégâts (propagation). Durée 3 tours. Une propagation par tour.</p>",
     "dofus_version": "3",
-    "state": "draft",
+    "state": "playable",
     "read_level": 0,
     "write_level": 3,
     "element_orientations": {
         "fire": "entrave",
-        "earth": "tank",
+        "earth": "protection",
         "water": "soin",
         "air": "degats"
     }

@@ -143,10 +143,11 @@ class PageService
         $roots = $pages->filter(fn ($page) => $page->parent_id === null);
         $children = $pages->filter(fn ($page) => $page->parent_id !== null);
         $breedMenuIcons = self::prefetchBreedMenuIcons($pages);
+        $specializationMenuIcons = self::prefetchSpecializationMenuIcons($pages);
 
         // Construire l'arborescence récursivement
-        return $roots->map(function ($page) use ($children, $breedMenuIcons) {
-            return self::buildMenuItem($page, $children, $breedMenuIcons);
+        return $roots->map(function ($page) use ($children, $breedMenuIcons, $specializationMenuIcons) {
+            return self::buildMenuItem($page, $children, $breedMenuIcons, $specializationMenuIcons);
         })->values()->toArray();
     }
 
@@ -156,11 +157,12 @@ class PageService
      * @param  Page  $page  Page à transformer en item de menu
      * @param  Collection<Page>  $allChildren  Toutes les pages enfants disponibles
      * @param  array<int, array{icon: string|null, hover: string|null}>  $breedMenuIcons
+     * @param  array<int, string>  $specializationMenuIcons
      * @return array<string, mixed> Item de menu avec structure
      */
-    private static function buildMenuItem(Page $page, Collection $allChildren, array $breedMenuIcons = []): array
+    private static function buildMenuItem(Page $page, Collection $allChildren, array $breedMenuIcons = [], array $specializationMenuIcons = []): array
     {
-        $menuIcon = self::resolveMenuIconForPage($page, $breedMenuIcons);
+        $menuIcon = self::resolveMenuIconForPage($page, $breedMenuIcons, $specializationMenuIcons);
 
         $item = [
             'id' => $page->id,
@@ -186,7 +188,7 @@ class PageService
             // Construire récursivement les enfants
             $item['children'] = $pageChildren
                 ->sortBy('menu_order')
-                ->map(fn ($child) => self::buildMenuItem($child, $allChildren, $breedMenuIcons))
+                ->map(fn ($child) => self::buildMenuItem($child, $allChildren, $breedMenuIcons, $specializationMenuIcons))
                 ->values()
                 ->toArray();
         }
@@ -238,10 +240,52 @@ class PageService
     }
 
     /**
+     * Icônes menu des spécialisations liées (objet en couleurs, pas de filtre gris).
+     *
+     * @param  Collection<int, Page>  $pages
+     * @return array<int, string>
+     */
+    private static function prefetchSpecializationMenuIcons(Collection $pages): array
+    {
+        $ids = $pages
+            ->map(function (Page $page): int {
+                $linked = $page->settings['linked_entity'] ?? null;
+                if (! is_array($linked) || ($linked['type'] ?? '') !== 'specialization') {
+                    return 0;
+                }
+
+                return (int) ($linked['id'] ?? 0);
+            })
+            ->filter(fn (int $id): bool => $id > 0)
+            ->unique()
+            ->values()
+            ->all();
+
+        if ($ids === []) {
+            return [];
+        }
+
+        $map = [];
+        Specialization::query()
+            ->whereIn('id', $ids)
+            ->get(['id', 'image'])
+            ->each(function (Specialization $specialization) use (&$map): void {
+                $image = trim((string) ($specialization->image ?? ''));
+                if ($image === '' || str_starts_with($image, 'fa-')) {
+                    return;
+                }
+                $map[(int) $specialization->id] = $image;
+            });
+
+        return $map;
+    }
+
+    /**
      * @param  array<int, array{icon: string|null, hover: string|null}|string|null>  $breedMenuIcons
+     * @param  array<int, string>  $specializationMenuIcons
      * @return array{icon: string|null, hover: string|null}
      */
-    private static function resolveMenuIconForPage(Page $page, array $breedMenuIcons): array
+    private static function resolveMenuIconForPage(Page $page, array $breedMenuIcons, array $specializationMenuIcons = []): array
     {
         $empty = ['icon' => null, 'hover' => null];
         $linked = $page->settings['linked_entity'] ?? null;
@@ -250,6 +294,16 @@ class PageService
         }
 
         $type = (string) ($linked['type'] ?? '');
+        if ($type === 'specialization') {
+            $specializationId = (int) ($linked['id'] ?? 0);
+            $icon = $specializationMenuIcons[$specializationId] ?? null;
+            if (! is_string($icon) || $icon === '') {
+                return $empty;
+            }
+
+            return ['icon' => self::normalizeMenuIconUrl($icon), 'hover' => null];
+        }
+
         if ($type !== 'breed') {
             return $empty;
         }

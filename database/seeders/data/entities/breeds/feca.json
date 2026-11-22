@@ -5,15 +5,15 @@
     "description_fast": "Protecteur",
     "life_dice": "1d10",
     "description": "Les Fécas sont de loyaux protecteurs toujours sur la défensive. Ils sont appréciés dans les groupes d'aventuriers pour leurs armures élémentaires et leur capacité à encaisser les coups durs. Ils sont également maîtres dans l'art des signes magiques : quan",
-    "mechanics": "<p><strong>Pile ou Face</strong> — La mécanique centrale du Féca, indépendante des voies.</p><p>Tu évolues toujours dans l’un des deux états suivants (propres à la classe, hors catalogue des états) :</p><ul><li><strong>Pile</strong></li><li><strong>Face</strong></li></ul><p>Certains sorts ont <strong>deux effets</strong> : l’un s’applique en Pile, l’autre en Face. Au niveau 1, un sort sans variante (hors choix de voie) te fait <strong>lancer un dé</strong> pour déterminer l’état de départ — c’est le cœur du kit Féca.</p>",
+    "mechanics": "<p><strong>Glyphes</strong> — Moteur zone, indépendant des voies.</p><p>Tu poses des glyphes visibles et magiques. Limite §3.3.1 (2→7). Un seul glyphe élémentaire par tour. Durée 2 tours sauf mention. Tes allié·e·s ignorent les dégâts de tes glyphes, mais prennent le reste (malus comme bonus).</p><p>Quand tu te tiens sur un de tes glyphes, tu gagnes une résistance dans l’élément de ce glyphe (un cran plus bas). À partir du niveau 10, cette résistance passe au palier Résistant.</p><p>Le rythme tient en trois gestes : tu poses le terrain, tu couvres les tiens, tu déclenches au bon moment (Transhumance, Main sur le glyphe).</p>",
     "dofus_version": "3",
-    "state": "draft",
+    "state": "playable",
     "read_level": 0,
     "write_level": 3,
     "element_orientations": {
         "fire": "entrave",
         "earth": "degats",
-        "water": "entrave",
+        "water": "protection",
         "air": "placement"
     }
 }

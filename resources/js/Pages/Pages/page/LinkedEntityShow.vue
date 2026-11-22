@@ -5,6 +5,8 @@
 import { Head, usePage } from "@inertiajs/vue3";
 import { computed, watch } from "vue";
 import PageRenderer from "@/Pages/Organismes/section/PageRenderer.vue";
+import PageTopNav from "@/Pages/Organismes/section/PageTopNav.vue";
+import { usePageSectionChrome } from "@/Composables/section/usePageSectionChrome";
 import BreedViewFull from "@/Pages/Molecules/entity/breed/BreedViewFull.vue";
 import SpecializationViewFull from "@/Pages/Molecules/entity/specialization/SpecializationViewFull.vue";
 import EntitySectionsRenderer from "@/Pages/Organismes/entity/EntitySectionsRenderer.vue";
@@ -65,12 +67,47 @@ const linkedEntitySections = computed(() => {
     const raw = entity?.sections ?? entity?._data?.sections;
     return Array.isArray(raw) ? raw : [];
 });
+
+const pageModel = computed(() => new Page(props.page));
+
+const navSections = computed(() => {
+    const cms = Array.isArray(cmsSections.value) ? cmsSections.value : [];
+    return [...linkedEntitySections.value, ...cms];
+});
+
+const {
+    planSections,
+    activeSectionTitle,
+    pageTitle: navPageTitle,
+    flattenedMenuPages,
+    l1Pages,
+    l1Title,
+    parentPageBreadcrumb,
+    currentPageBreadcrumb,
+    showBreadcrumb,
+    navigateToSection,
+    navigateToPage,
+} = usePageSectionChrome(pageModel, navSections, { pageTitle });
 </script>
 
 <template>
     <Head :title="pageTitle" />
 
     <div class="space-y-8 pb-10">
+        <PageTopNav
+            :show-breadcrumb="showBreadcrumb"
+            :l1-title="l1Title"
+            :l1-pages="l1Pages"
+            :page-title="navPageTitle"
+            :page-url="currentPageBreadcrumb?.url || ''"
+            :parent-page="parentPageBreadcrumb"
+            :active-section-title="activeSectionTitle"
+            :pages="flattenedMenuPages"
+            :sections="planSections"
+            @navigate:page="navigateToPage"
+            @navigate:section="navigateToSection"
+        />
+
         <BreedViewFull
             v-if="breed"
             :breed="breed"
@@ -87,10 +124,10 @@ const linkedEntitySections = computed(() => {
             class="space-y-3"
             :aria-label="breed ? 'Contenu de la classe' : 'Contenu de la spécialisation'"
         >
-            <h2 v-if="!breed" class="text-lg font-semibold">Sections</h2>
             <EntitySectionsRenderer
                 :sections="linkedEntitySections"
                 :immersive="Boolean(breed)"
+                :align-with-column="true"
                 :empty-message="breed ? '' : 'Aucune section liée à cette spécialisation.'"
             />
         </section>
@@ -99,7 +136,7 @@ const linkedEntitySections = computed(() => {
 
         <section v-if="hasCmsSections" class="space-y-3 border-t border-base-300/50 pt-6">
             <h2 v-if="breed || specialization" class="text-lg font-semibold">Contenu complémentaire</h2>
-            <PageRenderer :page="page" :user="user" :pages="pages" />
+            <PageRenderer :page="page" :user="user" :pages="pages" hide-top-nav />
         </section>
     </div>
 </template>

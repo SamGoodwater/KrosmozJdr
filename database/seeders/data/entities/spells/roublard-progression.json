@@ -1,63 +1,1854 @@
 {
     "_schema_version": "1",
     "breed": "Roublard",
+    "state": "playable",
     "entries": [
         {
-            "key": "roublard-extraction",
-            "name": "Extraction",
+            "key": "cordeau",
+            "name": "Cordeau",
+            "dofusdb_id": null,
+            "official_id": "jdr:roublard:cordeau",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 2,
             "types": [
+                "Entrave"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu tends une mèche entre deux de tes bombes du même élément. La ligne crépite, et chaque ennemi·e qui la traverse subit l'effet de cet élément.",
+            "effect": "Relie deux de tes bombes du même élément, non neutres, alignées ou en diagonale, à 3 cases ou moins l'une de l'autre (4 à partir du niveau 6, 5 à partir du niveau 13). Le mur occupe les cases entre elles, sans bloquer le passage ni la ligne de vue. Si ton modificateur de Sagesse vaut au moins 3, les deux bombes peuvent avoir des éléments différents : tu choisis l'élément du mur. Il touche un·e ennemi·e qui entre dans une de ses cases ou qui y commence son tour, une seule fois par tour pour une même créature ; une sauvegarde réussie réduit les dégâts de moitié et annule l'effet. Il dure tant que les deux bombes restent là, gardent leur élément et restent alignées ; une bombe peut tenir deux murs au plus. Les dégâts valent la moitié du niveau de charge de la plus faible des deux bombes, en d4, arrondie au supérieur, plus ton modificateur de l'élément. Une fois par tour.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "attack_characteristic_key": "strong",
+            "save_characteristic_key": "strong",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Entrave · Altération · physique · sauvegarde de l'élément du mur contre ton DD du même élément, à chaque déclenchement · sans ligne de vue.",
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "line-0-3",
+                    "params": {
+                        "value": "Mur entre deux bombes (même élément). Dégâts ½ charge min en d4 + effet élément."
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bombes à 3 cases ou moins"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 6,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "line-0-3",
+                            "params": {
+                                "value": "Mur entre deux bombes (même élément). Dégâts ½ charge min en d4 + effet élément."
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "4 cases ou moins"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "line-0-3",
+                            "params": {
+                                "value": "Mur entre deux bombes (même élément). Dégâts ½ charge min en d4 + effet élément."
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "5 cases ou moins"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "aimantation",
+            "name": "Aimantation",
+            "dofusdb_id": "13437",
+            "official_id": "jdr:roublard:aimantation",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 2,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu lèves un aimant de fortune, et tes bombes roulent vers lui. Elles se rassemblent au centre, et le frottement les charge.",
+            "effect": "Zone en cercle 2 autour de la case ciblée, pas sur toi. Tes bombes de la zone sont attirées de 2 cases vers le centre ; chacune gagne 1 niveau de charge, dans la limite d'1 par tour. Les autres créatures sont attirées d'1 case. Si ton modificateur d'Intelligence vaut au moins 3, la zone passe en cercle 3. Une fois par tour, relance d'1 tour.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "1",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "attack_characteristic_key": "strong",
+            "save_characteristic_key": "strong",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Placement · Altération · physique · automatique sur tes bombes et tes allié·e·s, sauvegarde de Force contre ton DD d'Intelligence pour un·e ennemi·e · DofusDB : 13437.",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "circle-0-2",
+                    "params": {
+                        "cells_formula": "2",
+                        "movement_kind": "pull",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "circle-0-2",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "pull",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bombes attirées de 2 +1 charge. Créatures de 1. Cercle 3 si Intel ≥ 3."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "tornabombe",
+            "name": "Tornabombe",
+            "dofusdb_id": "13435",
+            "official_id": "jdr:roublard:tornabombe",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 4,
+            "types": [
+                "Placement",
                 "Dégâts"
             ],
-            "element": null,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu lances une petite charge qui siffle et tourbillonne. Sur une de tes bombes, elle la change en Air et la fait exploser. Sur une créature, elle porte des dommages d'Air et l'aspire vers toi.",
+            "effect": "Sur une créature : dégâts d'Air, attirance d'1 case vers toi. Sur une de tes bombes : elle devient Air et explose aussitôt, selon les règles de l'explosion. Une fois par tour.",
             "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "1d6+Agilité",
+                        "value_formula": "1d6+[agi]",
+                        "dice_formula": "1d6+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "pull",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bombe : devient Air et explose."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d4+Agilité",
+                                "value_formula": "2d4+[agi]",
+                                "dice_formula": "2d4+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Air et explose."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Air et explose."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Air et explose."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "explobombe",
+            "name": "Explobombe",
+            "dofusdb_id": "13444",
+            "official_id": "jdr:roublard:explobombe",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 4,
+            "types": [
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu lances une charge à la mèche enflammée. Sur une de tes bombes, elle la change en Feu et la fait exploser. Sur une créature, elle éclate en dommages de Feu.",
+            "effect": "Sur une créature : dégâts de Feu. Sur une de tes bombes : elle devient Feu et explose aussitôt. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "2d4+Intelligence",
+                        "value_formula": "2d4+[intel]",
+                        "dice_formula": "2d4+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bombe : devient Feu et explose."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Feu et explose."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Feu et explose."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "3d6+Intelligence",
+                                "value_formula": "3d6+[intel]",
+                                "dice_formula": "3d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Feu et explose."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "bombe-a-eau",
+            "name": "Bombe à Eau",
+            "dofusdb_id": "13436",
+            "official_id": "jdr:roublard:bombe-a-eau",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 4,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu lances une outre gonflée d'eau et de poudre. Sur une de tes bombes, elle la change en Eau et la fait exploser. Sur une créature, elle porte des dommages d'Eau et lui coupe le pas.",
+            "effect": "Sur une créature : dégâts d'Eau, perte d'1 PM pendant 1 tour. Sur une de tes bombes : elle devient Eau et explose aussitôt. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "1d6+Chance",
+                        "value_formula": "1d6+[chance]",
+                        "dice_formula": "1d6+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "retirer",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pm",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bombe : devient Eau et explose."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d4+Chance",
+                                "value_formula": "2d4+[chance]",
+                                "dice_formula": "2d4+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Eau et explose."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Eau et explose."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Eau et explose."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "sismobombe",
+            "name": "Sismobombe",
+            "dofusdb_id": "13491",
+            "official_id": "jdr:roublard:sismobombe",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 4,
+            "types": [
+                "Amélioration",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu lances une charge lourde qui fait trembler le sol. Sur une de tes bombes, elle la change en Terre et la fait exploser. Sur une créature, elle porte des dommages de Terre et donne de l'élan à un·e allié·e.",
+            "effect": "Sur une créature : dégâts de Terre ; si le coup touche, un·e allié·e à 3 cases ou moins de la cible gagne des dégâts en plus à sa prochaine attaque, avant la fin de son prochain tour. Sur une de tes bombes : elle devient Terre et explose aussitôt. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d6+Force",
+                        "value_formula": "1d6+[strong]",
+                        "dice_formula": "1d6+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "+1d4 à un·e allié·e",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bombe : devient Terre et explose."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d4+Force",
+                                "value_formula": "2d4+[strong]",
+                                "dice_formula": "2d4+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d4 à un·e allié·e",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Terre et explose."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d4 à un·e allié·e",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Terre et explose."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d6",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Terre et explose."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "bombe-collante",
+            "name": "Bombe Collante",
+            "dofusdb_id": "13479",
+            "official_id": "jdr:roublard:bombe-collante",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Entrave"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu lances une de tes bombes enduite de glu sur un·e ennemi·e. Elle reste collée à lui ou elle, et le ou la suit partout.",
+            "effect": "Une de tes bombes à 5 cases ou moins de toi se colle à un·e ennemi·e : elle prend une case à son contact et le ou la suit quand il ou elle se déplace. Elle reste ta bombe : tu la charges et la fais exploser comme les autres. Si la cible réussit sa sauvegarde, la bombe ne bouge pas. Si ton modificateur de Force vaut au moins 3, la cible perd aussi 1 PM tant qu'elle est collée. Une fois par tour, relance de 2 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "attack_characteristic_key": "strong",
+            "save_characteristic_key": "strong",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Entrave · Altération · physique · sauvegarde de Force contre ton DD de Force · DofusDB : 13479.",
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Une bombe suit l’ennemi·e. −1 PM si For ≥ 3.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "casemate",
+            "name": "Casemate",
+            "dofusdb_id": "14412",
+            "official_id": "jdr:roublard:casemate",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Protection"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu entoures une de tes bombes de planches et de sacs de sable. Rien ne peut l'abîmer, et elle se charge à l'abri.",
+            "effect": "Une de tes bombes ne peut pas perdre de PV jusqu'au début de ton prochain tour (jusqu'à la fin de ton prochain tour si ton modificateur de Vitalité vaut au moins 3), et elle gagne 1 niveau de charge, dans la limite d'1 par tour. Une fois par tour, relance de 2 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bombe invulnérable 1 tour (2 si Vit ≥ 3).",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bombe : +1 niveau de charge."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "roublardise",
+            "name": "Roublardise",
+            "dofusdb_id": "13431",
+            "official_id": "jdr:roublard:roublardise",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu lances un fumigène et tu files en laissant un leurre à ta place. Tu reparais plus loin, tes bombes se couvrent, et ton tour s'arrête là.",
+            "effect": "Tu te téléportes sur une case libre. Un leurre prend ta place jusqu'au début de ton prochain tour : la première attaque qui le vise rate, et il disparaît. Tes bombes gagnent un bouclier de 1d6. Ton tour se termine. Si ton modificateur d'Agilité vaut au moins 3, la portée gagne 2 cases. Une fois par tour, relance de 3 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "Attirance de 2 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
-            "description": "Extraction : tu ramènes la cible.",
             "sub_effects": [
                 {
                     "slug": "déplacer",
                     "area": "point",
                     "params": {
-                        "cells_formula": "2",
-                        "movement_kind": "pull",
-                        "effect_direction": "action"
-                    }
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "1d6",
+                        "value_formula": "1d6",
+                        "dice_formula": "1d6",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Leurre à ta place. Fin du tour. +2 PO si Agi ≥ 3."
+                    },
+                    "order": 2
                 }
             ],
-            "official_id": "jdr:roublard-extraction",
-            "attack_characteristic_key": "agi"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 11,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "teleport",
+                                "effect_direction": "action",
+                                "teleport": true
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Leurre à ta place. Fin du tour. +2 PO si Agi ≥ 3."
+                            },
+                            "order": 2
+                        }
+                    ],
+                    "po_max": "5"
+                }
+            ]
         },
         {
-            "key": "roublard-magnetisme",
-            "name": "Magnétisme",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 2,
+            "key": "imposture",
+            "name": "Imposture",
+            "dofusdb_id": "13489",
+            "official_id": "jdr:roublard:imposture",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 6,
             "types": [
-                "Dégâts"
+                "Protection"
             ],
-            "element": null,
-            "pa": "3",
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu prends la place d'un·e allié·e au dernier moment, avec un grand sourire. Il ou elle se retrouve là où l'ennemi·e visait.",
+            "effect": "Tu échanges ta place avec un·e allié·e ou une de tes bombes. Jusqu'au début de ton prochain tour, tu as l'avantage aux jets de sauvegarde. Une bombe échangée gagne 1 niveau de charge, dans la limite d'1 par tour. Si ton modificateur de Chance vaut au moins 3, l'allié·e échangé·e gagne aussi +2 CA jusqu'au début de ton prochain tour. Une fois par tour, relance de 2 tours. Réaction : un·e allié·e à portée va être visé·e par une attaque. Tu échanges ta place avec lui ou elle.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "attack_roll",
+            "allows_reaction": true,
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Avantage aux sauvegardes. Bombe : +1 charge. +2 CA allié·e si Cha ≥ 3.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "cadence",
+            "name": "Cadence",
+            "dofusdb_id": "13475",
+            "official_id": "jdr:roublard:cadence",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 7,
+            "types": [
+                "Placement",
+                "Dégâts"
+            ],
+            "state": "playable",
             "is_magic": false,
-            "powerful": 3,
-            "effect": "Poussée de 2 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
-            "description": "Magnétisme : tu dégages l’espace.",
+            "resolution_mode": "attack_roll",
+            "description": "Tu tires une rafale de plombs qui fend l'air. Les ennemi·e·s dans la zone subissent des dommages d'Air et sont repoussé·e·s. Tes bombes touchées prennent l'élément Air et glissent avec le souffle.",
+            "effect": "Dégâts d'Air aux ennemi·e·s de la zone, recul d'1 case depuis le centre. Tes bombes de la zone deviennent Air et sont poussées d'1 case depuis le centre, sans exploser. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "2",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "2d4+Agilité",
+                        "value_formula": "2d4+[agi]",
+                        "dice_formula": "2d4+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "cross-0-1",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bombe : devient Air."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Air."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Air."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "pulsar",
+            "name": "Pulsar",
+            "dofusdb_id": "13442",
+            "official_id": "jdr:roublard:pulsar",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 7,
+            "types": [
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu lances une sphère de poudre qui s'embrase à l'impact. Les ennemi·e·s dans la zone subissent des dommages de Feu. Tes bombes touchées prennent l'élément Feu.",
+            "effect": "Dégâts de Feu aux ennemi·e·s de la zone. Tes bombes de la zone deviennent Feu, sans exploser. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "2",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "circle-0-1",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "2d6+Intelligence",
+                        "value_formula": "2d6+[intel]",
+                        "dice_formula": "2d6+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bombe : devient Feu."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "circle-0-1",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Feu."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "circle-0-1",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "3d6+Intelligence",
+                                "value_formula": "3d6+[intel]",
+                                "dice_formula": "3d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Feu."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "shrapnel",
+            "name": "Shrapnel",
+            "dofusdb_id": "14414",
+            "official_id": "jdr:roublard:shrapnel",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 7,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu fais éclater une gerbe d'éclats trempés. Les ennemi·e·s dans la zone subissent des dommages d'Eau, et ceux et celles collé·e·s à une bombe perdent leur élan. Tes bombes touchées prennent l'élément Eau.",
+            "effect": "Dégâts d'Eau aux ennemi·e·s de la zone. Un·e ennemi·e touché·e au contact d'une de tes bombes perd aussi 1 PA pendant 1 tour. Tes bombes de la zone deviennent Eau, sans exploser. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "2",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d4+Chance",
+                        "value_formula": "2d4+[chance]",
+                        "dice_formula": "2d4+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "retirer",
+                    "area": "cross-0-1",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pa",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bombe : devient Eau."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Eau."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Eau."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "mousquet",
+            "name": "Mousquet",
+            "dofusdb_id": "13473",
+            "official_id": "jdr:roublard:mousquet",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 7,
+            "types": [
+                "Amélioration",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu tires une décharge de mousquet sur un groupe. Les ennemi·e·s dans la zone subissent des dommages de Terre. Tes bombes touchées prennent l'élément Terre et se chargent.",
+            "effect": "Dégâts de Terre aux ennemi·e·s de la zone. Tes bombes de la zone deviennent Terre, sans exploser, et gagnent 1 niveau de charge, dans la limite d'1 par tour. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "2",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d4+Force",
+                        "value_formula": "2d4+[strong]",
+                        "dice_formula": "2d4+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bombe : devient Terre."
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bombes : +1 niveau de charge."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Terre."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombes : +1 niveau de charge."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Terre."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombes : +1 niveau de charge."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "kaboom",
+            "name": "Kaboom",
+            "dofusdb_id": "13450",
+            "official_id": "jdr:roublard:kaboom",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 8,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu distribues des allumettes à tes allié·e·s. Un coup de leur part sur une de tes bombes suffit à la faire sauter.",
+            "effect": "Jusqu'à la fin de son prochain tour, chaque allié·e dans la zone qui touche une de tes bombes la fait exploser, sans lui faire de dégâts, une fois par allié·e. Tes bombes de la zone gagnent 1 niveau de charge, dans la limite d'1 par tour. Si ton modificateur d'Intelligence vaut au moins 3, la zone passe en cercle 3. Une fois par tour, relance de 2 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "circle-0-2",
+                    "params": {
+                        "value": "Allié·e·s : déclenchent une bombe. Bombes : +1 charge.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "stratageme",
+            "name": "Stratagème",
+            "dofusdb_id": "13476",
+            "official_id": "jdr:roublard:stratageme",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 8,
+            "types": [
+                "Protection"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu tires sur une ficelle, et une de tes bombes glisse ailleurs, couverte d'une bâche. Elle change de place à l'abri des coups.",
+            "effect": "Tu téléportes une de tes bombes sur une case libre à 3 cases ou moins d'elle. Elle gagne un bouclier de 1d6. Si ton modificateur de Sagesse vaut au moins 3, tu peux le faire sur deux bombes. Une fois par tour, relance d'1 tour. Réaction : une de tes bombes est visée par une attaque. Tu la téléportes avant qu'elle touche.",
+            "pa": "1",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "1",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "allows_reaction": true,
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "3",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "1d6",
+                        "value_formula": "1d6",
+                        "dice_formula": "1d6",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Téléporte une bombe (deux si Sag ≥ 3)."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "dernier-souffle",
+            "name": "Dernier Souffle",
+            "dofusdb_id": "13446",
+            "official_id": "jdr:roublard:dernier-souffle",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 10,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu souffles sur toutes tes mèches jusqu'à en perdre le souffle. Tes bombes se chargent d'un coup, et tu le paies de ta santé.",
+            "effect": "Tu perds 2d6 PV, 1d6 si ton modificateur de Vitalité vaut au moins 3. Toutes tes bombes gagnent 1 niveau de charge, au-delà de la limite d'1 par tour, sans dépasser le niveau max. Une fois par tour, relance de 3 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Toutes les bombes : +1 charge hors limite. Tu perds 2d6 PV (1d6 si Vit ≥ 3)."
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "megabombe",
+            "name": "Mégabombe",
+            "dofusdb_id": "13490",
+            "official_id": "jdr:roublard:megabombe",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 10,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu ficelles plusieurs charges ensemble pour en faire une énorme. Les bombes voisines disparaissent, et celle qui reste gagne leur puissance.",
+            "effect": "Tes autres bombes à 2 cases ou moins de la bombe ciblée disparaissent, 3 cases si ton modificateur de Force vaut au moins 3. La bombe ciblée gagne 1 niveau de charge par bombe disparue, au-delà de la limite d'1 par tour, sans dépasser le niveau max. Une fois par tour, relance de 3 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "+1 charge par bombe absorbée dans un rayon de 2 (3 si For ≥ 3), hors limite."
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "poudre",
+            "name": "Poudre",
+            "dofusdb_id": "13441",
+            "official_id": "jdr:roublard:poudre",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu vides un sachet de poudre noire sur une de tes bombes. Son explosion fait partir les bombes voisines, et même détruite, elle saute.",
+            "effect": "Jusqu'à son explosion, la bombe ciblée ne peut plus être déplacée. Si elle tombe à 0 PV, elle explose. Quand elle explose, tes bombes dans sa zone explosent aussi, une seule fois chacune. Si ton modificateur de Chance vaut au moins 3, elle gagne 1 niveau de charge en explosant, au-delà de la limite par tour. Une fois par tour.",
+            "pa": "1",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bombe indéplaçable. Explose à 0 PV. Chaîne dans sa zone. +1 charge à l’explosion si Cha ≥ 3.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "remission",
+            "name": "Rémission",
+            "dofusdb_id": "13445",
+            "official_id": "jdr:roublard:remission",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Protection"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu poses un ressort armé sur toi, un·e allié·e ou une bombe. Qui frappe au contact est renvoyé·e en arrière, et une bombe encaisse mieux les tirs.",
+            "effect": "Jusqu'au début de ton prochain tour. Sur toi ou un·e allié·e : un·e ennemi·e qui frappe la cible au contact est repoussé·e de 2 cases. Sur une de tes bombes : elle ne prend que la moitié des dégâts à distance. Si ton modificateur de Sagesse vaut au moins 3, la cible gagne aussi un bouclier de 1d6. Une fois par tour, relance de 2 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
             "sub_effects": [
                 {
                     "slug": "déplacer",
@@ -66,114 +1857,228 @@
                         "cells_formula": "2",
                         "movement_kind": "push",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Allié·e : recul des attaquants au contact. Bombe : moitié dégâts à distance. Bouclier 1d6 si Sag ≥ 3.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:roublard-magnetisme",
-            "attack_characteristic_key": "agi"
+            "intensification": []
         },
         {
-            "key": "explobombe",
-            "name": "Explobombe",
-            "dofusdb_id": "13444",
+            "key": "dagues-boomerang",
+            "name": "Dagues Boomerang",
+            "dofusdb_id": "13438",
+            "official_id": "jdr:roublard:dagues-boomerang",
             "slot_index": 1,
             "choice_order": 0,
+            "character_level": 12,
+            "types": [
+                "Placement",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu lances deux dagues courbes qui reviennent dans ta main. Les ennemi·e·s sur leur route subissent des dommages d'Air, et le retour les tire ou les repousse. Tes bombes touchées prennent l'élément Air.",
+            "effect": "Ligne de 5 cases depuis toi. Dégâts d'Air aux ennemi·e·s de la ligne ; pour chacun·e, tu choisis un recul d'1 case ou une attirance d'1 case vers toi. Tes bombes de la ligne deviennent Air, sans exploser. Une fois par tour, relance de 2 tours.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "line-0-5",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "2d6+Agilité",
+                        "value_formula": "2d6+[agi]",
+                        "dice_formula": "2d6+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "line-0-5",
+                    "params": {
+                        "value": "Recul ou attirance de 1, au choix."
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bombe : devient Air."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "line-0-5",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "line-0-5",
+                            "params": {
+                                "value": "Recul ou attirance de 1, au choix."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Air."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "grenaille",
+            "name": "Grenaille",
+            "dofusdb_id": "14411",
+            "official_id": "jdr:roublard:grenaille",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 12,
             "types": [
                 "Dégâts"
             ],
-            "element": "fire",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": false,
-            "sight_line": true,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu vides une poche de grenaille brûlante sur la zone. Les ennemi·e·s subissent des dommages de Feu, et tes bombes touchées s'enflamment et explosent.",
+            "effect": "Dégâts de Feu aux ennemi·e·s de la zone. Puis tes bombes de la zone deviennent Feu et explosent, dans l'ordre que tu choisis, selon les règles de l'explosion. Une fois par tour, relance de 2 tours.",
+            "pa": "4",
             "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Intelligence (Feu). Magique, 5 PA, 1×/tour, PO 1–4. Piège visible. Déclenché si une créature y marche. Au plus 1 piège à la fois au niveau 1",
-            "description": "Tu poses, tu t’écartes. Qui marche dessus paie.",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "2",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "circle-0-1",
                     "params": {
                         "characteristic": "fire",
-                        "value": "1d6+Intelligence",
-                        "value_formula": "1d6+[intel]",
-                        "dice_formula": "1d6+[intel]",
-                        "value_formula_crit": "2d6+[intel]",
+                        "value": "2d8+Intelligence",
+                        "value_formula": "2d8+[intel]",
+                        "dice_formula": "2d8+[intel]",
                         "effect_direction": "action"
-                    }
-                }
-            ],
-            "target_type": "trap",
-            "character_level": 4
-        },
-        {
-            "key": "sismobombe",
-            "name": "Sismobombe",
-            "dofusdb_id": "13491",
-            "slot_index": 1,
-            "choice_order": 1,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Force (Terre). Magique, 5 PA, 1×/tour.",
-            "description": "Le sol saute autour de toi. Ceux qui restent collés prennent le choc.",
-            "sub_effects": [
+                    },
+                    "order": 0
+                },
                 {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
+                    "slug": "autre",
+                    "area": "point",
                     "params": {
-                        "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
-                        "effect_direction": "action"
-                    }
+                        "value": "Bombe : devient Feu et explose."
+                    },
+                    "order": 1
                 }
             ],
-            "character_level": 4
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "circle-0-1",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "3d8+Intelligence",
+                                "value_formula": "3d8+[intel]",
+                                "dice_formula": "3d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Feu et explose."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "roublard-bombe-a-eau",
-            "name": "Aquabombe",
+            "key": "resquille",
+            "name": "Resquille",
+            "dofusdb_id": "13443",
+            "official_id": "jdr:roublard:resquille",
             "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 5,
+            "choice_order": 2,
+            "character_level": 12,
             "types": [
+                "Entrave",
                 "Dégâts"
             ],
-            "element": "water",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu lances une vague trouble qui retourne le terrain. Les ennemi·e·s subissent des dommages d'Eau et restent planté·e·s. Tes bombes touchées prennent l'élément Eau.",
+            "effect": "Dégâts d'Eau aux ennemi·e·s de la zone, puis Indéplaçable pendant 1 tour. Tes bombes de la zone deviennent Eau, sans exploser, et sont téléportées sur la case symétrique par rapport au centre si elle est libre. Une fois par tour, relance de 2 tours.",
+            "pa": "4",
             "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Piège, 2d6 + Chance (Eau). Magique, 5 PA, 1×/tour. Au plus 2 pièges à la fois.",
-            "description": "Aquabombe : tu poses, tu t’écartes.",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "2",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -183,520 +2088,205 @@
                         "value": "2d6+Chance",
                         "value_formula": "2d6+[chance]",
                         "dice_formula": "2d6+[chance]",
-                        "value_formula_crit": "3d6+[chance]",
                         "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:roublard-bombe-a-eau",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "max_stack": 2,
-            "target_type": "trap"
-        },
-        {
-            "key": "roublard-bombe-a-air",
-            "name": "Tornabombe",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 5,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "air",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Piège, 2d6 + Agilité (Air). Magique, 5 PA, 1×/tour. Au plus 2 pièges à la fois.",
-            "description": "Tornabombe : tu poses, tu t’écartes.",
-            "sub_effects": [
+                    },
+                    "order": 0
+                },
                 {
-                    "slug": "frapper",
+                    "slug": "autre",
                     "area": "circle-0-1",
                     "params": {
-                        "characteristic": "air",
-                        "value": "2d6+Agilité",
-                        "value_formula": "2d6+[agi]",
-                        "dice_formula": "2d6+[agi]",
-                        "value_formula_crit": "3d6+[agi]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:roublard-bombe-a-air",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "max_stack": 2,
-            "target_type": "trap"
-        },
-        {
-            "key": "roublard-explobombe-majeure",
-            "name": "Bombe Feu",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 6,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
-            "description": "Bombe Feu : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "3d6+Intelligence",
-                        "value_formula": "3d6+[intel]",
-                        "dice_formula": "3d6+[intel]",
-                        "value_formula_crit": "4d6+[intel]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:roublard-explobombe-majeure",
-            "attack_characteristic_key": "intel"
-        },
-        {
-            "key": "roublard-roulette-roublard",
-            "name": "Triche",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 6,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Triche : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:roublard-roulette-roublard",
-            "attack_characteristic_key": "chance"
-        },
-        {
-            "key": "roublard-detonateur-majeur",
-            "name": "Poudre",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 7,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "6",
-            "po_editable": true,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Fais exploser une de tes bombes à PO 1–6 (dégâts de la bombe). 3 PA, 1×/tour.",
-            "description": "Poudre : le détonateur à distance. Pas un +2d4.",
-            "sub_effects": [
+                        "value": "Indéplaçable, 1 tour.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                },
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Explose une de tes bombes à distance (dégâts de la bombe).",
-                        "effect_direction": "action"
-                    }
+                        "value": "Bombe : devient Eau."
+                    },
+                    "order": 2
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Bombes : symétrie par rapport au centre."
+                    },
+                    "order": 3
                 }
             ],
-            "official_id": "jdr:roublard-detonateur-majeur",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "circle-0-1",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "circle-0-1",
+                            "params": {
+                                "value": "Indéplaçable, 1 tour.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Eau."
+                            },
+                            "order": 2
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombes : symétrie par rapport au centre."
+                            },
+                            "order": 3
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "roublard-derobade-roublard",
-            "name": "Resquille",
+            "key": "bombarde",
+            "name": "Bombarde",
+            "dofusdb_id": "14415",
+            "official_id": "jdr:roublard:bombarde",
             "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 7,
+            "choice_order": 3,
+            "character_level": 12,
             "types": [
-                "Placement"
+                "Amélioration",
+                "Dégâts"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "5",
-            "po_editable": false,
-            "sight_line": false,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu tires un boulet qui s'écrase au milieu du groupe. Les ennemi·e·s subissent des dommages de Terre et sont repoussé·e·s, tes allié·e·s pris·es dans le souffle frappent plus fort. Tes bombes touchées prennent l'élément Terre.",
+            "effect": "Dégâts de Terre aux ennemi·e·s de la zone, recul d'1 case depuis le centre. Tes allié·e·s de la zone gagnent des dégâts en plus à leur prochaine attaque, avant la fin de leur prochain tour. Tes bombes de la zone deviennent Terre, sans exploser. Une fois par tour, relance de 2 tours.",
+            "pa": "4",
             "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Téléportation 1–5 cases, pas de ligne de vue. 3 PA, 1×/tour.",
-            "description": "Resquille : tu disparais et tu réapparais.",
-            "sub_effects": [
-                {
-                    "slug": "déplacer",
-                    "area": "point",
-                    "params": {
-                        "cells_formula": "5",
-                        "movement_kind": "teleport",
-                        "effect_direction": "action",
-                        "teleport": true
-                    }
-                }
-            ],
-            "official_id": "jdr:roublard-derobade-roublard"
-        },
-        {
-            "key": "roublard-pulsar-majeur",
-            "name": "Mitraille",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 8,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
             "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 5,
-            "effect": "2d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
-            "description": "Mitraille : attaque simple, même budget que le palier 8.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "2d6+Intelligence",
-                        "value_formula": "2d6+[intel]",
-                        "dice_formula": "2d6+[intel]",
-                        "value_formula_crit": "3d6+[intel]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:roublard-pulsar-majeur",
-            "attack_characteristic_key": "intel"
-        },
-        {
-            "key": "roublard-espingole-majeure",
-            "name": "Arbalète",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 8,
-            "types": [
-                "Dégâts"
-            ],
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "2",
+            "po_max": "5",
+            "po_editable": true,
             "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 5,
-            "effect": "2d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Arbalète : attaque simple, même budget que le palier 8.",
+            "attack_characteristic_key": "strong",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "point",
+                    "area": "circle-0-1",
                     "params": {
                         "characteristic": "earth",
                         "value": "2d6+Force",
                         "value_formula": "2d6+[strong]",
                         "dice_formula": "2d6+[strong]",
-                        "value_formula_crit": "3d6+[strong]",
                         "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:roublard-espingole-majeure",
-            "attack_characteristic_key": "strong"
-        },
-        {
-            "key": "roublard-kaboom",
-            "name": "Kaboom",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 10,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "fire",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "3d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Kaboom : sort fort de palier 10.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "3d6+Intelligence",
-                        "value_formula": "3d6+[intel]",
-                        "dice_formula": "3d6+[intel]",
-                        "value_formula_crit": "4d6+[intel]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:roublard-kaboom",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "roublard-sismobombe-majeure",
-            "name": "Bombe de Métal",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 10,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "3d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Bombe de Métal : sort fort de palier 10.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "3d6+Force",
-                        "value_formula": "3d6+[strong]",
-                        "dice_formula": "3d6+[strong]",
-                        "value_formula_crit": "4d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:roublard-sismobombe-majeure",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "roublard-last-boom",
-            "name": "Dernier Souffle",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 11,
-            "types": [
-                "Amélioration"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "+3d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Dernier Souffle : tu te prépares. Le prochain élan frappe plus fort.",
-            "sub_effects": [
-                {
-                    "slug": "booster",
-                    "area": "point",
-                    "duration_formula": "1",
-                    "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "3d4",
-                        "value_formula": "3d4",
-                        "dice_formula": "3d4",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
-                    }
-                }
-            ],
-            "official_id": "jdr:roublard-last-boom",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
-        },
-        {
-            "key": "roublard-botte-celeste",
-            "name": "Botte Céleste",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 11,
-            "types": [
-                "Dégâts"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "Poussée de 4 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
-            "description": "Botte Céleste : tu dégages l’espace.",
-            "sub_effects": [
+                    },
+                    "order": 0
+                },
                 {
                     "slug": "déplacer",
-                    "area": "point",
+                    "area": "circle-0-1",
                     "params": {
-                        "cells_formula": "4",
+                        "cells_formula": "1",
                         "movement_kind": "push",
                         "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:roublard-botte-celeste",
-            "attack_characteristic_key": "agi"
-        },
-        {
-            "key": "roublard-megabombe",
-            "name": "Mégabombe",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 12,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "fire",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Piège, 4d6 + Intelligence (Feu). Magique, 5 PA, 1×/tour. Au plus 3 pièges à la fois.",
-            "description": "Mégabombe : tu poses, tu t’écartes.",
-            "sub_effects": [
+                    },
+                    "order": 1
+                },
                 {
-                    "slug": "frapper",
+                    "slug": "autre",
                     "area": "circle-0-1",
                     "params": {
-                        "characteristic": "fire",
-                        "value": "4d6+Intelligence",
-                        "value_formula": "4d6+[intel]",
-                        "dice_formula": "4d6+[intel]",
-                        "value_formula_crit": "5d6+[intel]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:roublard-megabombe",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "max_stack": 3,
-            "target_type": "trap"
-        },
-        {
-            "key": "roublard-salve",
-            "name": "Rafale",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 12,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "air",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "4d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Rafale : sort fort de palier 14.",
-            "sub_effects": [
+                        "value": "+1d6 aux allié·e·s",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 2
+                },
                 {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
+                    "slug": "autre",
+                    "area": "point",
                     "params": {
-                        "characteristic": "air",
-                        "value": "4d6+Agilité",
-                        "value_formula": "4d6+[agi]",
-                        "dice_formula": "4d6+[agi]",
-                        "value_formula_crit": "5d6+[agi]",
-                        "effect_direction": "action"
-                    }
+                        "value": "Bombe : devient Terre."
+                    },
+                    "order": 3
                 }
             ],
-            "official_id": "jdr:roublard-salve",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "circle-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "circle-0-1",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "circle-0-1",
+                            "params": {
+                                "value": "+2d6",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 2
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Bombe : devient Terre."
+                            },
+                            "order": 3
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

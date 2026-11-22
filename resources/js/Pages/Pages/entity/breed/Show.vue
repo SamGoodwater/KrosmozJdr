@@ -68,6 +68,7 @@ const goEdit = () => {
                     <EntitySectionsRenderer
                         :sections="breedSections"
                         :immersive="true"
+                        :align-with-column="true"
                         empty-message=""
                     />
                 </section>

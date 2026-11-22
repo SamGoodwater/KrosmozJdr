@@ -150,7 +150,7 @@ le type de cible, le cumul maximal et le délai global disposent désormais de d
 
 Les `norms_grid` de `dommages_spell`, `soin_spell`, `bouclier_spell`, `pv_temporaires_spell` et
 `vol_vie_spell` sont la **source de vérité runtime**. `dommages_spell` = formule neutre
-`round(3*pow([level],0.633))` (≈1d6 au niv.1, ≈4d10 au niv.20) × coefficients de palier
+`round(4*pow([level],0.56))` (4 au niv.1, 15 au niv.10, 21 au niv.20) × coefficients de palier
 (0,5 / 0,75 / 1 / 1,3 / 1,7) ; soin/bouclier/PV temp dérivés de `[dommages_spell]` ; vol de vie = 0,3 × dégâts.
 Lancement de référence à **3 PA**.
 

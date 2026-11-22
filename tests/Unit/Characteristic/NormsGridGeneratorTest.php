@@ -95,6 +95,24 @@ final class NormsGridGeneratorTest extends TestCase
         $this->assertSame(34.0, $grid['very_strong'][19]); // round(20*1.7)
     }
 
+    public function test_preview_current_damage_formula_lifts_the_low_end(): void
+    {
+        $coefs = [
+            'very_weak' => 0.5,
+            'weak' => 0.75,
+            'strong' => 1.3,
+            'very_strong' => 1.7,
+        ];
+
+        $grid = $this->generator->preview('round(4*pow([level],0.56))', [], false, $coefs, true);
+
+        $this->assertSame(4.0, $grid['neutral'][0]);
+        $this->assertSame(15.0, $grid['neutral'][9]);
+        $this->assertSame(21.0, $grid['neutral'][19]);
+        $this->assertSame(5.0, $grid['strong'][0]);
+        $this->assertSame(3.0, $grid['weak'][0]);
+    }
+
     public function test_preview_with_coefficients_reads_dependencies_on_neutral_only(): void
     {
         $deps = [

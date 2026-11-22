@@ -201,7 +201,7 @@ SPELLS = [
     ("lapement", "Lapement", 1, 3, ["Entrave", "Dégâts"], "earth", None,
      lambda r: [hit("earth", dice(r["degat"])), strip("pa", num(r["debuff"] or "1", "1")),
                 other("Sans état : dégâts seuls. Pile : −PA. Face : −PM. Consommation : les deux.")], {}),
-    ("destin-d-ecaflip", "Destin d'Ecaflip", 1, 3, ["Entrave", "Dégâts"], "earth", None,
+    ("destin-d-ecaflip", "Destin d’Ecaflip", 1, 3, ["Entrave", "Dégâts"], "earth", None,
      lambda r: [hit("earth", dice(r.get("degat") or "2d10")), heal(dice(r.get("degat") or "2d10")),
                 move("push", push_cells(r, "4")),
                 other("Sans état : dégâts seuls. Pile : vol de vie. Face : attire ou repousse. Consommation : les deux.")], {}),
@@ -229,7 +229,7 @@ SPELLS = [
                 heal(dice(r["autres"] or "1d4"), turns="1"),
                 other("Second soin au début du prochain tour. +1 dé si Intel ≥ 3.")], {}),
     # Niv. 5
-    ("tarot", "Tarot d'Ecaflip", 1, 0, ["Amélioration"], None, None,
+    ("tarot", "Tarot d’Ecaflip", 1, 0, ["Amélioration"], None, None,
      lambda r: [other("1d4 sur la zone (toi compris) : 1 +PM, 2 +PA, 3 −PM, 4 bouclier. Relance du dé si Sag ≥ 3.", zone(r))], {}),
     ("griffe-invocatrice", "Griffe Invocatrice", 1, 1, ["Invocation"], None, None,
      lambda r: [summon(), other("Sans état : mêlé. Pile : enragé. Face : affectueux. Consommation (niv. 7+) : les deux au dé augmenté.")], {}),
@@ -267,8 +267,22 @@ SPELLS = [
 
 
 def sheet_text(path: Path) -> dict[str, dict]:
+    """Lit Général/Description, Effets et Résolution (markdown *…* ou **…**)."""
     texts: dict[str, dict] = {}
     current = None
+    label_map = {
+        "général": "description",
+        "description": "description",
+        "effets": "effect",
+        "effet": "effect",
+        "résolution": "resolution",
+        "resolution": "resolution",
+    }
+    # Obsidian : `**Général :** texte` (deux-points à l'intérieur du gras).
+    label_re = re.compile(
+        r"^\*{1,2}\s*(Général|Description|Effets?|Résolution|Resolution)\s*:\s*\*{1,2}\s*(.*)$",
+        re.I,
+    )
     for line in path.read_text().splitlines():
         if re.match(r"^#{3,6}\s+Niv\s+\d+", line) or re.match(r"^\*\*Variante\s+\d+", line):
             current = audit.spell_name_from(line)
@@ -277,10 +291,15 @@ def sheet_text(path: Path) -> dict[str, dict]:
             continue
         if current is None:
             continue
-        for label, key in (("*Général*", "description"), ("*Effets*", "effect"), ("*Résolution*", "resolution")):
-            if line.startswith(label):
-                texts[current][key] = re.sub(r"^\*[^*]+\*\s*:\s*", "", line).strip()
+        match = label_re.match(line.strip())
+        if not match:
+            continue
+        key = label_map.get(match.group(1).strip().lower())
+        if key:
+            texts[current][key] = match.group(2).strip()
     return texts
+
+
 
 
 def build() -> None:

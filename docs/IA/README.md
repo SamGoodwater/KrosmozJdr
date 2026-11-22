@@ -4,6 +4,8 @@ Le **pipeline LLM** est branché : noyau générique (`GenerativeAiClient`, asse
 
 À ne pas confondre avec les fichiers `_ai.md` du reste de `/docs` : ceux-là orientent les **agents de développement**. Ici, il s’agit du **LLM métier** (Anthropic, défaut Haiku 4.5, liste dans IA métier).
 
+Voix des textes joueur / MJ (tout le site) : [TON.md](./TON.md) — tutoiement, phrases courtes, ambiance séparée des règles. Hors livre de règles.
+
 ## Le problème
 
 Le pipeline de scrapping convertit déjà DofusDB en entités Krosmoz (formules, clamps, normes). Les **nombres rentrent dans les bornes**. Ça ne suffit pas pour un JDR :

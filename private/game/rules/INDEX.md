@@ -53,7 +53,7 @@ Les numéros renvoient aux fichiers du livre. Changelog et historique : [[kref:p
 - **Expertise** (paliers 9 / 15 / 20, max 3) : 3.5.3, 2.4.5
 - **Maîtrise** (1 + ⌊niveau/4⌋) : 2.3.2, 3.5.3
 - **Passifs, mécaniques et capacités de classe** : 2.3.4
-- **Spécialisations** (6 jouables / 11 prévues ; paliers 1, 3, 6, 9, 12, 15, 20) : 2.4.1, 2.4.2
+- **Spécialisations** (11 jouables ; paliers 1, 3, 6, 9, 12, 15, 20 ; archétypes optionnels §2.4.2.7) : 2.4.1, 2.4.2
 - **Table de progression** (12 sorts au niv. 12 / intensification par sort / 6 points fixes / 7 paliers de spé) : 2.3.2
 - **Voies élémentaires** : 2.3.3
 

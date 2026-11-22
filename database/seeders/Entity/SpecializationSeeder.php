@@ -10,6 +10,7 @@ use App\Models\Section;
 use App\Models\User;
 use App\Services\Entity\LegacyEntitySectionImportService;
 use App\Services\Entity\LegacySpecializationRealignService;
+use App\Support\SpecializationImagePaths;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
 
@@ -194,6 +195,7 @@ class SpecializationSeeder extends Seeder
             'write_level' => User::ROLE_ADMIN,
             'created_by' => $creatorId,
         ])->save();
+        $this->assignLocalImage($specialization);
 
         $page = $importer->ensureImportPage(
             (string) ($spec['importPageSlug'] ?? 'import-specialization-'.$slug),
@@ -277,6 +279,7 @@ class SpecializationSeeder extends Seeder
                 'created_by' => $creatorId,
             ]
         );
+        $this->assignLocalImage($specialization);
 
         $page = $importer->ensureImportPage($importPageSlug, $importPageTitle, $creatorId);
         $parsedSections = app(LegacySpecializationRealignService::class)->realign(
@@ -312,6 +315,16 @@ class SpecializationSeeder extends Seeder
 
         if ($specializationCapabilitySync !== []) {
             $specialization->capabilities()->sync($specializationCapabilitySync);
+        }
+    }
+
+    /**
+     * Pose l’icône locale si la fiche n’a pas d’image choisie à la main.
+     */
+    private function assignLocalImage(Specialization $specialization): void
+    {
+        if (SpecializationImagePaths::assignIfMissing($specialization)) {
+            $specialization->save();
         }
     }
 

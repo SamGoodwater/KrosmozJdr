@@ -1,144 +1,478 @@
 {
     "_schema_version": "1",
     "breed": "Steamer",
+    "state": "playable",
     "entries": [
         {
-            "key": "steamer-courant",
-            "name": "Courant",
+            "key": "ancre",
+            "name": "Ancre",
+            "dofusdb_id": "13848",
+            "official_id": "jdr:steamer:ancre",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 2,
             "types": [
-                "Dégâts"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 3,
-            "effect": "Attirance de 2 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
-            "description": "Courant : tu ramènes la cible.",
-            "sub_effects": [
-                {
-                    "slug": "déplacer",
-                    "area": "point",
-                    "params": {
-                        "cells_formula": "2",
-                        "movement_kind": "pull",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:steamer-courant",
-            "attack_characteristic_key": "agi"
-        },
-        {
-            "key": "steamer-ancre",
-            "name": "Ancre",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 2,
-            "types": [
                 "Entrave"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "Retrait de 1 PM. Magique, 3 PA, 1×/tour. Sauvegarde Sagesse.",
-            "description": "Ancre : les jambes pèsent.",
+            "description": "Tu lances une petite ancre aux pieds de la cible.",
+            "effect": "−1 PM pendant 1 tour. Une fois par tour.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "attack_characteristic_key": "sagesse",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Entrave · Altération · physique · sauvegarde de Sagesse contre ton DD de Sagesse · DofusDB : 13848.",
             "sub_effects": [
                 {
                     "slug": "retirer",
                     "area": "point",
+                    "duration_formula": "1",
                     "params": {
-                        "characteristic": "movement_points",
+                        "characteristic": "pm",
                         "value": "1",
                         "value_formula": "1",
-                        "effect_direction": "action"
-                    }
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
                 }
             ],
-            "official_id": "jdr:steamer-ancre",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun retrait."
+            "intensification": []
+        },
+        {
+            "key": "surtension",
+            "name": "Surtension",
+            "dofusdb_id": "13874",
+            "official_id": "jdr:steamer:surtension",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 2,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu surcharges le prochain geste.",
+            "effect": "+1d4 aux dégâts de ton prochain sort de classe avant la fin de ton prochain tour. Pas de cumul. Une fois par tour.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "+1d4 prochain sort",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "foene",
+            "name": "Foène",
+            "dofusdb_id": "13870",
+            "official_id": "jdr:steamer:foene",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 4,
+            "types": [
+                "Placement",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu balayes une fourche d’air. Les cibles subissent des dommages d’Air et sont écartées.",
+            "effect": "Dégâts d’Air en fourche de 1. Repousse de 1 vers les extrémités. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "1d6+Agilité",
+                        "value_formula": "1d6+[agi]",
+                        "dice_formula": "1d6+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "cross-0-1",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Fourche 1 : repousse vers les extrémités."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d4+Agilité",
+                                "value_formula": "2d4+[agi]",
+                                "dice_formula": "2d4+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Fourche 1 : repousse vers les extrémités."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Fourche 1 : repousse vers les extrémités."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Fourche 1 : repousse vers les extrémités."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
         },
         {
             "key": "sabotage",
             "name": "Sabotage",
             "dofusdb_id": "13858",
+            "official_id": "jdr:steamer:sabotage",
             "slot_index": 1,
-            "choice_order": 0,
+            "choice_order": 1,
+            "character_level": 4,
             "types": [
+                "Soin",
                 "Dégâts"
             ],
-            "element": "fire",
-            "pa": "5",
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu satures une machine ou une cible de chaleur. L’ennemi·e brûle ; ta tourelle se recoud.",
+            "effect": "Sur une créature : dégâts de Feu. Sur une de tes tourelles : elle récupère des PV, rien d’autre. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "4",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Intelligence (Feu). Magique, 5 PA, 1×/tour, PO 1–4.",
-            "description": "Ça explose autour. Ceux qui restent collés paient.",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
                         "characteristic": "fire",
                         "value": "1d6+Intelligence",
                         "value_formula": "1d6+[intel]",
                         "dice_formula": "1d6+[intel]",
-                        "value_formula_crit": "2d6+[intel]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "soigner",
+                    "area": "point",
+                    "params": {
+                        "value": "1d6",
+                        "value_formula": "1d6",
+                        "dice_formula": "1d6",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Sur tourelle : soin seulement."
+                    },
+                    "order": 2
                 }
             ],
-            "character_level": 4
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d4+Intelligence",
+                                "value_formula": "2d4+[intel]",
+                                "dice_formula": "2d4+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "1d6",
+                                "value_formula": "1d6",
+                                "dice_formula": "1d6",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Sur tourelle : soin seulement."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "1d6",
+                                "value_formula": "1d6",
+                                "dice_formula": "1d6",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Sur tourelle : soin seulement."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "1d6",
+                                "value_formula": "1d6",
+                                "dice_formula": "1d6",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Sur tourelle : soin seulement."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
         },
         {
             "key": "aspiration",
             "name": "Aspiration",
             "dofusdb_id": "13838",
+            "official_id": "jdr:steamer:aspiration",
             "slot_index": 1,
-            "choice_order": 1,
+            "choice_order": 2,
+            "character_level": 4,
             "types": [
+                "Amélioration",
                 "Dégâts"
             ],
-            "element": "water",
-            "pa": "5",
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu tires un filet d’eau qui porte aussi un calibrage. La cible subit des dommages d’Eau, et ton prochain coup frappe plus fort.",
+            "effect": "Dégâts d’Eau. +1 aux dégâts de ton prochain sort de classe avant la fin de ton prochain tour. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "4",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Chance (Eau) et attirance de 1 case. Magique, 5 PA, 1×/tour, PO 1–4.",
-            "description": "Tu humes, tu tires. L’ennemi se rapproche en prenant le choc.",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -148,266 +482,1288 @@
                         "value": "1d6+Chance",
                         "value_formula": "1d6+[chance]",
                         "dice_formula": "1d6+[chance]",
-                        "value_formula_crit": "2d6+[chance]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
                 },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "+1 dégât prochain sort",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d4+Chance",
+                                "value_formula": "2d4+[chance]",
+                                "dice_formula": "2d4+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d4",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d4",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d6",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "ressac",
+            "name": "Ressac",
+            "dofusdb_id": "13852",
+            "official_id": "jdr:steamer:ressac",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 4,
+            "types": [
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu frappes d’un choc de carène. La cible subit de lourds dommages de Terre.",
+            "effect": "Dégâts de Terre. Une fois par tour. Sur une de tes tourelles : tu récupères 2 PA, rien d’autre. Via Harponneuse : la portée part de la tourelle ; dégâts au cran supérieur.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Via Harponneuse : 2d8"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Via : 3d6"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "3d6+Force",
+                                "value_formula": "3d6+[strong]",
+                                "dice_formula": "3d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Via : 3d8"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "3d8+Force",
+                                "value_formula": "3d8+[strong]",
+                                "dice_formula": "3d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Via : 4d6"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "remorquage",
+            "name": "Remorquage",
+            "dofusdb_id": "13876",
+            "official_id": "jdr:steamer:remorquage",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu tires une de tes tourelles sur une nouvelle case.",
+            "effect": "Téléporte une de tes tourelles sur une case libre dans la portée. Une fois par tour. Réaction : une attaque va réduire une de tes tourelles à 0 PV. Tu la téléportes sur une case libre dans la portée avant que le coup ne porte.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "allows_reaction": true,
+            "sub_effects": [
                 {
                     "slug": "déplacer",
                     "area": "point",
                     "params": {
                         "cells_formula": "1",
-                        "movement_kind": "pull",
-                        "effect_direction": "action"
-                    }
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Téléporte une tourelle."
+                    },
+                    "order": 1
                 }
             ],
-            "character_level": 4
+            "intensification": []
         },
         {
-            "key": "steamer-evolution",
-            "name": "Surcadençage",
-            "slot_index": 1,
+            "key": "secourisme",
+            "name": "Secourisme",
+            "dofusdb_id": "13878",
+            "official_id": "jdr:steamer:secourisme",
+            "slot_index": 2,
             "choice_order": 0,
             "character_level": 5,
             "types": [
-                "Amélioration"
+                "Soin"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "+1d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Surcadençage : tu te prépares. Le prochain élan frappe plus fort.",
-            "sub_effects": [
-                {
-                    "slug": "booster",
-                    "area": "point",
-                    "duration_formula": "1",
-                    "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "1d4",
-                        "value_formula": "1d4",
-                        "dice_formula": "1d4",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
-                    }
-                }
-            ],
-            "official_id": "jdr:steamer-evolution",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
-        },
-        {
-            "key": "steamer-maree",
-            "name": "Marée",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 5,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "water",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
+            "description": "Tu sors un kit de secours.",
+            "effect": "Soin. Une fois par tour.",
+            "pa": "3",
             "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "2d6 + Chance (Eau) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Marée : sort fort de palier 5.",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
             "sub_effects": [
                 {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
+                    "slug": "soigner",
+                    "area": "point",
                     "params": {
-                        "characteristic": "water",
-                        "value": "2d6+Chance",
-                        "value_formula": "2d6+[chance]",
-                        "dice_formula": "2d6+[chance]",
-                        "value_formula_crit": "3d6+[chance]",
+                        "value": "1d6",
+                        "value_formula": "1d6",
+                        "dice_formula": "1d6",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
                 }
             ],
-            "official_id": "jdr:steamer-maree",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 12,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "steamer-harponneuse-majeure",
-            "name": "Embuscade",
+            "key": "piston",
+            "name": "Piston",
+            "dofusdb_id": "13880",
+            "official_id": "jdr:steamer:piston",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 6,
             "types": [
-                "Dégâts"
+                "Placement"
             ],
-            "element": "air",
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu te propulses d’un piston.",
+            "effect": "Téléportation sur une case libre dans la portée. Une fois par tour.",
             "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "evolution",
+            "name": "Évolution",
+            "dofusdb_id": "13882",
+            "official_id": "jdr:steamer:evolution",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
             "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
-            "description": "Embuscade : attaque simple, même budget que le palier 13.",
+            "resolution_mode": "auto_success",
+            "description": "Tu ouvres la vanne. La machine monte en régime — ou elle crache tout d’un coup.",
+            "effect": "Sur une de tes tourelles, un seul choix, une fois par tour. **2 PA** : elle gagne 1 rang (I→II ou II→III), dans la limite d’une seule tourelle en rang III et des autres au plus en rang II. **3 PA** : elle passe directement en rang III jusqu’à la fin de **son** prochain tour, puis retombe en rang I (même si ça dépasse le plafond d’une III pendant ce temps).",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "2 PA : +1 rang (1× III max, autres ≤ II). 3 PA : rang III jusqu’à fin de son tour, puis rang I."
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "harmattan",
+            "name": "Harmattan",
+            "dofusdb_id": "13872",
+            "official_id": "jdr:steamer:harmattan",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 7,
+            "types": [
+                "Placement",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu aspires la cible d’un courant d’air. Elle subit des dommages d’Air et se rapproche.",
+            "effect": "Dégâts d’Air et attirance 2 cases. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
                     "params": {
                         "characteristic": "air",
-                        "value": "3d6+Agilité",
-                        "value_formula": "3d6+[agi]",
-                        "dice_formula": "3d6+[agi]",
-                        "value_formula_crit": "4d6+[agi]",
+                        "value": "2d4+Agilité",
+                        "value_formula": "2d4+[agi]",
+                        "dice_formula": "2d4+[agi]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "2",
+                        "movement_kind": "pull",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:steamer-harponneuse-majeure",
-            "attack_characteristic_key": "agi"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "3",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "3",
+                                "movement_kind": "pull",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "steamer-gardienne-majeure",
-            "name": "Onde",
+            "key": "vapor",
+            "name": "Vapor",
+            "dofusdb_id": "13862",
+            "official_id": "jdr:steamer:vapor",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 6,
+            "character_level": 7,
             "types": [
-                "Soin"
+                "Soin",
+                "Dégâts"
             ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu ouvres un nuage de vapeur brûlante. Les ennemi·e·s brûlent ; tes allié·e·s y reprennent souffle.",
+            "effect": "Dégâts de Feu en ligne de 3, allié·e·s épargné·e·s. Chaque allié·e sur la ligne est soigné·e. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "line-0-3",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "2d4+Intelligence",
+                        "value_formula": "2d4+[intel]",
+                        "dice_formula": "2d4+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "soigner",
+                    "area": "line-0-3",
+                    "params": {
+                        "value": "1d6",
+                        "value_formula": "1d6",
+                        "dice_formula": "1d6",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "line-0-3",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "line-0-3",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "line-0-3",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "line-0-3",
+                            "params": {
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "maree",
+            "name": "Marée",
+            "dofusdb_id": "13840",
+            "official_id": "jdr:steamer:maree",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 7,
+            "types": [
+                "Amélioration",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu ouvres une vague calibrée. Les cibles subissent des dommages d’Eau, et tu gagnes une seconde.",
+            "effect": "Dégâts d’Eau en croix de 1. Tu gagnes +1 PA jusqu’à la fin de ton prochain tour, plafond 1 PA gagné par tour grâce à toi. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
             "element": "water",
+            "attack_characteristic_key": "chance",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d4+Chance",
+                        "value_formula": "2d4+[chance]",
+                        "dice_formula": "2d4+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "booster",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pa",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "ancrage",
+            "name": "Ancrage",
+            "dofusdb_id": "13854",
+            "official_id": "jdr:steamer:ancrage",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 7,
+            "types": [
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu abats une ancre près d’une machine. La cible subit des dommages de Terre, plus lourds si une tourelle est proche.",
+            "effect": "Dégâts de Terre. +1d4 si une de tes tourelles est à 2 cases ou moins de la cible. Une fois par tour.",
             "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "5",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "3d4 + Sagesse. Magique, 3 PA, 2×/tour. Soin automatique sur une cible consentante.",
-            "description": "Onde : soin de palier 13.",
+            "element": "earth",
+            "attack_characteristic_key": "strong",
             "sub_effects": [
                 {
-                    "slug": "soigner",
+                    "slug": "frapper",
                     "area": "point",
                     "params": {
-                        "characteristic": "water",
-                        "value": "3d4+Sagesse",
-                        "value_formula": "3d4+[sagesse]",
-                        "dice_formula": "3d4+[sagesse]",
-                        "value_formula_crit": "4d4+[sagesse]",
+                        "characteristic": "earth",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
                         "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:steamer-gardienne-majeure",
-            "spares_chosen_targets": false
-        },
-        {
-            "key": "steamer-tourelle-tactique",
-            "name": "Tactirrelle",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 7,
-            "types": [
-                "Invocation"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Invoque une 2e tourelle adjacente. Elle agit à ton initiative : 1 attaque 1d6, 1 PM. Au plus 2 tourelles (passif Tourelle). 3 PA, 1×/tour.",
-            "description": "Tactirrelle : la 2e machine, pas un buff.",
-            "sub_effects": [
+                    },
+                    "order": 0
+                },
                 {
-                    "slug": "invoquer",
+                    "slug": "autre",
                     "area": "point",
                     "params": {
-                        "monster_official_id": "jdr:summon:steamer-tourelle-tactique",
-                        "effect_direction": "action"
-                    }
+                        "value": "+1d4 si tourelle ≤2 cases"
+                    },
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:steamer-tourelle-tactique"
-        },
-        {
-            "key": "steamer-tourelle-tactique-soin",
-            "name": "Soigneuse",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 7,
-            "types": [
-                "Invocation"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Invoque une 2e tourelle adjacente. Elle agit à ton initiative : soigne 1d4, 1 PM. Au plus 2 tourelles (passif Tourelle). 3 PA, 1×/tour.",
-            "description": "Soigneuse : l’autre 2e tourelle, qui soigne.",
-            "sub_effects": [
+            "intensification": [
                 {
-                    "slug": "invoquer",
-                    "area": "point",
-                    "params": {
-                        "monster_official_id": "jdr:summon:steamer-tourelle-tactique-soin",
-                        "effect_direction": "action"
-                    }
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d4 si tourelle ≤2 cases"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "3d6+Force",
+                                "value_formula": "3d6+[strong]",
+                                "dice_formula": "3d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d4 si tourelle ≤2 cases"
+                            },
+                            "order": 1
+                        }
+                    ]
                 }
-            ],
-            "official_id": "jdr:steamer-tourelle-tactique-soin"
+            ]
         },
         {
-            "key": "steamer-torpille-majeure",
-            "name": "Scaphandre",
+            "key": "tactirelle",
+            "name": "Tactirelle",
+            "dofusdb_id": "13884",
+            "official_id": "jdr:steamer:tactirelle",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 8,
             "types": [
+                "Invocation"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu déploies la tourelle de placement : elle attire ou pousse.",
+            "effect": "Invoque une Tactirelle (`jdr:summon:steamer-tactirelle`) sur une case libre adjacente, rang I. À son tour : attire **ou** pousse selon son rang. Une seule. Une fois par tour. Relance 3 tours.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "invoquer",
+                    "area": "point",
+                    "params": {
+                        "monster_official_id": "jdr:summon:steamer-tactirelle"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Rang I. Une seule. Attire ou pousse."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "scaphandre",
+            "name": "Scaphandre",
+            "dofusdb_id": "13888",
+            "official_id": "jdr:steamer:scaphandre",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 10,
+            "types": [
+                "Protection"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu verrouilles le scaphandre.",
+            "effect": "Bouclier sur toi jusqu’à la fin de ton prochain tour. Pas de cumul. Une fois par tour. Relance 1 tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "1",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "2d4",
+                        "value_formula": "2d4",
+                        "dice_formula": "2d4",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "2d6",
+                                "value_formula": "2d6",
+                                "dice_formula": "2d6",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "recif",
+            "name": "Récif",
+            "dofusdb_id": "13892",
+            "official_id": "jdr:steamer:recif",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 10,
+            "types": [
+                "Entrave"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu dresses un récif sous les pieds de la cible.",
+            "effect": "Indéplaçable pendant 1 tour. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "attack_characteristic_key": "sagesse",
+            "save_characteristic_key": "sagesse",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Entrave · Altération · physique · sauvegarde de Sagesse contre ton DD de Sagesse · DofusDB : 13892.",
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Indéplaçable, 1 tour.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "garde-a-vous",
+            "name": "Garde à Vous",
+            "dofusdb_id": "13894",
+            "official_id": "jdr:steamer:garde-a-vous",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu mets l’équipe au garde-à-vous.",
+            "effect": "Chaque allié·e à 3 cases ou moins gagne +1d4 aux dégâts de sa prochaine attaque avant la fin de son prochain tour. Une fois par tour. Relance 2 tours.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "circle-0-3",
+                    "params": {
+                        "value": "+1d4 prochaine attaque allié·e·s ≤3 cases.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "bathyscaphe",
+            "name": "Bathyscaphe",
+            "dofusdb_id": "13896",
+            "official_id": "jdr:steamer:bathyscaphe",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu plonges et tu réapparais plus loin.",
+            "effect": "Téléportation sur une case libre dans la portée, sans ligne de vue. Une fois par tour. Relance 1 tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "1",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Sans ligne de vue."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "embuscade",
+            "name": "Embuscade",
+            "dofusdb_id": "13890",
+            "official_id": "jdr:steamer:embuscade",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 12,
+            "types": [
+                "Placement",
                 "Dégâts"
             ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
+            "state": "playable",
             "is_magic": false,
-            "powerful": 5,
-            "effect": "2d6 + Intelligence (Feu). Physique, 3 PA, 2×/tour.",
-            "description": "Scaphandre : attaque simple, même budget que le palier 8.",
+            "resolution_mode": "attack_roll",
+            "description": "Tu déplaces une tourelle d’un coup de vapeur, puis tu frappes. La cible subit des dommages d’Air.",
+            "effect": "Tu téléportes une de tes tourelles sur une case libre dans la portée, puis dégâts d’Air sur une créature à son contact. Une fois par tour. Relance 1 tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "1",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "2d6+Agilité",
+                        "value_formula": "2d6+[agi]",
+                        "dice_formula": "2d6+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Téléporte une tourelle, puis frappe à son contact."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "teleport",
+                                "effect_direction": "action",
+                                "teleport": true
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Téléporte une tourelle, puis frappe à son contact."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "soupape",
+            "name": "Soupape",
+            "dofusdb_id": "13864",
+            "official_id": "jdr:steamer:soupape",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 12,
+            "types": [
+                "Soin",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu ouvres la soupape à fond. La cible subit des dommages de Feu, et tu soignes fort une autre créature.",
+            "effect": "Dégâts de Feu sur la cible. Soin sur un·e allié·e à 6 cases ou moins, ou toi. Une fois par tour. Relance 1 tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "1",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -417,35 +1773,84 @@
                         "value": "2d6+Intelligence",
                         "value_formula": "2d6+[intel]",
                         "dice_formula": "2d6+[intel]",
-                        "value_formula_crit": "3d6+[intel]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "soigner",
+                    "area": "point",
+                    "params": {
+                        "value": "2d6",
+                        "value_formula": "2d6",
+                        "dice_formula": "2d6",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:steamer-torpille-majeure",
-            "attack_characteristic_key": "intel"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "2d8",
+                                "value_formula": "2d8",
+                                "dice_formula": "2d8",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "steamer-longue-vue-majeure",
-            "name": "Periscope",
+            "key": "periscope",
+            "name": "Périscope",
+            "dofusdb_id": "13842",
+            "official_id": "jdr:steamer:periscope",
             "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 8,
+            "choice_order": 2,
+            "character_level": 12,
             "types": [
+                "Amélioration",
                 "Dégâts"
             ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
+            "state": "playable",
             "is_magic": false,
-            "powerful": 5,
-            "effect": "2d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Periscope : attaque simple, même budget que le palier 8.",
+            "resolution_mode": "attack_roll",
+            "description": "Tu vises sans ligne de vue et tu partages la lunette. La cible subit des dommages d’Eau ; tes allié·e·s proches voient plus loin.",
+            "effect": "Dégâts d’Eau, sans ligne de vue. Chaque allié·e à ton contact gagne +1 PO jusqu’à la fin de ton prochain tour. Une fois par tour. Relance 1 tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "1",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -455,253 +1860,142 @@
                         "value": "2d6+Chance",
                         "value_formula": "2d6+[chance]",
                         "dice_formula": "2d6+[chance]",
-                        "value_formula_crit": "3d6+[chance]",
                         "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:steamer-longue-vue-majeure",
-            "attack_characteristic_key": "chance"
-        },
-        {
-            "key": "steamer-sabotage-majeur",
-            "name": "Armadille",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 10,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "fire",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "3d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Armadille : sort fort de palier 10.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "3d6+Intelligence",
-                        "value_formula": "3d6+[intel]",
-                        "dice_formula": "3d6+[intel]",
-                        "value_formula_crit": "4d6+[intel]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:steamer-sabotage-majeur",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "steamer-aspiration-majeure",
-            "name": "Siphon",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 10,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "water",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "3d6 + Chance (Eau) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Siphon : sort fort de palier 10.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:steamer-aspiration-majeure",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "steamer-garde-a-vous",
-            "name": "Garde à Vous",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 11,
-            "types": [
-                "Amélioration"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "+3d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Garde à Vous : tu te prépares. Le prochain élan frappe plus fort.",
-            "sub_effects": [
+                    },
+                    "order": 0
+                },
                 {
                     "slug": "booster",
-                    "area": "point",
+                    "area": "cross-0-1",
                     "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "3d4",
-                        "value_formula": "3d4",
-                        "dice_formula": "3d4",
-                        "effect_direction": "self",
+                        "characteristic": "po",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
                         "duration_formula": "1"
-                    }
-                }
-            ],
-            "official_id": "jdr:steamer-garde-a-vous",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
-        },
-        {
-            "key": "steamer-recif",
-            "name": "Récif",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 11,
-            "types": [
-                "Protection"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "3d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Récif : une couche de Wakfu avant les PV.",
-            "sub_effects": [
+                    },
+                    "order": 1
+                },
                 {
-                    "slug": "protéger",
+                    "slug": "autre",
                     "area": "point",
-                    "duration_formula": "1",
                     "params": {
-                        "value": "3d4+Sagesse",
-                        "value_formula": "3d4+[sagesse]",
-                        "effect_direction": "self",
+                        "value": "+1 PO alliés au contact.",
                         "duration_formula": "1"
-                    }
+                    },
+                    "duration_formula": "1",
+                    "order": 2
                 }
             ],
-            "official_id": "jdr:steamer-recif",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "booster",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "po",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1 PO alliés au contact.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "steamer-kraken",
-            "name": "Kraken",
+            "key": "cabestan",
+            "name": "Cabestan",
+            "dofusdb_id": "13856",
+            "official_id": "jdr:steamer:cabestan",
             "slot_index": 1,
-            "choice_order": 0,
+            "choice_order": 3,
             "character_level": 12,
             "types": [
                 "Dégâts"
             ],
-            "element": "water",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu fais tourner un cabestan de métal. Chaque créature dans la zone subit des dommages de Terre.",
+            "effect": "Dégâts de Terre en zone 2×2. Une fois par tour. Relance 1 tour.",
+            "pa": "4",
             "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "4d6 + Chance (Eau) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Kraken : sort fort de palier 14.",
+            "cast_per_target": "1",
+            "number_between_two_cast": "1",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "rect-2x2",
                     "params": {
-                        "characteristic": "water",
-                        "value": "4d6+Chance",
-                        "value_formula": "4d6+[chance]",
-                        "dice_formula": "4d6+[chance]",
-                        "value_formula_crit": "5d6+[chance]",
+                        "characteristic": "earth",
+                        "value": "3d6+Force",
+                        "value_formula": "3d6+[strong]",
+                        "dice_formula": "3d6+[strong]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
                 }
             ],
-            "official_id": "jdr:steamer-kraken",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "steamer-canon",
-            "name": "Canon",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 12,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "fire",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "4d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Canon : sort fort de palier 14.",
-            "sub_effects": [
+            "intensification": [
                 {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "4d6+Intelligence",
-                        "value_formula": "4d6+[intel]",
-                        "dice_formula": "4d6+[intel]",
-                        "value_formula_crit": "5d6+[intel]",
-                        "effect_direction": "action"
-                    }
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "rect-2x2",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "3d8+Force",
+                                "value_formula": "3d8+[strong]",
+                                "dice_formula": "3d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        }
+                    ]
                 }
-            ],
-            "official_id": "jdr:steamer-canon",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            ]
         }
     ]
 }

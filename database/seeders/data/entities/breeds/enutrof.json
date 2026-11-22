@@ -5,8 +5,9 @@
     "description_fast": "Chasseur de trésors",
     "life_dice": "1d8",
     "description": "Les Enutrofs sont des chasseurs de trésor avides de kamas, qui malgré leur grand âge courent comme des dragodindes à la vue d'un coffre bien rempli. Ils sont experts dans l'art de ralentir leurs ennemis : ils peuvent ainsi les harceler avant de les assomm",
+    "mechanics": "<p><strong>Poisons</strong> — Un poison par voie, 1d4 (sans mod. d’élément), 2 déclenchements max.</p><ul><li><strong>Air / PA</strong> : tente un retrait de PA → dégâts d’Air.</li><li><strong>Eau / PM</strong> : tente un retrait de PM → dégâts d’Eau.</li><li><strong>Terre / PO</strong> : tente un retrait de PO → dégâts de Terre.</li><li><strong>Feu / soin</strong> : un soin au contact de la cible → dégâts de Feu sur la cible empoisonnée.</li></ul><p><strong>La pelle</strong> : +1 dégât (pas un dé) si la cible a 0 PM ou est à terre. Les objets animés (Sac, Pelle, Coffre) sont des invocations : frapper l’objet soigne l’attaquant·e de la moitié des dégâts.</p>",
     "dofus_version": "3",
-    "state": "draft",
+    "state": "playable",
     "read_level": 0,
     "write_level": 3,
     "element_orientations": {

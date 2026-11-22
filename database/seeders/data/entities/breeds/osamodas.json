@@ -5,8 +5,9 @@
     "description_fast": "Invocateur de créatures",
     "life_dice": "1d8",
     "description": "Les Osamodas sont des dompteurs nés ! Ils ont le pouvoir d'invoquer des créatures et sont de remarquables dresseurs. Une rumeur prétend qu'ils taillent leurs vêtements dans la peau de leurs ennemis, mais allez donc leur demander ce qu'il en est... Si vous",
+    "mechanics": "<p><strong>Troupeau</strong> — Moteur invocation.</p><p>Tu as une <strong>voie bénie</strong> (famille Air/Feu/Eau/Terre) et un <strong>compagnon</strong> permanent de cette famille : il ne compte ni dans ton nombre d’invocations, ni dans la limite de la horde.</p><p><strong>Invocation</strong> appelle une bête (rang 1/2/3 selon le niveau). Limite par élément : 1, 2 si mod. ≥ 3, 3 si mod. ≥ 5, +1 sur la voie bénie. Les boosts valent plein sur tes bêtes, moitié sur un·e allié·e.</p>",
     "dofus_version": "3",
-    "state": "draft",
+    "state": "playable",
     "read_level": 0,
     "write_level": 3,
     "element_orientations": {

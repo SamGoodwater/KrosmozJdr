@@ -28,6 +28,10 @@ final class NormsResolverTest extends TestCase
         $this->assertSame(12, $resolver->resolve($grid, 10, 2, [
             ['target' => 'level', 'modifier' => 2],
         ]));
+        $this->assertSame(14, $resolver->resolve($grid, 10, 2, [
+            ['target' => 'level', 'modifier' => 3],
+            ['target' => 'level', 'modifier' => 3],
+        ]));
     }
 
     public function test_compare_returns_delta(): void

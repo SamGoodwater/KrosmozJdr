@@ -384,15 +384,17 @@ HTML;
 
             $page = $this->createOrRestorePage($pageAttrs);
 
-            $this->ensureTextSection(
+            $introHtml = $this->libraryIntroHtml($title, $entityKey);
+            $intro = $this->ensureTextSection(
                 $page,
                 $slug.'-intro',
                 'Introduction',
-                '<h2>'.$title.'</h2><p>Cette page regroupe l\'accès au tableau principal de l\'entité <strong>'.$title.'</strong>.</p>',
+                $introHtml,
                 0,
                 $creatorId,
                 true
             );
+            $this->replaceBoilerplateLibraryIntro($intro, $introHtml, $entityKey);
 
             $this->ensureEntityTableSection(
                 $page,
@@ -403,6 +405,43 @@ HTML;
                 $creatorId
             );
         }
+    }
+
+    /**
+     * Introduction de catalogue. Les spécialisations ont un vrai mode d'emploi ;
+     * les autres bibliothèques gardent le texte d'accès au tableau.
+     */
+    private function libraryIntroHtml(string $title, string $entityKey): string
+    {
+        if ($entityKey === 'specialization') {
+            $html = '<h2>Spécialisations</h2>'
+                .'<p>Une spécialisation est un métier à côté de la classe. Elle ne remplace pas les sorts : elle donne un fil rouge, des compétences et des capacités, surtout hors combat.</p>'
+                .'<p>La progression compte <strong>7 paliers</strong> (niveaux 1, 3, 6, 9, 12, 15 et 20). Chaque palier apporte une capacité garantie, des options et une compétence. Certaines fiches ajoutent des <strong>archétypes</strong> au niveau 1 — l’Artiste en est le modèle, l’Érudit n’en a pas.</p>'
+                .'<p>Règles complètes : [[kref:page:regles-2-4-choisir-sa-specialisation|2.4.2 Choisir sa spécialisation]].</p>';
+
+            return KrefShortcodeReplacer::forEssentialPages()->replace($html);
+        }
+
+        return '<h2>'.$title.'</h2><p>Cette page regroupe l\'accès au tableau principal de l\'entité <strong>'.$title.'</strong>.</p>';
+    }
+
+    /**
+     * Remplace l’intro générique même si elle a été seedée avant les empreintes de contenu.
+     */
+    private function replaceBoilerplateLibraryIntro(Section $section, string $html, string $entityKey): void
+    {
+        if ($entityKey !== 'specialization') {
+            return;
+        }
+
+        $current = SectionContentSync::currentContent($section);
+        if (! str_contains($current, 'Cette page regroupe')) {
+            return;
+        }
+
+        $section->data = SectionContentSync::stamp(is_array($section->data) ? $section->data : [], $html);
+        $section->params = SectionContentSync::stamp(is_array($section->params) ? $section->params : [], $html);
+        $section->save();
     }
 
     /**

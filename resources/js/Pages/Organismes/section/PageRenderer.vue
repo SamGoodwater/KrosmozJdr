@@ -8,7 +8,7 @@
  * - Rend toutes les sections affichables via SectionRenderer
  * - Gère l'ordre des sections
  * - Respecte la visibilité et l'état des sections
- * - Bouton discret pour modifier la page (si droits)
+ * - Fil d'Ariane et plan des sections (PageTopNav)
  * 
  * @props {Object} page - Données de la page (avec sections)
  * @props {Object|null} user - Utilisateur connecté (optionnel)
@@ -17,19 +17,18 @@
  * @example
  * <PageRenderer :page="page" :user="user" :pages="pages" />
  */
-import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { computed, ref, watch } from 'vue';
 import SectionLazyGate from './SectionLazyGate.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import EditPageModal from './modals/EditPageModal.vue';
 import CreateSectionModal from './modals/CreateSectionModal.vue';
-import RulesPagePlan from './RulesPagePlan.vue';
-import RulesBreadcrumbSticky from './RulesBreadcrumbSticky.vue';
 import PageMenuChildrenIndex from './PageMenuChildrenIndex.vue';
+import PageTopNav from './PageTopNav.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { Page } from '@/Models';
-import { useDynamicMenu } from '@/Composables/layout/useDynamicMenu';
+import { pageSectionsUseFullWidth } from '@/Utils/section/sectionLayout';
+import { resolveSectionIdFromAnchor, usePageSectionChrome } from '@/Composables/section/usePageSectionChrome';
 
 const props = defineProps({
     page: {
@@ -64,26 +63,26 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    /** Le parent (fiche classe / spécialisation) affiche déjà le bandeau. */
+    hideTopNav: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 // Modals
 const editModalOpen = ref(false);
 const createSectionModalOpen = ref(false);
-const isPlanDropdownOpen = ref(false);
-const planDropdownRef = ref(null);
 
 // Section à ouvrir en mode édition après création
 const sectionToEdit = ref(null);
 const pendingSectionTemplate = ref(null); // Template de la section en attente
-const activeSectionId = ref(null);
-let sectionObserver = null;
 
 // Utiliser le modèle Page pour normaliser l'accès aux données
 const pageModel = computed(() => {
     if (!props.page) return null;
     return new Page(props.page);
 });
-const { menuItems } = useDynamicMenu();
 
 // Sections disponibles
 const sections = computed(() => {
@@ -141,10 +140,6 @@ const canEdit = computed(() => {
     return canUpdate;
 });
 
-const handleOpenEditModal = () => {
-    editModalOpen.value = true;
-};
-
 const handleCloseEditModal = () => {
     editModalOpen.value = false;
 };
@@ -160,37 +155,6 @@ const handleOpenCreateSectionModal = () => {
 
 const handleCloseCreateSectionModal = () => {
     createSectionModalOpen.value = false;
-};
-
-const togglePlanDropdown = () => {
-    isPlanDropdownOpen.value = !isPlanDropdownOpen.value;
-};
-
-const closePlanDropdown = () => {
-    isPlanDropdownOpen.value = false;
-};
-
-const handleDocumentClick = (event) => {
-    const host = planDropdownRef.value;
-    const target = event?.target;
-    if (!host || !target) return;
-    if (!host.contains(target)) {
-        closePlanDropdown();
-    }
-};
-
-const handleGlobalKeydown = (event) => {
-    if (event?.key === 'Escape') {
-        closePlanDropdown();
-    }
-};
-
-const handlePlanPanelClick = (event) => {
-    const target = event?.target;
-    if (!target) return;
-    if (target.closest('a, button')) {
-        closePlanDropdown();
-    }
 };
 
 const handleSectionCreated = (data) => {
@@ -282,6 +246,9 @@ const sortedSections = computed(() => {
     });
 });
 
+/** Toutes les sections prennent la largeur de la plus large (un tableau = la colonne). */
+const sectionsShareFullWidth = computed(() => pageSectionsUseFullWidth(sortedSections.value));
+
 /** IDs de sections à monter immédiatement (ancre URL, plan, édition). */
 const forceMountSectionIds = ref(new Set());
 
@@ -291,29 +258,8 @@ const forceMountSectionIds = ref(new Set());
  * @param {string} targetId
  * @returns {number|null}
  */
-function resolveSectionIdFromAnchor(targetId) {
-    const raw = String(targetId || "").replace(/^#/, "").trim();
-    if (!raw) {
-        return null;
-    }
-    if (raw.startsWith("section-") && raw.length > "section-".length) {
-        const id = Number(raw.slice("section-".length));
-        return Number.isNaN(id) || id <= 0 ? null : id;
-    }
-    if (raw.startsWith("ssec-") && raw.length > "ssec-".length) {
-        const rest = raw.slice("ssec-".length);
-        for (const s of sortedSections.value) {
-            const slug = String(s.slug || "").trim();
-            if (!slug) {
-                continue;
-            }
-            if (rest === slug || rest.startsWith(`${slug}-`)) {
-                const id = Number(s.id);
-                return Number.isNaN(id) || id <= 0 ? null : id;
-            }
-        }
-    }
-    return null;
+function sectionIdFromHash(targetId) {
+    return resolveSectionIdFromAnchor(targetId, sortedSections.value);
 }
 
 function collectHashEagerSectionIds() {
@@ -324,7 +270,7 @@ function collectHashEagerSectionIds() {
     if (!raw) {
         return new Set();
     }
-    const id = resolveSectionIdFromAnchor(raw);
+    const id = sectionIdFromHash(raw);
     return id ? new Set([id]) : new Set();
 }
 
@@ -365,295 +311,27 @@ function requestSectionMount(sectionOrId) {
     forceMountSectionIds.value = next;
 }
 
-const sectionHash = (section) => {
-    if (!section) return '';
-    const slug = String(section.slug || '').trim();
-    if (slug) return `#ssec-${slug}`;
-    const sid = section.id;
-    return sid ? `#section-${sid}` : '';
-};
-
-const parseL4Headings = (section) => {
-    const html = String(section?.data?.content || '').trim();
-    if (!html || typeof DOMParser === 'undefined') return [];
-    try {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const used = new Set();
-        return Array.from(doc.body.querySelectorAll('h4, h5, h6'))
-            .map((el, idx) => {
-                const text = String(el.textContent || '').trim();
-                if (!text) return null;
-                const base = text
-                    .normalize('NFD')
-                    .replace(/[\u0300-\u036f]/g, '')
-                    .toLowerCase()
-                    .replace(/[^a-z0-9\s-]/g, '')
-                    .trim()
-                    .replace(/\s+/g, '-');
-                const local = base || `heading-${idx + 1}`;
-                const prefix = String(section?.slug || section?.id || '').trim();
-                const anchorPrefix = prefix ? `ssec-${prefix}` : `section-${String(section?.id || '')}`;
-                let id = `${anchorPrefix}-${local}`;
-                let n = 2;
-                while (used.has(id)) {
-                    id = `${anchorPrefix}-${local}-${n}`;
-                    n += 1;
-                }
-                used.add(id);
-                return {
-                    id,
-                    text,
-                    hash: `#${id}`,
-                };
-            })
-            .filter(Boolean);
-    } catch {
-        return [];
-    }
-};
-
-const planSections = computed(() =>
-    sortedSections.value.map((section, index) => ({
-        id: section.id ?? `section-${index + 1}`,
-        title: String(section?.title || '').trim() || `Section ${index + 1}`,
-        hash: sectionHash(section),
-        l4Headings: parseL4Headings(section),
-    })),
-);
-
-const activeSectionTitle = computed(() => {
-    const id = activeSectionId.value;
-    if (!id) return planSections.value[0]?.title || '';
-    return planSections.value.find((section) => section.id === id)?.title || planSections.value[0]?.title || '';
-});
-
-const flattenedMenuPages = computed(() => {
-    const tree = Array.isArray(menuItems.value) ? menuItems.value : [];
-    const currentUrl = String(pageModel.value?.url || '').trim();
-    if (!tree.length || !currentUrl) return [];
-
-    const normalize = (url) => String(url || '').replace(/\/+$/, '');
-    const current = normalize(currentUrl);
-
-    let siblingBranch = null;
-
-    const visit = (items = []) => {
-        if (!Array.isArray(items) || !items.length || siblingBranch) return;
-        for (const item of items) {
-            const itemUrl = normalize(item?.url);
-            if (itemUrl === current) {
-                siblingBranch = items;
-                return;
-            }
-            const children = Array.isArray(item?.children) ? item.children : [];
-            if (children.length) {
-                if (children.some((child) => normalize(child?.url) === current)) {
-                    siblingBranch = children;
-                    return;
-                }
-                visit(children);
-                if (siblingBranch) return;
-            }
-        }
-    };
-
-    visit(tree);
-
-    // Fallback: si page courante non trouvée comme enfant, garder la liste actuelle minimale.
-    const branch = siblingBranch || [];
-    return branch
-        .filter((item) => item?.title && item?.url)
-        .map((item) => ({ title: item.title, url: item.url }));
-});
-
-const l1Pages = computed(() => {
-    const tree = Array.isArray(menuItems.value) ? menuItems.value : [];
-    const currentUrl = String(pageModel.value?.url || '').trim();
-    if (!tree.length || !currentUrl) return [];
-
-    const normalize = (url) => String(url || '').replace(/\/+$/, '');
-    const current = normalize(currentUrl);
-    let groupChildren = [];
-
-    const findGroupForCurrent = (groups = []) => {
-        for (const group of groups) {
-            const children = Array.isArray(group?.children) ? group.children : [];
-            if (!children.length) continue;
-            const hasCurrentInside = children.some((parentItem) => {
-                if (normalize(parentItem?.url) === current) return true;
-                const nested = Array.isArray(parentItem?.children) ? parentItem.children : [];
-                return nested.some((child) => normalize(child?.url) === current);
-            });
-            if (hasCurrentInside) {
-                groupChildren = children;
-                return true;
-            }
-        }
-        return false;
-    };
-
-    findGroupForCurrent(tree);
-
-    return (groupChildren || [])
-        .filter((item) => item?.title && item?.url)
-        .map((item) => ({ title: item.title, url: item.url }));
-});
-
-const l1Title = computed(() => {
-    const parentTitle = String(pageModel.value?.parent?.title || '').trim();
-    if (parentTitle) return parentTitle;
-    const menuGroup = String(pageModel.value?.menuGroup || '').trim();
-    if (menuGroup) return menuGroup;
-    return 'Règles';
-});
-
-const parentPageBreadcrumb = computed(() => {
-    const parent = pageModel.value?.parent;
-    if (!parent?.title) return null;
-    const url = String(parent.url || '').trim();
-    if (!url) return null;
-    return { title: parent.title, url };
-});
-
-const currentPageBreadcrumb = computed(() => {
-    const title = String(pageModel.value?.title || props.page?.title || '').trim();
-    const url = String(pageModel.value?.url || '').trim();
-    if (!title || !url) return null;
-    return { title, url };
+const {
+    planSections,
+    activeSectionTitle,
+    pageTitle,
+    flattenedMenuPages,
+    l1Pages,
+    l1Title,
+    parentPageBreadcrumb,
+    currentPageBreadcrumb,
+    showBreadcrumb,
+    navigateToSection,
+    navigateToPage,
+} = usePageSectionChrome(pageModel, sortedSections, {
+    prepareSection: requestSectionMount,
+    enabled: computed(() => !props.hideTopNav),
 });
 
 const menuChildIndexItems = computed(() =>
     Array.isArray(props.menuChildIndex) ? props.menuChildIndex : [],
 );
 
-const showRulesBreadcrumb = computed(() => pageModel.value?.showRulesBreadcrumb !== false);
-
-const navigateToSection = (section) => {
-    if (!section) return;
-    const hash = section.hash || '';
-    if (!hash) return;
-    if (typeof window !== 'undefined') {
-        const targetId = hash.replace(/^#/, '');
-        const sectionId = resolveSectionIdFromAnchor(targetId) ?? Number(section?.id);
-        if (sectionId) {
-            requestSectionMount(sectionId);
-        }
-        window.location.hash = hash;
-        nextTick(() => {
-            requestAnimationFrame(() => {
-                const el = document.getElementById(targetId);
-                if (el && typeof el.scrollIntoView === 'function') {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
-        });
-    }
-};
-
-const navigateToPage = (item) => {
-    const url = String(item?.url || '').trim();
-    if (!url) return;
-    router.visit(url, {
-        preserveScroll: true,
-    });
-};
-
-/**
- * Ancres `#section-{id}` (id numérique) ou `#ssec-{slug}` (slug section, règles / liens stables) : scroll une fois le DOM prêt.
- */
-function scrollToSectionFromHash() {
-    const raw = (typeof window !== 'undefined' ? window.location.hash : '').replace(/^#/, '');
-    if (!raw) return;
-    const isNumericSection = raw.startsWith('section-') && raw !== 'section-';
-    const isSlugSection = raw.startsWith('ssec-') && raw.length > 'ssec-'.length;
-    if (!isNumericSection && !isSlugSection) return;
-
-    const sectionId = resolveSectionIdFromAnchor(raw);
-    if (sectionId) {
-        requestSectionMount(sectionId);
-    }
-
-    nextTick(() => {
-        requestAnimationFrame(() => {
-            const el = document.getElementById(raw);
-            if (el && typeof el.scrollIntoView === 'function') {
-                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        });
-    });
-}
-
-function onInertiaFinish() {
-    scrollToSectionFromHash();
-}
-
-const setupSectionObserver = () => {
-    if (typeof window === 'undefined' || typeof IntersectionObserver === 'undefined') return;
-    if (sectionObserver) {
-        sectionObserver.disconnect();
-        sectionObserver = null;
-    }
-    const nodes = Array.from(document.querySelectorAll('[data-section-id]'));
-    if (!nodes.length) return;
-
-    sectionObserver = new IntersectionObserver(
-        (entries) => {
-            const visible = entries
-                .filter((entry) => entry.isIntersecting)
-                .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-            if (!visible.length) return;
-            const top = visible[0].target;
-            const rawId = Number(top?.getAttribute('data-section-id'));
-            if (!Number.isNaN(rawId) && rawId > 0) {
-                activeSectionId.value = rawId;
-            }
-        },
-        {
-            root: null,
-            threshold: [0.2, 0.45, 0.7],
-            rootMargin: '-18% 0px -58% 0px',
-        },
-    );
-
-    nodes.forEach((node) => sectionObserver.observe(node));
-    const firstId = Number(nodes[0]?.getAttribute('data-section-id'));
-    if (!Number.isNaN(firstId) && firstId > 0) {
-        activeSectionId.value = firstId;
-    }
-};
-
-onMounted(() => {
-    scrollToSectionFromHash();
-    setupSectionObserver();
-    if (typeof document !== 'undefined') {
-        document.addEventListener('inertia:finish', onInertiaFinish);
-        document.addEventListener('click', handleDocumentClick);
-        window.addEventListener('hashchange', scrollToSectionFromHash);
-        window.addEventListener('keydown', handleGlobalKeydown);
-    }
-});
-
-onBeforeUnmount(() => {
-    if (sectionObserver) {
-        sectionObserver.disconnect();
-        sectionObserver = null;
-    }
-    if (typeof document !== 'undefined') {
-        document.removeEventListener('inertia:finish', onInertiaFinish);
-        document.removeEventListener('click', handleDocumentClick);
-        window.removeEventListener('hashchange', scrollToSectionFromHash);
-        window.removeEventListener('keydown', handleGlobalKeydown);
-    }
-});
-
-watch(
-    () => sortedSections.value.map((s) => s?.id).join(','),
-    () => {
-        scrollToSectionFromHash();
-        nextTick(() => setupSectionObserver());
-    },
-);
 
 watch(sectionToEdit, (id) => {
     if (id) {
@@ -670,65 +348,20 @@ watch(sectionToEdit, (id) => {
             :class="pageModel?.pageCssClasses"
             :allow-overflow="true"
         >
-            <div class="rules-top-nav sticky top-2 z-40 mb-5 overflow-visible">
-                <div class="rules-top-nav__surface flex flex-col gap-2 md:flex-row md:items-start md:justify-between md:gap-3">
-                    <RulesBreadcrumbSticky
-                        v-if="showRulesBreadcrumb"
-                        class="min-w-0 w-full self-start md:flex-1"
-                        :l1-title="l1Title"
-                        :l1-pages="l1Pages"
-                        :page-title="pageModel?.title || props.page?.title || 'Page'"
-                        :page-url="currentPageBreadcrumb?.url || ''"
-                        :parent-page="parentPageBreadcrumb"
-                        :active-section-title="activeSectionTitle"
-                        :pages="flattenedMenuPages"
-                        :sections="planSections"
-                        @navigate:page="navigateToPage"
-                        @navigate:section="navigateToSection"
-                    />
-
-                    <div class="rules-top-nav__actions flex w-full items-start justify-end gap-2 md:w-auto md:flex-none">
-                        <div ref="planDropdownRef" class="rules-page-plan-popover" :class="{ 'is-open': isPlanDropdownOpen }">
-                            <button
-                                type="button"
-                                class="rules-page-plan-popover__trigger"
-                                :aria-expanded="isPlanDropdownOpen ? 'true' : 'false'"
-                                aria-haspopup="dialog"
-                                aria-label="Afficher le plan de la page"
-                                @click.stop="togglePlanDropdown"
-                            >
-                                <span>Plan de la page</span>
-                                <i class="fa-solid fa-chevron-down text-[10px] opacity-70" aria-hidden="true" />
-                            </button>
-                            <div
-                                v-if="isPlanDropdownOpen"
-                                class="rules-page-plan-popover__panel"
-                                role="dialog"
-                                aria-label="Plan de la page"
-                                @click="handlePlanPanelClick"
-                            >
-                                <RulesPagePlan
-                                    :show-heading="false"
-                                    :l1-title="l1Title"
-                                    :page-title="pageModel?.title || props.page?.title || 'Page'"
-                                    :sections="planSections"
-                                />
-                            </div>
-                        </div>
-
-                        <Btn
-                            v-if="canEdit"
-                            @click="handleOpenEditModal"
-                            variant="ghost"
-                            size="xs"
-                            title="Modifier les options de la page"
-                            class="shrink-0 self-start"
-                        >
-                            <Icon source="fa-edit" pack="solid" alt="Modifier la page" size="xs" />
-                        </Btn>
-                    </div>
-                </div>
-            </div>
+            <PageTopNav
+                v-if="!hideTopNav"
+                :show-breadcrumb="showBreadcrumb"
+                :l1-title="l1Title"
+                :l1-pages="l1Pages"
+                :page-title="pageTitle"
+                :page-url="currentPageBreadcrumb?.url || ''"
+                :parent-page="parentPageBreadcrumb"
+                :active-section-title="activeSectionTitle"
+                :pages="flattenedMenuPages"
+                :sections="planSections"
+                @navigate:page="navigateToPage"
+                @navigate:section="navigateToSection"
+            />
 
             <PageMenuChildrenIndex
                 v-if="menuChildIndexItems.length > 0"
@@ -744,6 +377,7 @@ watch(sectionToEdit, (id) => {
                 :user="user"
                 :auto-edit="sectionToEdit === section.id"
                 :eager="isSectionEager(section, index)"
+                :force-full-width="sectionsShareFullWidth"
             />
         </div>
 
@@ -817,85 +451,6 @@ watch(sectionToEdit, (id) => {
     margin: 0 auto;
     padding: 0;
     overflow: visible;
-}
-
-.rules-top-nav__surface {
-    border-radius: var(--radius-box);
-    backdrop-filter: blur(18px) saturate(1.08);
-    background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--color-slate-900) 10%, transparent) 0%,
-        color-mix(in srgb, var(--color-slate-900) 5%, transparent) 100%
-    );
-}
-
-.rules-page-plan-popover {
-    position: relative;
-    width: fit-content;
-    min-width: min(20rem, calc(100vw - 2rem));
-    max-width: min(24rem, calc(100vw - 2rem));
-}
-
-.rules-page-plan-popover__trigger {
-    display: inline-flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    width: 100%;
-    min-width: min(20rem, calc(100vw - 2rem));
-    max-width: min(24rem, calc(100vw - 2rem));
-    min-height: 0;
-    padding: 0.5rem 0.75rem;
-    border-radius: var(--radius-box);
-    border: 1px solid color-mix(in srgb, var(--color-slate-300) 18%, transparent);
-    background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--color-slate-900) 18%, transparent) 0%,
-        color-mix(in srgb, var(--color-slate-900) 10%, transparent) 100%
-    );
-    backdrop-filter: blur(16px) saturate(1.06);
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: color-mix(in srgb, hsl(var(--bc)) 75%, transparent);
-    cursor: pointer;
-    user-select: none;
-}
-
-.rules-page-plan-popover__trigger > span {
-    overflow-wrap: anywhere;
-    white-space: normal;
-}
-
-.rules-page-plan-popover.is-open .rules-page-plan-popover__trigger i {
-    transform: rotate(180deg);
-}
-
-.rules-page-plan-popover__trigger i {
-    transition: transform 0.2s ease;
-    flex: 0 0 auto;
-}
-
-.rules-page-plan-popover__panel {
-    position: absolute;
-    top: calc(100% + 0.45rem);
-    right: 0;
-    z-index: 60;
-    width: min(24rem, calc(100vw - 2rem));
-    min-width: min(20rem, calc(100vw - 2rem));
-    max-height: min(70vh, 34rem);
-    overflow: auto;
-    padding: 0.5rem;
-    border-radius: var(--radius-box);
-    border: 1px solid color-mix(in srgb, var(--color-slate-300) 20%, transparent);
-    background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--color-slate-900) 70%, transparent) 0%,
-        color-mix(in srgb, var(--color-slate-900) 85%, transparent) 100%
-    );
-    backdrop-filter: blur(18px) saturate(1.08);
-    box-shadow: 0 12px 36px color-mix(in srgb, black 40%, transparent);
 }
 
 .sections {

@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from "vue";
+import { publicSectionTitle } from "@/Utils/section/sectionTitle";
 
 const props = defineProps({
     l1Title: { type: String, default: "" },
@@ -23,8 +24,13 @@ const l1PagesList = computed(() =>
 );
 
 const sectionsList = computed(() =>
-    (Array.isArray(props.sections) ? props.sections : []).filter((item) => item?.title && item?.id),
+    (Array.isArray(props.sections) ? props.sections : []).filter(
+        (item) => publicSectionTitle(item?.title) && item?.id,
+    ),
 );
+
+const visibleSectionTitle = computed(() => publicSectionTitle(props.activeSectionTitle));
+const showSectionCrumb = computed(() => visibleSectionTitle.value !== "");
 
 const hasL1Choices = computed(() => l1PagesList.value.length > 1);
 const hasPageChoices = computed(() => pagesList.value.length > 1);
@@ -55,8 +61,7 @@ const singleL1Item = computed(() => {
 const singleSectionItem = computed(() => sectionsList.value[0] || null);
 
 const compactTail = computed(() => {
-    const section = String(props.activeSectionTitle || "").trim();
-    return section || String(props.pageTitle || "").trim() || "Page";
+    return visibleSectionTitle.value || String(props.pageTitle || "").trim() || "Page";
 });
 
 const goToPage = (page) => emit("navigate:page", page);
@@ -155,20 +160,20 @@ const goToSection = (section) => emit("navigate:section", section);
                     </span>
                 </li>
 
-                <li class="hidden sm:inline pointer-events-none select-none" aria-hidden="true">
+                <li v-if="showSectionCrumb" class="hidden sm:inline pointer-events-none select-none" aria-hidden="true">
                     <i class="fa-solid fa-chevron-right text-[9px] opacity-40" />
                 </li>
 
-                <li class="hidden sm:inline">
+                <li v-if="showSectionCrumb" class="hidden sm:inline">
                     <div v-if="hasSectionChoices" class="dropdown dropdown-bottom dropdown-end">
                         <button
                             type="button"
                             tabindex="0"
                             class="inline-flex max-w-56 items-center gap-1 rounded px-1.5 py-0.5 text-left leading-tight transition-colors hover:text-primary"
-                            :title="activeSectionTitle || undefined"
+                            :title="visibleSectionTitle"
                             aria-label="Choisir une autre section"
                         >
-                            <span class="truncate">{{ activeSectionTitle || "Section" }}</span>
+                            <span class="truncate">{{ visibleSectionTitle }}</span>
                             <i class="fa-solid fa-chevron-down relative top-px shrink-0 self-center text-[9px] leading-none opacity-70" />
                         </button>
                         <ul
@@ -194,10 +199,10 @@ const goToSection = (section) => emit("navigate:section", section);
                         :title="singleSectionItem.title"
                         @click="goToSection(singleSectionItem)"
                     >
-                        <span class="truncate">{{ activeSectionTitle || singleSectionItem.title }}</span>
+                        <span class="truncate">{{ visibleSectionTitle }}</span>
                     </button>
-                    <span v-else class="inline-flex max-w-56 truncate px-1.5 py-0.5" :title="activeSectionTitle || undefined">
-                        {{ activeSectionTitle || "Section" }}
+                    <span v-else class="inline-flex max-w-56 truncate px-1.5 py-0.5" :title="visibleSectionTitle">
+                        {{ visibleSectionTitle }}
                     </span>
                 </li>
 

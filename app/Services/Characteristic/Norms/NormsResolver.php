@@ -16,6 +16,9 @@ final class NormsResolver
 
     public const MAX_LEVEL = 20;
 
+    /** Cumul des conditions qui décalent le niveau (5.3.1.5). */
+    public const LEVEL_OFFSET_LIMIT = 4;
+
     /**
      * @param  array<string, array<int, int|float|null>>|null  $grid
      * @param  list<array{target?: string, modifier?: int|float}>  $conditions
@@ -86,6 +89,7 @@ final class NormsResolver
                 $offset += (int) ($condition['modifier'] ?? 0);
             }
         }
+        $offset = max(-self::LEVEL_OFFSET_LIMIT, min(self::LEVEL_OFFSET_LIMIT, $offset));
 
         return max(0, min(self::MAX_LEVEL - 1, $level - 1 + $offset));
     }

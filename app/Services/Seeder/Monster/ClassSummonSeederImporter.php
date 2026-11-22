@@ -17,7 +17,7 @@ use App\Models\User;
 use App\Support\ElementBitmask;
 
 /**
- * Importe les invocations de classe en monstres `auto` + 1 sort-créature.
+ * Importe les invocations de classe en monstres `playable` + 1 sort-créature.
  *
  * Idempotent. Upsert sur `official_id` `jdr:summon:…`. `auto_update = false`.
  *
@@ -128,7 +128,7 @@ final class ClassSummonSeederImporter
             'allows_reaction' => false,
             'duration' => null,
             'official_id' => $entry['action_official_id'],
-            'state' => Spell::STATE_AUTO,
+            'state' => Spell::STATE_PLAYABLE,
             'read_level' => User::ROLE_GUEST,
             'write_level' => User::ROLE_GAME_MASTER,
             'auto_update' => false,
@@ -229,7 +229,7 @@ final class ClassSummonSeederImporter
             'other_info' => $entry['other_info'],
             'hostility' => 0,
             'level' => (string) $entry['character_level'],
-            'state' => Creature::STATE_AUTO,
+            'state' => Creature::STATE_PLAYABLE,
             'read_level' => User::ROLE_GUEST,
             'write_level' => User::ROLE_GAME_MASTER,
             'created_by' => $this->createdById(),
@@ -292,7 +292,7 @@ final class ClassSummonSeederImporter
             'is_boss' => 0,
             'boss_pa' => '',
             'monster_race_id' => $raceId,
-            'state' => EntityState::Auto->value,
+            'state' => EntityState::Playable->value,
             'read_level' => User::ROLE_GUEST,
             'write_level' => User::ROLE_GAME_MASTER,
         ];

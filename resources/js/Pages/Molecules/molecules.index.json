@@ -1332,13 +1332,6 @@
     "file": "entity/specialization/SpecializationViewFull.vue"
   },
   {
-    "name": "SpecializationRelationsByLevel",
-    "description": "Blocs par niveau pour une spécialisation (sorts, capacités, équipements, etc.).",
-    "props": [],
-    "slots": [],
-    "file": "entity/specialization/SpecializationRelationsByLevel.vue"
-  },
-  {
     "name": "ShopViewText",
     "description": "ShopViewText — Vue Texte pour Shop",
     "props": [

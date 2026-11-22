@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Le site est calé sur PHP 8.5, la version qui sera en place au moment de la publication. Node, pnpm et Composer utilisés pour le développer sont montés sur leurs derniers correctifs de sécurité. La base MariaDB du poste reste sur le dernier paquet Debian : le correctif suivant n’est pas encore dans les dépôts officiels."
+    "description": "Chaque spécialisation jouable a maintenant un objet qui la représente (livre, bouclier, masque, ancre…). L’introduction du catalogue explique à quoi sert une spécialisation, comment se lisent les sept paliers, et où trouver la règle. Sur une page, les blocs de contenu ont la même largeur : le plus large donne le gabarit, le texte peut rester centré dedans. La fiche ne commence plus par la liste brute des capacités : elles se lisent dans le texte de chaque palier. Sur toutes les pages, un bloc sans vrai titre n’affiche plus « Texte » ni « Section »."
   },
   {
     "path": "backend/_ai.md",
@@ -130,14 +130,19 @@
     "description": "Ajouter/modifier un type d'entité, un champ, une vue, une colonne de table."
   },
   {
+    "path": "features/entities/creatures-et-personnages.md",
+    "title": "Créature, monstre, PNJ, PJ",
+    "description": "Trois façades partagent le même corps **`Creature`** (niveau, caractéristiques, PV, PA/PM, sorts liés, capacités, etc.). On ne mélange pas les façades."
+  },
+  {
     "path": "features/entities/README.md",
     "title": "Entités JDR",
     "description": "Les « entités de jeu » sont les objets métier du référentiel KrosmozJDR : sorts, objets, ressources, consommables, monstres, PNJ, classes, spécialisations, capacités, conditions, traits, panoplies, boutiques, campagnes, scénarios. Elles partagent un modèle de champs, un système de droits et un pipeline d'affichage communs."
   },
   {
     "path": "features/entities/sorts-depuis-fiche.md",
-    "title": "Construire un sort de classe depuis sa fiche",
-    "description": "On choisit d’abord le sort Dofus de départ, on écrit la fiche, puis on la recopie dans le catalogue. Une fois écrite, la fiche (Obsidian) fait foi. Le repère de niveaux (5/10/15/20, etc.) ne sert que lorsqu’une fiche n’a pas encore ses lignes."
+    "title": "Construire un sort depuis sa fiche",
+    "description": "Deux familles. On ne mélange pas les budgets ni les catégories."
   },
   {
     "path": "features/feedback/_ai.md",
@@ -273,6 +278,11 @@
     "path": "IA/RENCONTRES.md",
     "title": "Rencontres et PNJ (à la demande)",
     "description": "Monstres, sorts de créature et PNJ ne se génèrent **pas** en masse au départ. On les crée quand un scénario en a besoin : moins cher, relecture d’une fiche à la fois."
+  },
+  {
+    "path": "IA/TON.md",
+    "title": "Ton du site (pour les IA)",
+    "description": "Le ton cible, c’est celui des guides de quêtes Dofus clairs (ex. [Dofus pour les noobs](https://www.dofuspourlesnoobs.com/le-receptacle-des-dofus.html)) :"
   },
   {
     "path": "operations/_ai.md",

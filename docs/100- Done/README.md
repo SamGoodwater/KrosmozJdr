@@ -1,5 +1,21 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Icônes et pages de spécialisations
+
+Chaque spécialisation jouable a maintenant un objet qui la représente (livre, bouclier, masque, ancre…). L’introduction du catalogue explique à quoi sert une spécialisation, comment se lisent les sept paliers, et où trouver la règle. Sur une page, les blocs de contenu ont la même largeur : le plus large donne le gabarit, le texte peut rester centré dedans. La fiche ne commence plus par la liste brute des capacités : elles se lisent dans le texte de chaque palier. Sur toutes les pages, un bloc sans vrai titre n’affiche plus « Texte » ni « Section ». Le bandeau (fil d’Ariane et plan) est aussi sur les classes et les spécialisations, sans bouton pour modifier la page. Chaque section peut se replier : on ne garde que son titre, ou les premiers mots s’il n’y en a pas.
+
+## Novembre 2026 — Artiste modèle avec archétypes
+
+La spécialisation **Artiste** devient la fiche modèle **avec styles** (Musicien, Saltimbanque, Troubadour, Voyant) et **Applaudissement**. Textes séparés : ambiance d’un côté, règles de l’autre, ton simple façon guides Dofus. Une doc IA `docs/IA/TON.md` fixe cette voix pour tout le site (pas dans le livre de règles). Cadre technique §2.4.2.7 ; l’Érudit reste le modèle sans styles.
+
+## Novembre 2026 — Guide de création des sorts (classe vs créature)
+
+La fiche de création des sorts distingue **classe** et **créature**. Kit monstre en repères souples (sbire / standard / élite / boss ≈ 4). Invocation rare. Traits du catalogue possibles s’ils collent. Bestiaire Incarnam / Amakna (et leurs sorts) passés en **brouillon** en attendant validation. Clarifié aussi : monstre / PNJ / futur PJ partagent la créature (niveau, caracs) ; le PNJ a classe + spe + kit porté ; le monstre n’a pas de variantes de sorts de classe. Les pages **Création** du CMS (aide MJ) sont réécrites pour des humains : marche à suivre, moins de jargon technique, pour qu’un autre contributeur puisse créer des fiches.
+
+## Novembre 2026 — Cartes de gameplay et vague Zones
+
+Quatre classes d’exemple (Crâ, Iop, Ecaflip, Sram), plus l’Eniripsa déjà validé à la main. Les autres ont une carte courte dans Obsidian (`_gameplays-a-valider.md`) : tour type, moteur, voies, écarts Dofus, garde-fous. On valide la carte avant de réécrire. Vague Zones acceptée : fiches Féca (Eau en Protection, glyphes), Roublard (Mèche / bombes), Eliotrope (portails sans symétrie dure). Vague Invocations acceptée : Osamodas (Troupeau + compagnon permanent), Sadida (Jardin, arbres / poupées / poison), Steamer (Tourelle). Vagues 3–5 acceptées : Enutrof (Pelle), Sacrieur (Souffrance I–X), Pandawa (Portage), Zobal (Masque), Ouginak (Proie + points de Rage), Forgelance (Estoc), Xélor (Téléfrag sans symétrie dure), Huppermage (Contraste sans quatre états). Les 19 classes ont une fiche au format unifié (Eniripsa validé à la main). Les pièges (§3.3.1) ont le réseau ; les glyphes restent visibles et distincts. Précisions notées pour Sacrieur (Souffrance 10 paliers), Pandawa (portage), Xélor (Téléfrag simple), Huppermage (contraste sans 4 états), Ouginak (points de Rage), Osamodas (invocation préférée).
+
 ## Novembre 2026 — Outils alignés sur les derniers correctifs
 
 Le site est calé sur PHP 8.5, la version qui sera en place au moment de la publication. Node, pnpm et Composer utilisés pour le développer sont montés sur leurs derniers correctifs de sécurité. La base MariaDB du poste reste sur le dernier paquet Debian : le correctif suivant n’est pas encore dans les dépôts officiels.

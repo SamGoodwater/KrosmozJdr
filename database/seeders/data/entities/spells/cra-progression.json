@@ -6,45 +6,43 @@
         {
             "key": "vendetta",
             "name": "Vendetta",
+            "dofusdb_id": null,
+            "official_id": "jdr:cra:vendetta",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 2,
             "types": [
-                "Amélioration",
-                "Dégâts"
+                "Amélioration"
             ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "saving_throw",
+            "description": "Tu désignes une cible et tu la gardes dans l’œil. Chaque flèche qui suit cherche cette proie.",
+            "effect": "Si la sauvegarde échoue, tu as l’avantage pour toucher cette créature et tes dégâts contre elle augmentent. Relance de 3 tours.",
             "pa": "2",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "3",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "6",
             "po_editable": true,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "cast_per_target": "1",
-            "number_between_two_cast": "3",
-            "cast_in_line": false,
-            "resolution_mode": "saving_throw",
-            "is_magic": false,
-            "effect": "Avantage et bonus de dégâts pendant 3 tours.",
-            "description": "Tu nommes quelqu'un, même si un mur vous sépare. Tant que la marque tient, tes flèches cherchent cette cible et frappent plus juste, plus fort.",
+            "attack_characteristic_key": "agi",
+            "save_characteristic_key": "agi",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Amélioration · Altération · Wakfu · sauvegarde de Sagesse contre ton DD de Sagesse · sans ligne de vue.",
             "sub_effects": [
-                {
-                    "slug": "booster",
-                    "area": "point",
-                    "order": 0,
-                    "params": {
-                        "characteristic": "touch",
-                        "value": "1d6"
-                    },
-                    "duration_formula": "3"
-                },
                 {
                     "slug": "autre",
                     "area": "point",
-                    "order": 1,
                     "params": {
-                        "value": "Avantage aux jets de touche contre la cible."
+                        "value": "avantage et +1d6, 3 tours",
+                        "duration_formula": "1"
                     },
-                    "duration_formula": "3"
+                    "duration_formula": "1",
+                    "order": 0
                 }
             ],
             "intensification": [
@@ -54,23 +52,14 @@
                     "effect": "",
                     "sub_effects": [
                         {
-                            "slug": "booster",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "characteristic": "touch",
-                                "value": "1d8"
-                            },
-                            "duration_formula": "3"
-                        },
-                        {
                             "slug": "autre",
                             "area": "point",
-                            "order": 1,
                             "params": {
-                                "value": "Avantage aux jets de touche contre la cible."
+                                "value": "avantage et +1d8, 3 tours",
+                                "duration_formula": "1"
                             },
-                            "duration_formula": "3"
+                            "duration_formula": "1",
+                            "order": 0
                         }
                     ]
                 },
@@ -80,67 +69,56 @@
                     "effect": "",
                     "sub_effects": [
                         {
-                            "slug": "booster",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "characteristic": "touch",
-                                "value": "2d6"
-                            },
-                            "duration_formula": "3"
-                        },
-                        {
                             "slug": "autre",
                             "area": "point",
-                            "order": 1,
                             "params": {
-                                "value": "Avantage aux jets de touche contre la cible."
+                                "value": "avantage et +2d6, 3 tours",
+                                "duration_formula": "1"
                             },
-                            "duration_formula": "3"
+                            "duration_formula": "1",
+                            "order": 0
                         }
                     ]
                 }
-            ],
-            "official_id": "jdr:cra:vendetta",
-            "duration": "3 tours",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
-            "cast_in_diagonal": false
+            ]
         },
         {
             "key": "oeil-pour-oeil",
             "name": "Œil pour œil",
-            "slot_index": 1,
-            "choice_order": 1,
+            "dofusdb_id": "32454",
+            "official_id": "jdr:cra:oeil-pour-oeil",
+            "slot_index": 2,
+            "choice_order": 0,
             "character_level": 2,
             "types": [
-                "Protection",
-                "Placement"
+                "Protection"
             ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu gardes une flèche encochée pour quelqu’un, toi compris. Quand on le frappe, ta riposte gêne la visée de l’attaquant.",
+            "effect": "Pendant 2 tours, en réaction à une attaque contre la créature protégée, l’attaquant a un désavantage pour la toucher. Au niveau 6, le jet subit aussi −1. Au niveau 13, −2. La garde est lancée à ton tour : la relance et l’usage sont déjà comptés. La riposte dépense ta réaction, sans second paiement. Relance de 3 tours.",
             "pa": "2",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "0",
             "po_max": "6",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "cast_per_target": "1",
-            "number_between_two_cast": "3",
-            "cast_in_line": false,
-            "resolution_mode": "auto_success",
-            "is_magic": false,
-            "effect": "Réaction : repousse l’attaquant pendant 2 tours.",
-            "description": "Tu gardes une flèche encochée pour une créature, toi y compris. Quand on l'attaque, tu lâches le trait en réponse et l'attaquant recule.",
+            "allows_reaction": true,
             "sub_effects": [
                 {
-                    "slug": "déplacer",
+                    "slug": "autre",
                     "area": "point",
-                    "order": 0,
                     "params": {
-                        "cells_formula": "1",
-                        "movement_kind": "push"
+                        "value": "Garde préparée : riposte quand la cible est touchée.",
+                        "duration_formula": "2"
                     },
-                    "duration_formula": "2"
+                    "duration_formula": "2",
+                    "order": 0
                 }
             ],
             "intensification": [
@@ -150,14 +128,14 @@
                     "effect": "",
                     "sub_effects": [
                         {
-                            "slug": "déplacer",
+                            "slug": "autre",
                             "area": "point",
-                            "order": 0,
                             "params": {
-                                "cells_formula": "2",
-                                "movement_kind": "push"
+                                "value": "Garde préparée : riposte quand la cible est touchée.",
+                                "duration_formula": "2"
                             },
-                            "duration_formula": "2"
+                            "duration_formula": "2",
+                            "order": 0
                         }
                     ]
                 },
@@ -167,67 +145,70 @@
                     "effect": "",
                     "sub_effects": [
                         {
-                            "slug": "déplacer",
+                            "slug": "autre",
                             "area": "point",
-                            "order": 0,
                             "params": {
-                                "cells_formula": "3",
-                                "movement_kind": "push"
+                                "value": "Garde préparée : riposte quand la cible est touchée.",
+                                "duration_formula": "2"
                             },
-                            "duration_formula": "2"
+                            "duration_formula": "2",
+                            "order": 0
                         }
                     ]
                 }
-            ],
-            "dofusdb_id": "32454",
-            "duration": "2 tours",
-            "allows_reaction": true,
-            "cast_in_diagonal": false
+            ]
         },
         {
             "key": "fleche-de-recul",
             "name": "Flèche de recul",
+            "dofusdb_id": "32426",
+            "official_id": "jdr:cra:fleche-de-recul",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 4,
             "types": [
-                "Dégâts",
-                "Placement"
+                "Placement",
+                "Dégâts"
             ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu tires un carreau assez lourd pour faire reculer. Le choc ouvre de la place entre toi et la cible.",
+            "effect": "Dégâts d’Air et repousse la cible. Deux fois par tour.",
             "pa": "3",
-            "po_min": "1",
-            "po_max": "5",
-            "po_editable": true,
-            "sight_line": true,
             "cast_per_turn": "2",
             "cast_per_target": "1",
             "number_between_two_cast": "0",
+            "sight_line": true,
             "cast_in_line": false,
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "effect": "Les allié·e·s ne sont pas blessé·e·s par le recul.",
-            "description": "Tu décoches une flèche lourde. Elle inflige des dommages d'Air et fait reculer la cible.",
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
-                    "order": 0,
                     "params": {
                         "characteristic": "air",
                         "value": "1d6+Agilité",
                         "value_formula": "1d6+[agi]",
                         "dice_formula": "1d6+[agi]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
                 },
                 {
                     "slug": "déplacer",
                     "area": "point",
-                    "order": 1,
                     "params": {
                         "cells_formula": "2",
-                        "movement_kind": "push"
-                    }
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    },
+                    "order": 1
                 }
             ],
             "intensification": [
@@ -239,23 +220,24 @@
                         {
                             "slug": "frapper",
                             "area": "point",
-                            "order": 0,
                             "params": {
                                 "characteristic": "air",
                                 "value": "2d6+Agilité",
                                 "value_formula": "2d6+[agi]",
                                 "dice_formula": "2d6+[agi]",
                                 "effect_direction": "action"
-                            }
+                            },
+                            "order": 0
                         },
                         {
                             "slug": "déplacer",
                             "area": "point",
-                            "order": 1,
                             "params": {
                                 "cells_formula": "3",
-                                "movement_kind": "push"
-                            }
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
                         }
                     ],
                     "cast_per_target": "2"
@@ -268,26 +250,26 @@
                         {
                             "slug": "frapper",
                             "area": "point",
-                            "order": 0,
                             "params": {
                                 "characteristic": "air",
                                 "value": "2d8+Agilité",
                                 "value_formula": "2d8+[agi]",
                                 "dice_formula": "2d8+[agi]",
                                 "effect_direction": "action"
-                            }
+                            },
+                            "order": 0
                         },
                         {
                             "slug": "déplacer",
                             "area": "point",
-                            "order": 1,
                             "params": {
                                 "cells_formula": "4",
-                                "movement_kind": "push"
-                            }
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
                         }
                     ],
-                    "cast_per_turn": "3",
                     "cast_per_target": "3"
                 },
                 {
@@ -298,69 +280,79 @@
                         {
                             "slug": "frapper",
                             "area": "point",
-                            "order": 0,
                             "params": {
                                 "characteristic": "air",
                                 "value": "2d8+Agilité",
                                 "value_formula": "2d8+[agi]",
                                 "dice_formula": "2d8+[agi]",
                                 "effect_direction": "action"
-                            }
+                            },
+                            "order": 0
                         },
                         {
                             "slug": "déplacer",
                             "area": "point",
-                            "order": 1,
                             "params": {
                                 "cells_formula": "5",
-                                "movement_kind": "push"
-                            }
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 1
                         }
                     ],
-                    "cast_per_turn": "3",
                     "cast_per_target": "3"
                 }
-            ],
-            "element": "air",
-            "dofusdb_id": "32426",
-            "attack_characteristic_key": "agi",
-            "cast_in_diagonal": false
+            ]
         },
         {
             "key": "fleche-devorante",
-            "name": "Flèche Dévorante",
+            "name": "Flèche dévorante",
+            "dofusdb_id": "32446",
+            "official_id": "jdr:cra:fleche-devorante",
             "slot_index": 1,
             "choice_order": 1,
             "character_level": 4,
             "types": [
-                "Dégâts"
+                "Dégâts",
+                "Amélioration"
             ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "La flèche s’enfonce et se nourrit. Une part de ce qu’elle arrache te revient.",
+            "effect": "Dégâts de Feu. Tu récupères la moitié des dégâts finaux en points de vie. Une fois par tour.",
             "pa": "3",
-            "po_min": "1",
-            "po_max": "6",
-            "po_editable": true,
-            "sight_line": true,
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "0",
+            "sight_line": true,
             "cast_in_line": false,
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "effect": "Vol de la moitié des dégâts finaux.",
-            "description": "Tu tires une flèche qui boit la blessure. Elle inflige des dommages de Feu, et une part de ce qu'elle arrache te revient.",
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
-                    "order": 0,
                     "params": {
                         "characteristic": "fire",
                         "value": "2d4+Intelligence",
                         "value_formula": "2d4+[intel]",
                         "dice_formula": "2d4+[intel]",
-                        "effect_direction": "action",
-                        "life_steal_formula": "1/2 des dégâts finaux"
-                    }
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Brûlure / soin selon fiche."
+                    },
+                    "order": 1
                 }
             ],
             "intensification": [
@@ -372,19 +364,24 @@
                         {
                             "slug": "frapper",
                             "area": "point",
-                            "order": 0,
                             "params": {
                                 "characteristic": "fire",
                                 "value": "3d4+Intelligence",
                                 "value_formula": "3d4+[intel]",
                                 "dice_formula": "3d4+[intel]",
-                                "effect_direction": "action",
-                                "life_steal_formula": "1/2 des dégâts finaux"
-                            }
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Brûlure / soin selon fiche."
+                            },
+                            "order": 1
                         }
-                    ],
-                    "cast_per_turn": "2",
-                    "cast_per_target": "2"
+                    ]
                 },
                 {
                     "tier": "II",
@@ -394,19 +391,24 @@
                         {
                             "slug": "frapper",
                             "area": "point",
-                            "order": 0,
                             "params": {
                                 "characteristic": "fire",
                                 "value": "4d4+Intelligence",
                                 "value_formula": "4d4+[intel]",
                                 "dice_formula": "4d4+[intel]",
-                                "effect_direction": "action",
-                                "life_steal_formula": "1/2 des dégâts finaux"
-                            }
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Brûlure / soin selon fiche."
+                            },
+                            "order": 1
                         }
-                    ],
-                    "cast_per_turn": "2",
-                    "cast_per_target": "2"
+                    ]
                 },
                 {
                     "tier": "III",
@@ -416,69 +418,80 @@
                         {
                             "slug": "frapper",
                             "area": "point",
-                            "order": 0,
                             "params": {
                                 "characteristic": "fire",
                                 "value": "5d4+Intelligence",
                                 "value_formula": "5d4+[intel]",
                                 "dice_formula": "5d4+[intel]",
-                                "effect_direction": "action",
-                                "life_steal_formula": "1/2 des dégâts finaux"
-                            }
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Brûlure / soin selon fiche."
+                            },
+                            "order": 1
                         }
-                    ],
-                    "cast_per_turn": "2",
-                    "cast_per_target": "2"
+                    ]
                 }
-            ],
-            "element": "fire",
-            "dofusdb_id": "32446",
-            "attack_characteristic_key": "intel",
-            "cast_in_diagonal": false
+            ]
         },
         {
             "key": "oeil-de-taupe",
             "name": "Œil de taupe",
+            "dofusdb_id": "32437",
+            "official_id": "jdr:cra:oeil-de-taupe",
             "slot_index": 1,
             "choice_order": 2,
             "character_level": 4,
             "types": [
-                "Dégâts",
                 "Entrave"
             ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "saving_throw",
+            "description": "Tu déposes un nuage épais. Dedans, on n’y voit plus, et ce qui se cachait n’a plus d’ombre où se tenir.",
+            "effect": "Dégâts d’Eau en zone. Échec à la sauvegarde : état Aveuglé pour 1 tour, et une créature invisible est révélée. Tes alliés traversent le nuage sans en souffrir. Une fois par tour, relance de 2 tours.",
             "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "0",
             "po_max": "5",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "cast_per_target": "2",
-            "number_between_two_cast": "0",
-            "cast_in_line": false,
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "effect": "Aveugle et révèle l’invisible.",
-            "description": "Tu troubles une zone d'un nuage trouble. Il inflige des dommages d'Eau, aveugle les ennemi·e·s et révèle les invisibles. Tes allié·e·s traversent sans dommage.",
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "save_characteristic_key": "chance",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Eau · origine · Entrave · Altération · Wakfu · sauvegarde de Chance contre ton DD de Chance · alliés épargnés.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "rect-2x2",
-                    "order": 0,
+                    "area": "point",
                     "params": {
                         "characteristic": "water",
                         "value": "1d4+Chance",
                         "value_formula": "1d4+[chance]",
                         "dice_formula": "1d4+[chance]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
                 },
                 {
                     "slug": "autre",
-                    "area": "rect-2x2",
-                    "order": 1,
+                    "area": "point",
                     "params": {
-                        "value": "État Aveuglé. Révèle l'invisible. Les allié·e·s sont saufs."
-                    }
+                        "value": "Aveuglé. Révèle l’invisible.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
                 }
             ],
             "intensification": [
@@ -489,23 +502,25 @@
                     "sub_effects": [
                         {
                             "slug": "frapper",
-                            "area": "rect-2x3",
-                            "order": 0,
+                            "area": "point",
                             "params": {
                                 "characteristic": "water",
                                 "value": "1d6+Chance",
                                 "value_formula": "1d6+[chance]",
                                 "dice_formula": "1d6+[chance]",
                                 "effect_direction": "action"
-                            }
+                            },
+                            "order": 0
                         },
                         {
                             "slug": "autre",
-                            "area": "rect-2x3",
-                            "order": 1,
+                            "area": "point",
                             "params": {
-                                "value": "État Aveuglé. Révèle l'invisible. Les allié·e·s sont saufs."
-                            }
+                                "value": "Aveuglé. Révèle l’invisible.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ]
                 },
@@ -516,23 +531,25 @@
                     "sub_effects": [
                         {
                             "slug": "frapper",
-                            "area": "rect-3x3",
-                            "order": 0,
+                            "area": "point",
                             "params": {
                                 "characteristic": "water",
                                 "value": "2d4+Chance",
                                 "value_formula": "2d4+[chance]",
                                 "dice_formula": "2d4+[chance]",
                                 "effect_direction": "action"
-                            }
+                            },
+                            "order": 0
                         },
                         {
                             "slug": "autre",
-                            "area": "rect-3x3",
-                            "order": 1,
+                            "area": "point",
                             "params": {
-                                "value": "État Aveuglé. Révèle l'invisible. Les allié·e·s sont saufs."
-                            }
+                                "value": "Aveuglé. Révèle l’invisible.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ]
                 },
@@ -543,76 +560,78 @@
                     "sub_effects": [
                         {
                             "slug": "frapper",
-                            "area": "rect-4x4",
-                            "order": 0,
+                            "area": "point",
                             "params": {
                                 "characteristic": "water",
                                 "value": "2d4+Chance",
                                 "value_formula": "2d4+[chance]",
                                 "dice_formula": "2d4+[chance]",
                                 "effect_direction": "action"
-                            }
+                            },
+                            "order": 0
                         },
                         {
                             "slug": "autre",
-                            "area": "rect-4x4",
-                            "order": 1,
+                            "area": "point",
                             "params": {
-                                "value": "État Aveuglé. Révèle l'invisible. Les allié·e·s sont saufs."
-                            }
+                                "value": "Aveuglé. Révèle l’invisible.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ]
                 }
-            ],
-            "element": "water",
-            "dofusdb_id": "32437",
-            "attack_characteristic_key": "chance",
-            "cast_in_diagonal": false
+            ]
         },
         {
             "key": "fleche-punitive",
             "name": "Flèche punitive",
+            "dofusdb_id": "32456",
+            "official_id": "jdr:cra:fleche-punitive",
             "slot_index": 1,
             "choice_order": 3,
             "character_level": 4,
             "types": [
-                "Dégâts",
-                "Amélioration"
+                "Dégâts"
             ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Chaque flèche laisse une marque. Tant que tu continues, les marques s’ouvrent un peu plus.",
+            "effect": "Dégâts de Terre. Chaque coup réussi pose une charge sur la cible, 3 au maximum. Les charges ne se dissipent pas. Elles tombent si la cible finit un tour sans en avoir reçu une nouvelle de ta part. Chaque charge ajoute un bonus fixe aux dégâts de ce sort. Une fois par tour.",
             "pa": "4",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "0",
+            "sight_line": true,
             "cast_in_line": false,
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "effect": "Cumuls de dégâts supplémentaires, non dissipables.",
-            "description": "Tu répètes le même tir, tour après tour. La corde garde la tension : les dommages de Terre montent tant que tu ne t'arrêtes pas.",
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
-                    "order": 0,
                     "params": {
                         "characteristic": "earth",
                         "value": "1d6+Force",
                         "value_formula": "1d6+[strong]",
                         "dice_formula": "1d6+[strong]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
                 },
                 {
-                    "slug": "booster",
+                    "slug": "autre",
                     "area": "point",
-                    "order": 1,
                     "params": {
-                        "characteristic": "earth",
-                        "value": "3"
-                    }
+                        "value": "Charge (max 3). Bonus +2 par charge, nd."
+                    },
+                    "order": 1
                 }
             ],
             "intensification": [
@@ -624,23 +643,22 @@
                         {
                             "slug": "frapper",
                             "area": "point",
-                            "order": 0,
                             "params": {
                                 "characteristic": "earth",
                                 "value": "2d6+Force",
                                 "value_formula": "2d6+[strong]",
                                 "dice_formula": "2d6+[strong]",
                                 "effect_direction": "action"
-                            }
+                            },
+                            "order": 0
                         },
                         {
-                            "slug": "booster",
+                            "slug": "autre",
                             "area": "point",
-                            "order": 1,
                             "params": {
-                                "characteristic": "earth",
-                                "value": "6"
-                            }
+                                "value": "Charge (max 3). Bonus +2 par charge, nd."
+                            },
+                            "order": 1
                         }
                     ]
                 },
@@ -652,23 +670,22 @@
                         {
                             "slug": "frapper",
                             "area": "point",
-                            "order": 0,
                             "params": {
                                 "characteristic": "earth",
                                 "value": "3d6+Force",
                                 "value_formula": "3d6+[strong]",
                                 "dice_formula": "3d6+[strong]",
                                 "effect_direction": "action"
-                            }
+                            },
+                            "order": 0
                         },
                         {
-                            "slug": "booster",
+                            "slug": "autre",
                             "area": "point",
-                            "order": 1,
                             "params": {
-                                "characteristic": "earth",
-                                "value": "8"
-                            }
+                                "value": "Charge (max 3). Bonus +2 par charge, nd."
+                            },
+                            "order": 1
                         }
                     ]
                 },
@@ -680,64 +697,63 @@
                         {
                             "slug": "frapper",
                             "area": "point",
-                            "order": 0,
                             "params": {
                                 "characteristic": "earth",
                                 "value": "4d6+Force",
                                 "value_formula": "4d6+[strong]",
                                 "dice_formula": "4d6+[strong]",
                                 "effect_direction": "action"
-                            }
+                            },
+                            "order": 0
                         },
                         {
-                            "slug": "booster",
+                            "slug": "autre",
                             "area": "point",
-                            "order": 1,
                             "params": {
-                                "characteristic": "earth",
-                                "value": "10"
-                            }
+                                "value": "Charge (max 3). Bonus +2 par charge, nd."
+                            },
+                            "order": 1
                         }
                     ]
                 }
-            ],
-            "element": "earth",
-            "dofusdb_id": "32456",
-            "attack_characteristic_key": "strong",
-            "max_stack": 3,
-            "cast_in_diagonal": false
+            ]
         },
         {
             "key": "tir-puissant",
             "name": "Tir puissant",
+            "dofusdb_id": "32466",
+            "official_id": "jdr:cra:tir-puissant",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 5,
             "types": [
                 "Amélioration"
             ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu tends l’arc au maximum. La flèche part plus juste, et un coup critique emporte davantage.",
+            "effect": "Pendant la durée, ton seuil de critique baisse et un coup critique gagne des dégâts. Relance de 3 tours.",
             "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "3",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "0",
             "po_max": "4",
             "po_editable": true,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "cast_per_target": "1",
-            "number_between_two_cast": "3",
-            "cast_in_line": false,
-            "resolution_mode": "auto_success",
-            "is_magic": false,
-            "effect": "Critique facilité et dégâts critiques bonus pendant 2 tours.",
-            "description": "Tu tires la corde plus loin que d'habitude et tu la gardes ainsi un moment. Tes tirs partent plus près du point de rupture, et un coup critique fait plus mal.",
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
-                    "order": 0,
                     "params": {
-                        "value": "Critique à partir de 19. +2d4 dégâts en cas de critique."
+                        "value": "Prochains tirs renforcés.",
+                        "duration_formula": "1"
                     },
-                    "duration_formula": "2"
+                    "duration_formula": "1",
+                    "order": 0
                 }
             ],
             "intensification": [
@@ -749,51 +765,57 @@
                         {
                             "slug": "autre",
                             "area": "point",
-                            "order": 0,
                             "params": {
-                                "value": "Critique à partir de 18. +3d4 dégâts en cas de critique."
+                                "value": "Prochains tirs renforcés.",
+                                "duration_formula": "1"
                             },
-                            "duration_formula": "2"
+                            "duration_formula": "1",
+                            "order": 0
                         }
                     ]
                 }
-            ],
-            "dofusdb_id": "32466",
-            "duration": "2 tours",
-            "cast_in_diagonal": false
+            ]
         },
         {
             "key": "represailles",
             "name": "Représailles",
-            "slot_index": 1,
-            "choice_order": 1,
+            "dofusdb_id": null,
+            "official_id": "jdr:cra:represailles",
+            "slot_index": 2,
+            "choice_order": 0,
             "character_level": 5,
             "types": [
                 "Entrave"
             ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "saving_throw",
+            "description": "Tu poses une flèche piégée sur une créature. Chaque coup qu’elle encaisse lui vole un pas.",
+            "effect": "Si la sauvegarde échoue, chaque attaque qui la blesse lui retire 1 PM. Relance de 2 tours.",
             "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "0",
             "po_max": "4",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "cast_per_target": "1",
-            "number_between_two_cast": "2",
-            "cast_in_line": false,
-            "resolution_mode": "saving_throw",
-            "is_magic": false,
-            "effect": "Retire des PM à chaque attaque qui blesse la cible.",
-            "description": "Tu marques une créature d'une flèche fine. Chaque blessure qu'elle reçoit ensuite lui coupe un peu les jambes.",
+            "attack_characteristic_key": "chance",
+            "save_characteristic_key": "chance",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Entrave · Altération · Wakfu · sauvegarde de Chance contre ton DD de Chance.",
             "sub_effects": [
                 {
-                    "slug": "retirer",
+                    "slug": "autre",
                     "area": "point",
-                    "order": 0,
                     "params": {
-                        "characteristic": "pm",
-                        "value": "1 par attaque réussie"
+                        "value": "−1 PM par attaque qui la blesse.",
+                        "duration_formula": "1"
                     },
-                    "duration_formula": "1"
+                    "duration_formula": "1",
+                    "order": 0
                 }
             ],
             "intensification": [
@@ -803,160 +825,160 @@
                     "effect": "",
                     "sub_effects": [
                         {
-                            "slug": "retirer",
+                            "slug": "autre",
                             "area": "point",
-                            "order": 0,
                             "params": {
-                                "characteristic": "pm",
-                                "value": "1 par attaque réussie"
+                                "value": "−1 PM par attaque qui la blesse.",
+                                "duration_formula": "1"
                             },
-                            "duration_formula": "2"
+                            "duration_formula": "1",
+                            "order": 0
                         }
                     ]
                 }
-            ],
-            "element": "water",
-            "official_id": "jdr:cra:represailles",
-            "attack_characteristic_key": "chance",
-            "save_characteristic_key": "chance",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
-            "cast_in_diagonal": false
+            ]
         },
         {
             "key": "balise-tactique",
             "name": "Balise tactique",
+            "dofusdb_id": "32476",
+            "official_id": "jdr:cra:balise-tactique",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 6,
             "types": [
-                "Amélioration"
+                "Invocation"
             ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu plantes une flèche-balise. Pendant un instant, tes tirs peuvent partir d’elle.",
+            "effect": "Effet Invoquer vers le monstre Balise tactique (`jdr:summon:cra-balise-tactique`, fiche Balise-tactique-cra). Ce lien ouvre sa fiche. L’invocation a ton niveau et compte dans ta limite d’invocations. Elle reste 1 tour. Tu peux faire partir un de tes sorts depuis sa case. Tes propres dégâts ne l’abîment pas. Une fois par tour, relance de 3 tours.",
             "pa": "2",
-            "po_min": "1",
-            "po_max": "8",
-            "po_editable": true,
-            "sight_line": true,
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "3",
+            "sight_line": true,
             "cast_in_line": false,
-            "resolution_mode": "auto_success",
-            "is_magic": false,
-            "effect": "Cases adjacentes à la balise : terrain difficile pour les ennemis. La balise relance un de tes sorts comme s’il partait de sa case.",
-            "description": "Tu plantes une balise, un carreau fiché au sol ou dans un mur. Pendant un court instant, un de tes sorts peut partir d'elle. Tes propres tirs la laissent intacte.",
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "8",
+            "po_editable": true,
             "sub_effects": [
                 {
-                    "slug": "autre",
+                    "slug": "invoquer",
                     "area": "point",
-                    "order": 0,
                     "params": {
-                        "value": "Relance un de tes sorts depuis la balise pendant 1 tour."
-                    }
+                        "monster_official_id": "jdr:summon:cra-balise-tactique"
+                    },
+                    "order": 0
                 },
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Cases adjacentes à la balise : terrain difficile pour les ennemis."
+                        "value": "Compte dans la limite d’invocations. Relais d’un sort, 1 tour. Tes dégâts ne l’abîment pas."
                     },
-                    "duration_formula": "1",
                     "order": 1
                 }
             ],
-            "intensification": [],
-            "dofusdb_id": "32476",
-            "duration": "1 tour",
-            "cast_in_diagonal": false
+            "intensification": []
         },
         {
             "key": "balise-de-rappel",
             "name": "Balise de rappel",
-            "slot_index": 1,
-            "choice_order": 1,
+            "dofusdb_id": null,
+            "official_id": "jdr:cra:balise-de-rappel",
+            "slot_index": 2,
+            "choice_order": 0,
             "character_level": 6,
             "types": [
-                "Placement"
+                "Invocation"
             ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu plantes une flèche-balise et tu notes l’endroit. Au tour suivant, tu y reviens.",
+            "effect": "Effet Invoquer vers le monstre Balise de rappel (`jdr:summon:cra-balise-rappel`, fiche Balise-rappel-cra). Ce lien ouvre sa fiche. L’invocation a ton niveau et compte dans ta limite d’invocations. Au début de ton prochain tour, tu te téléportes sur sa case, puis elle disparaît. Relance de 3 tours.",
             "pa": "2",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": true,
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "3",
+            "sight_line": true,
             "cast_in_line": false,
-            "resolution_mode": "auto_success",
-            "is_magic": false,
-            "effect": "Au début de ton prochain tour, tu échanges ta place avec la balise.",
-            "description": "Tu plantes une balise là où tu veux revenir. Au début de ton prochain tour, tu prends sa place, et elle s'éteint.",
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "8",
+            "po_editable": true,
             "sub_effects": [
+                {
+                    "slug": "invoquer",
+                    "area": "point",
+                    "params": {
+                        "monster_official_id": "jdr:summon:cra-balise-rappel"
+                    },
+                    "order": 0
+                },
                 {
                     "slug": "autre",
                     "area": "point",
-                    "order": 0,
                     "params": {
-                        "value": "Téléporte l'invocateur à la place de la balise, puis elle disparaît."
-                    }
+                        "value": "Compte dans la limite d’invocations. Téléportation sur sa case au début de ton prochain tour, puis disparition."
+                    },
+                    "order": 1
                 }
             ],
-            "intensification": [],
-            "official_id": "jdr:cra:balise-de-rappel",
-            "cast_in_diagonal": false
+            "intensification": []
         },
         {
             "key": "fleche-boomerang",
-            "name": "Flèche Boomerang",
+            "name": "Flèche boomerang",
+            "dofusdb_id": null,
+            "official_id": "jdr:cra:fleche-boomerang",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 7,
             "types": [
-                "Dégâts",
-                "Entrave"
+                "Placement",
+                "Dégâts"
             ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu lances une flèche qui revient vers toi en ricochant d’une créature à l’autre. Elle peut frôler un allié sans s’y planter.",
+            "effect": "Dégâts d’Air. La flèche rebondit d’une créature ennemie à une autre, dans la limite de portée indiquée. Une fois par tour, relance de 2 tours.",
             "pa": "4",
-            "po_min": "2",
-            "po_max": "6",
-            "po_editable": true,
-            "sight_line": true,
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "2",
+            "sight_line": true,
             "cast_in_line": false,
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "effect": "Rebondit sur plusieurs créatures à portée.",
-            "description": "Tu lances une flèche qui ricoche d'une créature à l'autre. Chaque ennemi·e touché·e subit des dommages d'Air et perd de l'appui. Un·e allié·e n'est que frôlé·e.",
+            "cast_in_diagonal": false,
+            "po_min": "2",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
-                    "order": 0,
                     "params": {
                         "characteristic": "air",
                         "value": "2d6+Agilité",
                         "value_formula": "2d6+[agi]",
                         "dice_formula": "2d6+[agi]",
                         "effect_direction": "action"
-                    }
-                },
-                {
-                    "slug": "retirer",
-                    "area": "point",
-                    "order": 1,
-                    "params": {
-                        "characteristic": "pm",
-                        "value": "1"
-                    }
+                    },
+                    "order": 0
                 },
                 {
                     "slug": "autre",
                     "area": "point",
-                    "order": 2,
                     "params": {
-                        "value": "Rebondit sur 3 créatures à 4 PO ou moins. Un·e allié·e peut relayer sans subir les dégâts."
-                    }
+                        "value": "Rebonds entre ennemi·e·s."
+                    },
+                    "order": 1
                 }
             ],
             "intensification": [
@@ -968,31 +990,22 @@
                         {
                             "slug": "frapper",
                             "area": "point",
-                            "order": 0,
                             "params": {
                                 "characteristic": "air",
                                 "value": "2d8+Agilité",
                                 "value_formula": "2d8+[agi]",
                                 "dice_formula": "2d8+[agi]",
                                 "effect_direction": "action"
-                            }
-                        },
-                        {
-                            "slug": "retirer",
-                            "area": "point",
-                            "order": 1,
-                            "params": {
-                                "characteristic": "pm",
-                                "value": "1"
-                            }
+                            },
+                            "order": 0
                         },
                         {
                             "slug": "autre",
                             "area": "point",
-                            "order": 2,
                             "params": {
-                                "value": "Rebondit sur 4 créatures à 4 PO ou moins."
-                            }
+                                "value": "Rebonds entre ennemi·e·s."
+                            },
+                            "order": 1
                         }
                     ]
                 },
@@ -1004,85 +1017,81 @@
                         {
                             "slug": "frapper",
                             "area": "point",
-                            "order": 0,
                             "params": {
                                 "characteristic": "air",
                                 "value": "2d10+Agilité",
                                 "value_formula": "2d10+[agi]",
                                 "dice_formula": "2d10+[agi]",
                                 "effect_direction": "action"
-                            }
-                        },
-                        {
-                            "slug": "retirer",
-                            "area": "point",
-                            "order": 1,
-                            "params": {
-                                "characteristic": "pm",
-                                "value": "1"
-                            }
+                            },
+                            "order": 0
                         },
                         {
                             "slug": "autre",
                             "area": "point",
-                            "order": 2,
                             "params": {
-                                "value": "Rebondit sur 5 créatures à 4 PO ou moins."
-                            }
+                                "value": "Rebonds entre ennemi·e·s."
+                            },
+                            "order": 1
                         }
                     ]
                 }
-            ],
-            "element": "air",
-            "official_id": "jdr:cra:fleche-boomerang",
-            "attack_characteristic_key": "agi",
-            "cast_in_diagonal": false
+            ]
         },
         {
             "key": "fleche-explosive",
             "name": "Flèche explosive",
+            "dofusdb_id": "32445",
+            "official_id": "jdr:cra:fleche-explosive",
             "slot_index": 1,
             "choice_order": 1,
             "character_level": 7,
             "types": [
-                "Dégâts",
-                "Amélioration"
+                "Amélioration",
+                "Dégâts"
             ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "saving_throw",
+            "description": "La flèche éclate en gerbe. Le souffle chauffe tes prochaines flammes.",
+            "effect": "Dégâts de Feu en zone. Pendant 1 tour, tes dégâts de Feu gagnent ton modificateur d’Intelligence. Une fois par tour.",
             "pa": "5",
-            "po_min": "4",
-            "po_max": "5",
-            "po_editable": true,
-            "sight_line": true,
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "0",
+            "sight_line": true,
             "cast_in_line": false,
-            "resolution_mode": "saving_throw",
-            "is_magic": false,
-            "effect": "Zone ; bonus lié au modificateur d’Intelligence.",
-            "description": "Tu tires une flèche qui éclate à l'impact. La gerbe inflige des dommages de Feu en zone et rend tes prochains sorts de Feu plus vifs.",
+            "cast_in_diagonal": false,
+            "po_min": "4",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "save_characteristic_key": "intel",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Feu · origine · Amélioration · Attaque · Wakfu · sauvegarde d’Intelligence contre ton DD d’Intelligence.",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "rect-2x3",
-                    "order": 0,
+                    "area": "point",
                     "params": {
                         "characteristic": "fire",
                         "value": "2d8+Intelligence",
                         "value_formula": "2d8+[intel]",
                         "dice_formula": "2d8+[intel]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
                 },
                 {
-                    "slug": "booster",
+                    "slug": "autre",
                     "area": "point",
-                    "order": 1,
                     "params": {
-                        "characteristic": "fire",
-                        "value": "[intel]"
+                        "value": "+mod. Intelligence aux dégâts de Feu, 1 tour.",
+                        "duration_formula": "1"
                     },
-                    "duration_formula": "1"
+                    "duration_formula": "1",
+                    "order": 1
                 }
             ],
             "intensification": [
@@ -1093,25 +1102,25 @@
                     "sub_effects": [
                         {
                             "slug": "frapper",
-                            "area": "rect-3x3",
-                            "order": 0,
+                            "area": "point",
                             "params": {
                                 "characteristic": "fire",
                                 "value": "2d10+Intelligence",
                                 "value_formula": "2d10+[intel]",
                                 "dice_formula": "2d10+[intel]",
                                 "effect_direction": "action"
-                            }
+                            },
+                            "order": 0
                         },
                         {
-                            "slug": "booster",
+                            "slug": "autre",
                             "area": "point",
-                            "order": 1,
                             "params": {
-                                "characteristic": "fire",
-                                "value": "[intel]"
+                                "value": "+mod. Intelligence aux dégâts de Feu, 1 tour.",
+                                "duration_formula": "1"
                             },
-                            "duration_formula": "1"
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ]
                 },
@@ -1122,91 +1131,84 @@
                     "sub_effects": [
                         {
                             "slug": "frapper",
-                            "area": "rect-3x4",
-                            "order": 0,
+                            "area": "point",
                             "params": {
                                 "characteristic": "fire",
                                 "value": "2d12+Intelligence",
                                 "value_formula": "2d12+[intel]",
                                 "dice_formula": "2d12+[intel]",
                                 "effect_direction": "action"
-                            }
+                            },
+                            "order": 0
                         },
                         {
-                            "slug": "booster",
+                            "slug": "autre",
                             "area": "point",
-                            "order": 1,
                             "params": {
-                                "characteristic": "fire",
-                                "value": "[intel]"
+                                "value": "+mod. Intelligence aux dégâts de Feu, 1 tour.",
+                                "duration_formula": "1"
                             },
-                            "duration_formula": "1"
+                            "duration_formula": "1",
+                            "order": 1
                         }
                     ]
                 }
-            ],
-            "element": "fire",
-            "dofusdb_id": "32445",
-            "attack_characteristic_key": "intel",
-            "save_characteristic_key": "intel",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
-            "cast_in_diagonal": false
+            ]
         },
         {
             "key": "fleche-ralentissante",
             "name": "Flèche ralentissante",
+            "dofusdb_id": null,
+            "official_id": "jdr:cra:fleche-ralentissante",
             "slot_index": 1,
             "choice_order": 2,
             "character_level": 7,
             "types": [
-                "Dégâts",
-                "Entrave"
+                "Entrave",
+                "Dégâts"
             ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "La flèche est empennée pour mordre et rester. Le choc coupe l’élan : la cible peine à enchaîner.",
+            "effect": "Dégâts d’Eau et retire des PA. Au niveau 18, le retrait passe à 2 PA. Deux fois par tour.",
             "pa": "3",
-            "po_min": "1",
-            "po_max": "5",
-            "po_editable": true,
-            "sight_line": true,
             "cast_per_turn": "2",
             "cast_per_target": "2",
             "number_between_two_cast": "0",
+            "sight_line": true,
             "cast_in_line": false,
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "effect": "Retire des PA ; la cible ne peut pas réagir pendant 1 tour.",
-            "description": "Tu décoches une flèche empennée pour mordre et rester. Elle inflige des dommages d'Eau, coupe l'élan, et le réflexe de répondre ne part plus.",
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
-                    "order": 0,
                     "params": {
                         "characteristic": "water",
                         "value": "2d6+Chance",
                         "value_formula": "2d6+[chance]",
                         "dice_formula": "2d6+[chance]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
                 },
                 {
                     "slug": "retirer",
                     "area": "point",
-                    "order": 1,
+                    "duration_formula": "1",
                     "params": {
                         "characteristic": "pa",
-                        "value": "1"
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
                     },
-                    "duration_formula": "1"
-                },
-                {
-                    "slug": "autre",
-                    "area": "point",
-                    "order": 2,
-                    "params": {
-                        "value": "Empêche la réaction pendant 1 tour."
-                    },
-                    "duration_formula": "1"
+                    "order": 1
                 }
             ],
             "intensification": [
@@ -1218,36 +1220,29 @@
                         {
                             "slug": "frapper",
                             "area": "point",
-                            "order": 0,
                             "params": {
                                 "characteristic": "water",
                                 "value": "2d8+Chance",
                                 "value_formula": "2d8+[chance]",
                                 "dice_formula": "2d8+[chance]",
                                 "effect_direction": "action"
-                            }
+                            },
+                            "order": 0
                         },
                         {
                             "slug": "retirer",
                             "area": "point",
-                            "order": 1,
+                            "duration_formula": "1",
                             "params": {
                                 "characteristic": "pa",
-                                "value": "1"
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
                             },
-                            "duration_formula": "1"
-                        },
-                        {
-                            "slug": "autre",
-                            "area": "point",
-                            "order": 2,
-                            "params": {
-                                "value": "Empêche la réaction pendant 1 tour."
-                            },
-                            "duration_formula": "1"
+                            "order": 1
                         }
-                    ],
-                    "cast_per_turn": "3"
+                    ]
                 },
                 {
                     "tier": "II",
@@ -1257,77 +1252,83 @@
                         {
                             "slug": "frapper",
                             "area": "point",
-                            "order": 0,
                             "params": {
                                 "characteristic": "water",
                                 "value": "3d6+Chance",
                                 "value_formula": "3d6+[chance]",
                                 "dice_formula": "3d6+[chance]",
                                 "effect_direction": "action"
-                            }
+                            },
+                            "order": 0
                         },
                         {
                             "slug": "retirer",
                             "area": "point",
-                            "order": 1,
+                            "duration_formula": "1",
                             "params": {
                                 "characteristic": "pa",
-                                "value": "2"
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
                             },
-                            "duration_formula": "1"
-                        },
-                        {
-                            "slug": "autre",
-                            "area": "point",
-                            "order": 2,
-                            "params": {
-                                "value": "Empêche la réaction pendant 1 tour."
-                            },
-                            "duration_formula": "1"
+                            "order": 1
                         }
-                    ],
-                    "cast_per_turn": "3"
+                    ]
                 }
-            ],
-            "element": "water",
-            "official_id": "jdr:cra:fleche-ralentissante",
-            "attack_characteristic_key": "chance",
-            "cast_in_diagonal": false
+            ]
         },
         {
             "key": "fleche-massacrante",
             "name": "Flèche massacrante",
+            "dofusdb_id": null,
+            "official_id": "jdr:cra:fleche-massacrante",
             "slot_index": 1,
             "choice_order": 3,
             "character_level": 7,
             "types": [
                 "Dégâts"
             ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "saving_throw",
+            "description": "La flèche frappe le sol et la secousse se propage. Plus il y a de monde dans la zone, plus le choc est lourd.",
+            "effect": "Dégâts de Terre en croix. Le nombre de dés est égal au nombre de créatures dans la zone, alliées comprises, avec un plafond de 5 dés. Une fois par tour.",
             "pa": "5",
-            "po_min": "2",
-            "po_max": "5",
-            "po_editable": true,
-            "sight_line": true,
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "0",
+            "sight_line": true,
             "cast_in_line": false,
-            "resolution_mode": "saving_throw",
-            "is_magic": false,
-            "effect": "n dés : n = nombre de créatures dans la zone.",
-            "description": "Tu tires au milieu d'un groupe. La flèche se charge de chaque présence qu'elle frôle : plus il y a de monde, plus les dommages de Terre sont lourds.",
+            "cast_in_diagonal": false,
+            "po_min": "2",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "save_characteristic_key": "strong",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Terre · origine · Dégâts · Attaque · Wakfu · sauvegarde de Force contre ton DD de Force.",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "cross-0-1",
-                    "order": 0,
                     "params": {
                         "characteristic": "earth",
-                        "value": "nd4+Force",
-                        "value_formula": "nd4+[strong]",
-                        "dice_formula": "nd4+[strong]",
+                        "value": "1d4+Force",
+                        "value_formula": "1d4+[strong]",
+                        "dice_formula": "1d4+[strong]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "n dés = créatures dans la zone (allié·e·s compris), plafond 5."
+                    },
+                    "order": 1
                 }
             ],
             "intensification": [
@@ -1339,14 +1340,22 @@
                         {
                             "slug": "frapper",
                             "area": "cross-0-2",
-                            "order": 0,
                             "params": {
                                 "characteristic": "earth",
-                                "value": "nd4+Force",
-                                "value_formula": "nd4+[strong]",
-                                "dice_formula": "nd4+[strong]",
+                                "value": "1d4+Force",
+                                "value_formula": "1d4+[strong]",
+                                "dice_formula": "1d4+[strong]",
                                 "effect_direction": "action"
-                            }
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-2",
+                            "params": {
+                                "value": "n dés = créatures dans la zone (allié·e·s compris), plafond 5."
+                            },
+                            "order": 1
                         }
                     ]
                 },
@@ -1358,147 +1367,156 @@
                         {
                             "slug": "frapper",
                             "area": "cross-0-2",
-                            "order": 0,
                             "params": {
                                 "characteristic": "earth",
-                                "value": "nd6+Force",
-                                "value_formula": "nd6+[strong]",
-                                "dice_formula": "nd6+[strong]",
+                                "value": "1d6+Force",
+                                "value_formula": "1d6+[strong]",
+                                "dice_formula": "1d6+[strong]",
                                 "effect_direction": "action"
-                            }
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-2",
+                            "params": {
+                                "value": "n dés = créatures dans la zone (allié·e·s compris), plafond 5."
+                            },
+                            "order": 1
                         }
                     ]
                 }
-            ],
-            "element": "earth",
-            "official_id": "jdr:cra:fleche-massacrante",
-            "attack_characteristic_key": "strong",
-            "save_characteristic_key": "strong",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
-            "cast_in_diagonal": false
+            ]
         },
         {
             "key": "fleche-ecrasante",
             "name": "Flèche écrasante",
+            "dofusdb_id": null,
+            "official_id": "jdr:cra:fleche-ecrasante",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 8,
             "types": [
                 "Entrave"
             ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "saving_throw",
+            "description": "La flèche s’abat et cloue les bottes au sol. Personne dans la zone ne se fait déplacer.",
+            "effect": "Échec à la sauvegarde, ou allié consentant : état Indéplaçable pendant 1 tour. Ni poussée, ni attirance, ni échange. Relance de 4 tours. Réaction : un allié à portée va être poussé, attiré ou échangé. Cet allié est Indéplaçable jusqu’au début de ton prochain tour.",
             "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "4",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "0",
             "po_max": "5",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "cast_per_target": "1",
-            "number_between_two_cast": "4",
-            "cast_in_line": false,
-            "resolution_mode": "saving_throw",
-            "is_magic": false,
-            "effect": "Applique Indéplaçable (allié·e·s compris).",
-            "description": "Tu tires une flèche qui s'écrase au sol et cloue l'endroit. Ceux qui s'y trouvent, allié·e·s compris, ne peuvent plus être déplacés.",
-            "sub_effects": [
-                {
-                    "slug": "autre",
-                    "area": "rect-2x3",
-                    "order": 0,
-                    "params": {
-                        "value": "État Indéplaçable."
-                    }
-                }
-            ],
-            "intensification": [],
-            "official_id": "jdr:cra:fleche-ecrasante",
             "attack_characteristic_key": "vitality",
             "save_characteristic_key": "vitality",
             "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
-            "spares_chosen_targets": false,
-            "cast_in_diagonal": false
+            "save_success_note": "Aucun élément · origine · Entrave · Altération · Wakfu · sauvegarde de Vitalité contre ton DD de Vitalité · les alliés consentants ne lancent pas de jet · réaction.",
+            "allows_reaction": true,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Indéplaçable 1 tour, allié·e·s compris.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
         },
         {
             "key": "acuite-absolue",
             "name": "Acuité absolue",
-            "slot_index": 1,
-            "choice_order": 1,
+            "dofusdb_id": "32469",
+            "official_id": "jdr:cra:acuite-absolue",
+            "slot_index": 2,
+            "choice_order": 0,
             "character_level": 8,
             "types": [
                 "Amélioration"
             ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu retiens la carte des couverts. Pendant un tour, les murs ne cachent plus tes cibles.",
+            "effect": "Pendant 1 tour, tes sorts de flèche ignorent la ligne de vue. Relance de 4 tours.",
             "pa": "2",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "4",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "0",
             "po_max": "0",
             "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "cast_per_target": "1",
-            "number_between_two_cast": "4",
-            "cast_in_line": false,
-            "resolution_mode": "auto_success",
-            "is_magic": false,
-            "effect": "Pendant 1 tour, tes tirs ignorent les lignes de vue.",
-            "description": "Tes yeux se voilent un instant. Pendant un court moment, tu distingues les silhouettes à travers les obstacles, et tes tirs n'ont plus besoin de ligne de vue.",
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
-                    "order": 0,
                     "params": {
-                        "value": "Ignore les lignes de vue pendant 1 tour."
+                        "value": "Précision / critiques renforcés.",
+                        "duration_formula": "1"
                     },
-                    "duration_formula": "1"
+                    "duration_formula": "1",
+                    "order": 0
                 }
             ],
-            "intensification": [],
-            "dofusdb_id": "32469",
-            "duration": "1 tour",
-            "cast_in_diagonal": false
+            "intensification": []
         },
         {
             "key": "pas-chasse",
             "name": "Pas chassé",
+            "dofusdb_id": "32464",
+            "official_id": "jdr:cra:pas-chasse",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 10,
             "types": [
-                "Placement",
-                "Amélioration"
+                "Placement"
             ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu glisses de côté entre deux tirs, sans perdre le rythme.",
+            "effect": "Tu te téléportes d’une courte distance et tu gagnes 1 PM. Deux fois par tour.",
             "pa": "2",
-            "po_min": "0",
-            "po_max": "1",
-            "po_editable": true,
-            "sight_line": true,
             "cast_per_turn": "2",
             "cast_per_target": "2",
             "number_between_two_cast": "0",
+            "sight_line": true,
             "cast_in_line": false,
-            "resolution_mode": "auto_success",
-            "is_magic": false,
-            "effect": "Téléportation sur la case visée et +1 PM.",
-            "description": "Tu fais un pas de côté si court qu'il ressemble à une glissade. Tu te retrouves sur la case visée, avec un peu plus d'allonge dans les jambes.",
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "1",
+            "po_editable": true,
             "sub_effects": [
                 {
                     "slug": "déplacer",
                     "area": "point",
-                    "order": 0,
                     "params": {
-                        "cells_formula": "1",
-                        "movement_kind": "teleport",
-                        "teleport": true
-                    }
+                        "cells_formula": "2",
+                        "movement_kind": "jump",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
                 },
                 {
-                    "slug": "booster",
+                    "slug": "autre",
                     "area": "point",
-                    "order": 1,
                     "params": {
-                        "characteristic": "pm",
-                        "value": "1"
-                    }
+                        "value": "Pas de côté / chasse."
+                    },
+                    "order": 1
                 }
             ],
             "intensification": [
@@ -1510,66 +1528,306 @@
                         {
                             "slug": "déplacer",
                             "area": "point",
-                            "order": 0,
                             "params": {
-                                "cells_formula": "1",
-                                "movement_kind": "teleport",
-                                "teleport": true
-                            }
+                                "cells_formula": "2",
+                                "movement_kind": "jump",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
                         },
                         {
-                            "slug": "booster",
+                            "slug": "autre",
                             "area": "point",
-                            "order": 1,
                             "params": {
-                                "characteristic": "pm",
-                                "value": "1"
-                            }
+                                "value": "Pas de côté / chasse."
+                            },
+                            "order": 1
                         }
                     ],
                     "po_max": "3"
                 }
-            ],
-            "dofusdb_id": "32464",
-            "cast_in_diagonal": false
+            ]
         },
         {
             "key": "fleche-empoisonnee",
             "name": "Flèche empoisonnée",
-            "slot_index": 1,
-            "choice_order": 1,
+            "dofusdb_id": "13060",
+            "official_id": "jdr:cra:fleche-empoisonnee",
+            "slot_index": 2,
+            "choice_order": 0,
             "character_level": 10,
             "types": [
                 "Entrave"
             ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "saving_throw",
+            "description": "Tu enduis la pointe. Pendant un court instant, tes retraits de PA et de PM trouvent forcément leur prise.",
+            "effect": "Si la sauvegarde échoue, pendant 1 tour tes retraits de PA et de PM réussissent sans jet d’esquive. Relance de 4 tours, puis de 2 au niveau 17.",
             "pa": "2",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "4",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "5",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "cast_per_target": "1",
-            "number_between_two_cast": "4",
-            "cast_in_line": false,
-            "resolution_mode": "saving_throw",
-            "is_magic": false,
-            "effect": "État Empoisonné pendant 1 tour. Tes retraits de PA et de PM contre la cible réussissent automatiquement.",
-            "description": "Tu enduis la pointe. Tant que le poison tient, tes retraits de pas et de gestes contre cette cible ne ratent plus.",
+            "attack_characteristic_key": "chance",
+            "save_characteristic_key": "chance",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Entrave · Altération · Wakfu · sauvegarde de Vitalité contre ton DD de Vitalité.",
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
-                    "order": 0,
                     "params": {
-                        "value": "Retraits de PA et de PM automatiques contre la cible."
+                        "value": "Poison. Sauvegarde.",
+                        "duration_formula": "2"
                     },
-                    "duration_formula": "1"
+                    "duration_formula": "2",
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison. Sauvegarde.",
+                                "duration_formula": "2"
+                            },
+                            "duration_formula": "2",
+                            "order": 0
+                        }
+                    ],
+                    "number_between_two_cast": "2"
+                }
+            ]
+        },
+        {
+            "key": "sentinelle",
+            "name": "Sentinelle",
+            "dofusdb_id": "32479",
+            "official_id": "jdr:cra:sentinelle",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu te poses et tu ne bouges plus. L’œil et l’arc se règlent sur la même ligne.",
+            "effect": "Jusqu’à ce que tu te déplaces, tu as l’avantage pour toucher, +1d8 aux dégâts de tes flèches, et +5 de portée. Le premier déplacement rompt la posture. Relance de 4 tours. La portée gagnée allonge aussi la portée longue de l’Œil de Crâ.",
+            "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "4",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Allonge la portée normale (donc la portée longue).",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "fleches-amoureuses",
+            "name": "Flèches amoureuses",
+            "dofusdb_id": null,
+            "official_id": "jdr:cra:fleches-amoureuses",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu lies deux créatures par une même flèche. Quand l’une encaisse, l’autre reprend un peu de souffle.",
+            "effect": "Pendant 2 tours, quand l’une des deux créatures liées subit des dégâts, l’autre récupère la moitié des dégâts finaux en points de vie. Relance de 3 tours. Réaction : un allié à portée passe sous la moitié de ses PV. Il récupère la moitié des dégâts de ce coup.",
+            "pa": "3",
+            "cast_per_turn": "2",
+            "cast_per_target": "2",
+            "number_between_two_cast": "3",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "8",
+            "po_editable": true,
+            "allows_reaction": true,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Buff / soins selon fiche.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "pluie-de-fleches",
+            "name": "Pluie de flèches",
+            "dofusdb_id": "32481",
+            "official_id": "jdr:cra:pluie-de-fleches",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 12,
+            "types": [
+                "Placement",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu bandes l’arc vers le ciel et tu lâches une volée. Les flèches retombent ensemble, puis les traits plantés encombrent le sol.",
+            "effect": "Dégâts d’Air au moment où les flèches retombent. Ensuite la zone est un terrain difficile pour tout le monde : chaque case coûte 1 PM de plus. Le terrain dure 3 tours, puis 4 au niveau 17. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "2d8+Agilité",
+                        "value_formula": "2d8+[agi]",
+                        "dice_formula": "2d8+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
                 },
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "État Empoisonné."
+                        "value": "Terrain difficile pour tout le monde.",
+                        "duration_formula": "3"
+                    },
+                    "duration_formula": "3",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "3d8+Agilité",
+                                "value_formula": "3d8+[agi]",
+                                "dice_formula": "3d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Terrain difficile pour tout le monde.",
+                                "duration_formula": "3"
+                            },
+                            "duration_formula": "3",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "fleche-tyrannique",
+            "name": "Flèche tyrannique",
+            "dofusdb_id": "32488",
+            "official_id": "jdr:cra:fleche-tyrannique",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 12,
+            "types": [
+                "Amélioration",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "saving_throw",
+            "description": "La flèche laisse un venin de feu. Chaque fois qu’on force la cible à bouger, le venin se réveille.",
+            "effect": "Dégâts de Feu. Si la sauvegarde échoue, la cible est empoisonnée. Chaque déplacement forcé qu’elle subit pendant la durée lui inflige des dégâts de Feu supplémentaires. Une fois par tour, relance de 3 tours.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "save_characteristic_key": "intel",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Feu · origine · Amélioration · Attaque · Wakfu · sauvegarde d’Intelligence contre ton DD d’Intelligence.",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "2d8+Intelligence",
+                        "value_formula": "2d8+[intel]",
+                        "dice_formula": "2d8+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Buff Feu.",
+                        "duration_formula": "1"
                     },
                     "duration_formula": "1",
                     "order": 1
@@ -1582,357 +1840,72 @@
                     "effect": "",
                     "sub_effects": [
                         {
-                            "slug": "autre",
+                            "slug": "frapper",
                             "area": "point",
-                            "order": 0,
                             "params": {
-                                "value": "Retraits de PA et de PM automatiques contre la cible."
+                                "characteristic": "fire",
+                                "value": "3d8+Intelligence",
+                                "value_formula": "3d8+[intel]",
+                                "dice_formula": "3d8+[intel]",
+                                "effect_direction": "action"
                             },
-                            "duration_formula": "1"
+                            "order": 0
                         },
                         {
                             "slug": "autre",
                             "area": "point",
                             "params": {
-                                "value": "État Empoisonné."
+                                "value": "Buff Feu.",
+                                "duration_formula": "1"
                             },
                             "duration_formula": "1",
                             "order": 1
                         }
-                    ],
-                    "number_between_two_cast": "2"
-                }
-            ],
-            "dofusdb_id": "13060",
-            "attack_characteristic_key": "vitality",
-            "save_characteristic_key": "vitality",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
-            "duration": "1 tour",
-            "cast_in_diagonal": false
-        },
-        {
-            "key": "sentinelle",
-            "name": "Sentinelle",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 11,
-            "types": [
-                "Amélioration"
-            ],
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "cast_per_target": "1",
-            "number_between_two_cast": "4",
-            "cast_in_line": false,
-            "resolution_mode": "auto_success",
-            "is_magic": false,
-            "effect": "Avantage, dégâts et portée bonus ; perdu au déplacement.",
-            "description": "Tu te poses, arc levé, et tu ne bouges plus. Tant que tu restes là, la visée est plus sûre, les traits portent plus loin et frappent plus fort.",
-            "sub_effects": [
-                {
-                    "slug": "autre",
-                    "area": "point",
-                    "order": 0,
-                    "params": {
-                        "value": "Avantage aux jets de touche."
-                    }
-                },
-                {
-                    "slug": "booster",
-                    "area": "point",
-                    "order": 1,
-                    "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "1d8"
-                    }
-                },
-                {
-                    "slug": "booster",
-                    "area": "point",
-                    "order": 2,
-                    "params": {
-                        "characteristic": "po",
-                        "value": "5"
-                    }
-                }
-            ],
-            "intensification": [],
-            "dofusdb_id": "32479",
-            "cast_in_diagonal": false
-        },
-        {
-            "key": "fleches-amoureuses",
-            "name": "Flèches amoureuses",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 11,
-            "types": [
-                "Soin"
-            ],
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "8",
-            "po_editable": true,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "cast_per_target": "1",
-            "number_between_two_cast": "3",
-            "cast_in_line": false,
-            "resolution_mode": "auto_success",
-            "is_magic": false,
-            "effect": "Lie deux créatures : l’une se soigne de la moitié des dégâts reçus par l’autre.",
-            "description": "Tu lies deux créatures par une paire de flèches. Quand l'une subit des dommages, l'autre en récupère une part.",
-            "sub_effects": [
-                {
-                    "slug": "autre",
-                    "area": "point",
-                    "order": 0,
-                    "params": {
-                        "value": "Soin égal à la moitié des dégâts finaux subis par l'autre créature liée."
-                    },
-                    "duration_formula": "2"
-                }
-            ],
-            "intensification": [],
-            "official_id": "jdr:cra:fleches-amoureuses",
-            "duration": "2 tours",
-            "cast_in_diagonal": false
-        },
-        {
-            "key": "pluie-de-fleches",
-            "name": "Pluie de flèches",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 12,
-            "types": [
-                "Dégâts",
-                "Entrave"
-            ],
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "cast_per_target": "1",
-            "number_between_two_cast": "0",
-            "cast_in_line": false,
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "effect": "Zone ; réduit l’esquive PM pendant 1 tour.",
-            "description": "Tu bandes l'arc vers le ciel et tu lâches une volée. Les flèches retombent en zone, infligent des dommages d'Air, et celles qui frappent les jambes gênent la course.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "rect-3x3",
-                    "order": 0,
-                    "params": {
-                        "characteristic": "air",
-                        "value": "2d8+Agilité",
-                        "value_formula": "2d8+[agi]",
-                        "dice_formula": "2d8+[agi]",
-                        "effect_direction": "action"
-                    }
-                },
-                {
-                    "slug": "retirer",
-                    "area": "point",
-                    "order": 1,
-                    "params": {
-                        "characteristic": "dodge_pm",
-                        "value": "5"
-                    },
-                    "duration_formula": "1"
-                }
-            ],
-            "intensification": [
-                {
-                    "tier": "I",
-                    "required_creature_level": 17,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "frapper",
-                            "area": "rect-3x3",
-                            "order": 0,
-                            "params": {
-                                "characteristic": "air",
-                                "value": "3d8+Agilité",
-                                "value_formula": "3d8+[agi]",
-                                "dice_formula": "3d8+[agi]",
-                                "effect_direction": "action"
-                            }
-                        },
-                        {
-                            "slug": "retirer",
-                            "area": "point",
-                            "order": 1,
-                            "params": {
-                                "characteristic": "dodge_pm",
-                                "value": "10"
-                            },
-                            "duration_formula": "1"
-                        }
                     ]
                 }
-            ],
-            "element": "air",
-            "dofusdb_id": "32481",
-            "attack_characteristic_key": "agi",
-            "cast_in_diagonal": false
-        },
-        {
-            "key": "fleche-tyrannique",
-            "name": "Flèche tyrannique",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 12,
-            "types": [
-                "Dégâts",
-                "Entrave"
-            ],
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "6",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "cast_per_target": "1",
-            "number_between_two_cast": "3",
-            "cast_in_line": false,
-            "resolution_mode": "saving_throw",
-            "is_magic": false,
-            "effect": "Applique un poison de Feu sur plusieurs tours.",
-            "description": "Tu marques une créature d'une flèche qui reste plantée. Elle subit des dommages de Feu, et chaque déplacement forcé réveille le poison de la pointe.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "order": 0,
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "3d8+Intelligence",
-                        "value_formula": "3d8+[intel]",
-                        "dice_formula": "3d8+[intel]",
-                        "effect_direction": "action"
-                    }
-                },
-                {
-                    "slug": "autre",
-                    "area": "point",
-                    "order": 1,
-                    "params": {
-                        "value": "Poison : +2d6 Feu pendant 2 tours à chaque déplacement contre son gré."
-                    },
-                    "duration_formula": "2"
-                }
-            ],
-            "intensification": [
-                {
-                    "tier": "I",
-                    "required_creature_level": 17,
-                    "effect": "",
-                    "sub_effects": [
-                        {
-                            "slug": "frapper",
-                            "area": "point",
-                            "order": 0,
-                            "params": {
-                                "characteristic": "fire",
-                                "value": "4d8+Intelligence",
-                                "value_formula": "4d8+[intel]",
-                                "dice_formula": "4d8+[intel]",
-                                "effect_direction": "action"
-                            }
-                        },
-                        {
-                            "slug": "autre",
-                            "area": "point",
-                            "order": 1,
-                            "params": {
-                                "value": "Poison : +3d6 Feu pendant 2 tours à chaque déplacement contre son gré."
-                            },
-                            "duration_formula": "2"
-                        }
-                    ]
-                }
-            ],
-            "element": "fire",
-            "dofusdb_id": "32488",
-            "attack_characteristic_key": "intel",
-            "save_characteristic_key": "intel",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
-            "duration": "2 tours",
-            "cast_in_diagonal": false
+            ]
         },
         {
             "key": "fleche-paralysante",
             "name": "Flèche paralysante",
+            "dofusdb_id": null,
+            "official_id": "jdr:cra:fleche-paralysante",
             "slot_index": 1,
             "choice_order": 2,
             "character_level": 12,
             "types": [
-                "Dégâts",
                 "Entrave"
             ],
+            "state": "playable",
+            "is_magic": true,
+            "resolution_mode": "saving_throw",
+            "description": "Tu plantes une flèche qui engourdit. Le froid se répand en croix autour du point d’impact, et les bras répondent mal.",
+            "effect": "Dégâts d’Eau en croix. Échec à la sauvegarde : désavantage aux jets d’attaque pendant 1 tour. Une fois par tour, relance de 1 tour.",
             "pa": "4",
-            "po_min": "3",
-            "po_max": "6",
-            "po_editable": true,
-            "sight_line": true,
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "1",
+            "sight_line": true,
             "cast_in_line": false,
-            "resolution_mode": "saving_throw",
-            "is_magic": false,
-            "effect": "Retire PA et PM ; désavantage aux jets de la cible.",
-            "description": "Tu plantes une flèche qui engourdit. Le froid se répand en croix : dommages d'Eau, le geste et le pas se coupent, et les attaques partent de travers.",
+            "cast_in_diagonal": false,
+            "po_min": "3",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "save_characteristic_key": "chance",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Eau · origine · Entrave · Altération · Wakfu · sauvegarde de Chance contre ton DD de Chance.",
             "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "cross-0-2",
-                    "order": 0,
-                    "params": {
-                        "characteristic": "water",
-                        "value": "2d12+Chance",
-                        "value_formula": "2d12+[chance]",
-                        "dice_formula": "2d12+[chance]",
-                        "effect_direction": "action"
-                    }
-                },
-                {
-                    "slug": "retirer",
-                    "area": "point",
-                    "order": 1,
-                    "params": {
-                        "characteristic": "pa",
-                        "value": "1"
-                    }
-                },
-                {
-                    "slug": "retirer",
-                    "area": "point",
-                    "order": 2,
-                    "params": {
-                        "characteristic": "pm",
-                        "value": "1"
-                    }
-                },
                 {
                     "slug": "autre",
                     "area": "point",
-                    "order": 3,
                     "params": {
-                        "value": "Désavantage aux jets d'attaque pendant 1 tour."
+                        "value": "Paralysie / entrave forte.",
+                        "duration_formula": "1"
                     },
-                    "duration_formula": "1"
+                    "duration_formula": "1",
+                    "order": 0
                 }
             ],
             "intensification": [
@@ -1942,100 +1915,59 @@
                     "effect": "",
                     "sub_effects": [
                         {
-                            "slug": "frapper",
-                            "area": "cross-0-2",
-                            "order": 0,
-                            "params": {
-                                "characteristic": "water",
-                                "value": "4d8+Chance",
-                                "value_formula": "4d8+[chance]",
-                                "dice_formula": "4d8+[chance]",
-                                "effect_direction": "action"
-                            }
-                        },
-                        {
-                            "slug": "retirer",
-                            "area": "point",
-                            "order": 1,
-                            "params": {
-                                "characteristic": "pa",
-                                "value": "1"
-                            }
-                        },
-                        {
-                            "slug": "retirer",
-                            "area": "point",
-                            "order": 2,
-                            "params": {
-                                "characteristic": "pm",
-                                "value": "1"
-                            }
-                        },
-                        {
                             "slug": "autre",
                             "area": "point",
-                            "order": 3,
                             "params": {
-                                "value": "Désavantage aux jets d'attaque pendant 1 tour."
+                                "value": "Paralysie / entrave forte.",
+                                "duration_formula": "1"
                             },
-                            "duration_formula": "1"
+                            "duration_formula": "1",
+                            "order": 0
                         }
                     ]
                 }
-            ],
-            "element": "water",
-            "official_id": "jdr:cra:fleche-paralysante",
-            "attack_characteristic_key": "chance",
-            "save_characteristic_key": "chance",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, l'effet n'est pas appliqué.",
-            "cast_in_diagonal": false
+            ]
         },
         {
             "key": "carreaux-destructeurs",
             "name": "Carreaux destructeurs",
+            "dofusdb_id": null,
+            "official_id": "jdr:cra:carreaux-destructeurs",
             "slot_index": 1,
             "choice_order": 3,
             "character_level": 12,
             "types": [
-                "Dégâts",
-                "Entrave"
+                "Dégâts"
             ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu tires une volée courte et serrée. Le choc arrache de la force à la cible et te la prête.",
+            "effect": "Dégâts de Terre en zone, en ligne. Tu voles le modificateur de Force de la cible : tes dégâts de Terre le gagnent, et la cible le perd, pendant 2 tours. Au niveau 17, ce vol se cumule et ne se dissipe pas tant que la durée court. Une fois par tour.",
             "pa": "4",
-            "po_min": "1",
-            "po_max": "3",
-            "po_editable": true,
-            "sight_line": true,
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "0",
-            "cast_in_line": true,
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "effect": "Vol du modificateur de Force (cumulable).",
-            "description": "Tu tires une volée courte de carreaux lourds, en ligne. Ils infligent de lourds dommages de Terre et, pendant un moment, la force du coup passe de la cible à toi.",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "rect-2x2",
-                    "order": 0,
+                    "area": "point",
                     "params": {
                         "characteristic": "earth",
-                        "value": "2d12+Force",
-                        "value_formula": "2d12+[strong]",
-                        "dice_formula": "2d12+[strong]",
+                        "value": "2d8+Force",
+                        "value_formula": "2d8+[strong]",
+                        "dice_formula": "2d8+[strong]",
                         "effect_direction": "action"
-                    }
-                },
-                {
-                    "slug": "voler-caracteristiques",
-                    "area": "point",
-                    "order": 1,
-                    "params": {
-                        "characteristic": "strong",
-                        "value": "[strong]"
                     },
-                    "duration_formula": "2"
+                    "order": 0
                 }
             ],
             "intensification": [
@@ -2046,43 +1978,19 @@
                     "sub_effects": [
                         {
                             "slug": "frapper",
-                            "area": "rect-2x2",
-                            "order": 0,
+                            "area": "point",
                             "params": {
                                 "characteristic": "earth",
-                                "value": "4d8+Force",
-                                "value_formula": "4d8+[strong]",
-                                "dice_formula": "4d8+[strong]",
+                                "value": "3d8+Force",
+                                "value_formula": "3d8+[strong]",
+                                "dice_formula": "3d8+[strong]",
                                 "effect_direction": "action"
-                            }
-                        },
-                        {
-                            "slug": "voler-caracteristiques",
-                            "area": "point",
-                            "order": 1,
-                            "params": {
-                                "characteristic": "strong",
-                                "value": "[strong]"
                             },
-                            "duration_formula": "2"
-                        },
-                        {
-                            "slug": "autre",
-                            "area": "point",
-                            "order": 2,
-                            "params": {
-                                "value": "Cumulable, non dissipable."
-                            }
+                            "order": 0
                         }
-                    ],
-                    "cast_per_turn": "2",
-                    "cast_per_target": "2"
+                    ]
                 }
-            ],
-            "element": "earth",
-            "official_id": "jdr:cra:carreaux-destructeurs",
-            "attack_characteristic_key": "strong",
-            "cast_in_diagonal": false
+            ]
         }
     ]
 }

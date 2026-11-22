@@ -15,7 +15,7 @@
  * @example
  * <SectionRenderer :section="section" :user="user" />
  */
-import { computed, ref, watch, shallowRef, nextTick, onMounted } from 'vue';
+import { computed, ref, watch, shallowRef, nextTick, onMounted, onBeforeUnmount } from 'vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import SectionHeader from '@/Pages/Molecules/section/SectionHeader.vue';
@@ -28,6 +28,9 @@ import { useSectionAPI } from './composables/useSectionAPI';
 import { useSectionUI } from './composables/useSectionUI';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { isSectionContentDeferred } from '@/Utils/section/sectionUpdatePayload';
+import { isFullWidthSectionTemplate, sectionWidthClass } from '@/Utils/section/sectionLayout';
+import { isPlaceholderSectionTitle, publicSectionTitle, sectionDisplayLabel } from '@/Utils/section/sectionTitle';
+import { publishSectionPlanLabel } from '@/Utils/section/sectionPlanLabels';
 
 const props = defineProps({
     section: {
@@ -46,26 +49,21 @@ const props = defineProps({
         default: false
     },
     /**
-     * Masque les titres génériques (Texte, Contenu…) hors édition — fiches immersives.
+     * Conservé pour les fiches qui l'envoyaient déjà.
+     * Le masquage des titres de secours (« Texte », « Section ») est global, en lecture.
      */
     immersive: {
         type: Boolean,
         default: false,
     },
+    /**
+     * Aligne cette section sur la plus large de la page (tableau ou fiche pleine colonne).
+     */
+    forceFullWidth: {
+        type: Boolean,
+        default: false,
+    },
 });
-
-/** Titres CMS « méta » à ne pas afficher en lecture immersive. */
-const GENERIC_SECTION_TITLES = new Set([
-    "texte",
-    "text",
-    "section",
-    "sections",
-    "contenu",
-    "content",
-    "description",
-    "body",
-    "sans titre",
-]);
 
 /** Section locale (peut recevoir le HTML différé via API). */
 const hydratedSection = ref({ ...props.section });
@@ -165,25 +163,60 @@ const sectionTitle = computed(
     () => String(hydratedSection.value?.title || sectionModel.value?.title || "").trim(),
 );
 
-const isGenericSectionTitle = computed(() => {
-    const t = sectionTitle.value.toLowerCase();
-    return t === "" || GENERIC_SECTION_TITLES.has(t);
+const isGenericSectionTitle = computed(() => isPlaceholderSectionTitle(sectionTitle.value));
+
+/** Repli local : ouvert par défaut. Le corps est masqué, le libellé reste. */
+const collapsed = ref(false);
+
+const readingLabel = computed(() => sectionDisplayLabel(hydratedSection.value));
+
+watch(readingLabel, (label) => {
+    publishSectionPlanLabel(sectionId.value, label);
+}, { immediate: true });
+
+const headerTitle = computed(() => {
+    if (isEditing.value) return sectionTitle.value;
+    if (collapsed.value) return readingLabel.value;
+    return publicSectionTitle(sectionTitle.value);
 });
 
-/** Afficher le libellé de titre dans le header. */
+/** En lecture, un titre de secours ne s'affiche que replié (premiers mots). */
 const showSectionTitle = computed(() => {
     if (isEditing.value) return true;
-    if (!props.immersive) return true;
+    if (collapsed.value) return Boolean(readingLabel.value);
     return !isGenericSectionTitle.value;
 });
 
-/**
- * En lecture immersive, pas de bandeau header si titre générique et pas de droits d’édition.
- */
-const showSectionHeader = computed(() => {
-    if (!props.immersive) return true;
-    if (isEditing.value || canEdit.value) return true;
-    return showSectionTitle.value;
+const showSectionHeader = computed(() => true);
+
+function expandIfHashMatches() {
+    if (typeof window === "undefined") return;
+    const raw = window.location.hash.replace(/^#/, "");
+    if (!raw) return;
+    const slug = sectionWebSlug.value;
+    const id = sectionId.value;
+    const matches =
+        (id && (raw === `section-${id}` || raw.startsWith(`section-${id}-`)))
+        || (slug && (raw === `ssec-${slug}` || raw.startsWith(`ssec-${slug}-`)));
+    if (matches) collapsed.value = false;
+}
+
+function toggleCollapsed() {
+    if (isEditing.value) return;
+    collapsed.value = !collapsed.value;
+}
+
+watch(isEditing, (editing) => {
+    if (editing) collapsed.value = false;
+});
+
+onMounted(() => {
+    expandIfHashMatches();
+    window.addEventListener("hashchange", expandIfHashMatches);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener("hashchange", expandIfHashMatches);
 });
 
 // Activer automatiquement le mode édition si autoEdit est true
@@ -232,23 +265,30 @@ const sectionSettings = computed(() => {
 });
 
 /**
- * Templates tableaux : largeur 100 % du cadre (évite le shrink-to-fit au chargement).
- * Les autres sections occupent 2/3 à partir de `md`, centrées par défaut.
+ * Templates tableaux : largeur 100 % du cadre.
+ * `forceFullWidth` aligne les autres sections de la même page sur cette largeur.
  */
-const isFullWidthSection = computed(() => templateValue.value.endsWith('_table'));
+const isFullWidthSection = computed(() => isFullWidthSectionTemplate(templateValue.value));
+
+const stretchToColumn = computed(() => isFullWidthSection.value || props.forceFullWidth);
 
 const sectionAlignSelfClass = computed(() => {
-  if (isFullWidthSection.value) return 'self-stretch';
+  if (stretchToColumn.value) return 'self-stretch';
   const raw = String(sectionSettings.value?.layoutAlignSelf || 'center').toLowerCase().trim();
   if (raw === 'start' || raw === 'left') return 'self-start';
   if (raw === 'end' || raw === 'right') return 'self-end';
   return 'self-center';
 });
 
-const sectionWidthClass = computed(() =>
-  isFullWidthSection.value
-    ? 'w-full min-w-0 max-w-full'
-    : 'w-full min-w-0 max-w-full md:w-2/3'
+const sectionWidthClassName = computed(() => sectionWidthClass(stretchToColumn.value));
+
+/**
+ * Texte élargi : la carte prend la colonne, la lecture reste centrée.
+ */
+const measureContentClass = computed(() =>
+  props.forceFullWidth && !isFullWidthSection.value && templateValue.value === 'text'
+    ? 'section-renderer__body--measure'
+    : ''
 );
 
 /**
@@ -450,7 +490,7 @@ const handleDeleteSection = async () => {
     <div 
         :id="sectionId ? `section-${sectionId}` : undefined"
         class="section-renderer section-renderer-surface group relative rounded-2xl border border-base-300/40 bg-base-100/40 px-3 pb-4 pt-2 shadow-sm backdrop-blur-[1px] md:px-5 md:pb-6 md:pt-3" 
-        :class="[uiData.containerClass, sectionAlignSelfClass, sectionWidthClass]"
+        :class="[uiData.containerClass, sectionAlignSelfClass, sectionWidthClassName, collapsed ? 'pb-2 md:pb-3' : '']"
         :data-section-id="sectionModel?.id" 
         :data-section-slug="sectionWebSlug || undefined"
         :data-section-template="templateValue"
@@ -466,8 +506,9 @@ const handleDeleteSection = async () => {
     />
     <SectionHeader
       v-if="showSectionHeader"
-      :title="sectionTitle"
+      :title="headerTitle"
       :show-title="showSectionTitle"
+      :collapsed="collapsed"
       :isEditing="isEditing"
       :canEdit="canEdit"
       :canDelete="canEdit"
@@ -477,9 +518,10 @@ const handleDeleteSection = async () => {
       @open-params="handleOpenParamsModal"
       @copy-link="handleCopyLink"
       @request-delete="handleDeleteSection"
+      @toggle-collapse="toggleCollapsed"
     />
     
-    <div class="section-renderer__body min-w-0 max-w-full overflow-x-auto">
+    <div v-show="!collapsed" class="section-renderer__body min-w-0 max-w-full overflow-x-auto" :class="measureContentClass">
     <!-- Contenu selon le mode -->
     <div v-if="isLoadingTemplate || contentLoading" class="section-loading">
       <SectionContentSkeleton
@@ -545,5 +587,11 @@ const handleDeleteSection = async () => {
 
 .section-error {
     margin: 1rem 0;
+}
+
+.section-renderer__body--measure :deep(.section-text-content) {
+    width: 100%;
+    max-width: 48rem;
+    margin-inline: auto;
 }
 </style>

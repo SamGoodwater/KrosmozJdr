@@ -1,714 +1,2572 @@
 {
     "_schema_version": "1",
     "breed": "Enutrof",
+    "state": "playable",
     "entries": [
         {
-            "key": "enutrof-coffre-anime",
-            "name": "Coffre Animé",
+            "key": "age-d-or",
+            "name": "Âge d’Or",
+            "dofusdb_id": "13329",
+            "official_id": "jdr:enutrof:age-d-or",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 2,
             "types": [
                 "Amélioration"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "Pose un Coffre (zone visible, 1 case, PO 1–4). Un allié adjacent peut y piocher 1d4 PV, 1 fois / combat. Pas une invocation. 3 PA, 1×/tour.",
-            "description": "Coffre Animé : une caisse sur le sol, pas une bête.",
+            "description": "Tu poses la main sur une épaule, la tienne comprise. Les jambes ne se laissent plus accrocher, et le prochain coup pèse un peu plus.",
+            "effect": "Jusqu’au début de ton prochain tour, la cible ne peut pas être taclé·e. Sa prochaine attaque inflige +1 dégât. Si ton mod. de Sagesse vaut au moins 3, ce bonus passe à +2. Une fois par tour, relance de 2 tours. Pas de dégâts. Au niveau 6, le bonus de base passe à +2, et à +3 si Sagesse ≥ 3.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "4",
+            "po_editable": true,
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Zone 1 case : un allié adjacent pioche 1d4 PV, 1 fois / combat.",
-                        "effect_direction": "action"
-                    }
+                        "value": "Ne peut pas être taclé. Prochain coup +1, +2 si Sag ≥ 3",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
                 }
             ],
-            "dofusdb_id": "13347",
-            "target_type": "glyph"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 6,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Prochain coup +2, +3 si Sag ≥ 3",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "enutrof-acceleration",
-            "name": "Accélération",
+            "key": "clef-du-tresor",
+            "name": "Clef du Trésor",
+            "dofusdb_id": "13332",
+            "official_id": "jdr:enutrof:clef-du-tresor",
             "slot_index": 1,
             "choice_order": 1,
             "character_level": 2,
             "types": [
-                "Amélioration"
+                "Entrave"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu tournes une clé devant les yeux de la cible. Elle vise moins loin.",
+            "effect": "−1 PO. Ça réveille un poison de portée déjà posé. Une fois par tour. Pas de dégâts, et ce sort ne pose pas de poison. Si ton mod. de Force vaut au moins 3, la portée du sort gagne une case. −2 PO au niveau 6.",
+            "pa": "2",
             "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "+1d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Accélération : tu te prépares. Le prochain élan frappe plus fort.",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "attack_characteristic_key": "strong",
+            "save_characteristic_key": "strong",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Entrave · Altération · sauvegarde de Force contre ton DD de Force · DofusDB : 13332.",
             "sub_effects": [
                 {
-                    "slug": "booster",
+                    "slug": "retirer",
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "1d4",
-                        "value_formula": "1d4",
-                        "dice_formula": "1d4",
-                        "effect_direction": "self",
+                        "characteristic": "po",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
                         "duration_formula": "1"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Réveille un poison de PO. Ne pose pas de poison."
+                    },
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:enutrof-acceleration",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 6,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "po",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Réveille un poison de PO. Ne pose pas de poison."
+                            },
+                            "order": 1
+                        }
+                    ],
+                    "po_max": "6"
+                }
+            ]
+        },
+        {
+            "key": "abattement",
+            "name": "Abattement",
+            "dofusdb_id": "13365",
+            "official_id": "jdr:enutrof:abattement",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 4,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu abats la pelle à plat. La cible subit des dommages d’Air, et le coup lui coupe le geste.",
+            "effect": "Dégâts d’Air, poison de PA, et −1 PA. Le retrait réveille le poison une fois. −2 PA au niveau 19. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "1d6+Agilité",
+                        "value_formula": "1d6+[agi]",
+                        "dice_formula": "1d6+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Poison PA. 1d4 de l’élément, 2 déclenchements max."
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "retirer",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pa",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d4+Agilité",
+                                "value_formula": "2d4+[agi]",
+                                "dice_formula": "2d4+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison PA. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 2
+                        }
+                    ],
+                    "po_max": "4"
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison PA. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 2
+                        }
+                    ],
+                    "po_max": "4"
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison PA. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 2
+                        }
+                    ],
+                    "po_max": "4"
+                }
+            ]
+        },
+        {
+            "key": "feu-de-mine",
+            "name": "Feu de Mine",
+            "dofusdb_id": "13355",
+            "official_id": "jdr:enutrof:feu-de-mine",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 4,
+            "types": [
+                "Soin",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu allumes une mèche sur la cible. Elle subit des dommages de Feu. Qui la frappe ensuite referme un peu ses plaies : le soin au contact attise la braise.",
+            "effect": "Dégâts de Feu et poison de soin. Le prochain coup d’un·e allié·e (ou toi) contre cette cible, d’ici le début de ton prochain tour, soigne l’attaquant·e de 1d4 une fois — et ce soin au contact réveille le poison. Pas le coup de ce sort. Au niveau 14, ce soin passe à 2d4. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Poison soin. 1d4 de l’élément, 2 déclenchements max."
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Poison soin. Prochain coup allié/toi : soin 1d4 (réveille)"
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d4+Intelligence",
+                                "value_formula": "2d4+[intel]",
+                                "dice_formula": "2d4+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison soin. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison soin. Prochain coup allié/toi : soin 1d4 (réveille)"
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison soin. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison soin. Prochain coup : soin 2d4"
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison soin. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison soin. Prochain coup : soin 2d4"
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
         },
         {
             "key": "pelle-aurifere",
             "name": "Pelle Aurifère",
             "dofusdb_id": "13343",
+            "official_id": "jdr:enutrof:pelle-aurifere",
             "slot_index": 1,
-            "choice_order": 0,
+            "choice_order": 2,
+            "character_level": 4,
             "types": [
+                "Amélioration",
                 "Dégâts"
             ],
-            "element": "water",
-            "pa": "5",
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu grattes le sol et tu ramasses ce qui brille. La cible subit des dommages d’Eau, perd un pas, et ce pas te revient.",
+            "effect": "Dégâts d’Eau, poison de PM, −1 PM, et +1 PM pour toi jusqu’au début de ton prochain tour. Au niveau 14, +2 PM si Chance ≥ 3. −2 PM sur la cible au niveau 19. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "attack_roll",
+            "element": "water",
             "attack_characteristic_key": "chance",
-            "is_magic": false,
-            "powerful": 5,
-            "effect": "1d6 + Chance (Eau) et retrait de 1 PM. Physique, 5 PA, 1×/tour, PO 1–4 adapté.",
-            "description": "La pelle pèse. Le coup porte, les jambes lâchent un pas.",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
-                    "order": 0,
                     "params": {
                         "characteristic": "water",
                         "value": "1d6+Chance",
                         "value_formula": "1d6+[chance]",
                         "dice_formula": "1d6+[chance]",
-                        "value_formula_crit": "2d6+[chance]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Poison PM. 1d4 de l’élément, 2 déclenchements max."
+                    },
+                    "order": 1
                 },
                 {
                     "slug": "retirer",
                     "area": "point",
-                    "order": 1,
+                    "duration_formula": "1",
                     "params": {
-                        "characteristic": "movement_points_creature",
+                        "characteristic": "pm",
                         "value": "1",
                         "value_formula": "1",
-                        "effect_direction": "action"
-                    }
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 2
+                },
+                {
+                    "slug": "booster",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pm",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 3
                 }
             ],
-            "character_level": 4
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d4+Chance",
+                                "value_formula": "2d4+[chance]",
+                                "dice_formula": "2d4+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison PM. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 2
+                        },
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 3
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison PM. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 2
+                        },
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 3
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison PM. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 2
+                        },
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 3
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "lancer-de-pelle",
-            "name": "Lancer de Pelle",
-            "dofusdb_id": "13330",
+            "key": "eboulement",
+            "name": "Éboulement",
+            "dofusdb_id": "13352",
+            "official_id": "jdr:enutrof:eboulement",
             "slot_index": 1,
-            "choice_order": 1,
+            "choice_order": 3,
+            "character_level": 4,
             "types": [
                 "Dégâts"
             ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "attack_roll",
-            "attack_characteristic_key": "strong",
+            "state": "playable",
             "is_magic": false,
-            "powerful": 5,
-            "effect": "1d6 + Force (Terre) et poussée de 1 case. Physique, 5 PA, 1×/tour, PO 1–4 adapté.",
-            "description": "Tu lances l’outil. Ça cogne, ça recule.",
+            "resolution_mode": "attack_roll",
+            "description": "Tu fais crouler le sol sur la cible. Elle subit des dommages de Terre, et sa visée se raccourcit.",
+            "effect": "Dégâts de Terre, poison de portée, et −1 PO. −2 PO au niveau 19. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
-                    "order": 0,
                     "params": {
                         "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
                 },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Poison PO. 1d4 de l’élément, 2 déclenchements max."
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "retirer",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "po",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison PO. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "po",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "3d6+Force",
+                                "value_formula": "3d6+[strong]",
+                                "dice_formula": "3d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison PO. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "po",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "3d8+Force",
+                                "value_formula": "3d8+[strong]",
+                                "dice_formula": "3d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison PO. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "retirer",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "po",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "sac-anime",
+            "name": "Sac Animé",
+            "dofusdb_id": "13328",
+            "official_id": "jdr:enutrof:sac-anime",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Invocation"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu donnes un coup de pelle au sac et il se dresse. C’est une invocation : il encaisse à la place des allié·e·s proches, puis il retombe.",
+            "effect": "Effet Invoquer vers le monstre Sac Animé (`jdr:summon:enutrof-sac-anime`, fiche Sac-anime). L’invocation a ton niveau. Un seul objet animé à la fois. Contrôlé, il joue juste après toi et tient 3 tours. Relance de 4 tours.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "4",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "invoquer",
+                    "area": "point",
+                    "params": {
+                        "monster_official_id": "jdr:summon:enutrof-sac-anime"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Un seul objet animé. 3 tours. Frapper = soin moitié des dégâts."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "tunnel-de-fortune",
+            "name": "Tunnel de Fortune",
+            "dofusdb_id": "14274",
+            "official_id": "jdr:enutrof:tunnel-de-fortune",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 5,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu files dans une galerie que toi seul vois. Le prochain coup, après quelques pas, tombe plus lourd.",
+            "effect": "Tu deviens invisible jusqu’à ce que tu infliges des dégâts, ou jusqu’au début de ton prochain tour. Si tu as dépensé au moins 2 PM avant ta prochaine attaque de classe, elle inflige +1d4. Si ton mod. d’Intelligence vaut au moins 3, +2d4. Une fois. Relance de 3 tours. Pas de dégâts par lui-même. Au niveau 12, frapper ne te révèle plus : tu restes invisible jusqu’au début de ton prochain tour.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Invisible. Prochain coup +1d4 si 2 PM, +2d4 si Intel ≥ 3",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 12,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Invisible jusqu’à ton prochain tour, même si tu frappes",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "pelle-animee",
+            "name": "Pelle Animée",
+            "dofusdb_id": "13344",
+            "official_id": "jdr:enutrof:pelle-animee",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Invocation"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu plantes la pelle et elle se relève. C’est une invocation : elle pousse, elle frappe, puis elle retombe.",
+            "effect": "Effet Invoquer vers le monstre Pelle Animée (`jdr:summon:enutrof-pelle-animee`, fiche Pelle-animee). L’invocation a ton niveau. Un seul objet animé à la fois. Contrôlée, elle joue juste après toi et tient 3 tours. Relance de 4 tours.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "4",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "invoquer",
+                    "area": "point",
+                    "params": {
+                        "monster_official_id": "jdr:summon:enutrof-pelle-animee"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Un seul objet animé. 3 tours."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "boite-de-pandore",
+            "name": "Boîte de Pandore",
+            "dofusdb_id": "13334",
+            "official_id": "jdr:enutrof:boite-de-pandore",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 6,
+            "types": [
+                "Soin"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu entrouvres la boîte. Les tiens reprennent un peu d’air, et tu en gardes la plus grosse part.",
+            "effect": "Les allié·e·s de la zone sont soigné·e·s de 1d4. Toi, de 2d4. Si ton mod. de Chance vaut au moins 3, les allié·e·s passent aussi à 2d4. Une fois par tour, relance de 3 tours. Pas de dégâts. Au niveau 11, ton soin passe à 3d4, celui des allié·e·s à 2d4, et à 3d4 si Chance ≥ 3.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "soigner",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "2d4",
+                        "value_formula": "2d4",
+                        "dice_formula": "2d4",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Toi 2d4. Allié·e·s 1d4, 2d4 si Chance ≥ 3"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 11,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "soigner",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "3d4",
+                                "value_formula": "3d4",
+                                "dice_formula": "3d4",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Toi 3d4. Allié·e·s 2d4, 3d4 si Chance ≥ 3"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "banqueroute",
+            "name": "Banqueroute",
+            "dofusdb_id": "14278",
+            "official_id": "jdr:enutrof:banqueroute",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 7,
+            "types": [
+                "Entrave",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu frappes comme pour reprendre une dette. La cible subit des dommages d’Air, une invocation encaisse plus, et le geste devient plus dur à esquiver.",
+            "effect": "Dégâts d’Air, poison de PA, et baisse d’esquive PA. +1d4 si la cible est une invocation. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "2d4+Agilité",
+                        "value_formula": "2d4+[agi]",
+                        "dice_formula": "2d4+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Poison PA. 1d4 de l’élément, 2 déclenchements max."
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "−5 esquive PA, 1 tour",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 2
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "+1d4 vs invocation."
+                    },
+                    "order": 3
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison PA. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "−10 esquive PA, 1 tour",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 2
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d4 vs invocation."
+                            },
+                            "order": 3
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison PA. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "−10 esquive PA, 1 tour",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 2
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1d4 vs invocation."
+                            },
+                            "order": 3
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "coup-de-grisou",
+            "name": "Coup de Grisou",
+            "dofusdb_id": "13368",
+            "official_id": "jdr:enutrof:coup-de-grisou",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 7,
+            "types": [
+                "Soin",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu fais jaillir un coup de grisou. Les ennemi·e·s de la zone subissent des dommages de Feu, et les soigner attise la flamme.",
+            "effect": "Dégâts de Feu en zone, allié·e·s saufs, et poison de soin sur chaque ennemi·e touché·e. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
+            "spares_chosen_targets": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "fire",
+                        "value": "2d4+Intelligence",
+                        "value_formula": "2d4+[intel]",
+                        "dice_formula": "2d4+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Poison soin. 1d4 de l’élément, 2 déclenchements max."
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Allié·e·s épargné·e·s."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison soin. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Allié·e·s épargné·e·s."
+                            },
+                            "order": 2
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison soin. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Allié·e·s épargné·e·s."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "orpaillage",
+            "name": "Orpaillage",
+            "dofusdb_id": "13363",
+            "official_id": "jdr:enutrof:orpaillage",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 7,
+            "types": [
+                "Amélioration",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu laves le sable dans un courant. La cible subit des dommages d’Eau, et l’eau qui reste sur elle mord si on lui coupe le pas.",
+            "effect": "Dégâts d’Eau et poison de PM. Pas de retrait ici : Maladresse ou un autre sort le réveille. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d4+Chance",
+                        "value_formula": "2d4+[chance]",
+                        "dice_formula": "2d4+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Poison PM. 1d4 de l’élément, 2 déclenchements max."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison PM. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison PM. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "remblai",
+            "name": "Remblai",
+            "dofusdb_id": "13335",
+            "official_id": "jdr:enutrof:remblai",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 7,
+            "types": [
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu renverses un tombereau. Les créatures autour subissent des dommages de Terre. Toi et les tiens restent à l’écart, et une invocation encaisse plus.",
+            "effect": "Dégâts de Terre en zone, allié·e·s saufs, toi sauf. +1d4 si la cible est une invocation. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "spares_chosen_targets": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Allié·e·s et toi saufs. +1d4 vs invocation."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Allié·e·s et toi saufs. +1d4 vs invocation."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "3d6+Force",
+                                "value_formula": "3d6+[strong]",
+                                "dice_formula": "3d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Allié·e·s et toi saufs. +1d4 vs invocation."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "avarice",
+            "name": "Avarice",
+            "dofusdb_id": "13362",
+            "official_id": "jdr:enutrof:avarice",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 8,
+            "types": [
+                "Entrave"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu tires le pas de ceux qui sont trop près, et tu t’en sers pour un geste de plus.",
+            "effect": "Les ennemi·e·s de la zone perdent 1 PM. Toi, tu gagnes 1 PA jusqu’à la fin de ce tour. Tu n’es pas dans le retrait. Ça réveille un poison de PM. Si ton mod. de Vitalité vaut au moins 3, ta prochaine attaque de classe dans ce tour inflige +1 dégât. Une fois par tour, relance de 3 tours. Pas de dégâts. −2 PM au niveau 13, et le bonus de coup passe à +1, ou +2 si Vitalité ≥ 3.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "retirer",
+                    "area": "cross-0-1",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pm",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "booster",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pa",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Réveille poison PM. Toi hors retrait."
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "retirer",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Réveille poison PM. Toi hors retrait."
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "decadence",
+            "name": "Décadence",
+            "dofusdb_id": "13369",
+            "official_id": "jdr:enutrof:decadence",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 8,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu pousses du plat de la pelle, ou tu prends la place d’un·e allié·e qui se décale.",
+            "effect": "Tu choisis. Soit tu repousses un·e ennemi·e d’une case. Soit tu échanges ta place avec un·e allié·e. Si ton mod. d’Agilité vaut au moins 3, la repousse gagne une case. Une fois par tour. Pas de dégâts. Au niveau 13, la repousse de base passe à 2. L’échange ne traverse pas un mur. Réaction : un·e allié·e à portée va être poussé·e ou attiré·e. Tu échanges ta place avec lui ou elle.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "allows_reaction": true,
+            "sub_effects": [
                 {
                     "slug": "déplacer",
                     "area": "point",
-                    "order": 1,
                     "params": {
                         "cells_formula": "1",
                         "movement_kind": "push",
                         "effect_direction": "action"
-                    }
-                }
-            ],
-            "character_level": 4
-        },
-        {
-            "key": "enutrof-coup-de-grisou",
-            "name": "Coup de Grisou",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 5,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "fire",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "2d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Coup de Grisou : sort fort de palier 5.",
-            "sub_effects": [
+                    },
+                    "order": 0
+                },
                 {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "fire",
-                        "value": "2d6+Intelligence",
-                        "value_formula": "2d6+[intel]",
-                        "dice_formula": "2d6+[intel]",
-                        "value_formula_crit": "3d6+[intel]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "29772",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "enutrof-eboulement",
-            "name": "Éboulement",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 5,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "2d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Éboulement : sort fort de palier 5.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "2d6+Force",
-                        "value_formula": "2d6+[strong]",
-                        "dice_formula": "2d6+[strong]",
-                        "value_formula_crit": "3d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "31368",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "enutrof-pelle-de-fortune",
-            "name": "Pelle de Fortune",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 6,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Pelle de Fortune : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
+                    "slug": "autre",
                     "area": "point",
                     "params": {
-                        "characteristic": "earth",
-                        "value": "3d6+Force",
-                        "value_formula": "3d6+[strong]",
-                        "dice_formula": "3d6+[strong]",
-                        "value_formula_crit": "4d6+[strong]",
-                        "effect_direction": "action"
-                    }
+                        "value": "Ou échange avec un·e allié·e. +1 case de repousse si Agi ≥ 3."
+                    },
+                    "order": 1
                 }
             ],
-            "dofusdb_id": "30775",
-            "attack_characteristic_key": "strong"
-        },
-        {
-            "key": "enutrof-orpaillage",
-            "name": "Orpaillage",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 6,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Orpaillage : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
+            "intensification": [
                 {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Ou échange avec un·e allié·e. +1 case de repousse si Agi ≥ 3."
+                            },
+                            "order": 1
+                        }
+                    ],
+                    "po_max": "4"
                 }
-            ],
-            "dofusdb_id": "29769",
-            "attack_characteristic_key": "chance"
+            ]
         },
         {
-            "key": "enutrof-cles-du-tresor",
-            "name": "Clef du Trésor",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 7,
-            "types": [
-                "Dégâts"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 5,
-            "effect": "Attirance de 3 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
-            "description": "Clef du Trésor : tu ramènes la cible.",
-            "sub_effects": [
-                {
-                    "slug": "déplacer",
-                    "area": "point",
-                    "params": {
-                        "cells_formula": "3",
-                        "movement_kind": "pull",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "13332",
-            "attack_characteristic_key": "agi"
-        },
-        {
-            "key": "enutrof-ruée-vers-l-or",
-            "name": "Ruée vers l'Or",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 7,
-            "types": [
-                "Placement"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "5",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Téléportation 1–5 cases, pas de ligne de vue. 3 PA, 1×/tour.",
-            "description": "Ruée vers l'Or : tu disparais et tu réapparais.",
-            "sub_effects": [
-                {
-                    "slug": "déplacer",
-                    "area": "point",
-                    "params": {
-                        "cells_formula": "5",
-                        "movement_kind": "teleport",
-                        "effect_direction": "action",
-                        "teleport": true
-                    }
-                }
-            ],
-            "dofusdb_id": "29757"
-        },
-        {
-            "key": "enutrof-pelle-fantomatique",
-            "name": "Pelle Fantomatique",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 8,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 5,
-            "effect": "2d6 + Force (Terre). Physique, 3 PA, 2×/tour.",
-            "description": "Pelle Fantomatique : attaque simple, même budget que le palier 8.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "2d6+Force",
-                        "value_formula": "2d6+[strong]",
-                        "dice_formula": "2d6+[strong]",
-                        "value_formula_crit": "3d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "13336",
-            "attack_characteristic_key": "strong"
-        },
-        {
-            "key": "enutrof-monnaie-sonnante",
-            "name": "Monnaie Sonnante",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 8,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 5,
-            "effect": "2d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Monnaie Sonnante : attaque simple, même budget que le palier 8.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "point",
-                    "params": {
-                        "characteristic": "water",
-                        "value": "2d6+Chance",
-                        "value_formula": "2d6+[chance]",
-                        "dice_formula": "2d6+[chance]",
-                        "value_formula_crit": "3d6+[chance]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "29770",
-            "attack_characteristic_key": "chance"
-        },
-        {
-            "key": "enutrof-feu-de-mine",
-            "name": "Feu de Mine",
+            "key": "coffre-anime",
+            "name": "Coffre Animé",
+            "dofusdb_id": "13347",
+            "official_id": "jdr:enutrof:coffre-anime",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 10,
             "types": [
-                "Dégâts"
+                "Invocation"
             ],
-            "element": "fire",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu fais sauter le couvercle et le coffre s’avance. C’est une invocation : il soigne, il mord, et il pèse plus lourd quand il est abîmé.",
+            "effect": "Effet Invoquer vers le monstre Coffre Animé (`jdr:summon:enutrof-coffre-anime`, fiche Coffre-anime). L’invocation a ton niveau. Un seul objet animé à la fois. Contrôlé, il joue juste après toi et tient 3 tours. Relance de 4 tours.",
+            "pa": "3",
             "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "3d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Feu de Mine : sort fort de palier 10.",
+            "cast_per_target": "1",
+            "number_between_two_cast": "4",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
             "sub_effects": [
                 {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
+                    "slug": "invoquer",
+                    "area": "point",
                     "params": {
-                        "characteristic": "fire",
-                        "value": "3d6+Intelligence",
-                        "value_formula": "3d6+[intel]",
-                        "dice_formula": "3d6+[intel]",
-                        "value_formula_crit": "4d6+[intel]",
-                        "effect_direction": "action"
-                    }
+                        "monster_official_id": "jdr:summon:enutrof-coffre-anime"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Un seul objet animé. 3 tours."
+                    },
+                    "order": 1
                 }
             ],
-            "dofusdb_id": "13355",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            "intensification": []
         },
         {
-            "key": "enutrof-tourbiere",
-            "name": "Tourbière",
+            "key": "retraite-anticipee",
+            "name": "Retraite Anticipée",
+            "dofusdb_id": "13349",
+            "official_id": "jdr:enutrof:retraite-anticipee",
             "slot_index": 1,
             "choice_order": 1,
             "character_level": 10,
             "types": [
                 "Entrave"
             ],
-            "element": "water",
-            "pa": "5",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu balayes les chevilles autour de toi. Les ennemi·e·s perdent un pas. Toi, tu restes libre de marcher.",
+            "effect": "Les ennemi·e·s de la zone perdent 1 PM. Toi et tes allié·e·s n’êtes pas dans le retrait. Ça réveille un poison de PM. Si ton mod. de Force vaut au moins 3, tu recules ensuite d’une case, sur une case libre. Une fois par tour, relance de 2 tours. Pas de dégâts. −2 PM au niveau 17, et le recul passe à 2 si Force ≥ 3.",
+            "pa": "3",
             "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Retrait de 1 PM. Magique, 5 PA, 1×/tour. Sauvegarde Sagesse.",
-            "description": "Tourbière : les jambes pèsent.",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
             "sub_effects": [
                 {
                     "slug": "retirer",
-                    "area": "point",
+                    "area": "cross-0-1",
+                    "duration_formula": "1",
                     "params": {
-                        "characteristic": "movement_points",
+                        "characteristic": "pm",
                         "value": "1",
                         "value_formula": "1",
-                        "effect_direction": "action"
-                    }
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Réveille poison PM. Recul si Force ≥ 3."
+                    },
+                    "order": 1
                 }
             ],
-            "dofusdb_id": "23609",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun retrait."
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "retirer",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "2",
+                                "value_formula": "2",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Réveille poison PM. Recul si Force ≥ 3."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "enutrof-malle-animee",
-            "name": "Malle Animée",
+            "key": "boite-a-outils",
+            "name": "Boîte à Outils",
+            "dofusdb_id": "13357",
+            "official_id": "jdr:enutrof:boite-a-outils",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 11,
             "types": [
-                "Invocation"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "Invoque une créature alliée adjacente. Elle agit à ton initiative : 1 attaque 2d4, 1 PM. Au plus 1 invocation à la fois. 3 PA, 1×/tour.",
-            "description": "Malle Animée : une invocation. Fragile, mais elle occupe.",
-            "sub_effects": [
-                {
-                    "slug": "invoquer",
-                    "area": "point",
-                    "params": {
-                        "monster_official_id": "jdr:summon:enutrof-malle-animee",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "dofusdb_id": "13371"
-        },
-        {
-            "key": "enutrof-opportunite",
-            "name": "Opportunité",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 11,
-            "types": [
                 "Amélioration"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "+3d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Opportunité : tu te prépares. Le prochain élan frappe plus fort.",
+            "description": "Tu prêtes le bon outil. Le geste et le pas de l’allié·e s’allongent, et tu n’es pas du genre à tout donner.",
+            "effect": "L’allié·e gagne 1 PA et 1 PM jusqu’au début de ton prochain tour. Si ton mod. d’Intelligence vaut au moins 3, tu gagnes aussi 1 PM, toi, jusqu’au début de ton prochain tour. Une fois par tour, relance de 3 tours. Pas de dégâts. Au niveau 20, le PM de l’allié·e passe à 2, et tu gagnes 1 PA en plus du PM si Intelligence ≥ 3.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "4",
+            "po_editable": true,
             "sub_effects": [
                 {
                     "slug": "booster",
                     "area": "point",
                     "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "3d4",
-                        "value_formula": "3d4",
-                        "dice_formula": "3d4",
-                        "effect_direction": "self",
+                        "characteristic": "pa",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
                         "duration_formula": "1"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "booster",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pm",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "+1 PA et +1 PM. Toi +1 PM si Intel ≥ 3"
+                    },
+                    "order": 2
                 }
             ],
-            "dofusdb_id": "13366",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pa",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "booster",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "+1 PA et +2 PM. Toi +1 PM et +1 PA si Intel ≥ 3"
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "enutrof-age-d-or",
-            "name": "Âge d'Or",
+            "key": "corruption",
+            "name": "Corruption",
+            "dofusdb_id": "13346",
+            "official_id": "jdr:enutrof:corruption",
+            "slot_index": 1,
+            "choice_order": 1,
+            "character_level": 11,
+            "types": [
+                "Protection"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu glisses une pièce dans la main de quelqu’un. Cette personne ne peut plus blesser, et plus aucun coup ne la touche.",
+            "effect": "La cible, allié·e ou ennemi·e, est invulnérable et pacifiste jusqu’au début de ton prochain tour. Elle ne peut ni infliger ni subir de dégâts. Elle peut encore se déplacer, soigner, et subir un retrait. Une fois par tour, relance de 4 tours. Pas de dégâts. Au niveau 20, la relance passe à 3 tours.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "4",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "6",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Invulnérable et pacifiste, 1 tour. Peut encore se déplacer, soigner, subir un retrait.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 20,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Invulnérable et pacifiste, 1 tour. Peut encore se déplacer, soigner, subir un retrait.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 0
+                        }
+                    ],
+                    "number_between_two_cast": "3"
+                }
+            ]
+        },
+        {
+            "key": "beche-des-anciens",
+            "name": "Bêche des Anciens",
+            "dofusdb_id": "13367",
+            "official_id": "jdr:enutrof:beche-des-anciens",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 12,
             "types": [
+                "Entrave",
                 "Dégâts"
             ],
-            "element": "water",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu fais tournoyer la bêche. Les ennemi·e·s autour subissent des dommages d’Air et reculent. Une pièce reste si on leur coupe le geste.",
+            "effect": "Dégâts d’Air en zone, allié·e·s saufs. Poison de PA, puis repousse depuis le centre. Une fois par tour, relance de 2 tours. Repousse de 2 au niveau 17.",
+            "pa": "4",
             "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "4d6 + Chance (Eau) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Âge d'Or : sort fort de palier 14.",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "spares_chosen_targets": true,
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "cross-0-1",
                     "params": {
-                        "characteristic": "water",
-                        "value": "4d6+Chance",
-                        "value_formula": "4d6+[chance]",
-                        "dice_formula": "4d6+[chance]",
-                        "value_formula_crit": "5d6+[chance]",
+                        "characteristic": "air",
+                        "value": "2d6+Agilité",
+                        "value_formula": "2d6+[agi]",
+                        "dice_formula": "2d6+[agi]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Poison PA. 1d4 de l’élément, 2 déclenchements max."
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "déplacer",
+                    "area": "cross-0-1",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "push",
+                        "effect_direction": "action"
+                    },
+                    "order": 2
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Allié·e·s épargné·e·s."
+                    },
+                    "order": 3
                 }
             ],
-            "dofusdb_id": "13329",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison PA. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "cross-0-1",
+                            "params": {
+                                "cells_formula": "2",
+                                "movement_kind": "push",
+                                "effect_direction": "action"
+                            },
+                            "order": 2
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Allié·e·s épargné·e·s."
+                            },
+                            "order": 3
+                        }
+                    ],
+                    "po_max": "5"
+                }
+            ]
         },
         {
-            "key": "enutrof-banqueroute",
-            "name": "Banqueroute",
+            "key": "gisement",
+            "name": "Gisement",
+            "dofusdb_id": "14273",
+            "official_id": "jdr:enutrof:gisement",
             "slot_index": 1,
             "choice_order": 1,
             "character_level": 12,
             "types": [
+                "Soin",
                 "Dégâts"
             ],
-            "element": "fire",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu ouvres un gisement brûlant. Les ennemi·e·s de la zone subissent des dommages de Feu ; les allié·e·s y reprennent des forces, et ce soin au contact attise la braise.",
+            "effect": "Dégâts de Feu aux ennemi·e·s de la zone, poison de soin sur eux. Les allié·e·s de la zone, toi compris·e, sont soigné·e·s : chaque soin au contact d’un·e ennemi·e empoisonné·e réveille son poison (dans la limite des deux déclenchements). Une fois par tour, relance de 2 tours.",
+            "pa": "4",
             "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "4d6 + Intelligence (Feu) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Banqueroute : sort fort de palier 14.",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "4",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
                         "characteristic": "fire",
-                        "value": "4d6+Intelligence",
-                        "value_formula": "4d6+[intel]",
-                        "dice_formula": "4d6+[intel]",
-                        "value_formula_crit": "5d6+[intel]",
+                        "value": "2d6+Intelligence",
+                        "value_formula": "2d6+[intel]",
+                        "dice_formula": "2d6+[intel]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Poison soin. 1d4 de l’élément, 2 déclenchements max."
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "soigner",
+                    "area": "point",
+                    "params": {
+                        "value": "1d4",
+                        "value_formula": "1d4",
+                        "dice_formula": "1d4",
+                        "effect_direction": "action"
+                    },
+                    "order": 2
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Soins allié·e·s au contact : réveillent le poison."
+                    },
+                    "order": 3
                 }
             ],
-            "dofusdb_id": "14278",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison soin. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "2d4",
+                                "value_formula": "2d4",
+                                "dice_formula": "2d4",
+                                "effect_direction": "action"
+                            },
+                            "order": 2
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Soins allié·e·s au contact : réveillent le poison."
+                            },
+                            "order": 3
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "tamisage",
+            "name": "Tamisage",
+            "dofusdb_id": "13370",
+            "official_id": "jdr:enutrof:tamisage",
+            "slot_index": 1,
+            "choice_order": 2,
+            "character_level": 12,
+            "types": [
+                "Amélioration",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu secoues un tamis plein d’eau. Les ennemi·e·s subissent des dommages d’Eau. Toi et les tiens gagnez un pas.",
+            "effect": "Dégâts d’Eau aux ennemi·e·s de la zone, poison de PM. Toi et les allié·e·s de la zone gagnez 1 PM jusqu’au début de ton prochain tour. Si Chance ≥ 3, ce gain passe à 2. Une fois par tour, relance de 2 tours.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "3",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d6+Chance",
+                        "value_formula": "2d6+[chance]",
+                        "dice_formula": "2d6+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Poison PM. 1d4 de l’élément, 2 déclenchements max."
+                    },
+                    "order": 1
+                },
+                {
+                    "slug": "booster",
+                    "area": "cross-0-1",
+                    "duration_formula": "1",
+                    "params": {
+                        "characteristic": "pm",
+                        "value": "1",
+                        "value_formula": "1",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 2
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Poison PM. 1d4 de l’élément, 2 déclenchements max."
+                            },
+                            "order": 1
+                        },
+                        {
+                            "slug": "booster",
+                            "area": "cross-0-1",
+                            "duration_formula": "1",
+                            "params": {
+                                "characteristic": "pm",
+                                "value": "1",
+                                "value_formula": "1",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "tourbiere",
+            "name": "Tourbière",
+            "dofusdb_id": "13358",
+            "official_id": "jdr:enutrof:tourbiere",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 12,
+            "types": [
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu ouvres une tourbière sous les pieds. Les ennemi·e·s dedans subissent des dommages de Terre, et plus tu as marché, plus le sol les ancre.",
+            "effect": "Dégâts de Terre en zone, allié·e·s saufs. Indéplaçable pendant 1 tour. +1d4 si tu as déjà dépensé au moins 3 PM dans ce tour, avant ce sort. Une fois par tour, relance de 2 tours. Au niveau 17, le bonus de marche passe à +2d4 si tu as dépensé au moins 6 PM.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "spares_chosen_targets": true,
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "cross-0-1",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d8+Force",
+                        "value_formula": "2d8+[strong]",
+                        "dice_formula": "2d8+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "cross-0-1",
+                    "params": {
+                        "value": "Indéplaçable, 1 tour. Bonus si PM déjà dépensés ce tour.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "cross-0-1",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "3d8+Force",
+                                "value_formula": "3d8+[strong]",
+                                "dice_formula": "3d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "cross-0-1",
+                            "params": {
+                                "value": "Indéplaçable, 1 tour. Bonus si PM déjà dépensés ce tour.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

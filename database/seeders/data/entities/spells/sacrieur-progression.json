@@ -1,410 +1,1115 @@
 {
     "_schema_version": "1",
     "breed": "Sacrieur",
+    "state": "playable",
     "entries": [
         {
-            "key": "sacrieur-cooperation",
-            "name": "Coopération",
+            "key": "liens-du-sang",
+            "name": "Liens du Sang",
+            "dofusdb_id": "12754",
+            "official_id": "jdr:sacrieur:liens-du-sang",
             "slot_index": 1,
             "choice_order": 0,
             "character_level": 2,
             "types": [
-                "Placement"
+                "Protection"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "4",
-            "po_editable": true,
-            "sight_line": true,
-            "cast_per_turn": "1",
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 3,
-            "effect": "Échange de position avec la cible. 3 PA, 1×/tour.",
-            "description": "Coopération : vous changez de place.",
+            "description": "Tu attaches un fil de sang entre toi et un·e ennemi·e. C'est un déplacement : tu te rues vers lui ou elle, et chaque coup qu'il ou elle te donne te rapproche.",
+            "effect": "Tu avances de 2 cases vers l'ennemi·e ciblé·e, 3 en Souffrance VI ou plus. Jusqu'au début de ton prochain tour, chaque fois qu'il ou elle te blesse, tu avances d'1 case vers lui ou elle. Si ton mod. d'Agilité vaut au moins 3, ces pas ne peuvent pas être taclés. Relance de 2 tours. Pas de dégâts.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "5",
+            "po_editable": true,
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Échange de position avec la cible.",
-                        "effect_direction": "action"
-                    }
+                        "value": "Lien de sang / partage.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
                 }
             ],
-            "official_id": "jdr:sacrieur-cooperation",
-            "spares_chosen_targets": false
+            "intensification": []
         },
         {
-            "key": "sacrieur-pied-du-sacrieur",
-            "name": "Pied du Sacrieur",
-            "slot_index": 1,
-            "choice_order": 1,
+            "key": "penitence",
+            "name": "Pénitence",
+            "dofusdb_id": "12764",
+            "official_id": "jdr:sacrieur:penitence",
+            "slot_index": 2,
+            "choice_order": 0,
             "character_level": 2,
             "types": [
-                "Dégâts"
+                "Entrave"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "attack_roll",
+            "state": "playable",
             "is_magic": false,
-            "powerful": 3,
-            "effect": "Poussée de 2 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
-            "description": "Pied du Sacrieur : tu dégages l’espace.",
+            "resolution_mode": "auto_success",
+            "description": "Tu prends la place d'un·e allié·e et tu lui laisses un fil rouge au poignet. C'est une protection : s'il ou elle est frappé·e, tu reviens te mettre devant.",
+            "effect": "Tu échanges ta place avec l'allié·e. Jusqu'au début de ton prochain tour, la première fois qu'il ou elle est touché·e, vous échangez vos places avant les dégâts : le coup te vise à sa place, contre ta CA. Si ton mod. de Sagesse vaut au moins 3, ce coup perd 2 dégâts. Relance de 3 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
             "sub_effects": [
                 {
-                    "slug": "déplacer",
+                    "slug": "autre",
                     "area": "point",
                     "params": {
-                        "cells_formula": "2",
-                        "movement_kind": "push",
-                        "effect_direction": "action"
-                    }
+                        "value": "Pénitence.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
                 }
             ],
-            "official_id": "jdr:sacrieur-pied-du-sacrieur",
-            "attack_characteristic_key": "agi"
+            "intensification": []
         },
         {
-            "key": "folie-sanguinaire",
-            "name": "Folie Sanguinaire",
-            "dofusdb_id": "12740",
+            "key": "assaut",
+            "name": "Assaut",
+            "dofusdb_id": "12733",
+            "official_id": "jdr:sacrieur:assaut",
             "slot_index": 1,
             "choice_order": 0,
+            "character_level": 4,
             "types": [
+                "Placement",
                 "Dégâts"
             ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu agrippes la cible et tu pivotes avec elle. Vous échangez vos places, et le choc porte des dommages d'Air.",
+            "effect": "Tu échanges ta place avec la cible, allié·e ou ennemi·e. Sur un·e ennemi·e : dégâts d'Air. Sur un·e allié·e : pas de dégâts. Une fois par tour.",
+            "pa": "3",
             "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Force (Terre) en petite zone autour de toi, vol de vie 1d4. Magique, 5 PA, 1×/tour.",
-            "description": "Tu t’ouvres, le sang frappe autour. Ceux qui restent collés paient.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "1d6+Force",
-                        "value_formula": "1d6+[strong]",
-                        "dice_formula": "1d6+[strong]",
-                        "value_formula_crit": "2d6+[strong]",
-                        "life_steal_formula": "1d4",
-                        "effect_direction": "self"
-                    }
-                }
-            ],
-            "character_level": 4
-        },
-        {
-            "key": "chatiment",
-            "name": "Châtiment",
-            "dofusdb_id": "12760",
-            "slot_index": 1,
-            "choice_order": 1,
-            "types": [
-                "Dégâts"
-            ],
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
             "element": "air",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât.",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "1d6 + Agilité (Air) en petite zone autour de toi. Magique, 5 PA, 1×/tour.",
-            "description": "Un éclat d’air. Moins de vol, même choc : ceux autour encaissent.",
+            "attack_characteristic_key": "agi",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
                     "params": {
                         "characteristic": "air",
                         "value": "1d6+Agilité",
                         "value_formula": "1d6+[agi]",
                         "dice_formula": "1d6+[agi]",
-                        "value_formula_crit": "2d6+[agi]",
-                        "effect_direction": "self"
-                    }
-                }
-            ],
-            "character_level": 4
-        },
-        {
-            "key": "sacrieur-punition-majeure",
-            "name": "Assaut",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 5,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "2d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Assaut : sort fort de palier 5.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "2d6+Force",
-                        "value_formula": "2d6+[strong]",
-                        "dice_formula": "2d6+[strong]",
-                        "value_formula_crit": "3d6+[strong]",
                         "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:sacrieur-punition-majeure",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "sacrieur-fureur",
-            "name": "Furie",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 5,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "air",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "2d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Furie : sort fort de palier 5.",
-            "sub_effects": [
+                    },
+                    "order": 0
+                },
                 {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "2d6+Agilité",
-                        "value_formula": "2d6+[agi]",
-                        "dice_formula": "2d6+[agi]",
-                        "value_formula_crit": "3d6+[agi]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:sacrieur-fureur",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "sacrieur-stase",
-            "name": "Stase",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 6,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
-            "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Chance (Eau). Physique, 3 PA, 2×/tour.",
-            "description": "Stase : attaque simple, même budget que le palier 13.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
+                    "slug": "déplacer",
                     "area": "point",
                     "params": {
-                        "characteristic": "water",
-                        "value": "3d6+Chance",
-                        "value_formula": "3d6+[chance]",
-                        "dice_formula": "3d6+[chance]",
-                        "value_formula_crit": "4d6+[chance]",
-                        "effect_direction": "action"
-                    }
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:sacrieur-stase",
-            "attack_characteristic_key": "chance"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d4+Agilité",
+                                "value_formula": "2d4+[agi]",
+                                "dice_formula": "2d4+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "teleport",
+                                "effect_direction": "action",
+                                "teleport": true
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "teleport",
+                                "effect_direction": "action",
+                                "teleport": true
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "déplacer",
+                            "area": "point",
+                            "params": {
+                                "cells_formula": "1",
+                                "movement_kind": "teleport",
+                                "effect_direction": "action",
+                                "teleport": true
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "sacrieur-absorption-majeure",
-            "name": "Drain Vital",
+            "key": "hecatombe",
+            "name": "Hécatombe",
+            "dofusdb_id": "12750",
+            "official_id": "jdr:sacrieur:hecatombe",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 6,
+            "character_level": 4,
             "types": [
+                "Entrave",
                 "Dégâts"
             ],
-            "element": "fire",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
+            "state": "playable",
             "is_magic": false,
-            "powerful": 8,
-            "effect": "3d6 + Intelligence (Feu) et vol de vie 3d4. 3 PA, 2×/tour.",
-            "description": "Drain Vital : tu frappes, tu récupères.",
+            "resolution_mode": "attack_roll",
+            "description": "Tu marques la cible d'une flamme noire. Elle subit des dommages de Feu, et ses plaies refusent de se refermer.",
+            "effect": "Dégâts de Feu. Jusqu'au début de ton prochain tour, la cible ne reçoit que la moitié des soins. En Souffrance IV ou plus, −1 PM aussi. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
             "sub_effects": [
                 {
                     "slug": "frapper",
                     "area": "point",
                     "params": {
                         "characteristic": "fire",
-                        "value": "3d6+Intelligence",
-                        "value_formula": "3d6+[intel]",
-                        "dice_formula": "3d6+[intel]",
-                        "value_formula_crit": "4d6+[intel]",
-                        "effect_direction": "action",
-                        "life_steal_formula": "3d4"
-                    }
+                        "value": "1d6+Intelligence",
+                        "value_formula": "1d6+[intel]",
+                        "dice_formula": "1d6+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Moitié des soins. −1 PM en Souffrance IV+"
+                    },
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:sacrieur-absorption-majeure",
-            "attack_characteristic_key": "intel"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d4+Intelligence",
+                                "value_formula": "2d4+[intel]",
+                                "dice_formula": "2d4+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Moitié des soins. −1 PM en Souffrance IV+"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Moitié des soins. −1 PM en Souffrance IV+"
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Moitié des soins. −1 PM en Souffrance IV+"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "sacrieur-transposition",
-            "name": "Transposition",
+            "key": "condensation",
+            "name": "Condensation",
+            "dofusdb_id": "12745",
+            "official_id": "jdr:sacrieur:condensation",
             "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 7,
+            "choice_order": 2,
+            "character_level": 4,
             "types": [
-                "Placement"
+                "Dégâts"
             ],
-            "element": null,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu lances une chaîne d'eau sanglante et tu tires la cible vers toi. Elle subit des dommages d'Eau.",
+            "effect": "Dégâts d'Eau. La cible est attirée d'1 case vers toi, 2 en Souffrance IV ou plus. Une fois par tour.",
             "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "4",
             "po_editable": true,
-            "sight_line": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d4+Chance",
+                        "value_formula": "2d4+[chance]",
+                        "dice_formula": "2d4+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Condensation."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d6+Chance",
+                                "value_formula": "2d6+[chance]",
+                                "dice_formula": "2d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Condensation."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Condensation."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "3d6+Chance",
+                                "value_formula": "3d6+[chance]",
+                                "dice_formula": "3d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Condensation."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "ravage",
+            "name": "Ravage",
+            "dofusdb_id": "12746",
+            "official_id": "jdr:sacrieur:ravage",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 4,
+            "types": [
+                "Tank",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu fonces tête baissée sur la cible et tu la percutes. Elle subit des dommages de Terre, et tu te raidis contre le choc.",
+            "effect": "Avant le coup, tu peux avancer de 2 cases en ligne droite vers la cible, sans être taclé·e. Dégâts de Terre. Tu gagnes des PV temporaires. Une fois par tour.",
+            "pa": "3",
             "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "1d4+Force",
+                        "value_formula": "1d4+[strong]",
+                        "dice_formula": "1d4+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Ravage."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 9,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "1d6+Force",
+                                "value_formula": "1d6+[strong]",
+                                "dice_formula": "1d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Ravage."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 14,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d4+Force",
+                                "value_formula": "2d4+[strong]",
+                                "dice_formula": "2d4+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Ravage."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "III",
+                    "required_creature_level": 19,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Ravage."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "mutilation",
+            "name": "Mutilation",
+            "dofusdb_id": null,
+            "official_id": "jdr:sacrieur:mutilation",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Entrave"
+            ],
+            "state": "playable",
+            "is_magic": false,
             "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "Échange de position avec la cible. 3 PA, 1×/tour.",
-            "description": "Transposition : vous changez de place.",
+            "description": "Tu t'entailles le bras, et la douleur te donne de la force. C'est un buff : tes sorts frappent plus fort, payés de ton sang.",
+            "effect": "Tu perds 1d6 PV. Jusqu'à la fin de ton prochain tour, tes sorts de dégâts font +1d4, une fois par sort. Si ton mod. de Force vaut au moins 3, +1d6. Relance de 3 tours.",
+            "pa": "1",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
             "sub_effects": [
                 {
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Échange de position avec la cible.",
-                        "effect_direction": "action"
-                    }
+                        "value": "Perte de PV / mutilation.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
                 }
             ],
-            "official_id": "jdr:sacrieur-transposition",
-            "spares_chosen_targets": false
+            "intensification": []
         },
         {
-            "key": "sacrieur-sang-impur",
-            "name": "Sang Impur",
+            "key": "pacte-de-sang",
+            "name": "Pacte de Sang",
+            "dofusdb_id": "12762",
+            "official_id": "jdr:sacrieur:pacte-de-sang",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 5,
+            "types": [
+                "Protection"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu signes un pacte de ton sang avec ton dieu. C'est une protection : une chair neuve te couvre, sans soigner ta douleur.",
+            "effect": "Tu gagnes des PV temporaires. Ils ne changent pas ta Souffrance. Si ton mod. de Vitalité vaut au moins 3, +1d6. Relance de 3 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Pacte : lien / sacrifice.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 12,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Pacte : lien / sacrifice.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "pilori",
+            "name": "Pilori",
+            "dofusdb_id": "14011",
+            "official_id": "jdr:sacrieur:pilori",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Entrave"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu cloues un·e allié·e au sol d'un regard. C'est une protection : il ou elle ne bouge plus, et les coups qu'il ou elle reçoit au contact nourrissent ta chair.",
+            "effect": "Un·e allié·e : bouclier, et Enraciné·e jusqu'au début de ton prochain tour. Si un·e ennemi·e le ou la frappe au contact, tu gagnes 2 PV temporaires. Si ton mod. de Sagesse vaut au moins 3, le bouclier gagne 1d4. Relance de 2 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Pilori : immobilise / marque.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 11,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Pilori : immobilise / marque.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "perfusion",
+            "name": "Perfusion",
+            "dofusdb_id": "12758",
+            "official_id": "jdr:sacrieur:perfusion",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 6,
+            "types": [
+                "Soin"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu t'ouvres la paume et tu laisses couler ta vie vers tes allié·e·s. C'est un soin : tu souffres pour qu'ils et elles tiennent debout.",
+            "effect": "Tu perds 1d6 PV. Tes allié·e·s à 2 cases ou moins de toi sont soigné·e·s d'autant. Si ton mod. de Chance vaut au moins 3, chacun·e gagne 1d4 de plus. Pas sur toi. Relance de 2 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "soigner",
+                    "area": "point",
+                    "params": {
+                        "value": "1d6",
+                        "value_formula": "1d6",
+                        "dice_formula": "1d6",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Perfusion / vol de vie."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 11,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "soigner",
+                            "area": "point",
+                            "params": {
+                                "value": "1d6",
+                                "value_formula": "1d6",
+                                "dice_formula": "1d6",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Perfusion / vol de vie."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "furie",
+            "name": "Furie",
+            "dofusdb_id": "12723",
+            "official_id": "jdr:sacrieur:furie",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 7,
+            "types": [
+                "Placement",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu tournoies, bras écartés, au milieu d'un groupe. Les ennemi·e·s subissent des dommages d'Air et sont projeté·e·s loin du centre.",
+            "effect": "Dégâts d'Air aux ennemi·e·s dans la zone. Recul 1 case depuis le centre. En Souffrance IV ou plus, recul 2 cases. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "2",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "air",
+                        "value": "2d4+Agilité",
+                        "value_formula": "2d4+[agi]",
+                        "dice_formula": "2d4+[agi]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Furie."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d6+Agilité",
+                                "value_formula": "2d6+[agi]",
+                                "dice_formula": "2d6+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Furie."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Furie."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "absorption",
+            "name": "Absorption",
+            "dofusdb_id": "12734",
+            "official_id": "jdr:sacrieur:absorption",
             "slot_index": 1,
             "choice_order": 1,
             "character_level": 7,
             "types": [
-                "Amélioration"
+                "Entrave",
+                "Dégâts"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu plantes ta main dans la cible et tu aspires sa force. Elle subit des dommages de Feu et perd son élan, et un peu de sa vie passe en toi.",
+            "effect": "Dégâts de Feu, −1 PA. Tu es soigné·e de 1d4. En Souffrance VI ou plus, −1 PM aussi. Une fois par tour.",
+            "pa": "4",
             "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "+2d4 aux dégâts de tes sorts jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Sang Impur : tu te prépares. Le prochain élan frappe plus fort.",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": true,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
             "sub_effects": [
                 {
-                    "slug": "booster",
+                    "slug": "frapper",
                     "area": "point",
-                    "duration_formula": "1",
                     "params": {
-                        "characteristic": "dommages_spell",
-                        "value": "2d4",
-                        "value_formula": "2d4",
-                        "dice_formula": "2d4",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
-                    }
+                        "characteristic": "fire",
+                        "value": "2d4+Intelligence",
+                        "value_formula": "2d4+[intel]",
+                        "dice_formula": "2d4+[intel]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Absorption."
+                    },
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:sacrieur-sang-impur",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d6+Intelligence",
+                                "value_formula": "2d6+[intel]",
+                                "dice_formula": "2d6+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Absorption."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Absorption."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "sacrieur-dissolution",
-            "name": "Dissolution",
+            "key": "nervosite",
+            "name": "Nervosité",
+            "dofusdb_id": "12727",
+            "official_id": "jdr:sacrieur:nervosite",
             "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 8,
+            "choice_order": 2,
+            "character_level": 7,
             "types": [
                 "Dégâts"
             ],
-            "element": "water",
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
+            "state": "playable",
             "is_magic": false,
-            "powerful": 5,
-            "effect": "2d6 + Chance (Eau) et vol de vie 2d4. 3 PA, 2×/tour.",
-            "description": "Dissolution : tu frappes, tu récupères.",
+            "resolution_mode": "attack_roll",
+            "description": "Tu frappes le sol d'un poing tremblant, et une onde d'eau rouge jaillit autour du point d'impact. Les ennemi·e·s qui s'y tiennent subissent des dommages d'Eau.",
+            "effect": "Dégâts d'Eau aux ennemi·e·s dans la zone. En Souffrance VI ou plus, la zone passe en cercle 1. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "2",
+            "po_editable": true,
+            "element": "water",
+            "attack_characteristic_key": "chance",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -414,36 +1119,533 @@
                         "value": "2d6+Chance",
                         "value_formula": "2d6+[chance]",
                         "dice_formula": "2d6+[chance]",
-                        "value_formula_crit": "3d6+[chance]",
-                        "effect_direction": "action",
-                        "life_steal_formula": "2d4"
-                    }
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Nervosité."
+                    },
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:sacrieur-dissolution",
-            "attack_characteristic_key": "chance"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "2d8+Chance",
+                                "value_formula": "2d8+[chance]",
+                                "dice_formula": "2d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Nervosité."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "3d6+Chance",
+                                "value_formula": "3d6+[chance]",
+                                "dice_formula": "3d6+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Nervosité."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "sacrieur-camouflage",
-            "name": "Camouflage",
+            "key": "afflux",
+            "name": "Afflux",
+            "dofusdb_id": "12729",
+            "official_id": "jdr:sacrieur:afflux",
             "slot_index": 1,
-            "choice_order": 1,
+            "choice_order": 3,
+            "character_level": 7,
+            "types": [
+                "Tank",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu tends les bras et tu tires un groupe vers toi par le sang. Les ennemi·e·s subissent des dommages de Terre et se retrouvent collé·e·s à toi.",
+            "effect": "Ennemi·e·s dans la zone : attirance 1 case vers le centre, puis dégâts de Terre. Tu gagnes 1 PV temporaire par ennemi·e touché·e, 2 en Souffrance IV ou plus. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "3",
+            "po_editable": true,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "earth",
+                        "value": "2d4+Force",
+                        "value_formula": "2d4+[strong]",
+                        "dice_formula": "2d4+[strong]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Afflux."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 13,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d6+Force",
+                                "value_formula": "2d6+[strong]",
+                                "dice_formula": "2d6+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Afflux."
+                            },
+                            "order": 1
+                        }
+                    ]
+                },
+                {
+                    "tier": "II",
+                    "required_creature_level": 18,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Afflux."
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "fluctuation",
+            "name": "Fluctuation",
+            "dofusdb_id": "12763",
+            "official_id": "jdr:sacrieur:fluctuation",
+            "slot_index": 1,
+            "choice_order": 0,
             "character_level": 8,
+            "types": [
+                "Placement"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Ton cœur s'emballe, et ton corps devient insaisissable. C'est un buff : tu cours plus loin, et rien ne te retient.",
+            "effect": "Jusqu'à la fin de ton prochain tour, +1 PM et tu ne peux pas être taclé·e. En Souffrance VIII ou plus, +2 PM. Si ton mod. d'Agilité vaut au moins 3, un·e allié·e à ton contact gagne aussi +1 PM. Relance de 2 tours.",
+            "pa": "1",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "déplacer",
+                    "area": "point",
+                    "params": {
+                        "cells_formula": "1",
+                        "movement_kind": "teleport",
+                        "effect_direction": "action",
+                        "teleport": true
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Fluctuation / placement."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "libation",
+            "name": "Libation",
+            "dofusdb_id": "12759",
+            "official_id": "jdr:sacrieur:libation",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 8,
+            "types": [
+                "Soin"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu verses ton sang en offrande à ton dieu. C'est un soin différé : tu souffres maintenant, et ta chair se referme à la fin de ton prochain tour, d'autant mieux que tu as souffert.",
+            "effect": "Tu perds 1d6 PV. La durée de tes effets néfastes baisse de 1 tour. À la fin de ton prochain tour, tu es soigné·e de 1d6 par tranche de deux niveaux de Souffrance que tu as à ce moment (arrondi au supérieur). Si ton mod. de Chance vaut au moins 3, +1d6. Relance de 3 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "soigner",
+                    "area": "point",
+                    "params": {
+                        "value": "2d4",
+                        "value_formula": "2d4",
+                        "dice_formula": "2d4",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Libation."
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "punition",
+            "name": "Punition",
+            "dofusdb_id": "12741",
+            "official_id": "jdr:sacrieur:punition",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 10,
             "types": [
                 "Dégâts"
             ],
-            "element": "air",
-            "pa": "3",
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu rends d'un seul coup toute la douleur que tu portes. La cible subit des dommages neutres, d'autant plus lourds que tu souffres.",
+            "effect": "Dégâts neutres : 1d4 par tranche de deux niveaux de Souffrance, arrondie au supérieur. 1d4 en Souffrance I et II, 2d4 en III et IV, jusqu'à 5d4 en IX et X. Au niveau 11, ce sont des d6. Pas de mod. ajouté. Une fois par tour.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "1",
             "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "2",
-            "resolution_mode": "attack_roll",
+            "po_editable": true,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Dégâts neutres selon Souffrance. Signature."
+                    },
+                    "order": 0
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Dégâts neutres selon Souffrance. Signature."
+                            },
+                            "order": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "coagulation",
+            "name": "Coagulation",
+            "dofusdb_id": "12737",
+            "official_id": "jdr:sacrieur:coagulation",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 10,
+            "types": [
+                "Protection"
+            ],
+            "state": "playable",
             "is_magic": false,
-            "powerful": 5,
-            "effect": "2d6 + Agilité (Air). Physique, 3 PA, 2×/tour.",
-            "description": "Camouflage : attaque simple, même budget que le palier 8.",
+            "resolution_mode": "auto_success",
+            "description": "Ton sang durcit sur tes plaies comme une armure. C'est une protection : plus tu souffres, plus la croûte est épaisse.",
+            "effect": "Tu gagnes un bouclier : 1d6 par tranche de deux niveaux de Souffrance, arrondie au supérieur. 1d6 en Souffrance I et II, jusqu'à 5d6 en IX et X. Au niveau 11, ce sont des d8. Il dure jusqu'au début de ton prochain tour, et ne change pas ta Souffrance. Une fois par tour.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "0",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "protéger",
+                    "area": "point",
+                    "duration_formula": "1",
+                    "params": {
+                        "value": "1d6",
+                        "value_formula": "1d6",
+                        "dice_formula": "1d6",
+                        "effect_direction": "action",
+                        "duration_formula": "1"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Coagulation / bouclier.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "protéger",
+                            "area": "point",
+                            "duration_formula": "1",
+                            "params": {
+                                "value": "1d8",
+                                "value_formula": "1d8",
+                                "dice_formula": "1d8",
+                                "effect_direction": "action",
+                                "duration_formula": "1"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Coagulation / bouclier.",
+                                "duration_formula": "1"
+                            },
+                            "duration_formula": "1",
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "berserk",
+            "name": "Berserk",
+            "dofusdb_id": "12743",
+            "official_id": "jdr:sacrieur:berserk",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Amélioration"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "auto_success",
+            "description": "Tu lâches la bride à ta rage. C'est un buff : plus rien ne te retient, tes sorts cognent plus fort, mais les soins glissent sur toi.",
+            "effect": "Seulement en Souffrance VI ou plus. Tu perds 1d6 PV. Tu es Berserk : intaclable, tes sorts de dégâts font +2, et tu ne reçois que la moitié des soins. Ça prend fin si tu reviens en Souffrance V ou moins, ou au bout de 3 tours. Si ton mod. d'Intelligence vaut au moins 3, +3 au lieu de +2. Relance de 4 tours.",
+            "pa": "2",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "4",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Berserk : bonus selon Souffrance.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "rituel-de-jashin",
+            "name": "Rituel de Jashin",
+            "dofusdb_id": "14000",
+            "official_id": "jdr:sacrieur:rituel-de-jashin",
+            "slot_index": 2,
+            "choice_order": 0,
+            "character_level": 11,
+            "types": [
+                "Protection"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "saving_throw",
+            "description": "Tu prononces le rituel interdit, et ton sang se lie à celui d'un·e ennemi·e. C'est un debuff : chaque blessure qu'il ou elle te fait lui revient en partie.",
+            "effect": "Jusqu'au début de ton prochain tour, quand l'ennemi·e ciblé·e te blesse, il ou elle subit la moitié des dégâts, en neutre. Tu ne peux pas être taclé·e. Si ton mod. de Chance vaut au moins 3, cela dure jusqu'à la fin de ton prochain tour. Relance de 3 tours.",
+            "pa": "3",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "3",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
+            "attack_characteristic_key": "vitality",
+            "save_characteristic_key": "vitality",
+            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
+            "save_success_note": "Aucun élément · origine · Altération · DD de Chance vs jet de sauvegarde de Sagesse · DofusDB : 14000.",
+            "sub_effects": [
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Rituel de Jashin.",
+                        "duration_formula": "1"
+                    },
+                    "duration_formula": "1",
+                    "order": 0
+                }
+            ],
+            "intensification": []
+        },
+        {
+            "key": "carnage",
+            "name": "Carnage",
+            "dofusdb_id": "12752",
+            "official_id": "jdr:sacrieur:carnage",
+            "slot_index": 1,
+            "choice_order": 0,
+            "character_level": 12,
+            "types": [
+                "Placement",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu t'ouvres les veines et tu traverses la mêlée comme un éclair rouge. Chaque ennemi·e sur ta route subit des dommages d'Air.",
+            "effect": "Tu perds 1d6 PV. Ligne de 4 cases devant toi : tu te téléportes sur la dernière case libre de la ligne. Dégâts d'Air à chaque ennemi·e sur la ligne. En Souffrance VI ou plus : +1d6. En Souffrance VIII ou plus : la ligne fait 6 cases. Une fois par tour, relance de 2 tours.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "1",
+            "po_editable": true,
+            "element": "air",
+            "attack_characteristic_key": "agi",
             "sub_effects": [
                 {
                     "slug": "frapper",
@@ -453,247 +1655,290 @@
                         "value": "2d6+Agilité",
                         "value_formula": "2d6+[agi]",
                         "dice_formula": "2d6+[agi]",
-                        "value_formula_crit": "3d6+[agi]",
                         "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:sacrieur-camouflage",
-            "attack_characteristic_key": "agi"
-        },
-        {
-            "key": "sacrieur-projection",
-            "name": "Projection",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 10,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "earth",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "3d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Projection : sort fort de palier 10.",
-            "sub_effects": [
+                    },
+                    "order": 0
+                },
                 {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "earth",
-                        "value": "3d6+Force",
-                        "value_formula": "3d6+[strong]",
-                        "dice_formula": "3d6+[strong]",
-                        "value_formula_crit": "4d6+[strong]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:sacrieur-projection",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "sacrieur-decimation",
-            "name": "Décimation",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 10,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "air",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "3d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Décimation : sort fort de palier 10.",
-            "sub_effects": [
-                {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
-                    "params": {
-                        "characteristic": "air",
-                        "value": "3d6+Agilité",
-                        "value_formula": "3d6+[agi]",
-                        "dice_formula": "3d6+[agi]",
-                        "value_formula_crit": "4d6+[agi]",
-                        "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:sacrieur-decimation",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "sacrieur-sacrifice-majeur",
-            "name": "Protection Sacrée",
-            "slot_index": 1,
-            "choice_order": 0,
-            "character_level": 11,
-            "types": [
-                "Protection"
-            ],
-            "element": null,
-            "pa": "3",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "auto_success",
-            "is_magic": true,
-            "powerful": 8,
-            "effect": "3d4+Sagesse de bouclier jusqu’à la fin de ton prochain tour. Pas de cumul. 3 PA, 1×/tour.",
-            "description": "Protection Sacrée : une couche de Wakfu avant les PV.",
-            "sub_effects": [
-                {
-                    "slug": "protéger",
+                    "slug": "autre",
                     "area": "point",
-                    "duration_formula": "1",
                     "params": {
-                        "value": "3d4+Sagesse",
-                        "value_formula": "3d4+[sagesse]",
-                        "effect_direction": "self",
-                        "duration_formula": "1"
-                    }
+                        "value": "Tu perds 1d6 PV. +1d6 en Souffrance VI+"
+                    },
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:sacrieur-sacrifice-majeur",
-            "spares_chosen_targets": false,
-            "duration": "jusqu’à la fin de ton prochain tour",
-            "max_stack": 1
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "air",
+                                "value": "2d8+Agilité",
+                                "value_formula": "2d8+[agi]",
+                                "dice_formula": "2d8+[agi]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Tu perds 1d6 PV. +1d6 en Souffrance VI+"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "sacrieur-attirance-majeure",
-            "name": "Condamnation",
+            "key": "immolation",
+            "name": "Immolation",
+            "dofusdb_id": "12747",
+            "official_id": "jdr:sacrieur:immolation",
             "slot_index": 1,
             "choice_order": 1,
-            "character_level": 11,
+            "character_level": 12,
             "types": [
+                "Entrave",
                 "Dégâts"
             ],
-            "element": null,
-            "pa": "3",
-            "po_min": "1",
-            "po_max": "1",
-            "po_editable": false,
-            "sight_line": true,
-            "cast_per_turn": "1",
-            "resolution_mode": "attack_roll",
+            "state": "playable",
             "is_magic": false,
-            "powerful": 8,
-            "effect": "Attirance de 4 cases, pas de dégâts. Physique, 3 PA, 1×/tour.",
-            "description": "Condamnation : tu ramènes la cible.",
+            "resolution_mode": "attack_roll",
+            "description": "Tu t'embrases de ton propre sang. Les ennemi·e·s autour de toi subissent des dommages de Feu, et la chaleur leur plante les pieds.",
+            "effect": "Tu perds 1d6 PV. Dégâts de Feu aux ennemi·e·s à ton contact, puis Indéplaçable pendant 1 tour. En Souffrance VIII ou plus : Indéplaçable pendant 2 tours. Une fois par tour, relance de 2 tours.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "element": "fire",
+            "attack_characteristic_key": "intel",
             "sub_effects": [
                 {
-                    "slug": "déplacer",
+                    "slug": "frapper",
                     "area": "point",
                     "params": {
-                        "cells_formula": "4",
-                        "movement_kind": "pull",
+                        "characteristic": "fire",
+                        "value": "2d6+Intelligence",
+                        "value_formula": "2d6+[intel]",
+                        "dice_formula": "2d6+[intel]",
                         "effect_direction": "action"
-                    }
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Tu perds 1d6 PV"
+                    },
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:sacrieur-attirance-majeure",
-            "attack_characteristic_key": "agi"
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "fire",
+                                "value": "2d8+Intelligence",
+                                "value_formula": "2d8+[intel]",
+                                "dice_formula": "2d8+[intel]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Tu perds 1d6 PV"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "key": "sacrieur-punition-supreme",
-            "name": "Berserk",
+            "key": "dechainement",
+            "name": "Déchaînement",
+            "dofusdb_id": "12755",
+            "official_id": "jdr:sacrieur:dechainement",
             "slot_index": 1,
-            "choice_order": 0,
+            "choice_order": 2,
             "character_level": 12,
             "types": [
                 "Dégâts"
             ],
-            "element": "earth",
-            "pa": "5",
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu laisses ta douleur exploser en un torrent de sang et d'eau. Les ennemi·e·s autour de toi subissent des dommages d'Eau, d'autant plus lourds que tu souffres.",
+            "effect": "Tu perds 1d6 PV. Dégâts d'Eau aux ennemi·e·s à ton contact. En Souffrance V ou plus : +1d6. En Souffrance VIII ou plus : +2d6 au lieu de +1d6. Une fois par tour, relance de 2 tours.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
             "po_min": "0",
             "po_max": "0",
             "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "4d6 + Force (Terre) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Berserk : sort fort de palier 14.",
+            "element": "water",
+            "attack_characteristic_key": "chance",
             "sub_effects": [
                 {
                     "slug": "frapper",
-                    "area": "circle-0-1",
+                    "area": "point",
+                    "params": {
+                        "characteristic": "water",
+                        "value": "2d8+Chance",
+                        "value_formula": "2d8+[chance]",
+                        "dice_formula": "2d8+[chance]",
+                        "effect_direction": "action"
+                    },
+                    "order": 0
+                },
+                {
+                    "slug": "autre",
+                    "area": "point",
+                    "params": {
+                        "value": "Tu perds 1d6 PV. +1d6 en Souffrance V+, +2d6 en VIII+"
+                    },
+                    "order": 1
+                }
+            ],
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "water",
+                                "value": "3d8+Chance",
+                                "value_formula": "3d8+[chance]",
+                                "dice_formula": "3d8+[chance]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Tu perds 1d6 PV. +1d6 en Souffrance V+, +2d6 en VIII+"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "bain-de-sang",
+            "name": "Bain de Sang",
+            "dofusdb_id": "12732",
+            "official_id": "jdr:sacrieur:bain-de-sang",
+            "slot_index": 1,
+            "choice_order": 3,
+            "character_level": 12,
+            "types": [
+                "Tank",
+                "Dégâts"
+            ],
+            "state": "playable",
+            "is_magic": false,
+            "resolution_mode": "attack_roll",
+            "description": "Tu t'entailles et tu fais pleuvoir ton sang autour de toi. Les ennemi·e·s subissent des dommages de Terre, et le sang versé durcit sur ta peau.",
+            "effect": "Tu perds 1d6 PV. Dégâts de Terre aux ennemi·e·s à ton contact. Tu gagnes des PV temporaires, plus 2 par ennemi·e touché·e. En Souffrance VIII ou plus, les ennemi·e·s touché·e·s ont le désavantage à leur Fuite pour te quitter jusqu'à ton prochain tour. Une fois par tour, relance de 2 tours.",
+            "pa": "4",
+            "cast_per_turn": "1",
+            "cast_per_target": "1",
+            "number_between_two_cast": "2",
+            "sight_line": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "po_min": "0",
+            "po_max": "0",
+            "po_editable": false,
+            "element": "earth",
+            "attack_characteristic_key": "strong",
+            "sub_effects": [
+                {
+                    "slug": "frapper",
+                    "area": "point",
                     "params": {
                         "characteristic": "earth",
-                        "value": "4d6+Force",
-                        "value_formula": "4d6+[strong]",
-                        "dice_formula": "4d6+[strong]",
-                        "value_formula_crit": "5d6+[strong]",
+                        "value": "2d6+Force",
+                        "value_formula": "2d6+[strong]",
+                        "dice_formula": "2d6+[strong]",
                         "effect_direction": "action"
-                    }
-                }
-            ],
-            "official_id": "jdr:sacrieur-punition-supreme",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
-        },
-        {
-            "key": "sacrieur-chatiment-force",
-            "name": "Châtiment Osé",
-            "slot_index": 1,
-            "choice_order": 1,
-            "character_level": 12,
-            "types": [
-                "Dégâts"
-            ],
-            "element": "air",
-            "pa": "5",
-            "po_min": "0",
-            "po_max": "0",
-            "po_editable": false,
-            "sight_line": false,
-            "cast_per_turn": "1",
-            "resolution_mode": "saving_throw",
-            "is_magic": true,
-            "powerful": 5,
-            "effect": "4d6 + Agilité (Air) en petite zone. Magique, 5 PA, 1×/tour.",
-            "description": "Châtiment Osé : sort fort de palier 14.",
-            "sub_effects": [
+                    },
+                    "order": 0
+                },
                 {
-                    "slug": "frapper",
-                    "area": "circle-0-1",
+                    "slug": "autre",
+                    "area": "point",
                     "params": {
-                        "characteristic": "air",
-                        "value": "4d6+Agilité",
-                        "value_formula": "4d6+[agi]",
-                        "dice_formula": "4d6+[agi]",
-                        "value_formula_crit": "5d6+[agi]",
-                        "effect_direction": "action"
-                    }
+                        "value": "Tu perds 1d6 PV"
+                    },
+                    "order": 1
                 }
             ],
-            "official_id": "jdr:sacrieur-chatiment-force",
-            "save_characteristic_key": "sagesse",
-            "save_dc_formula": "8 + modificateur de caractéristique + bonus de maîtrise",
-            "save_success_note": "En cas de sauvegarde réussie, aucun dégât."
+            "intensification": [
+                {
+                    "tier": "I",
+                    "required_creature_level": 17,
+                    "effect": "",
+                    "sub_effects": [
+                        {
+                            "slug": "frapper",
+                            "area": "point",
+                            "params": {
+                                "characteristic": "earth",
+                                "value": "2d8+Force",
+                                "value_formula": "2d8+[strong]",
+                                "dice_formula": "2d8+[strong]",
+                                "effect_direction": "action"
+                            },
+                            "order": 0
+                        },
+                        {
+                            "slug": "autre",
+                            "area": "point",
+                            "params": {
+                                "value": "Tu perds 1d6 PV"
+                            },
+                            "order": 1
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

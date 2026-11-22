@@ -111,6 +111,22 @@ describe('useNormsReader', () => {
         expect(reader.effectivePowerLevel.value).toBe('very_weak');
     });
 
+    it('clamps stacked level offsets to ±4', async () => {
+        const grid = ref(makeGrid());
+        const conditions = ref([
+            { characteristic_key: 'pa', operator: '>=', value: 5, target: 'level', modifier: 3, comment: '' },
+            { characteristic_key: 'cd', operator: '>=', value: 4, target: 'level', modifier: 3, comment: '' },
+        ]);
+        const reader = useNormsReader(grid, conditions);
+        reader.selectLevel(10);
+        reader.toggleCondition(0);
+        reader.toggleCondition(1);
+        await nextTick();
+        // 9 + min(6, 4) = 13
+        expect(reader.levelOffset.value).toBe(4);
+        expect(reader.effectiveLevelIndex.value).toBe(13);
+    });
+
     it('clamps level index to bounds', async () => {
         const grid = ref(makeGrid());
         const conditions = ref([

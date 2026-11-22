@@ -7,23 +7,120 @@
             "engine": "zone",
             "is_magic": true,
             "description": "Tu dessines le terrain. Tes glyphes sont visibles, magiques, et tes allié·e·s n’y brûlent pas.",
-            "effect": "<p><strong>Niveau 1.</strong> Tu poses des glyphes (visibles, magiques). Limite 2. Tes allié·e·s ignorent les dégâts de tes glyphes.</p><p><strong>Montée.</strong> Limite §3.3.1 (2→7). Dès 7 : un glyphe peut soigner ou bloquer au lieu de seulement brûler.</p><p><strong>Moteur.</strong> Zone visible, déclenchée en début de tour de la créature dessus. Superposition autorisée. Le plus ancien disparaît si tu dépasses la limite.</p>"
+            "effect": "<p><strong>Niveau 1.</strong> Tu poses des glyphes visibles. La limite suit le plafond des zones. Tes allié·e·s ignorent les dégâts de tes glyphes. Quand tu te tiens sur un de tes glyphes, tu gagnes une résistance dans l’élément de ce glyphe : les dégâts de cet élément que tu subis sont un cran plus bas. Si plusieurs glyphes se chevauchent, tu choisis l’élément.</p><p><strong>Montée.</strong> Limite §3.3.1 (2→7). À partir du niveau 10, la résistance sur glyphe passe au palier Résistant.</p><p><strong>Moteur.</strong> Zone visible, magique. Déclenchement au début du tour d’un·e ennemi·e dessus. Superposition autorisée. Le plus ancien disparaît si tu dépasses la limite.</p>",
+            "capabilities": [
+                {
+                    "name": "Signe partagé",
+                    "level": 3,
+                    "pa": "0",
+                    "is_magic": true,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Le bouclier posé sur un glyphe se recopie.",
+                    "effect": "<p>Une fois par repos court : quand tu lances un bouclier sur un·e allié·e, chaque allié·e qui se tient dans un de tes glyphes reçoit le même bouclier, pour le même montant.</p>"
+                },
+                {
+                    "name": "Main sur le glyphe",
+                    "level": 9,
+                    "pa": "0",
+                    "is_magic": true,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu fais partir un glyphe sans quitter ta case.",
+                    "effect": "<p>Une fois par repos court : tu déclenches un de tes glyphes déjà posé. Les ennemi·e·s qui s’y trouvent subissent ses dégâts. Le glyphe reste, et le malus aussi.</p>"
+                },
+                {
+                    "name": "Chœur des glyphes",
+                    "level": 14,
+                    "pa": "0",
+                    "is_magic": true,
+                    "duration": "0",
+                    "time_before_use_again": "repos long",
+                    "description": "Tous les signes partent ensemble.",
+                    "effect": "<p>Une fois par repos long : tu déclenches tous tes glyphes en même temps, sans te déplacer. Même effet que Main sur le glyphe, sur chacun.</p>"
+                }
+            ]
         },
         {
             "breed": "Osamodas",
             "name": "Troupeau",
             "engine": "invocation",
             "is_magic": true,
-            "description": "Une bête à tes côtés, dès le premier combat. La permanente n’arrive qu’avec l’expérience.",
-            "effect": "<p><strong>Niveau 1.</strong> Tu maintiens 1 invocation. Elle agit à ton initiative. Voie : Feu frappe, Eau soigne, Air place (1 PM).</p><p><strong>Montée.</strong> Niveau 7 : +1 invocation liée (la permanente). Niveau 11 : la liée a 1d6 PV au lieu de 1d4.</p><p><strong>Moteur.</strong> Créature alliée. Pas de fusion ni de sacrifice d’invocation avant 11. Fiches : Tofu, Dragoune, Bouftou, Dragonnet, Sulfénix.</p>"
+            "description": "Enfant, tu as choisi une voix d’appel. Osamodas te l’a bénie. Ta voie bénie est une famille : Bouftous, Dragons, Crapauds ou Tofus.",
+            "effect": "<p><strong>Niveau 1.</strong> Une bête de ta voie bénie reste à tes côtés : c’est ton compagnon. Il ne disparaît pas au bout d’une heure, et il ne compte jamais, ni dans ton nombre d’invocations, ni dans la limite de la horde. Tu choisis son rang parmi ceux que tu peux appeler. En changer demande un repos long. À 0 PV, il s’efface et revient après un repos court, ou tout de suite via Invocation.</p><p><strong>Horde.</strong> Limite par élément : 1 bête, 2 si mod. ≥ 3, 3 si mod. ≥ 5. Voie bénie : +1. Rang 2 hors voie bénie si mod. ≥ 2 ; rang 3 si mod. ≥ 4.</p><p><strong>Moteur.</strong> Invocation. 12 fiches (4 familles × 3 rangs).</p>",
+            "capabilities": [
+                {
+                    "name": "Appel du compagnon",
+                    "level": 3,
+                    "pa": "1",
+                    "is_magic": true,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Un sifflement, et ta bête accourt.",
+                    "effect": "<p>Une fois par repos court, 1 PA depuis la réserve de Wakfu : ton compagnon, s’il est à 1 km ou moins, apparaît sur une case libre à ton contact. Hors combat comme en combat.</p>"
+                },
+                {
+                    "name": "Tiens bon !",
+                    "level": 9,
+                    "pa": "2",
+                    "is_magic": true,
+                    "duration": "1 tour",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu cries son nom, et ta bête refuse de tomber.",
+                    "effect": "<p>Réaction, une fois par repos court, 2 PA depuis la réserve de Wakfu : une de tes bêtes qui tombe à 0 PV reste à 1 PV. Elle a +1 CA jusqu’au début de ton prochain tour.</p>"
+                },
+                {
+                    "name": "La Horde",
+                    "level": 14,
+                    "pa": "3",
+                    "is_magic": true,
+                    "duration": "3 tours",
+                    "time_before_use_again": "repos long",
+                    "description": "Tu lances un appel, et toutes les familles répondent.",
+                    "effect": "<p>Une fois par repos long, 3 PA depuis la réserve de Wakfu : pendant 3 tours, la limite de la horde monte de 1 bête pour chaque élément, et Invocation coûte 1 PA de moins (2 au moins). Ton nombre d’invocations ne change pas.</p>"
+                }
+            ]
         },
         {
             "breed": "Enutrof",
-            "name": "Pelle",
-            "engine": "marque",
+            "name": "La pelle",
+            "previous_name": "Pelle",
+            "engine": "poison",
             "is_magic": false,
-            "description": "Tu frappes plus fort ce qui n’a plus de jambes. Le coffre vient après.",
-            "effect": "<p><strong>Niveau 1.</strong> Si une cible a 0 PM restant (ou est à terre), tes attaques de classe contre elle infligent +1 dégât (pas un dé).</p><p><strong>Montée.</strong> Niveau 7 : Coffre (zone 1 case ; un allié peut y piocher 1d4 PV, 1 fois / combat). Niveau 11 : le bonus passe à +1d4.</p><p><strong>Moteur.</strong> Marque implicite « ralenti ». Le coffre est une zone, pas une invocation.</p>"
+            "description": "Quand la cible ne peut plus bouger, ou qu’elle est à terre, ton coup de pelle pèse plus.",
+            "effect": "<p><strong>Niveau 1.</strong> Si la cible a 0 PM restant, ou si elle est à terre, tes sorts de classe qui infligent des dégâts font +1 dégât (un point, pas un dé). Le 1d4 d’un poison ne le gagne pas. Les coups des objets animés non plus.</p><p><strong>Poisons.</strong> Un par voie (PA / PM / PO / soin au contact). 1d4 de l’élément, 2 déclenchements max. Voir la fiche classe.</p><p><strong>Objets animés.</strong> Sac (5), Pelle (6), Coffre (10) : 1 à la fois. Frapper l’objet soigne l’attaquant·e (toi ou allié·e) de la moitié des dégâts.</p>",
+            "capabilities": [
+                {
+                    "name": "Coup d’œil",
+                    "level": 3,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu sais ce que vaut un tas avant de te baisser.",
+                    "effect": "<p>Une fois par repos court : avantage à un test pour estimer un objet, marchander, ou fouiller un endroit déjà visité.</p>"
+                },
+                {
+                    "name": "Ma part",
+                    "level": 9,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Le poison te laisse une pièce.",
+                    "effect": "<p>Une fois par repos court : quand un de tes poisons se déclenche, tu récupères 1d4 PV. Tu choisis quel déclenchement s’il y en a deux.</p>"
+                },
+                {
+                    "name": "Bas de laine",
+                    "level": 14,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos long",
+                    "description": "Tu doubles la mise, et tu gardes la monnaie.",
+                    "effect": "<p>Une fois par repos long : un déclenchement de poison inflige 2d4 au lieu de 1d4. Si le déclencheur était un retrait, tu gagnes ce point (1 PM, 1 PA ou 1 PO) jusqu’à la fin de ton tour.</p>"
+                }
+            ]
         },
         {
             "breed": "Sram",
@@ -31,15 +128,79 @@
             "engine": "zone",
             "is_magic": false,
             "description": "Le sol ment. Tes pièges sont cachés ; il faut les chercher.",
-            "effect": "<p><strong>Niveau 1.</strong> Tu poses des pièges (cachés, non magiques). Limite 2. Perception Modérée pour les voir (Difficile dès 11). Pas sous une créature.</p><p><strong>Montée.</strong> Limite §3.3.1 (2→7). Dès 7 : un piège peut téléporter ou invisibiliser au lieu de seulement piquer.</p><p><strong>Moteur.</strong> Zone cachée. Le plus ancien saute si tu dépasses la limite.</p>"
+            "effect": "<p><strong>Niveau 1.</strong> Tu poses des pièges cachés et non magiques, jamais sous une créature. Limite = plafond des zones. Perception Modérée pour les voir (Difficile dès 11). Toute créature dans la zone subit les effets, toi y compris.</p><p><strong>Réseau.</strong> Une créature poussée ou attirée dans un piège le déclenche.</p><p><strong>Moteur.</strong> Zone cachée. Le plus ancien disparaît si tu dépasses la limite.</p>",
+            "capabilities": [
+                {
+                    "name": "Doigts de fée",
+                    "level": 3,
+                    "pa": "2",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "0",
+                    "description": "La bourse change de ceinture sans un bruit.",
+                    "effect": "<p>2 PA depuis la réserve de Wakfu : avantage à un test d’Escamotage (opposition Perception). En combat, cible au contact.</p>"
+                },
+                {
+                    "name": "Œil du piégeur",
+                    "level": 9,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu sais où toi, tu aurais posé le piège.",
+                    "effect": "<p>Avantage pour repérer et désamorcer un piège. Une fois par repos court : déplace un de tes pièges sur une case libre à 3 cases ou moins.</p>"
+                },
+                {
+                    "name": "Assassinat",
+                    "level": 14,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos long",
+                    "description": "Le coup part avant que la cible comprenne.",
+                    "effect": "<p>Une fois par repos long : une attaque de classe qui touche une cible qui ne te voit pas est un coup critique, et chaque dé compte son maximum avant d’être doublé.</p>"
+                }
+            ]
         },
         {
             "breed": "Xélor",
             "name": "Sablier",
             "engine": "tempo",
-            "is_magic": true,
-            "description": "Tu échanges les tours et tu gardes un PA en poche. Pas de file d’attente MMO.",
-            "effect": "<p><strong>Niveau 1.</strong> Au début du combat, tu peux échanger ton initiative avec un allié volontaire. Si un sort vole un PA, tu peux le garder « en poche » (1 PA max) jusqu’à ton prochain tour.</p><p><strong>Montée.</strong> Niveau 7 : tu peux donner le PA en poche à un allié. Niveau 11 : 1 fois / combat, reculer une créature d’un cran d’initiative (sauvegarde).</p><p><strong>Moteur.</strong> Tempo : initiative + 1 PA volé ou donné.</p>"
+            "is_magic": false,
+            "description": "Tu portes le temps sur toi. Une créature que tu déplaces est en Téléfrag ; tu arrives toujours à l’heure pile.",
+            "effect": "<p>Tu as l’avantage à tes jets d’initiative, et tu ne peux pas être surpris·e. Hors combat, tu connais toujours l’heure exacte et le temps écoulé. Une créature déplacée par un de tes sorts est en Téléfrag (jeton de table, jusqu’à la fin de ton prochain tour). À partir du niveau 10, au début d’un combat, tu peux échanger ton initiative avec celle d’un·e allié·e consentant·e.</p>",
+            "capabilities": [
+                {
+                    "name": "Retard",
+                    "level": 3,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu fais sauter une seconde à quelqu'un.",
+                    "effect": "<p>Une fois par repos court, au début d'un tour de combat, une créature que tu vois joue juste après toi au lieu de sa place habituelle, pour ce tour seulement. Une créature non consentante fait un jet de sauvegarde de Sagesse contre ton DD de Sagesse.</p>"
+                },
+                {
+                    "name": "Retour en arrière",
+                    "level": 9,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu reprends les derniers pas.",
+                    "effect": "<p>Une fois par repos court, quand une créature que tu vois finit un déplacement, tu la ramènes à la case où elle l'a commencé. Elle est en Téléfrag. Ça ne coûte pas de PA. Une créature non consentante fait un jet de sauvegarde de Sagesse contre ton DD de Sagesse.</p>"
+                },
+                {
+                    "name": "Arrêt du temps",
+                    "level": 14,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos long",
+                    "description": "Le monde s'arrête. Toi, non.",
+                    "effect": "<p>Une fois par repos long, à la fin de ton tour, tu joues un tour de plus, entier. Pendant ce tour, dès que tu infliges des dégâts à une créature, ou qu'un de tes effets en affecte une autre que toi, le tour s'arrête.</p>"
+                }
+            ]
         },
         {
             "breed": "Ecaflip",
@@ -68,7 +229,7 @@
                     "duration": "0",
                     "time_before_use_again": "repos court",
                     "description": "Le dé ne t’a pas plu ? Tu le relances.",
-                    "effect": "<p>Une fois par repos court, après avoir lancé le dé d’un de tes sorts de hasard (Tarot, Roulette, Rekop, Bluff, Chance d’Ecaflip, Roue de la fortune), tu le relances et tu gardes le résultat de ton choix.</p>"
+                    "effect": "<p>Une fois par repos court, après avoir lancé le dé de Tarot d’Ecaflip, de Roulette ou de Roue de la Fortune, tu le relances et tu gardes le résultat de ton choix.</p>"
                 },
                 {
                     "name": "Lecture du destin",
@@ -189,7 +350,7 @@
                     "duration": "24 heures",
                     "time_before_use_again": "0",
                     "description": "Une fois repérée, ta proie ne t’échappe plus vraiment.",
-                    "effect": "<p>Hors combat, pour 1 PA depuis la réserve de Wakfu, tu désignes une créature que tu vois. Pendant 24 heures, tu connais sa direction et sa distance approximative, et tu as l’avantage aux tests de Survie pour suivre sa piste. Une seule créature pistée à la fois.</p>"
+                    "effect": "<p>Pour 1 PA depuis la réserve de Wakfu (en combat comme hors combat), tu désignes une créature que tu vois. Pendant 24 heures, tu connais sa direction et sa distance approximative, et tu as l’avantage aux tests de Survie pour suivre sa piste. Une seule créature pistée à la fois.</p>"
                 },
                 {
                     "name": "Tir parfait",
@@ -208,72 +369,374 @@
             "name": "Jardin",
             "engine": "invocation",
             "is_magic": true,
-            "description": "Une poupée, et l’herbe autour d’elle qui accroche les pieds.",
-            "effect": "<p><strong>Niveau 1.</strong> 1 poupée à la fois. Les cases adjacentes à la poupée sont du terrain difficile pour les ennemis.</p><p><strong>Montée.</strong> Niveau 7 : +1 poupée. Niveau 11 : le poison d’un sort Sadida dure +1 tour sur une cible adjacente à une poupée.</p><p><strong>Moteur.</strong> Invocation-plante. Pas d’explosion de poupée avant 11.</p>"
+            "description": "Ton terrain pousse autour de toi. Tu y prends racine ; les ennemi·e·s s’y prennent les pieds.",
+            "effect": "<p>Au contact d’un de tes arbres ou d’une de tes poupées, tu es enraciné·e : +1 CA, et tu ne peux pas être déplacé·e contre ton gré. Tes arbres ne bloquent pas ta ligne de vue. Les cases au contact d’une de tes poupées sont un terrain difficile pour les ennemi·e·s : y entrer coûte 1 PM de plus. À partir du niveau 10, un·e allié·e au contact d’un de tes arbres gagne aussi +1 CA.</p><p>Tes arbres et tes poupées sont des invocations : elles comptent dans ta limite d’invocations.</p>",
+            "capabilities": [
+                {
+                    "name": "Langage des plantes",
+                    "level": 3,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "0",
+                    "description": "Les feuilles te racontent leur journée.",
+                    "effect": "<p>Hors combat, sans limite d’usage : une plante te dit ce qu’elle a vu ou senti dans la journée, à sa façon. Tu sens aussi si une plante est abîmée par le wakfu.</p>"
+                },
+                {
+                    "name": "Écorce",
+                    "level": 9,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu disparais derrière ton arbre.",
+                    "effect": "<p>Une fois par repos court, en réaction : quand une attaque te vise, tu échanges ta place avec un de tes arbres à 6 cases ou moins. L’attaque vise l’arbre à ta place.</p>"
+                },
+
+                {
+                    "name": "Forêt",
+                    "level": 14,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos long",
+                    "description": "Le sol s’ouvre, et le bois monte d’un coup.",
+                    "effect": "<p>Une fois par repos long, tu plantes d’un coup jusqu’à 4 arbres sur des cases de terre libres à 6 cases ou moins. Ils comptent dans ta limite d’invocations, et le plus ancien part s’il le faut. Ces arbres ont le double de PV.</p>"
+                }
+            ]
         },
         {
             "breed": "Sacrieur",
-            "name": "Martyre",
+            "name": "Sang du Sacrieur",
+            "previous_name": "Martyre",
             "engine": "etat",
             "is_magic": false,
-            "description": "On te touche, tu rends. Une fois par round au début.",
-            "effect": "<p><strong>Niveau 1.</strong> 1 fois par round, quand tu subis des dégâts, ta prochaine attaque de mêlée de classe (avant la fin de ton prochain tour) fait +1d4.</p><p><strong>Montée.</strong> Niveau 7 : plus de limite 1/round. Niveau 11 : tu peux convertir 1d4 PV auto-infligés en +1d6 sur le prochain coup (sort Punition).</p><p><strong>Moteur.</strong> État « blessé récemment ». Les PV sont une ressource, pas un pourcentage MMO.</p>"
+            "description": "Plus tu as mal, plus ta chair durcit.",
+            "effect": "<p>Tu gagnes une résistance fixe, dans tous les éléments, qui suit ton niveau de Souffrance : avant le niveau 10, la moitié de ton niveau de Souffrance arrondie au supérieur (+1 en I, jusqu’à +5 en X) ; à partir du niveau 10, ton niveau de Souffrance (+1 en I, jusqu’à +10 en X). Ce bonus ne joue pas sur les dégâts pris par un sacrifice, ni sur les PV que tu perds par tes propres sorts. Tu connais toujours ton niveau de Souffrance.</p>",
+            "capabilities": [
+                {
+                    "name": "Sentir la douleur",
+                    "level": 3,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "0",
+                    "description": "Tu sens la souffrance des autres comme la tienne.",
+                    "effect": "<p>Tu connais le niveau de Souffrance (I à X) de toute créature que tu vois à 6 cases ou moins, comme si c’était un Sacrieur. Hors combat, tu sais aussi si une créature cache une blessure ou une maladie. Ça ne coûte rien.</p>"
+                },
+                {
+                    "name": "À ta place",
+                    "level": 9,
+                    "pa": "2",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu te jettes devant le coup.",
+                    "effect": "<p>Une fois par repos court, pour 2 PA pris dans ta réserve de Wakfu, en réaction : quand un coup touche un·e allié·e à 3 cases ou moins, tu le prends à sa place, avec la règle du sacrifice. Tu prends 2 dégâts de moins.</p>"
+                },
+                {
+                    "name": "Transe sanglante",
+                    "level": 14,
+                    "pa": "3",
+                    "is_magic": false,
+                    "duration": "2 tours",
+                    "time_before_use_again": "repos long",
+                    "description": "Tu entres en transe, et ta douleur devient ce que tu veux.",
+                    "effect": "<p>Une fois par repos long, pour 3 PA pris dans ta réserve de Wakfu. Pendant 2 tours (3 dès le niveau 17), tu choisis ton niveau de Souffrance au début de chacun de tes tours, sans perdre de PV. Tes vrais PV continuent de compter pour tout le reste.</p>"
+                }
+            ]
         },
         {
             "breed": "Pandawa",
-            "name": "Portage",
+            "name": "Enfant de Pandala",
+            "previous_name": "Portage",
             "engine": "etat",
             "is_magic": false,
-            "description": "Tu portes. La picole est un choix, pas un prérequis.",
-            "effect": "<p><strong>Niveau 1.</strong> Tu peux porter une créature volontaire adjacente (1 PM extra par case). La poser est gratuit. Saoul n’est pas requis.</p><p><strong>Montée.</strong> Niveau 7 : Picole (Saoul) devient un vrai état : +1d4 dégâts, −1 CA, 1 fois / combat pour entrer. Niveau 11 : porter un ennemi (sauvegarde).</p><p><strong>Moteur.</strong> État perso Porté / Saoul. Chamrak reste un sort (lancer).</p>"
+            "description": "Tu as grandi en portant des jarres et des ami·e·s sur les sentiers de Pandala.",
+            "effect": "<p>Tu portes <strong>sans malus</strong> : porter une créature ne te coûte pas de PM en plus. Tu soulèves une créature consentante, ou inconsciente, <strong>de ta taille</strong> ou plus petite. Tu as l’avantage aux tests de Force (Athlétisme) pour soulever, porter ou lancer. Saoul est optionnel : aucun sort ne l’exige.</p>",
+            "capabilities": [
+                {
+                    "name": "Dos de Pandala",
+                    "level": 3,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "0",
+                    "description": "Tu portes plus gros que toi, et plus longtemps.",
+                    "effect": "<p>Hors combat, tu portes une créature consentante d’une taille au-dessus de la tienne, et tu peux la porter toute une journée de marche sans fatigue. En combat, Karcham peut porter une créature d’une taille au-dessus de la tienne. Ça ne coûte rien.</p>"
+                },
+                {
+                    "name": "Rattrapage",
+                    "level": 9,
+                    "pa": "1",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu tends les bras au bon moment.",
+                    "effect": "<p>Une fois par repos court, pour 1 PA pris dans ta réserve de Wakfu, en réaction : un·e allié·e à <strong>2 cases ou moins</strong> qui chute, ou que l’on projette, atterrit dans tes bras. Il ou elle ne subit pas de dégâts de chute, et tu le ou la portes. Il te faut les mains libres.</p>"
+                },
+                {
+                    "name": "Lancer de Pandala",
+                    "level": 14,
+                    "pa": "3",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos long",
+                    "description": "Tu prends ton élan, et tu envoies ton allié·e de l’autre côté du champ de bataille.",
+                    "effect": "<p>Une fois par repos long, pour 3 PA pris dans ta réserve de Wakfu. Tu lances la créature que tu portes sur une case libre à 10 cases ou moins, sans ligne de vue. Elle atterrit sans dégâts. Les ennemi·e·s à son contact sont À terre s’ils ou elles ratent un jet de sauvegarde de Force contre ton DD de Force.</p>"
+                }
+            ]
         },
         {
             "breed": "Roublard",
             "name": "Mèche",
             "engine": "zone",
             "is_magic": false,
-            "description": "Tes bombes sont des pièges qu’on voit. La chaîne, beaucoup plus tard.",
-            "effect": "<p><strong>Niveau 1.</strong> Tes bombes sont des pièges visibles (même plafond que les pièges, §3.3.1). Quand une bombe explose, tu peux pousser la cible de 1 case.</p><p><strong>Montée.</strong> Niveau 7 : exploser une bombe à distance (action). Niveau 11 : chaîne — une explosion déclenche les bombes adjacentes.</p><p><strong>Moteur.</strong> Zone retardée. Pas de triangle de bombes au niveau 1.</p>"
+            "description": "Tu ne mets jamais ta peau dans le coup : ta poudre s’en charge, et elle tient mieux le choc que toi.",
+            "effect": "<p>Tes bombes sont des invocations visibles. Leurs points de vie valent deux fois ton niveau. À l’explosion, les ennemi·e·s de la zone subissent les dégâts et le malus de l’élément de la bombe ; toi et tes allié·e·s ne recevez que l’effet positif, sans jet, et tu peux choisir de repousser chaque ennemi·e touché·e d’une case. Le sort Poudre, appris au niveau 11, relie tes bombes entre elles : l’explosion de l’une déclenche celle des autres dans sa zone. Tu as aussi l’avantage aux tests pour fabriquer, poser, repérer ou désamorcer un explosif ou un mécanisme (serrure piégée, détonateur, machine).</p>",
+            "capabilities": [
+                {
+                    "name": "Pétard",
+                    "level": 3,
+                    "pa": "2",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Un peu de poudre, une mèche courte, et tout le monde regarde ailleurs.",
+                    "effect": "<p>Une fois par repos court, pour 2 PA pris dans ta réserve de Wakfu. Hors combat, tu fais sauter une serrure simple, une petite porte en bois ou un cadenas, ou tu crées une diversion bruyante à 6 cases ou moins. Avec la diversion, tu as l’avantage à ton prochain test de Discrétion ou de Supercherie dans la minute.</p>"
+                },
+                {
+                    "name": "Planque",
+                    "level": 9,
+                    "pa": "2",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu tires un·e allié·e devant toi. Il ou elle comprendra plus tard.",
+                    "effect": "<p>Une fois par repos court, pour 2 PA pris dans ta réserve de Wakfu, en réaction : quand une attaque te vise, tu échanges ta place avec un·e allié·e à ton contact. L’attaque le ou la vise à ta place.</p>"
+                },
+                {
+                    "name": "Feu d’artifice",
+                    "level": 14,
+                    "pa": "3",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos long",
+                    "description": "Toutes les mèches partent en même temps.",
+                    "effect": "<p>Une fois par repos long, pour 3 PA pris dans ta réserve de Wakfu : toutes tes bombes gagnent 1 niveau de charge, au-delà de la limite d’une par tour, puis explosent, dans l’ordre que tu choisis.</p>"
+                }
+            ]
         },
         {
             "breed": "Zobal",
             "name": "Masque",
             "engine": "etat",
-            "is_magic": true,
-            "description": "Un visage pour la journée. Cavalcade reste un téléport, pas un troisième kit.",
-            "effect": "<p><strong>Niveau 1.</strong> Au repos, tu choisis 1 masque : Psychopathe (+1 dégât) ou Classique (+1 aux jets pour protéger un allié adjacent). Cavalcade reste un téléport.</p><p><strong>Montée.</strong> Les sorts Masque permettent de changer d’état en combat. Niveau 7 : 3e masque (placement). 1 masque à la fois.</p><p><strong>Moteur.</strong> 1 état perso. Les sorts ne changent pas de liste au niveau 1 — seul le rider change.</p>"
+            "is_magic": false,
+            "description": "Un visage pour la scène — ou aucun. Le rôle change, la liste de sorts non.",
+            "effect": "<p>Tu peux jouer sans masque. Le sort Masque chausse un type débloqué (Psychopathe ou Classique dès le niveau 1 ; Renégat dès le niveau 8) ou le retire. 1 masque à la fois. Le masque ajoute son rider et peut modifier quelques mécaniques ; les sorts élémentaires n’en ont pas besoin. Cavalcade reste un téléport.</p>",
+            "capabilities": [
+                {
+                    "name": "Coulisse",
+                    "level": 3,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu changes de rôle hors scène.",
+                    "effect": "<p>Une fois par repos court, tu as l’avantage à un test de Supercherie, de Déguisement ou de Représentation, ou tu changes de masque sans dépenser d’action.</p>"
+                },
+                {
+                    "name": "Deuxième entrée",
+                    "level": 9,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu réapparais ailleurs.",
+                    "effect": "<p>Une fois par repos court, en réaction : quand une attaque te rate, tu te téléportes jusqu’à 3 cases.</p>"
+                },
+                {
+                    "name": "Mascarade totale",
+                    "level": 14,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "jusqu’à la fin de ton prochain tour",
+                    "time_before_use_again": "repos long",
+                    "description": "Tous les visages en même temps. Une fois.",
+                    "effect": "<p>Une fois par repos long, jusqu’à la fin de ton prochain tour, tu cumules les riders des trois masques.</p>"
+                }
+            ]
         },
         {
             "breed": "Steamer",
             "name": "Tourelle",
             "engine": "invocation",
             "is_magic": false,
-            "description": "Une machine. Elle tire à ton tour. L’évolution des tourelles attend.",
-            "effect": "<p><strong>Niveau 1.</strong> 1 tourelle. Elle tire 1d4 (élément de ta voie) à ton initiative ; 1 PM si tu le dépenses pour la déplacer.</p><p><strong>Montée.</strong> Niveau 7 : 2e tourelle. Niveau 11 : une tourelle peut soigner 1d4 au lieu de tirer.</p><p><strong>Moteur.</strong> Invocation-machine. Pas d’évolution Harponne / Soin / Tactique au niveau 1.</p>"
+            "description": "Tu poses des machines. Elles tiennent le terrain pendant que tu calibres.",
+            "effect": "<p>Tu invoques jusqu’à trois tourelles distinctes (Harponneuse, Gardienne, Tactirelle), dans la limite de ton nombre d’invocations. Pas de doublon. Elles jouent juste après toi. PV = ton niveau. Leurs actions suivent leur rang (I–III), indépendamment de ta voie. Évolution monte le rang (une III max ; les autres ≤ II). Repositionnement : téléport ≤ 3 cases. 1 PM : déplacer une tourelle d’1 case.</p>",
+            "capabilities": [
+                {
+                    "name": "Clé à molette",
+                    "level": 3,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu répares ce qui coince.",
+                    "effect": "<p>Une fois par repos court : tu restaures 2d4 PV à une de tes tourelles, ou tu as l’avantage à un test pour réparer un mécanisme (serrure, engrenage, pompe) dans la minute.</p>"
+                },
+                {
+                    "name": "Filet de sécurité",
+                    "level": 9,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "La machine prend le coup à ta place.",
+                    "effect": "<p>Une fois par repos court, en réaction : quand une attaque te vise et qu’une de tes tourelles est à 3 cases ou moins, l’attaque la vise à ta place.</p>"
+                },
+                {
+                    "name": "Surcharge",
+                    "level": 14,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "jusqu’à la fin de ton prochain tour",
+                    "time_before_use_again": "repos long",
+                    "description": "Toutes les soupapes s’ouvrent.",
+                    "effect": "<p>Une fois par repos long : jusqu’à la fin de ton prochain tour, chacune de tes tourelles agit deux fois (tir / soin-bouclier / attire-pousse).</p>"
+                }
+            ]
         },
         {
             "breed": "Eliotrope",
             "name": "Faille",
             "engine": "zone",
             "is_magic": true,
-            "description": "Un pas de plus quand tu te téléportes. Les vrais portails s’ouvrent au 7.",
-            "effect": "<p><strong>Niveau 1.</strong> 1 fois par tour, quand tu te téléportes avec un sort de classe, tu peux aller 1 case plus loin.</p><p><strong>Montée.</strong> Niveau 7 : 2 portails (cases visibles). Entrer dans l’un te sort par l’autre (1 PM). Niveau 11 : un allié peut les emprunter.</p><p><strong>Moteur.</strong> Téléport d’abord. Portails = 2 zones à partir du 7.</p>"
+            "description": "Le chemin se plie un peu plus pour toi que pour les autres.",
+            "effect": "<p>Une fois par tour, quand tu te téléportes avec un sort de classe, tu peux aller 1 case plus loin que la portée indiquée. Dès le niveau 1, tu as jusqu’à 2 portails (cases visibles, plafond de zones) ; entrer dans l’un coûte 1 PM et te fait sortir par un autre, au choix. Pas de numérotation ni de symétrie : la portée d’un sort via le réseau se mesure depuis le portail de sortie. À partir du niveau 11, un·e allié·e consentant·e peut emprunter ce réseau.</p>",
+            "capabilities": [
+                {
+                    "name": "Pas de côté",
+                    "level": 3,
+                    "pa": "0",
+                    "is_magic": true,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu glisses d’une case que personne n’avait prévue.",
+                    "effect": "<p>Une fois par repos court, en réaction : quand une créature que tu vois termine un déplacement à ton contact, tu te téléportes sur une case libre à 2 cases ou moins, sans dépenser de PA.</p>"
+                },
+
+                {
+                    "name": "Réseau ouvert",
+                    "level": 9,
+                    "pa": "0",
+                    "is_magic": true,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu tiens la porte pour quelqu’un.",
+                    "effect": "<p>Une fois par repos court : un·e allié·e que tu vois emprunte ton réseau de portails sans dépenser de PM, ou tu te téléportes à 6 cases ou moins sans ligne de vue.</p>"
+                },
+                {
+                    "name": "Fracture",
+                    "level": 14,
+                    "pa": "0",
+                    "is_magic": true,
+                    "duration": "1 minute ou fin du combat",
+                    "time_before_use_again": "repos long",
+                    "description": "Le monde se plie. Une fois.",
+                    "effect": "<p>Une fois par repos long : tu poses jusqu’à 2 portails supplémentaires, au-delà de ton plafond, pour 1 minute ou jusqu’à la fin du combat. Le surplus disparaît ensuite.</p>"
+                }
+            ]
         },
         {
             "breed": "Huppermage",
             "name": "Contraste",
             "engine": "marque",
-            "is_magic": true,
-            "description": "Changer d’élément, c’est +1. Pas un dé — Runification n’ajoute plus de 1d4.",
-            "effect": "<p><strong>Niveau 1.</strong> Si le sort de classe que tu lances n’a pas le même élément que le précédent (ce tour), +1 dégât (pas un dé). Les sorts ne donnent pas un second bonus de dégâts « rune » au niveau 1.</p><p><strong>Montée.</strong> Niveau 7 : tu poses 1 rune (marque) ; un sort d’un autre élément la consomme pour +1d4. Niveau 11 : 2 runes max.</p><p><strong>Moteur.</strong> Marque élémentaire. Pas de puzzle à 4 runes au niveau 1.</p>"
+            "is_magic": false,
+            "description": "Tu changes de couleur, et le coup suit. Les runes habitent le sol, pas seulement la cible.",
+            "effect": "<p>Contraste : +1 dégât si tu changes d’élément ce tour. Les sorts de classe qui touchent posent Multiélément. Tu transformes Multiélément en rune (élément au choix) via Runification ou Empreinte. 1 rune max (2 dès le niveau 11). Consommer une rune d’un autre élément : +1d4. Spatiaux : Feu pousse, Air téléporte dessus, Terre symétrie, Eau attire.</p>",
+            "capabilities": [
+                {
+                    "name": "Lecture des flux",
+                    "level": 3,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu sens quelle couleur tient la pièce.",
+                    "effect": "<p>Une fois par repos court : tu connais l’élément dominant d’une créature que tu vois, ou avantage à un test de Savoir lié aux éléments / Wakfu dans la minute.</p>"
+                },
+                {
+                    "name": "Deuxième couleur",
+                    "level": 9,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu enchaînes sans perdre le fil.",
+                    "effect": "<p>Une fois par repos court : le prochain Contraste de ce tour donne +1d4 au lieu de +1.</p>"
+                },
+                {
+                    "name": "Écho runique",
+                    "level": 14,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "jusqu’à la fin de ton prochain tour",
+                    "time_before_use_again": "repos long",
+                    "description": "Tu frappes comme si tu vidais les runes — elles restent.",
+                    "effect": "<p>Une fois par repos long : jusqu’à la fin de ton prochain tour, chaque fois qu’un de tes sorts consommerait une ou plusieurs runes, tu gagnes le bonus de consommation mais les runes restent (Écho).</p>"
+                }
+            ]
         },
         {
             "breed": "Ouginak",
             "name": "Proie",
             "engine": "etat",
             "is_magic": false,
-            "description": "La première blessure désigne la proie. La Rage est un choix, plus tard.",
-            "effect": "<p><strong>Niveau 1.</strong> La première créature que tu blesses dans le combat est ta Proie. Tes attaques de classe contre elle ont +1 au jet. Rage n’est pas requise.</p><p><strong>Montée.</strong> Niveau 7 : Rage (état perso, 1/combat) : +1d4 vs la Proie, −1 CA. Niveau 11 : changer de Proie 1 fois / combat.</p><p><strong>Moteur.</strong> 1 cible marquée + Rage optionnelle à 7.</p>"
+            "description": "Tu marques une cible, et la meute la tient dans le regard.",
+            "effect": "<p>La première créature que tu blesses dans le combat est ta Proie (ou Amarok). Tes attaques de classe contre elle ont +1 au jet. Tu gagnes 1 POINT DE RAGE au début de chacun de tes tours (plafond 5, 6 au niveau 11). Consommer des points : +1d4/point sur les sorts qui l’écrivent. À la fin du combat, Rage = 0. Niveau 11 : changer de Proie 1×/combat.</p>",
+            "capabilities": [
+                {
+                    "name": "Flair",
+                    "level": 3,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu sens la piste.",
+                    "effect": "<p>Une fois par repos court : avantage à Survie / Perception pour suivre une piste, ou direction d’une créature blessée vue dans l’heure.</p>"
+                },
+                {
+                    "name": "Forme bestiale",
+                    "level": 7,
+                    "pa": "6",
+                    "is_magic": false,
+                    "duration": "2 tours (3 dès niv. 11) ; hors combat 10 min × niveau",
+                    "time_before_use_again": "0",
+                    "description": "La meute prend le dessus. Griffes dehors.",
+                    "effect": "<p>Coût : 6 PA Wakfu, ou 6 POINTS DE RAGE (Rage seulement dès le niveau 11). Sorts de classe au contact ; +6 dégâts aux attaques ; PM doublés ; intaclable ; +6 dégâts subis par attaque. Durée : 2 tours en combat (3 dès 11) ; hors combat 10 min × niveau (1 h dès 6, 2 h dès 14).</p>"
+                },
+                {
+                    "name": "Acharnement",
+                    "level": 9,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu ne lâches pas.",
+                    "effect": "<p>Une fois par repos court, en réaction : quand ta Proie quitte ton contact, tu te téléportes à son contact (si ≤6 cases).</p>"
+                },
+                {
+                    "name": "Meute intérieure",
+                    "level": 14,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "fin du combat",
+                    "time_before_use_again": "repos long",
+                    "description": "Tout le monde est sur la même piste. Une fois.",
+                    "effect": "<p>Une fois par repos long : jusqu’à la fin du combat, chaque allié·e a +1 au jet contre ta Proie.</p>"
+                }
+            ]
         },
         {
             "breed": "Forgelance",
@@ -281,7 +744,39 @@
             "engine": "etat",
             "is_magic": false,
             "description": "Tu charges, tu vises juste. La phalange protège les allié·e·s au 7.",
-            "effect": "<p><strong>Niveau 1.</strong> 1 fois par round, après t’être téléporté avec un sort de classe, ta prochaine attaque de classe ce tour a l’avantage.</p><p><strong>Montée.</strong> Niveau 7 : un allié adjacent bénéficie d’un abri partiel (phalange). Niveau 11 : l’avantage survit si l’attaque rate, 1 fois.</p><p><strong>Moteur.</strong> État « chargé ». La lance n’est pas une invocation.</p>"
+            "effect": "<p>1 fois par round, après t’être téléporté·e avec un sort de classe, tu es chargé·e : ta prochaine attaque de classe ce tour a l’avantage. À partir du niveau 7, Phalange : un·e allié·e adjacent bénéficie d’un abri partiel. À partir du niveau 11, l’avantage survit si l’attaque rate, 1 fois. La lance n’est pas une invocation.</p>",
+            "capabilities": [
+                {
+                    "name": "Pointe de gloire",
+                    "level": 3,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu marques le coup pour la légende.",
+                    "effect": "<p>Une fois par repos court : avantage à Prestige, Intimidation ou performance martiale, ou +1d4 aux dégâts de ta prochaine attaque de lance ce tour.</p>"
+                },
+                {
+                    "name": "Contre-charge",
+                    "level": 9,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos court",
+                    "description": "Tu réponds en avançant.",
+                    "effect": "<p>Une fois par repos court, en réaction : quand une créature entre à ton contact, tu te téléportes d’1 case libre puis portes une attaque de classe à l’avantage contre elle.</p>"
+                },
+                {
+                    "name": "Immortelle",
+                    "level": 14,
+                    "pa": "0",
+                    "is_magic": false,
+                    "duration": "0",
+                    "time_before_use_again": "repos long",
+                    "description": "La lance ne tombe pas. Une fois.",
+                    "effect": "<p>Une fois par repos long : quand tu tomberais à 0 PV, tu restes à 1 PV et tu te téléportes jusqu’à 4 cases. Tu es chargé·e.</p>"
+                }
+            ]
         }
     ]
 }

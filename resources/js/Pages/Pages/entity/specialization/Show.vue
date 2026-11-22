@@ -49,9 +49,9 @@ const goEdit = () => {
                 <SpecializationViewFull :specialization="specialization" :show-actions="true" />
 
                 <section class="space-y-3">
-                    <h2 class="text-lg font-semibold">Sections</h2>
                     <EntitySectionsRenderer
                         :sections="specialization.sections"
+                        :align-with-column="true"
                         empty-message="Aucune section liée à cette spécialisation."
                     />
                 </section>

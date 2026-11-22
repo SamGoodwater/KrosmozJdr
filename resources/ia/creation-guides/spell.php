@@ -31,27 +31,73 @@ return static function (array $k): array {
                 'id' => 'philosophie',
                 'title' => 'Philosophie',
                 'html' => '<h2>Sorts</h2>'
-                    .'<p>Un sort a <strong>une job</strong> : dégâts, soin, contrôle, placement ou utilité. Le coût en '.$pa.' / '.$pm.' / Wakfu paie la puissance ; la fréquence (cooldown, 1/combat) empêche les combos abusifs. '.$k['kSortsEq'].' · '.$k['kSortsLivre'].'.</p>'
-                    .'<p>En <strong>conversion Dofus</strong> : on garde nom, classe, élément, image et fantasy. On réécrit le texte d’effet en <strong>1 effet principal + 0 à 2 secondaires</strong> jouables à table. On n’invente pas de type d’effet hors catalogue. Les états pointent vers les cinq états JDR (Pesanteur, Empoisonné, Étourdi, Ralenti, Affaibli) — '.$k['kEtats'].'.</p>'
-                    .'<p>Deux familles : <strong>sort de classe</strong> (grimoire d’un PJ / PNJ) et <strong>sort de créature</strong> (action d’un monstre, 1 à 2 par fiche). On ne mélange pas.</p>',
+                    .'<p>Un sort, c’est <strong>une chose claire</strong> à la table : dégâts au contact ou à distance, soin, protection, amélioration, entrave, placement ou invocation. Le coût en '.$pa.' et la fréquence (combien de fois par tour) paient la puissance. '.$k['kSortsEq'].' · '.$k['kSortsLivre'].'.</p>'
+                    .'<p>Il y a <strong>deux familles</strong> — ne les mélange pas :</p>'
+                    .'<ul>'
+                    .'<li><strong>Sort de classe</strong> (PJ / PNJ) : grand grimoire, voies, variantes. On part de Dofus, on adapte pour le JDR.</li>'
+                    .'<li><strong>Sort de créature</strong> (monstre) : peu d’actions. On part des sorts Dofus de la créature, on simplifie.</li>'
+                    .'</ul>'
+                    .'<p>En convertissant un sort Dofus : garde le nom, l’élément et l’image. Réécris l’effet en <strong>1 effet principal + au plus 2 secondaires</strong> qu’on peut jouer en 10 secondes. Les états pointent vers le catalogue JDR (Pesanteur, Empoisonné…) — '.$k['kEtats'].'.</p>',
+            ],
+            [
+                'id' => 'methode',
+                'title' => 'Comment écrire un sort',
+                'html' => '<h3>Marche à suivre</h3>'
+                    .'<ol>'
+                    .'<li><strong>Choisis la famille</strong> : classe ou créature.</li>'
+                    .'<li><strong>Une job</strong> : dis en une phrase ce que fait le sort.</li>'
+                    .'<li><strong>Deux textes</strong> : <em>Général</em> = le geste (sans chiffres, tutoiement) ; <em>Effets</em> = ce qu’on lance au tour (dés, portée, relance).</li>'
+                    .'<li><strong>Remplis le tableau</strong> : PA, PO, zone, lancers par tour, dégâts / autres colonnes. Une case vide = défaut (souvent 3 PA, contact, 2/tour).</li>'
+                    .'<li><strong>Calibre</strong> sur la charte du niveau (tableau plus bas). Lis à voix haute. Publie en jouable seulement si c’est clair.</li>'
+                    .'</ol>'
+                    .'<p>Pour une classe entière : [[kref:page:creation-classes|Classes]]. Pour un monstre : [[kref:page:creation-monstres|Monstres]].</p>',
             ],
             [
                 'id' => 'points',
                 'title' => 'Points importants',
                 'html' => '<h3>À respecter</h3>'
                     .'<ol>'
-                    .'<li><strong>Une job.</strong> Un sort qui tape, soigne et stun à la fois casse la table. L’identité de classe (téléport, piège, invocation) n’est pas un 3ᵉ DPS.</li>'
-                    .'<li><strong>Élément ↔ caractéristique.</strong> Terre → '.$force.', Feu → '.$intel.', Eau → '.$chance.', Air → '.$agi.'. Un sort Terre sur une créature à Force nulle est une erreur.</li>'
-                    .'<li><strong>Budget de tour.</strong> Au niveau 1, vise ~6 '.$pa.' (ex. 3+3). Une action à 5 '.$pa.' est souvent la seule du tour.</li>'
-                    .'<li><strong>Au plus 3 effets JDR</strong> (1 + 0–2). Les combos MMO (runes, masques, bombes empilées) se simplifient.</li>'
-                    .'<li><strong>Catégorie.</strong> 0 = classe, 1 = créature, 2 = apprenable, 3 = consommable. Un sort-créature ne va pas dans un grimoire de classe.</li>'
-                    .'<li><strong>Deux variantes d’un emplacement</strong> restent équivalentes (même coût, même bande de puissance, fantasy différente).</li>'
-                    .'<li>Publie seulement en jouable quand le texte se lit à voix haute en 10 secondes.</li>'
+                    .'<li><strong>Une job.</strong> Pas un sort qui tape, soigne et étourdit à la fois.</li>'
+                    .'<li><strong>Élément ↔ caractéristique.</strong> Terre → '.$force.', Feu → '.$intel.', Eau → '.$chance.', Air → '.$agi.'.</li>'
+                    .'<li><strong>Budget de tour.</strong> Au niveau 1, vise environ 6 '.$pa.' (ex. deux sorts à 3). Un sort à 5 '.$pa.' est souvent le seul du tour.</li>'
+                    .'<li><strong>Simplifie Dofus.</strong> Au plus 3 effets jouables. Les combos MMO se coupent.</li>'
+                    .'<li><strong>Bon catalogue.</strong> Un sort de monstre ne va pas dans le grimoire d’une classe, et inversement.</li>'
+                    .'<li><strong>Publie</strong> seulement quand le texte se lit en dix secondes.</li>'
                     .'</ol>',
             ],
             [
+                'id' => 'classe',
+                'title' => 'Sorts de classe',
+                'html' => '<h3>Sorts de classe</h3>'
+                    .'<p>Une classe a un passif, des voies (Air / Feu / Eau / Terre) et environ <strong>30 sorts</strong> répartis en choix (souvent 2 variantes, parfois 4 sur les voies). Le joueur n’en apprend qu’une variante par choix.</p>'
+                    .'<ul>'
+                    .'<li><strong>Voies</strong> : sorts qui font des dégâts de l’élément, aux niveaux 1, 4, 7 et 12. Le niveau 1 frappe simple ; les effets forts viennent plus tard.</li>'
+                    .'<li><strong>Généraux</strong> : sorts utiles (placement, protection…) sans forcément d’élément. Les deux variantes d’un choix ne font pas la même chose.</li>'
+                    .'<li>Deux sorts d’une même voie ne doivent pas être des copies.</li>'
+                    .'</ul>'
+                    .'<p>Détail de la conversion d’une classe : [[kref:page:creation-classes|Classes]]. En combat, seuls les sorts de classe utilisent les '.$pa.' rendus chaque tour ; le reste puise dans la réserve de Wakfu.</p>',
+            ],
+            [
+                'id' => 'creature',
+                'title' => 'Sorts de créature',
+                'html' => '<h3>Sorts de créature (monstres)</h3>'
+                    .'<p>Reprends les sorts Dofus de la créature, puis <strong>coupe</strong> jusqu’à un kit court. Ce sont des repères, pas des quotas figés.</p>'
+                    .'<table><thead><tr><th>Puissance</th><th>Repère</th><th>Idée</th></tr></thead><tbody>'
+                    .'<tr><td>Sbire / peu puissant</td><td>1–2</td><td>1 dégât ± placement ou entrave</td></tr>'
+                    .'<tr><td>Normal</td><td>2</td><td>1 dégât + 1 autre</td></tr>'
+                    .'<tr><td>Élite / puissant</td><td>~3</td><td>1–2 attaques + 1–2 autres</td></tr>'
+                    .'<tr><td>Boss</td><td>plafond ≈ 4</td><td>distance + càc + outil + placement</td></tr>'
+                    .'</tbody></table>'
+                    .'<ul>'
+                    .'<li>Garde les coûts '.$pa.' proches de Dofus (rythme du tour).</li>'
+                    .'<li><strong>Invocation</strong> : rare — moins d’entités = plus simple pour le MJ.</li>'
+                    .'<li>Pas de « variantes de classe » : une action = un sort.</li>'
+                    .'</ul>'
+                    .'<p>Suite : [[kref:page:creation-monstres|Monstres]].</p>',
+            ],
+            [
                 'id' => 'limites',
-                'title' => 'Limites et propriétés',
+                'title' => 'Limites (chiffres)',
                 'html' => '<h3>Dégâts et soins (ligne neutre)</h3>'
                     .'<table><thead><tr><th>Niveau</th><th>Dégâts</th><th>Soins / bouclier</th></tr></thead><tbody>'
                     .'<tr><td>1–5</td><td>1d6+mod à 2d6+mod</td><td>1d4+mod à 2d4+mod</td></tr>'
@@ -59,48 +105,14 @@ return static function (array $k): array {
                     .'<tr><td>11–15</td><td>3d6+mod à 4d6+mod</td><td>3d4+mod à 4d4+mod</td></tr>'
                     .'<tr><td>16–20</td><td>4d6+mod à 5d6+mod</td><td>4d4+mod à 5d4+mod</td></tr>'
                     .'</tbody></table>'
-                    .'<p>Régulateurs : 5+ '.$pa.' → +1 puissance ; zone large → −1 par cible touchée. Chartes vivantes plus bas.</p>'
-                    .'<h3>Coûts</h3>'
+                    .'<p>Sort à 5+ '.$pa.' → un cran plus fort. Large zone → un cran plus faible par cible. Créature faible −20–30 % ; boss +50–100 % <em>ou</em> des phases (pas les deux à fond).</p>'
+                    .'<h3>Coûts usuels</h3>'
                     .'<ul>'
-                    .'<li>Action simple : 3–4 '.$pa.' (souvent 2×/tour).</li>'
-                    .'<li>Action forte : 5 '.$pa.' (souvent 1×/tour).</li>'
-                    .'<li>Bonus / identité : 2–3 '.$pa.' (3 si l’effet compte vraiment).</li>'
-                    .'<li>Déplacement : 1 '.$pm.' / case ; téléport / charge = coût dédié, pas gratuit.</li>'
+                    .'<li>Action simple : 3–4 '.$pa.'</li>'
+                    .'<li>Action forte : 5 '.$pa.' (souvent 1×/tour)</li>'
+                    .'<li>Petit bonus / déplacement : 2–3 '.$pa.'</li>'
                     .'</ul>'
-                    .'<h3>Fréquence et durées</h3>'
-                    .'<ul>'
-                    .'<li>Cooldown court 1–3 tours, moyen 4–6, long 7–10, très long = repos.</li>'
-                    .'<li>Contrôle (stun, immobilisation) : sauvegarde + 1–2 tours, jamais 10 tours sans sortie.</li>'
-                    .'<li>Buff : durée courte ; pas de cumul du même bonus.</li>'
-                    .'</ul>'
-                    .'<h3>Kit de classe (rappel)</h3>'
-                    .'<p>12 emplacements, 1 à 4 variantes chacun (le plus souvent 2), 12 appris. Un emplacement à 4 variantes (une par voie) est courant : compte environ 8 variantes au niveau 1. Chaque voie suit l’orientation de la fiche de classe (dégâts, soin, placement…), qui fait foi. Les 16 sorts des voies viennent des sorts Dofus de leur élément qui font des dégâts, et en font tous ; leur effet secondaire s’adapte à l’orientation. Les autres choix (deux variantes) viennent des sorts Dofus sans élément ni dégâts, et leurs deux variantes n’ont pas la même orientation. Méthode : [[kref:page:creation-classes|Classes]].</p><p> Niveau 1 : 3 emplacements (attaque 1d6+mod à 3 '.$pa.', fort 4–5 '.$pa.', identité 2–3 '.$pa.'). Puis 2, 4, 5, 6, 7, 8, 10, 11, 12. Intensification <strong>propre au sort</strong> (repère : niv. 1 élémentaire 5/10/15/20, niv. 1 général 7/14/20, niv. 2 → 6/13/19, niv. 4 → 9/14/19, niv. 5 → 12/20, niv. 6 → 11/18, niv. 7 → 13/18, niv. 8 → 13/20, niv. 10 → 17, niv. 11 → 20, niv. 12 → 17). Un sort général peut perdre des lignes, jusqu’à aucune. Soins en <strong>d4</strong>, dégâts en <strong>d6</strong>. Détail : '.$k['kSortsEq'].'.</p>'
-                    .'<p><strong>Coût et Wakfu :</strong> en combat significatif, seuls les sorts de classe utilisent les '.$pa.' rendus chaque tour (le don des dieux). Un sort appris (parchemin, maître) ou une capacité puise toujours dans la réserve de Wakfu ; hors combat, tout y puise.</p>'
-                    .'<h3>Propriétés de fiche (conversion)</h3>'
-                    .'<ul>'
-                    .'<li><code>name</code>, image — identité, figée si source Dofus.</li>'
-                    .'<li><code>description</code> — le geste, réécrit pour le JDR. Une ou deux phrases, tutoiement, langage inclusif, image concrète (gerbe de flamme, jet d’eau, air comprimé autour de l’arme), élément et nature de l’effet, sans valeurs. Pas d’image vague ni de métaphore opaque. 255 caractères maximum.</li>'
-                    .'<li><code>effect</code> — texte factuel pour jouer le tour (dés, durées, relances). C’est le delta de conversion.</li>'
-                    .'<li><code>level</code> — niveau d’apprentissage (classe) ou de la créature.</li>'
-                    .'<li><code>category</code> — 0 classe · 1 créature · 2 apprenable · 3 consommable.</li>'
-                    .'<li><code>element</code> — masque (Terre / Feu / Eau / Air / Neutre), aligné sur les sous-effets.</li>'
-                    .'<li><code>pa</code>, <code>pa_from_wakfu_reserve</code> (défaut false = PA du tour ; true pour sorts appris / réserve), <code>po_min</code>, <code>po_max</code>, <code>po_editable</code> — coût et portée.</li>'
-                    .'<li><code>sight_line</code>, <code>cast_in_line</code>, <code>cast_in_diagonal</code> — géométrie.</li>'
-                    .'<li><code>cast_per_turn</code>, <code>cast_per_target</code> — plafonds par tour / par cible.</li>'
-                    .'<li><code>target_type</code> — direct, <code>trap</code> ou <code>glyph</code>.</li>'
-                    .'<li><code>max_stack</code>, <code>global_cooldown</code>, <code>number_between_two_cast</code>, <code>duration</code>.</li>'
-                    .'<li><code>is_magic</code>, <code>powerful</code>, <code>ritual_available</code>, <code>casting_time</code>.</li>'
-                    .'<li><code>resolution_mode</code> : uniquement <code>attack_roll</code>, <code>saving_throw</code> ou <code>auto_success</code> ; <code>attack_characteristic_key</code> (ex. <code>strong</code>, <code>intel</code>).</li>'
-                    .'<li><code>save_characteristic_key</code>, <code>save_dc_formula</code>, <code>save_success_note</code>, <code>spares_chosen_targets</code> (Épargne : créatures choisies par le lanceur sans dégâts, autres effets maintenus), <code>allows_reaction</code>.</li>'
-                    .'<li>Sous-effets : slugs du catalogue (frapper, soigner, pousser, invoquer…). Invocation : lier le monstre <code>jdr:summon:…</code>.</li>'
-                    .'<li><code>params.applies_to</code> : <code>caster</code>, <code>targets</code> (défaut) ou <code>caster_and_targets</code> — qui reçoit l’effet.</li>'
-                    .'<li><code>params.conditions</code> : comparaisons (formule / opérateur / formule) liées par ET ou OU. Caractéristiques : <code>[clé]</code> ou <code>[clé:caster]</code> = lanceur, <code>[clé:target]</code> = cible.</li>'
-                    .'<li><code>params.value_rules</code> : règles sur la valeur (<code>replace</code>, <code>add</code>, <code>subtract</code>), chacune avec ses conditions.</li>'
-                    .'<li><code>params.value_up_to</code> : si vrai, le lanceur choisit un montant ≤ la formule (« jusqu’à »).</li>'
-                    .'</ul>'
-                    .'<h3>Sorts à facteurs</h3>'
-                    .'<p>Un effet peut ne s’appliquer que si des conditions sont vraies. Exemple : <code>[modifier_intelligence_creature] &gt; [modifier_chance_creature:target]</code>. La valeur peut aussi être un plafond (« jusqu’à 3 cases ») ou changer via des règles ( +1 si Agi ≥ 3 ). Formule plafonnée : <code>min(3 + [strong], 6)</code>.</p>'
-                    .'<p>Sur les sorts généraux d’une classe, la résolution reste automatique, '.$sagesse.' ou '.$vitalite.', sauf quatre exceptions (une par voie). Méthode classe : [[kref:page:creation-classes|Classes]].</p>',
+                    .'<p>Les chartes vivantes sont en bas de cette page. Contrôle / buff : durée courte, sauvegarde si besoin, pas de cumul du même bonus.</p>',
             ],
             [
                 'id' => 'conseils',
@@ -108,35 +120,25 @@ return static function (array $k): array {
                 'html' => '<h3>Conseils</h3>'
                     .'<ul>'
                     .'<li>Lis le sort à voix haute. S’il faut un schéma MMO, coupe.</li>'
-                    .'<li>La description se lit comme un geste, pas comme une fiche technique. L’image dit comment ça part. L’élément et l’effet sont nommés une fois, sans chiffre.</li>'
-                    .'<li>Si c’est trop fort chaque tour : baisse les dés, monte le coût, ou ajoute un cooldown.</li>'
-                    .'<li>Portée mini 2 sur les flèches (Crâ) : collé, tu recules ou tu prends tes distances — ce n’est pas un sort de mêlée.</li>'
-                    .'<li>Invocation = créature fragile (1d4), pas un second PJ.</li>'
-                    .'<li>Ne copie pas un passif ou une capacité de classe dans le sort (la Fureur de l’Iop est une capacité ; Concentration ne rajoute pas un dé).</li>'
-                    .'<li>Sort-créature : 1 attaque calée sur les '.$pa.' Dofus du monstre ; une 2ᵉ option seulement si le monstre a assez de '.$pa.' pour ne pas tout lancer chaque tour.</li>'
-                    .'<li>Compare toujours à la charte au niveau du sort, ligne neutre, puis régulateurs.</li>'
-                    .'<li>Pour un bonus de voie, garde une base utile à tout le monde, puis un petit seuil ou un modificateur — pas un sort qui ne marche qu’avec 5 en Agilité.</li>'
+                    .'<li>Le <em>Général</em> raconte le geste ; les chiffres sont dans <em>Effets</em> / le tableau.</li>'
+                    .'<li>Trop fort chaque tour ? Baisse les dés, monte le coût, ou ajoute une relance.</li>'
+                    .'<li>Une invocation = créature fragile, pas un second PJ.</li>'
+                    .'<li>Ne mets pas un passif de classe dans un sort.</li>'
                     .'</ul>'
-                    .'<p><strong>À éviter :</strong> dégâts de sort fort + large zone + pas de cooldown ; contrôle sans sauvegarde ; jeton Dofus brut à la place d’un état JDR ; 8 sorts sur un sbire ; transformer un sort automatique en jet pour caser une caractéristique.</p>',
+                    .'<p><strong>À éviter :</strong> gros dégâts + large zone + pas de relance ; contrôle sans sauvegarde ; 8 sorts sur un sbire ; grimoire de classe collé à un monstre.</p>',
             ],
             [
                 'id' => 'exemples',
                 'title' => 'Exemples',
-                'html' => '<h3>Étalons jouables</h3>'
+                'html' => '<h3>Étalons</h3>'
                     .'<ul>'
-                    .'<li><strong>Pression</strong> (Iop, niv. 1) — Terre, 3 '.$pa.', 2×/tour, '.$po.' 1, 1d6+'.$force.', mêlée. C’est l’attaque de base.</li>'
-                    .'<li><strong>Fendoir</strong> (Iop, niv. 1) — Terre, 5 '.$pa.', 1×/tour, petite zone, sauvegarde, 1d6+'.$force.'. C’est le sort fort.</li>'
-                    .'<li><strong>Bond</strong> (Iop, niv. 1) — 3 '.$pa.' bonus, téléport 1–4, pas de dégâts. Combo du tour : Bond + Pression.</li>'
-                    .'<li><strong>Mot Vivifiant</strong> (Eniripsa, niv. 1) — 3 '.$pa.', 1d4+'.$sagesse.' (soin en d4, pas d6).</li>'
-                    .'<li><strong>Béco du Tofu</strong> (Tofu Chimérique) — sort-créature Air, 3 '.$pa.', 1d6, une action. Le monstre n’a pas de grimoire de classe.</li>'
+                    .'<li><strong>Pression</strong> (Iop) — attaque de base de classe, 3 '.$pa.', mêlée.</li>'
+                    .'<li><strong>Fendoir</strong> (Iop) — sort fort, 5 '.$pa.', 1×/tour.</li>'
+                    .'<li><strong>Bond</strong> (Iop) — placement, pas de dégâts.</li>'
+                    .'<li><strong>Mot Vivifiant</strong> (Eniripsa) — soin (dés en d4).</li>'
+                    .'<li><strong>Béco du Tofu</strong> — une action de monstre faible.</li>'
                     .'</ul>'
-                    .'<h3>Exemples à facteurs</h3>'
-                    .'<ul>'
-                    .'<li><strong>Repousse conditionnelle</strong> — valeur 1 ; règle <code>add</code> +1 si <code>[modifier_agility_creature] &gt;= 3</code>.</li>'
-                    .'<li><strong>Attirance au choix</strong> — valeur 3 avec <code>value_up_to</code> : le lanceur attire de 1 à 3 cases.</li>'
-                    .'<li><strong>Dégâts si Intel &gt; Chance</strong> — condition <code>[modifier_intelligence_creature] &gt; [modifier_chance_creature:target]</code>.</li>'
-                    .'</ul>'
-                    .'<p>Catalogue : [[kref:page:bibliotheque-spell|Sorts]]. Classes : chaque fiche a ses 12 emplacements et leurs variantes ; Crâ, Iop et Ecaflip sont validés et servent de modèle.</p>',
+                    .'<p>Catalogue : [[kref:page:bibliotheque-spell|Sorts]]. Les 19 classes jouables servent de modèles.</p>',
             ],
         ],
         'cms_extras' => [

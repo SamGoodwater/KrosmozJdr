@@ -17,9 +17,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "attack_roll",
-            "description": "Tu frappes du plat de la patte et tu bondis en arrière. La cible subit des dommages d'Air.",
-            "effect": "Dégâts d'Air, puis un bond en arrière. Le bond a besoin d'une case libre. Deux fois par tour. Ce sort ne lit pas la pièce : Dofus ne faisait que te donner des PM.",
+            "resolution_mode": null,
+            "description": "Tu frappes du plat de la patte et tu bondis en arrière.",
+            "effect": "Dégâts d’Air, puis un bond en arrière sur une case libre. Deux fois par tour. Ce sort ne lit pas la pièce.",
             "pa": "3",
             "cast_per_turn": "2",
             "cast_per_target": "2",
@@ -189,9 +189,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "attack_roll",
-            "description": "Tu projettes un filet du bout des griffes. Il inflige des dommages de Feu, et une langue chaude referme une plaie, la tienne ou celle d'un·e allié·e.",
-            "effect": "Dégâts de Feu. Deux fois par tour. Le soin ne part pas sans état. Dofus choisissait les dégâts ou le soin : ici les dégâts partent toujours.",
+            "resolution_mode": null,
+            "description": "Tu projettes un filet du bout des griffes. Le feu part, et une langue chaude referme une plaie, la tienne ou celle d’un allié.",
+            "effect": "Dégâts de Feu. Deux fois par tour.",
             "pa": "3",
             "cast_per_turn": "2",
             "cast_per_target": "2",
@@ -210,9 +210,9 @@
                     "area": "point",
                     "params": {
                         "characteristic": "fire",
-                        "value": "1d6+Intelligence",
-                        "value_formula": "1d6+[intel]",
-                        "dice_formula": "1d6+[intel]",
+                        "value": "1d4+Intelligence",
+                        "value_formula": "1d4+[intel]",
+                        "dice_formula": "1d4+[intel]",
                         "effect_direction": "action"
                     },
                     "order": 0
@@ -297,9 +297,9 @@
                             "slug": "soigner",
                             "area": "point",
                             "params": {
-                                "value": "2d4",
-                                "value_formula": "2d4",
-                                "dice_formula": "2d4",
+                                "value": "1d4",
+                                "value_formula": "1d4",
+                                "dice_formula": "1d4",
                                 "effect_direction": "action"
                             },
                             "order": 1
@@ -335,9 +335,9 @@
                             "slug": "soigner",
                             "area": "point",
                             "params": {
-                                "value": "2d4",
-                                "value_formula": "2d4",
-                                "dice_formula": "2d4",
+                                "value": "1d4",
+                                "value_formula": "1d4",
+                                "dice_formula": "1d4",
                                 "effect_direction": "action"
                             },
                             "order": 1
@@ -373,9 +373,9 @@
                             "slug": "soigner",
                             "area": "point",
                             "params": {
-                                "value": "3d4",
-                                "value_formula": "3d4",
-                                "dice_formula": "3d4",
+                                "value": "1d4",
+                                "value_formula": "1d4",
+                                "dice_formula": "1d4",
                                 "effect_direction": "action"
                             },
                             "order": 1
@@ -405,9 +405,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "attack_roll",
-            "description": "Tu frappes sec, et le coup éclabousse. La cible subit des dommages d'Eau, très important si tu fais un critique.",
-            "effect": "Dégâts d'Eau, critique augmenté. Deux fois par tour.",
+            "resolution_mode": null,
+            "description": "Tu frappes sec, et le coup éclabousse. Un critique emporte beaucoup plus.",
+            "effect": "Dégâts d’Eau. Sur un coup critique, les dés de dégâts sont ceux de la colonne Critique. Deux fois par tour. Ce sort ne lit pas la pièce.",
             "pa": "3",
             "cast_per_turn": "2",
             "cast_per_target": "2",
@@ -437,7 +437,7 @@
                     "slug": "autre",
                     "area": "point",
                     "params": {
-                        "value": "Si critique 3d6"
+                        "value": "Critique augmenté."
                     },
                     "order": 1
                 }
@@ -464,7 +464,7 @@
                             "slug": "autre",
                             "area": "point",
                             "params": {
-                                "value": "Si critique 5d6"
+                                "value": "Critique augmenté."
                             },
                             "order": 1
                         }
@@ -491,7 +491,7 @@
                             "slug": "autre",
                             "area": "point",
                             "params": {
-                                "value": "Si critique 5d8"
+                                "value": "Critique augmenté."
                             },
                             "order": 1
                         }
@@ -518,7 +518,7 @@
                             "slug": "autre",
                             "area": "point",
                             "params": {
-                                "value": "Si critique 7d8"
+                                "value": "Critique augmenté."
                             },
                             "order": 1
                         }
@@ -545,7 +545,7 @@
                             "slug": "autre",
                             "area": "point",
                             "params": {
-                                "value": "Si critique 7d10"
+                                "value": "Critique augmenté."
                             },
                             "order": 1
                         }
@@ -567,9 +567,9 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "attack_roll",
-            "description": "Tu frappes, et la patte choisit. La cible subit des dommages de Terre et perd le geste, ou le pas.",
-            "effect": "Dégâts de Terre. Deux fois par tour. Le retrait ne part pas sans état, et il ne se cumule pas. Il remplace le bonus de PA ou de PM que Dofus te donnait.",
+            "resolution_mode": null,
+            "description": "Tu frappes, et la patte choisit. La cible perd le geste, ou le pas.",
+            "effect": "Dégâts de Terre. Deux fois par tour. Le retrait dure 1 tour et ne se cumule pas.",
             "pa": "3",
             "cast_per_turn": "2",
             "cast_per_target": "2",
@@ -761,8 +761,8 @@
                             "duration_formula": "1",
                             "params": {
                                 "characteristic": "pa",
-                                "value": "2",
-                                "value_formula": "2",
+                                "value": "1",
+                                "value_formula": "1",
                                 "effect_direction": "action",
                                 "duration_formula": "1"
                             },
@@ -793,22 +793,25 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "auto_success",
-            "description": "Tu plies les jarrets et tu bondis sur la case adjacentes.",
-            "effect": "",
+            "resolution_mode": null,
+            "description": "Tu plies les jarrets et tu bondis. La pièce allonge le saut, ou te le laisse faire sans voir la case.",
+            "effect": "Saut sur une case libre. Le saut ignore le tacle de la case quittée. Une fois par tour, deux fois à partir du niveau 7.",
             "pa": "2",
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "0",
-            "sight_line": false,
+            "sight_line": true,
             "cast_in_line": false,
             "cast_in_diagonal": false,
+            "po_min": "1",
+            "po_max": "4",
+            "po_editable": true,
             "sub_effects": [
                 {
                     "slug": "déplacer",
                     "area": "point",
                     "params": {
-                        "cells_formula": "4",
+                        "cells_formula": "2",
                         "movement_kind": "jump",
                         "effect_direction": "action"
                     },
@@ -846,7 +849,7 @@
                             "slug": "déplacer",
                             "area": "point",
                             "params": {
-                                "cells_formula": "4",
+                                "cells_formula": "2",
                                 "movement_kind": "jump",
                                 "effect_direction": "action"
                             },
@@ -874,8 +877,7 @@
                             "order": 2
                         }
                     ],
-                    "cast_per_turn": "2",
-                    "cast_per_target": "2"
+                    "cast_per_turn": "2"
                 }
             ]
         },
@@ -892,14 +894,14 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "auto_success",
-            "description": "Tu humes l'air. Les invisibles reprennent un contour, et une plaie proche se referme mieux s'il y a un·e ennemi·e dans le coin.",
-            "effect": "Révèle les invisibles de la zone et soigne un·e allié·e qui s'y trouve. S'il y a au moins un·e ennemi·e dans la zone, le soin gagne un dé. Une fois par tour, relance de 3 tours. Si ton mod. d'Intelligence vaut au moins 3, le soin gagne encore un dé.",
+            "resolution_mode": null,
+            "description": "Tu humes l’air. Les invisibles reprennent un contour, et une plaie proche se referme mieux s’il y a un ennemi dans le coin.",
+            "effect": "Révèle les invisibles de la zone et soigne un allié qui s’y trouve. S’il y a au moins un ennemi dans la zone, le soin gagne un bonus. Si ton modificateur d’Intelligence vaut au moins 3, il en gagne un second. Une fois par tour, relance de 3 tours.",
             "pa": "2",
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "3",
-            "sight_line": false,
+            "sight_line": true,
             "cast_in_line": false,
             "cast_in_diagonal": false,
             "po_min": "0",
@@ -908,7 +910,7 @@
             "sub_effects": [
                 {
                     "slug": "soigner",
-                    "area": "rect-2x2",
+                    "area": "point",
                     "params": {
                         "value": "1d4",
                         "value_formula": "1d4",
@@ -919,7 +921,7 @@
                 },
                 {
                     "slug": "autre",
-                    "area": "rect-2x2",
+                    "area": "point",
                     "params": {
                         "value": "Révèle les invisibles. +1d4 s'il y a un·e ennemi·e, +1d4 si Intel ≥ 3."
                     },
@@ -934,18 +936,18 @@
                     "sub_effects": [
                         {
                             "slug": "soigner",
-                            "area": "rect-3x3",
+                            "area": "point",
                             "params": {
-                                "value": "2d4",
-                                "value_formula": "2d4",
-                                "dice_formula": "2d4",
+                                "value": "1d4",
+                                "value_formula": "1d4",
+                                "dice_formula": "1d4",
                                 "effect_direction": "action"
                             },
                             "order": 0
                         },
                         {
                             "slug": "autre",
-                            "area": "rect-3x3",
+                            "area": "point",
                             "params": {
                                 "value": "Révèle les invisibles. +1d4 s'il y a un·e ennemi·e, +1d4 si Intel ≥ 3."
                             },
@@ -969,13 +971,13 @@
             "state": "playable",
             "is_magic": false,
             "resolution_mode": "attack_roll",
-            "description": "Tu croises une créature toute proche. Tu prends sa place, ou tu te poses sur une case libre à côté. Un·e allié·e se prête au pas. Un·e ennemi·e peut le refuser.",
-            "effect": "Tu choisis : échange de place, ou saut sur une case libre dans la portée. Une fois par tour.",
+            "description": "Tu croises une créature toute proche. Tu prends sa place, ou tu te poses à côté.",
+            "effect": "Tu choisis : échange de place, ou saut sur une case libre dans la portée. Un allié se prête au pas. Un ennemi peut le refuser. Une fois par tour, deux fois à partir du niveau 7.",
             "pa": "2",
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "0",
-            "sight_line": false,
+            "sight_line": true,
             "cast_in_line": false,
             "cast_in_diagonal": false,
             "po_min": "1",
@@ -1030,7 +1032,6 @@
                         }
                     ],
                     "cast_per_turn": "2",
-                    "cast_per_target": "2",
                     "po_max": "3"
                 }
             ]
@@ -1048,14 +1049,14 @@
             ],
             "state": "playable",
             "is_magic": false,
-            "resolution_mode": "auto_success",
+            "resolution_mode": null,
             "description": "Tu poses la patte sur une plaie. Elle se ferme un peu, et le prochain coup qui porte vraiment dresse un éclat devant la cible.",
-            "effect": "Soin. Jusqu'au début de ton prochain tour, le premier coup critique que porte la cible lui donne un bouclier. Une fois par tour, relance de 3 tours. Si ton mod. de Vitalité vaut au moins 3, le bouclier gagne un dé.",
+            "effect": "Soin. Jusqu’au début de ton prochain tour, le premier coup critique que porte la cible lui donne un bouclier. Une fois par tour, relance de 3 tours. Si ton modificateur de Vitalité vaut au moins 3, le bouclier gagne un dé.",
             "pa": "2",
             "cast_per_turn": "1",
             "cast_per_target": "1",
             "number_between_two_cast": "3",
-            "sight_line": false,
+            "sight_line": true,
             "cast_in_line": false,
             "cast_in_diagonal": false,
             "po_min": "0",
@@ -1105,9 +1106,9 @@
                             "slug": "soigner",
                             "area": "point",
                             "params": {
-                                "value": "2d4",
-                                "value_formula": "2d4",
-                                "dice_formula": "2d4",
+                                "value": "1d4",
+                                "value_formula": "1d4",
+                                "dice_formula": "1d4",
                                 "effect_direction": "action"
                             },
                             "order": 0
@@ -1117,9 +1118,9 @@
                             "area": "point",
                             "duration_formula": "1",
                             "params": {
-                                "value": "2d4",
-                                "value_formula": "2d4",
-                                "dice_formula": "2d4",
+                                "value": "1d4",
+                                "value_formula": "1d4",
+                                "dice_formula": "1d4",
                                 "effect_direction": "action",
                                 "duration_formula": "1"
                             },

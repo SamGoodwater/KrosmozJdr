@@ -81,11 +81,31 @@ final class DraftSpecializationContentRenderer
             .$this->li('Idéal pour', (string) ($spec['idealFor'] ?? ''))
             .'</ul>';
 
-        $parts[] = '<h2>Comment lire un palier</h2><p>'
-            .'À chaque palier, la fiche écrit <strong>choix entre X et Y</strong> : tu prends <strong>une</strong> des capacités garanties, '
-            .'puis <strong>une</strong> des autres options. Ce n’est pas une case vide, et ça ne donne <strong>jamais</strong> de points de caractéristique. '
+        $thread = trim((string) ($spec['thread'] ?? ''));
+        if ($thread !== '') {
+            $parts[] = '<h2>En bref</h2><p>'.$this->richText($thread).'</p>';
+        }
+
+        $signature = $spec['signature'] ?? null;
+        if (is_array($signature)) {
+            $sigName = trim((string) ($signature['name'] ?? ''));
+            $sigSummary = trim((string) ($signature['summary'] ?? ''));
+            if ($sigName !== '' && $sigSummary !== '') {
+                $parts[] = '<h2>'.$this->capabilityKref($sigName).'</h2><p>'.$this->richText($sigSummary).'</p>';
+            }
+        }
+
+        $archetypes = $spec['archetypes'] ?? [];
+        if (is_array($archetypes) && $archetypes !== []) {
+            $parts[] = $this->archetypesHtml($archetypes);
+        }
+
+        $parts[] = '<h2>Comment lire un niveau</h2><p>'
+            .'À chaque niveau de la fiche, tu lis <strong>choix entre X et Y</strong> : tu prends <strong>une</strong> des capacités garanties, '
+            .'puis <strong>une</strong> des autres options. Ça ne donne <strong>jamais</strong> de points de caractéristique. '
             .'Les options, ce sont des <strong>capacités</strong>, un <strong>trait</strong> à partir du niveau 12, plus les <strong>compétences</strong> '
-            .'et les <strong>métiers</strong> du bloc Maîtrises. Les <strong>aptitudes</strong> tombent toutes seules aux niveaux 3, 9 et 15.'
+            .'et les <strong>métiers</strong> du bloc Maîtrises. Les <strong>aptitudes</strong> arrivent toutes seules aux niveaux 3, 9 et 15. '
+            .'Si la fiche propose plusieurs styles (Musicien, Saltimbanque…), tu en choisis un au niveau 1 : certaines options suivent alors ce style.'
             .'</p>';
 
         $difference = trim((string) ($spec['difference'] ?? ''));
@@ -174,6 +194,7 @@ final class DraftSpecializationContentRenderer
             $name = trim((string) ($entry['name'] ?? ''));
             $effect = trim((string) ($entry['effect'] ?? ''));
             $type = trim((string) ($entry['type'] ?? ''));
+            $variants = $entry['archetype_variants'] ?? null;
             if ($name === '') {
                 continue;
             }
@@ -184,13 +205,74 @@ final class DraftSpecializationContentRenderer
             }
 
             $items .= '<li><strong>'.$label.'</strong>';
-            if ($effect !== '') {
+            if (is_array($variants) && $variants !== []) {
+                $items .= ' — selon ton style :<ul>';
+                foreach ($variants as $variant) {
+                    if (! is_array($variant)) {
+                        continue;
+                    }
+                    $vName = trim((string) ($variant['name'] ?? ''));
+                    $vEffect = trim((string) ($variant['effect'] ?? ''));
+                    if ($vName === '') {
+                        continue;
+                    }
+                    $items .= '<li><strong>'.$this->capabilityKref($vName).'</strong>';
+                    if ($vEffect !== '') {
+                        $items .= ' — '.$this->richText($vEffect);
+                    }
+                    $items .= '</li>';
+                }
+                $items .= '</ul>';
+            } elseif ($effect !== '') {
                 $items .= ' — '.$this->richText($effect);
             }
             $items .= '</li>';
         }
 
         return $items === '' ? '<p>Aucune piste pour l’instant.</p>' : '<ul>'.$items.'</ul>';
+    }
+
+    /**
+     * @param  array<string, mixed>  $archetypes
+     */
+    private function archetypesHtml(array $archetypes): string
+    {
+        $blocks = ['<h2>Styles</h2>',
+            '<p>Au niveau 1, choisis <strong>un</strong> style. Il fixe tes outils, tes jets de sauvegarde et ta liste de compétences. Il change aussi un peu l’usage d’Applaudissement. Plus loin, certaines options sont liées à ce style : tu n’as que la tienne.</p>',
+        ];
+
+        foreach ($archetypes as $archetype) {
+            if (! is_array($archetype)) {
+                continue;
+            }
+            $name = trim((string) ($archetype['name'] ?? ''));
+            if ($name === '') {
+                continue;
+            }
+            $blocks[] = '<h3>'.e($name).'</h3>';
+            $blurb = trim((string) ($archetype['blurb'] ?? ''));
+            if ($blurb !== '') {
+                $blocks[] = '<p>'.$this->richText($blurb).'</p>';
+            }
+            $thread = trim((string) ($archetype['thread'] ?? ''));
+            if ($thread !== '') {
+                $blocks[] = '<p>'.$this->richText($thread).'</p>';
+            }
+            $applause = trim((string) ($archetype['applaudissement'] ?? ''));
+            if ($applause !== '') {
+                $blocks[] = '<p><strong>Avec Applaudissement</strong> : '.$this->richText($applause).'</p>';
+            }
+            $masteries = $archetype['masteries'] ?? [];
+            if (is_array($masteries) && $masteries !== []) {
+                $items = '';
+                foreach ($masteries as $label => $text) {
+                    $items .= $this->li((string) $label, (string) $text);
+                }
+                $blocks[] = '<ul>'.$items.'</ul>';
+            }
+        }
+
+        return implode('', $blocks);
     }
 
     /**
@@ -212,6 +294,19 @@ final class DraftSpecializationContentRenderer
                 $name = trim((string) ($entry['name'] ?? ''));
                 if ($name !== '') {
                     $names[] = $name;
+                }
+                $variants = $entry['archetype_variants'] ?? null;
+                if (! is_array($variants)) {
+                    continue;
+                }
+                foreach ($variants as $variant) {
+                    if (! is_array($variant)) {
+                        continue;
+                    }
+                    $vName = trim((string) ($variant['name'] ?? ''));
+                    if ($vName !== '') {
+                        $names[] = $vName;
+                    }
                 }
             }
         }

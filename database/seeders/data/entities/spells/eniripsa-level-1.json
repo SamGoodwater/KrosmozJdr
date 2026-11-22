@@ -580,7 +580,7 @@
             "is_magic": true,
             "resolution_mode": "attack_roll",
             "description": "Tu lâches un gros mot qui frappe comme une pierre. La cible subit des dommages de Terre.",
-            "effect": "Dégâts de Terre. Deux fois par tour. À partir du niveau 5 : la cible recule d'une, 2 ou 3 case depuis toi.",
+            "effect": "Dégâts de Terre. Deux fois par tour. À partir du niveau 5 : la cible est repoussée (1 case au niv. 5, 2 au niv. 10, 3 au niv. 15).",
             "pa": "3",
             "cast_per_turn": "2",
             "cast_per_target": "2",

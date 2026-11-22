@@ -6,7 +6,7 @@
     "life_dice": "1d8",
     "description": "Membres d'un clan créé à l'origine par Raval et la famille Smisse, les Roublards ont finalement prêté allégeance au dieu Dralbour, qui n'est autre que Sram. Maîtres de l'entourloupe, du coup fourré, des bombes à retardement et des pistolets... les Roublards ne sont à l'aise qu'en terrain miné.",
     "dofus_version": "3",
-    "state": "draft",
+    "state": "playable",
     "read_level": 0,
     "write_level": 3,
     "element_orientations": {
@@ -14,5 +14,18 @@
         "earth": "amelioration",
         "water": "entrave",
         "air": "placement"
+    },
+    "mechanics": {
+        "engine": "zone",
+        "bombs": {
+            "summon_official_id": "jdr:summon:roublard-bombe",
+            "counts_as_summon": true,
+            "counts_as_zone": true,
+            "hp_formula": "2 × niveau",
+            "charge_max": "1 + bonus de maîtrise",
+            "charge_per_turn": 1,
+            "chain_spell": "Poudre",
+            "chain_level": 11
+        }
     }
 }

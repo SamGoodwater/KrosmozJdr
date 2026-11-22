@@ -465,6 +465,55 @@ class PageControllerTest extends TestCase
     }
 
     /**
+     * Les sous-pages spécialisation exposent menu_icon depuis la colonne image.
+     */
+    public function test_menu_exposes_specialization_icon_from_image_column(): void
+    {
+        $parent = Page::factory()->create([
+            'title' => 'Spécialisations',
+            'slug' => 'bibliotheque-specialization',
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'menu_group' => 'Bibliothèques',
+            'entity_key' => 'specialization',
+        ]);
+
+        $specialization = Specialization::factory()->create([
+            'name' => 'Artiste Test',
+            'image' => '/storage/images/specializations/artiste.png',
+        ]);
+
+        Page::factory()->create([
+            'title' => 'Artiste Test',
+            'slug' => 'specialisation-artiste-test',
+            'parent_id' => $parent->id,
+            'in_menu' => true,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'entity_key' => 'specialization',
+            'settings' => [
+                'linked_entity' => [
+                    'type' => 'specialization',
+                    'id' => $specialization->id,
+                ],
+            ],
+        ]);
+
+        PageService::clearMenuCache();
+
+        $response = $this->getJson(route('pages.menu'));
+        $response->assertOk();
+
+        $libraries = collect($response->json('menu'))->firstWhere('id', 'bibliotheques');
+        $specs = collect($libraries['children'])->firstWhere('title', 'Spécialisations');
+        $child = collect($specs['children'])->firstWhere('title', 'Artiste Test');
+
+        $this->assertNotNull($child);
+        $this->assertSame('/storage/images/specializations/artiste.png', $child['menu_icon']);
+    }
+
+    /**
      * Test : les sous-pages classe exposent menu_icon depuis la colonne icon de Breed.
      */
     public function test_menu_exposes_breed_menu_icon_for_linked_class_pages(): void

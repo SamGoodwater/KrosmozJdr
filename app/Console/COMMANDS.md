@@ -415,6 +415,24 @@ php artisan breeds:sync-images
 
 ---
 
+## `specializations:sync-images`
+
+```yaml
+signature: specializations:sync-images
+domain: data
+ui: false
+cron: false
+```
+
+Aligne `specializations.image` sur `storage/app/public/images/specializations/{slug}.png` (objet, fond transparent). N’écrase pas une image choisie à la main. `--dry-run` pour compter sans écrire. Invalide le cache du menu s’il y a des mises à jour.
+
+```bash
+php artisan specializations:sync-images --dry-run
+php artisan specializations:sync-images
+```
+
+---
+
 ## `game-terms:rewrite-dissipable`
 
 ```yaml
