@@ -45,4 +45,21 @@ final class PlayableCraClassSheetTest extends TestCase
         $this->assertStringNotContainsString('<table>', $html);
         $this->assertStringNotContainsString('palier de spé', $html);
     }
+
+    public function test_cra_level_1_spell_krefs_are_minimal_with_n1_labels(): void
+    {
+        $breeds = require database_path('seeders/data/playable-breeds.php');
+        $cra = collect($breeds)->firstWhere('name', 'Crâ');
+        $sections = (new ClassSheetContentRenderer)->sections($cra);
+        $niveau1 = collect($sections)->firstWhere('title', 'Niveau 1');
+        $this->assertIsArray($niveau1);
+        $html = (string) ($niveau1['content'] ?? '');
+
+        $this->assertStringContainsString('Sort 1 (élémentaire)', $html);
+        $this->assertStringContainsString('Sort 2', $html);
+        $this->assertStringContainsString('Sort 3', $html);
+        $this->assertStringContainsString('|view=minimal]]', $html);
+        $this->assertStringContainsString('data-breed-level-spells="1"', $html);
+        $this->assertStringContainsString('[[kref:entity:spells:Flèche harcelante|Flèche harcelante|view=minimal]]', $html);
+    }
 }

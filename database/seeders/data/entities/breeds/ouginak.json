@@ -15,33 +15,5 @@
         "water": "amelioration",
         "air": "degats"
     },
-    "mechanics": {
-        "engine": "etat",
-        "prey": {
-            "first_wound": true,
-            "amarok": true,
-            "attack_bonus": "+1 au jet",
-            "change_once_level": 11
-        },
-        "rage_points": {
-            "per_turn": 1,
-            "cap": 5,
-            "cap_level_11": 6,
-            "spend_bonus": "+1d4 par point",
-            "reset_end_of_combat": true
-        },
-        "bestial_form": {
-            "capability_level": 7,
-            "cost_rage": 6,
-            "cost_wakfu_pa": 6,
-            "rage_cost_from_level": 11,
-            "melee_only": true,
-            "damage_bonus": 6,
-            "damage_taken_bonus": 6,
-            "double_pm": true,
-            "untackleable": true,
-            "combat_turns": 2,
-            "combat_turns_level_11": 3
-        }
-    }
+    "mechanics": "<p><strong>Proie</strong></p><p>La première créature que tu blesses dans le combat est ta Proie. Tes attaques de classe contre elle ont +1 au jet. Au niveau 11, tu peux en changer 1 fois par combat.</p><p>Au début de chacun de tes tours, tu gagnes 1 point de rage. Le plafond est 5, ou 6 au niveau 11. Un sort qui dépense ces points ajoute 1d4 par point. À la fin du combat, la rage retombe à 0.</p><p><strong>Forme bestiale</strong>, à partir du niveau 7. Elle coûte 6 PA depuis la réserve de Wakfu, ou 6 points de rage. À partir du niveau 11, elle se paie seulement en rage. Tu ne frappes plus qu’au contact. Tu gagnes +6 aux dégâts, tu subis +6 dégâts par attaque, tes PM sont doublés, et on ne peut pas te tacler. Elle dure 2 tours, 3 au niveau 11.</p>"
 }

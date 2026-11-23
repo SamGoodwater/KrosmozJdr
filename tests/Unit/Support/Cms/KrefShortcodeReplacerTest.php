@@ -76,4 +76,24 @@ class KrefShortcodeReplacerTest extends TestCase
 
         $this->assertSame($input, (new KrefShortcodeReplacer)->replace($input));
     }
+
+    #[Test]
+    public function it_stores_entity_view_minimal_in_payload(): void
+    {
+        $html = (new KrefShortcodeReplacer(static fn (): int => 42))->replace(
+            '[[kref:entity:spells:Boule de feu|Boule de feu|view=minimal]]'
+        );
+
+        $this->assertStringContainsString('kref--view-minimal', $html);
+        $this->assertSame(1, preg_match('/title="([^"]+)"/', $html, $m));
+        $b64 = strtr($m[1], '-_', '+/');
+        $pad = strlen($b64) % 4 === 0 ? '' : str_repeat('=', 4 - (strlen($b64) % 4));
+        $json = base64_decode($b64.$pad, true);
+        $this->assertIsString($json);
+        $decoded = json_decode($json, true);
+        $this->assertSame('entity', $decoded['t'] ?? null);
+        $this->assertSame('spells', $decoded['p']['entityType'] ?? null);
+        $this->assertSame(42, $decoded['p']['id'] ?? null);
+        $this->assertSame('minimal', $decoded['p']['view'] ?? null);
+    }
 }

@@ -36,9 +36,12 @@ const ENTITY_CONFIG = {
   capitalize: { color: 'slate', label: 'Capital' },
   breed: { color: 'teal', label: 'Classe' },
   capability: { color: 'pink', label: 'Capacité' },
+  aptitude: { color: 'fuchsia', label: 'Aptitude' },
   consumable: { color: 'orange', label: 'Consommable' },
   scenario: { color: 'neutral', label: 'Scénario' },
   condition: { color: 'red', label: 'État' },
+  language: { color: 'cyan', label: 'Langue' },
+  job: { color: 'yellow', label: 'Métier' },
 };
 
 /** Clés d'entité reconnues (alignées sur $theme-entities). */

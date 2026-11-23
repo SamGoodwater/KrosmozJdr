@@ -5,7 +5,7 @@
     "description_fast": "Assassin",
     "life_dice": "1d10",
     "description": "Tu poses, tu disparais, tu reviens. On ne te voit qu’au moment du coup.",
-    "mechanics": "<p><strong>Pièges</strong> — Zones cachées, non magiques. Perception Modérée (Difficile dès 11). Jamais sous une créature. Plafond §3.3.1.</p><p>Toute créature dans la zone subit l’effet, <strong>toi y compris</strong>. Réseau : une poussée ou attirance dans un piège le déclenche.</p><p><strong>Invisibilité</strong> obligatoire. Tu restes invisible si le coup achève. Le Double = tes stats, ½ PV, déplacement seul.</p>",
+    "mechanics": "<p><strong>Pièges</strong></p><p>Tes pièges sont cachés, et ils ne sont pas magiques. Tu n’en poses pas sous une créature. Pour les voir, il faut un jet de Perception : Modéré jusqu’au niveau 10, Difficile à partir du niveau 11.</p><p>Leur nombre suit le plafond des zones : 2 aux niveaux 1 à 3, jusqu’à 7 aux niveaux 17 à 20. Si tu dépasses, le plus ancien disparaît.</p><p>Toi et tes allié·e·s subissez l’effet, sauf si le sort dit le contraire. Une créature poussée ou attirée dans un piège le déclenche, puis elle finit son déplacement.</p><p><strong>Invisibilité.</strong> Elle fait partie de la classe. Si le coup achève la cible, tu restes invisible.</p><p><strong>Double.</strong> Il a tes caractéristiques et la moitié de tes points de vie. Il ne lance pas de sort : il se déplace seulement.</p>",
     "dofus_version": "3",
     "state": "playable",
     "read_level": 0,

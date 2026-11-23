@@ -7,7 +7,7 @@
   {
     "path": "100- Done/README.md",
     "title": "Ce qui a été fait",
-    "description": "Chaque spécialisation jouable a maintenant un objet qui la représente (livre, bouclier, masque, ancre…). L’introduction du catalogue explique à quoi sert une spécialisation, comment se lisent les sept paliers, et où trouver la règle. Sur une page, les blocs de contenu ont la même largeur : le plus large donne le gabarit, le texte peut rester centré dedans. La fiche ne commence plus par la liste brute des capacités : elles se lisent dans le texte de chaque palier. Sur toutes les pages, un bloc sans vrai titre n’affiche plus « Texte » ni « Section ». Le bandeau (fil d’Ariane et plan) est aussi sur les classes et les spécialisations, sans bouton pour modifier la page. Chaque section peut se replier : on ne garde que son titre, ou les premiers mots s’il n’y en a pas."
+    "description": "Les entrées **Aptitudes** et **Langues** apparaissent dans le menu Bibliothèques (pages CMS + tableau). Les langues restent éditables côté admin MJ ; en lecture, tout le monde peut les consulter comme les autres catalogues."
   },
   {
     "path": "backend/_ai.md",

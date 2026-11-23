@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Table\AptitudeTableController;
 use App\Http\Controllers\Api\Table\BreedTableController;
 use App\Http\Controllers\Api\Table\CampaignTableController;
 use App\Http\Controllers\Api\Table\CapabilityTableController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Api\Table\CreatureTableController;
 use App\Http\Controllers\Api\Table\CreatureTraitTableController;
 use App\Http\Controllers\Api\Table\ItemTableController;
 use App\Http\Controllers\Api\Table\ItemTypeTableController;
+use App\Http\Controllers\Api\Table\LanguageTableController;
 use App\Http\Controllers\Api\Table\MonsterRaceTableController;
 use App\Http\Controllers\Api\Table\MonsterTableController;
 use App\Http\Controllers\Api\Table\NpcTableController;
@@ -62,6 +64,8 @@ Route::middleware(['web'])->prefix('tables')->group(function () {
         ->name('api.tables.conditions');
     Route::get('/capabilities', [CapabilityTableController::class, 'index'])
         ->name('api.tables.capabilities');
+    Route::get('/aptitudes', [AptitudeTableController::class, 'index'])
+        ->name('api.tables.aptitudes');
     Route::get('/breeds', [BreedTableController::class, 'index'])
         ->name('api.tables.breeds');
     Route::get('/specializations', [SpecializationTableController::class, 'index'])
@@ -74,6 +78,8 @@ Route::middleware(['web'])->prefix('tables')->group(function () {
         ->name('api.tables.panoplies');
     Route::get('/creature-traits', [CreatureTraitTableController::class, 'index'])
         ->name('api.tables.creature-traits');
+    Route::get('/languages', [LanguageTableController::class, 'index'])
+        ->name('api.tables.languages');
     Route::get('/shops', [ShopTableController::class, 'index'])
         ->name('api.tables.shops');
 });

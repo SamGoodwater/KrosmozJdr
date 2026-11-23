@@ -15,13 +15,15 @@ use Database\Seeders\PageSeeder;
  * Shortcodes {@code [[kref:…]]} convertis par {@see PageSeeder}
  * via {@see KrefShortcodeReplacer}.
  *
- * Les icônes vivent dans `storage/app/public/images/jobs/` et sont servies
- * depuis `/storage/images/jobs/`.
+ * Les vignettes de chaque métier vivent dans `storage/app/public/images/jobs/`
+ * et sont servies depuis `/storage/images/jobs/`.
+ * L’entrée de menu utilise la clé `job` (`/storage/images/icons/entities/job.webp`).
  *
  * @return array{
  *   title: string,
  *   slug: string,
  *   menu_order: int,
+ *   entity_key: string,
  *   icon: string|null,
  *   sections: list<array{slug: string, title: string, template: string, html?: string, settings?: array<string, mixed>}>
  * }
@@ -55,7 +57,8 @@ $strength = '[[kref:characteristic:strength_creature|Force]]';
 return [
     'title' => 'Les métiers',
     'slug' => 'les-metiers',
-    'menu_order' => 12,
+    'menu_order' => 14,
+    'entity_key' => 'job',
     'icon' => null,
     'sections' => [
         [

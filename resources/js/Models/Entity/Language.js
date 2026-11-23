@@ -24,3 +24,5 @@ export class Language extends BaseModel {
         return Number(this._data.sort_order ?? this._data.sortOrder ?? 0);
     }
 }
+
+export default Language;

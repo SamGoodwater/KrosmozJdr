@@ -70,7 +70,7 @@
             "character_level": 1,
             "size": 1,
             "primary": "chance",
-            "description": "Une poupée de sève. Fragile, elle occupe et elle pique.",
+            "description": "Une poupée de sève. Elle occupe la case et elle pique.",
             "other_info": "Invocation de Sadida. Elle compte dans ta limite d’invocations.",
             "action": {
                 "name": "Pique",
@@ -312,7 +312,7 @@
             "character_level": 8,
             "size": 2,
             "primary": "strong",
-            "description": "Un compagnon de meute. Fragile, il occupe et il mord.",
+            "description": "Un compagnon de meute. Il occupe la case et il mord.",
             "other_info": "Invocation d’Ouginak.",
             "action": {
                 "name": "Morsure",

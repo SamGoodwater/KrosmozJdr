@@ -123,6 +123,7 @@ class LegacyEntitySectionImportService
      * Crée ou met à jour les sections texte et synchronise la relation pivot.
      *
      * @param  callable(list<string>, int): void|null  $onCapabilityNames
+     * @param  callable(list<string>, int): void|null  $onAptitudeNames
      * @return array<int, array{level: int}>
      */
     public function importParsedSections(
@@ -133,6 +134,7 @@ class LegacyEntitySectionImportService
         ?int $creatorId = null,
         ?callable $onCapabilityNames = null,
         string $sectionState = Section::STATE_PLAYABLE,
+        ?callable $onAptitudeNames = null,
     ): array {
         $this->assertHasLeveledSections($entity);
 
@@ -163,6 +165,11 @@ class LegacyEntitySectionImportService
             $capabilityNames = $sectionData['capabilities'] ?? [];
             if ($onCapabilityNames !== null && is_array($capabilityNames) && $capabilityNames !== []) {
                 $onCapabilityNames($capabilityNames, $legacyLevel);
+            }
+
+            $aptitudeNames = $sectionData['aptitudes'] ?? [];
+            if ($onAptitudeNames !== null && is_array($aptitudeNames) && $aptitudeNames !== []) {
+                $onAptitudeNames($aptitudeNames, $legacyLevel);
             }
         }
 

@@ -35,6 +35,11 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    /** Placée dans une rangée côte à côte. */
+    inAdjacentRow: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const emit = defineEmits(["mounted"]);
@@ -137,6 +142,7 @@ onBeforeUnmount(() => {
         :user="user"
         :auto-edit="autoEdit"
         :force-full-width="forceFullWidth"
+        :in-adjacent-row="inAdjacentRow"
     />
 
     <div

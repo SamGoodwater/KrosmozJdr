@@ -85,6 +85,19 @@ export function isSupportedKrefType(krefType) {
     return ALLOWED_KREF_TYPES.has(normalizeKrefType(krefType));
 }
 
+const ENTITY_VIEWS = new Set(["text", "icon", "minimal"]);
+
+/**
+ * Mode d’affichage d’une kref entité (`text` défaut | `icon` | `minimal`).
+ *
+ * @param {unknown} raw
+ * @returns {'text'|'icon'|'minimal'}
+ */
+export function normalizeEntityView(raw) {
+    const v = String(raw || "text").trim();
+    return ENTITY_VIEWS.has(v) ? v : "text";
+}
+
 /**
  * Lit un span kref legacy (`data-kref-*`) si présent.
  *

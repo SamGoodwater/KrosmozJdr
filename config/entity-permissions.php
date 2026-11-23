@@ -11,6 +11,7 @@
  * NB: Les permissions "par instance" restent exposées via les API Resources (champ `can`).
  */
 
+use App\Models\Entity\Aptitude;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Campaign;
 use App\Models\Entity\Capability;
@@ -41,6 +42,7 @@ return [
      */
     'conditions' => Condition::class,
     'campaigns' => Campaign::class,
+    'aptitudes' => Aptitude::class,
     'capabilities' => Capability::class,
     'breeds' => Breed::class,
     'consumables' => Consumable::class,

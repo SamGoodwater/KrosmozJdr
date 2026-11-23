@@ -26,6 +26,7 @@ const props = defineProps({
     specialization: { type: Object, required: true },
     availableSpells: { type: Array, default: () => [] },
     availableCapabilities: { type: Array, default: () => [] },
+    availableAptitudes: { type: Array, default: () => [] },
     availableCreatureTraits: { type: Array, default: () => [] },
     availableConsumables: { type: Array, default: () => [] },
     availableResources: { type: Array, default: () => [] },
@@ -141,6 +142,25 @@ const canDelete = computed(() => canDeleteAny('specializations') || isAdmin.valu
                                 routeName: 'entities.specializations.updateCapabilities',
                                 relatedEntityType: 'capabilities',
                                 searchApiEntityType: 'capabilities',
+                                pivotFields: ['level'],
+                            }"
+                        />
+
+                        <EntityRelationsManager
+                            :relations="specialization.aptitudes || []"
+                            :available-items="availableAptitudes"
+                            :entity-id="specialization.id"
+                            entity-type="specializations"
+                            relation-type="aptitudes"
+                            relation-name="Aptitudes"
+                            :config="{
+                                itemLabel: 'aptitude',
+                                itemLabelPlural: 'aptitudes',
+                                displayFields: ['name'],
+                                searchFields: ['name'],
+                                routeName: 'entities.specializations.updateAptitudes',
+                                relatedEntityType: 'aptitudes',
+                                searchApiEntityType: 'aptitudes',
                                 pivotFields: ['level'],
                             }"
                         />

@@ -5,6 +5,7 @@
     "description_fast": "Maître du temps",
     "life_dice": "1d8",
     "description": "Tu joues avec l’heure. Tu ralentis, tu téléportes, tu arrives pile.",
+    "mechanics": "<p><strong>Le temps</strong></p><p>Tu as l’avantage à tes jets d’initiative, et tu ne peux pas être surpris·e. Hors combat, tu connais toujours l’heure exacte et le temps écoulé.</p><p>Une créature déplacée par un de tes sorts est en Téléfrag, jusqu’à la fin de ton prochain tour.</p><p>À partir du niveau 10, au début d’un combat, tu peux échanger ton initiative avec celle d’un·e allié·e d’accord.</p>",
     "dofus_version": "3",
     "state": "playable",
     "read_level": 0,

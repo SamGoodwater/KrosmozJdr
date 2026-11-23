@@ -19,6 +19,7 @@ const CREATE_CORE_FIELD_KEYS_BY_TYPE = {
     consumables: ['name', 'description', 'consumable_type_id', 'level'],
     resources: ['name', 'description', 'resource_type_id', 'level'],
     capabilities: ['name', 'description', 'element'],
+    aptitudes: ['name', 'description', 'reuse_type'],
     monsters: ['name', 'description', 'level', 'monster_race_id'],
     breeds: ['name', 'description'],
     panoplies: ['name', 'description'],
@@ -32,7 +33,7 @@ const CREATE_CORE_FIELD_KEYS_BY_TYPE = {
 };
 
 /** Types dont le `store` web est encore un stub vide. */
-const QUICK_CREATE_UNSUPPORTED_TYPES = ['panoplies', 'scenarios', 'shops'];
+const QUICK_CREATE_UNSUPPORTED_TYPES = ['panoplies', 'scenarios', 'shops', 'languages'];
 
 /** @deprecated Utiliser getEntityCreateCoreFieldKeys — conservé pour les Index existants. */
 const CREATE_ALLOW_FIELD_KEYS_BY_TYPE = {
@@ -46,6 +47,8 @@ const CREATE_ALLOW_FIELD_KEYS_BY_TYPE = {
     resource: ['resource_type_id', 'level', 'dofusdb_id', 'auto_update'],
     capabilities: ['dofusdb_id', 'auto_update', 'element'],
     capability: ['dofusdb_id', 'auto_update', 'element'],
+    aptitudes: ['reuse_type', 'duration_type', 'range_type'],
+    aptitude: ['reuse_type', 'duration_type', 'range_type'],
     monsters: ['dofusdb_id', 'auto_update', 'monster_race_id', 'level'],
     monster: ['dofusdb_id', 'auto_update', 'monster_race_id', 'level'],
     breeds: ['dofusdb_id', 'auto_update'],

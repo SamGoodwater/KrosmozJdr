@@ -25,9 +25,13 @@ use Illuminate\Database\Eloquent\Model;
  * - {@code [[kref:page:regles-3-2-combat|Combat]]}
  * - {@code [[kref:pageSection:regles-3-2-combat@regle-3-2-2-tour-de-jeu-et-actions|Tour de jeu]]}
  * - {@code [[kref:entity:spells:42|Boule de feu]]} ou {@code [[kref:entity:spells:Boule de feu|Boule de feu]]} (résolution par nom)
+ * - Affichage entité : {@code [[kref:entity:spells:42|Boule de feu|view=minimal]]} (`text` défaut, `icon`, `minimal`)
  */
 final class KrefShortcodeReplacer
 {
+    /** @var list<string> */
+    private const ENTITY_VIEWS = ['text', 'icon', 'minimal'];
+
     /** @var array<int, string> */
     private const ALLOWED_TYPES = ['characteristic', 'entity', 'page', 'pageSection', 'page_section'];
 
@@ -63,6 +67,7 @@ final class KrefShortcodeReplacer
                 'scenarios' => Scenario::class,
                 'panoplies' => Panoply::class,
                 'capabilities' => Capability::class,
+                'aptitudes' => \App\Models\Entity\Aptitude::class,
                 'creatures' => Creature::class,
                 default => null,
             };
@@ -126,19 +131,20 @@ final class KrefShortcodeReplacer
             return $content;
         }
 
-        $pattern = '/\[\[kref:([a-zA-Z_]+):([^\]|]+)(?:\|([^\]]+))?\]\]/u';
+        $pattern = '/\[\[kref:([a-zA-Z_]+):([^\]|]+)(?:\|([^\]|]*))?(?:\|view=(text|icon|minimal))?\]\]/u';
 
         return (string) preg_replace_callback($pattern, function (array $matches): string {
             $rawType = trim((string) ($matches[1] ?? ''));
             $rawTarget = trim((string) ($matches[2] ?? ''));
             $label = trim((string) ($matches[3] ?? ''));
+            $view = trim((string) ($matches[4] ?? ''));
 
             if ($rawType === '' || $rawTarget === '' || ! in_array($rawType, self::ALLOWED_TYPES, true)) {
                 return (string) $matches[0];
             }
 
             $type = $rawType === 'page_section' ? 'pageSection' : $rawType;
-            $payload = $this->buildPayload($type, $rawTarget);
+            $payload = $this->buildPayload($type, $rawTarget, $view);
             if ($payload === null) {
                 return (string) $matches[0];
             }
@@ -146,6 +152,9 @@ final class KrefShortcodeReplacer
             $finalLabel = $label !== '' ? $label : $rawTarget;
             $title = $this->encodeTitle($type, $payload, $finalLabel);
             $classes = $this->isNavigable($type) ? 'kref kref--nav' : 'kref';
+            if ($type === 'entity' && isset($payload['view']) && $payload['view'] !== 'text') {
+                $classes .= ' kref--view-'.e((string) $payload['view']);
+            }
 
             return '<span class="'.$classes.'" title="'.e($title).'">'.e($finalLabel).'</span>';
         }, $content);
@@ -154,7 +163,7 @@ final class KrefShortcodeReplacer
     /**
      * @return array<string, mixed>|null
      */
-    private function buildPayload(string $type, string $target): ?array
+    private function buildPayload(string $type, string $target, string $view = ''): ?array
     {
         if ($type === 'characteristic') {
             return ['key' => trim($target)];
@@ -203,7 +212,16 @@ final class KrefShortcodeReplacer
                 $resolvedId = $resolved;
             }
 
-            return ['entityType' => $entityType, 'id' => is_numeric($resolvedId) ? (int) $resolvedId : $resolvedId];
+            $payload = [
+                'entityType' => $entityType,
+                'id' => is_numeric($resolvedId) ? (int) $resolvedId : $resolvedId,
+            ];
+            $normalizedView = in_array($view, self::ENTITY_VIEWS, true) ? $view : 'text';
+            if ($normalizedView !== 'text') {
+                $payload['view'] = $normalizedView;
+            }
+
+            return $payload;
         }
 
         return null;

@@ -116,6 +116,21 @@ export function getBreedChoiceNumber(characterLevel, slotIndex) {
 }
 
 /**
+ * Libellé du choix de sort au niveau 1 (3 emplacements).
+ *
+ * @param {number} slotIndex - 1, 2 ou 3
+ * @returns {string}
+ * @example breedLevel1SpellChoiceLabel(1) // "Sort 1 (élémentaire)"
+ */
+export function breedLevel1SpellChoiceLabel(slotIndex) {
+    const slot = Number(slotIndex);
+    if (slot === 1) return "Sort 1 (élémentaire)";
+    if (slot === 2) return "Sort 2";
+    if (slot === 3) return "Sort 3";
+    return `Sort ${slot}`;
+}
+
+/**
  * Titre d’un groupe de variantes : « Choix 1 · Niveau 1 · 4 variantes ».
  *
  * @param {{ character_level: number, slot_index: number, spells?: object[] }} group

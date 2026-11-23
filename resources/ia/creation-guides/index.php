@@ -22,6 +22,7 @@ return [
     'item' => $load(__DIR__.'/item.php'),
     'consumable' => $load(__DIR__.'/consumable.php'),
     'capability' => $load(__DIR__.'/capability.php'),
+    'aptitude' => $load(__DIR__.'/aptitude.php'),
     'trait' => $load(__DIR__.'/trait.php'),
     'resource' => $load(__DIR__.'/resource.php'),
 ];

@@ -1,5 +1,29 @@
 # Ce qui a été fait
 
+## Novembre 2026 — Aptitudes et langues dans le menu Bibliothèques
+
+Les entrées **Aptitudes** et **Langues** apparaissent dans le menu Bibliothèques (pages CMS + tableau). Les langues restent éditables côté admin MJ ; en lecture, tout le monde peut les consulter comme les autres catalogues.
+
+## Novembre 2026 — Aptitudes séparées des capacités
+
+Les **aptitudes de spécialisation** ont leur propre fiche (réutilisation, durée, portée, effet) : ce ne sont plus des capacités passives. Les passifs de classe restent des capacités. Sur une fiche de spé, les aptitudes restent dans le texte des paliers ; on peut aussi les retrouver dans la bibliothèque « Aptitudes ».
+
+## Novembre 2026 — Équipements brouillon, premier passage
+
+Les fiches d’équipement qui ne portaient qu’une note interne (« trou de grille ») ont une phrase claire : les bonus sont là, la description reste à relire. Les premiers objets de niveau 1, de l’Aileron de Skale à la Boufballe, sont passés au « tu ». Le reste du brouillon suit.
+
+## Novembre 2026 — Ressources jouables, au « tu »
+
+Les 365 ressources déjà jouables ont une description courte, à la deuxième personne. Les blagues et les usages (potion, poison, élément) restent. Le prochain scrap ne les écrase plus : ces fiches ne se mettent plus à jour toutes seules.
+
+## Novembre 2026 — Fiche spécialisation : paliers densifiés et styles colorés
+
+Les pages de spécialisation restent **organisées par niveau** (maîtrises, aptitudes, capacités dans chaque palier), pas par variante. Les capacités à choisir sont en **puce texte** comme ailleurs sur le site (survol pour la fiche courte). Quand un choix dépend du style (Musicien, Saltimbanque…), une **petite icône colorée** marque la variante à côté du nom — plus facile à repérer sans découper la fiche en gros blocs.
+
+## Novembre 2026 — Fiche classe : catalogues et cartes de sorts
+
+Sur la fiche d’une classe (page bibliothèque `/pages/classe-…` comprise), on lit d’abord les voies, puis le **passif et la mécanique côte à côte**, puis un **catalogue d’icônes** des sorts et des capacités (blocs par niveau, côte à côte). Le détail principal reste **niveau par niveau**, plus compact, avec les sorts en petite carte contractée. Les pages CMS peuvent aussi placer plusieurs sections côte à côte (même id de rangée + largeur réglable).
+
 ## Novembre 2026 — Icônes et pages de spécialisations
 
 Chaque spécialisation jouable a maintenant un objet qui la représente (livre, bouclier, masque, ancre…). L’introduction du catalogue explique à quoi sert une spécialisation, comment se lisent les sept paliers, et où trouver la règle. Sur une page, les blocs de contenu ont la même largeur : le plus large donne le gabarit, le texte peut rester centré dedans. La fiche ne commence plus par la liste brute des capacités : elles se lisent dans le texte de chaque palier. Sur toutes les pages, un bloc sans vrai titre n’affiche plus « Texte » ni « Section ». Le bandeau (fil d’Ariane et plan) est aussi sur les classes et les spécialisations, sans bouton pour modifier la page. Chaque section peut se replier : on ne garde que son titre, ou les premiers mots s’il n’y en a pas.

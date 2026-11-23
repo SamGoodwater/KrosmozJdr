@@ -31,6 +31,7 @@ const ENTITY_COMPONENT_MAP = {
   'conditions': 'Condition',
   'panoplies': 'Panoply',
   'capabilities': 'Capability',
+  'aptitudes': 'Aptitude',
   'creature-traits': 'CreatureTrait',
   'specializations': 'Specialization',
   'resource-types': 'ResourceType',

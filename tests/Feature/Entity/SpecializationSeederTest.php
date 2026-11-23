@@ -27,7 +27,7 @@ class SpecializationSeederTest extends TestCase
             'Érudit' => ['Politicien', 'Mémoire des formules', 'Expertise en Wakfu'],
             'Milicien·ne' => ['Frères d’armes', 'Position d’autorité', 'Général'],
             'Dévot' => ['Refuge du pèlerin', 'Médecine de terrain', 'Haranguer les foules'],
-            'Artiste' => ['Spectacle ambulant', 'Touche-à-tout', 'Manipulateur subtil'],
+            'Artiste' => ['Présence de scène', 'Oreille du public', 'Manipulateur subtil'],
             'Explorateur·rice' => ['Jamais vraiment perdu', 'Rituel', 'Œil de l’éclaireur·euse'],
             'Voleur·euse' => ['Argot des voleurs', 'Furtivité suprême', 'Insaisissable'],
             'Artisan·e' => ['Réseau d’ateliers', 'Gestes économiques', 'Maître d’un geste'],
@@ -55,8 +55,19 @@ class SpecializationSeederTest extends TestCase
             $this->assertStringNotContainsString('emplacement libre', $html, $name);
             $this->assertStringNotContainsString('à calibrer', $html, $name);
             $this->assertStringNotContainsString('+2 points', $html, $name);
-            $this->assertStringContainsString('Choix entre', $html, $name);
-            $this->assertGreaterThanOrEqual(3, $spec->capabilities()->where('is_passive', true)->count(), $name);
+            $this->assertTrue(
+                str_contains($html, 'Choix entre') || str_contains($html, 'choisis-en'),
+                "{$name} devrait proposer un choix (Choix entre / choisis-en)",
+            );
+            $this->assertGreaterThanOrEqual(3, $spec->aptitudes()->count(), $name);
+            foreach ($aptitudes as $aptitudeName) {
+                $this->assertTrue(
+                    $spec->aptitudes()->where('name', $aptitudeName)->exists(),
+                    "{$name} devrait lier l'aptitude {$aptitudeName}",
+                );
+            }
+            // Shortcodes résolus en spans kref ; entityType aptitudes apparaît encodé dans title=
+            $this->assertStringContainsString('YXB0aXR1ZGVz', $html, $name);
         }
 
         $this->assertTrue(

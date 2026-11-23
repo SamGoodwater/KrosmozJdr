@@ -15,18 +15,5 @@
         "water": "protection",
         "air": "entrave"
     },
-    "mechanics": {
-        "engine": "etat",
-        "estoc": {
-            "trigger": "teleport_classe",
-            "effect": "avantage prochaine attaque de classe",
-            "once_per_round": true,
-            "survive_miss_level": 11
-        },
-        "phalange": {
-            "from_level": 7,
-            "ally_adjacent_cover": true
-        },
-        "lance_is_summon": false
-    }
+    "mechanics": "<p><strong>Estoc</strong></p><p>1 fois par tour, après t’être téléporté·e avec un sort de classe, tu es chargé·e. Ta prochaine attaque de classe dans ce tour a l’avantage. À partir du niveau 11, cet avantage reste même si l’attaque rate, 1 fois.</p><p>À partir du niveau 7, Phalange : un·e allié·e à ton contact a un abri partiel.</p><p>La lance n’est pas une invocation.</p>"
 }

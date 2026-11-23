@@ -15,17 +15,5 @@
         "water": "degats",
         "air": "entrave"
     },
-    "mechanics": {
-        "engine": "zone",
-        "portals": {
-            "counts_as_zone": true,
-            "max_from_level_1": 2,
-            "network_from_level": 1,
-            "enter_cost_pm": 1,
-            "ally_network_level": 11,
-            "no_symmetry": true,
-            "no_portal_order": true,
-            "short_attack_ranges": true
-        }
-    }
+    "mechanics": "<p><strong>Portails</strong></p><p>Une fois par tour, quand tu te téléportes avec un sort de classe, tu peux aller 1 case plus loin que la portée.</p><p>Dès le niveau 1, tu as jusqu’à 2 portails. Ce sont des cases visibles, et ils comptent dans le plafond des zones. Entrer dans l’un coûte 1 PM et te fait sortir par un autre, au choix.</p><p>Il n’y a ni numéro ni symétrie. La portée d’un sort à travers le réseau se mesure depuis le portail de sortie.</p><p>À partir du niveau 11, un·e allié·e d’accord peut emprunter ce réseau.</p>"
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders\Entity;
 
+use App\Services\Seeder\Item\ApplyDraftItemDescriptions;
 use App\Services\Seeder\Item\ItemSeederFileRepository;
 use App\Services\Seeder\Item\ItemSeederImporter;
 use App\Support\Seeder\SeedMode;
@@ -24,12 +25,17 @@ class ItemSeeder extends Seeder
         }
 
         $result = app(ItemSeederImporter::class)->import(overwrite: SeedMode::overwrite());
+        $described = 0;
+        if (SeedMode::overwrite()) {
+            $described = app(ApplyDraftItemDescriptions::class)->apply();
+        }
 
         $this->command?->info(sprintf(
-            '  ItemSeeder : %d création(s), %d mise(s) à jour, %d ignoré(s).',
+            '  ItemSeeder : %d création(s), %d mise(s) à jour, %d ignoré(s), %d description(s) de brouillon.',
             count($result['created']),
             count($result['updated']),
-            count($result['skipped'])
+            count($result['skipped']),
+            $described
         ));
         foreach ($result['skipped'] as $reason) {
             $this->command?->warn('    '.$reason);

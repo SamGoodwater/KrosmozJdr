@@ -54,6 +54,15 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  /**
+   * Taille du titre en lecture.
+   * `compact` : h3/h4 densifiés (fiches classe, niveaux).
+   */
+  titleSize: {
+    type: String,
+    default: "default",
+    validator: (v) => ["default", "compact"].includes(v),
+  },
 });
 
 const emit = defineEmits(['update:title', 'toggle-edit', 'open-params', 'copy-link', 'request-delete', 'toggle-collapse']);
@@ -105,7 +114,15 @@ const handleTitleKeydown = (event) => {
         class="input input-sm input-ghost w-full"
         placeholder="Titre"
       />
-      <h3 v-else class="truncate text-xl font-bold tracking-tight text-base-content md:text-2xl">
+      <h3
+        v-else
+        class="truncate font-semibold tracking-tight text-base-content m-0"
+        :class="
+          titleSize === 'compact'
+            ? 'text-sm md:text-base'
+            : 'text-xl font-bold md:text-2xl'
+        "
+      >
         {{ title }}
       </h3>
     </div>

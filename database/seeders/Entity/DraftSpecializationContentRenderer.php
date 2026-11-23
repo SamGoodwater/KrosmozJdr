@@ -53,7 +53,8 @@ final class DraftSpecializationContentRenderer
                 'title' => 'Niveau '.$level,
                 'level' => max(1, $level),
                 'content' => $this->levelHtml($level, $levelData, $spec),
-                'capabilities' => $this->capabilityNames($levelData),
+                'capabilities' => $this->namedEntryNames($levelData['capacities'] ?? []),
+                'aptitudes' => $this->namedEntryNames($levelData['aptitudes'] ?? []),
             ];
         }
 
@@ -211,7 +212,7 @@ final class DraftSpecializationContentRenderer
     private function stylesSummaryHtml(array $styles): string
     {
         $blocks = [];
-        foreach ($styles as $style) {
+        foreach ($styles as $styleKey => $style) {
             if (! is_array($style)) {
                 continue;
             }
@@ -219,7 +220,10 @@ final class DraftSpecializationContentRenderer
             if ($name === '') {
                 continue;
             }
-            $blocks[] = '<h3>'.e($name).'</h3>';
+            $key = is_string($styleKey) && ! is_numeric($styleKey)
+                ? $styleKey
+                : strtolower($this->asciiSlug($name));
+            $blocks[] = '<h3>'.$this->styleLabelHtml($key, $name).'</h3>';
             $blurb = trim((string) ($style['blurb'] ?? ''));
             if ($blurb !== '') {
                 $blocks[] = '<p>'.$this->richText($blurb).'</p>';
@@ -241,6 +245,26 @@ final class DraftSpecializationContentRenderer
         }
 
         return implode('', $blocks);
+    }
+
+    /**
+     * Pastille HTML pour un style / variante (hydratée côté front via .spe-style).
+     */
+    private function styleLabelHtml(string $styleKey, string $label): string
+    {
+        $key = trim($styleKey);
+        $text = trim($label) !== '' ? trim($label) : $key;
+
+        return '<span class="spe-style" data-spe-style="'.e($key).'">'.e($text).'</span>';
+    }
+
+    private function asciiSlug(string $value): string
+    {
+        $ascii = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value);
+        $ascii = is_string($ascii) ? $ascii : $value;
+        $slug = strtolower(preg_replace('/[^a-z0-9]+/i', '-', $ascii) ?? '');
+
+        return trim($slug, '-') ?: 'style';
     }
 
     /**
@@ -296,7 +320,7 @@ final class DraftSpecializationContentRenderer
             $title = $pick > 0
                 ? 'Aptitudes — choisis-en '.$pick
                 : ($this->envelope ? 'Aptitudes' : 'Aptitude (automatique)');
-            $parts[] = '<h2>'.$title.'</h2>'.$this->namedEffectsList($aptitudes);
+            $parts[] = '<h2>'.$title.'</h2>'.$this->namedEffectsList($aptitudes, 'aptitudes');
         }
 
         $capacities = $levelData['capacities'] ?? [];
@@ -305,7 +329,7 @@ final class DraftSpecializationContentRenderer
             $title = $pick > 0
                 ? 'Capacités — choisis-en '.$pick
                 : ($this->playable ? 'Capacités' : 'Capacités (pistes)');
-            $parts[] = '<h2>'.$title.'</h2>'.$this->namedEffectsList($capacities);
+            $parts[] = '<h2>'.$title.'</h2>'.$this->namedEffectsList($capacities, 'capabilities');
         }
 
         if ($level === 1 && $flavor === '' && $masteries === []) {
@@ -317,8 +341,9 @@ final class DraftSpecializationContentRenderer
 
     /**
      * @param  list<array<string, mixed>>|array<int|string, mixed>  $entries
+     * @param  'capabilities'|'aptitudes'  $entityType
      */
-    private function namedEffectsList(array $entries): string
+    private function namedEffectsList(array $entries, string $entityType = 'capabilities'): string
     {
         $items = '';
         foreach ($entries as $entry) {
@@ -334,7 +359,7 @@ final class DraftSpecializationContentRenderer
                 continue;
             }
 
-            $label = $this->capabilityKref($name);
+            $label = $this->entityKref($entityType, $name);
             if ($type !== '' && ! $this->envelope) {
                 $label .= ' <em>('.e($this->capacityTypeLabel($type)).')</em>';
             }
@@ -342,7 +367,7 @@ final class DraftSpecializationContentRenderer
             $items .= '<li><strong>'.$label.'</strong>';
             if (is_array($variants) && $variants !== []) {
                 $items .= ' — selon ton style :<ul>';
-                foreach ($variants as $variant) {
+                foreach ($variants as $styleKey => $variant) {
                     if (! is_array($variant)) {
                         continue;
                     }
@@ -351,7 +376,10 @@ final class DraftSpecializationContentRenderer
                     if ($vName === '') {
                         continue;
                     }
-                    $items .= '<li><strong>'.$this->capabilityKref($vName).'</strong>';
+                    $key = is_string($styleKey) && ! is_numeric($styleKey)
+                        ? $styleKey
+                        : strtolower($this->asciiSlug($vName));
+                    $items .= '<li data-spe-style="'.e($key).'"><strong>'.$this->entityKref($entityType, $vName).'</strong>';
                     if ($vEffect !== '') {
                         $items .= ' — '.$this->richText($vEffect);
                     }
@@ -368,37 +396,35 @@ final class DraftSpecializationContentRenderer
     }
 
     /**
-     * @param  array<string, mixed>  $levelData
+     * @param  list<array<string, mixed>>|array<int|string, mixed>  $entries
      * @return list<string>
      */
-    private function capabilityNames(array $levelData): array
+    private function namedEntryNames(array $entries): array
     {
         $names = [];
-        foreach (['capacities', 'aptitudes'] as $key) {
-            $entries = $levelData[$key] ?? [];
-            if (! is_array($entries)) {
+        if (! is_array($entries)) {
+            return $names;
+        }
+
+        foreach ($entries as $entry) {
+            if (! is_array($entry)) {
                 continue;
             }
-            foreach ($entries as $entry) {
-                if (! is_array($entry)) {
+            $name = trim((string) ($entry['name'] ?? ''));
+            if ($name !== '') {
+                $names[] = $name;
+            }
+            $variants = $entry['archetype_variants'] ?? null;
+            if (! is_array($variants)) {
+                continue;
+            }
+            foreach ($variants as $variant) {
+                if (! is_array($variant)) {
                     continue;
                 }
-                $name = trim((string) ($entry['name'] ?? ''));
-                if ($name !== '') {
-                    $names[] = $name;
-                }
-                $variants = $entry['archetype_variants'] ?? null;
-                if (! is_array($variants)) {
-                    continue;
-                }
-                foreach ($variants as $variant) {
-                    if (! is_array($variant)) {
-                        continue;
-                    }
-                    $vName = trim((string) ($variant['name'] ?? ''));
-                    if ($vName !== '') {
-                        $names[] = $vName;
-                    }
+                $vName = trim((string) ($variant['name'] ?? ''));
+                if ($vName !== '') {
+                    $names[] = $vName;
                 }
             }
         }
@@ -406,9 +432,16 @@ final class DraftSpecializationContentRenderer
         return array_values(array_unique($names));
     }
 
+    private function entityKref(string $entityType, string $name): string
+    {
+        $type = $entityType === 'aptitudes' ? 'aptitudes' : 'capabilities';
+
+        return '[[kref:entity:'.$type.':'.$name.'|'.$name.']]';
+    }
+
     private function capabilityKref(string $name): string
     {
-        return '[[kref:entity:capabilities:'.$name.'|'.$name.']]';
+        return $this->entityKref('capabilities', $name);
     }
 
     /**

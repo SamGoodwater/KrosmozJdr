@@ -15,17 +15,5 @@
         "water": "entrave",
         "air": "placement"
     },
-    "mechanics": {
-        "engine": "zone",
-        "bombs": {
-            "summon_official_id": "jdr:summon:roublard-bombe",
-            "counts_as_summon": true,
-            "counts_as_zone": true,
-            "hp_formula": "2 × niveau",
-            "charge_max": "1 + bonus de maîtrise",
-            "charge_per_turn": 1,
-            "chain_spell": "Poudre",
-            "chain_level": 11
-        }
-    }
+    "mechanics": "<p><strong>Bombes</strong></p><p>Tes bombes sont des invocations visibles. Elles comptent dans ta limite. Elles ne bougent pas, elles n’agissent pas, et elles bloquent le passage.</p><p>Leurs points de vie valent deux fois ton niveau. À la pose, l’élément est neutre et la charge vaut 1. Elle monte de 1 par tour, jusqu’à 1 plus ton bonus de maîtrise.</p><p>À l’explosion, les ennemi·e·s au contact prennent les dégâts et le malus. Toi et tes allié·e·s ne recevez que l’effet positif, sans jet. Tu peux repousser chaque ennemi·e touché·e d’une case. Une bombe détruite n’explose pas.</p><p>Le sort Poudre, au niveau 11, relie tes bombes : l’explosion de l’une déclenche les autres dans sa zone.</p>"
 }

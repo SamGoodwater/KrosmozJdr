@@ -1,4 +1,9 @@
-import { parseKrefPayload, isKrefPayloadComplete, normalizeKrefType } from "@/Composables/richText/krefCodec";
+import {
+    parseKrefPayload,
+    isKrefPayloadComplete,
+    normalizeKrefType,
+    normalizeEntityView,
+} from "@/Composables/richText/krefCodec";
 
 const TYPE_META = {
     characteristic: {
@@ -45,11 +50,15 @@ export function getReferencePresentation(attrs) {
     const navigable = krefType === "page" || krefType === "pageSection" || krefType === "entity";
     const invalidPayload = Boolean(krefType) && !isKrefPayloadComplete(krefType, payload);
 
+    const entityView =
+        krefType === "entity" ? normalizeEntityView(payload?.view) : "text";
+
     const wrapperClasses = [
         "kref",
         `kref--type-${krefType || "unknown"}`,
         navigable ? "kref--nav" : "",
         invalidPayload ? "kref--invalid" : "",
+        entityView !== "text" ? `kref--view-${entityView}` : "",
     ].filter(Boolean);
 
     if (import.meta.env?.DEV && invalidPayload) {

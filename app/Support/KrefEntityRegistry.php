@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+use App\Models\Entity\Aptitude;
 use App\Models\Entity\Campaign;
 use App\Models\Entity\Capability;
 use App\Models\Entity\Consumable;
@@ -38,6 +39,7 @@ class KrefEntityRegistry
             'npcs',
             'panoplies',
             'capabilities',
+            'aptitudes',
             'creatures',
         ];
     }
@@ -62,6 +64,7 @@ class KrefEntityRegistry
             'scenarios' => Scenario::query()->find($id),
             'panoplies' => Panoply::query()->find($id),
             'capabilities' => Capability::query()->find($id),
+            'aptitudes' => Aptitude::query()->find($id),
             'creatures' => Creature::query()->find($id),
             default => null,
         };

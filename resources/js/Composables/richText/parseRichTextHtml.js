@@ -56,6 +56,8 @@ const SAFE_ATTRS = [
     "height",
     // Couleurs TipTap / import règles (déjà passées par DOMPurify côté lecture).
     "style",
+    // Variantes de spécialisation (pastilles colorées).
+    "data-spe-style",
 ];
 
 /**

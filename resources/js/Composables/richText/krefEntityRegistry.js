@@ -100,6 +100,14 @@ export const KREF_ENTITY_CONFIGS = Object.freeze([
         atPrefix: "capacite",
     },
     {
+        entityType: "aptitudes",
+        entityKey: "aptitude",
+        label: "Aptitudes",
+        icon: "fa-solid fa-sparkles",
+        iconUrl: resolveEntityIconUrl("aptitude"),
+        atPrefix: "aptitude",
+    },
+    {
         entityType: "creatures",
         entityKey: "creature",
         label: "Créatures",

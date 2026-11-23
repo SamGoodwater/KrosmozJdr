@@ -7,6 +7,7 @@
  * @description
  * Uniquement les emplacements de variantes (pas le pivot 0/1 « toujours disponibles », reliquat Dofus).
  * En densité `full` / `compact` : bascule Icônes (défaut) / Cartes minimales / Texte.
+ * Mode icônes : blocs-colonnes par niveau (label au-dessus, icônes dessous), côte à côte + wrap.
  */
 import { computed, markRaw, ref, watch } from "vue";
 import SpellViewText from "@/Pages/Molecules/entity/spell/SpellViewText.vue";
@@ -15,10 +16,14 @@ import EntityViewTextLink from "@/Pages/Molecules/entity/shared/EntityViewTextLi
 import OverlayTrigger from "@/Pages/Molecules/overlay/OverlayTrigger.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
-import { spellImageFilterCss } from "@/Utils/Entity/spellImageFilter";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import BreedCatalogByLevel from "@/Pages/Molecules/entity/breed/BreedCatalogByLevel.vue";
+import { spellImageFilterCss } from "@/Utils/Entity/spellImageFilter";
 import { Spell } from "@/Models/Entity/Spell";
-import { breedVariantGroupTitle, splitBreedSpellSlotGroups } from "@/Utils/entity/breedSpellSlots";
+import {
+    breedVariantGroupTitle,
+    splitBreedSpellSlotGroups,
+} from "@/Utils/entity/breedSpellSlots";
 import { fetchEntityModelById } from "@/Composables/entity/useEntityTableFetch";
 
 const SPELL_LAYOUT_STORAGE_KEY = "breed_spell_slots_layout";
@@ -33,7 +38,6 @@ function readStoredSpellLayout() {
     try {
         const raw = localStorage.getItem(SPELL_LAYOUT_STORAGE_KEY);
         if (raw === "text" || raw === "cards" || raw === "icons") return raw;
-        // Ancien défaut « cards » → icônes (rappel compact).
         if (raw == null) return "icons";
     } catch {
         /* private mode / SSR */
@@ -71,7 +75,30 @@ const rawBreed = computed(() => props.breed?._data ?? props.breed);
 const variantGroupsList = computed(() => splitBreedSpellSlotGroups(rawBreed.value).variantGroups);
 
 const hasAny = computed(() => variantGroupsList.value.some((g) => (g.spells || []).length > 0));
-const ICON_LIMIT = 48;
+
+/**
+ * Catalogue icônes : un bloc-colonne par niveau (toutes les variantes du niveau).
+ * @returns {Array<{ level: number, levelLabel: string, spells: object[] }>}
+ */
+const iconCatalogByLevel = computed(() => {
+    /** @type {Map<number, object[]>} */
+    const ordered = new Map();
+    for (const g of [...variantGroupsList.value].sort((a, b) =>
+        Number(a.character_level) !== Number(b.character_level)
+            ? Number(a.character_level) - Number(b.character_level)
+            : Number(a.slot_index) - Number(b.slot_index),
+    )) {
+        if (!(g.spells || []).length) continue;
+        const level = Number(g.character_level);
+        if (!ordered.has(level)) ordered.set(level, []);
+        ordered.get(level).push(...(g.spells || []));
+    }
+    return Array.from(ordered.keys()).map((level) => ({
+        level,
+        levelLabel: `N${level}`,
+        spells: ordered.get(level) || [],
+    }));
+});
 
 /** Bascule Icônes / Cartes / Texte (fiche full + compact). */
 const spellLayout = ref(readStoredSpellLayout());
@@ -101,11 +128,6 @@ function setSpellLayout(layout) {
  * @returns {Spell}
  */
 const asSpellModel = (raw) => (raw instanceof Spell ? raw : new Spell(raw));
-
-const allVariantSpells = computed(() => variantGroupsList.value.flatMap((g) => g.spells || []));
-
-const variantPreview = computed(() => allVariantSpells.value.slice(0, ICON_LIMIT).map((s) => asSpellModel(s)));
-const hiddenVariantCount = computed(() => Math.max(0, allVariantSpells.value.length - variantPreview.value.length));
 
 const spellName = (spell) => spell?.name || spell?._data?.name || "Sort";
 const spellImage = (spell) => spell?.image || spell?._data?.image || "";
@@ -149,6 +171,13 @@ function spellIconOverlay(raw) {
  * @param {{ character_level: number, slot_index: number, spells?: object[] }} g
  */
 const variantTitle = (g) => breedVariantGroupTitle(g);
+
+const iconBtnClass = computed(() =>
+    props.density === "compact"
+        ? "btn btn-ghost btn-xs btn-square"
+        : "btn btn-ghost btn-sm btn-square border border-base-300/40 bg-base-200/20 hover:bg-base-200/50",
+);
+const iconThumbClass = computed(() => (props.density === "compact" ? "h-5 w-5" : "h-7 w-7"));
 </script>
 
 <template>
@@ -205,48 +234,55 @@ const variantTitle = (g) => breedVariantGroupTitle(g);
         </div>
 
         <template v-if="density === 'full'">
-            <div class="rounded-box border border-base-300 bg-base-100/40 p-4 space-y-3">
-                <div>
-                    <h3 class="text-xs font-semibold uppercase tracking-wide text-primary-300">Variantes de sorts</h3>
-                    <p v-if="showTempleNote" class="text-xs text-primary-400/90 mt-1">
-                        À chaque variante, un seul sort est retenu. Pour en changer : temple de ton dieu, autant
-                        d’heures que le niveau de la variante.
-                    </p>
+            <div class="rounded-box border border-base-300/60 bg-base-100/30 p-4 space-y-3">
+                <div class="flex flex-wrap items-baseline justify-between gap-2">
+                    <div>
+                        <h3 class="text-xs font-semibold uppercase tracking-wide text-base-content/50">
+                            Catalogue des sorts
+                        </h3>
+                        <p v-if="showTempleNote" class="text-xs text-base-content/55 mt-1">
+                            À chaque variante, un seul sort est retenu. Pour en changer : temple de ton dieu, autant
+                            d’heures que le niveau de la variante.
+                        </p>
+                    </div>
                 </div>
 
-                <div v-if="isIconsLayout" class="flex flex-wrap items-center gap-2">
-                    <OverlayTrigger
-                        v-for="s in variantPreview"
-                        :key="`full-i-${s.id}`"
-                        :content="spellIconOverlay(s)"
-                        trigger="click"
-                        placement="bottom-start"
-                        max-width="auto"
-                        :interactive="true"
-                        :close-on-outside="true"
-                        :close-on-escape="true"
-                        :chromeless="true"
-                        panel-class="w-[min(92vw,36rem)] max-w-[36rem]"
-                        :focus-trap="false"
+                <div v-if="isIconsLayout" class="flex flex-wrap items-start gap-x-4 gap-y-3">
+                    <BreedCatalogByLevel
+                        v-for="block in iconCatalogByLevel"
+                        :key="`icons-n${block.level}`"
+                        :level-label="block.levelLabel"
                     >
-                        <button
-                            type="button"
-                            class="btn btn-ghost btn-sm btn-square border border-base-300/40 bg-base-200/20 hover:bg-base-200/50"
-                            :aria-label="spellName(s)"
-                            :title="spellName(s)"
+                        <OverlayTrigger
+                            v-for="s in block.spells"
+                            :key="`full-i-${s.id}`"
+                            :content="spellIconOverlay(s)"
+                            trigger="click"
+                            placement="bottom-start"
+                            max-width="auto"
+                            :interactive="true"
+                            :close-on-outside="true"
+                            :close-on-escape="true"
+                            :chromeless="true"
+                            panel-class="w-[min(92vw,36rem)] max-w-[36rem]"
+                            :focus-trap="false"
                         >
-                            <EntityThumb
-                                size="table"
-                                class="h-7 w-7"
-                                :src="spellImage(s) || ''"
-                                :label="spellName(s)"
-                                :css-filter="spellCssFilter(s)"
-                            />
-                        </button>
-                    </OverlayTrigger>
-                    <span v-if="hiddenVariantCount > 0" class="text-xs text-base-content/60">
-                        +{{ hiddenVariantCount }}
-                    </span>
+                            <button
+                                type="button"
+                                :class="iconBtnClass"
+                                :aria-label="spellName(s)"
+                                :title="spellName(s)"
+                            >
+                                <EntityThumb
+                                    size="table"
+                                    :class="iconThumbClass"
+                                    :src="spellImage(s) || ''"
+                                    :label="spellName(s)"
+                                    :css-filter="spellCssFilter(s)"
+                                />
+                            </button>
+                        </OverlayTrigger>
+                    </BreedCatalogByLevel>
                 </div>
 
                 <template v-else>
@@ -304,37 +340,45 @@ const variantTitle = (g) => breedVariantGroupTitle(g);
 
         <template v-else-if="density === 'compact'">
             <div class="rounded-box border border-base-300/80 bg-base-200/30 p-2 space-y-2">
-                <div class="text-[10px] font-semibold uppercase tracking-wide text-base-content/50">Variantes de sorts</div>
-                <div v-if="isIconsLayout" class="flex flex-wrap items-center gap-1.5">
-                    <OverlayTrigger
-                        v-for="s in variantPreview"
-                        :key="`c-i-${s.id}`"
-                        :content="spellIconOverlay(s)"
-                        trigger="click"
-                        placement="bottom-start"
-                        max-width="auto"
-                        :interactive="true"
-                        :close-on-outside="true"
-                        :close-on-escape="true"
-                        :chromeless="true"
-                        panel-class="w-[min(92vw,36rem)] max-w-[36rem]"
-                        :focus-trap="false"
+                <div class="text-[10px] font-semibold uppercase tracking-wide text-base-content/50">
+                    Catalogue des sorts
+                </div>
+                <div v-if="isIconsLayout" class="flex flex-wrap items-start gap-x-3 gap-y-2">
+                    <BreedCatalogByLevel
+                        v-for="block in iconCatalogByLevel"
+                        :key="`c-icons-n${block.level}`"
+                        :level-label="block.levelLabel"
                     >
-                        <button
-                            type="button"
-                            class="btn btn-ghost btn-xs btn-square"
-                            :aria-label="spellName(s)"
-                            :title="spellName(s)"
+                        <OverlayTrigger
+                            v-for="s in block.spells"
+                            :key="`c-i-${s.id}`"
+                            :content="spellIconOverlay(s)"
+                            trigger="click"
+                            placement="bottom-start"
+                            max-width="auto"
+                            :interactive="true"
+                            :close-on-outside="true"
+                            :close-on-escape="true"
+                            :chromeless="true"
+                            panel-class="w-[min(92vw,36rem)] max-w-[36rem]"
+                            :focus-trap="false"
                         >
-                            <EntityThumb
-                                size="table"
-                                class="h-5 w-5"
-                                :src="spellImage(s) || ''"
-                                :label="spellName(s)"
-                                :css-filter="spellCssFilter(s)"
-                            />
-                        </button>
-                    </OverlayTrigger>
+                            <button
+                                type="button"
+                                :class="iconBtnClass"
+                                :aria-label="spellName(s)"
+                                :title="spellName(s)"
+                            >
+                                <EntityThumb
+                                    size="table"
+                                    :class="iconThumbClass"
+                                    :src="spellImage(s) || ''"
+                                    :label="spellName(s)"
+                                    :css-filter="spellCssFilter(s)"
+                                />
+                            </button>
+                        </OverlayTrigger>
+                    </BreedCatalogByLevel>
                 </div>
                 <div v-else class="grid gap-2 sm:grid-cols-2">
                     <div
@@ -386,37 +430,42 @@ const variantTitle = (g) => breedVariantGroupTitle(g);
             <!-- density === text : Minimal / Line -->
             <div class="space-y-1 text-[11px] leading-snug text-base-content/85">
                 <div class="text-[10px] font-semibold uppercase tracking-wide text-base-content/50">Variantes</div>
-                <div v-if="lightweight" class="flex flex-wrap items-center gap-1.5">
-                    <OverlayTrigger
-                        v-for="s in variantPreview"
-                        :key="`vt-i-${s.id}`"
-                        :content="spellIconOverlay(s)"
-                        trigger="click"
-                        placement="bottom-start"
-                        max-width="auto"
-                        :interactive="true"
-                        :close-on-outside="true"
-                        :close-on-escape="true"
-                        :chromeless="true"
-                        panel-class="w-[min(92vw,36rem)] max-w-[36rem]"
-                        :focus-trap="false"
+                <div v-if="lightweight" class="flex flex-wrap items-start gap-x-3 gap-y-1.5">
+                    <BreedCatalogByLevel
+                        v-for="block in iconCatalogByLevel"
+                        :key="`vt-icons-n${block.level}`"
+                        :level-label="block.levelLabel"
                     >
-                        <button
-                            type="button"
-                            class="btn btn-ghost btn-xs btn-square"
-                            :aria-label="spellName(s)"
-                            :title="spellName(s)"
+                        <OverlayTrigger
+                            v-for="s in block.spells"
+                            :key="`vt-i-${s.id}`"
+                            :content="spellIconOverlay(s)"
+                            trigger="click"
+                            placement="bottom-start"
+                            max-width="auto"
+                            :interactive="true"
+                            :close-on-outside="true"
+                            :close-on-escape="true"
+                            :chromeless="true"
+                            panel-class="w-[min(92vw,36rem)] max-w-[36rem]"
+                            :focus-trap="false"
                         >
-                            <EntityThumb
-                                size="table"
-                                class="h-4 w-4"
-                                :src="spellImage(s) || ''"
-                                :label="spellName(s)"
-                                :css-filter="spellCssFilter(s)"
-                            />
-                        </button>
-                    </OverlayTrigger>
-                    <span v-if="hiddenVariantCount > 0" class="text-[10px] text-base-content/60">+{{ hiddenVariantCount }}</span>
+                            <button
+                                type="button"
+                                class="btn btn-ghost btn-xs btn-square"
+                                :aria-label="spellName(s)"
+                                :title="spellName(s)"
+                            >
+                                <EntityThumb
+                                    size="table"
+                                    class="h-4 w-4"
+                                    :src="spellImage(s) || ''"
+                                    :label="spellName(s)"
+                                    :css-filter="spellCssFilter(s)"
+                                />
+                            </button>
+                        </OverlayTrigger>
+                    </BreedCatalogByLevel>
                 </div>
                 <div
                     v-else

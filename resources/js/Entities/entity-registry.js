@@ -27,7 +27,9 @@ import { Condition } from "@/Models/Entity/Condition";
 import { CreatureTrait } from "@/Models/Entity/CreatureTrait";
 import { Panoply } from "@/Models/Entity/Panoply";
 import { Capability } from "@/Models/Entity/Capability";
+import { Aptitude } from "@/Models/Entity/Aptitude";
 import { Specialization } from "@/Models/Entity/Specialization";
+import { Language } from "@/Models/Entity/Language";
 import { Shop } from "@/Models/Entity/Shop";
 
 // Import du mapper Resource (seul mapper existant pour l'instant)
@@ -49,11 +51,13 @@ import { getConditionFieldDescriptors } from "@/Entities/condition/condition-des
 import { getCreatureTraitFieldDescriptors } from "@/Entities/creature-trait/creature-trait-descriptors";
 import { getPanoplyFieldDescriptors } from "@/Entities/panoply/panoply-descriptors";
 import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
+import { getAptitudeFieldDescriptors } from "@/Entities/aptitude/aptitude-descriptors";
 import { getSpecializationFieldDescriptors } from "@/Entities/specialization/specialization-descriptors";
+import { getLanguageFieldDescriptors } from "@/Entities/language/language-descriptors";
 import { getShopFieldDescriptors } from "@/Entities/shop/shop-descriptors";
 
 /**
- * @typedef {'resources'|'resource-types'|'items'|'spells'|'monsters'|'creatures'|'npcs'|'breeds'|'consumables'|'campaigns'|'scenarios'|'conditions'|'panoplies'|'capabilities'|'specializations'|'creature-traits'|'shops'} EntityTypeKey
+ * @typedef {'resources'|'resource-types'|'items'|'spells'|'monsters'|'creatures'|'npcs'|'breeds'|'consumables'|'campaigns'|'scenarios'|'conditions'|'panoplies'|'capabilities'|'aptitudes'|'specializations'|'creature-traits'|'languages'|'shops'} EntityTypeKey
  */
 
 /**
@@ -80,7 +84,9 @@ export function normalizeEntityType(raw) {
   if (s === "creature-trait" || s === "creatureTrait" || s === "creature-traits" || s === "creatureTraits") return "creature-traits";
   if (s === "panoply" || s === "panoplies") return "panoplies";
   if (s === "capability" || s === "capabilities") return "capabilities";
+  if (s === "aptitude" || s === "aptitudes") return "aptitudes";
   if (s === "specialization" || s === "specializations") return "specializations";
+  if (s === "language" || s === "languages") return "languages";
   if (s === "shop" || s === "shops") return "shops";
   return s;
 }
@@ -208,6 +214,14 @@ export function getEntityConfig(entityType) {
         responseAdapter: createEntityAdapter(Capability),
         defaults: { minimalImportantFields: ["name", "level", "pa", "po", "element"] },
       };
+    case "aptitudes":
+      return {
+        key,
+        model: Aptitude,
+        getDescriptors: getAptitudeFieldDescriptors,
+        responseAdapter: createEntityAdapter(Aptitude),
+        defaults: { minimalImportantFields: ["name", "reuse_type", "duration_type", "range_type"] },
+      };
     case "specializations":
       return {
         key,
@@ -215,6 +229,14 @@ export function getEntityConfig(entityType) {
         getDescriptors: getSpecializationFieldDescriptors,
         responseAdapter: createEntityAdapter(Specialization),
         defaults: { minimalImportantFields: ["name", "description", "capabilities_count"] },
+      };
+    case "languages":
+      return {
+        key,
+        model: Language,
+        getDescriptors: getLanguageFieldDescriptors,
+        responseAdapter: createEntityAdapter(Language),
+        defaults: { minimalImportantFields: ["name", "color"] },
       };
     case "shops":
       return {

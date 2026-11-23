@@ -27,7 +27,13 @@ import PageTopNav from './PageTopNav.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { Page } from '@/Models';
-import { pageSectionsUseFullWidth } from '@/Utils/section/sectionLayout';
+import {
+    adjacentCellClass,
+    adjacentCellStyle,
+    groupSectionsIntoRows,
+    pageSectionsUseFullWidth,
+} from '@/Utils/section/sectionLayout';
+import AdjacentSectionsRow from '@/Pages/Molecules/section/AdjacentSectionsRow.vue';
 import { resolveSectionIdFromAnchor, usePageSectionChrome } from '@/Composables/section/usePageSectionChrome';
 
 const props = defineProps({
@@ -249,6 +255,18 @@ const sortedSections = computed(() => {
 /** Toutes les sections prennent la largeur de la plus large (un tableau = la colonne). */
 const sectionsShareFullWidth = computed(() => pageSectionsUseFullWidth(sortedSections.value));
 
+/** Rangées : sections consécutives au même `layoutRowId` côte à côte. */
+const sectionRows = computed(() => groupSectionsIntoRows(sortedSections.value));
+
+/**
+ * Index plat d’une section dans sortedSections (eager mount).
+ * @param {object} section
+ * @returns {number}
+ */
+function sectionFlatIndex(section) {
+    return sortedSections.value.findIndex((s) => s?.id === section?.id);
+}
+
 /** IDs de sections à monter immédiatement (ancre URL, plan, édition). */
 const forceMountSectionIds = ref(new Set());
 
@@ -368,17 +386,38 @@ watch(sectionToEdit, (id) => {
                 :items="menuChildIndexItems"
             />
 
-            <!-- Sections -->
-            <div v-if="sortedSections.length > 0" class="sections">
-            <SectionLazyGate
-                v-for="(section, index) in sortedSections"
-                :key="section.id"
-                :section="section"
-                :user="user"
-                :auto-edit="sectionToEdit === section.id"
-                :eager="isSectionEager(section, index)"
-                :force-full-width="sectionsShareFullWidth"
-            />
+            <!-- Sections (rangées éventuelles côte à côte) -->
+            <div v-if="sectionRows.length > 0" class="sections">
+            <template v-for="row in sectionRows" :key="row.key">
+                <AdjacentSectionsRow
+                    v-if="row.items.length > 1"
+                    class="sections__adjacent-row w-full min-w-0"
+                >
+                    <div
+                        v-for="(item, itemIdx) in row.items"
+                        :key="item.section.id ?? `${row.key}-${itemIdx}`"
+                        :class="adjacentCellClass(item.layoutWidth)"
+                        :style="adjacentCellStyle(item.layoutWidth)"
+                    >
+                        <SectionLazyGate
+                            :section="item.section"
+                            :user="user"
+                            :auto-edit="sectionToEdit === item.section.id"
+                            :eager="isSectionEager(item.section, sectionFlatIndex(item.section))"
+                            :force-full-width="sectionsShareFullWidth"
+                            :in-adjacent-row="true"
+                        />
+                    </div>
+                </AdjacentSectionsRow>
+                <SectionLazyGate
+                    v-else
+                    :section="row.items[0].section"
+                    :user="user"
+                    :auto-edit="sectionToEdit === row.items[0].section.id"
+                    :eager="isSectionEager(row.items[0].section, sectionFlatIndex(row.items[0].section))"
+                    :force-full-width="sectionsShareFullWidth"
+                />
+            </template>
         </div>
 
         <!-- Message si aucune section -->
@@ -470,6 +509,17 @@ watch(sectionToEdit, (id) => {
         &:last-child {
             margin-bottom: 0;
         }
+    }
+
+    :deep(.sections__adjacent-row > *) {
+        display: flex;
+        flex-direction: column;
+    }
+
+    :deep(.sections__adjacent-row .section-renderer-surface),
+    :deep(.sections__adjacent-row .section-lazy-gate) {
+        margin-bottom: 0;
+        height: 100%;
     }
 }
 </style>

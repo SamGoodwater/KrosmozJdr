@@ -200,7 +200,8 @@ class PdfService
             'consumable' => ['createdBy', 'consumableType', 'resources'],
             'condition' => ['createdBy', 'creatures'],
             'capability' => ['createdBy', 'specializations', 'creatures'],
-            'specialization' => ['createdBy', 'capabilities', 'npcs'],
+            'aptitude' => ['createdBy', 'specializations'],
+            'specialization' => ['createdBy', 'capabilities', 'aptitudes', 'npcs'],
             'shop' => ['createdBy', 'npc', 'items', 'consumables', 'resources'],
             default => ['createdBy'],
         };

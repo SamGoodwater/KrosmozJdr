@@ -18,6 +18,7 @@ Route::prefix('entities/specializations')->name('entities.specializations.')->gr
         Route::patch('/{specialization}', [SpecializationController::class, 'update'])->name('update');
         Route::patch('/{specialization}/spells', [SpecializationController::class, 'updateSpells'])->name('updateSpells');
         Route::patch('/{specialization}/capabilities', [SpecializationController::class, 'updateCapabilities'])->name('updateCapabilities');
+        Route::patch('/{specialization}/aptitudes', [SpecializationController::class, 'updateAptitudes'])->name('updateAptitudes');
         Route::patch('/{specialization}/creature-traits', [SpecializationController::class, 'updateCreatureTraits'])->name('updateCreatureTraits');
         Route::patch('/{specialization}/consumables', [SpecializationController::class, 'updateConsumables'])->name('updateConsumables');
         Route::patch('/{specialization}/resources', [SpecializationController::class, 'updateResources'])->name('updateResources');

@@ -58,6 +58,14 @@ export const ENTITY_ROUTE_CONFIG = {
     show: { name: "entities.capabilities.show", paramsMode: "scalar" },
     edit: { name: "entities.capabilities.edit", paramsMode: "object", paramKey: "capability" },
   },
+  aptitude: {
+    show: { name: "entities.aptitudes.show", paramsMode: "object", paramKey: "aptitude" },
+    edit: { name: "entities.aptitudes.edit", paramsMode: "object", paramKey: "aptitude" },
+  },
+  aptitudes: {
+    show: { name: "entities.aptitudes.show", paramsMode: "object", paramKey: "aptitude" },
+    edit: { name: "entities.aptitudes.edit", paramsMode: "object", paramKey: "aptitude" },
+  },
   condition: {
     show: { name: "entities.conditions.show", paramsMode: "object", paramKey: "condition" },
     edit: { name: "entities.conditions.edit", paramsMode: "object", paramKey: "condition" },

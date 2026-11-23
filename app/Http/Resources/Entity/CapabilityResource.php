@@ -52,6 +52,15 @@ class CapabilityResource extends JsonResource
             'creatures' => $this->whenLoaded('creatures'),
             'conditions' => $this->whenLoaded('conditions', fn () => ConditionResource::collection($this->conditions)->resolve($request)),
 
+            // Pivot (ex. capability_specialization.level = palier 1/3/6/…)
+            'pivot' => $this->when($this->pivot !== null, function () {
+                $pivot = $this->pivot;
+
+                return [
+                    'level' => isset($pivot->level) ? (int) $pivot->level : null,
+                ];
+            }),
+
             // Droits d'accès
             'can' => [
                 'update' => $user ? $user->can('update', $this->resource) : false,

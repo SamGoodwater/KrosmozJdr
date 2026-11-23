@@ -15,25 +15,5 @@
         "water": "placement",
         "air": "degats"
     },
-    "mechanics": {
-        "engine": "marque",
-        "contrast": {"bonus": "+1", "on_element_change": true},
-        "multielement": {
-            "on_class_spell_hit": true,
-            "convert_spells": ["Runification", "Empreinte"]
-        },
-        "runes": {
-            "from_level": 1,
-            "max_level_1": 1,
-            "max_level_11": 2,
-            "consume_other_element": "+1d4",
-            "spatial": {
-                "fire": "pousse autour",
-                "air": "téléport sur la rune",
-                "earth": "symétrie",
-                "water": "attire vers la rune"
-            },
-            "echo_capability": "Écho runique"
-        }
-    }
+    "mechanics": "<p><strong>Runes</strong></p><p>Si tu changes d’élément dans le tour, ton coup gagne +1 dégât. C’est le Contraste.</p><p>Un sort de classe qui touche pose Multiélément. Runification ou Empreinte le change en rune, de l’élément que tu choisis.</p><p>1 rune au plus. 2 à partir du niveau 11. Consommer une rune d’un autre élément ajoute 1d4.</p><p>Feu pousse autour de la rune. Air te téléporte dessus. Terre fait une symétrie. Eau attire vers la rune.</p>"
 }

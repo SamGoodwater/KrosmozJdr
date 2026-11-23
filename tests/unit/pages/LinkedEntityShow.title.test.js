@@ -5,15 +5,24 @@ import LinkedEntityShow from "@/Pages/Pages/page/LinkedEntityShow.vue";
 
 vi.mock("@inertiajs/vue3", () => ({
     Head: { props: ["title"], template: "<div />" },
+    router: { visit: vi.fn() },
     usePage: () => ({ props: { auth: { user: null }, characteristicRuntime: null } }),
 }));
 
+Object.defineProperty(window, "location", {
+    value: { hash: "", pathname: "/", href: "http://localhost/" },
+    writable: true,
+});
+
 const stubs = {
     BreedViewFull: { template: "<div />" },
+    BreedShowBody: { template: "<div />" },
     SpecializationViewFull: { template: "<div />" },
-    EntitySectionsRenderer: { template: "<div />" },
+    SpecializationShowBody: { template: "<div />" },
     BreedWriteMetaPanel: { template: "<div />" },
+    SpecializationWriteMetaPanel: { template: "<div />" },
     PageRenderer: { template: "<div />" },
+    PageTopNav: { template: "<div />" },
 };
 
 /**

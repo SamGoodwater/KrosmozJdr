@@ -70,6 +70,14 @@ const alignSelfOptions = computed(() => [
     { value: 'end', label: 'Droite' },
 ]);
 
+const layoutWidthOptions = computed(() => [
+    { value: 'fill', label: 'Remplir (s’adapte)' },
+    { value: 'auto', label: 'Contenu (taille naturelle)' },
+    { value: 'half', label: '50 %' },
+    { value: 'third', label: '33 %' },
+    { value: 'twoThirds', label: '66 %' },
+]);
+
 /**
  * Normalise la section en utilisant SectionMapper pour garantir un accès correct
  */
@@ -171,10 +179,22 @@ const initializeFormData = () => {
         settings: {
             classes: sectionSettings.classes || '',
             customCss: sectionSettings.customCss || '',
+            layoutRowId: sectionSettings.layoutRowId || '',
+            layoutAlignSelf: sectionSettings.layoutAlignSelf || 'center',
+            layoutWidth: 'fill',
+            layoutWidthPercent: '',
             // Inclure tous les autres settings de la section
             ...sectionSettings,
         },
     };
+
+    const widthRaw = formData.settings.layoutWidth;
+    if (typeof widthRaw === 'number' || (typeof widthRaw === 'string' && /^\d+(\.\d+)?%?$/.test(String(widthRaw).trim()))) {
+        formData.settings.layoutWidthPercent = String(widthRaw).replace(/%$/, '');
+        formData.settings.layoutWidth = 'fill';
+    } else if (!widthRaw) {
+        formData.settings.layoutWidth = 'fill';
+    }
     
     return formData;
 };
@@ -313,12 +333,22 @@ const handleValidate = () => {
     // Nettoyer les valeurs vides des settings
     const cleanedSettings = {};
     Object.keys(formData.value.settings).forEach(key => {
+        if (key === 'layoutWidthPercent') return;
         const value = formData.value.settings[key];
         // Garder les valeurs non vides (null, undefined, '' sont considérés comme vides)
         if (value !== null && value !== undefined && value !== '') {
             cleanedSettings[key] = value;
         }
     });
+
+    // % personnalisé prioritaire sur le preset de largeur de rangée.
+    const percentRaw = String(formData.value.settings.layoutWidthPercent ?? '').trim();
+    if (percentRaw !== '') {
+        const percent = Number(percentRaw.replace(/%$/, ''));
+        if (Number.isFinite(percent) && percent > 0) {
+            cleanedSettings.layoutWidth = Math.min(100, Math.max(1, Math.round(percent)));
+        }
+    }
     
     emit('validated', {
         title: formData.value.title || null,
@@ -530,6 +560,28 @@ const checkboxTemplateValue = (key, fallback) => {
                     helper="Positionne la section dans la page (gauche, centre, droite)."
                     :options="alignSelfOptions"
                     :searchable="false"
+                />
+
+                <InputField
+                    v-model="formData.settings.layoutRowId"
+                    label="Rangée côte à côte (id)"
+                    helper="Même identifiant sur des sections consécutives pour les afficher côte à côte (ex. passif-meca). Vide = seule sur sa ligne."
+                    placeholder="ex: passif-meca"
+                />
+
+                <SelectField
+                    v-model="formData.settings.layoutWidth"
+                    label="Largeur dans la rangée"
+                    helper="Quand la section partage une rangée : moitié, tiers, contenu, ou remplir l’espace restant. Pour un % libre, utilisez le champ ci-dessous."
+                    :options="layoutWidthOptions"
+                    :searchable="false"
+                />
+
+                <InputField
+                    v-model="formData.settings.layoutWidthPercent"
+                    label="Largeur personnalisée (%)"
+                    helper="Si renseigné (1–100), remplace le preset ci-dessus. Laissez vide pour le preset."
+                    placeholder="ex: 40"
                 />
                 
                 <!-- CSS personnalisé -->

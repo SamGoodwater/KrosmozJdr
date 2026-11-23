@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\EntityState;
 use App\Http\Controllers\Controller;
+use App\Models\Entity\Aptitude;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Campaign;
 use App\Models\Entity\Capability;
@@ -41,6 +42,7 @@ class EntityStateController extends Controller
 {
     /** @var array<string, class-string<Model>> */
     private const MODELS = [
+        'aptitudes' => Aptitude::class,
         'breeds' => Breed::class,
         'campaigns' => Campaign::class,
         'capabilities' => Capability::class,

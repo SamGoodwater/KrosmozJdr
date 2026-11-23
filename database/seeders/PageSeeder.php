@@ -383,6 +383,18 @@ HTML;
             }
 
             $page = $this->createOrRestorePage($pageAttrs);
+            // Réordonner / rattacher même sans SEED_OVERWRITE (nouvelle entrée config, etc.).
+            $page->fill([
+                'title' => $title,
+                'in_menu' => true,
+                'menu_order' => $menuOrder,
+                'menu_group' => 'Bibliothèques',
+                'entity_key' => $entityKey !== '' ? $entityKey : null,
+                'menu_item_css_classes' => $menuItemCssClasses,
+            ]);
+            if ($page->isDirty()) {
+                $page->save();
+            }
 
             $introHtml = $this->libraryIntroHtml($title, $entityKey);
             $intro = $this->ensureTextSection(
@@ -472,9 +484,23 @@ HTML;
             'menu_order' => (int) $config['menu_order'],
             'menu_group' => 'Bibliothèques',
             'parent_id' => null,
+            'entity_key' => (string) ($config['entity_key'] ?? 'job'),
             'icon' => $config['icon'] ?? null,
+            'menu_item_css_classes' => 'color-'.(string) ($config['entity_key'] ?? 'job').'-500 box-shadow-glass',
             'created_by' => $creatorId,
         ]);
+        $page->fill([
+            'title' => (string) $config['title'],
+            'in_menu' => true,
+            'menu_order' => (int) $config['menu_order'],
+            'menu_group' => 'Bibliothèques',
+            'entity_key' => (string) ($config['entity_key'] ?? 'job'),
+            'icon' => $config['icon'] ?? null,
+            'menu_item_css_classes' => 'color-'.(string) ($config['entity_key'] ?? 'job').'-500 box-shadow-glass',
+        ]);
+        if ($page->isDirty()) {
+            $page->save();
+        }
 
         $krefReplacer = KrefShortcodeReplacer::forEssentialPages();
         $expectedSlugs = [];
@@ -738,6 +764,7 @@ HTML;
             'specialization' => 'specializations',
             'spell' => 'spells',
             'capability' => 'capabilities',
+            'aptitude' => 'aptitudes',
             'monster' => 'monsters',
             'npc' => 'npcs',
             'item' => 'items',
@@ -746,6 +773,7 @@ HTML;
             'resource' => 'resources',
             'condition' => 'conditions',
             'creature-trait' => 'creature-traits',
+            'language' => 'languages',
             default => 'spells',
         };
     }

@@ -11,7 +11,7 @@ return [
     'keys' => [
         'section', 'page', 'npc', 'item', 'creature', 'shop', 'campaign',
         'resource', 'monster', 'panoply', 'specialization', 'spell', 'user',
-        'attribute', 'capitalize', 'breed', 'capability', 'consumable',
-        'scenario', 'condition',
+        'attribute', 'capitalize', 'breed', 'capability', 'aptitude', 'consumable',
+        'scenario', 'condition', 'creature-trait', 'language', 'job',
     ],
 ];

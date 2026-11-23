@@ -15,17 +15,5 @@
         "water": "placement",
         "air": "protection"
     },
-    "mechanics": {
-        "engine": "etat",
-        "masks": {
-            "optional": true,
-            "max_active": 1,
-            "types": {
-                "psychopathe": {"unlock_level": 1, "rider": "+1 dégât"},
-                "classique": {"unlock_level": 1, "rider": "+1 aux jets pour protéger un·e allié·e adjacent"},
-                "renegat": {"unlock_level": 8, "rider": "1×/tour téléport 1 après attaque de classe réussie", "unlock_spell": "Masque du Renégat"}
-            },
-            "switch_spell": "Masque"
-        }
-    }
+    "mechanics": "<p><strong>Masques</strong></p><p>Tu peux jouer sans masque. Le sort Masque en met un, ou l’enlève. Un seul à la fois.</p><p>Psychopathe et Classique sont là dès le niveau 1. Renégat arrive au niveau 8, avec Masque du Renégat.</p><p>Psychopathe : +1 dégât. Classique : +1 aux jets pour protéger un·e allié·e à ton contact. Renégat : 1 fois par tour, après une attaque de classe réussie, tu te téléportes d’1 case.</p><p>Tes sorts élémentaires n’ont pas besoin d’un masque. Cavalcade reste une téléportation.</p>"
 }

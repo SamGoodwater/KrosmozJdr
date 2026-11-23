@@ -6,18 +6,18 @@ use App\Models\Entity\Language;
 use App\Models\User;
 
 /**
- * Référentiel des langues — CRUD réservé aux maîtres du jeu et plus.
+ * Référentiel des langues — lecture publique (Bibliothèque) ; CRUD MJ+.
  */
 class LanguagePolicy
 {
-    public function viewAny(User $user): bool
+    public function viewAny(?User $user): bool
     {
-        return $user->isGameMaster();
+        return true;
     }
 
-    public function view(User $user, Language $language): bool
+    public function view(?User $user, Language $language): bool
     {
-        return $user->isGameMaster();
+        return true;
     }
 
     public function create(User $user): bool

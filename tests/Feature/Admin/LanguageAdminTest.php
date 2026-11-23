@@ -79,4 +79,14 @@ class LanguageAdminTest extends TestCase
 
         $this->assertDatabaseMissing('languages', ['id' => $language->id]);
     }
+
+    public function test_guest_can_list_languages_via_table_api(): void
+    {
+        Language::factory()->create(['name' => 'Langue publique test']);
+
+        $this->getJson(route('api.tables.languages', ['format' => 'entities', 'limit' => 50]))
+            ->assertOk()
+            ->assertJsonPath('meta.entityType', 'languages')
+            ->assertJsonFragment(['name' => 'Langue publique test']);
+    }
 }

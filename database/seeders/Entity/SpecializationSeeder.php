@@ -3,6 +3,7 @@
 namespace Database\Seeders\Entity;
 
 use App\Console\Concerns\WritesArtisanCommandOutput;
+use App\Models\Entity\Aptitude;
 use App\Models\Entity\Capability;
 use App\Models\Entity\Specialization;
 use App\Models\Page;
@@ -209,9 +210,11 @@ class SpecializationSeeder extends Seeder
         ])->save();
 
         $this->upsertAuthoredCapabilities($spec, $creatorId);
+        $this->upsertAuthoredAptitudes($spec, $creatorId);
 
         $renderer = new DraftSpecializationContentRenderer;
         $specializationCapabilitySync = [];
+        $specializationAptitudeSync = [];
         $sync = $importer->importParsedSections(
             $specialization,
             $page,
@@ -234,12 +237,30 @@ class SpecializationSeeder extends Seeder
                 }
             },
             Section::STATE_PLAYABLE,
+            function (array $aptitudeNames, int $palier) use (&$specializationAptitudeSync): void {
+                foreach ($aptitudeNames as $aptitudeName) {
+                    $aptitudeName = trim((string) $aptitudeName);
+                    if ($aptitudeName === '') {
+                        continue;
+                    }
+
+                    $aptitude = Aptitude::query()->where('name', $aptitudeName)->first();
+                    if (! $aptitude) {
+                        continue;
+                    }
+
+                    $specializationAptitudeSync[$aptitude->id] = ['level' => $palier];
+                }
+            },
         );
 
         $this->pruneImportPage($page, $sync);
 
         if ($specializationCapabilitySync !== []) {
             $specialization->capabilities()->sync($specializationCapabilitySync);
+        }
+        if ($specializationAptitudeSync !== []) {
+            $specialization->aptitudes()->sync($specializationAptitudeSync);
         }
 
         $this->command?->info("Fiche jouable {$name} écrite depuis playable-specializations/{$slug}.php.");
@@ -376,9 +397,30 @@ class SpecializationSeeder extends Seeder
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Crée ou met à jour les aptitudes d’une fiche rédigée
+     * pour que les kref `[[kref:entity:aptitudes:…]]` se résolvent à l’import.
+     *
+     * @param  array<string, mixed>  $spec
+     */
+    private function upsertAuthoredAptitudes(array $spec, ?int $creatorId): void
+    {
+        $levels = $spec['levels'] ?? [];
+        if (! is_array($levels)) {
+            return;
+        }
+
+        foreach ($levels as $level => $levelData) {
+            if (! is_array($levelData)) {
+                continue;
+            }
+
             foreach ($levelData['aptitudes'] ?? [] as $entry) {
                 if (is_array($entry)) {
-                    $this->upsertSpecializationCapability($entry, true, $palier, $creatorId);
+                    $this->upsertSpecializationAptitude($entry, $creatorId);
                 }
             }
         }
@@ -426,6 +468,74 @@ class SpecializationSeeder extends Seeder
             $capability->created_by = $creatorId;
         }
         $capability->save();
+    }
+
+    /**
+     * @param  array<string, mixed>  $entry
+     */
+    private function upsertSpecializationAptitude(array $entry, ?int $creatorId): void
+    {
+        $name = trim((string) ($entry['name'] ?? ''));
+        if ($name === '') {
+            return;
+        }
+
+        $aptitude = Aptitude::query()->where('name', $name)->first() ?? new Aptitude;
+        $wasNew = ! $aptitude->exists;
+
+        $reuseType = (string) ($entry['reuse_type'] ?? Aptitude::REUSE_UNLIMITED);
+        if (! in_array($reuseType, [
+            Aptitude::REUSE_UNLIMITED,
+            Aptitude::REUSE_SHORT_REST,
+            Aptitude::REUSE_LONG_REST,
+            Aptitude::REUSE_TIMED,
+        ], true)) {
+            $reuseType = Aptitude::REUSE_UNLIMITED;
+        }
+
+        $durationType = (string) ($entry['duration_type'] ?? Aptitude::DURATION_PERMANENT);
+        if (! in_array($durationType, [
+            Aptitude::DURATION_INSTANT,
+            Aptitude::DURATION_TIMED,
+            Aptitude::DURATION_PERMANENT,
+            Aptitude::DURATION_WHILE_CONDITION,
+        ], true)) {
+            $durationType = Aptitude::DURATION_PERMANENT;
+        }
+
+        $rangeType = (string) ($entry['range_type'] ?? Aptitude::RANGE_SELF);
+        if (! in_array($rangeType, [
+            Aptitude::RANGE_SELF,
+            Aptitude::RANGE_DISTANCE,
+            Aptitude::RANGE_SENSE,
+        ], true)) {
+            $rangeType = Aptitude::RANGE_SELF;
+        }
+
+        $aptitude->fill([
+            'name' => $name,
+            'description' => trim((string) ($entry['description'] ?? 'Aptitude de spécialisation')) ?: 'Aptitude de spécialisation',
+            'effect' => trim((string) ($entry['effect'] ?? '')),
+            'reuse_type' => $reuseType,
+            'reuse_amount' => $entry['reuse_amount'] ?? null,
+            'reuse_unit' => $entry['reuse_unit'] ?? null,
+            'duration_type' => $durationType,
+            'duration_amount' => $entry['duration_amount'] ?? null,
+            'duration_unit' => $entry['duration_unit'] ?? null,
+            'duration_note' => $entry['duration_note'] ?? null,
+            'range_type' => $rangeType,
+            'range_amount' => $entry['range_amount'] ?? null,
+            'range_unit' => $entry['range_unit'] ?? null,
+            'range_sense' => $entry['range_sense'] ?? null,
+            'range_note' => $entry['range_note'] ?? null,
+        ]);
+        if ($wasNew) {
+            $aptitude->state = Aptitude::STATE_PLAYABLE;
+            $aptitude->read_level = User::ROLE_GUEST;
+            $aptitude->write_level = User::ROLE_ADMIN;
+            $aptitude->created_by = $creatorId;
+        }
+        $aptitude->save();
     }
 
     /**

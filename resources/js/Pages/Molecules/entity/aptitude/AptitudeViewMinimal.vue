@@ -1,0 +1,134 @@
+<script setup>
+/**
+ * AptitudeViewMinimal — Vue minimal (Aptitude)
+ *
+ * @description
+ * EntityMinimalCard : image + nom ; description toujours visible (compact + déployé).
+ */
+import { computed } from "vue";
+import EntityThumb from "@/Pages/Molecules/entity/shared/EntityThumb.vue";
+import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import EntityMinimalCard from "@/Pages/Molecules/entity/shared/EntityMinimalCard.vue";
+import EntityMinimalTitle from "@/Pages/Molecules/entity/shared/EntityMinimalTitle.vue";
+import { useEntityMinimalShell } from "@/Composables/entity/useEntityMinimalShell";
+
+const props = defineProps({
+    aptitude: { type: Object, required: true },
+    showActions: { type: Boolean, default: true },
+    displayMode: {
+        type: String,
+        default: "hover",
+        validator: (v) => ["compact", "hover", "extended"].includes(v),
+    },
+    tableMeta: { type: Object, default: () => ({}) },
+});
+
+const emit = defineEmits([
+    "edit",
+    "copy-link",
+    "download-pdf",
+    "refresh",
+    "view",
+    "quick-view",
+    "delete",
+    "action",
+]);
+
+const entity = computed(() => props.aptitude);
+
+const {
+    minimalActionsContext,
+    minimalActionWhitelist,
+    openQuickView,
+    handleMinimalAction,
+} = useEntityMinimalShell({
+    entityTypePlural: "aptitudes",
+    showRoute: "entities.aptitudes.show",
+    editRoute: "entities.aptitudes.edit",
+    routeParam: "aptitude",
+    emit,
+    getEntity: () => entity.value,
+});
+
+const handleAction = async (actionKey) => {
+    await handleMinimalAction(actionKey);
+};
+
+const imageUrl = computed(() => {
+    const u = props.aptitude?.image ?? props.aptitude?._data?.image;
+    return u && String(u).trim() ? String(u) : null;
+});
+
+const displayName = computed(() => props.aptitude?.name || "Aptitude");
+
+const getCell = (fieldKey) =>
+    props.aptitude.toCell(fieldKey, { size: "sm", context: "minimal" });
+
+const descriptionCell = computed(() => getCell("description"));
+const hasDescription = computed(() => {
+    const v = descriptionCell.value?.value;
+    if (v == null) return false;
+    return String(v).replace(/<[^>]*>/g, "").trim().length > 0;
+});
+</script>
+
+<template>
+    <EntityMinimalCard
+        :display-mode="displayMode"
+        pinned-entity-type="aptitudes"
+        :pinned-entity-id="entity?.id"
+        @open-quick-view="openQuickView"
+    >
+        <template #compact>
+            <div data-cy="entity-minimal-card-compact" class="flex gap-2 p-2">
+                <EntityThumb size="xs" :src="imageUrl || ''" :label="displayName" />
+                <div class="min-w-0 flex-1">
+                    <div class="flex min-w-0 items-center gap-1.5">
+                        <EntityMinimalTitle :label="displayName" @open="openQuickView" />
+                    </div>
+                    <div
+                        v-if="hasDescription"
+                        class="prose prose-sm prose-invert mt-1 max-w-none text-[11px] leading-snug text-primary-300/90"
+                    >
+                        <CellRenderer :cell="descriptionCell" ui-color="primary" />
+                    </div>
+                </div>
+            </div>
+        </template>
+        <template #expanded>
+            <div data-cy="entity-minimal-card-expanded" class="flex flex-col gap-1.5 p-2">
+                <div class="flex items-start gap-2">
+                    <EntityThumb size="xs" :src="imageUrl || ''" :label="displayName" />
+                    <div class="min-w-0 flex-1">
+                        <div class="flex w-full min-w-0 items-start gap-1.5">
+                            <div class="min-w-0">
+                                <div class="flex min-w-0 items-center gap-1.5">
+                                    <EntityMinimalTitle :label="displayName" @open="openQuickView" />
+                                </div>
+                            </div>
+                            <div v-if="showActions" data-entity-actions class="ml-auto flex min-w-8 flex-1 justify-end" @click.stop>
+                                <EntityActions
+                                    entity-type="aptitudes"
+                                    :entity="entity"
+                                    format="dropdown"
+                                    display="icon-only"
+                                    size="xs"
+                                    :whitelist="minimalActionWhitelist"
+                                    :context="minimalActionsContext"
+                                    @action="(k) => handleAction(k)"
+                                />
+                            </div>
+                        </div>
+                        <div
+                            v-if="hasDescription"
+                            class="prose prose-sm prose-invert mt-1 max-w-none text-xs leading-snug text-primary-300/90"
+                        >
+                            <CellRenderer :cell="descriptionCell" ui-color="primary" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </EntityMinimalCard>
+</template>

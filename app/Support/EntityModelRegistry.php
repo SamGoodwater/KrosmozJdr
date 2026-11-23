@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+use App\Models\Entity\Aptitude;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Campaign;
 use App\Models\Entity\Capability;
@@ -34,6 +35,7 @@ final class EntityModelRegistry
     public static function modelMap(): array
     {
         return [
+            'aptitudes' => Aptitude::class,
             'breeds' => Breed::class,
             'campaigns' => Campaign::class,
             'capabilities' => Capability::class,
@@ -71,6 +73,7 @@ final class EntityModelRegistry
     public static function normalizeType(string $entityType): string
     {
         return match (trim($entityType)) {
+            'aptitude' => 'aptitudes',
             'breed', 'class', 'classes' => 'breeds',
             'campaign' => 'campaigns',
             'capability' => 'capabilities',

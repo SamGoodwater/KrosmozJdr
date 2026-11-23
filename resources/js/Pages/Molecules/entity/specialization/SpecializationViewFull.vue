@@ -4,8 +4,8 @@
  *
  * @description
  * Alignée Breed : EntityViewHeader (image | nom / accroche / corps) et traits.
- * Les capacités se lisent dans les sections de palier (liens cliquables), pas
- * dans une liste en tête de fiche.
+ * Les capacités se lisent dans {@link SpecializationShowBody} (vue texte par palier),
+ * pas dans une liste en tête de fiche.
  *
  * @props {Specialization} specialization - Instance du modèle Specialization
  * @props {Boolean} showActions - Afficher les actions (défaut: true)

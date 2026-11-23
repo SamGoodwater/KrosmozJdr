@@ -38,6 +38,7 @@ require __DIR__.'/admin/project-super-console.php';
 require __DIR__.'/entities/condition.php';
 require __DIR__.'/entities/creature-trait.php';
 require __DIR__.'/entities/campaign.php';
+require __DIR__.'/entities/aptitude.php';
 require __DIR__.'/entities/capability.php';
 require __DIR__.'/entities/breed.php';
 require __DIR__.'/entities/consumable.php';

@@ -128,7 +128,7 @@
             "engine": "zone",
             "is_magic": false,
             "description": "Le sol ment. Tes pièges sont cachés ; il faut les chercher.",
-            "effect": "<p><strong>Niveau 1.</strong> Tu poses des pièges cachés et non magiques, jamais sous une créature. Limite = plafond des zones. Perception Modérée pour les voir (Difficile dès 11). Toute créature dans la zone subit les effets, toi y compris.</p><p><strong>Réseau.</strong> Une créature poussée ou attirée dans un piège le déclenche.</p><p>Le plus ancien disparaît si tu dépasses la limite.</p>",
+            "effect": "<p>Tu poses des pièges cachés et non magiques, jamais sous une créature. Leur nombre suit le plafond des zones. Si tu dépasses, le plus ancien disparaît.</p><p>Pour les voir, un jet de Perception : Modéré jusqu’au niveau 10, Difficile à partir du niveau 11.</p><p>Toi et tes allié·e·s subissez l’effet. Une créature poussée ou attirée dans un piège le déclenche.</p>",
             "capabilities": [
                 {
                     "name": "Doigts de fée",

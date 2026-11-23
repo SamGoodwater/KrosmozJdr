@@ -40,6 +40,39 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
+  APTITUDE_SPECIALIZATION {
+    aptitude_id : bigint(20) unsigned
+    specialization_id : bigint(20) unsigned
+    level : smallint(5) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  APTITUDES {
+    id : bigint(20) unsigned
+    name : varchar(255)
+    description : text
+    effect : text
+    reuse_type : varchar(32)
+    reuse_amount : int(10) unsigned
+    reuse_unit : varchar(16)
+    duration_type : varchar(32)
+    duration_amount : int(10) unsigned
+    duration_unit : varchar(16)
+    duration_note : varchar(255)
+    range_type : varchar(32)
+    range_amount : int(10) unsigned
+    range_unit : varchar(8)
+    range_sense : varchar(32)
+    range_note : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
+    image : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    deleted_at : timestamp
+    created_by : bigint(20) unsigned
+  }
   BREED_CAPABILITY {
     id : bigint(20) unsigned
     breed_id : bigint(20) unsigned
@@ -1691,6 +1724,9 @@ erDiagram
   }
   ADMIN_ACTIVITY_LOGS }o--|| USERS : "FK actor_id"
   AI_GENERATION_RUNS }o--|| USERS : "FK user_id"
+  APTITUDE_SPECIALIZATION }o--|| APTITUDES : "FK aptitude_id"
+  APTITUDE_SPECIALIZATION }o--|| SPECIALIZATIONS : "FK specialization_id"
+  APTITUDES }o--|| USERS : "FK created_by"
   BREED_CAPABILITY }o--|| BREEDS : "FK breed_id"
   BREED_CAPABILITY }o--|| CAPABILITIES : "FK capability_id"
   BREED_CREATURE_TRAIT }o--|| BREEDS : "FK breed_id"

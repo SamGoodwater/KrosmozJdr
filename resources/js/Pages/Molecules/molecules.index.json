@@ -132,6 +132,13 @@
     "file": "section/SectionContentSkeleton.vue"
   },
   {
+    "name": "AdjacentSectionsRow",
+    "description": "Rangée de blocs côte à côte (wrap mobile → colonne). Utilisé par le CMS (sections groupées) et la fiche classe (passif + mécanique).",
+    "props": [],
+    "slots": [],
+    "file": "section/AdjacentSectionsRow.vue"
+  },
+  {
     "name": "PendingErasureBanner",
     "description": "Bannière affichée quand l'utilisateur a une demande de suppression en cours. Propose d'annuler la demande pour récupérer le compte (tant qu'un admin ne l'a pas supprimé définitivement).",
     "props": [],
@@ -1330,6 +1337,40 @@
     ],
     "slots": [],
     "file": "entity/specialization/SpecializationViewFull.vue"
+  },
+  {
+    "name": "SpecializationStyleChip",
+    "description": "Marqueur de variante / style de spécialisation. Distinct des badges compétences : fond clair, police plus grande, couleur sur icône + nom.",
+    "props": [],
+    "slots": [],
+    "file": "entity/specialization/SpecializationStyleChip.vue"
+  },
+  {
+    "name": "SpecializationShowBody",
+    "description": "Corps de fiche spécialisation (bibliothèque CMS + page Show) : présentation CMS → progression par paliers (pas de catalogue capacités).",
+    "props": [
+      {
+        "name": "specialization",
+        "type": "Object",
+        "desc": "- Specialization / payload"
+      }
+    ],
+    "slots": [],
+    "file": "entity/specialization/SpecializationShowBody.vue"
+  },
+  {
+    "name": "SpecializationProgressionRead",
+    "description": "Progression spécialisation : sections CMS « Niveau N » (header partage / édition / repli), corps densifié ({@link SpecializationLevelBody}). Le HTML narrative vient de la section **hydratée** (slot `#read`) pour respecter le chargement différé CMS.",
+    "props": [],
+    "slots": [],
+    "file": "entity/specialization/SpecializationProgressionRead.vue"
+  },
+  {
+    "name": "SpecializationLevelBody",
+    "description": "Corps d’un palier : narrative CMS aérée (maîtrises, aptitudes, styles) + capacités vue texte + variantes (pastille colorée + capacité).",
+    "props": [],
+    "slots": [],
+    "file": "entity/specialization/SpecializationLevelBody.vue"
   },
   {
     "name": "ShopViewText",
@@ -2603,6 +2644,19 @@
     "file": "entity/breed/BreedSpellSlotsDisplay.vue"
   },
   {
+    "name": "BreedShowBody",
+    "description": "Corps de fiche classe (bibliothèque CMS + page Show) : présentation → voies → passif+mécanique → catalogues sorts/capacités → progression.",
+    "props": [
+      {
+        "name": "breed",
+        "type": "Object",
+        "desc": "- Breed / payload"
+      }
+    ],
+    "slots": [],
+    "file": "entity/breed/BreedShowBody.vue"
+  },
+  {
     "name": "BreedProgressionRecap",
     "description": "Tableau récap de progression de classe (Vue) — sorts en puces élément, DV, passif, capacités.",
     "props": [],
@@ -2611,7 +2665,7 @@
   },
   {
     "name": "BreedProgressionRead",
-    "description": "Progression classe : une carte par niveau (PV, caracs, sorts minimal, capacité).",
+    "description": "Progression classe : une section CMS par niveau (header partage / édition / repli), corps Vue densifié ({@link BreedLevelBody}) en lecture.",
     "props": [
       {
         "name": "breed",
@@ -2649,7 +2703,7 @@
   },
   {
     "name": "BreedLevelSpellChoices",
-    "description": "Variantes de sorts pour un niveau de classe — cartes SpellViewMinimal.",
+    "description": "Variantes de sorts pour un niveau de classe — cartes SpellViewMinimal en hover (contractées). Niveau 1 : sous-titres « Sort 1 (élémentaire) », « Sort 2 », « Sort 3 », groupes côte à côte.",
     "props": [
       {
         "name": "breed",
@@ -2664,6 +2718,13 @@
     ],
     "slots": [],
     "file": "entity/breed/BreedLevelSpellChoices.vue"
+  },
+  {
+    "name": "BreedLevelBody",
+    "description": "Corps Vue d’un niveau de classe (PV, caracs, sorts hover, capacité). Affiché dans le slot `#read` de {@link SectionRenderer} (header CMS conservé).",
+    "props": [],
+    "slots": [],
+    "file": "entity/breed/BreedLevelBody.vue"
   },
   {
     "name": "BreedElementOrientationsDisplay",
@@ -2684,6 +2745,13 @@
     "file": "entity/breed/BreedElementOrientationsDisplay.vue"
   },
   {
+    "name": "BreedCatalogByLevel",
+    "description": "Bloc-colonne de catalogue classe : niveau au-dessus, enfants (icônes) en wrap en dessous.",
+    "props": [],
+    "slots": [],
+    "file": "entity/breed/BreedCatalogByLevel.vue"
+  },
+  {
     "name": "BreedCapabilitiesDisplay",
     "description": "Capacités liées à une classe : passifs en premier, puis capacités de classe triées par niveau.",
     "props": [
@@ -2700,6 +2768,69 @@
     ],
     "slots": [],
     "file": "entity/breed/BreedCapabilitiesDisplay.vue"
+  },
+  {
+    "name": "BreedCapabilitiesCatalog",
+    "description": "Catalogue secondaire des capacités de classe (hors passif), groupées par niveau. Bascule Icônes (défaut) / Cartes / Texte — localStorage dédié.",
+    "props": [
+      {
+        "name": "capabilities",
+        "type": "object[]",
+        "desc": ""
+      },
+      {
+        "name": "density",
+        "type": "'full'|'compact'",
+        "desc": ""
+      }
+    ],
+    "slots": [],
+    "file": "entity/breed/BreedCapabilitiesCatalog.vue"
+  },
+  {
+    "name": "AptitudeViewText",
+    "description": "AptitudeViewText — Vue Texte pour Aptitude",
+    "props": [
+      {
+        "name": "aptitude",
+        "type": "Aptitude",
+        "desc": "- Instance du modèle Aptitude"
+      }
+    ],
+    "slots": [],
+    "file": "entity/aptitude/AptitudeViewText.vue"
+  },
+  {
+    "name": "AptitudeViewMinimal",
+    "description": "AptitudeViewMinimal — Vue minimal (Aptitude)",
+    "props": [],
+    "slots": [],
+    "file": "entity/aptitude/AptitudeViewMinimal.vue"
+  },
+  {
+    "name": "AptitudeViewFull",
+    "description": "AptitudeViewFull — Vue Full pour Aptitude",
+    "props": [
+      {
+        "name": "aptitude",
+        "type": "Aptitude",
+        "desc": ""
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": ""
+      }
+    ],
+    "slots": [],
+    "file": "entity/aptitude/AptitudeViewFull.vue"
+  },
+  {
+    "name": "AptitudeLineRow",
+    "description": "AptitudeLineRow — ligne dense pour les tables d’entité.",
+    "props": [],
+    "slots": [],
+    "file": "entity/aptitude/AptitudeLineRow.vue"
   },
   {
     "name": "ToggleField",
@@ -2937,7 +3068,7 @@
   },
   {
     "name": "RichTextHtmlTree",
-    "description": "Rendu récursif d’un arbre HTML (voir parseRichTextHtml) avec puces kref Vue.",
+    "description": "Rendu récursif d’un arbre HTML (voir parseRichTextHtml) avec puces kref Vue et pastilles de style de spécialisation (`.spe-style`).",
     "props": [],
     "slots": [],
     "file": "data-display/RichTextHtmlTree.vue"
@@ -3000,6 +3131,13 @@
     ],
     "slots": [],
     "file": "data-display/KrefEntityTooltipBody.vue"
+  },
+  {
+    "name": "KrefEntityEmbed",
+    "description": "Embed kref entité selon `view` : text (puce) | icon (vignette) | minimal (carte).",
+    "props": [],
+    "slots": [],
+    "file": "data-display/KrefEntityEmbed.vue"
   },
   {
     "name": "ImageViewer",

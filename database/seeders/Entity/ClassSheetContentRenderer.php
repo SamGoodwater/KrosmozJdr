@@ -133,8 +133,10 @@ final class ClassSheetContentRenderer
                 ? '<p>Tu gagnes le sort ci-dessous.</p>'
                 : '<p>Tu as le choix entre '.e($this->variantPhrase($variantCounts))
                     .' — les cartes ci-dessous.</p>';
-            // Ancre pour BreedLevelSpellChoices (cartes + note temple).
+            // Ancre pour BreedLevelSpellChoices (rendu Vue principal).
             $parts[] = '<p data-breed-level-spells="'.e((string) $level).'" class="breed-level-spells-anchor" hidden></p>';
+            // Krefs TipTap view=minimal pour réutilisation CMS / édition.
+            $parts[] = $this->levelSpellChoicesHtml($level, $choices);
         }
 
         if (! empty($levelData['carac_or_trait'])) {
@@ -181,9 +183,65 @@ final class ClassSheetContentRenderer
         return implode(', ', $unique).' ou '.$last.' variantes';
     }
 
-    private function spellKref(string $name): string
+    private function spellKref(string $name, string $view = 'text'): string
     {
-        return '[[kref:entity:spells:'.$name.'|'.$name.']]';
+        $name = trim($name);
+        if ($name === '') {
+            return '';
+        }
+        $base = '[[kref:entity:spells:'.$name.'|'.$name;
+        if ($view !== '' && $view !== 'text') {
+            return $base.'|view='.$view.']]';
+        }
+
+        return $base.']]';
+    }
+
+    /**
+     * Blocs sorts d’un niveau en krefs {@code view=minimal} (libellés N1 explicites).
+     *
+     * @param  list<list<mixed>>  $choices
+     */
+    private function levelSpellChoicesHtml(int $level, array $choices): string
+    {
+        if ($choices === []) {
+            return '';
+        }
+
+        $chunks = [];
+        foreach ($choices as $idx => $choice) {
+            if (! is_array($choice) || $choice === []) {
+                continue;
+            }
+            $slotIndex = $idx + 1;
+            $heading = $level === 1
+                ? $this->level1SpellChoiceLabel($slotIndex)
+                : (count($choices) > 1 ? 'Choix '.$slotIndex : '');
+            if ($heading !== '') {
+                $chunks[] = '<h3>'.e($heading).'</h3>';
+            }
+            $krefs = [];
+            foreach ($choice as $spellName) {
+                $spellName = trim((string) $spellName);
+                if ($spellName === '') {
+                    continue;
+                }
+                $krefs[] = '<p>'.$this->spellKref($spellName, 'minimal').'</p>';
+            }
+            $chunks = array_merge($chunks, $krefs);
+        }
+
+        return implode('', $chunks);
+    }
+
+    private function level1SpellChoiceLabel(int $slotIndex): string
+    {
+        return match ($slotIndex) {
+            1 => 'Sort 1 (élémentaire)',
+            2 => 'Sort 2',
+            3 => 'Sort 3',
+            default => 'Sort '.$slotIndex,
+        };
     }
 
     /**

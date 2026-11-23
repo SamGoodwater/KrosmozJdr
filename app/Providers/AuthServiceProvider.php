@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Characteristic;
+use App\Models\Entity\Aptitude;
 use App\Models\Entity\Condition;
 use App\Models\Entity\CreatureTrait;
 use App\Models\Entity\Language;
@@ -15,6 +16,7 @@ use App\Models\Type\MonsterRace;
 use App\Models\Type\ResourceType;
 use App\Models\Type\SpellType;
 use App\Policies\CharacteristicPolicy;
+use App\Policies\Entity\AptitudePolicy;
 use App\Policies\Entity\ConditionPolicy;
 use App\Policies\Entity\CreatureTraitPolicy;
 use App\Policies\Entity\LanguagePolicy;
@@ -38,6 +40,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Language::class => LanguagePolicy::class,
         LoadingTip::class => LoadingTipPolicy::class,
+        Aptitude::class => AptitudePolicy::class,
         Condition::class => ConditionPolicy::class,
         CreatureTrait::class => CreatureTraitPolicy::class,
         Characteristic::class => CharacteristicPolicy::class,

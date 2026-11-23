@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AptitudeBulkController;
 use App\Http\Controllers\Api\BreedBulkController;
 use App\Http\Controllers\Api\CampaignBulkController;
 use App\Http\Controllers\Api\CapabilityBulkController;
@@ -100,6 +101,8 @@ Route::middleware(['web', 'auth'])->prefix('entities')->group(function () {
         ->name('api.entities.panoplies.bulk');
     Route::patch('/capabilities/bulk', [CapabilityBulkController::class, 'bulkUpdate'])
         ->name('api.entities.capabilities.bulk');
+    Route::patch('/aptitudes/bulk', [AptitudeBulkController::class, 'bulkUpdate'])
+        ->name('api.entities.aptitudes.bulk');
     Route::patch('/specializations/bulk', [SpecializationBulkController::class, 'bulkUpdate'])
         ->name('api.entities.specializations.bulk');
     Route::patch('/shops/bulk', [ShopBulkController::class, 'bulkUpdate'])

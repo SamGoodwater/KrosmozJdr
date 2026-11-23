@@ -1,7 +1,13 @@
 <script setup>
 import { computed } from "vue";
 import SectionRenderer from "@/Pages/Organismes/section/SectionRenderer.vue";
-import { pageSectionsUseFullWidth } from "@/Utils/section/sectionLayout";
+import AdjacentSectionsRow from "@/Pages/Molecules/section/AdjacentSectionsRow.vue";
+import {
+    adjacentCellClass,
+    adjacentCellStyle,
+    groupSectionsIntoRows,
+    pageSectionsUseFullWidth,
+} from "@/Utils/section/sectionLayout";
 
 const props = defineProps({
     sections: {
@@ -72,18 +78,39 @@ const normalizedSections = computed(() => {
 const sectionsShareFullWidth = computed(
     () => props.alignWithColumn || pageSectionsUseFullWidth(normalizedSections.value),
 );
+
+const sectionRows = computed(() => groupSectionsIntoRows(normalizedSections.value));
 </script>
 
 <template>
     <div class="entity-sections-renderer w-full min-w-0 space-y-4">
-        <div v-if="normalizedSections.length > 0" class="sections">
-            <SectionRenderer
-                v-for="section in normalizedSections"
-                :key="section.id"
-                :section="section"
-                :immersive="immersive"
-                :force-full-width="sectionsShareFullWidth"
-            />
+        <div v-if="sectionRows.length > 0" class="sections">
+            <template v-for="row in sectionRows" :key="row.key">
+                <AdjacentSectionsRow
+                    v-if="row.items.length > 1"
+                    class="sections__adjacent-row w-full min-w-0"
+                >
+                    <div
+                        v-for="(item, itemIdx) in row.items"
+                        :key="item.section.id ?? `${row.key}-${itemIdx}`"
+                        :class="adjacentCellClass(item.layoutWidth)"
+                        :style="adjacentCellStyle(item.layoutWidth)"
+                    >
+                        <SectionRenderer
+                            :section="item.section"
+                            :immersive="immersive"
+                            :force-full-width="sectionsShareFullWidth"
+                            :in-adjacent-row="true"
+                        />
+                    </div>
+                </AdjacentSectionsRow>
+                <SectionRenderer
+                    v-else
+                    :section="row.items[0].section"
+                    :immersive="immersive"
+                    :force-full-width="sectionsShareFullWidth"
+                />
+            </template>
         </div>
 
         <div
@@ -113,6 +140,16 @@ const sectionsShareFullWidth = computed(
         &:last-child {
             margin-bottom: 0;
         }
+    }
+
+    :deep(.sections__adjacent-row > *) {
+        display: flex;
+        flex-direction: column;
+    }
+
+    :deep(.sections__adjacent-row .section-renderer-surface) {
+        margin-bottom: 0;
+        height: 100%;
     }
 }
 </style>

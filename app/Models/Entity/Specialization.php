@@ -33,6 +33,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property int|null $created_by
+ * @property-read Collection<int, Aptitude> $aptitudes
+ * @property-read int|null $aptitudes_count
  * @property-read Collection<int, Capability> $capabilities
  * @property-read int|null $capabilities_count
  * @property-read User|null $createdBy
@@ -207,6 +209,16 @@ class Specialization extends Model implements HasMedia
     public function capabilities(): BelongsToMany
     {
         return $this->belongsToMany(Capability::class, 'capability_specialization')
+            ->withPivot('level')
+            ->withTimestamps();
+    }
+
+    /**
+     * Les aptitudes (bonus naturels) associées à cette spécialisation.
+     */
+    public function aptitudes(): BelongsToMany
+    {
+        return $this->belongsToMany(Aptitude::class, 'aptitude_specialization')
             ->withPivot('level')
             ->withTimestamps();
     }

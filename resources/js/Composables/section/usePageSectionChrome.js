@@ -274,7 +274,9 @@ export function usePageSectionChrome(pageSource, sectionsSource, options = {}) {
 
     function scrollToSectionFromHash() {
         if (!enabled.value) return;
-        const raw = (typeof window !== "undefined" ? window.location.hash : "").replace(/^#/, "");
+        const raw = String(
+            typeof window !== "undefined" ? (window.location?.hash ?? "") : "",
+        ).replace(/^#/, "");
         if (!raw) return;
         const isNumericSection = raw.startsWith("section-") && raw !== "section-";
         const isSlugSection = raw.startsWith("ssec-") && raw.length > "ssec-".length;

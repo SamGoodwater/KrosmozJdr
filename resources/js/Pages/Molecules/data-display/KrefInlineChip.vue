@@ -6,27 +6,17 @@
  * @example
  * <KrefInlineChip kref-type="characteristic" kref-payload='{"key":"action_points_creature"}' label="PA" />
  */
-import { computed, markRaw, onMounted, ref, watch } from "vue";
+import { computed } from "vue";
 import { parseKrefPayload, normalizeKrefType } from "@/Composables/richText/krefCodec";
 import { getReferencePresentation } from "@/Composables/richText/referenceRenderService";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import Image from "@/Pages/Atoms/data-display/Image.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
-import OverlayTrigger from "@/Pages/Molecules/overlay/OverlayTrigger.vue";
-import KrefEntityTooltipBody from "@/Pages/Molecules/data-display/KrefEntityTooltipBody.vue";
 import CharacteristicInfoPanel from "@/Pages/Molecules/data-display/CharacteristicInfoPanel.vue";
-import { loadKrefEntityMinimalOverlay } from "@/Composables/richText/krefEntityMinimalOverlay";
-import {
-    getCachedKrefEntityPreview,
-    loadKrefEntityPreview,
-} from "@/Composables/richText/krefEntityPreviewCache";
-import { OVERLAY_TRIGGER } from "@/Composables/overlay/overlayConstants";
+import KrefEntityEmbed from "@/Pages/Molecules/data-display/KrefEntityEmbed.vue";
 import {
     resolveDef,
     getCharacteristicColorStyle,
 } from "@/Composables/entity/useCharacteristicDisplay";
-import { getSpellInlineChipSurfaceStyle } from "@/Utils/Entity/Elements";
-import { spellImageFilterStyle } from "@/Utils/Entity/spellImageFilter";
 
 const props = defineProps({
     krefType: { type: String, default: "" },
@@ -120,77 +110,25 @@ const entityTypeStr = computed(() => {
     return typeof t === "string" ? t.trim() : "";
 });
 
+/** @type {import('vue').ComputedRef<'text'|'icon'|'minimal'>} */
+const entityView = computed(() => {
+    const v = String(payload.value?.view || "text").trim();
+    return ["text", "icon", "minimal"].includes(v) ? v : "text";
+});
+
 const wrapCharacteristicTooltip = computed(
     () => krefType.value === "characteristic" && characteristicKey.value !== "",
 );
 
-const wrapEntityTooltip = computed(
+const wrapEntityEmbed = computed(
     () => krefType.value === "entity" && entityTypeStr.value !== "" && entityId.value != null,
 );
 
-const isSpellEntity = computed(() => entityTypeStr.value === "spells");
-
-/** Aperçu léger (image + élément) pour les krefs sorts. */
-const spellPreview = ref(null);
-
-async function hydrateSpellPreview() {
-    if (!isSpellEntity.value || entityId.value == null) {
-        spellPreview.value = null;
-        return;
-    }
-    const cached = getCachedKrefEntityPreview("spells", entityId.value);
-    if (cached) {
-        spellPreview.value = cached;
-        return;
-    }
-    try {
-        spellPreview.value = await loadKrefEntityPreview("spells", entityId.value);
-    } catch {
-        spellPreview.value = null;
-    }
-}
-
-onMounted(() => {
-    void hydrateSpellPreview();
-});
-
-watch([isSpellEntity, entityId], () => {
-    void hydrateSpellPreview();
-});
-
-const spellChipStyle = computed(() => {
-    if (!isSpellEntity.value) return undefined;
-    return getSpellInlineChipSurfaceStyle(spellPreview.value?.element);
-});
-
-const spellImageStyle = computed(() =>
-    spellImageFilterStyle({ element: spellPreview.value?.element, image: spellPreview.value?.image }),
-);
-
-const entityOverlayContent = computed(() => {
-    if (!wrapEntityTooltip.value) {
-        return "";
-    }
-    const entityType = entityTypeStr.value;
-    const id = entityId.value;
-    return {
-        key: `kref-entity-minimal:${entityType}:${id}`,
-        loader: async () => {
-            const overlay = await loadKrefEntityMinimalOverlay(entityType, id);
-            if (overlay) {
-                return overlay;
-            }
-            return {
-                component: markRaw(KrefEntityTooltipBody),
-                props: { entityType, id },
-            };
-        },
-    };
-});
-
 const rootClass = computed(() => {
     const base = props.asRoot ? presentation.value.wrapperClasses.join(" ") : "";
-    return [base, isSpellEntity.value ? "kref--spell-chip" : ""].filter(Boolean).join(" ") || undefined;
+    const viewClass =
+        wrapEntityEmbed.value && entityView.value !== "text" ? `kref--view-${entityView.value}` : "";
+    return [base, viewClass].filter(Boolean).join(" ") || undefined;
 });
 </script>
 
@@ -217,46 +155,14 @@ const rootClass = computed(() => {
             </span>
         </Tooltip>
 
-        <OverlayTrigger
-            v-else-if="wrapEntityTooltip"
-            :content="entityOverlayContent"
-            :trigger="OVERLAY_TRIGGER.HOVER"
-            placement="bottom-start"
-            max-width="auto"
-            :interactive="true"
-            :close-on-outside="true"
-            :close-on-escape="true"
-            :chromeless="true"
-            panel-class="max-w-[min(92vw,22rem)]"
-            :focus-trap="false"
-            class="inline-flex max-w-full min-w-0 align-baseline"
-        >
-            <span
-                class="kref__entity-chip inline-flex max-w-full min-w-0 items-center gap-1 align-baseline rounded-sm border border-transparent px-1 py-0.5 transition-colors"
-                :class="{ 'kref__entity-chip--spell': isSpellEntity }"
-                :style="spellChipStyle"
-            >
-                <span
-                    v-if="isSpellEntity && spellPreview?.image"
-                    class="pointer-events-none inline-flex h-4 w-4 shrink-0 overflow-hidden rounded-sm"
-                    :style="spellImageStyle"
-                >
-                    <Image
-                        :src="spellPreview.image"
-                        :alt="presentation.displayLabel"
-                        fit="cover"
-                        rounded="sm"
-                        class="h-4 w-4"
-                    />
-                </span>
-                <i
-                    v-else
-                    :class="[presentation.iconClass, 'kref__icon']"
-                    aria-hidden="true"
-                />
-                <span class="kref__label">{{ presentation.displayLabel }}</span>
-            </span>
-        </OverlayTrigger>
+        <KrefEntityEmbed
+            v-else-if="wrapEntityEmbed"
+            :entity-type="entityTypeStr"
+            :entity-id="entityId"
+            :label="presentation.displayLabel"
+            :view="entityView"
+            :fallback-icon-class="presentation.iconClass"
+        />
 
         <span
             v-else-if="showCharacteristicResolvedChip"
@@ -291,15 +197,5 @@ const rootClass = computed(() => {
     min-width: 0;
     color: inherit;
     text-decoration: none;
-}
-
-.kref__entity-chip--spell {
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.kref__entity-chip--spell:hover {
-    background-color: var(--spell-chip-hover-bg) !important;
-    border-color: color-mix(in oklch, currentColor 35%, transparent);
 }
 </style>

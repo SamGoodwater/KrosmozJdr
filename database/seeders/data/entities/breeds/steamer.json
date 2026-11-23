@@ -15,32 +15,5 @@
         "water": "amelioration",
         "air": "placement"
     },
-    "mechanics": {
-        "engine": "invocation",
-        "turrets": {
-            "max_types": 3,
-            "no_duplicates": true,
-            "max_rank_iii": 1,
-            "other_max_rank": 2,
-            "hp_formula": "niveau du lanceur",
-            "ca_formula": "10 + bonus de maîtrise",
-            "reposition_cells": 3,
-            "upgrade_spell": "Évolution",
-            "types": {
-                "harponneuse": {
-                    "official_id": "jdr:summon:steamer-harponneuse",
-                    "role": "offensive_neutre",
-                    "debuff_from_rank": 3
-                },
-                "gardienne": {
-                    "official_id": "jdr:summon:steamer-gardienne",
-                    "role": "soin_ou_bouclier"
-                },
-                "tactirelle": {
-                    "official_id": "jdr:summon:steamer-tactirelle",
-                    "role": "attire_ou_pousse"
-                }
-            }
-        }
-    }
+    "mechanics": "<p><strong>Tourelles</strong></p><p>Tu invoques jusqu’à trois tourelles différentes : Harponneuse, Gardienne, Tactirelle. Pas deux fois la même. Elles comptent dans ta limite d’invocations, et elles jouent juste après toi.</p><p>Leurs points de vie valent ton niveau. Leur classe d’armure vaut 10 plus ton bonus de maîtrise.</p><p>Le sort Évolution monte leur rang. Une seule peut être au rang III. Les autres restent au rang II au plus. La Harponneuse ne pose un malus qu’au rang III.</p><p>Tu peux en replacer une à 3 cases ou moins. Pour 1 PM, tu la déplaces d’1 case.</p>"
 }

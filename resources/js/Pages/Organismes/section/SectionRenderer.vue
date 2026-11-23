@@ -63,6 +63,22 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    /**
+     * Section placée dans une rangée côte à côte : occupe 100 % de sa cellule flex.
+     */
+    inAdjacentRow: {
+        type: Boolean,
+        default: false,
+    },
+    /**
+     * Titre header compact (niveaux de classe).
+     * @type {'default'|'compact'}
+     */
+    headerTitleSize: {
+        type: String,
+        default: "default",
+        validator: (v) => ["default", "compact"].includes(v),
+    },
 });
 
 /** Section locale (peut recevoir le HTML différé via API). */
@@ -270,17 +286,23 @@ const sectionSettings = computed(() => {
  */
 const isFullWidthSection = computed(() => isFullWidthSectionTemplate(templateValue.value));
 
-const stretchToColumn = computed(() => isFullWidthSection.value || props.forceFullWidth);
+const stretchToColumn = computed(
+  () => isFullWidthSection.value || props.forceFullWidth || props.inAdjacentRow,
+);
 
 const sectionAlignSelfClass = computed(() => {
-  if (stretchToColumn.value) return 'self-stretch';
+  if (props.inAdjacentRow || stretchToColumn.value) return 'self-stretch';
   const raw = String(sectionSettings.value?.layoutAlignSelf || 'center').toLowerCase().trim();
   if (raw === 'start' || raw === 'left') return 'self-start';
   if (raw === 'end' || raw === 'right') return 'self-end';
   return 'self-center';
 });
 
-const sectionWidthClassName = computed(() => sectionWidthClass(stretchToColumn.value));
+const sectionWidthClassName = computed(() =>
+  props.inAdjacentRow
+    ? 'w-full min-w-0 max-w-full self-stretch h-full'
+    : sectionWidthClass(stretchToColumn.value),
+);
 
 /**
  * Texte élargi : la carte prend la colonne, la lecture reste centrée.
@@ -513,6 +535,7 @@ const handleDeleteSection = async () => {
       :canEdit="canEdit"
       :canDelete="canEdit"
       :isHovered="isHovered"
+      :title-size="headerTitleSize"
       @update:title="handleTitleUpdate"
       @toggle-edit="handleToggleEdit"
       @open-params="handleOpenParamsModal"
@@ -530,6 +553,13 @@ const handleDeleteSection = async () => {
         :show-header="false"
       />
         </div>
+
+        <!-- Lecture : slot optionnel (ex. progression classe Vue) ; édition = template TipTap. -->
+        <slot
+          v-else-if="!isEditing && $slots.read"
+          name="read"
+          :section="hydratedSection"
+        />
 
         <component
       v-else-if="templateComponent"

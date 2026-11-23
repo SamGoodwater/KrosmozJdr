@@ -6,7 +6,8 @@
 
 - `database/migrations/`
 - `database/seeders/`
-- `database/seeders/data/` — JSON versionnés (items, panoplies, consommables, 19 classes, 19 passifs + capacités de classe 3/9/14, 24 sorts de classe, 19 invocations, 28 monstres JDR, 5 PNJ Incarnam) + PHP `playable-breeds.php` (présentation des 19 classes) et `playable-specializations/*.php` (11 fiches)
+- `database/seeders/data/` — JSON versionnés (items, panoplies, consommables, 19 classes, 19 passifs + capacités de classe 3/9/14, 24 sorts de classe, 19 invocations, 28 monstres JDR, 5 PNJ Incarnam) + PHP `playable-breeds.php` (présentation des 19 classes) et `playable-specializations/*.php` (11 fiches ; blocs `aptitudes` → table `aptitudes` + pivot `aptitude_specialization`)
+- Tables `aptitudes` + `aptitude_specialization` (palier) ; commande `entities:migrate-specialization-aptitudes` pour basculer d’anciennes Capability spé passives.
 - `npcs.official_id` / `auto_update` : upsert seeder `jdr:npc:incarnam:…`, `auto_update = false`.
 - Favoris user : table `user_favorites` (`user_id`, `entity_type`, `entity_id`)
 - Jobs console admin : table `project_console_jobs` (domaine, %, sortie filtrée)

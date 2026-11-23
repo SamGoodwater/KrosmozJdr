@@ -144,6 +144,13 @@ const showRefPickerModal = ref(false)
 const refPickerQuery = ref('')
 const refPickerItems = ref([])
 const refPickerLoading = ref(false)
+/** Mode d’affichage pour les krefs entité à l’insertion (`text` | `icon` | `minimal`). */
+const refPickerEntityView = ref('text')
+const ENTITY_VIEW_OPTIONS = [
+  { value: 'text', label: 'Texte (puce)' },
+  { value: 'icon', label: 'Icône' },
+  { value: 'minimal', label: 'Minimal (carte)' },
+]
 let refPickerSearchTimer = null
 
 const richEditorRootRef = ref(null)
@@ -736,16 +743,45 @@ const insertReferenceTrigger = (triggerText) => {
   syncAtMenu()
 }
 
+/**
+ * Enrichit le payload entité avec le mode d’affichage choisi.
+ *
+ * @param {object} item
+ * @param {string} [view]
+ * @returns {object}
+ */
+const withEntityView = (item, view = 'text') => {
+  if (!item || item.krefType !== 'entity') return item
+  const normalized = ['text', 'icon', 'minimal'].includes(view) ? view : 'text'
+  let payload = {}
+  try {
+    payload = JSON.parse(String(item.krefPayload || '{}'))
+  } catch {
+    payload = {}
+  }
+  if (normalized === 'text') {
+    delete payload.view
+  } else {
+    payload.view = normalized
+  }
+  return {
+    ...item,
+    krefPayload: JSON.stringify(payload),
+  }
+}
+
 const insertRichReference = (item, options = {}) => {
   const replaceTriggerRange = options.replaceTriggerRange !== false
+  const entityView = options.entityView || 'text'
   if (!editor.value || !item) return
+  const enriched = withEntityView(item, entityView)
   if (replaceTriggerRange && atCommandRange.value) {
     editor.value.chain().focus().deleteRange(atCommandRange.value).run()
   }
   editor.value.chain().focus().insertReferenceInline({
-    krefType: item.krefType,
-    payload: item.krefPayload,
-    label: item.label,
+    krefType: enriched.krefType,
+    payload: enriched.krefPayload,
+    label: enriched.label,
   }).run()
 }
 
@@ -761,17 +797,22 @@ const openReferencePicker = () => {
   showRefPickerModal.value = true
   refPickerQuery.value = ''
   refPickerItems.value = []
+  refPickerEntityView.value = 'text'
 }
 
 const closeReferencePicker = () => {
   showRefPickerModal.value = false
   refPickerQuery.value = ''
   refPickerItems.value = []
+  refPickerEntityView.value = 'text'
 }
 
 const runRefPickerItem = (item) => {
   if (!item) return
-  insertRichReference(item, { replaceTriggerRange: false })
+  insertRichReference(item, {
+    replaceTriggerRange: false,
+    entityView: item.krefType === 'entity' ? refPickerEntityView.value : 'text',
+  })
   closeReferencePicker()
 }
 
@@ -1896,6 +1937,23 @@ const sanitizedPreviewHtml = computed(() => {
           <p class="text-sm text-base-content/70 mb-3">
             Recherche (min. 2 caractères), ordre : caractéristiques, sections, pages, entités (12 résultats max.).
           </p>
+          <div class="mb-3">
+            <label class="label py-0">
+              <span class="label-text text-xs opacity-70">Affichage des entités</span>
+            </label>
+            <div class="join join-horizontal w-full flex-wrap">
+              <button
+                v-for="opt in ENTITY_VIEW_OPTIONS"
+                :key="opt.value"
+                type="button"
+                class="btn btn-xs join-item"
+                :class="refPickerEntityView === opt.value ? 'btn-primary' : 'btn-ghost'"
+                @click="refPickerEntityView = opt.value"
+              >
+                {{ opt.label }}
+              </button>
+            </div>
+          </div>
           <input
             v-model="refPickerQuery"
             type="search"

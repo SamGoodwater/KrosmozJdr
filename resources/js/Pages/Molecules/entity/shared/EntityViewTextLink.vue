@@ -47,7 +47,27 @@ const props = defineProps({
    * (payload tableau allégé → vue minimale avec effets).
    */
   hydrateType: { type: String, default: "" },
+  /**
+   * Déclencheur overlay. Défaut : hover pour les sorts, click sinon.
+   * @type {''|'hover'|'click'}
+   */
+  trigger: {
+    type: String,
+    default: "",
+    validator: (v) => v === "" || ["hover", "click"].includes(v),
+  },
+  /**
+   * `chip` = bordure (listes / tableaux) ; `inline` = puce type kref (texte CMS).
+   * @type {'chip'|'inline'}
+   */
+  appearance: {
+    type: String,
+    default: "chip",
+    validator: (v) => ["chip", "inline"].includes(v),
+  },
 });
+
+const isInlineAppearance = computed(() => props.appearance === "inline");
 
 const entityName = computed(() => props.entity?.name || props.entity?.title || "");
 const imageSrc = computed(() => {
@@ -63,6 +83,11 @@ const imageFilterStyle = computed(() => spellImageFilterStyle(props.entity));
 const isSpellLink = computed(
     () => props.entityProp === "spell" || props.hydrateType === "spells",
 );
+
+const overlayTrigger = computed(() => {
+  if (props.trigger === "hover" || props.trigger === "click") return props.trigger;
+  return isSpellLink.value ? "hover" : "click";
+});
 
 const spellChipStyle = computed(() => {
     if (!isSpellLink.value) return undefined;
@@ -165,7 +190,7 @@ const overlayContent = computed(() => {
 <template>
   <OverlayTrigger
     :content="overlayContent"
-    :trigger="isSpellLink ? 'hover' : 'click'"
+    :trigger="overlayTrigger"
     :placement="placement"
     max-width="auto"
     :interactive="true"
@@ -176,8 +201,12 @@ const overlayContent = computed(() => {
     :focus-trap="false"
   >
     <div
-      class="entity-view-text-link inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-sm border px-1.5 py-0.5 transition-[background-color,border-color]"
-      :class="{ 'entity-view-text-link--spell': isSpellLink }"
+      class="entity-view-text-link inline-flex min-w-0 max-w-full items-center gap-1 rounded-sm transition-[background-color,border-color]"
+      :class="{
+        'entity-view-text-link--spell': isSpellLink,
+        'entity-view-text-link--chip border gap-1.5 px-1.5 py-0.5': !isInlineAppearance,
+        'entity-view-text-link--inline border border-transparent px-1 py-0.5': isInlineAppearance,
+      }"
       :style="spellChipStyle"
       tabindex="0"
       @mousedown.capture="handleAltNavigation"
@@ -225,5 +254,12 @@ const overlayContent = computed(() => {
 .entity-view-text-link--spell:hover {
   background-color: var(--spell-chip-hover-bg) !important;
   border-color: color-mix(in oklch, currentColor 35%, transparent);
+}
+.entity-view-text-link--inline {
+  cursor: pointer;
+  text-decoration: none;
+}
+.entity-view-text-link--inline:hover {
+  background-color: color-mix(in oklch, hsl(var(--p)) 12%, transparent);
 }
 </style>

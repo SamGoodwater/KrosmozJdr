@@ -1,4 +1,10 @@
 <script setup>
+/**
+ * Fiche lecture d’une spécialisation — route entities.specializations.show.
+ * Corps partagé avec la page bibliothèque (`LinkedEntityShow`) via {@link SpecializationShowBody}.
+ *
+ * @props {Object} specialization - Payload SpecializationResource
+ */
 import { computed } from "vue";
 import { Head, router, usePage } from "@inertiajs/vue3";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
@@ -7,8 +13,8 @@ import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import EntityViewFullWrapper from "@/Pages/Molecules/entity/shared/EntityViewFullWrapper.vue";
 import SpecializationViewFull from "@/Pages/Molecules/entity/specialization/SpecializationViewFull.vue";
+import SpecializationShowBody from "@/Pages/Molecules/entity/specialization/SpecializationShowBody.vue";
 import SpecializationWriteMetaPanel from "@/Pages/Molecules/entity/specialization/SpecializationWriteMetaPanel.vue";
-import EntitySectionsRenderer from "@/Pages/Organismes/entity/EntitySectionsRenderer.vue";
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -48,13 +54,7 @@ const goEdit = () => {
 
                 <SpecializationViewFull :specialization="specialization" :show-actions="true" />
 
-                <section class="space-y-3">
-                    <EntitySectionsRenderer
-                        :sections="specialization.sections"
-                        :align-with-column="true"
-                        empty-message="Aucune section liée à cette spécialisation."
-                    />
-                </section>
+                <SpecializationShowBody :specialization="specialization" />
 
                 <SpecializationWriteMetaPanel :specialization="specialization" />
             </div>

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Entity\Concerns\ProvidesAvailableEntitySections;
 use App\Http\Controllers\Entity\Concerns\SyncsLeveledEntitySections;
 use App\Http\Requests\Entity\StoreSpecializationRequest;
+use App\Http\Requests\Entity\UpdateSpecializationAptitudesRequest;
 use App\Http\Requests\Entity\UpdateSpecializationCapabilitiesRequest;
 use App\Http\Requests\Entity\UpdateSpecializationConsumablesRequest;
 use App\Http\Requests\Entity\UpdateSpecializationCreatureTraitsRequest;
@@ -46,6 +47,7 @@ class SpecializationController extends Controller
                 'createdBy',
                 'npcs' => fn ($q) => $q->visibleToUser($viewer),
                 'capabilities' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
+                'aptitudes' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
                 'spells' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
             ])
             ->withCount([
@@ -125,6 +127,7 @@ class SpecializationController extends Controller
             'createdBy',
             'npcs' => fn ($q) => $q->visibleToUser($viewer)->limit(100),
             'capabilities' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
+            'aptitudes' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
             'spells' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
             'creatureTraits' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
             'consumables' => fn ($q) => $q->visibleToUser($viewer)->orderBy('name'),
@@ -148,6 +151,7 @@ class SpecializationController extends Controller
         $specialization->load([
             'createdBy',
             'capabilities' => fn ($q) => $q->orderBy('name'),
+            'aptitudes' => fn ($q) => $q->orderBy('name'),
             'spells' => fn ($q) => $q->orderBy('name'),
             'creatureTraits' => fn ($q) => $q->orderBy('name'),
             'consumables' => fn ($q) => $q->orderBy('name'),
@@ -161,6 +165,7 @@ class SpecializationController extends Controller
             'specialization' => new SpecializationResource($specialization),
             'availableSpells' => [],
             'availableCapabilities' => [],
+            'availableAptitudes' => [],
             'availableCreatureTraits' => [],
             'availableConsumables' => [],
             'availableResources' => [],
@@ -196,6 +201,13 @@ class SpecializationController extends Controller
         $specialization->capabilities()->sync($request->validatedLeveledSyncPayload());
 
         return redirect()->back()->with('success', 'Capacités de la spécialisation mises à jour.');
+    }
+
+    public function updateAptitudes(UpdateSpecializationAptitudesRequest $request, Specialization $specialization): RedirectResponse
+    {
+        $specialization->aptitudes()->sync($request->validatedLeveledSyncPayload());
+
+        return redirect()->back()->with('success', 'Aptitudes de la spécialisation mises à jour.');
     }
 
     public function updateCreatureTraits(UpdateSpecializationCreatureTraitsRequest $request, Specialization $specialization): RedirectResponse
